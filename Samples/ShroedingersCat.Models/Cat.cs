@@ -1,6 +1,6 @@
 ﻿namespace ShroedingersCat.Models
 {
-    internal class Cat : ICat
+    public class Cat : ICat
     {
     }
 }

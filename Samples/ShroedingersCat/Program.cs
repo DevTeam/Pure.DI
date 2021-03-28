@@ -1,10 +1,17 @@
 ﻿namespace ShroedingersCat
 {
-    class Program
+    using Models;
+    using Pure.DI;
+
+    // ReSharper disable once ClassNeverInstantiated.Global
+    public class Program
     {
         static void Main(string[] args)
         {
-            new HelloWorld().Write();
+            DI.Setup()
+                .Bind<ICat>().As(Lifetime.Transient).To<Cat>();
+
+            var a = CompositionRoot.Resolve<ICat>();
         }
     }
 }
