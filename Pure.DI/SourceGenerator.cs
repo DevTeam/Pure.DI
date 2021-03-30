@@ -9,7 +9,7 @@
     [Generator]
     public class SourceGenerator: ISourceGenerator
     {
-        private static readonly DIBuilder Builder = new DIBuilder(new ObjectBuilder(new ConstructorsResolver()));
+        private static readonly ResolverBuilder Builder = new ResolverBuilder(new ObjectBuilder(new ConstructorsResolver()));
 
         public void Initialize(GeneratorInitializationContext context)
         {
@@ -19,21 +19,23 @@
                 Debugger.Launch();
             }
 #endif
-            context.RegisterForSyntaxNotifications(() => new MetadataReceiver());
         }
 
         public void Execute(GeneratorExecutionContext context)
         {
-            if (
-                context.SyntaxContextReceiver is MetadataReceiver bindingsReceiver
-                && bindingsReceiver.Metadata.Count > 0)
+            foreach (var tree in context.Compilation.SyntaxTrees)
             {
-                foreach (var metadata in bindingsReceiver.Metadata)
+                var semanticModel = context.Compilation.GetSemanticModel(tree);
+                var walker = new MetadataWalker(semanticModel);
+                walker.Visit(tree.GetRoot());
+                if (walker.Metadata.Count > 0)
                 {
-                    var semanticModel = context.Compilation.GetSemanticModel(metadata.Tree);
-                    var typeResolver = new TypeResolver(metadata);
-                    var compilationUnitSyntax = Builder.Build(metadata, semanticModel, typeResolver);
-                    context.AddSource(metadata.TargetTypeName, SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8));
+                    foreach (var metadata in walker.Metadata)
+                    {
+                        var typeResolver = new TypeResolver(metadata, semanticModel);
+                        var compilationUnitSyntax = Builder.Build(metadata, semanticModel, typeResolver);
+                        context.AddSource(metadata.TargetTypeName, SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8));
+                    }
                 }
             }
         }

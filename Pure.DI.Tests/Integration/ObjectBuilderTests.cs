@@ -85,11 +85,11 @@ namespace Sample
             var typeResolver = new Mock<ITypeResolver>();
             var targetType = compilation.GetTypeByMetadataName(type);
 
-            typeResolver.Setup(i => i.Resolve(It.IsAny<ITypeSymbol>())).Returns<ITypeSymbol>(i => i);
+            typeResolver.Setup(i => i.Resolve(It.IsAny<INamedTypeSymbol>())).Returns<INamedTypeSymbol>(i => i);
             
             var contractType = compilation.GetTypeByMetadataName("Sample.IName");
             var implementationType = compilation.GetTypeByMetadataName("Sample.Name");
-            typeResolver.Setup(i => i.Resolve(It.Is<ITypeSymbol>(j => SymbolEqualityComparer.Default.Equals(j, contractType)))).Returns(implementationType);
+            typeResolver.Setup(i => i.Resolve(It.Is<INamedTypeSymbol>(j => SymbolEqualityComparer.IncludeNullability.Equals(j, contractType)))).Returns(implementationType);
 
             // When
             var actualExpression = builder.TryBuild(targetType, semanticModel, typeResolver.Object)?.ToString();
@@ -131,7 +131,7 @@ namespace Sample
 ", 
             "new Sample.Cat<string>(new Sample.Name<string>())")]
 
-        public void ShouldBuildGeneric(string code, string expectedExpression)
+        public void ShouldBuildWhenSimpleGeneric(string code, string expectedExpression)
         {
             // Given
             var (compilation, tree, root, semanticModel) = code.Compile();
@@ -139,11 +139,11 @@ namespace Sample
             var typeResolver = new Mock<ITypeResolver>();
             var targetType = compilation.GetTypeByMetadataName("Sample.Cat`1").Construct(compilation.GetSpecialType(SpecialType.System_String));
 
-            typeResolver.Setup(i => i.Resolve(It.IsAny<ITypeSymbol>())).Returns<ITypeSymbol>(i => i);
+            typeResolver.Setup(i => i.Resolve(It.IsAny<INamedTypeSymbol>())).Returns<INamedTypeSymbol>(i => i);
 
             var contractType = compilation.GetTypeByMetadataName("Sample.IName`1").Construct(compilation.GetSpecialType(SpecialType.System_String));
             var implementationType = compilation.GetTypeByMetadataName("Sample.Name`1").Construct(compilation.GetSpecialType(SpecialType.System_String));
-            typeResolver.Setup(i => i.Resolve(It.Is<ITypeSymbol>(j => SymbolEqualityComparer.Default.Equals(j, contractType)))).Returns(implementationType);
+            typeResolver.Setup(i => i.Resolve(It.Is<INamedTypeSymbol>(j => SymbolEqualityComparer.IncludeNullability.Equals(j, contractType)))).Returns(implementationType);
 
             // When
             var actualExpression = builder.TryBuild(targetType, semanticModel, typeResolver.Object)?.ToString();

@@ -5,6 +5,6 @@
 
     internal interface IObjectBuilder
     {
-        ObjectCreationExpressionSyntax TryBuild(ITypeSymbol typeSymbol, SemanticModel semanticModel, ITypeResolver typeResolver);
+        ObjectCreationExpressionSyntax TryBuild(INamedTypeSymbol typeSymbol, SemanticModel semanticModel, ITypeResolver typeResolver);
     }
 }

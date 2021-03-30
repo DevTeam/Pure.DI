@@ -9,9 +9,18 @@
         static void Main(string[] args)
         {
             DI.Setup()
-                .Bind<ICat>().As(Lifetime.Transient).To<Cat>();
+                .Bind<IBox<TT>>().To<Box<TT>>()
+                .Bind<ICat>().To<Cat>()
+                .Bind<Program>().As(Lifetime.Singleton).To<Program>();
 
-            var a = CompositionRoot.Resolve<ICat>();
+            var program = Resolver.Resolve<Program>();
+            program.ShowBox();
         }
+
+        private readonly IBox<ICat> _box;
+
+        public Program(IBox<ICat> box) => _box = box;
+
+        public void ShowBox() => System.Console.WriteLine(_box);
     }
 }

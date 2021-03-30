@@ -1,0 +1,77 @@
+﻿<#@ import namespace="System.Collections.Generic" #>
+
+// ReSharper disable InconsistentNaming
+// ReSharper disable ClassNeverInstantiated.Global
+namespace Pure.DI
+{
+    using Core;
+<#
+var baseTypes = new Dictionary<string, string> { 
+    { "System.IDisposable", "TTDisposable#" },
+    { "System.IComparable", "TTComparable#" },
+    { "System.IComparable<T>", "TTComparable#<in T>" },
+    { "System.IEquatable<T>", "TTEquatable#<T>" },
+    { "System.Collections.Generic.IEnumerable<T>", "TTEnumerable#<out T>" },
+    { "System.Collections.Generic.IEnumerator<T>", "TTEnumerator#<out T>" },
+    { "System.Collections.Generic.ICollection<T>", "TTCollection#<T>" },
+    { "System.Collections.Generic.IList<T>", "TTList#<T>" },
+    { "System.Collections.Generic.ISet<T>", "TTSet#<T>" },
+    { "System.Collections.Generic.IComparer<T>", "TTComparer#<in T>" },
+    { "System.Collections.Generic.IEqualityComparer<T>", "TTEqualityComparer#<in T>" },
+    { "System.Collections.Generic.IDictionary<TKey, TValue>", "TTDictionary#<TKey, TValue>" },
+    { "System.IObservable<T>", "TTObservable#<out T>" },
+    { "System.IObserver<T>", "TTObserver#<in T>" }
+};
+#>
+<#for(int i = 0; i <= 32; i++) {#>
+    /// <summary>
+    /// Represents the generic type arguments marker for a reference type.
+    /// </summary>
+    [PublicAPI, GenericTypeArgument]
+    public abstract class TT<#=i == 0 ? "" : i.ToString()#> { }
+
+    /// <summary>
+    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// </summary>
+    [PublicAPI, GenericTypeArgument]
+    public class TTC<#=i == 0 ? "" : i.ToString()#> { }
+
+    /// <summary>
+    /// Represents the generic type arguments marker for an interface.
+    /// </summary>
+    [PublicAPI, GenericTypeArgument]
+    public interface TTI<#=i == 0 ? "" : i.ToString()#> { }
+
+    /// <summary>
+    /// Represents the generic type arguments marker for a value type.
+    /// </summary>
+    [PublicAPI, GenericTypeArgument]
+    public struct TTS<#=i == 0 ? "" : i.ToString()#> { }
+
+<#
+    if (i > 8)
+    {
+        continue;
+    }
+
+    foreach(var baseType in baseTypes)
+    {#>
+/// <summary>
+    /// Represents the generic type arguments marker for <c><#=baseType.Key.Replace('<','[').Replace('>',']')#></c>.
+    /// </summary>
+    [PublicAPI, GenericTypeArgument]
+    public interface <#=baseType.Value.Replace("#", i == 0 ? "" : i.ToString())#>: <#=baseType.Key#> { }
+
+    <#}#>
+<#}#>
+
+    internal static class GenericTypeArguments
+    {
+        internal static readonly System.Type[] Arguments =
+        {
+<#for(var i = 0; i <= 32; i++) {#>
+            typeof(TT<#=i == 0 ? "" : i.ToString()#>),
+<#}#>
+        };
+    }
+}

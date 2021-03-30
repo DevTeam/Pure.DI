@@ -10,15 +10,15 @@
     internal class MetadataWalker: CSharpSyntaxWalker
     {
         private readonly SemanticModel _semanticModel;
-        private readonly List<DIMetadata> _metadata = new List<DIMetadata>();
+        private readonly List<ResolverMetadata> _metadata = new List<ResolverMetadata>();
         private string _namespace;
-        private DIMetadata _di;
+        private ResolverMetadata _resolver;
         private BindingMetadata _binding = new BindingMetadata();
 
         public MetadataWalker(SemanticModel semanticModel) =>
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
 
-        public IReadOnlyCollection<DIMetadata> Metadata => _metadata;
+        public IReadOnlyCollection<ResolverMetadata> Metadata => _metadata;
 
         public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
         {
@@ -49,20 +49,20 @@
                     var targetTypeName = GetValue<string>(invocationOperation.Arguments[0], _semanticModel);
                     if (string.IsNullOrWhiteSpace(targetTypeName))
                     {
-                        targetTypeName = "CompositionRoot";
+                        targetTypeName = "Resolver";
                     }
 
                     if (_namespace != null)
                     {
-                        _di = new DIMetadata(node.SyntaxTree, _namespace, targetTypeName, new List<BindingMetadata>());
-                        _metadata.Add(_di);
+                        _resolver = new ResolverMetadata(_namespace, targetTypeName, new List<BindingMetadata>());
+                        _metadata.Add(_resolver);
                     }
                 }
 
                 return;
             }
 
-            if (_di == null)
+            if (_resolver == null)
             {
                 return;
             }
@@ -80,20 +80,20 @@
                 // To<>()
                 if (invocationOperation.TargetMethod.Name == nameof(IBinding.To)
                     && typeof(IBinding).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel)
-                    && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel))
+                    && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
+                    && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol implementationType)
                 {
-                    ITypeSymbol implementationType = invocationOperation.TargetMethod.TypeArguments[0];
                     _binding.ImplementationType = implementationType;
-                    _di.Bindings.Add(_binding);
+                    _resolver.Bindings.Add(_binding);
                     _binding = new BindingMetadata();
                 }
 
                 // Bind<>()
                 if (invocationOperation.TargetMethod.Name == nameof(IBinding.Bind)
                     && (typeof(IBinding).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel) || typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel))
-                    && typeof(IBinding).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel))
+                    && typeof(IBinding).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
+                    && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol contractType)
                 {
-                    var contractType = invocationOperation.TargetMethod.TypeArguments[0];
                     _binding.ContractTypes.Add(contractType);
                 }
 

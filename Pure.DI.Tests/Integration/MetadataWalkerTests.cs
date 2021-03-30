@@ -64,7 +64,7 @@ namespace Sample
             bindings[1].ImplementationType.ToDisplayString().ShouldBe("Sample.Cat");
 
             metadata[1].Namespace.ShouldBe("Sample");
-            metadata[1].TargetTypeName.ShouldBe("CompositionRoot");
+            metadata[1].TargetTypeName.ShouldBe("Resolver");
             bindings = metadata[1].Bindings.ToList();
             bindings.Count.ShouldBe(1);
             bindings[0].ContractTypes.Select(i => i.ToDisplayString()).ToList().ShouldBe(new[] { "Sample.ICat" });

@@ -6,7 +6,7 @@
 
     internal class MetadataReceiver : ISyntaxContextReceiver
     {
-        private List<DIMetadata> _metadata = new List<DIMetadata>();
+        private List<ResolverMetadata> _metadata = new List<ResolverMetadata>();
 
         public void OnVisitSyntaxNode(GeneratorSyntaxContext context)
         {
@@ -19,6 +19,6 @@
             }
         }
 
-        public IReadOnlyCollection<DIMetadata> Metadata => _metadata;
+        public IReadOnlyCollection<ResolverMetadata> Metadata => _metadata;
     }
 }

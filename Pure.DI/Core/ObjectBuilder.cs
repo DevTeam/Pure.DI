@@ -14,14 +14,14 @@
             _constructorsResolver = constructorsResolver ?? throw new ArgumentNullException(nameof(constructorsResolver));
 
         [CanBeNull]
-        public ObjectCreationExpressionSyntax TryBuild(ITypeSymbol typeSymbol, SemanticModel semanticModel, ITypeResolver typeResolver)
+        public ObjectCreationExpressionSyntax TryBuild(INamedTypeSymbol typeSymbol, SemanticModel semanticModel, ITypeResolver typeResolver)
         {
             var resolvedType = typeResolver.Resolve(typeSymbol);
             return (
                 from ctor in _constructorsResolver.Resolve(resolvedType, semanticModel)
                 let parameters =
                     from parameter in ctor.Parameters
-                    select TryBuild(parameter.Type, semanticModel, typeResolver)
+                    select TryBuild((INamedTypeSymbol)parameter.Type, semanticModel, typeResolver)
                 where parameters.All(i => i != null)
                 let arguments = SyntaxFactory.SeparatedList(
                     from parameter in parameters

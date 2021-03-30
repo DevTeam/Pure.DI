@@ -7,21 +7,20 @@
 
     internal class ConstructorsResolver : IConstructorsResolver
     {
-        public IEnumerable<IMethodSymbol> Resolve(ITypeSymbol typeSymbol, SemanticModel semanticModel) =>
-            from member in typeSymbol.GetMembers().OfType<IMethodSymbol>()
-            where member.MetadataName.Equals(".ctor", StringComparison.CurrentCultureIgnoreCase)
-            where member.DeclaredAccessibility != Accessibility.Private
+        public IEnumerable<IMethodSymbol> Resolve(INamedTypeSymbol typeSymbol, SemanticModel semanticModel) =>
+            from ctor in typeSymbol.Constructors
+            where ctor.DeclaredAccessibility != Accessibility.Private
             let isObsoleted = (
-                from attr in member.GetAttributes()
+                from attr in ctor.GetAttributes()
                 where typeof(ObsoleteAttribute).Equals(attr.AttributeClass, semanticModel)
                 select attr).Any()
-            let parameters = member.Parameters
+            let parameters = ctor.Parameters
             let canBeResolved = (
                 from parameter in parameters
                 where parameter.IsOptional || parameter.HasExplicitDefaultValue
                 select parameter).Any()
             let order = (parameters.Length + 1) * (canBeResolved ? 0xffff : 1) * (isObsoleted ? 1 : 0xff)
             orderby order descending
-            select member;
+            select ctor;
     }
 }
