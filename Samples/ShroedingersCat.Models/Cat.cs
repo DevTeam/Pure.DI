@@ -2,6 +2,10 @@
 {
     public class Cat : ICat
     {
-        public override string ToString() => "Barsik";
+        private readonly string _name;
+
+        public Cat(string name) => _name = name;
+
+        public override string ToString() => _name;
     }
 }

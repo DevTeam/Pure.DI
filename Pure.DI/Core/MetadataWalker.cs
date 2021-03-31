@@ -73,28 +73,50 @@
             }
 
             if (
-                invocationOperation.TargetMethod.Parameters.Length == 0
-                && invocationOperation.TargetMethod.IsGenericMethod
+                invocationOperation.TargetMethod.IsGenericMethod
                 && invocationOperation.TargetMethod.TypeArguments.Length == 1)
             {
-                // To<>()
-                if (invocationOperation.TargetMethod.Name == nameof(IBinding.To)
-                    && typeof(IBinding).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel)
-                    && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
-                    && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol implementationType)
+                if (invocationOperation.TargetMethod.Parameters.Length == 0)
                 {
-                    _binding.ImplementationType = implementationType;
-                    _resolver.Bindings.Add(_binding);
-                    _binding = new BindingMetadata();
-                }
+                    // To<>()
+                    if (invocationOperation.TargetMethod.Name == nameof(IBinding.To)
+                        && typeof(IBinding).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel)
+                        && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
+                        && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol implementationType)
+                    {
+                        _binding.ImplementationType = implementationType;
+                        _resolver.Bindings.Add(_binding);
+                        _binding = new BindingMetadata();
+                    }
 
-                // Bind<>()
-                if (invocationOperation.TargetMethod.Name == nameof(IBinding.Bind)
-                    && (typeof(IBinding).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel) || typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel))
-                    && typeof(IBinding).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
-                    && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol contractType)
+                    // Bind<>()
+                    if (invocationOperation.TargetMethod.Name == nameof(IBinding.Bind)
+                        && (typeof(IBinding).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel) || typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel))
+                        && typeof(IBinding).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
+                        && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol contractType)
+                    {
+                        _binding.ContractTypes.Add(contractType);
+                    }
+                }
+                else
                 {
-                    _binding.ContractTypes.Add(contractType);
+                    // To<>(ctx => new ...())
+                    if (invocationOperation.TargetMethod.Name == nameof(IBinding.To)
+                        && typeof(IBinding).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel)
+                        && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
+                        && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol implementationType)
+                    {
+                        _binding.ImplementationType = implementationType;
+                        if (
+                            invocationOperation.Arguments[0].Syntax is ArgumentSyntax factory
+                            && factory.Expression is SimpleLambdaExpressionSyntax lambda)
+                        {
+                            _binding.Factory = lambda;
+                        }
+
+                        _resolver.Bindings.Add(_binding);
+                        _binding = new BindingMetadata();
+                    }
                 }
 
                 return;

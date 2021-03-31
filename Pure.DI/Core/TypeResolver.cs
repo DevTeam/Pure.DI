@@ -1,74 +1,94 @@
 ﻿namespace Pure.DI.Core
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     internal class TypeResolver : ITypeResolver
     {
         private readonly SemanticModel _semanticModel;
-        private readonly Dictionary<INamedTypeSymbol, INamedTypeSymbol> _map = new Dictionary<INamedTypeSymbol, INamedTypeSymbol>(SymbolEqualityComparer.IncludeNullability);
-        private readonly Dictionary<INamedTypeSymbol, GenericTypeInfo> _genericMap = new Dictionary<INamedTypeSymbol, GenericTypeInfo>(SymbolEqualityComparer.IncludeNullability);
-        private readonly HashSet<BindingMetadata> _additionalBindings = new HashSet<BindingMetadata>();
+        private readonly IObjectBuilder _constructorObjectBuilder;
+        private readonly IObjectBuilder _factoryObjectBuilder;
+        private readonly Dictionary<Key, Binding<INamedTypeSymbol>> _map = new Dictionary<Key, Binding<INamedTypeSymbol>>();
+        private readonly Dictionary<Key, Binding<INamedTypeSymbol>> _genericMap = new Dictionary<Key, Binding<INamedTypeSymbol>>();
+        private readonly Dictionary<Key, Binding<SimpleLambdaExpressionSyntax>> _factories = new Dictionary<Key, Binding<SimpleLambdaExpressionSyntax>>();
 
-        public TypeResolver(ResolverMetadata metadata, SemanticModel semanticModel)
+        public TypeResolver(
+            ResolverMetadata metadata,
+            SemanticModel semanticModel,
+            IObjectBuilder constructorObjectBuilder,
+            IObjectBuilder factoryObjectBuilder)
         {
             _semanticModel = semanticModel;
+            _constructorObjectBuilder = constructorObjectBuilder;
+            _factoryObjectBuilder = factoryObjectBuilder;
             foreach (var binding in metadata.Bindings)
             {
-                foreach (var contractType in binding.ContractTypes)
+                foreach (var bindingContractType in binding.ContractTypes)
                 {
-                    if (contractType.IsComposedGenericTypeMarker(semanticModel))
+                    foreach (var tag in binding.Tags.DefaultIfEmpty(null))
                     {
-                        _genericMap[contractType.ConstructUnboundGenericType()] = new GenericTypeInfo(contractType, binding);
-                    }
-                    else
-                    {
-                        _map[contractType] = binding.ImplementationType;
+                        Key key;
+                        if (bindingContractType.IsComposedGenericTypeMarker(semanticModel))
+                        {
+                            key = new Key(bindingContractType.ConstructUnboundGenericType(), tag);
+                            _genericMap[key] = new Binding<INamedTypeSymbol>(binding, bindingContractType);
+                        }
+                        else
+                        {
+                            key = new Key(bindingContractType, tag);
+                            _map[key] = new Binding<INamedTypeSymbol>(binding, binding.ImplementationType);
+                        }
+
+                        if (binding.Factory != null)
+                        {
+                            _factories[key] = new Binding<SimpleLambdaExpressionSyntax>(binding, binding.Factory);
+                        }
                     }
                 }
             }
         }
 
-        public IReadOnlyCollection<BindingMetadata> AdditionalBindings => _additionalBindings;
-
-        public INamedTypeSymbol Resolve(INamedTypeSymbol typeSymbol)
+        public TypeResolveDescription Resolve(INamedTypeSymbol contractType, ExpressionSyntax tag)
         {
-            if (_map.TryGetValue(typeSymbol, out var implementationType))
+            var key = new Key(contractType, tag);
+            if (_factories.TryGetValue(key, out var factory))
             {
-                var typeMap = new Dictionary<INamedTypeSymbol, INamedTypeSymbol>();
-                CreateMap(typeSymbol, implementationType, typeMap, _semanticModel);
-                return implementationType;
+                return new TypeResolveDescription(factory.Metadata, contractType, _factoryObjectBuilder);
             }
 
-            if (typeSymbol.IsGenericType)
+            if (_map.TryGetValue(key, out var implementationEntry))
             {
-                if(_genericMap.TryGetValue(typeSymbol.ConstructUnboundGenericType(), out var genericTypeInfo))
+                var typeMap = new Dictionary<INamedTypeSymbol, INamedTypeSymbol>();
+                CreateMap(contractType, implementationEntry.Details, typeMap, _semanticModel);
+                return new TypeResolveDescription(implementationEntry.Metadata, implementationEntry.Details, _constructorObjectBuilder);
+            }
+
+            if (contractType.IsGenericType)
+            {
+                if (_genericMap.TryGetValue(new Key(contractType.ConstructUnboundGenericType(), tag), out implementationEntry))
                 {
                     var typesMap = new Dictionary<INamedTypeSymbol, INamedTypeSymbol>();
-                    CreateMap(genericTypeInfo.ContractType, typeSymbol, typesMap, _semanticModel);
+                    CreateMap(implementationEntry.Details, contractType, typesMap, _semanticModel);
                     if (typesMap.Count > 0)
                     { 
-                        var contractType = ConstructType(genericTypeInfo.ContractType, typesMap);
-                        implementationType = ConstructType(genericTypeInfo.Binding.ImplementationType, typesMap);
+                        var constructedContractType = ConstructType(implementationEntry.Details, typesMap);
+                        var implementationType = ConstructType(implementationEntry.Metadata.ImplementationType, typesMap);
                         var binding = new BindingMetadata
                         {
                             ImplementationType = implementationType,
-                            Lifetime = genericTypeInfo.Binding.Lifetime
+                            Lifetime = implementationEntry.Metadata.Lifetime
                         };
 
-                        foreach (var tag in genericTypeInfo.Binding.Tags)
-                        {
-                            binding.Tags.Add(tag);
-                        }
-
-                        binding.ContractTypes.Add(contractType);
-                        _additionalBindings.Add(binding);
-                        return implementationType;
+                        binding.Tags.Add(tag);
+                        binding.ContractTypes.Add(constructedContractType);
+                        return new TypeResolveDescription(implementationEntry.Metadata, implementationType, _constructorObjectBuilder);
                     }
                 }
             }
 
-            return typeSymbol;
+            return new TypeResolveDescription(new BindingMetadata(), contractType, _constructorObjectBuilder);
         }
 
         private void CreateMap(INamedTypeSymbol type, INamedTypeSymbol targetType, IDictionary<INamedTypeSymbol, INamedTypeSymbol> typesMap, SemanticModel semanticModel)
@@ -158,15 +178,43 @@
             return type.Construct(_semanticModel, args.ToArray());
         }
 
-        private readonly struct GenericTypeInfo
+        private readonly struct Binding<T>
+        {
+            public readonly BindingMetadata Metadata;
+            public readonly T Details;
+
+            public Binding(BindingMetadata metadata, T details)
+            {
+                Metadata = metadata;
+                Details = details;
+            }
+        }
+
+        private readonly struct Key
         {
             public readonly INamedTypeSymbol ContractType;
-            public readonly BindingMetadata Binding;
+            public readonly ExpressionSyntax Tag;
 
-            public GenericTypeInfo(INamedTypeSymbol contractType, BindingMetadata binding)
+            public Key(INamedTypeSymbol contractType, ExpressionSyntax tag)
             {
                 ContractType = contractType;
-                Binding = binding;
+                Tag = tag;
+            }
+
+            public bool Equals(Key other) =>
+                ContractType.Equals(other.ContractType, SymbolEqualityComparer.IncludeNullability)
+                && Equals(Tag, other.Tag);
+
+            public override bool Equals(object obj) =>
+                obj is Key other
+                && Equals(other);
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return ((ContractType != null ? SymbolEqualityComparer.IncludeNullability.GetHashCode(ContractType) : 0) * 397) ^ (Tag != null ? Tag.GetHashCode() : 0);
+                }
             }
         }
     }

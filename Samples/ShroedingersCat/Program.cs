@@ -11,11 +11,12 @@
         {
             DI.Setup()
                 .Bind<IBox<TT>>().To<Box<TT>>()
+                .Bind<string>().Tag("CatName").To(ctx => "Shroedingers")
+                .Bind<string>().To(ctx => $"{ctx.Resolve<string>("CatName")} cat")
                 .Bind<ICat>().To<Cat>()
                 .Bind<Program>().As(Lifetime.Singleton).To<Program>();
 
-            var program = Resolver.Resolve<Program>();
-            program.ShowBox();
+            Resolver.Resolve<Program>().ShowBox();
         }
 
         private readonly IBox<ICat> _box;

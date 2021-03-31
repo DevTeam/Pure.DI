@@ -1,12 +1,10 @@
 ﻿namespace Pure.DI.Core
 {
-    using System.Collections.Generic;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     internal interface ITypeResolver
     {
-        IReadOnlyCollection<BindingMetadata> AdditionalBindings { get; }
-
-        INamedTypeSymbol Resolve(INamedTypeSymbol typeSymbol);
+        TypeResolveDescription Resolve(INamedTypeSymbol typeSymbol, ExpressionSyntax tag);
     }
 }

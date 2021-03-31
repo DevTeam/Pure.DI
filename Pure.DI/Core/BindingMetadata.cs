@@ -1,13 +1,13 @@
 ﻿namespace Pure.DI.Core
 {
     using System.Collections.Generic;
-    using System.Linq;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     internal class BindingMetadata
     {
         [CanBeNull] public INamedTypeSymbol ImplementationType = null;
+        [CanBeNull] public SimpleLambdaExpressionSyntax Factory = null;
         public Lifetime Lifetime = Lifetime.Transient;
         [NotNull] public readonly ISet<INamedTypeSymbol> ContractTypes = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.IncludeNullability);
         [NotNull] public readonly ISet<ExpressionSyntax> Tags = new HashSet<ExpressionSyntax>();

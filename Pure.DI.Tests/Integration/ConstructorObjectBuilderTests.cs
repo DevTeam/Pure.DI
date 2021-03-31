@@ -6,7 +6,7 @@
     using Shouldly;
     using Xunit;
 
-    public class ObjectBuilderTests
+    public class ConstructorObjectBuilderTests
     {
         [Theory]
         [InlineData(@"
@@ -81,18 +81,18 @@ namespace Sample
         {
             // Given
             var (compilation, tree, root, semanticModel) = code.Compile();
-            var builder =  new ObjectBuilder(new ConstructorsResolver());
+            var builder =  new ConstructorObjectBuilder(new ConstructorsResolver());
             var typeResolver = new Mock<ITypeResolver>();
             var targetType = compilation.GetTypeByMetadataName(type);
 
-            typeResolver.Setup(i => i.Resolve(It.IsAny<INamedTypeSymbol>())).Returns<INamedTypeSymbol>(i => i);
+            typeResolver.Setup(i => i.Resolve(It.IsAny<INamedTypeSymbol>(),null)).Returns<INamedTypeSymbol>(i => new TypeResolveDescription(new BindingMetadata(), i, builder));
             
             var contractType = compilation.GetTypeByMetadataName("Sample.IName");
             var implementationType = compilation.GetTypeByMetadataName("Sample.Name");
-            typeResolver.Setup(i => i.Resolve(It.Is<INamedTypeSymbol>(j => SymbolEqualityComparer.IncludeNullability.Equals(j, contractType)))).Returns(implementationType);
+            typeResolver.Setup(i => i.Resolve(It.Is<INamedTypeSymbol>(j => SymbolEqualityComparer.IncludeNullability.Equals(j, contractType)), null)).Returns(new TypeResolveDescription(new BindingMetadata(), implementationType, builder));
 
             // When
-            var actualExpression = builder.TryBuild(targetType, semanticModel, typeResolver.Object)?.ToString();
+            var actualExpression = builder.TryBuild(new BindingMetadata(), targetType, null, semanticModel, typeResolver.Object)?.ToString();
 
             // Then
             actualExpression.ShouldBe(expectedExpression);
@@ -135,18 +135,18 @@ namespace Sample
         {
             // Given
             var (compilation, tree, root, semanticModel) = code.Compile();
-            var builder = new ObjectBuilder(new ConstructorsResolver());
+            var builder = new ConstructorObjectBuilder(new ConstructorsResolver());
             var typeResolver = new Mock<ITypeResolver>();
             var targetType = compilation.GetTypeByMetadataName("Sample.Cat`1").Construct(compilation.GetSpecialType(SpecialType.System_String));
 
-            typeResolver.Setup(i => i.Resolve(It.IsAny<INamedTypeSymbol>())).Returns<INamedTypeSymbol>(i => i);
+            typeResolver.Setup(i => i.Resolve(It.IsAny<INamedTypeSymbol>(), null)).Returns<INamedTypeSymbol>(i => new TypeResolveDescription(new BindingMetadata(), i, builder));
 
             var contractType = compilation.GetTypeByMetadataName("Sample.IName`1").Construct(compilation.GetSpecialType(SpecialType.System_String));
             var implementationType = compilation.GetTypeByMetadataName("Sample.Name`1").Construct(compilation.GetSpecialType(SpecialType.System_String));
-            typeResolver.Setup(i => i.Resolve(It.Is<INamedTypeSymbol>(j => SymbolEqualityComparer.IncludeNullability.Equals(j, contractType)))).Returns(implementationType);
+            typeResolver.Setup(i => i.Resolve(It.Is<INamedTypeSymbol>(j => SymbolEqualityComparer.IncludeNullability.Equals(j, contractType)), null)).Returns(new TypeResolveDescription(new BindingMetadata(), implementationType, builder));
 
             // When
-            var actualExpression = builder.TryBuild(targetType, semanticModel, typeResolver.Object)?.ToString();
+            var actualExpression = builder.TryBuild(new BindingMetadata(), targetType, null, semanticModel, typeResolver.Object)?.ToString();
 
             // Then
             actualExpression.ShouldBe(expectedExpression);

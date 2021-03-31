@@ -24,7 +24,10 @@ namespace Sample
 
     public interface ICat { }
 
-    public class Cat { }
+    public class Cat
+    {
+        public Cat(string name) { }
+    }
 
     public class Root
     {
@@ -37,44 +40,17 @@ namespace Sample
         {
             DI.Setup()
                 .Bind<IBox<TT>>().To<Box<TT>>()
+                .Bind<string>().Tag(1).To<string>(ctx => ""Barsik"")
+                .Bind<string>().To<string>(ctx => { return ""Cat"" + ctx.Resolve<string>(1); })
                 .Bind<ICat>().To<Cat>()
                 .Bind<Root>().As(Lifetime.Singleton).Tag(10).To<Root>()
-                .Bind<Root>().As(Lifetime.Singleton).To<Root>();
+                .Bind<Root>().As(Lifetime.Transient).To<Root>();
         }
     }    
 }
 ",
             @"")]
 
-        /*
-        [InlineData(@"
-namespace Sample
-{ 
-    using Pure.DI;
-
-    public interface IName {}
-
-    public class Name {}
-
-    public class Cat
-    {
-        public Cat(IName name) { }
-    }
-
-    public class Program
-    {
-        static void Main()
-        {
-            DI.Setup()
-                .Bind<IName>().As(Lifetime.Singleton).To<Name>()
-                .Bind<Cat>().To<Cat>();
-        }
-    }    
-}
-",
-            @"")]
-
-        */
         public void ShouldBuild(string code, string expectedCode)
         {
             // Given
@@ -83,9 +59,10 @@ namespace Sample
             walker.Visit(root);
             var metadata = walker.Metadata.First();
 
-            var builder = new ResolverBuilder(new ObjectBuilder(new ConstructorsResolver()));
-            
-            var typeResolver = new TypeResolver(metadata, semanticModel);
+            var builder = new ResolverBuilder();
+            var constructorObjectBuilder = new ConstructorObjectBuilder(new ConstructorsResolver());
+            var factoryObjectBuilder = new FactoryObjectBuilder();
+            var typeResolver = new TypeResolver(metadata, semanticModel, constructorObjectBuilder, factoryObjectBuilder);
 
             // When
             var actualExpression = builder.Build(metadata, semanticModel, typeResolver).ToString();
