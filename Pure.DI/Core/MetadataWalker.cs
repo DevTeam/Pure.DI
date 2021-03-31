@@ -47,7 +47,7 @@
                     && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel))
                 {
                     var targetTypeName = GetValue<string>(invocationOperation.Arguments[0], _semanticModel);
-                    if (string.IsNullOrWhiteSpace(targetTypeName))
+                    if (string.IsNullOrWhiteSpace(targetTypeName) || !SyntaxFacts.IsValidIdentifier(targetTypeName))
                     {
                         targetTypeName = "Resolver";
                     }

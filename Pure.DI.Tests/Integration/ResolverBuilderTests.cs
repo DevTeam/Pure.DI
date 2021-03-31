@@ -38,7 +38,8 @@ namespace Sample
             DI.Setup()
                 .Bind<IBox<TT>>().To<Box<TT>>()
                 .Bind<ICat>().To<Cat>()
-                .Bind<Root>().To<Root>();
+                .Bind<Root>().As(Lifetime.Singleton).Tag(10).To<Root>()
+                .Bind<Root>().As(Lifetime.Singleton).To<Root>();
         }
     }    
 }
@@ -65,7 +66,7 @@ namespace Sample
         static void Main()
         {
             DI.Setup()
-                .Bind<IName>().To<Name>()
+                .Bind<IName>().As(Lifetime.Singleton).To<Name>()
                 .Bind<Cat>().To<Cat>();
         }
     }    

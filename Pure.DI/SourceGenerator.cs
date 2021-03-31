@@ -1,6 +1,5 @@
 ﻿namespace Pure.DI
 {
-    using System.Diagnostics;
     using System.Text;
     using Core;
     using Microsoft.CodeAnalysis;
@@ -9,7 +8,7 @@
     [Generator]
     public class SourceGenerator: ISourceGenerator
     {
-        private static readonly ResolverBuilder Builder = new ResolverBuilder(new ObjectBuilder(new ConstructorsResolver()));
+        private static readonly IObjectBuilder ObjectBuilder = new ObjectBuilder(new ConstructorsResolver());
 
         public void Initialize(GeneratorInitializationContext context)
         {
@@ -23,6 +22,7 @@
 
         public void Execute(GeneratorExecutionContext context)
         {
+            var builder = new ResolverBuilder(ObjectBuilder);
             foreach (var tree in context.Compilation.SyntaxTrees)
             {
                 var semanticModel = context.Compilation.GetSemanticModel(tree);
@@ -33,7 +33,7 @@
                     foreach (var metadata in walker.Metadata)
                     {
                         var typeResolver = new TypeResolver(metadata, semanticModel);
-                        var compilationUnitSyntax = Builder.Build(metadata, semanticModel, typeResolver);
+                        var compilationUnitSyntax = builder.Build(metadata, semanticModel, typeResolver);
                         context.AddSource(metadata.TargetTypeName, SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8));
                     }
                 }

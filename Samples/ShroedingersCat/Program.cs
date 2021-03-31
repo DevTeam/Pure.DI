@@ -7,7 +7,7 @@
     // ReSharper disable once ClassNeverInstantiated.Global
     public class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             DI.Setup()
                 .Bind<IBox<TT>>().To<Box<TT>>()
@@ -22,6 +22,6 @@
 
         public Program(IBox<ICat> box) => _box = box;
 
-        public void ShowBox() => Console.WriteLine(_box);
+        private void ShowBox() => Console.WriteLine(_box);
     }
 }
