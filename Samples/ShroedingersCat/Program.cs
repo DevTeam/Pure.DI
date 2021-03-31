@@ -1,5 +1,6 @@
 ﻿namespace ShroedingersCat
 {
+    using System;
     using Models;
     using Pure.DI;
 
@@ -21,6 +22,6 @@
 
         public Program(IBox<ICat> box) => _box = box;
 
-        public void ShowBox() => System.Console.WriteLine(_box);
+        public void ShowBox() => Console.WriteLine(_box);
     }
 }

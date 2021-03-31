@@ -7,6 +7,29 @@
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<!-- Generates a package at build -->
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<!-- Do not include the generator as a lib dependency -->
+	
+		<IsPackable>true</IsPackable>
+		<PackageId>Pure.DI</PackageId>
+		<Authors>NikolayP</Authors>
+		<Description>Pure DI for .NET.</Description>
+		<PackageProjectUrl>https://github.com/DevTeam/Pure.DI/</PackageProjectUrl>
+		<PackageIcon>common\icon.png</PackageIcon>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/DevTeam/Pure.DI.git</RepositoryUrl>
+		<PackageTags>di pure ioc container di</PackageTags>
+		<Product>IoC Container</Product>
+		<Copyright>Copyright (C) 2018-2021 Nikolay Pianikov</Copyright>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+	</ItemGroup>
+	
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" PrivateAssets="all" />
 		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="all" />
@@ -17,6 +40,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<None Include="icon.png">
+			<Pack>true</Pack>
+			<PackagePath>common</PackagePath>
+		</None>
+
 		<None Update="GenericTypeArguments.tt">
 			<LastGenOutput>GenericTypeArguments.cs</LastGenOutput>
 			<Generator>TextTemplatingFileGenerator</Generator>
@@ -33,3 +61,4 @@
 		<Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
 	</ItemGroup>
 </Project>
+
