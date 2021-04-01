@@ -7,18 +7,16 @@
 
     internal class TypeBindingStatementsStrategy: IBindingStatementsStrategy
     {
-        private readonly SemanticModel _semanticModel;
         private readonly IBindingExpressionStrategy _bindingExpressionStrategy;
 
-        public TypeBindingStatementsStrategy(SemanticModel semanticModel, IBindingExpressionStrategy bindingExpressionStrategy)
+        public TypeBindingStatementsStrategy(IBindingExpressionStrategy bindingExpressionStrategy)
         {
-            _semanticModel = semanticModel;
             _bindingExpressionStrategy = bindingExpressionStrategy;
         }
 
         public IEnumerable<StatementSyntax> CreateStatements(BindingMetadata binding, INamedTypeSymbol contractType)
         {
-            var instance = _bindingExpressionStrategy.TryBuild(binding, contractType, null);
+            var instance = _bindingExpressionStrategy.TryBuild(binding, contractType, null, new List<BindingMetadata>());
             yield return SyntaxFactory.ReturnStatement(instance);
         }
     }

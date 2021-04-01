@@ -12,39 +12,47 @@
 namespace Sample
 { 
     using Pure.DI;
+    using System;
 
-    public interface IBox<T> { T Content {get;} }
+interface IBox<out T> { T Content { get; } }
 
-    public class Box<T> : IBox<T>
-    {
-        public Box(T content) => Content = content;
+        interface ICat { State State { get; } }
 
-        public T Content { get; }
+        enum State { Alive, Dead }
+
+        class CardboardBox<T> : IBox<T>
+        {
+            public CardboardBox(T content) => Content = content;
+
+            public T Content { get; }
+        }
+
+        class ShroedingersCat : ICat
+        {
+            // Represents the superposition of the states
+            private readonly Lazy<State> _superposition;
+
+            public ShroedingersCat(Lazy<State> superposition) => _superposition = superposition;
+
+            // The decoherence of the superposition at the time of observation via an irreversible process
+            public State State => _superposition.Value;
+
+            public override string ToString() => $""{State} cat"";
     }
 
-    public interface ICat { }
-
-    public class Cat
-    {
-        public Cat(string name) { }
-    }
-
-    public class Root
-    {
-        public Root(IBox<ICat> box) { }
-    }
-
-    public class Program
+public class Program
     {
         static void Main()
         {
             DI.Setup()
-                .Bind<IBox<TT>>().To<Box<TT>>()
-                .Bind<string>().Tag(1).To<string>(ctx => ""Barsik"")
-                .Bind<string>().To<string>(ctx => { return ""Cat"" + ctx.Resolve<string>(1); })
-                .Bind<ICat>().To<Cat>()
-                .Bind<Root>().As(Lifetime.Singleton).Tag(10).To<Root>()
-                .Bind<Root>().As(Lifetime.Transient).To<Root>();
+                .Bind<Func<TT>>().To(ctx => new Func<TT>(() => ctx.Resolve<TT>()))
+                .Bind<Lazy<TT>>().To(ctx => new Lazy<TT>(ctx.Resolve<Func<TT>>(), true))
+                // Represents a quantum superposition of 2 states: Alive or Dead
+                .Bind<State>().To(ctx => (State)new Random().Next(2))
+                // Represents schrodinger's cat
+                .Bind<ICat>().To<ShroedingersCat>()
+                // Represents a cardboard box with any content
+                .Bind<IBox<TT>>().To<CardboardBox<TT>>();
         }
     }    
 }
@@ -58,7 +66,6 @@ namespace Sample
             var walker = new MetadataWalker(semanticModel);
             walker.Visit(root);
             var metadata = walker.Metadata.First();
-
             var builder = new ResolverBuilder();
             var constructorObjectBuilder = new ConstructorObjectBuilder(new ConstructorsResolver());
             var factoryObjectBuilder = new FactoryObjectBuilder();

@@ -20,7 +20,7 @@
         {
             foreach (var tag in binding.Tags)
             {
-                var instance = _bindingExpressionStrategy.TryBuild(binding, contractType, tag);
+                var instance = _bindingExpressionStrategy.TryBuild(binding, contractType, tag, new List<BindingMetadata>());
                 yield return SyntaxFactory.IfStatement(
                     SyntaxFactory.InvocationExpression(
                         SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, tag, SyntaxFactory.Token(SyntaxKind.DotToken), SyntaxFactory.IdentifierName("Equals"))

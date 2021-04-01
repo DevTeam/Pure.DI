@@ -24,10 +24,11 @@
         public ExpressionSyntax TryBuild(
             BindingMetadata binding,
             INamedTypeSymbol contractType,
-            ExpressionSyntax tag)
+            ExpressionSyntax tag,
+            ICollection<BindingMetadata> additionalBindings)
         {
             var typeResolveDescription = _typeResolver.Resolve(contractType, tag);
-            ExpressionSyntax objectExpression = typeResolveDescription.ObjectBuilder.TryBuild(typeResolveDescription.Binding, contractType, typeResolveDescription.Binding.Tags.FirstOrDefault(), _semanticModel, _typeResolver);
+            var objectExpression = typeResolveDescription.ObjectBuilder.TryBuild(typeResolveDescription, additionalBindings);
             if (objectExpression == null)
             {
                 return null;
@@ -37,7 +38,7 @@
             {
                 case Lifetime.Singleton:
                 {
-                    var resolvedType = typeResolveDescription.TypeSymbol;
+                    var resolvedType = typeResolveDescription.Type;
                     var singletonClassName = FindName(string.Join("_", resolvedType.ToMinimalDisplayParts(_semanticModel, 0).Where(i => i.Kind == SymbolDisplayPartKind.ClassName).Select(i => i.ToString())) + "Singleton");
 
                     var singletonClass = SyntaxFactory.ClassDeclaration(singletonClassName)
@@ -65,7 +66,7 @@
                 }
             }
 
-            return SyntaxFactory.BinaryExpression(SyntaxKind.AsExpression, SyntaxFactory.ParenthesizedExpression(objectExpression), ResolverBuilder.TTypeSyntax);
+            return SyntaxFactory.CastExpression(ResolverBuilder.TTypeSyntax, SyntaxFactory.CastExpression(ResolverBuilder.ObjectTypeSyntax, SyntaxFactory.ParenthesizedExpression(objectExpression)));
         }
 
         private string FindName(string prefix)

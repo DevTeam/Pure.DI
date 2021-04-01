@@ -1,6 +1,7 @@
 ﻿namespace Pure.DI
 {
     using System;
+    using System.Diagnostics;
     using System.Text;
     using Core;
     using Microsoft.CodeAnalysis;
@@ -15,7 +16,7 @@
 
         public void Initialize(GeneratorInitializationContext context)
         {
-#if DEBUG && AA
+#if DEBUG && A
             if (!Debugger.IsAttached)
             {
                 Debugger.Launch();

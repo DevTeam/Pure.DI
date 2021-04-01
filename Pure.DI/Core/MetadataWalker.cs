@@ -11,6 +11,7 @@
     {
         private readonly SemanticModel _semanticModel;
         private readonly List<ResolverMetadata> _metadata = new List<ResolverMetadata>();
+        private readonly List<UsingDirectiveSyntax> _usingDirectives = new List<UsingDirectiveSyntax>();
         private string _namespace;
         private ResolverMetadata _resolver;
         private BindingMetadata _binding = new BindingMetadata();
@@ -24,6 +25,12 @@
         {
             _namespace = node.Name.ToString();
             base.VisitNamespaceDeclaration(node);
+        }
+
+        public override void VisitUsingDirective(UsingDirectiveSyntax node)
+        {
+            _usingDirectives.Add(node);
+            base.VisitUsingDirective(node);
         }
 
         public override void VisitInvocationExpression(InvocationExpressionSyntax node)
@@ -54,9 +61,12 @@
 
                     if (_namespace != null)
                     {
-                        _resolver = new ResolverMetadata(_namespace, targetTypeName, new List<BindingMetadata>());
+                        _resolver = new ResolverMetadata(_namespace, _usingDirectives, targetTypeName);
                         _metadata.Add(_resolver);
+                        _namespace = null;
                     }
+
+                    _usingDirectives.Clear();
                 }
 
                 return;

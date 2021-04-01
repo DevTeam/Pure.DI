@@ -11,7 +11,6 @@
         private readonly IObjectBuilder _constructorObjectBuilder;
         private readonly IObjectBuilder _factoryObjectBuilder;
         private readonly Dictionary<Key, Binding<INamedTypeSymbol>> _map = new Dictionary<Key, Binding<INamedTypeSymbol>>();
-        private readonly Dictionary<Key, Binding<INamedTypeSymbol>> _genericMap = new Dictionary<Key, Binding<INamedTypeSymbol>>();
         private readonly Dictionary<Key, Binding<SimpleLambdaExpressionSyntax>> _factories = new Dictionary<Key, Binding<SimpleLambdaExpressionSyntax>>();
 
         public TypeResolver(
@@ -33,13 +32,14 @@
                         if (bindingContractType.IsComposedGenericTypeMarker(semanticModel))
                         {
                             key = new Key(bindingContractType.ConstructUnboundGenericType(), tag);
-                            _genericMap[key] = new Binding<INamedTypeSymbol>(binding, bindingContractType);
                         }
                         else
                         {
                             key = new Key(bindingContractType, tag);
-                            _map[key] = new Binding<INamedTypeSymbol>(binding, binding.ImplementationType);
+                            
                         }
+
+                        _map[key] = new Binding<INamedTypeSymbol>(binding, binding.ImplementationType);
 
                         if (binding.Factory != null)
                         {
@@ -52,29 +52,22 @@
 
         public TypeResolveDescription Resolve(INamedTypeSymbol contractType, ExpressionSyntax tag)
         {
-            var key = new Key(contractType, tag);
-            if (_factories.TryGetValue(key, out var factory))
-            {
-                return new TypeResolveDescription(factory.Metadata, contractType, _factoryObjectBuilder);
-            }
-
-            if (_map.TryGetValue(key, out var implementationEntry))
-            {
-                var typeMap = new Dictionary<INamedTypeSymbol, INamedTypeSymbol>();
-                CreateMap(contractType, implementationEntry.Details, typeMap, _semanticModel);
-                return new TypeResolveDescription(implementationEntry.Metadata, implementationEntry.Details, _constructorObjectBuilder);
-            }
-
+            Binding<INamedTypeSymbol> implementationEntry;
             if (contractType.IsGenericType)
             {
-                if (_genericMap.TryGetValue(new Key(contractType.ConstructUnboundGenericType(), tag), out implementationEntry))
+                var key = new Key(contractType.ConstructUnboundGenericType(), tag);
+                if (_map.TryGetValue(key, out implementationEntry))
                 {
-                    var typesMap = new Dictionary<INamedTypeSymbol, INamedTypeSymbol>();
-                    CreateMap(implementationEntry.Details, contractType, typesMap, _semanticModel);
+                    var typesMap = new TypesMap(implementationEntry.Details, contractType, _semanticModel);
+                    if (_factories.TryGetValue(key, out var factory))
+                    {
+                        return new TypeResolveDescription(factory.Metadata, contractType, tag, _factoryObjectBuilder, typesMap, _semanticModel, this);
+                    }
+
                     if (typesMap.Count > 0)
                     { 
-                        var constructedContractType = ConstructType(implementationEntry.Details, typesMap);
-                        var implementationType = ConstructType(implementationEntry.Metadata.ImplementationType, typesMap);
+                        var constructedContractType = typesMap.ConstructType(implementationEntry.Details);
+                        var implementationType = typesMap.ConstructType(implementationEntry.Metadata.ImplementationType);
                         var binding = new BindingMetadata
                         {
                             ImplementationType = implementationType,
@@ -83,99 +76,26 @@
 
                         binding.Tags.Add(tag);
                         binding.ContractTypes.Add(constructedContractType);
-                        return new TypeResolveDescription(implementationEntry.Metadata, implementationType, _constructorObjectBuilder);
+                        return new TypeResolveDescription(implementationEntry.Metadata, implementationType, tag, _constructorObjectBuilder, typesMap, _semanticModel, this);
                     }
                 }
             }
-
-            return new TypeResolveDescription(new BindingMetadata(), contractType, _constructorObjectBuilder);
-        }
-
-        private void CreateMap(INamedTypeSymbol type, INamedTypeSymbol targetType, IDictionary<INamedTypeSymbol, INamedTypeSymbol> typesMap, SemanticModel semanticModel)
-        {
-            if (type.Equals(targetType, SymbolEqualityComparer.IncludeNullability))
+            else
             {
-                return;
-            }
-
-            if (typesMap.ContainsKey(type))
-            {
-                return;
-            }
-
-            if (type.IsGenericTypeMarker(semanticModel))
-            {
-                typesMap[type] = targetType;
-                return;
-            }
-
-            // Constructed generic
-            if (targetType.IsGenericType)
-            {
-                if (type.ConstructUnboundGenericType().Equals(targetType.ConstructUnboundGenericType(), SymbolEqualityComparer.IncludeNullability))
+                var key = new Key(contractType, tag);
+                if (_map.TryGetValue(key, out implementationEntry))
                 {
-                    typesMap[type] = targetType;
-                    var typeArgs = type.TypeArguments;
-                    var targetTypeArgs = targetType.TypeArguments;
-                    for (var i = 0; i < typeArgs.Length; i++)
+                    var typesMap = new TypesMap(implementationEntry.Details, contractType, _semanticModel);
+                    if (_factories.TryGetValue(key, out var factory))
                     {
-                        if (
-                            typeArgs[i] is INamedTypeSymbol typeArg
-                            && targetTypeArgs[i] is INamedTypeSymbol targetTypeArg)
-                        {
-                            CreateMap(typeArg, targetTypeArg, typesMap, semanticModel);
-                        }
+                        return new TypeResolveDescription(factory.Metadata, contractType, tag, _factoryObjectBuilder, typesMap, _semanticModel, this);
                     }
 
-                    return;
+                    return new TypeResolveDescription(implementationEntry.Metadata, implementationEntry.Details, tag, _constructorObjectBuilder, typesMap, _semanticModel, this);
                 }
-
-                foreach (var implementedInterface in targetType.Interfaces)
-                {
-                    CreateMap(type, implementedInterface, typesMap, semanticModel);
-                }
-
-                foreach (var implementedInterface in type.Interfaces)
-                {
-                    CreateMap(implementedInterface, targetType, typesMap, semanticModel);
-                }
-
-                return;
             }
 
-            // Array
-            /*if (targetType.IsArray())
-            {
-                Map(type.GetElementType(), targetType.GetElementType(), typesMap);
-                typesMap[type.Type] = targetType.Type;
-            }*/
-        }
-
-        private INamedTypeSymbol ConstructType(INamedTypeSymbol type, IDictionary<INamedTypeSymbol, INamedTypeSymbol> typesMap)
-        {
-            if (typesMap.TryGetValue(type, out var newType))
-            {
-                return newType;
-            }
-
-            if (!type.IsGenericType)
-            {
-                return type;
-            }
-
-            var args = new List<ITypeSymbol>();
-            foreach (var arg in type.TypeArguments)
-            {
-                var typeArgument = arg;
-                if (typeArgument is INamedTypeSymbol namedTypeArgument)
-                {
-                    typeArgument = ConstructType(namedTypeArgument, typesMap);
-                }
-
-                args.Add(typeArgument);
-            }
-
-            return type.Construct(_semanticModel, args.ToArray());
+            return new TypeResolveDescription(new BindingMetadata(), contractType, tag, _constructorObjectBuilder, new TypesMap(_semanticModel), _semanticModel, this, false);
         }
 
         private readonly struct Binding<T>

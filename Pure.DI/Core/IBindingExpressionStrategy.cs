@@ -1,5 +1,6 @@
 ﻿namespace Pure.DI.Core
 {
+    using System.Collections.Generic;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -8,6 +9,7 @@
         ExpressionSyntax TryBuild(
             BindingMetadata binding,
             INamedTypeSymbol contractType,
-            ExpressionSyntax tag);
+            ExpressionSyntax tag,
+            ICollection<BindingMetadata> additionalBindings);
     }
 }

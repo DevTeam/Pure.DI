@@ -1,7 +1,9 @@
 ﻿namespace Pure.DI.Tests.Integration
 {
+    using System.Collections.Generic;
     using System.Linq;
     using Core;
+    using Microsoft.CodeAnalysis;
     using Shouldly;
     using Xunit;
 
@@ -20,7 +22,15 @@
             var ctorResolver = new ConstructorsResolver();
             
             // When
-            var actualCtor = ctorResolver.Resolve(compilation.GetTypeByMetadataName(type), semanticModel).FirstOrDefault();
+            var typeDescription = new TypeResolveDescription(
+                new BindingMetadata(),
+                compilation.GetTypeByMetadataName(type),
+                null,
+                null,
+                new TypesMap(semanticModel),
+                semanticModel,
+                null);
+            var actualCtor = ctorResolver.Resolve(typeDescription).FirstOrDefault();
 
             // Then
             actualCtor?.ToDisplayString().ShouldBe(expectedCtor);
