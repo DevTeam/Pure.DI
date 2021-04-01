@@ -115,12 +115,8 @@
 
         private static IEnumerable<MemberDeclarationSyntax> CreateResolveMethods(ResolverMetadata metadata, SemanticModel semanticModel, ITypeResolver typeResolver)
         {
-            var additionalMembers = new List<MemberDeclarationSyntax>();
-            var expressionStrategy = new BindingExpressionStrategy(semanticModel, typeResolver, additionalMembers);
-            var statementsStrategy = new TypeBindingStatementsStrategy(expressionStrategy);
-            var tagStatementsStrategy = new TypeAndTagBindingStatementsStrategy(semanticModel, expressionStrategy);
-
             var additionalBindings = new HashSet<BindingMetadata>();
+            var expressionStrategy = new BindingExpressionStrategy(semanticModel, typeResolver, new List<MemberDeclarationSyntax>());
             foreach (var binding in metadata.Bindings)
             {
                 foreach (var contractType in binding.ContractTypes)
@@ -138,8 +134,12 @@
                 StaticResolveMethodSyntax.AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax))
             };
 
+            var additionalMembers = new List<MemberDeclarationSyntax>();
+            expressionStrategy = new BindingExpressionStrategy(semanticModel, typeResolver, additionalMembers);
+            var statementsStrategy = new TypeBindingStatementsStrategy(expressionStrategy);
+            var tagStatementsStrategy = new TypeAndTagBindingStatementsStrategy(semanticModel, expressionStrategy);
             var _generated = new HashSet<string>();
-            foreach (var binding in metadata.Bindings.Concat(additionalBindings))
+            foreach (var binding in metadata.Bindings.Concat(additionalBindings).Distinct())
             {
                 foreach (var contractType in binding.ContractTypes)
                 {

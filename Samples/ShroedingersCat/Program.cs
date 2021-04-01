@@ -2,6 +2,7 @@
 {
     using System;
     using Pure.DI;
+    using static Pure.DI.Lifetime;
 
     // ReSharper disable once ClassNeverInstantiated.Global
     public class Program
@@ -32,7 +33,7 @@
                 // Represents a cardboard box with any content
                 .Bind<IBox<TT>>().To<CardboardBox<TT>>()
                 // Composition Root
-                .Bind<Program>().To<Program>();
+                .Bind<Program>().As(Singleton).To<Program>();
         }
     }
 

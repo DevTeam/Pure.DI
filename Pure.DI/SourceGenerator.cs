@@ -1,7 +1,6 @@
 ﻿namespace Pure.DI
 {
     using System;
-    using System.Diagnostics;
     using System.Text;
     using Core;
     using Microsoft.CodeAnalysis;
