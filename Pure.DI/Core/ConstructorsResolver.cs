@@ -17,8 +17,10 @@
             let parameters = ctor.Parameters
             let canBeResolved = (
                 from parameter in parameters
-                where parameter.IsOptional || parameter.HasExplicitDefaultValue || typeDescription.TypeResolver.Resolve(typeDescription.Type, typeDescription.Tag).IsResolved
-                select parameter).Any()
+                let paramType = parameter.Type as INamedTypeSymbol
+                let paramTypeDescription = typeDescription.TypeResolver.Resolve(paramType, null, true)
+                select parameter.IsOptional || parameter.HasExplicitDefaultValue || paramTypeDescription.IsResolved)
+                .All(isResolved => isResolved)
             let order = (parameters.Length + 1) * (canBeResolved ? 0xffff : 1) * (isObsoleted ? 1 : 0xff)
             orderby order descending
             select ctor;

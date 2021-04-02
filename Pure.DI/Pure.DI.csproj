@@ -5,6 +5,7 @@
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>..\DevTeam.snk</AssemblyOriginatorKeyFile>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -37,6 +38,7 @@
 
 	<PropertyGroup>
 		<RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+		<LangVersion>default</LangVersion>
 	</PropertyGroup>
 
 	<ItemGroup>

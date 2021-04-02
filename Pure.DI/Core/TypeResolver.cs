@@ -50,12 +50,12 @@
             }
         }
 
-        public TypeResolveDescription Resolve(INamedTypeSymbol contractType, ExpressionSyntax tag)
+        public TypeResolveDescription Resolve(INamedTypeSymbol contractType, ExpressionSyntax tag, bool anyTag = false)
         {
             Binding<INamedTypeSymbol> implementationEntry;
             if (contractType.IsGenericType)
             {
-                var key = new Key(contractType.ConstructUnboundGenericType(), tag);
+                var key = new Key(contractType.ConstructUnboundGenericType(), tag, anyTag);
                 if (_map.TryGetValue(key, out implementationEntry))
                 {
                     var typesMap = new TypesMap(implementationEntry.Details, contractType, _semanticModel);
@@ -114,26 +114,28 @@
         {
             public readonly INamedTypeSymbol ContractType;
             public readonly ExpressionSyntax Tag;
+            private readonly bool _anyTag;
 
-            public Key(INamedTypeSymbol contractType, ExpressionSyntax tag)
+            public Key(INamedTypeSymbol contractType, ExpressionSyntax tag, bool anyTag = false)
             {
                 ContractType = contractType;
                 Tag = tag;
+                _anyTag = anyTag;
             }
 
             public bool Equals(Key other) =>
                 ContractType.Equals(other.ContractType, SymbolEqualityComparer.IncludeNullability)
-                && Equals(Tag, other.Tag);
+                && (_anyTag || other._anyTag || Equals(Tag, other.Tag));
 
             public override bool Equals(object obj) =>
                 obj is Key other
-                && Equals(other);
+                && (_anyTag || other._anyTag || Equals(other));
 
             public override int GetHashCode()
             {
                 unchecked
                 {
-                    return ((ContractType != null ? SymbolEqualityComparer.IncludeNullability.GetHashCode(ContractType) : 0) * 397) ^ (Tag != null ? Tag.GetHashCode() : 0);
+                    return ContractType != null ? SymbolEqualityComparer.IncludeNullability.GetHashCode(ContractType) : 0;
                 }
             }
         }

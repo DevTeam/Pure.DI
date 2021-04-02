@@ -14,9 +14,9 @@
             _bindingExpressionStrategy = bindingExpressionStrategy;
         }
 
-        public IEnumerable<StatementSyntax> CreateStatements(BindingMetadata binding, INamedTypeSymbol contractType)
+        public IEnumerable<StatementSyntax> CreateStatements(BindingMetadata binding, INamedTypeSymbol contractType, INameService nameService)
         {
-            var instance = _bindingExpressionStrategy.TryBuild(binding, contractType, null, new List<BindingMetadata>());
+            var instance = _bindingExpressionStrategy.TryBuild(binding, contractType, null, nameService, new List<BindingMetadata>());
             yield return SyntaxFactory.ReturnStatement(instance);
         }
     }

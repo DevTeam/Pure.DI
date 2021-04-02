@@ -10,39 +10,22 @@
         [Theory]
         [InlineData(@"
 namespace Sample
-{ 
-    using Pure.DI;
+{
     using System;
+    using Pure.DI;
+    using static Pure.DI.Lifetime;
 
-interface IBox<out T> { T Content { get; } }
+    // ReSharper disable once ClassNeverInstantiated.Global
+    public class Program
+    {
+        private readonly IBox<ICat> _box;
 
-        interface ICat { State State { get; } }
-
-        enum State { Alive, Dead }
-
-        class CardboardBox<T> : IBox<T>
-        {
-            public CardboardBox(T content) => Content = content;
-
-            public T Content { get; }
-        }
-
-        class ShroedingersCat : ICat
-        {
-            // Represents the superposition of the states
-            private readonly Lazy<State> _superposition;
-
-            public ShroedingersCat(Lazy<State> superposition) => _superposition = superposition;
-
-            // The decoherence of the superposition at the time of observation via an irreversible process
-            public State State => _superposition.Value;
-
-            public override string ToString() => $""{State} cat"";
+        internal Program(IBox<ICat> box) => _box = box;        
     }
 
-public class Program
+    internal static partial class Resolver
     {
-        static void Main()
+        static Resolver()
         {
             DI.Setup()
                 .Bind<Func<TT>>().To(ctx => new Func<TT>(() => ctx.Resolve<TT>()))
@@ -52,10 +35,41 @@ public class Program
                 // Represents schrodinger's cat
                 .Bind<ICat>().To<ShroedingersCat>()
                 // Represents a cardboard box with any content
-                .Bind<IBox<TT>>().To<CardboardBox<TT>>();
+                .Bind<IBox<TT>>().To<CardboardBox<TT>>()
+                // Composition Root
+                .Bind<Program>().As(Singleton).To<Program>();
         }
-    }    
+    }
+
+    interface IBox<out T> { T Content { get; } }
+
+    interface ICat { State State { get; } }
+
+    enum State { Alive, Dead }
+
+    class CardboardBox<T> : IBox<T>
+    {
+        public CardboardBox(T content) => Content = content;
+
+        public T Content { get; }
+
+        public override string ToString() => $""[{Content}]"";
+    }
+
+class ShroedingersCat : ICat
+{
+    // Represents the superposition of the states
+    private readonly Lazy<State> _superposition;
+
+    public ShroedingersCat(Lazy<State> superposition) => _superposition = superposition;
+
+    // The decoherence of the superposition at the time of observation via an irreversible process
+    public State State => _superposition.Value;
+
+    public override string ToString() => $""{State} cat"";
 }
+}
+
 ",
             @"")]
 

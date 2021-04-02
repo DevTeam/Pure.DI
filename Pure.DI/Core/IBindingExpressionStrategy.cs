@@ -10,6 +10,7 @@
             BindingMetadata binding,
             INamedTypeSymbol contractType,
             ExpressionSyntax tag,
+            INameService nameService,
             ICollection<BindingMetadata> additionalBindings);
     }
 }

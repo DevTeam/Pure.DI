@@ -17,6 +17,7 @@
         internal static readonly TypeSyntax TTypeSyntax = SyntaxFactory.ParseTypeName("T");
         internal static readonly TypeSyntax ContextTypeSyntax = SyntaxFactory.ParseTypeName(ContextClassName);
         internal static readonly TypeSyntax ObjectTypeSyntax = SyntaxFactory.ParseTypeName(nameof(Object));
+        private static readonly TypeSyntax TypeTypeSyntax = SyntaxFactory.ParseTypeName(nameof(Type));
         private static readonly TypeSyntax ContextInterfaceTypeSyntax = SyntaxFactory.ParseTypeName(nameof(IContext));
         private static readonly TypeParameterSyntax TTypeParameterSyntax = SyntaxFactory.TypeParameter("T");
 
@@ -29,14 +30,29 @@
                             SyntaxFactory.ParseTypeName(nameof(MethodImplOptions)),
                             SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0x100 | 0x200))))));
 
-        private static readonly MethodDeclarationSyntax ResolveMethodSyntax =
+        private static readonly MethodDeclarationSyntax TResolveMethodSyntax =
             SyntaxFactory.MethodDeclaration(TTypeSyntax, nameof(IContext.Resolve))
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                .AddTypeParameterListParameters(TTypeParameterSyntax)
-                .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(AggressiveOptimizationAndInliningAttr));
+                .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(AggressiveOptimizationAndInliningAttr))
+                .AddTypeParameterListParameters(TTypeParameterSyntax);
+
+        private static readonly MethodDeclarationSyntax GenericStaticResolveMethodSyntax =
+            TResolveMethodSyntax.AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword));
+
+        private static readonly MethodDeclarationSyntax GenericStaticResolveWithTagMethodSyntax =
+            GenericStaticResolveMethodSyntax.AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax));
+
+        private static readonly MethodDeclarationSyntax ObjectResolveMethodSyntax =
+            SyntaxFactory.MethodDeclaration(ObjectTypeSyntax, nameof(IContext.Resolve))
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(AggressiveOptimizationAndInliningAttr))
+                .AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("type")).WithType(TypeTypeSyntax));
 
         private static readonly MethodDeclarationSyntax StaticResolveMethodSyntax =
-            ResolveMethodSyntax.AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword));
+            ObjectResolveMethodSyntax.AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword));
+
+        private static readonly MethodDeclarationSyntax StaticResolveWithTagMethodSyntax =
+            StaticResolveMethodSyntax.AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax));
 
         private static readonly ArgumentSyntax ParamName = SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression).WithToken(SyntaxFactory.Literal("T")));
         private static readonly ArgumentSyntax ExceptionMessage = SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression).WithToken(SyntaxFactory.Literal("Cannot resolve an instance of the required type T.")));
@@ -84,7 +100,7 @@
                                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.SealedKeyword))
                                         .AddBaseListTypes(SyntaxFactory.SimpleBaseType(ContextInterfaceTypeSyntax))
                                         .AddMembers(
-                                            ResolveMethodSyntax
+                                            TResolveMethodSyntax
                                                 .AddBodyStatements(
                                                     SyntaxFactory.ReturnStatement()
                                                         .WithExpression(
@@ -96,7 +112,7 @@
                                                                     SyntaxFactory.GenericName(nameof(IContext.Resolve))
                                                                         .AddTypeArgumentListArguments(TTypeSyntax))))))
                                         .AddMembers(
-                                            ResolveMethodSyntax
+                                            TResolveMethodSyntax
                                                 .AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax))
                                                 .AddBodyStatements(
                                                     SyntaxFactory.ReturnStatement()
@@ -116,78 +132,74 @@
         private static IEnumerable<MemberDeclarationSyntax> CreateResolveMethods(ResolverMetadata metadata, SemanticModel semanticModel, ITypeResolver typeResolver)
         {
             var additionalBindings = new HashSet<BindingMetadata>();
-            var expressionStrategy = new BindingExpressionStrategy(semanticModel, typeResolver, new List<MemberDeclarationSyntax>());
+            var expressionStrategy = new BindingExpressionStrategy(semanticModel, typeResolver, new AsIsBindingResultStrategy(), new List<MemberDeclarationSyntax>());
             foreach (var binding in metadata.Bindings)
             {
                 foreach (var contractType in binding.ContractTypes)
                 {
                     foreach (var tag in binding.Tags.DefaultIfEmpty(null))
                     {
-                        expressionStrategy.TryBuild(binding, contractType, tag, additionalBindings);
+                        expressionStrategy.TryBuild(binding, contractType, tag, new NameService(), additionalBindings);
                     }
                 }
             }
-
-            var members = new[]
-            {
-                StaticResolveMethodSyntax,
-                StaticResolveMethodSyntax.AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax))
-            };
 
             var additionalMembers = new List<MemberDeclarationSyntax>();
-            expressionStrategy = new BindingExpressionStrategy(semanticModel, typeResolver, additionalMembers);
+            var genericExpressionStrategy = new BindingExpressionStrategy(semanticModel, typeResolver, new GenericBindingResultStrategy(), additionalMembers);
+            var genericStatementsStrategy = new TypeBindingStatementsStrategy(genericExpressionStrategy);
+            var genericTagStatementsStrategy = new TypeAndTagBindingStatementsStrategy(semanticModel, genericExpressionStrategy);
+            var typeOfTExpression = SyntaxFactory.TypeOfExpression(TTypeSyntax);
+            var genericReturnDefault = SyntaxFactory.ReturnStatement(SyntaxFactory.DefaultExpression(TTypeSyntax));
+
             var statementsStrategy = new TypeBindingStatementsStrategy(expressionStrategy);
             var tagStatementsStrategy = new TypeAndTagBindingStatementsStrategy(semanticModel, expressionStrategy);
-            var _generated = new HashSet<string>();
-            foreach (var binding in metadata.Bindings.Concat(additionalBindings).Distinct())
+            var typeExpression = SyntaxFactory.ParseName("type");
+            var returnDefault = SyntaxFactory.ReturnStatement(SyntaxFactory.DefaultExpression(ObjectTypeSyntax));
+
+            var allVariants = new[]
             {
-                foreach (var contractType in binding.ContractTypes)
-                {
-                    foreach (var tag in binding.Tags.DefaultIfEmpty(null))
-                    {
-                        if (!contractType.IsValidTypeToResolve(semanticModel))
-                        {
-                            continue;
-                        }
+                new MethodVariant(GenericStaticResolveMethodSyntax, true, genericStatementsStrategy, typeOfTExpression, genericReturnDefault),
+                new MethodVariant(GenericStaticResolveWithTagMethodSyntax, false, genericTagStatementsStrategy, typeOfTExpression, genericReturnDefault),
+                new MethodVariant(StaticResolveMethodSyntax, true, statementsStrategy, typeExpression, returnDefault),
+                new MethodVariant(StaticResolveWithTagMethodSyntax, false, tagStatementsStrategy, typeExpression, returnDefault)
+            };
 
-                        IBindingStatementsStrategy bindingStatementsStrategy;
-                        int memberIndex;
-                        if (tag == null)
-                        {
-                            memberIndex = 0;
-                            bindingStatementsStrategy = statementsStrategy;
-                        }
-                        else
-                        {
-                            memberIndex = 1;
-                            bindingStatementsStrategy = tagStatementsStrategy;
-                        }
+            var nameService = new NameService();
+            
+            var variants =
+                from binding in metadata.Bindings.Concat(additionalBindings).Distinct()
+                from contractType in binding.ContractTypes
+                where contractType.IsValidTypeToResolve(semanticModel)
+                from tag in binding.Tags.DefaultIfEmpty(null)
+                from variant in allVariants
+                where variant.HasDefaultTag == (tag == null)
+                let statement = ResolveStatement(semanticModel, contractType, variant, binding, nameService)
+                group (variant, statement) by (variant.TargetMethod.ToString(), statement.ToString()) into groupedByStatement
+                // Avoid duplication of statements
+                select groupedByStatement.First();
 
-                        var resolveStatementExpression = SyntaxFactory.IfStatement(
-                            SyntaxFactory.BinaryExpression(
-                                SyntaxKind.EqualsExpression,
-                                SyntaxFactory.TypeOfExpression(contractType.ToTypeSyntax(semanticModel)),
-                                SyntaxFactory.TypeOfExpression(TTypeSyntax)),
-                            SyntaxFactory.Block(bindingStatementsStrategy.CreateStatements(binding, contractType))
-                        );
-
-                        if (_generated.Add(resolveStatementExpression.ToString()))
-                        {
-                            members[memberIndex] = members[memberIndex].AddBodyStatements(resolveStatementExpression);
-                        }
-                    }
-                }
+            foreach (var (variant, statement) in variants)
+            {
+                variant.TargetMethod = variant.TargetMethod.AddBodyStatements(statement);
             }
 
-            var returnDefault = SyntaxFactory.ReturnStatement(SyntaxFactory.DefaultExpression(TTypeSyntax));
-            for (var memberIndex = 0; memberIndex < members.Length; memberIndex++)
-            {
-                members[memberIndex] = members[memberIndex].AddBodyStatements(returnDefault);
-            }
-
-            var result = new List<MemberDeclarationSyntax>(members);
-            result.AddRange(additionalMembers);
-            return result;
+            return allVariants
+                .Select(strategy => (MemberDeclarationSyntax)strategy.TargetMethod.AddBodyStatements(strategy.DefaultReturnStatement))
+                .Concat(additionalMembers);
         }
+
+        private static IfStatementSyntax ResolveStatement(
+            SemanticModel semanticModel,
+            INamedTypeSymbol contractType,
+            MethodVariant method,
+            BindingMetadata binding,
+            INameService nameService) =>
+            SyntaxFactory.IfStatement(
+                SyntaxFactory.BinaryExpression(
+                    SyntaxKind.EqualsExpression,
+                    SyntaxFactory.TypeOfExpression(contractType.ToTypeSyntax(semanticModel)),
+                    method.TypeExpression),
+                SyntaxFactory.Block(method.BindingStatementsStrategy.CreateStatements(binding, contractType, nameService))
+            );
     }
 }
