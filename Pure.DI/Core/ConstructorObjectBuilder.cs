@@ -14,24 +14,24 @@
         public ConstructorObjectBuilder(IConstructorsResolver constructorsResolver) =>
             _constructorsResolver = constructorsResolver ?? throw new ArgumentNullException(nameof(constructorsResolver));
 
-        [CanBeNull]
         public ExpressionSyntax TryBuild(
+            ITypeResolver typeResolver,
             TypeResolveDescription typeDescription,
             ICollection<BindingMetadata> additionalBindings,
             int level = 0)
         {
             if (level > 256)
             {
-                return null;
+                return SyntaxFactory.ParseName("Cyclic dependency in \"{typeDescription.Type}\".");
             }
 
-            return (
-                from ctor in _constructorsResolver.Resolve(typeDescription)
+            var ctorExpression = (
+                from ctor in _constructorsResolver.Resolve(typeResolver, typeDescription)
                 let parameters =
                     from parameter in ctor.Parameters
                     let type = parameter.Type as INamedTypeSymbol
-                    let paramResolveDescription = type != null ? typeDescription.TypeResolver.Resolve(type, null): null
-                    select TryBuildInternal(paramResolveDescription?.ObjectBuilder, paramResolveDescription, additionalBindings, level)
+                    let paramResolveDescription = type != null ? typeResolver.Resolve(type, null): null
+                    select TryBuildInternal(typeResolver, paramResolveDescription?.ObjectBuilder, paramResolveDescription, additionalBindings, level)
                 where parameters.All(i => i != null)
                 let arguments = SyntaxFactory.SeparatedList(
                     from parameter in parameters
@@ -41,11 +41,18 @@
                         .WithArgumentList(SyntaxFactory.ArgumentList(arguments))
                 select objectCreationExpression
             ).FirstOrDefault();
+
+            if (ctorExpression != null)
+            {
+                return ctorExpression;
+            }
+
+            return SyntaxFactory.ParseName($"Cannot find constructor for \"{typeDescription.Type}\".");
         }
 
-        [CanBeNull]
-        private ExpressionSyntax TryBuildInternal(
-            [CanBeNull] IObjectBuilder objectBuilder,
+        private ExpressionSyntax? TryBuildInternal(
+            ITypeResolver typeResolver,
+            IObjectBuilder? objectBuilder,
             TypeResolveDescription typeDescription,
             ICollection<BindingMetadata> additionalBindings,
             int level)
@@ -56,12 +63,12 @@
             }
 
             var constructedType = typeDescription.TypesMap.ConstructType(typeDescription.Type);
-            if (!typeDescription.Type.Equals(constructedType, SymbolEqualityComparer.IncludeNullability))
+            if (!typeDescription.Type.Equals(constructedType, SymbolEqualityComparer.Default))
             {
                 additionalBindings.Add(new BindingMetadata(typeDescription.Binding, constructedType));
             }
 
-            return objectBuilder.TryBuild(typeDescription, additionalBindings, level + 1);
+            return objectBuilder.TryBuild(typeResolver, typeDescription, additionalBindings, level + 1);
         }
     }
 }

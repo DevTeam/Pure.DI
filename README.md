@@ -86,7 +86,7 @@ static partial class Composer
       .Bind<Func<TT>>().To(ctx => new Func<TT>(ctx.Resolve<TT>))
       .Bind<Lazy<TT>>().To<Lazy<TT>>()
       // Represents a quantum superposition of 2 states: Alive or Dead
-      .Bind<State>().To(ctx => (State)Indeterminacy.Next(2))
+      .Bind<State>().To(_ => (State)Indeterminacy.Next(2))
       // Represents schrodinger's cat
       .Bind<ICat>().To<ShroedingersCat>()
       // Represents a cardboard box with any content

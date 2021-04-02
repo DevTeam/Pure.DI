@@ -25,21 +25,15 @@
             _additionalMembers = additionalMembers;
         }
 
-        [CanBeNull]
         public ExpressionSyntax TryBuild(
             BindingMetadata binding,
             INamedTypeSymbol contractType,
-            ExpressionSyntax tag,
+            ExpressionSyntax? tag,
             INameService nameService,
             ICollection<BindingMetadata> additionalBindings)
         {
             var typeResolveDescription = _typeResolver.Resolve(contractType, tag);
-            var objectExpression = typeResolveDescription.ObjectBuilder.TryBuild(typeResolveDescription, additionalBindings);
-            if (objectExpression == null)
-            {
-                return null;
-            }
-
+            var objectExpression = typeResolveDescription.ObjectBuilder.TryBuild(_typeResolver, typeResolveDescription, additionalBindings);
             switch (binding.Lifetime)
             {
                 case Lifetime.Singleton:

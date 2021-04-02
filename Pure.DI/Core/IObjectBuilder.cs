@@ -6,6 +6,7 @@
     internal interface IObjectBuilder
     {
         ExpressionSyntax TryBuild(
+            ITypeResolver typeResolver,
             TypeResolveDescription typeDescription,
             ICollection<BindingMetadata> additionalBindings,
             int level = 0);

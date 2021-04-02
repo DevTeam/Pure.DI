@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -11,28 +10,14 @@
     internal class MetadataWalker: CSharpSyntaxWalker
     {
         private readonly SemanticModel _semanticModel;
-        private readonly List<ResolverMetadata> _metadata = new List<ResolverMetadata>();
-        private readonly List<UsingDirectiveSyntax> _usingDirectives = new List<UsingDirectiveSyntax>();
-        private string _namespace;
-        private ResolverMetadata _resolver;
-        private BindingMetadata _binding = new BindingMetadata();
+        private readonly List<ResolverMetadata> _metadata = new();
+        private ResolverMetadata? _resolver;
+        private BindingMetadata _binding = new();
 
         public MetadataWalker(SemanticModel semanticModel) =>
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
 
         public IReadOnlyCollection<ResolverMetadata> Metadata => _metadata;
-
-        public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax node)
-        {
-            _namespace = node.Name.ToString();
-            base.VisitNamespaceDeclaration(node);
-        }
-
-        public override void VisitUsingDirective(UsingDirectiveSyntax node)
-        {
-            _usingDirectives.Add(node);
-            base.VisitUsingDirective(node);
-        }
 
         public override void VisitInvocationExpression(InvocationExpressionSyntax node)
         {
@@ -52,14 +37,11 @@
                     && !invocationOperation.TargetMethod.IsGenericMethod
                     && invocationOperation.TargetMethod.Name == nameof(DI.Setup)
                     && typeof(DI).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel)
-                    && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel))
+                    && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
+                    && TryGetValue(invocationOperation.Arguments[0], _semanticModel, out var targetTypeName, string.Empty))
                 {
-                    var targetTypeName = GetValue<string>(invocationOperation.Arguments[0], _semanticModel);
                     _resolver = new ResolverMetadata(node, targetTypeName);
                     _metadata.Add(_resolver);
-                    
-                    _namespace = null;
-                    _usingDirectives.Clear();
                 }
 
                 return;
@@ -128,42 +110,44 @@
             if (invocationOperation.Arguments.Length == 1
                 && !invocationOperation.TargetMethod.IsGenericMethod)
             {
-                // As(Lifitime lifitime)
+                // As(Lifitime)
                 if (invocationOperation.TargetMethod.Name == nameof(IBinding.As)
                     && typeof(IBinding).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel)
-                    && typeof(IBinding).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel))
+                    && typeof(IBinding).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
+                    && TryGetValue(invocationOperation.Arguments[0], _semanticModel, out var lifetime, Lifetime.Transient))
                 {
-                    _binding.Lifetime = GetValue<Lifetime>(invocationOperation.Arguments[0], _semanticModel);
+                    _binding.Lifetime = lifetime;
                 }
 
                 // Tag(object tag)
                 if (invocationOperation.TargetMethod.Name == nameof(IBinding.Tag)
                     && typeof(IBinding).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel)
-                    && typeof(IBinding).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel))
+                    && typeof(IBinding).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
+                    && invocationOperation.Arguments[0].Syntax is ArgumentSyntax tag)
                 {
-                    if (invocationOperation.Arguments[0].Syntax is ArgumentSyntax tag)
-                    {
-                        _binding.Tags.Add(tag.Expression);
-                    }
+                    _binding.Tags.Add(tag.Expression);
                 }
             }
 
         }
 
-        private static T GetValue<T>(IArgumentOperation arg, SemanticModel semanticModel)
+        private static bool TryGetValue<T>(IArgumentOperation arg, SemanticModel semanticModel, out T value, T defaultValue)
         {
-            var value = semanticModel.GetConstantValue(arg.Value.Syntax);
-            if (value.HasValue)
+            var optionalValue = semanticModel.GetConstantValue(arg.Value.Syntax);
+            if (optionalValue.HasValue && optionalValue.Value != null)
             {
-                return (T)value.Value;
+                value = (T)optionalValue.Value;
+                return true;
             }
 
-            if (arg.Value.ConstantValue.HasValue)
+            if (arg.Value.ConstantValue.HasValue && arg.Value.ConstantValue.Value != null)
             {
-                return (T)arg.Value.ConstantValue.Value;
+                value = (T)arg.Value.ConstantValue.Value;
+                return true;
             }
 
-            return default;
+            value = defaultValue;
+            return false;
         }
     }
 }

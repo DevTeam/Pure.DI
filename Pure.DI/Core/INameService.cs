@@ -5,6 +5,6 @@
 
     internal interface INameService
     {
-        string FindName(string prefix, INamedTypeSymbol contractType, ExpressionSyntax tag);
+        string FindName(string prefix, INamedTypeSymbol contractType, ExpressionSyntax? tag);
     }
 }

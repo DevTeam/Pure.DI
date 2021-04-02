@@ -6,7 +6,7 @@
     internal class TypesMap : ITypesMap
     {
         private readonly SemanticModel _semanticModel;
-        private readonly Dictionary<INamedTypeSymbol, INamedTypeSymbol> _map = new Dictionary<INamedTypeSymbol, INamedTypeSymbol>(SymbolEqualityComparer.IncludeNullability);
+        private readonly Dictionary<INamedTypeSymbol, INamedTypeSymbol> _map = new(SymbolEqualityComparer.Default);
 
         public TypesMap(INamedTypeSymbol type, INamedTypeSymbol targetType, SemanticModel semanticModel)
         {
@@ -23,7 +23,7 @@
 
         private void CreateMap(INamedTypeSymbol type, INamedTypeSymbol targetType, IDictionary<INamedTypeSymbol, INamedTypeSymbol> typesMap)
         {
-            if (!type.IsGenericType && type.Equals(targetType, SymbolEqualityComparer.IncludeNullability))
+            if (!type.IsGenericType && type.Equals(targetType, SymbolEqualityComparer.Default))
             {
                 return;
             }
@@ -42,7 +42,7 @@
             // Constructed generic
             if (targetType.IsGenericType)
             {
-                if (type.ConstructUnboundGenericType().Equals(targetType.ConstructUnboundGenericType(), SymbolEqualityComparer.IncludeNullability))
+                if (type.ConstructUnboundGenericType().Equals(targetType.ConstructUnboundGenericType(), SymbolEqualityComparer.Default))
                 {
                     typesMap[type] = targetType;
                     var typeArgs = type.TypeArguments;
@@ -69,16 +69,7 @@
                 {
                     CreateMap(implementedInterface, targetType, typesMap);
                 }
-
-                return;
             }
-
-            // Array
-            /*if (targetType.IsArray())
-            {
-                Map(type.GetElementType(), targetType.GetElementType(), typesMap);
-                typesMap[type.Type] = targetType.Type;
-            }*/
         }
 
         public INamedTypeSymbol ConstructType(INamedTypeSymbol type)

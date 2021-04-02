@@ -48,10 +48,10 @@
                 {
                     context.ReportDiagnostic(Diagnostic.Create(
                         new DiagnosticDescriptor(
-                            "SG0001",
+                            "DI-0001",
                             ex.Message,
-                            "Method {0} returns. All methods must return void.",
-                            "yeet",
+                            ex.StackTrace,
+                            "Unhandled",
                             DiagnosticSeverity.Error,
                             true), tree.GetRoot().GetLocation(), (object)ex));
                 }

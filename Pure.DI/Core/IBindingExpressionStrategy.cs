@@ -9,7 +9,7 @@
         ExpressionSyntax TryBuild(
             BindingMetadata binding,
             INamedTypeSymbol contractType,
-            ExpressionSyntax tag,
+            ExpressionSyntax? tag,
             INameService nameService,
             ICollection<BindingMetadata> additionalBindings);
     }

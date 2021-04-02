@@ -6,6 +6,7 @@
 		<AssemblyOriginatorKeyFile>..\DevTeam.snk</AssemblyOriginatorKeyFile>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<IsPackable>false</IsPackable>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>

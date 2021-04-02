@@ -8,19 +8,20 @@
     internal class FactoryObjectBuilder: IObjectBuilder
     {
         public ExpressionSyntax TryBuild(
+            ITypeResolver typeResolver,
             TypeResolveDescription typeDescription,
             ICollection<BindingMetadata> additionalBindings,
             int level = 0)
         {
             var factory = typeDescription.Binding.Factory;
-            ExpressionSyntax resultExpression = factory;
-            if (factory.ExpressionBody != null)
+            ExpressionSyntax? resultExpression = factory;
+            if (factory?.ExpressionBody != null)
             {
                 resultExpression = factory.ExpressionBody;
             }
             else
             {
-                if (factory.Block != null)
+                if (factory?.Block != null)
                 {
                     var funcName = SyntaxFactory.GenericName(nameof(Func<object>))
                         .WithTypeArgumentList(
@@ -29,15 +30,23 @@
                                 .AddArguments(typeDescription.Type.ToTypeSyntax(typeDescription.SemanticModel)));
 
                     var createFunc = SyntaxFactory.ObjectCreationExpression(funcName)
-                        .AddArgumentListArguments(SyntaxFactory.Argument(typeDescription.Binding.Factory));
+                        .AddArgumentListArguments(SyntaxFactory.Argument(factory));
 
                     resultExpression = SyntaxFactory.InvocationExpression(createFunc)
                         .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName(ResolverBuilder.SharedContextName)));
                 }
             }
 
-            return (ExpressionSyntax)new FactoryRewriter(typeDescription, factory.Parameter.Identifier, additionalBindings)
-                .Visit(resultExpression);
+            if (factory != null && resultExpression != null)
+            {
+                return (ExpressionSyntax) new FactoryRewriter(
+                        typeDescription,
+                        factory.Parameter.Identifier,
+                        additionalBindings)
+                    .Visit(resultExpression);
+            }
+
+            return SyntaxFactory.DefaultExpression(SyntaxFactory.ParseTypeName(typeDescription.Type.Name));
         }
     }
 }

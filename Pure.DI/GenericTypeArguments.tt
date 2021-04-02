@@ -27,25 +27,25 @@ var baseTypes = new Dictionary<string, string> {
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
-    [PublicAPI, GenericTypeArgument]
+    [GenericTypeArgument]
     public abstract class TT<#=i == 0 ? "" : i.ToString()#> { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with defaul constructor.
     /// </summary>
-    [PublicAPI, GenericTypeArgument]
+    [GenericTypeArgument]
     public class TTC<#=i == 0 ? "" : i.ToString()#> { }
 
     /// <summary>
     /// Represents the generic type arguments marker for an interface.
     /// </summary>
-    [PublicAPI, GenericTypeArgument]
+    [GenericTypeArgument]
     public interface TTI<#=i == 0 ? "" : i.ToString()#> { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
-    [PublicAPI, GenericTypeArgument]
+    [GenericTypeArgument]
     public struct TTS<#=i == 0 ? "" : i.ToString()#> { }
 
 <#
@@ -59,7 +59,7 @@ var baseTypes = new Dictionary<string, string> {
 /// <summary>
     /// Represents the generic type arguments marker for <c><#=baseType.Key.Replace('<','[').Replace('>',']')#></c>.
     /// </summary>
-    [PublicAPI, GenericTypeArgument]
+    [GenericTypeArgument]
     public interface <#=baseType.Value.Replace("#", i == 0 ? "" : i.ToString())#>: <#=baseType.Key#> { }
 
     <#}#>

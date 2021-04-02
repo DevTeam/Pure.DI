@@ -6,10 +6,10 @@
 
     internal class NameService : INameService
     {
-        private readonly Dictionary<Key, string> _names = new Dictionary<Key, string>();
-        private readonly Dictionary<string, int> _ids = new Dictionary<string, int>();
+        private readonly Dictionary<Key, string> _names = new();
+        private readonly Dictionary<string, int> _ids = new();
 
-        public string FindName(string prefix, INamedTypeSymbol contractType, ExpressionSyntax tag)
+        public string FindName(string prefix, INamedTypeSymbol contractType, ExpressionSyntax? tag)
         {
             var key = new Key(prefix, contractType, tag);
             if (_names.TryGetValue(key, out var name))
@@ -34,34 +34,30 @@
 
         private readonly struct Key
         {
-            public readonly INamedTypeSymbol Type;
-            public readonly ExpressionSyntax Tag;
-            public readonly string Prefix;
+            private readonly INamedTypeSymbol _type;
+            private readonly ExpressionSyntax? _tag;
+            private readonly string _prefix;
 
-            public Key(string prefix, INamedTypeSymbol contractType, ExpressionSyntax tag)
+            public Key(string prefix, INamedTypeSymbol contractType, ExpressionSyntax? tag)
             {
-                Type = contractType;
-                Tag = tag;
-                Prefix = prefix;
+                _type = contractType;
+                _tag = tag;
+                _prefix = prefix;
             }
 
-            public bool Equals(Key other)
-            {
-                return Type.Equals(other.Type, SymbolEqualityComparer.IncludeNullability) && Tag?.ToString() == other.Tag?.ToString() && Prefix == other.Prefix;
-            }
+            private bool Equals(Key other) =>
+                _type.Equals(other._type, SymbolEqualityComparer.Default) && _tag?.ToString() == other._tag?.ToString() && _prefix == other._prefix;
 
-            public override bool Equals(object obj)
-            {
-                return obj is Key other && Equals(other);
-            }
+            public override bool Equals(object obj) =>
+                obj is Key other && Equals(other);
 
             public override int GetHashCode()
             {
                 unchecked
                 {
-                    var hashCode = (Type != null ? Type.GetHashCode() : 0);
-                    hashCode = (hashCode * 397) ^ (Tag != null ? Tag.ToString().GetHashCode() : 0);
-                    hashCode = (hashCode * 397) ^ (Prefix != null ? Prefix.GetHashCode() : 0);
+                    var hashCode = _type.GetHashCode();
+                    hashCode = (hashCode * 397) ^ (_tag != null ? _tag.ToString().GetHashCode() : 0);
+                    hashCode = (hashCode * 397) ^ _prefix.GetHashCode();
                     return hashCode;
                 }
             }

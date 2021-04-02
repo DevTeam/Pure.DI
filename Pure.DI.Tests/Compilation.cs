@@ -34,13 +34,6 @@
             return (compilation, tree, root, semanticModel);
         }
 
-        public static IEnumerable<INamedTypeSymbol> GetTypesByMetadataName(this CSharpCompilation compilation, string typeMetadataName) =>
-            compilation.References
-                .Select(compilation.GetAssemblyOrModuleSymbol)
-                .OfType<IAssemblySymbol>()
-                .Select(assemblySymbol => assemblySymbol.GetTypeByMetadataName(typeMetadataName))
-                .Where(i => i != null);
-
         private static string GetSystemAssemblyPathByName(string assemblyName) =>
             Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location) ?? string.Empty, assemblyName);
     }

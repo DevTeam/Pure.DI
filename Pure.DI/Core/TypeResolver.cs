@@ -1,17 +1,19 @@
 ﻿namespace Pure.DI.Core
 {
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+    [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
     internal class TypeResolver : ITypeResolver
     {
         private readonly SemanticModel _semanticModel;
         private readonly IObjectBuilder _constructorObjectBuilder;
         private readonly IObjectBuilder _factoryObjectBuilder;
-        private readonly Dictionary<Key, Binding<INamedTypeSymbol>> _map = new Dictionary<Key, Binding<INamedTypeSymbol>>();
-        private readonly Dictionary<Key, Binding<SimpleLambdaExpressionSyntax>> _factories = new Dictionary<Key, Binding<SimpleLambdaExpressionSyntax>>();
+        private readonly Dictionary<Key, Binding<INamedTypeSymbol>> _map = new();
+        private readonly Dictionary<Key, Binding<SimpleLambdaExpressionSyntax>> _factories = new();
 
         public TypeResolver(
             ResolverMetadata metadata,
@@ -24,20 +26,18 @@
             _factoryObjectBuilder = factoryObjectBuilder;
             foreach (var binding in metadata.Bindings)
             {
+                if (binding.ImplementationType == null)
+                {
+                    continue;
+                }
+                
                 foreach (var bindingContractType in binding.ContractTypes)
                 {
-                    foreach (var tag in binding.Tags.DefaultIfEmpty(null))
+                    foreach (var tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null))
                     {
-                        Key key;
-                        if (bindingContractType.IsComposedGenericTypeMarker(semanticModel))
-                        {
-                            key = new Key(bindingContractType.ConstructUnboundGenericType(), tag);
-                        }
-                        else
-                        {
-                            key = new Key(bindingContractType, tag);
-                            
-                        }
+                        var key = bindingContractType.IsComposedGenericTypeMarker(semanticModel) 
+                            ? new Key(bindingContractType.ConstructUnboundGenericType(), tag)
+                            : new Key(bindingContractType, tag);
 
                         _map[key] = new Binding<INamedTypeSymbol>(binding, binding.ImplementationType);
 
@@ -50,7 +50,7 @@
             }
         }
 
-        public TypeResolveDescription Resolve(INamedTypeSymbol contractType, ExpressionSyntax tag, bool anyTag = false)
+        public TypeResolveDescription Resolve(INamedTypeSymbol contractType, ExpressionSyntax? tag, bool anyTag = false)
         {
             Binding<INamedTypeSymbol> implementationEntry;
             if (contractType.IsGenericType)
@@ -61,10 +61,10 @@
                     var typesMap = new TypesMap(implementationEntry.Details, contractType, _semanticModel);
                     if (_factories.TryGetValue(key, out var factory))
                     {
-                        return new TypeResolveDescription(factory.Metadata, contractType, tag, _factoryObjectBuilder, typesMap, _semanticModel, this);
+                        return new TypeResolveDescription(factory.Metadata, contractType, _factoryObjectBuilder, typesMap, _semanticModel);
                     }
 
-                    if (typesMap.Count > 0)
+                    if (typesMap.Count > 0 && implementationEntry.Metadata.ImplementationType != null)
                     { 
                         var constructedContractType = typesMap.ConstructType(implementationEntry.Details);
                         var implementationType = typesMap.ConstructType(implementationEntry.Metadata.ImplementationType);
@@ -74,9 +74,13 @@
                             Lifetime = implementationEntry.Metadata.Lifetime
                         };
 
-                        binding.Tags.Add(tag);
+                        if (tag != null)
+                        {
+                            binding.Tags.Add(tag);
+                        }
+
                         binding.ContractTypes.Add(constructedContractType);
-                        return new TypeResolveDescription(implementationEntry.Metadata, implementationType, tag, _constructorObjectBuilder, typesMap, _semanticModel, this);
+                        return new TypeResolveDescription(implementationEntry.Metadata, implementationType, _constructorObjectBuilder, typesMap, _semanticModel);
                     }
                 }
             }
@@ -88,14 +92,14 @@
                     var typesMap = new TypesMap(implementationEntry.Details, contractType, _semanticModel);
                     if (_factories.TryGetValue(key, out var factory))
                     {
-                        return new TypeResolveDescription(factory.Metadata, contractType, tag, _factoryObjectBuilder, typesMap, _semanticModel, this);
+                        return new TypeResolveDescription(factory.Metadata, contractType, _factoryObjectBuilder, typesMap, _semanticModel);
                     }
 
-                    return new TypeResolveDescription(implementationEntry.Metadata, implementationEntry.Details, tag, _constructorObjectBuilder, typesMap, _semanticModel, this);
+                    return new TypeResolveDescription(implementationEntry.Metadata, implementationEntry.Details, _constructorObjectBuilder, typesMap, _semanticModel);
                 }
             }
 
-            return new TypeResolveDescription(new BindingMetadata(), contractType, tag, _constructorObjectBuilder, new TypesMap(_semanticModel), _semanticModel, this, false);
+            return new TypeResolveDescription(new BindingMetadata(), contractType, _constructorObjectBuilder, new TypesMap(_semanticModel), _semanticModel, false);
         }
 
         private readonly struct Binding<T>
@@ -112,20 +116,20 @@
 
         private readonly struct Key
         {
-            public readonly INamedTypeSymbol ContractType;
-            public readonly ExpressionSyntax Tag;
+            private readonly INamedTypeSymbol _contractType;
+            private readonly ExpressionSyntax? _tag;
             private readonly bool _anyTag;
 
-            public Key(INamedTypeSymbol contractType, ExpressionSyntax tag, bool anyTag = false)
+            public Key(INamedTypeSymbol contractType, ExpressionSyntax? tag, bool anyTag = false)
             {
-                ContractType = contractType;
-                Tag = tag;
+                _contractType = contractType;
+                _tag = tag;
                 _anyTag = anyTag;
             }
 
-            public bool Equals(Key other) =>
-                ContractType.Equals(other.ContractType, SymbolEqualityComparer.IncludeNullability)
-                && (_anyTag || other._anyTag || Equals(Tag, other.Tag));
+            private bool Equals(Key other) =>
+                _contractType.Equals(other._contractType, SymbolEqualityComparer.Default)
+                && (_anyTag || other._anyTag || Equals(_tag, other._tag));
 
             public override bool Equals(object obj) =>
                 obj is Key other
@@ -133,10 +137,7 @@
 
             public override int GetHashCode()
             {
-                unchecked
-                {
-                    return ContractType != null ? SymbolEqualityComparer.IncludeNullability.GetHashCode(ContractType) : 0;
-                }
+                return SymbolEqualityComparer.Default.GetHashCode(_contractType);
             }
         }
     }

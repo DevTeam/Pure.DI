@@ -70,7 +70,92 @@ class ShroedingersCat : ICat
 }
 
 ",
-            @"")]
+            @"using System.Runtime.CompilerServices;
+
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using static Pure.DI.Lifetime;
+
+    internal static partial class Resolver
+    {
+        private static readonly Context SharedContext = new Context();
+        [MethodImplAttribute((MethodImplOptions)768)]
+        public static T Resolve<T>()
+        {
+            if (typeof(Sample.State) == typeof(T))
+            {
+                return (T)(Object)((State)new Random().Next(2));
+            }
+
+            if (typeof(Sample.ICat) == typeof(T))
+            {
+                return (T)(Object)(new Sample.ShroedingersCat(new System.Lazy<Sample.State>((State)new Random().Next(2))));
+            }
+
+            if (typeof(Sample.Program) == typeof(T))
+            {
+                return (T)(Object)(ProgramSingleton.Shared);
+            }
+
+            return default(T);
+        }
+
+        [MethodImplAttribute((MethodImplOptions)768)]
+        public static T Resolve<T>(Object tag)
+        {
+            return default(T);
+        }
+
+        [MethodImplAttribute((MethodImplOptions)768)]
+        public static Object Resolve(Type type)
+        {
+            if (typeof(Sample.State) == type)
+            {
+                return ((State)new Random().Next(2));
+            }
+
+            if (typeof(Sample.ICat) == type)
+            {
+                return (new Sample.ShroedingersCat(new System.Lazy<Sample.State>((State)new Random().Next(2))));
+            }
+
+            if (typeof(Sample.Program) == type)
+            {
+                return (ProgramSingleton.Shared);
+            }
+
+            return default(Object);
+        }
+
+        [MethodImplAttribute((MethodImplOptions)768)]
+        public static Object Resolve(Type type, Object tag)
+        {
+            return default(Object);
+        }
+
+        private static class ProgramSingleton
+        {
+            public static readonly Sample.Program Shared = new Sample.Program(new Sample.CardboardBox<Sample.ICat>(new Sample.ShroedingersCat(new System.Lazy<Sample.State>((State)new Random().Next(2)))));
+        }
+
+        private sealed class Context : IContext
+        {
+            [MethodImplAttribute((MethodImplOptions)768)]
+            public T Resolve<T>()
+            {
+                return Resolver.Resolve<T>();
+            }
+
+            [MethodImplAttribute((MethodImplOptions)768)]
+            public T Resolve<T>(Object tag)
+            {
+                return Resolver.Resolve<T>(tag);
+            }
+        }
+    }
+}")]
 
         public void ShouldBuild(string code, string expectedCode)
         {

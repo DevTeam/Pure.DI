@@ -5,6 +5,6 @@
 
     internal interface ITypeResolver
     {
-        TypeResolveDescription Resolve(INamedTypeSymbol typeSymbol, ExpressionSyntax tag, bool anyTag = false);
+        TypeResolveDescription Resolve(INamedTypeSymbol typeSymbol, ExpressionSyntax? tag, bool anyTag = false);
     }
 }

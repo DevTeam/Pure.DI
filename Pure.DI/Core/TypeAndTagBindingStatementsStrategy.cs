@@ -7,14 +7,10 @@
 
     internal class TypeAndTagBindingStatementsStrategy : IBindingStatementsStrategy
     {
-        private readonly SemanticModel _semanticModel;
         private readonly IBindingExpressionStrategy _bindingExpressionStrategy;
 
-        public TypeAndTagBindingStatementsStrategy(SemanticModel semanticModel, IBindingExpressionStrategy bindingExpressionStrategy)
-        {
-            _semanticModel = semanticModel;
+        public TypeAndTagBindingStatementsStrategy(IBindingExpressionStrategy bindingExpressionStrategy) =>
             _bindingExpressionStrategy = bindingExpressionStrategy;
-        }
 
         public IEnumerable<StatementSyntax> CreateStatements(BindingMetadata binding, INamedTypeSymbol contractType, INameService nameService)
         {

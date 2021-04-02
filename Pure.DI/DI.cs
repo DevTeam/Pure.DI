@@ -1,4 +1,5 @@
-﻿namespace Pure.DI
+﻿// ReSharper disable UnusedParameter.Global
+namespace Pure.DI
 {
     using Core;
 

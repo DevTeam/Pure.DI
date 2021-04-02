@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core
+﻿// ReSharper disable IdentifierTypo
+namespace Pure.DI.Core
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -50,7 +51,7 @@
                 {
                     var constructedType = _typeDescription.TypesMap.ConstructType(namedType);
                     args[i] = constructedType.ToTypeSyntax(_typeDescription.SemanticModel);
-                    if (!namedType.Equals(constructedType, SymbolEqualityComparer.IncludeNullability))
+                    if (!namedType.Equals(constructedType, SymbolEqualityComparer.Default))
                     {
                         _additionalBindings.Add(new BindingMetadata(_typeDescription.Binding, constructedType));
                     }
@@ -58,97 +59,7 @@
             }
         }
 
-        public override SyntaxNode VisitPredefinedType(PredefinedTypeSyntax node)
-        {
-            return base.VisitPredefinedType(node);
-        }
-
-        public override SyntaxNode VisitArrayType(ArrayTypeSyntax node)
-        {
-            return base.VisitArrayType(node);
-        }
-
-        public override SyntaxNode VisitPointerType(PointerTypeSyntax node)
-        {
-            return base.VisitPointerType(node);
-        }
-
-        public override SyntaxNode VisitFunctionPointerType(FunctionPointerTypeSyntax node)
-        {
-            return base.VisitFunctionPointerType(node);
-        }
-
-        public override SyntaxNode VisitNullableType(NullableTypeSyntax node)
-        {                         
-            return base.VisitNullableType(node);
-        }
-
-        public override SyntaxNode VisitTupleType(TupleTypeSyntax node)
-        {
-            return base.VisitTupleType(node);
-        }
-
-        public override SyntaxNode VisitOmittedTypeArgument(OmittedTypeArgumentSyntax node)
-        {
-            return base.VisitOmittedTypeArgument(node);
-        }
-
-        public override SyntaxNode VisitRefType(RefTypeSyntax node)
-        {
-            return base.VisitRefType(node);
-        }
-
-        public override SyntaxNode VisitRefTypeExpression(RefTypeExpressionSyntax node)
-        {
-            return base.VisitRefTypeExpression(node);
-        }
-
-        public override SyntaxNode VisitTypeOfExpression(TypeOfExpressionSyntax node)
-        {
-            return base.VisitTypeOfExpression(node);
-        }
-
-        public override SyntaxNode VisitTypePattern(TypePatternSyntax node)
-        {
-            return base.VisitTypePattern(node);
-        }
-
-        public override SyntaxNode VisitTypeParameterList(TypeParameterListSyntax node)
-        {
-            return base.VisitTypeParameterList(node);
-        }
-
-        public override SyntaxNode VisitTypeParameter(TypeParameterSyntax node)
-        {
-            return base.VisitTypeParameter(node);
-        }
-
-        public override SyntaxNode VisitSimpleBaseType(SimpleBaseTypeSyntax node)
-        {
-            return base.VisitSimpleBaseType(node);
-        }
-
-        public override SyntaxNode VisitPrimaryConstructorBaseType(PrimaryConstructorBaseTypeSyntax node)
-        {
-            return base.VisitPrimaryConstructorBaseType(node);
-        }
-
-        public override SyntaxNode VisitTypeParameterConstraintClause(TypeParameterConstraintClauseSyntax node)
-        {
-            return base.VisitTypeParameterConstraintClause(node);
-        }
-
-        public override SyntaxNode VisitTypeConstraint(TypeConstraintSyntax node)
-        {
-            return base.VisitTypeConstraint(node);
-        }
-
-        public override SyntaxNode VisitTypeCref(TypeCrefSyntax node)
-        {
-            return base.VisitTypeCref(node);
-        }
-
-        public override SyntaxNode VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
+        public override SyntaxNode? VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
         {
             if (
                 node.Kind() == SyntaxKind.SimpleMemberAccessExpression

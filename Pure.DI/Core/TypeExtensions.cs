@@ -12,7 +12,7 @@
             SyntaxFactory.ParseTypeName(typeSymbol.ToMinimalDisplayString(semanticModel, 0));
 
         public static bool Equals(this Type type, ITypeSymbol typeSymbol, SemanticModel semanticModel) => 
-            SymbolEqualityComparer.IncludeNullability.Equals(ToTypeSymbol(type, semanticModel), typeSymbol);
+            SymbolEqualityComparer.Default.Equals(ToTypeSymbol(type, semanticModel), typeSymbol);
 
         public static bool IsValidTypeToResolve(this INamedTypeSymbol typeSymbol, SemanticModel semanticModel) =>
             !typeSymbol.IsUnboundGenericType && !typeSymbol.IsComposedGenericTypeMarker(semanticModel);
@@ -59,7 +59,9 @@
         {
             foreach (var attr in typeSymbol.GetAttributes())
             {
-                if (typeof(GenericTypeArgumentAttribute).Equals(attr.AttributeClass, semanticModel))
+                if (
+                    attr.AttributeClass != null
+                    && typeof(GenericTypeArgumentAttribute).Equals(attr.AttributeClass, semanticModel))
                 {
                     return true;
                 }
@@ -70,15 +72,20 @@
 
         private static INamedTypeSymbol ToTypeSymbol(this Type type, SemanticModel semanticModel)
         {
+            if (type.FullName == null)
+            {
+                throw new ArgumentException(nameof(type));
+            }
+
             if (!type.IsConstructedGenericType)
             {
-                return semanticModel.Compilation.GetTypeByMetadataName(type.FullName);
+                return semanticModel.Compilation.GetTypeByMetadataName(type.FullName) ?? throw new InvalidOperationException("Cannot convert type.");
             }
 
             var typeArgumentsTypeInfos = type.GenericTypeArguments.Select(a => ToTypeSymbol(a, semanticModel));
             var openType = type.GetGenericTypeDefinition();
-            var typeSymbol = semanticModel.Compilation.GetTypeByMetadataName(openType.FullName);
-            return typeSymbol.Construct(typeArgumentsTypeInfos.ToArray<ITypeSymbol>());
+            var typeSymbol = semanticModel.Compilation.GetTypeByMetadataName(openType.FullName ?? throw new InvalidOperationException("Cannot get generic type name."));
+            return typeSymbol?.Construct(typeArgumentsTypeInfos.ToArray<ITypeSymbol>()) ?? throw new InvalidOperationException("Cannot convert generic type.");
         }
     }
 }

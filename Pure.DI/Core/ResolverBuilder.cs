@@ -10,6 +10,7 @@
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]
+    [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
     internal class ResolverBuilder
     {
         internal const string SharedContextName = "SharedContext";
@@ -54,9 +55,9 @@
         private static readonly MethodDeclarationSyntax StaticResolveWithTagMethodSyntax =
             StaticResolveMethodSyntax.AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax));
 
+        /*
         private static readonly ArgumentSyntax ParamName = SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression).WithToken(SyntaxFactory.Literal("T")));
         private static readonly ArgumentSyntax ExceptionMessage = SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression).WithToken(SyntaxFactory.Literal("Cannot resolve an instance of the required type T.")));
-
         private static readonly StatementSyntax ThrowCannotResolveException = SyntaxFactory
             .ThrowStatement()
             .WithExpression(
@@ -64,7 +65,7 @@
                     .WithArgumentList(
                         SyntaxFactory.ArgumentList().AddArguments(
                             ParamName,
-                            ExceptionMessage)));
+                            ExceptionMessage)));*/
 
         public CompilationUnitSyntax Build(ResolverMetadata metadata, SemanticModel semanticModel, ITypeResolver typeResolver)
         {
@@ -107,7 +108,7 @@
                 compilationUnit = compilationUnit.AddUsings(originalCompilationUnit.Usings.ToArray());
             }
 
-            NamespaceDeclarationSyntax prevNamespaceNode = null;
+            NamespaceDeclarationSyntax? prevNamespaceNode = null;
             foreach (var originalNamespaceNode in metadata.SetupNode.Ancestors().OfType<NamespaceDeclarationSyntax>().Reverse())
             {
                 var namespaceNode = 
@@ -187,19 +188,19 @@
                 from binding in metadata.Bindings
                 from contractType in binding.ContractTypes
                 where contractType.IsValidTypeToResolve(semanticModel)
-                from tag in binding.Tags.DefaultIfEmpty(null)
+                from tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null)
                 select expressionStrategy.TryBuild(binding, contractType, tag, new NameService(), additionalBindings))
                 .ToList();
 
             var additionalMembers = new List<MemberDeclarationSyntax>();
             var genericExpressionStrategy = new BindingExpressionStrategy(semanticModel, typeResolver, new GenericBindingResultStrategy(), additionalMembers);
             var genericStatementsStrategy = new TypeBindingStatementsStrategy(genericExpressionStrategy);
-            var genericTagStatementsStrategy = new TypeAndTagBindingStatementsStrategy(semanticModel, genericExpressionStrategy);
+            var genericTagStatementsStrategy = new TypeAndTagBindingStatementsStrategy(genericExpressionStrategy);
             var typeOfTExpression = SyntaxFactory.TypeOfExpression(TTypeSyntax);
             var genericReturnDefault = SyntaxFactory.ReturnStatement(SyntaxFactory.DefaultExpression(TTypeSyntax));
 
             var statementsStrategy = new TypeBindingStatementsStrategy(expressionStrategy);
-            var tagStatementsStrategy = new TypeAndTagBindingStatementsStrategy(semanticModel, expressionStrategy);
+            var tagStatementsStrategy = new TypeAndTagBindingStatementsStrategy(expressionStrategy);
             var typeExpression = SyntaxFactory.ParseName("type");
             var returnDefault = SyntaxFactory.ReturnStatement(SyntaxFactory.DefaultExpression(ObjectTypeSyntax));
 
@@ -217,7 +218,7 @@
                 from binding in metadata.Bindings.Concat(additionalBindings).Distinct()
                 from contractType in binding.ContractTypes
                 where contractType.IsValidTypeToResolve(semanticModel)
-                from tag in binding.Tags.DefaultIfEmpty(null)
+                from tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null)
                 from variant in allVariants
                 where variant.HasDefaultTag == (tag == null)
                 let statement = ResolveStatement(semanticModel, contractType, variant, binding, nameService)
