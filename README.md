@@ -51,13 +51,11 @@ class ShroedingersCat : ICat
 }
 ```
 
-_It is important to note that our abstraction and our implementation do not know anything about any IoC containers at all._
+_It is important to note that our abstraction and our implementation do not know anything about any IoC/DI containers at all._
 
 ### Let's glue all together
 
-Just add the package reference to [Pure.DI](https://www.nuget.org/packages/Pure.DI). It ships entirely as NuGet packages.
-
-_Using NuGet packages allows you to optimize your application to include only the necessary dependencies._
+Just add a package reference to [Pure.DI](https://www.nuget.org/packages/Pure.DI). Using NuGet packages allows you to optimize your application to include only the necessary dependencies.
 
 - Package Manager
 
@@ -71,7 +69,7 @@ _Using NuGet packages allows you to optimize your application to include only th
   dotnet add package Pure.DI
   ```
 
-Declare the required dependencies in a dedicated class *__Glue__*. It is possible to do this anywhere in your code, but putting this information in one place is often the better solution and helps keep your code more organized.
+Declare required dependencies in a class like:
 
 ```csharp
 static partial class Composer
@@ -97,7 +95,7 @@ static partial class Composer
 }
 ```
 
-_Defining generic type arguments using special marker types like [*__TT__*](#generic-autowiring-) in the sample above is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints._
+_Defining generic type arguments using special marker types like [*__TT__*](Pure.DI/GenericTypeArguments.cs) in the sample above is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints._
 
 ### Time to open boxes!
 
@@ -115,21 +113,20 @@ class Program
 }
 ```
 
-This is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) - a single place in an application where the composition of the object graphs for an application take place. Each instance is resolved by a strongly-typed block of statements like the operator new which is compiled on the fly from the corresponding expression tree with minimal impact on performance or memory consumption. For instance, the getting of a box looks like:
-
+This is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) - a single place in an application where the composition of the object graphs for an application take place. Each instance is resolved by a strongly-typed block of statements like the operator new which is compiled on the fly from the corresponding expression tree with minimal impact on performance or memory consumption. For instance, the creating of a composition root *__Program__* looks like this:
 ```csharp
 // Models a random subatomic event that may or may not occur
 Random Indeterminacy = new();
 
-new Sample.Program(
-  new Sample.CardboardBox<Sample.ICat>(
-    new Sample.ShroedingersCat(
-      new Lazy<Sample.State>(
-        new Func<Sample.State>(
-          () => Indeterminacy.Next(2)))));
+new Program(
+  new CardboardBox<ICat>(
+    new ShroedingersCat(
+      new Lazy<State>(
+        new Func<State>(
+          () => (State)Indeterminacy.Next(2)))));
 ```
 
-It allows you to take full advantage of dependency injection everywhere and every time without any compromises!
+Take full advantage of Dependency Injection everywhere and every time without any compromise. Inject them all!
 
 ## NuGet packages
 
