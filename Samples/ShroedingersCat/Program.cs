@@ -46,6 +46,7 @@
         static Composer()
         {
             DI.Setup()
+                // .NET BCL types
                 .Bind<Func<TT>>().To(ctx => new Func<TT>(ctx.Resolve<TT>))
                 .Bind<Lazy<TT>>().To<Lazy<TT>>()
                 // Represents a quantum superposition of 2 states: Alive or Dead
