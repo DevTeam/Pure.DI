@@ -39,7 +39,7 @@
                 let objectCreationExpression =
                     SyntaxFactory.ObjectCreationExpression(typeDescription.Type.ToTypeSyntax(typeDescription.SemanticModel))
                         .WithArgumentList(SyntaxFactory.ArgumentList(arguments))
-                select objectCreationExpression.NormalizeWhitespace()
+                select objectCreationExpression
             ).FirstOrDefault();
         }
 

@@ -66,83 +66,130 @@
                             ParamName,
                             ExceptionMessage)));
 
-        public CompilationUnitSyntax Build(ResolverMetadata metadata, SemanticModel semanticModel, ITypeResolver typeResolver) =>
-            SyntaxFactory.CompilationUnit()
+        public CompilationUnitSyntax Build(ResolverMetadata metadata, SemanticModel semanticModel, ITypeResolver typeResolver)
+        {
+            var ownerClass = (
+                from cls in metadata.SetupNode.Ancestors().OfType<ClassDeclarationSyntax>()
+                where
+                    cls.Modifiers.Any(i => i.Kind() == SyntaxKind.StaticKeyword)
+                    && cls.Modifiers.Any(i => i.Kind() == SyntaxKind.PartialKeyword)
+                    && cls.Modifiers.All(i => i.Kind() != SyntaxKind.PrivateKeyword)
+                select cls).FirstOrDefault();
+
+            var classModifiers = new List<SyntaxToken>();
+            if (ownerClass == null)
+            {
+                classModifiers.Add(SyntaxFactory.Token(SyntaxKind.InternalKeyword));
+                classModifiers.Add(SyntaxFactory.Token(SyntaxKind.StaticKeyword));
+                classModifiers.Add(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
+                if (string.IsNullOrWhiteSpace(metadata.TargetTypeName))
+                {
+                    var parentClassName = metadata.SetupNode.Ancestors().OfType<ClassDeclarationSyntax>().Select(i => i.Identifier.Text).FirstOrDefault();
+                    metadata.TargetTypeName = $"{parentClassName}DI";
+                }
+            }
+            else
+            {
+                classModifiers.AddRange(ownerClass.Modifiers);
+                if (string.IsNullOrWhiteSpace(metadata.TargetTypeName))
+                {
+                    metadata.TargetTypeName = ownerClass.Identifier.Text;
+                }
+            }
+
+            var compilationUnit = SyntaxFactory.CompilationUnit()
+                .AddUsings(
+                    SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Runtime.CompilerServices")));
+
+            var originalCompilationUnit = metadata.SetupNode.Ancestors().OfType<CompilationUnitSyntax>().FirstOrDefault();
+            if (originalCompilationUnit != null)
+            {
+                compilationUnit = compilationUnit.AddUsings(originalCompilationUnit.Usings.ToArray());
+            }
+
+            NamespaceDeclarationSyntax prevNamespaceNode = null;
+            foreach (var originalNamespaceNode in metadata.SetupNode.Ancestors().OfType<NamespaceDeclarationSyntax>().Reverse())
+            {
+                var namespaceNode = 
+                    SyntaxFactory.NamespaceDeclaration(originalNamespaceNode.Name)
+                        .AddUsings(originalNamespaceNode.Usings.ToArray());
+
+                prevNamespaceNode = prevNamespaceNode == null ? namespaceNode : prevNamespaceNode.AddMembers(namespaceNode);
+            }
+
+            var resolverClass = SyntaxFactory.ClassDeclaration(metadata.TargetTypeName)
+                .AddModifiers(classModifiers.ToArray())
                 .AddMembers(
-                    SyntaxFactory.NamespaceDeclaration(SyntaxFactory.IdentifierName(metadata.Namespace))
-                        .AddUsings(
-                            SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(nameof(System))),
-                            SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Pure.DI")),
-                            SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Runtime.CompilerServices")))
-                        .AddMembers(
-                            SyntaxFactory.ClassDeclaration(metadata.TargetTypeName)
+                    SyntaxFactory.FieldDeclaration(
+                            SyntaxFactory.VariableDeclaration(ContextTypeSyntax)
+                                .AddVariables(
+                                    SyntaxFactory.VariableDeclarator(SharedContextName)
+                                        .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(ContextTypeSyntax).AddArgumentListArguments()))))
                                 .AddModifiers(
-                                    SyntaxFactory.Token(SyntaxKind.InternalKeyword),
+                                    SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
                                     SyntaxFactory.Token(SyntaxKind.StaticKeyword),
-                                    SyntaxFactory.Token(SyntaxKind.PartialKeyword))
-                                .AddMembers(
-                                    SyntaxFactory.FieldDeclaration(
-                                            SyntaxFactory.VariableDeclaration(ContextTypeSyntax)
-                                                .AddVariables(
-                                                    SyntaxFactory.VariableDeclarator(SharedContextName)
-                                                        .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(ContextTypeSyntax).AddArgumentListArguments()))
-                                                )
-                                        )
-                                        .AddModifiers(
-                                            SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                                            SyntaxFactory.Token(SyntaxKind.StaticKeyword),
-                                            SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword)))
-                                .AddMembers(
-                                    CreateResolveMethods(metadata, semanticModel, typeResolver).ToArray())
-                                .AddMembers(
-                                    SyntaxFactory.ClassDeclaration(ContextClassName)
-                                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
-                                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.SealedKeyword))
-                                        .AddBaseListTypes(SyntaxFactory.SimpleBaseType(ContextInterfaceTypeSyntax))
-                                        .AddMembers(
-                                            TResolveMethodSyntax
-                                                .AddBodyStatements(
-                                                    SyntaxFactory.ReturnStatement()
-                                                        .WithExpression(
-                                                            SyntaxFactory.InvocationExpression(
-                                                                SyntaxFactory.MemberAccessExpression(
-                                                                    SyntaxKind.SimpleMemberAccessExpression,
-                                                                    SyntaxFactory.ParseName(metadata.TargetTypeName),
-                                                                    SyntaxFactory.Token(SyntaxKind.DotToken),
-                                                                    SyntaxFactory.GenericName(nameof(IContext.Resolve))
-                                                                        .AddTypeArgumentListArguments(TTypeSyntax))))))
-                                        .AddMembers(
-                                            TResolveMethodSyntax
-                                                .AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax))
-                                                .AddBodyStatements(
-                                                    SyntaxFactory.ReturnStatement()
-                                                        .WithExpression(
-                                                            SyntaxFactory.InvocationExpression(
-                                                                SyntaxFactory.MemberAccessExpression(
-                                                                    SyntaxKind.SimpleMemberAccessExpression,
-                                                                    SyntaxFactory.ParseName(metadata.TargetTypeName),
-                                                                    SyntaxFactory.Token(SyntaxKind.DotToken),
-                                                                    SyntaxFactory.GenericName(nameof(IContext.Resolve))
-                                                                        .AddTypeArgumentListArguments(TTypeSyntax)))
-                                                                .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag"))))))
-                                )
-                        )
-                ).NormalizeWhitespace();
+                                    SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword)))
+                .AddMembers(
+                    CreateResolveMethods(metadata, semanticModel, typeResolver).ToArray())
+                .AddMembers(
+                    SyntaxFactory.ClassDeclaration(ContextClassName)
+                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
+                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.SealedKeyword))
+                        .AddBaseListTypes(SyntaxFactory.SimpleBaseType(ContextInterfaceTypeSyntax))
+                        .AddMembers(
+                            TResolveMethodSyntax
+                                .AddBodyStatements(
+                                    SyntaxFactory.ReturnStatement()
+                                        .WithExpression(
+                                            SyntaxFactory.InvocationExpression(
+                                                SyntaxFactory.MemberAccessExpression(
+                                                    SyntaxKind.SimpleMemberAccessExpression, 
+                                                    SyntaxFactory.ParseName(metadata.TargetTypeName), 
+                                                    SyntaxFactory.Token(SyntaxKind.DotToken),
+                                                    SyntaxFactory.GenericName(nameof(IContext.Resolve))
+                                                        .AddTypeArgumentListArguments(TTypeSyntax))))))
+                        .AddMembers(
+                            TResolveMethodSyntax
+                                .AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax))
+                                .AddBodyStatements(
+                                    SyntaxFactory.ReturnStatement()
+                                        .WithExpression(
+                                            SyntaxFactory.InvocationExpression(
+                                                    SyntaxFactory.MemberAccessExpression(
+                                                        SyntaxKind.SimpleMemberAccessExpression, 
+                                                        SyntaxFactory.ParseName(metadata.TargetTypeName),
+                                                        SyntaxFactory.Token(SyntaxKind.DotToken), 
+                                                        SyntaxFactory.GenericName(nameof(IContext.Resolve))
+                                                            .AddTypeArgumentListArguments(TTypeSyntax)))
+                                                .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")))))));
+
+            if (prevNamespaceNode != null)
+            {
+                prevNamespaceNode = prevNamespaceNode.AddMembers(resolverClass);
+                compilationUnit = compilationUnit.AddMembers(prevNamespaceNode);
+            }
+            else
+            {
+                compilationUnit = compilationUnit.AddMembers(resolverClass);
+            }
+
+            return compilationUnit.NormalizeWhitespace();
+        }
 
         private static IEnumerable<MemberDeclarationSyntax> CreateResolveMethods(ResolverMetadata metadata, SemanticModel semanticModel, ITypeResolver typeResolver)
         {
             var additionalBindings = new HashSet<BindingMetadata>();
             var expressionStrategy = new BindingExpressionStrategy(semanticModel, typeResolver, new AsIsBindingResultStrategy(), new List<MemberDeclarationSyntax>());
-            foreach (var binding in metadata.Bindings)
-            {
-                foreach (var contractType in binding.ContractTypes)
-                {
-                    foreach (var tag in binding.Tags.DefaultIfEmpty(null))
-                    {
-                        expressionStrategy.TryBuild(binding, contractType, tag, new NameService(), additionalBindings);
-                    }
-                }
-            }
+
+            // ReSharper disable once UnusedVariable
+            // Find additional bindings
+            var probes = (
+                from binding in metadata.Bindings
+                from contractType in binding.ContractTypes
+                where contractType.IsValidTypeToResolve(semanticModel)
+                from tag in binding.Tags.DefaultIfEmpty(null)
+                select expressionStrategy.TryBuild(binding, contractType, tag, new NameService(), additionalBindings))
+                .ToList();
 
             var additionalMembers = new List<MemberDeclarationSyntax>();
             var genericExpressionStrategy = new BindingExpressionStrategy(semanticModel, typeResolver, new GenericBindingResultStrategy(), additionalMembers);
@@ -165,7 +212,7 @@
             };
 
             var nameService = new NameService();
-            
+
             var variants =
                 from binding in metadata.Bindings.Concat(additionalBindings).Distinct()
                 from contractType in binding.ContractTypes
@@ -174,7 +221,7 @@
                 from variant in allVariants
                 where variant.HasDefaultTag == (tag == null)
                 let statement = ResolveStatement(semanticModel, contractType, variant, binding, nameService)
-                group (variant, statement) by (variant.TargetMethod.ToString(), statement.ToString()) into groupedByStatement
+                group (variant, statement) by (variant.TargetMethod.ToString(), statement.ToString(), contractType.ToString(), tag?.ToString()) into groupedByStatement
                 // Avoid duplication of statements
                 select groupedByStatement.First();
 

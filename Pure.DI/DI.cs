@@ -4,6 +4,6 @@
 
     public static class DI
     {
-        public static IConfiguration Setup(string targetTypeName = "Resolver") => Configuration.Shared;
+        public static IConfiguration Setup(string targetTypeName = "") => Configuration.Shared;
     }
 }

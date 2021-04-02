@@ -28,8 +28,7 @@ namespace Sample
         static Resolver()
         {
             DI.Setup()
-                .Bind<Func<TT>>().To(ctx => new Func<TT>(() => ctx.Resolve<TT>()))
-                .Bind<Lazy<TT>>().To(ctx => new Lazy<TT>(ctx.Resolve<Func<TT>>(), true))
+                .Bind<Func<TT>>().To(ctx => new Func<TT>(ctx.Resolve<TT>))                
                 // Represents a quantum superposition of 2 states: Alive or Dead
                 .Bind<State>().To(ctx => (State)new Random().Next(2))
                 // Represents schrodinger's cat

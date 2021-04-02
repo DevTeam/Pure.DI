@@ -1,19 +1,17 @@
 ﻿namespace Pure.DI.Core
 {
     using System.Collections.Generic;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using Microsoft.CodeAnalysis;
 
     internal class ResolverMetadata
     {
-        public readonly string Namespace;
-        public readonly IReadOnlyCollection<UsingDirectiveSyntax> UsingDirectives;
-        public readonly string TargetTypeName;
+        public string TargetTypeName;
+        public readonly SyntaxNode SetupNode;
         public readonly ICollection<BindingMetadata> Bindings;
 
-        public ResolverMetadata(string @namespace, IEnumerable<UsingDirectiveSyntax> usingDirectives, string targetTypeName)
+        public ResolverMetadata(SyntaxNode setupNode, string targetTypeName)
         {
-            Namespace = @namespace;
-            UsingDirectives = new List<UsingDirectiveSyntax>(usingDirectives);
+            SetupNode = setupNode;
             TargetTypeName = targetTypeName;
             Bindings = new List<BindingMetadata>();
         }

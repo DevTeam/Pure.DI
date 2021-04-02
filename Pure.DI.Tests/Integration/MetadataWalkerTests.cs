@@ -48,7 +48,6 @@ namespace Sample
             // Then
             metadata.Count.ShouldBe(2);
 
-            metadata[0].Namespace.ShouldBe("Sample");
             metadata[0].TargetTypeName.ShouldBe("My");
             var bindings = metadata[0].Bindings.ToList();
             bindings.Count.ShouldBe(2);
@@ -65,7 +64,6 @@ namespace Sample
             bindings[1].Tags.Count.ShouldBe(0);
             bindings[1].ImplementationType.ToDisplayString().ShouldBe("Sample.Cat");
 
-            metadata[1].Namespace.ShouldBe("Sample");
             metadata[1].TargetTypeName.ShouldBe("Resolver");
             bindings = metadata[1].Bindings.ToList();
             bindings.Count.ShouldBe(2);

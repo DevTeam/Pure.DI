@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -54,18 +55,10 @@
                     && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel))
                 {
                     var targetTypeName = GetValue<string>(invocationOperation.Arguments[0], _semanticModel);
-                    if (string.IsNullOrWhiteSpace(targetTypeName) || !SyntaxFacts.IsValidIdentifier(targetTypeName))
-                    {
-                        targetTypeName = "Resolver";
-                    }
-
-                    if (_namespace != null)
-                    {
-                        _resolver = new ResolverMetadata(_namespace, _usingDirectives, targetTypeName);
-                        _metadata.Add(_resolver);
-                        _namespace = null;
-                    }
-
+                    _resolver = new ResolverMetadata(node, targetTypeName);
+                    _metadata.Add(_resolver);
+                    
+                    _namespace = null;
                     _usingDirectives.Clear();
                 }
 
