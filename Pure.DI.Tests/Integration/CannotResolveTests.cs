@@ -16,14 +16,13 @@
             // Given
 
             // When
-            var output =
-                @"namespace Sample
+            var output = @"
+            namespace Sample
             {
                 using System;
                 using Pure.DI;
                 using static Pure.DI.Lifetime;
 
-                // ReSharper disable once ClassNeverInstantiated.Global
                 public class CompositionRoot
                 {
                     public readonly string Value;

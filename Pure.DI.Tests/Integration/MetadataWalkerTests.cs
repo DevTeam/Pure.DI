@@ -6,36 +6,36 @@
     using Microsoft.CodeAnalysis.CSharp;
     using Shouldly;
     using Xunit;
-    using Compilation = Tests.Compilation;
+    using Compilation = Compilation;
 
     public class MetadataWalkerTests
     {
         private const string Code = @"
-namespace Sample
-{
-    using Pure.DI;
-
-    public class Program
-    {
-        public static void Main()
+        namespace Sample
         {
-            DI.Setup(""My"")
-                .Bind<ICat>().As(Lifetime.Singleton).Tag(""Abc"").Tag(1).To<Cat>()
-                .Bind<ICat>().Bind<object>().As(Lifetime.Transient).To<Cat>();
-        }        
+            using Pure.DI;
 
-        private void Abc()
-        {
-            DI.Setup("""")
-                .Bind<ICat>().To<Cat>()
-                .Bind<string>().To<string>(ctx => ""Barsik"");
+            public class Program
+            {
+                public static void Main()
+                {
+                    DI.Setup(""My"")
+                        .Bind<ICat>().As(Lifetime.Singleton).Tag(""Abc"").Tag(1).To<Cat>()
+                        .Bind<ICat>().Bind<object>().As(Lifetime.Transient).To<Cat>();
+                }        
+
+                private void Abc()
+                {
+                    DI.Setup("""")
+                        .Bind<ICat>().To<Cat>()
+                        .Bind<string>().To<string>(ctx => ""Barsik"");
+                }
+            }
+
+            public interface ICat { }
+            public class Cat : ICat { }
         }
-    }
-
-    public interface ICat { }
-    public class Cat : ICat { }
-}
-";
+        ";
 
         [Fact]
         public void ShouldProvideBindings()

@@ -11,13 +11,12 @@
             // Given
 
             // When
-            var output =
-                @"namespace Sample
+            var output = @"
+            namespace Sample
             {
                 using System;
                 using Pure.DI;               
 
-                // ReSharper disable once ClassNeverInstantiated.Global
                 public class CompositionRoot
                 {
                     public readonly bool Value;
@@ -47,13 +46,12 @@
             // Given
 
             // When
-            var output =
-                @"namespace Sample
+            var output = @"
+            namespace Sample
             {
                 using System;
                 using Pure.DI;               
 
-                // ReSharper disable once ClassNeverInstantiated.Global
                 public class CompositionRoot
                 {
                     public readonly bool Value;
@@ -90,13 +88,12 @@
             // Given
 
             // When
-            var output =
-            @"namespace Sample
+            var output = @"
+            namespace Sample
             {
                 using System;
                 using Pure.DI;               
 
-                // ReSharper disable once ClassNeverInstantiated.Global
                 public class CompositionRoot
                 {
                     public readonly int Value;
