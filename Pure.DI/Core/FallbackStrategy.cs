@@ -7,17 +7,16 @@
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    internal class DefaultValueStrategy : IDefaultValueStrategy
+    internal class FallbackStrategy : IDefaultValueStrategy
     {
         internal const string CannotResolveMessage = "Cannot resolve an instance of the required type.";
         private static readonly ExpressionSyntax CannotResolveException = SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(nameof(ArgumentException)))
             .WithArgumentList(
                 SyntaxFactory.ArgumentList().AddArguments(
-                    SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression).WithToken(SyntaxFactory.Literal("type"))),
                     SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression).WithToken(SyntaxFactory.Literal(CannotResolveMessage)))));
 
         public StatementSyntax Build(
-            ICollection<FactoryMetadata> metadata,
+            ICollection<FallbackMetadata> metadata,
             TypeSyntax? targetType,
             ExpressionSyntax typeExpression,
             ExpressionSyntax tagExpression)
@@ -27,7 +26,7 @@
                 return SyntaxFactory.ThrowStatement().WithExpression(CannotResolveException);
             }
 
-            var rewriter = new DefaultFactoryRewriter(typeExpression, tagExpression);
+            var rewriter = new FallbackFactoryRewriter(typeExpression, tagExpression);
             var factories = metadata
                 .Select(i => (ExpressionSyntax)rewriter.Visit(i.Factory))
                 .Reverse()
@@ -51,12 +50,12 @@
             return SyntaxFactory.ReturnStatement(defaultExpression);
         }
 
-        private class DefaultFactoryRewriter: CSharpSyntaxRewriter
+        private class FallbackFactoryRewriter: CSharpSyntaxRewriter
         {
             private readonly ExpressionSyntax _typeExpression;
             private readonly ExpressionSyntax _tagExpression;
 
-            public DefaultFactoryRewriter(ExpressionSyntax typeExpression, ExpressionSyntax tagExpression)
+            public FallbackFactoryRewriter(ExpressionSyntax typeExpression, ExpressionSyntax tagExpression)
             {
                 _typeExpression = typeExpression;
                 _tagExpression = tagExpression;

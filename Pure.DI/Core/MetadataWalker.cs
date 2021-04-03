@@ -129,12 +129,12 @@
                 }
 
                 // Using(Func<Type, object, object> resolver)
-                if (invocationOperation.TargetMethod.Name == nameof(IConfiguration.Using)
+                if (invocationOperation.TargetMethod.Name == nameof(IConfiguration.Fallback)
                     && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel)
                     && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
                     && invocationOperation.Arguments[0].Syntax is ArgumentSyntax factory)
                 {
-                    _resolver?.Factories.Add(new FactoryMetadata(factory.Expression));
+                    _resolver?.Fallback.Add(new FallbackMetadata(factory.Expression));
                 }
             }
 

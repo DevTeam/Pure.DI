@@ -41,7 +41,7 @@
             }".Replace("string", type).Run(out var generatedCode);
 
             // Then
-            output.Any(i => i.Contains(DefaultValueStrategy.CannotResolveMessage) && i.Contains(nameof(ArgumentException))).ShouldBeTrue();
+            output.Any(i => i.Contains(FallbackStrategy.CannotResolveMessage) && i.Contains(nameof(ArgumentException))).ShouldBeTrue();
         }
     }
 }

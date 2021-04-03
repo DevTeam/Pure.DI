@@ -196,15 +196,15 @@
             var genericTagStatementsStrategy = new TypeAndTagBindingStatementsStrategy(genericExpressionStrategy, additionalBindings);
             var typeOfTExpression = SyntaxFactory.TypeOfExpression(TTypeSyntax);
 
-            var genericReturnDefault = _defaultValueStrategy.Build(metadata.Factories, TTypeSyntax, typeOfTExpression, SyntaxFactory.DefaultExpression(ObjectTypeSyntax));
-            var genericWithTagReturnDefault = _defaultValueStrategy.Build(metadata.Factories, TTypeSyntax, typeOfTExpression, SyntaxFactory.ParseTypeName("tag"));
+            var genericReturnDefault = _defaultValueStrategy.Build(metadata.Fallback, TTypeSyntax, typeOfTExpression, SyntaxFactory.DefaultExpression(ObjectTypeSyntax));
+            var genericWithTagReturnDefault = _defaultValueStrategy.Build(metadata.Fallback, TTypeSyntax, typeOfTExpression, SyntaxFactory.ParseTypeName("tag"));
 
             var statementsStrategy = new TypeBindingStatementsStrategy(expressionStrategy, additionalBindings);
             var tagStatementsStrategy = new TypeAndTagBindingStatementsStrategy(expressionStrategy, additionalBindings);
             var typeExpression = SyntaxFactory.ParseName("type");
 
-            var returnDefault = _defaultValueStrategy.Build(metadata.Factories, null,SyntaxFactory.ParseTypeName("type"), SyntaxFactory.DefaultExpression(ObjectTypeSyntax));
-            var returnWithTagDefault = _defaultValueStrategy.Build(metadata.Factories, null, SyntaxFactory.ParseTypeName("type"), SyntaxFactory.ParseTypeName("type"));
+            var returnDefault = _defaultValueStrategy.Build(metadata.Fallback, null,SyntaxFactory.ParseTypeName("type"), SyntaxFactory.DefaultExpression(ObjectTypeSyntax));
+            var returnWithTagDefault = _defaultValueStrategy.Build(metadata.Fallback, null, SyntaxFactory.ParseTypeName("type"), SyntaxFactory.ParseTypeName("type"));
 
             var allVariants = new[]
             {

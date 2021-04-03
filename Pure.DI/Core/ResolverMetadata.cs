@@ -8,14 +8,14 @@
         public string TargetTypeName;
         public readonly SyntaxNode SetupNode;
         public readonly ICollection<BindingMetadata> Bindings;
-        public readonly ICollection<FactoryMetadata> Factories;
+        public readonly ICollection<FallbackMetadata> Fallback;
 
         public ResolverMetadata(SyntaxNode setupNode, string targetTypeName)
         {
             SetupNode = setupNode;
             TargetTypeName = targetTypeName;
             Bindings = new List<BindingMetadata>();
-            Factories = new List<FactoryMetadata>();
+            Fallback = new List<FallbackMetadata>();
         }
     }
 }

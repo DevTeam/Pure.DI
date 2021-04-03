@@ -13,7 +13,7 @@
         private static readonly IConstructorsResolver ConstructorsResolver = new ConstructorsResolver();
         private static readonly IObjectBuilder ConstructorObjectBuilder = new ConstructorObjectBuilder(ConstructorsResolver);
         private static readonly IObjectBuilder FactoryObjectBuilder = new FactoryObjectBuilder();
-        private static readonly IDefaultValueStrategy DefaultValueStrategy = new DefaultValueStrategy();
+        private static readonly IDefaultValueStrategy DefaultValueStrategy = new FallbackStrategy();
 
         public void Initialize(GeneratorInitializationContext context)
         {

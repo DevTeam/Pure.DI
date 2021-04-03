@@ -57,14 +57,12 @@ namespace Sample
                 // Represents a quantum superposition of 2 states: Alive or Dead
                 .Bind<State>().To(_ => (State)Indeterminacy.Next(2))
                 // Represents schrodinger's cat
-                .Bind<ICat>().As(Singleton).To<ShroedingersCat>()
+                .Bind<ICat>().To<ShroedingersCat>()
                 // Represents a cardboard box with any content
                 .Bind<IBox<TT>>().To<CardboardBox<TT>>()
                 // Composition Root
                 .Bind<Program>().As(Singleton).To<Program>();
         }
-
-        private static object Fallback(Type type, object tag) => throw new ArgumentException(nameof(type), "Cannot resolve.");
     }
 
     // Time to open boxes!

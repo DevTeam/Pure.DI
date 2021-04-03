@@ -2,10 +2,10 @@
 {
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    internal class FactoryMetadata
+    internal class FallbackMetadata
     {
         public readonly ExpressionSyntax Factory;
 
-        public FactoryMetadata(ExpressionSyntax factory) => Factory = factory;
+        public FallbackMetadata(ExpressionSyntax factory) => Factory = factory;
     }
 }

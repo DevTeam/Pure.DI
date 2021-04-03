@@ -37,7 +37,7 @@
             var setupTree = setupCompilation.SyntaxTrees.First();
             var setupSemanticModel = setupCompilation.GetSemanticModel(setupTree);
             
-            var builder = new ResolverBuilder(new DefaultValueStrategy());
+            var builder = new ResolverBuilder(new FallbackStrategy());
             var constructorObjectBuilder = new ConstructorObjectBuilder(new ConstructorsResolver());
             var factoryObjectBuilder = new FactoryObjectBuilder();
             var walker = new MetadataWalker(setupSemanticModel);

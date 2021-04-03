@@ -6,6 +6,6 @@
     {
         IBinding Bind<T>();
 
-        IConfiguration Using(Func<Type, object, object> factory);
+        IConfiguration Fallback(Func<Type, object, object> factory);
     }
 }

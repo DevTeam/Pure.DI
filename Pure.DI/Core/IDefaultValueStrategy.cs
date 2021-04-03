@@ -6,7 +6,7 @@
     internal interface IDefaultValueStrategy
     {
         StatementSyntax Build(
-            ICollection<FactoryMetadata> metadata,
+            ICollection<FallbackMetadata> metadata,
             TypeSyntax? targetType,
             ExpressionSyntax typeExpression,
             ExpressionSyntax tagExpression);

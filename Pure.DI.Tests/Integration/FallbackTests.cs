@@ -3,7 +3,7 @@
     using Shouldly;
     using Xunit;
 
-    public class UsingTests
+    public class FallbackTests
     {
         [Fact]
         public void ShouldUseLastFallbackFactoryWhenSeveral()
@@ -11,7 +11,7 @@
             // Given
 
             // When
-            var output = 
+            var output =
             @"namespace Sample
             {
                 using System;
@@ -30,8 +30,8 @@
                     static Composer()
                     {
                         DI.Setup()
-                            .Using(Fallback1)
-                            .Using(Fallback2)
+                            .Fallback(Fallback1)
+                            .Fallback(Fallback2)
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }
 
@@ -69,7 +69,7 @@
                     static Composer()
                     {
                         DI.Setup()
-                            .Using(Fallback1)       
+                            .Fallback(Fallback1)       
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }
 
