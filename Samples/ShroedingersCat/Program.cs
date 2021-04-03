@@ -57,7 +57,7 @@ namespace Sample
                 // Represents a quantum superposition of 2 states: Alive or Dead
                 .Bind<State>().To(_ => (State)Indeterminacy.Next(2))
                 // Represents schrodinger's cat
-                .Bind<ICat>().To<ShroedingersCat>()
+                .Bind<ICat>().As(Singleton).To<ShroedingersCat>()
                 // Represents a cardboard box with any content
                 .Bind<IBox<TT>>().To<CardboardBox<TT>>()
                 // Composition Root

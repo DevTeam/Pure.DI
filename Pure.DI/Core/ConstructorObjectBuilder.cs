@@ -16,8 +16,9 @@
 
         public ExpressionSyntax TryBuild(
             ITypeResolver typeResolver,
+            IBindingExpressionStrategy bindingExpressionStrategy,
             TypeResolveDescription typeDescription,
-            ICollection<BindingMetadata> additionalBindings,
+            ISet<BindingMetadata> additionalBindings,
             int level = 0)
         {
             if (level > 256)
@@ -31,7 +32,7 @@
                     from parameter in ctor.Parameters
                     let type = parameter.Type as INamedTypeSymbol
                     let paramResolveDescription = type != null ? typeResolver.Resolve(type, null): null
-                    select TryBuildInternal(typeResolver, paramResolveDescription?.ObjectBuilder, paramResolveDescription, additionalBindings, level)
+                    select TryBuildInternal(typeResolver, bindingExpressionStrategy, paramResolveDescription?.ObjectBuilder, paramResolveDescription, additionalBindings, level)
                 where parameters.All(i => i != null)
                 let arguments = SyntaxFactory.SeparatedList(
                     from parameter in parameters
@@ -50,11 +51,12 @@
             return SyntaxFactory.ParseName($"Cannot find constructor for \"{typeDescription.Type}\".");
         }
 
-        private ExpressionSyntax? TryBuildInternal(
+        private static ExpressionSyntax? TryBuildInternal(
             ITypeResolver typeResolver,
+            IBindingExpressionStrategy bindingExpressionStrategy,
             IObjectBuilder? objectBuilder,
             TypeResolveDescription typeDescription,
-            ICollection<BindingMetadata> additionalBindings,
+            ISet<BindingMetadata> additionalBindings,
             int level)
         {
             if (objectBuilder == null)
@@ -70,7 +72,7 @@
 
             if (typeDescription.IsResolved)
             {
-                return objectBuilder.TryBuild(typeResolver, typeDescription, additionalBindings, level + 1);
+                return bindingExpressionStrategy.TryBuild(typeDescription.Binding, constructedType, null, additionalBindings);
             }
 
             var contractType = typeDescription.Type.ToTypeSyntax(typeDescription.SemanticModel);

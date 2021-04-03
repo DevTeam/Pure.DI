@@ -11,57 +11,71 @@
         private readonly SemanticModel _semanticModel;
         private readonly ITypeResolver _typeResolver;
         private readonly IBindingResultStrategy _resultStrategy;
-        private readonly ICollection<MemberDeclarationSyntax> _additionalMembers;
+        private readonly INameService _nameService;
+        private readonly IDictionary<MemberKey, MemberDeclarationSyntax> _additionalMembers;
+        private readonly IBindingExpressionStrategy _dependencyBindingExpressionStrategy;
 
         public BindingExpressionStrategy(
             SemanticModel semanticModel,
             ITypeResolver typeResolver,
             IBindingResultStrategy resultStrategy,
-            ICollection<MemberDeclarationSyntax> additionalMembers)
+            INameService nameService,
+            IDictionary<MemberKey, MemberDeclarationSyntax> additionalMembers,
+            IBindingExpressionStrategy? dependencyBindingExpressionStrategy)
         {
             _semanticModel = semanticModel;
             _typeResolver = typeResolver;
             _resultStrategy = resultStrategy;
+            _nameService = nameService;
             _additionalMembers = additionalMembers;
+            _dependencyBindingExpressionStrategy = dependencyBindingExpressionStrategy ?? this;
         }
 
         public ExpressionSyntax TryBuild(
             BindingMetadata binding,
             INamedTypeSymbol contractType,
             ExpressionSyntax? tag,
-            INameService nameService,
-            ICollection<BindingMetadata> additionalBindings)
+            ISet<BindingMetadata> additionalBindings)
         {
             var typeResolveDescription = _typeResolver.Resolve(contractType, tag);
-            var objectExpression = typeResolveDescription.ObjectBuilder.TryBuild(_typeResolver, typeResolveDescription, additionalBindings);
+            var objectExpression = typeResolveDescription.ObjectBuilder.TryBuild(_typeResolver, _dependencyBindingExpressionStrategy, typeResolveDescription, additionalBindings);
             switch (binding.Lifetime)
             {
                 case Lifetime.Singleton:
                 {
                     var resolvedType = typeResolveDescription.Type;
-                    var singletonClassName = nameService.FindName(string.Join("_", resolvedType.ToMinimalDisplayParts(_semanticModel, 0).Where(i => i.Kind == SymbolDisplayPartKind.ClassName).Select(i => i.ToString())) + "Singleton", contractType, tag);
+                    var classParts = resolvedType.ToMinimalDisplayParts(_semanticModel, 0).Where(i => i.Kind == SymbolDisplayPartKind.ClassName).Select(i => i.ToString());
+                    var memberKey = new MemberKey(
+                        string.Join("_", classParts) + "Singleton",
+                        resolvedType,
+                        tag);
 
-                    var singletonClass = SyntaxFactory.ClassDeclaration(singletonClassName)
-                        .AddModifiers(
-                            SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                            SyntaxFactory.Token(SyntaxKind.StaticKeyword))
-                        .AddMembers(
-                            SyntaxFactory.FieldDeclaration(
-                                    SyntaxFactory.VariableDeclaration(
-                                            resolvedType.ToTypeSyntax(_semanticModel))
-                                        .AddVariables(
-                                            SyntaxFactory.VariableDeclarator("Shared")
-                                                .WithInitializer(SyntaxFactory.EqualsValueClause(objectExpression))
-                                        )
-                                )
-                                .AddModifiers(
-                                    SyntaxFactory.Token(SyntaxKind.PublicKeyword),
-                                    SyntaxFactory.Token(SyntaxKind.StaticKeyword),
-                                    SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword))
-                        );
+                    if (!_additionalMembers.TryGetValue(memberKey, out var singletonClass))
+                    {
+                        var singletonClassName = _nameService.FindName(memberKey);
+                        singletonClass = SyntaxFactory.ClassDeclaration(singletonClassName)
+                            .AddModifiers(
+                                SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
+                                SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                            .AddMembers(
+                                SyntaxFactory.FieldDeclaration(
+                                        SyntaxFactory.VariableDeclaration(
+                                                resolvedType.ToTypeSyntax(_semanticModel))
+                                            .AddVariables(
+                                                SyntaxFactory.VariableDeclarator("Shared")
+                                                    .WithInitializer(SyntaxFactory.EqualsValueClause(objectExpression))
+                                            )
+                                    )
+                                    .AddModifiers(
+                                        SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+                                        SyntaxFactory.Token(SyntaxKind.StaticKeyword),
+                                        SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword))
+                            );
 
-                    _additionalMembers.Add(singletonClass);
-                    objectExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ParseName(singletonClassName), SyntaxFactory.Token(SyntaxKind.DotToken), SyntaxFactory.IdentifierName("Shared"));
+                        _additionalMembers.Add(memberKey, singletonClass);
+                    }
+
+                    objectExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ParseName(((ClassDeclarationSyntax)singletonClass).Identifier.Text), SyntaxFactory.Token(SyntaxKind.DotToken), SyntaxFactory.IdentifierName("Shared"));
                     break;
                 }
             }

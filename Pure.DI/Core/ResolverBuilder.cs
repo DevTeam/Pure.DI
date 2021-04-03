@@ -173,8 +173,10 @@
 
         private IEnumerable<MemberDeclarationSyntax> CreateResolveMethods(ResolverMetadata metadata, SemanticModel semanticModel, ITypeResolver typeResolver)
         {
+            var nameService = new NameService();
+            var additionalMembers = new Dictionary<MemberKey, MemberDeclarationSyntax>();
             var additionalBindings = new HashSet<BindingMetadata>();
-            var expressionStrategy = new BindingExpressionStrategy(semanticModel, typeResolver, new AsIsBindingResultStrategy(), new List<MemberDeclarationSyntax>());
+            var expressionStrategy = new BindingExpressionStrategy(semanticModel, typeResolver, new AsIsBindingResultStrategy(), nameService, additionalMembers, null);
 
             // ReSharper disable once UnusedVariable
             // Find additional bindings
@@ -183,21 +185,22 @@
                 from contractType in binding.ContractTypes
                 where contractType.IsValidTypeToResolve(semanticModel)
                 from tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null)
-                select expressionStrategy.TryBuild(binding, contractType, tag, new NameService(), additionalBindings))
+                select expressionStrategy.TryBuild(binding, contractType, tag, additionalBindings))
                 .ToList();
 
             // Default values
-            var additionalMembers = new List<MemberDeclarationSyntax>();
-            var genericExpressionStrategy = new BindingExpressionStrategy(semanticModel, typeResolver, new GenericBindingResultStrategy(), additionalMembers);
-            var genericStatementsStrategy = new TypeBindingStatementsStrategy(genericExpressionStrategy);
-            var genericTagStatementsStrategy = new TypeAndTagBindingStatementsStrategy(genericExpressionStrategy);
+            nameService.Reset();
+            additionalMembers.Clear();
+            var genericExpressionStrategy = new BindingExpressionStrategy(semanticModel, typeResolver, new GenericBindingResultStrategy(), nameService, additionalMembers, expressionStrategy);
+            var genericStatementsStrategy = new TypeBindingStatementsStrategy(genericExpressionStrategy, additionalBindings);
+            var genericTagStatementsStrategy = new TypeAndTagBindingStatementsStrategy(genericExpressionStrategy, additionalBindings);
             var typeOfTExpression = SyntaxFactory.TypeOfExpression(TTypeSyntax);
 
             var genericReturnDefault = _defaultValueStrategy.Build(metadata.Factories, TTypeSyntax, typeOfTExpression, SyntaxFactory.DefaultExpression(ObjectTypeSyntax));
             var genericWithTagReturnDefault = _defaultValueStrategy.Build(metadata.Factories, TTypeSyntax, typeOfTExpression, SyntaxFactory.ParseTypeName("tag"));
 
-            var statementsStrategy = new TypeBindingStatementsStrategy(expressionStrategy);
-            var tagStatementsStrategy = new TypeAndTagBindingStatementsStrategy(expressionStrategy);
+            var statementsStrategy = new TypeBindingStatementsStrategy(expressionStrategy, additionalBindings);
+            var tagStatementsStrategy = new TypeAndTagBindingStatementsStrategy(expressionStrategy, additionalBindings);
             var typeExpression = SyntaxFactory.ParseName("type");
 
             var returnDefault = _defaultValueStrategy.Build(metadata.Factories, null,SyntaxFactory.ParseTypeName("type"), SyntaxFactory.DefaultExpression(ObjectTypeSyntax));
@@ -210,8 +213,6 @@
                 new MethodVariant(StaticResolveMethodSyntax, true, statementsStrategy, typeExpression, returnDefault),
                 new MethodVariant(StaticResolveWithTagMethodSyntax, false, tagStatementsStrategy, typeExpression, returnWithTagDefault)
             };
-
-            var nameService = new NameService();
 
             var variants =
                 from binding in metadata.Bindings.Reverse().Concat(additionalBindings).Distinct()
@@ -241,7 +242,7 @@
 
             return allVariants
                 .Select(strategy => strategy.TargetMethod)
-                .Concat(additionalMembers);
+                .Concat(additionalMembers.Values);
         }
 
         private static IfStatementSyntax ResolveStatement(
@@ -255,7 +256,7 @@
                     SyntaxKind.EqualsExpression,
                     SyntaxFactory.TypeOfExpression(contractType.ToTypeSyntax(semanticModel)),
                     method.TypeExpression),
-                SyntaxFactory.Block(method.BindingStatementsStrategy.CreateStatements(binding, contractType, nameService))
+                SyntaxFactory.Block(method.BindingStatementsStrategy.CreateStatements(binding, contractType))
             );
     }
 }

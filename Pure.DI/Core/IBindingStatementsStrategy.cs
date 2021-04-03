@@ -6,6 +6,6 @@
 
     internal interface IBindingStatementsStrategy
     {
-        IEnumerable<StatementSyntax> CreateStatements(BindingMetadata binding, INamedTypeSymbol contractType, INameService nameService);
+        IEnumerable<StatementSyntax> CreateStatements(BindingMetadata binding, INamedTypeSymbol contractType);
     }
 }

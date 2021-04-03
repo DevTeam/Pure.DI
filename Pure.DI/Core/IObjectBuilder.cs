@@ -7,8 +7,9 @@
     {
         ExpressionSyntax TryBuild(
             ITypeResolver typeResolver,
+            IBindingExpressionStrategy bindingExpressionStrategy,
             TypeResolveDescription typeDescription,
-            ICollection<BindingMetadata> additionalBindings,
+            ISet<BindingMetadata> additionalBindings,
             int level = 0);
     }
 }
