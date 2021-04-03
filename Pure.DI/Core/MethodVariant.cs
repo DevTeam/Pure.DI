@@ -8,20 +8,20 @@
         public readonly bool HasDefaultTag;
         public readonly IBindingStatementsStrategy BindingStatementsStrategy;
         public readonly ExpressionSyntax TypeExpression;
-        public readonly ReturnStatementSyntax DefaultReturnStatement;
+        public readonly StatementSyntax[] PostStatements;
 
         public MethodVariant(
             MethodDeclarationSyntax targetMethod,
             bool hasDefaultTag,
             IBindingStatementsStrategy bindingStatementsStrategy,
             ExpressionSyntax typeExpression,
-            ReturnStatementSyntax defaultReturnStatement)
+            params StatementSyntax[] postStatements)
         {
             TargetMethod = targetMethod;
             HasDefaultTag = hasDefaultTag;
             BindingStatementsStrategy = bindingStatementsStrategy;
             TypeExpression = typeExpression;
-            DefaultReturnStatement = defaultReturnStatement;
+            PostStatements = postStatements;
         }
     }
 }

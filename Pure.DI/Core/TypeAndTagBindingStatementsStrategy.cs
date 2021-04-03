@@ -14,6 +14,8 @@
 
         public IEnumerable<StatementSyntax> CreateStatements(BindingMetadata binding, INamedTypeSymbol contractType, INameService nameService)
         {
+            
+
             foreach (var tag in binding.Tags)
             {
                 var instance = _bindingExpressionStrategy.TryBuild(binding, contractType, tag, nameService, new List<BindingMetadata>());

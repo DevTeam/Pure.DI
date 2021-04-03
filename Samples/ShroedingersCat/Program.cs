@@ -51,6 +51,7 @@ namespace Sample
         static Composer()
         {
             DI.Setup()
+                .Using((type, tag) => Fallback(type, tag))
                 // .NET BCL types
                 .Bind<Func<TT>>().To(ctx => new Func<TT>(ctx.Resolve<TT>))
                 .Bind<Lazy<TT>>().To<Lazy<TT>>()
@@ -63,6 +64,8 @@ namespace Sample
                 // Composition Root
                 .Bind<Program>().As(Singleton).To<Program>();
         }
+
+        private static object Fallback(Type type, object tag) => throw new ArgumentException(nameof(type), "Cannot resolve.");
     }
 
     // Time to open boxes!

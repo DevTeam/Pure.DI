@@ -2,8 +2,11 @@
 {
     using System.Linq;
     using Core;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Shouldly;
     using Xunit;
+    using Compilation = Tests.Compilation;
 
     public class MetadataWalkerTests
     {
@@ -38,11 +41,12 @@ namespace Sample
         public void ShouldProvideBindings()
         {
             // Given
-            var (_, _, root, semanticModel) = Code.Compile();
+            var compilation = Compilation.Compile(OutputKind.ConsoleApplication, CSharpSyntaxTree.ParseText(Code).GetCompilationUnitRoot());
+            var semanticModel = compilation.GetSemanticModel(compilation.SyntaxTrees.First());
             var walker = new MetadataWalker(semanticModel);
 
             // When
-            walker.Visit(root);
+            walker.Visit(compilation.SyntaxTrees.First().GetRoot());
             var metadata = walker.Metadata.ToList();
 
             // Then

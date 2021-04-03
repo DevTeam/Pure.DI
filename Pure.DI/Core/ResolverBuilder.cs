@@ -13,6 +13,7 @@
     [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
     internal class ResolverBuilder
     {
+        private readonly IDefaultValueStrategy _defaultValueStrategy;
         internal const string SharedContextName = "SharedContext";
         private const string ContextClassName = "Context";
         internal static readonly TypeSyntax TTypeSyntax = SyntaxFactory.ParseTypeName("T");
@@ -66,6 +67,11 @@
                         SyntaxFactory.ArgumentList().AddArguments(
                             ParamName,
                             ExceptionMessage)));*/
+
+        public ResolverBuilder(IDefaultValueStrategy defaultValueStrategy)
+        {
+            _defaultValueStrategy = defaultValueStrategy;
+        }
 
         public CompilationUnitSyntax Build(ResolverMetadata metadata, SemanticModel semanticModel, ITypeResolver typeResolver)
         {
@@ -177,7 +183,7 @@
             return compilationUnit.NormalizeWhitespace();
         }
 
-        private static IEnumerable<MemberDeclarationSyntax> CreateResolveMethods(ResolverMetadata metadata, SemanticModel semanticModel, ITypeResolver typeResolver)
+        private IEnumerable<MemberDeclarationSyntax> CreateResolveMethods(ResolverMetadata metadata, SemanticModel semanticModel, ITypeResolver typeResolver)
         {
             var additionalBindings = new HashSet<BindingMetadata>();
             var expressionStrategy = new BindingExpressionStrategy(semanticModel, typeResolver, new AsIsBindingResultStrategy(), new List<MemberDeclarationSyntax>());
@@ -192,30 +198,43 @@
                 select expressionStrategy.TryBuild(binding, contractType, tag, new NameService(), additionalBindings))
                 .ToList();
 
+            // Default values
             var additionalMembers = new List<MemberDeclarationSyntax>();
             var genericExpressionStrategy = new BindingExpressionStrategy(semanticModel, typeResolver, new GenericBindingResultStrategy(), additionalMembers);
             var genericStatementsStrategy = new TypeBindingStatementsStrategy(genericExpressionStrategy);
             var genericTagStatementsStrategy = new TypeAndTagBindingStatementsStrategy(genericExpressionStrategy);
             var typeOfTExpression = SyntaxFactory.TypeOfExpression(TTypeSyntax);
-            var genericReturnDefault = SyntaxFactory.ReturnStatement(SyntaxFactory.DefaultExpression(TTypeSyntax));
+
+            var genericReturnDefault = 
+                SyntaxFactory.ReturnStatement().WithExpression(
+                SyntaxFactory.CastExpression(TTypeSyntax,
+                _defaultValueStrategy.Build(metadata.Factories, typeOfTExpression, SyntaxFactory.DefaultExpression(ObjectTypeSyntax), SyntaxFactory.DefaultExpression(TTypeSyntax))));
+
+            var genericWithTagReturnDefault =
+                SyntaxFactory.ReturnStatement().WithExpression(
+                SyntaxFactory.CastExpression(TTypeSyntax,
+                    _defaultValueStrategy.Build(metadata.Factories, typeOfTExpression, SyntaxFactory.ParseTypeName("tag"), SyntaxFactory.DefaultExpression(TTypeSyntax))));
 
             var statementsStrategy = new TypeBindingStatementsStrategy(expressionStrategy);
             var tagStatementsStrategy = new TypeAndTagBindingStatementsStrategy(expressionStrategy);
             var typeExpression = SyntaxFactory.ParseName("type");
-            var returnDefault = SyntaxFactory.ReturnStatement(SyntaxFactory.DefaultExpression(ObjectTypeSyntax));
+            var returnDefault = SyntaxFactory.ReturnStatement().WithExpression(
+                _defaultValueStrategy.Build(metadata.Factories, SyntaxFactory.ParseTypeName("type"), SyntaxFactory.DefaultExpression(ObjectTypeSyntax), SyntaxFactory.DefaultExpression(ObjectTypeSyntax)));
+            var returnWithTagDefault = SyntaxFactory.ReturnStatement().WithExpression(
+                _defaultValueStrategy.Build(metadata.Factories, SyntaxFactory.ParseTypeName("type"), SyntaxFactory.ParseTypeName("type"), SyntaxFactory.DefaultExpression(ObjectTypeSyntax)));
 
             var allVariants = new[]
             {
                 new MethodVariant(GenericStaticResolveMethodSyntax, true, genericStatementsStrategy, typeOfTExpression, genericReturnDefault),
-                new MethodVariant(GenericStaticResolveWithTagMethodSyntax, false, genericTagStatementsStrategy, typeOfTExpression, genericReturnDefault),
+                new MethodVariant(GenericStaticResolveWithTagMethodSyntax, false, genericTagStatementsStrategy, typeOfTExpression, genericWithTagReturnDefault),
                 new MethodVariant(StaticResolveMethodSyntax, true, statementsStrategy, typeExpression, returnDefault),
-                new MethodVariant(StaticResolveWithTagMethodSyntax, false, tagStatementsStrategy, typeExpression, returnDefault)
+                new MethodVariant(StaticResolveWithTagMethodSyntax, false, tagStatementsStrategy, typeExpression, returnWithTagDefault)
             };
 
             var nameService = new NameService();
 
             var variants =
-                from binding in metadata.Bindings.Concat(additionalBindings).Distinct()
+                from binding in metadata.Bindings.Reverse().Concat(additionalBindings).Distinct()
                 from contractType in binding.ContractTypes
                 where contractType.IsValidTypeToResolve(semanticModel)
                 from tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null)
@@ -226,13 +245,22 @@
                 // Avoid duplication of statements
                 select groupedByStatement.First();
 
+            // Body
             foreach (var (variant, statement) in variants)
             {
-                variant.TargetMethod = variant.TargetMethod.AddBodyStatements(statement);
+                variant.TargetMethod = variant.TargetMethod
+                    .AddBodyStatements(statement);
+            }
+
+            // Post statements
+            foreach (var variant in allVariants)
+            {
+                variant.TargetMethod = variant.TargetMethod
+                    .AddBodyStatements(variant.PostStatements);
             }
 
             return allVariants
-                .Select(strategy => (MemberDeclarationSyntax)strategy.TargetMethod.AddBodyStatements(strategy.DefaultReturnStatement))
+                .Select(strategy => strategy.TargetMethod)
                 .Concat(additionalMembers);
         }
 

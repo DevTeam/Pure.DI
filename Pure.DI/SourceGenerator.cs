@@ -13,6 +13,7 @@
         private static readonly IConstructorsResolver ConstructorsResolver = new ConstructorsResolver();
         private static readonly IObjectBuilder ConstructorObjectBuilder = new ConstructorObjectBuilder(ConstructorsResolver);
         private static readonly IObjectBuilder FactoryObjectBuilder = new FactoryObjectBuilder();
+        private static readonly IDefaultValueStrategy DefaultValueStrategy = new DefaultValueStrategy();
 
         public void Initialize(GeneratorInitializationContext context)
         {
@@ -26,7 +27,7 @@
 
         public void Execute(GeneratorExecutionContext context)
         {
-            var builder = new ResolverBuilder();
+            var builder = new ResolverBuilder(DefaultValueStrategy);
             foreach (var tree in context.Compilation.SyntaxTrees)
             {
                 try

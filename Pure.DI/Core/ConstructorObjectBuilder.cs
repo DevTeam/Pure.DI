@@ -68,7 +68,15 @@
                 additionalBindings.Add(new BindingMetadata(typeDescription.Binding, constructedType));
             }
 
-            return objectBuilder.TryBuild(typeResolver, typeDescription, additionalBindings, level + 1);
+            if (typeDescription.IsResolved)
+            {
+                return objectBuilder.TryBuild(typeResolver, typeDescription, additionalBindings, level + 1);
+            }
+
+            var contractType = typeDescription.Type.ToTypeSyntax(typeDescription.SemanticModel);
+            return SyntaxFactory.CastExpression(contractType,
+                SyntaxFactory.InvocationExpression(SyntaxFactory.ParseName(nameof(IContext.Resolve)))
+                    .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(contractType))));
         }
     }
 }
