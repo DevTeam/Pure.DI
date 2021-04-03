@@ -1,5 +1,6 @@
 ﻿namespace Pure.DI.Core
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.CodeAnalysis;
@@ -8,24 +9,31 @@
 
     internal class DefaultValueStrategy : IDefaultValueStrategy
     {
-        public ExpressionSyntax Build(
+        internal const string CannotResolveMessage = "Cannot resolve an instance of the required type.";
+        private static readonly ExpressionSyntax CannotResolveException = SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(nameof(ArgumentException)))
+            .WithArgumentList(
+                SyntaxFactory.ArgumentList().AddArguments(
+                    SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression).WithToken(SyntaxFactory.Literal("type"))),
+                    SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression).WithToken(SyntaxFactory.Literal(CannotResolveMessage)))));
+
+        public StatementSyntax Build(
             ICollection<FactoryMetadata> metadata,
+            TypeSyntax? targetType,
             ExpressionSyntax typeExpression,
-            ExpressionSyntax tagExpression,
-            ExpressionSyntax defaultValue)
+            ExpressionSyntax tagExpression)
         {
             if (metadata.Count == 0)
             {
-                return defaultValue;
+                return SyntaxFactory.ThrowStatement().WithExpression(CannotResolveException);
             }
 
             var rewriter = new DefaultFactoryRewriter(typeExpression, tagExpression);
             var factories = metadata
                 .Select(i => (ExpressionSyntax)rewriter.Visit(i.Factory))
                 .Reverse()
-                .Concat(new []{ defaultValue }).ToList();
+                .Concat(new []{ SyntaxFactory.ThrowExpression(CannotResolveException) }).ToList();
 
-            var exp = factories.Skip(1)
+            var defaultExpression = factories.Skip(1)
                 .Aggregate(
                     factories.First(),
                     (source, acc) =>
@@ -34,7 +42,13 @@
                             source,
                             acc));
 
-            return exp;
+
+            if (targetType != null)
+            {
+                defaultExpression = SyntaxFactory.CastExpression(targetType, defaultExpression);
+            }
+
+            return SyntaxFactory.ReturnStatement(defaultExpression);
         }
 
         private class DefaultFactoryRewriter: CSharpSyntaxRewriter

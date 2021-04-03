@@ -51,7 +51,6 @@ namespace Sample
         static Composer()
         {
             DI.Setup()
-                .Using((type, tag) => Fallback(type, tag))
                 // .NET BCL types
                 .Bind<Func<TT>>().To(ctx => new Func<TT>(ctx.Resolve<TT>))
                 .Bind<Lazy<TT>>().To<Lazy<TT>>()

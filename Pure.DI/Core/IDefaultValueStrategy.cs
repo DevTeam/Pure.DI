@@ -5,10 +5,10 @@
 
     internal interface IDefaultValueStrategy
     {
-        ExpressionSyntax Build(
+        StatementSyntax Build(
             ICollection<FactoryMetadata> metadata,
+            TypeSyntax? targetType,
             ExpressionSyntax typeExpression,
-            ExpressionSyntax tagExpression,
-            ExpressionSyntax defaultValue);
+            ExpressionSyntax tagExpression);
     }
 }

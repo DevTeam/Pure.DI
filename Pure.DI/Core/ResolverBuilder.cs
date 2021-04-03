@@ -56,18 +56,6 @@
         private static readonly MethodDeclarationSyntax StaticResolveWithTagMethodSyntax =
             StaticResolveMethodSyntax.AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax));
 
-        /*
-        private static readonly ArgumentSyntax ParamName = SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression).WithToken(SyntaxFactory.Literal("T")));
-        private static readonly ArgumentSyntax ExceptionMessage = SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression).WithToken(SyntaxFactory.Literal("Cannot resolve an instance of the required type T.")));
-        private static readonly StatementSyntax ThrowCannotResolveException = SyntaxFactory
-            .ThrowStatement()
-            .WithExpression(
-                SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName(nameof(ArgumentOutOfRangeException)))
-                    .WithArgumentList(
-                        SyntaxFactory.ArgumentList().AddArguments(
-                            ParamName,
-                            ExceptionMessage)));*/
-
         public ResolverBuilder(IDefaultValueStrategy defaultValueStrategy)
         {
             _defaultValueStrategy = defaultValueStrategy;
@@ -205,23 +193,15 @@
             var genericTagStatementsStrategy = new TypeAndTagBindingStatementsStrategy(genericExpressionStrategy);
             var typeOfTExpression = SyntaxFactory.TypeOfExpression(TTypeSyntax);
 
-            var genericReturnDefault = 
-                SyntaxFactory.ReturnStatement().WithExpression(
-                SyntaxFactory.CastExpression(TTypeSyntax,
-                _defaultValueStrategy.Build(metadata.Factories, typeOfTExpression, SyntaxFactory.DefaultExpression(ObjectTypeSyntax), SyntaxFactory.DefaultExpression(TTypeSyntax))));
-
-            var genericWithTagReturnDefault =
-                SyntaxFactory.ReturnStatement().WithExpression(
-                SyntaxFactory.CastExpression(TTypeSyntax,
-                    _defaultValueStrategy.Build(metadata.Factories, typeOfTExpression, SyntaxFactory.ParseTypeName("tag"), SyntaxFactory.DefaultExpression(TTypeSyntax))));
+            var genericReturnDefault = _defaultValueStrategy.Build(metadata.Factories, TTypeSyntax, typeOfTExpression, SyntaxFactory.DefaultExpression(ObjectTypeSyntax));
+            var genericWithTagReturnDefault = _defaultValueStrategy.Build(metadata.Factories, TTypeSyntax, typeOfTExpression, SyntaxFactory.ParseTypeName("tag"));
 
             var statementsStrategy = new TypeBindingStatementsStrategy(expressionStrategy);
             var tagStatementsStrategy = new TypeAndTagBindingStatementsStrategy(expressionStrategy);
             var typeExpression = SyntaxFactory.ParseName("type");
-            var returnDefault = SyntaxFactory.ReturnStatement().WithExpression(
-                _defaultValueStrategy.Build(metadata.Factories, SyntaxFactory.ParseTypeName("type"), SyntaxFactory.DefaultExpression(ObjectTypeSyntax), SyntaxFactory.DefaultExpression(ObjectTypeSyntax)));
-            var returnWithTagDefault = SyntaxFactory.ReturnStatement().WithExpression(
-                _defaultValueStrategy.Build(metadata.Factories, SyntaxFactory.ParseTypeName("type"), SyntaxFactory.ParseTypeName("type"), SyntaxFactory.DefaultExpression(ObjectTypeSyntax)));
+
+            var returnDefault = _defaultValueStrategy.Build(metadata.Factories, null,SyntaxFactory.ParseTypeName("type"), SyntaxFactory.DefaultExpression(ObjectTypeSyntax));
+            var returnWithTagDefault = _defaultValueStrategy.Build(metadata.Factories, null, SyntaxFactory.ParseTypeName("type"), SyntaxFactory.ParseTypeName("type"));
 
             var allVariants = new[]
             {
