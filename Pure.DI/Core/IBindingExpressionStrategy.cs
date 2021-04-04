@@ -8,8 +8,12 @@
     {
         ExpressionSyntax TryBuild(
             BindingMetadata binding,
-            INamedTypeSymbol contractType,
+            ITypeSymbol contractType,
             ExpressionSyntax? tag,
+            ISet<BindingMetadata> additionalBindings);
+
+        ExpressionSyntax TryBuild(
+            TypeResolveDescription typeResolveDescription,
             ISet<BindingMetadata> additionalBindings);
     }
 }

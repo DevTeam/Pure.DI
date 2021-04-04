@@ -30,16 +30,13 @@
                 from ctor in _constructorsResolver.Resolve(typeResolver, typeDescription)
                 let parameters =
                     from parameter in ctor.Parameters
-                    let type = parameter.Type as INamedTypeSymbol
-                    let paramResolveDescription = type != null ? typeResolver.Resolve(type, null): null
+                    let paramResolveDescription = typeResolver.Resolve(parameter.Type, null)
                     select TryBuildInternal(typeResolver, bindingExpressionStrategy, paramResolveDescription?.ObjectBuilder, paramResolveDescription, additionalBindings, level)
                 where parameters.All(i => i != null)
                 let arguments = SyntaxFactory.SeparatedList(
                     from parameter in parameters
                     select SyntaxFactory.Argument(parameter))
-                let objectCreationExpression =
-                    SyntaxFactory.ObjectCreationExpression(typeDescription.Type.ToTypeSyntax(typeDescription.SemanticModel))
-                        .WithArgumentList(SyntaxFactory.ArgumentList(arguments))
+                let objectCreationExpression = CreateObject(typeDescription, arguments)
                 select objectCreationExpression
             ).FirstOrDefault();
 
@@ -49,6 +46,19 @@
             }
 
             return SyntaxFactory.ParseName($"Cannot find constructor for \"{typeDescription.Type}\".");
+        }
+
+        private static ExpressionSyntax CreateObject(TypeResolveDescription typeDescription, SeparatedSyntaxList<ArgumentSyntax> arguments)
+        {
+            var typeSyntax = typeDescription.Type.ToTypeSyntax(typeDescription.SemanticModel);
+            if (typeSyntax.IsKind(SyntaxKind.TupleType))
+            {
+                return SyntaxFactory.TupleExpression()
+                    .WithArguments(arguments);
+            }
+
+            return SyntaxFactory.ObjectCreationExpression(typeSyntax)
+                .WithArgumentList(SyntaxFactory.ArgumentList(arguments));
         }
 
         private static ExpressionSyntax? TryBuildInternal(
@@ -64,21 +74,35 @@
                 return null;
             }
 
-            var constructedType = typeDescription.TypesMap.ConstructType(typeDescription.Type);
-            if (!typeDescription.Type.Equals(constructedType, SymbolEqualityComparer.Default))
+            if (typeDescription.Type is INamedTypeSymbol type)
             {
-                additionalBindings.Add(new BindingMetadata(typeDescription.Binding, constructedType));
+                var constructedType = typeDescription.TypesMap.ConstructType(type);
+                if (!typeDescription.Type.Equals(constructedType, SymbolEqualityComparer.Default))
+                {
+                    additionalBindings.Add(new BindingMetadata(typeDescription.Binding, constructedType));
+                }
+
+                if (typeDescription.IsResolved)
+                {
+                    return bindingExpressionStrategy.TryBuild(typeDescription.Binding, constructedType, null, additionalBindings);
+                }
+
+                var contractType = typeDescription.Type.ToTypeSyntax(typeDescription.SemanticModel);
+                return SyntaxFactory.CastExpression(contractType,
+                    SyntaxFactory.InvocationExpression(SyntaxFactory.ParseName(nameof(IContext.Resolve)))
+                        .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(contractType))));
             }
 
-            if (typeDescription.IsResolved)
+            if (typeDescription.Type is IArrayTypeSymbol arrayType)
             {
-                return bindingExpressionStrategy.TryBuild(typeDescription.Binding, constructedType, null, additionalBindings);
+                var arrayTypeDescription = typeResolver.Resolve(arrayType, null);
+                if (arrayTypeDescription.IsResolved)
+                {
+                    return bindingExpressionStrategy.TryBuild(arrayTypeDescription, additionalBindings);
+                }
             }
 
-            var contractType = typeDescription.Type.ToTypeSyntax(typeDescription.SemanticModel);
-            return SyntaxFactory.CastExpression(contractType,
-                SyntaxFactory.InvocationExpression(SyntaxFactory.ParseName(nameof(IContext.Resolve)))
-                    .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(contractType))));
+            return null;
         }
     }
 }

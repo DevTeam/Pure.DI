@@ -11,7 +11,7 @@
         public TypesMap(INamedTypeSymbol type, INamedTypeSymbol targetType, SemanticModel semanticModel)
         {
             _semanticModel = semanticModel;
-            CreateMap(type, targetType, _map);
+            CreateMap(type, targetType);
         }
 
         public TypesMap(SemanticModel semanticModel)
@@ -21,30 +21,30 @@
 
         public int Count => _map.Count;
 
-        private void CreateMap(INamedTypeSymbol type, INamedTypeSymbol targetType, IDictionary<INamedTypeSymbol, INamedTypeSymbol> typesMap)
+        private void CreateMap(INamedTypeSymbol type, INamedTypeSymbol targetType)
         {
             if (!type.IsGenericType && type.Equals(targetType, SymbolEqualityComparer.Default))
             {
                 return;
             }
 
-            if (typesMap.ContainsKey(type))
+            if (_map.ContainsKey(type))
             {
                 return;
             }
 
             if (type.IsGenericTypeMarker(_semanticModel))
             {
-                typesMap[type] = targetType;
+                _map[type] = targetType;
                 return;
             }
 
             // Constructed generic
-            if (targetType.IsGenericType)
+            if (type.IsGenericType && targetType.IsGenericType)
             {
                 if (type.ConstructUnboundGenericType().Equals(targetType.ConstructUnboundGenericType(), SymbolEqualityComparer.Default))
                 {
-                    typesMap[type] = targetType;
+                    _map[type] = targetType;
                     var typeArgs = type.TypeArguments;
                     var targetTypeArgs = targetType.TypeArguments;
                     for (var i = 0; i < typeArgs.Length; i++)
@@ -53,7 +53,7 @@
                             typeArgs[i] is INamedTypeSymbol typeArg
                             && targetTypeArgs[i] is INamedTypeSymbol targetTypeArg)
                         {
-                            CreateMap(typeArg, targetTypeArg, typesMap);
+                            CreateMap(typeArg, targetTypeArg);
                         }
                     }
 
@@ -62,12 +62,12 @@
 
                 foreach (var implementedInterface in targetType.Interfaces)
                 {
-                    CreateMap(type, implementedInterface, typesMap);
+                    CreateMap(type, implementedInterface);
                 }
 
                 foreach (var implementedInterface in type.Interfaces)
                 {
-                    CreateMap(implementedInterface, targetType, typesMap);
+                    CreateMap(implementedInterface, targetType);
                 }
             }
         }

@@ -5,11 +5,11 @@
 
     internal readonly struct MemberKey
     {
-        private readonly INamedTypeSymbol _type;
+        private readonly ITypeSymbol _type;
         private readonly ExpressionSyntax? _tag;
         public readonly string Prefix;
 
-        public MemberKey(string prefix, INamedTypeSymbol contractType, ExpressionSyntax? tag)
+        public MemberKey(string prefix, ITypeSymbol contractType, ExpressionSyntax? tag)
         {
             _type = contractType;
             _tag = tag;

@@ -13,6 +13,7 @@
         private static readonly IConstructorsResolver ConstructorsResolver = new ConstructorsResolver();
         private static readonly IObjectBuilder ConstructorObjectBuilder = new ConstructorObjectBuilder(ConstructorsResolver);
         private static readonly IObjectBuilder FactoryObjectBuilder = new FactoryObjectBuilder();
+        private static readonly IObjectBuilder ArrayObjectBuilder = new ArrayObjectBuilder();
         private static readonly IDefaultValueStrategy DefaultValueStrategy = new FallbackStrategy();
 
         public void Initialize(GeneratorInitializationContext context)
@@ -39,7 +40,7 @@
                     {
                         foreach (var metadata in walker.Metadata)
                         {
-                            var typeResolver = new TypeResolver(metadata, semanticModel, ConstructorObjectBuilder, FactoryObjectBuilder);
+                            var typeResolver = new TypeResolver(metadata, semanticModel, ConstructorObjectBuilder, FactoryObjectBuilder, ArrayObjectBuilder);
                             var compilationUnitSyntax = builder.Build(metadata, semanticModel, typeResolver);
                             context.AddSource(metadata.TargetTypeName, SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8));
                         }

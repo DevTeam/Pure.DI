@@ -40,13 +40,14 @@
             var builder = new ResolverBuilder(new FallbackStrategy());
             var constructorObjectBuilder = new ConstructorObjectBuilder(new ConstructorsResolver());
             var factoryObjectBuilder = new FactoryObjectBuilder();
+            var arrayObjectBuilder = new ArrayObjectBuilder();
             var walker = new MetadataWalker(setupSemanticModel);
             walker.Visit(setupTree.GetRoot());
             var roots = new List<CompilationUnitSyntax> { setupRoot, codeRoot };
             var generated = new List<string>();
             foreach (var metadata in walker.Metadata)
             {
-                var typeResolver = new TypeResolver(metadata, setupSemanticModel, constructorObjectBuilder, factoryObjectBuilder);
+                var typeResolver = new TypeResolver(metadata, setupSemanticModel, constructorObjectBuilder, factoryObjectBuilder, arrayObjectBuilder);
                 var generatedExpression = builder.Build(metadata, setupSemanticModel, typeResolver);
                 generated.Add(generatedExpression.ToString());
                 roots.Add(generatedExpression);

@@ -1,11 +1,13 @@
 ﻿namespace Pure.DI.Core
 {
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     internal class TypeResolveDescription
     {
         public readonly BindingMetadata Binding;
-        public readonly INamedTypeSymbol Type;
+        public readonly ITypeSymbol Type;
+        public readonly ExpressionSyntax? Tag;
         public readonly IObjectBuilder ObjectBuilder;
         public readonly ITypesMap TypesMap;
         public readonly SemanticModel SemanticModel;
@@ -13,7 +15,8 @@
 
         public TypeResolveDescription(
             BindingMetadata binding,
-            INamedTypeSymbol type,
+            ITypeSymbol type,
+            ExpressionSyntax? tag,
             IObjectBuilder objectBuilder,
             ITypesMap typesMap,
             SemanticModel semanticModel,
@@ -21,10 +24,13 @@
         {
             Binding = binding;
             Type = type;
+            Tag = tag;
             ObjectBuilder = objectBuilder;
             TypesMap = typesMap;
             SemanticModel = semanticModel;
             IsResolved = isResolved;
         }
+
+        public override string ToString() => $"{Type}: {IsResolved}";
     }
 }

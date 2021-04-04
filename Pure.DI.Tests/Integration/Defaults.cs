@@ -22,7 +22,7 @@
                 .Bind<System.Collections.Generic.ISet<TT>>().To(ctx => new System.Collections.Generic.HashSet<TT>(ctx.Resolve<TT[]>()))
 
                 // Tuples
-                .Bind<System.Tuple<TT, TT1>>()
+                .Bind<System.Tuple<TT, TT1>>().To<System.Tuple<TT, TT1>>()
                 .Bind<(TT, TT1)>().To<(TT, TT1)>()
                 .Bind<System.Tuple<TT, TT1, TT2>>().To<System.Tuple<TT, TT1, TT2>>()
                 .Bind<(TT, TT1, TT2)>().To<(TT, TT1, TT2)>()

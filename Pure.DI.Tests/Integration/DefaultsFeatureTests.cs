@@ -162,6 +162,125 @@
             output.ShouldBe(new[] { "abc" }, generatedCode);
         }
 
+        [Fact]
+        public void ShouldSupportTuple()
+        {
+            // Given
+
+            // When
+            var output = (GetFeaturesCode() + @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                static partial class Composer
+                {
+                    // Models a random subatomic event that may or may not occur
+                    private static readonly Random Indeterminacy = new();
+
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .DependsOn(""Defaults"")
+                            .Bind<string>().To(_ => ""abc"")
+                            .Bind<int>().To(_ => 333)
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(Tuple<string, int> value) => Value = value.Item1 + value.Item2;
+                }
+            }").Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "abc333" }, generatedCode);
+        }
+
+        [Fact]
+        public void ShouldSupportValueTuple()
+        {
+            // Given
+
+            // When
+            var output = (GetFeaturesCode() + @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                static partial class Composer
+                {
+                    // Models a random subatomic event that may or may not occur
+                    private static readonly Random Indeterminacy = new();
+
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .DependsOn(""Defaults"")
+                            .Bind<string>().To(_ => ""abc"")
+                            .Bind<int>().To(_ => 333)
+                            .Bind<long>().To(_ => 99)
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot((string, int, long) value) => Value = value.Item1 + value.Item2 + value.Item3;
+                }
+            }").Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "abc33399" }, generatedCode);
+        }
+
+        [Fact]
+        public void ShouldSupportArray()
+        {
+            // Given
+
+            // When
+            var output = (GetFeaturesCode() + @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                static partial class Composer
+                {
+                    // Models a random subatomic event that may or may not occur
+                    private static readonly Random Indeterminacy = new();
+
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .DependsOn(""Defaults"")
+                            .Bind<string>().Tag(1).To(_ => ""1"")
+                            .Bind<string>().To(_ => ""2"")                            
+                            .Bind<string>().Tag(3).To(_ => ""3"")
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string[] value) => Value = String.Join(""."", value);
+                }
+            }").Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "1.2.3" }, generatedCode);
+        }
+
         private string GetFeaturesCode()
         {
             var assembly = GetType().Assembly;
