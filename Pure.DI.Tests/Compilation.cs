@@ -28,10 +28,10 @@
 
         private const string Code = @"namespace Sample { public class Program { public static void Main() => System.Console.WriteLine(Composer.Resolve<CompositionRoot>().Value); } }";
 
-        public static IReadOnlyList<string> Run(this string setupCode, out string generatedCode)
+        public static IReadOnlyList<string> Run(this string setupCode, out string generatedCode, string resolveName = "Composer")
         {
             var setupRoot = CSharpSyntaxTree.ParseText(setupCode).GetCompilationUnitRoot();
-            var codeRoot = CSharpSyntaxTree.ParseText(Code).GetCompilationUnitRoot();
+            var codeRoot = CSharpSyntaxTree.ParseText(Code.Replace("Composer", resolveName)).GetCompilationUnitRoot();
 
             var setupCompilation = Compile(OutputKind.DynamicallyLinkedLibrary, setupRoot);
             var setupTree = setupCompilation.SyntaxTrees.First();

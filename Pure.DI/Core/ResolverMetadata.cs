@@ -9,6 +9,7 @@
         public readonly SyntaxNode SetupNode;
         public readonly ICollection<BindingMetadata> Bindings;
         public readonly ICollection<FallbackMetadata> Fallback;
+        public readonly ICollection<string> DependsOn;
 
         public ResolverMetadata(SyntaxNode setupNode, string targetTypeName)
         {
@@ -16,6 +17,7 @@
             TargetTypeName = targetTypeName;
             Bindings = new List<BindingMetadata>();
             Fallback = new List<FallbackMetadata>();
+            DependsOn = new List<string>();
         }
     }
 }

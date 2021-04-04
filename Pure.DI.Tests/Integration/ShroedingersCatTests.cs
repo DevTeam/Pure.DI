@@ -4,10 +4,10 @@
     using Shouldly;
     using Xunit;
 
-    public class ShroedingersCat
+    public class ShroedingersCatTests
     {
         [Fact]
-        public void ShouldSupportSingletons()
+        public void ShouldSupportShroedingersCatScenario()
         {
             // Given
 

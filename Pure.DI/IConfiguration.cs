@@ -7,5 +7,7 @@
         IBinding Bind<T>();
 
         IConfiguration Fallback(Func<Type, object, object> factory);
+
+        IConfiguration DependsOn(string dependencyName);
     }
 }

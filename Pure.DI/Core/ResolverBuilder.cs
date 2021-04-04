@@ -18,8 +18,8 @@
         private const string ContextClassName = "Context";
         internal static readonly TypeSyntax TTypeSyntax = SyntaxFactory.ParseTypeName("T");
         internal static readonly TypeSyntax ContextTypeSyntax = SyntaxFactory.ParseTypeName(ContextClassName);
-        internal static readonly TypeSyntax ObjectTypeSyntax = SyntaxFactory.ParseTypeName(nameof(Object));
-        private static readonly TypeSyntax TypeTypeSyntax = SyntaxFactory.ParseTypeName(nameof(Type));
+        internal static readonly TypeSyntax ObjectTypeSyntax = SyntaxFactory.ParseTypeName("object");
+        private static readonly TypeSyntax TypeTypeSyntax = SyntaxFactory.ParseTypeName("System.Type");
         private static readonly TypeSyntax ContextInterfaceTypeSyntax = SyntaxFactory.ParseTypeName(nameof(IContext));
         private static readonly TypeParameterSyntax TTypeParameterSyntax = SyntaxFactory.TypeParameter("T");
 
@@ -79,8 +79,12 @@
                 classModifiers.Add(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
                 if (string.IsNullOrWhiteSpace(metadata.TargetTypeName))
                 {
-                    var parentClassName = metadata.SetupNode.Ancestors().OfType<ClassDeclarationSyntax>().Select(i => i.Identifier.Text).FirstOrDefault();
-                    metadata.TargetTypeName = $"{parentClassName}DI";
+                    var parentNodeName = metadata.SetupNode
+                        .Ancestors()
+                        .Select(TryGetNodeName)
+                        .FirstOrDefault(i => !string.IsNullOrWhiteSpace(i));
+                    
+                    metadata.TargetTypeName = $"{parentNodeName}DI";
                 }
             }
             else
@@ -171,6 +175,24 @@
             return compilationUnit.NormalizeWhitespace();
         }
 
+        private static string? TryGetNodeName(SyntaxNode node)
+        {
+            switch (node)
+            {
+                case ClassDeclarationSyntax classDeclaration:
+                    return classDeclaration.Identifier.Text;
+
+                case StructDeclarationSyntax structDeclaration:
+                    return structDeclaration.Identifier.Text;
+
+                case RecordDeclarationSyntax recordDeclaration:
+                    return recordDeclaration.Identifier.Text;
+
+                default:
+                    return null;
+            }
+        }
+
         private IEnumerable<MemberDeclarationSyntax> CreateResolveMethods(ResolverMetadata metadata, SemanticModel semanticModel, ITypeResolver typeResolver)
         {
             var nameService = new NameService();
@@ -215,13 +237,13 @@
             };
 
             var variants =
-                from binding in metadata.Bindings.Reverse().Concat(additionalBindings).Distinct()
+                from binding in metadata.Bindings.Reverse().Concat(additionalBindings).Distinct().ToList()
                 from contractType in binding.ContractTypes
                 where contractType.IsValidTypeToResolve(semanticModel)
                 from tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null)
                 from variant in allVariants
                 where variant.HasDefaultTag == (tag == null)
-                let statement = ResolveStatement(semanticModel, contractType, variant, binding, nameService)
+                let statement = ResolveStatement(semanticModel, contractType, variant, binding)
                 group (variant, statement) by (variant.TargetMethod.ToString(), statement.ToString(), contractType.ToString(), tag?.ToString()) into groupedByStatement
                 // Avoid duplication of statements
                 select groupedByStatement.First();
@@ -249,8 +271,7 @@
             SemanticModel semanticModel,
             INamedTypeSymbol contractType,
             MethodVariant method,
-            BindingMetadata binding,
-            INameService nameService) =>
+            BindingMetadata binding) =>
             SyntaxFactory.IfStatement(
                 SyntaxFactory.BinaryExpression(
                     SyntaxKind.EqualsExpression,

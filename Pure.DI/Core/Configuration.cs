@@ -9,5 +9,7 @@
         public IBinding Bind<T>() => new Binding(this);
 
         public IConfiguration Fallback(Func<Type, object, object> factory) => this;
+        
+        public IConfiguration DependsOn(string dependencyName) => this;
     }
 }
