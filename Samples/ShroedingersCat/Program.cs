@@ -43,12 +43,12 @@ namespace Sample
 
     // Let's glue all together
 
-    static partial class Composer
+    static partial class Glue
     {
         // Models a random subatomic event that may or may not occur
         private static readonly Random Indeterminacy = new();
 
-        static Composer()
+        static Glue()
         {
             DI.Setup()
                 // Represents a quantum superposition of 2 states: Alive or Dead
@@ -67,7 +67,7 @@ namespace Sample
     public class Program
     {
         // Composition Root, a single place in an application where the composition of the object graphs for an application take place
-        public static void Main() => Composer.Resolve<Program>().Run();
+        public static void Main() => Glue.Resolve<Program>().Run();
 
         private readonly IBox<ICat> _box;
 

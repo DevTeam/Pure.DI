@@ -73,12 +73,12 @@ Just add a package reference to [Pure.DI](https://www.nuget.org/packages/Pure.DI
 Declare required dependencies in a class like:
 
 ```csharp
-static partial class Composer
+static partial class Glue
 {
   // Models a random subatomic event that may or may not occur
   private static readonly Random Indeterminacy = new();
 
-  static Composer()
+  static Glue()
   {
     DI.Setup()
       // Represents a quantum superposition of 2 states: Alive or Dead
@@ -130,5 +130,6 @@ Take full advantage of Dependency Injection everywhere and every time without an
 
 |     | packages |
 | --- | --- |
-| Container | [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI) |
+| Contracts | [![NuGet](https://buildstats.info/nuget/Pure.DI.Contracts)](https://www.nuget.org/packages/Pure.DI.Contracts) |
+| Source generator | [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI) |
 
