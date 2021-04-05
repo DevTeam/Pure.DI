@@ -80,9 +80,7 @@
             return _resultStrategy.Build(objectExpression);
         }
 
-        public ExpressionSyntax TryBuild(
-            BindingMetadata binding,
-            ITypeSymbol contractType,
+        public ExpressionSyntax TryBuild(ITypeSymbol contractType,
             ExpressionSyntax? tag,
             ISet<BindingMetadata> additionalBindings)
         {

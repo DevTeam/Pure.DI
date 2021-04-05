@@ -16,9 +16,9 @@
             _additionalBindings = additionalBindings;
         }
 
-        public IEnumerable<StatementSyntax> CreateStatements(BindingMetadata binding, INamedTypeSymbol contractType)
+        public IEnumerable<StatementSyntax> CreateStatements(BindingMetadata binding, ITypeSymbol contractType)
         {
-            var instance = _bindingExpressionStrategy.TryBuild(binding, contractType, null, _additionalBindings);
+            var instance = _bindingExpressionStrategy.TryBuild(contractType, null, _additionalBindings);
             yield return SyntaxFactory.ReturnStatement(instance);
         }
     }

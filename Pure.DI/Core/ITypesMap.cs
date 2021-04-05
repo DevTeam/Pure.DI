@@ -4,6 +4,6 @@
 
     internal interface ITypesMap
     {
-        INamedTypeSymbol ConstructType(INamedTypeSymbol type);
+        ITypeSymbol ConstructType(ITypeSymbol type);
     }
 }

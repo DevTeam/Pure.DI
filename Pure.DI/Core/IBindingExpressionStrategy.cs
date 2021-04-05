@@ -7,7 +7,6 @@
     internal interface IBindingExpressionStrategy
     {
         ExpressionSyntax TryBuild(
-            BindingMetadata binding,
             ITypeSymbol contractType,
             ExpressionSyntax? tag,
             ISet<BindingMetadata> additionalBindings);

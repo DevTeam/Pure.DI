@@ -207,7 +207,7 @@
                 from contractType in binding.ContractTypes
                 where contractType.IsValidTypeToResolve(semanticModel)
                 from tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null)
-                select expressionStrategy.TryBuild(binding, contractType, tag, additionalBindings))
+                select expressionStrategy.TryBuild(contractType, tag, additionalBindings))
                 .ToList();
 
             // Default values
@@ -269,7 +269,7 @@
 
         private static IfStatementSyntax ResolveStatement(
             SemanticModel semanticModel,
-            INamedTypeSymbol contractType,
+            ITypeSymbol contractType,
             MethodVariant method,
             BindingMetadata binding) =>
             SyntaxFactory.IfStatement(

@@ -14,8 +14,20 @@
         public static bool Equals(this Type type, ITypeSymbol typeSymbol, SemanticModel semanticModel) => 
             SymbolEqualityComparer.Default.Equals(ToTypeSymbol(type, semanticModel), typeSymbol);
 
-        public static bool IsValidTypeToResolve(this INamedTypeSymbol typeSymbol, SemanticModel semanticModel) =>
-            !typeSymbol.IsUnboundGenericType && !typeSymbol.IsComposedGenericTypeMarker(semanticModel);
+        public static bool IsValidTypeToResolve(this ITypeSymbol typeSymbol, SemanticModel semanticModel)
+        {
+            if (typeSymbol is INamedTypeSymbol namedTypeSymbol)
+            {
+                return !namedTypeSymbol.IsUnboundGenericType && !namedTypeSymbol.IsComposedGenericTypeMarker(semanticModel);
+            }
+
+            if (typeSymbol is IArrayTypeSymbol arrayTypeSymbol)
+            {
+                return arrayTypeSymbol.IsValidTypeToResolve(semanticModel);
+            }
+
+            return false;
+        }
 
         public static INamedTypeSymbol Construct(this INamedTypeSymbol typeSymbol, SemanticModel semanticModel, params ITypeSymbol[] typeArgSymbols)
         {
@@ -36,26 +48,36 @@
         }
 
 
-        public static bool IsComposedGenericTypeMarker(this INamedTypeSymbol typeSymbol, SemanticModel semanticModel)
+        public static bool IsComposedGenericTypeMarker(this ITypeSymbol typeSymbol, SemanticModel semanticModel)
         {
             if (IsGenericTypeMarker(typeSymbol, semanticModel))
             {
                 return true;
             }
 
-            if (!typeSymbol.IsGenericType)
+            if (typeSymbol is INamedTypeSymbol namedTypeSymbol)
             {
-                return false;
+                if (!namedTypeSymbol.IsGenericType)
+                {
+                    return false;
+                }
+
+                return
+                    namedTypeSymbol
+                        .TypeArguments
+                        .OfType<INamedTypeSymbol>()
+                        .Any(type => IsComposedGenericTypeMarker(type, semanticModel));
             }
 
-            return
-                typeSymbol
-                    .TypeArguments
-                    .OfType<INamedTypeSymbol>()
-                    .Any(type => IsComposedGenericTypeMarker(type, semanticModel));
+            if (typeSymbol is IArrayTypeSymbol arrayTypeSymbol)
+            {
+                return arrayTypeSymbol.ElementType.IsComposedGenericTypeMarker(semanticModel);
+            }
+
+            return false;
         }
 
-        public static bool IsGenericTypeMarker(this INamedTypeSymbol typeSymbol, SemanticModel semanticModel)
+        public static bool IsGenericTypeMarker(this ITypeSymbol typeSymbol, SemanticModel semanticModel)
         {
             foreach (var attr in typeSymbol.GetAttributes())
             {

@@ -21,6 +21,8 @@
                         MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
                         MetadataReference.CreateFromFile(GetSystemAssemblyPathByName("netstandard.dll")),
                         MetadataReference.CreateFromFile(GetSystemAssemblyPathByName("System.Runtime.dll")),
+                        MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location),
+                        MetadataReference.CreateFromFile(typeof(IList<object>).Assembly.Location),
                         MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
                         MetadataReference.CreateFromFile(typeof(DI).Assembly.Location))
                     .AddSyntaxTrees(roots.Select(root => CSharpSyntaxTree.Create(root)))
@@ -156,7 +158,12 @@
                        + "Line " + (diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line + 1)
                        + Environment.NewLine
                        + Environment.NewLine
-                       + string.Join(Environment.NewLine, source.Split(Environment.NewLine).Select((line, number) => $"{number + 1:0000}: {line}"));
+                       + string.Join(
+                           Environment.NewLine,
+                           source.Split(Environment.NewLine)
+                               .Select(
+                                   (line, number) => $"/*{number + 1:0000}*/ {line}")
+                           );
             }
             
             return description;

@@ -18,6 +18,7 @@
                 .Bind<System.Collections.Generic.IReadOnlyCollection<TT>>()
                 .Bind<System.Collections.Generic.IList<TT>>()
                 .Bind<System.Collections.Generic.IReadOnlyList<TT>>()
+                .As(Lifetime.Singleton)
                     .To(ctx => new System.Collections.Generic.List<TT>(ctx.Resolve<TT[]>()))
                 .Bind<System.Collections.Generic.ISet<TT>>().To(ctx => new System.Collections.Generic.HashSet<TT>(ctx.Resolve<TT[]>()))
 

@@ -84,7 +84,7 @@
 
                 if (typeDescription.IsResolved)
                 {
-                    return bindingExpressionStrategy.TryBuild(typeDescription.Binding, constructedType, null, additionalBindings);
+                    return bindingExpressionStrategy.TryBuild(constructedType, null, additionalBindings);
                 }
 
                 var contractType = typeDescription.Type.ToTypeSyntax(typeDescription.SemanticModel);

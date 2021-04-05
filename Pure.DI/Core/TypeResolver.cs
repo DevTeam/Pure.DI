@@ -13,7 +13,7 @@
         private readonly IObjectBuilder _constructorObjectBuilder;
         private readonly IObjectBuilder _factoryObjectBuilder;
         private readonly IObjectBuilder _arrayObjectBuilder;
-        private readonly Dictionary<Key, Binding<INamedTypeSymbol>> _map = new();
+        private readonly Dictionary<Key, Binding<ITypeSymbol>> _map = new();
         private readonly Dictionary<Key, Binding<SimpleLambdaExpressionSyntax>> _factories = new();
 
         public TypeResolver(
@@ -38,11 +38,12 @@
                 {
                     foreach (var tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null))
                     {
-                        var key = bindingContractType.IsComposedGenericTypeMarker(semanticModel) 
-                            ? new Key(bindingContractType.ConstructUnboundGenericType(), tag)
-                            : new Key(bindingContractType, tag);
+                        var key = bindingContractType.IsComposedGenericTypeMarker(semanticModel)
+                                  && bindingContractType is INamedTypeSymbol namedType
+                                ? new Key(namedType.ConstructUnboundGenericType(), tag)
+                                : new Key(bindingContractType, tag);
 
-                        _map[key] = new Binding<INamedTypeSymbol>(binding, binding.ImplementationType);
+                        _map[key] = new Binding<ITypeSymbol>(binding, binding.ImplementationType);
 
                         if (binding.Factory != null)
                         {
@@ -57,7 +58,7 @@
         {
             if (contractTypeSymbol is INamedTypeSymbol contractType)
             {
-                Binding<INamedTypeSymbol> implementationEntry;
+                Binding<ITypeSymbol> implementationEntry;
                 if (contractType.IsGenericType)
                 {
                     var key = new Key(contractType.ConstructUnboundGenericType(), tag, anyTag);

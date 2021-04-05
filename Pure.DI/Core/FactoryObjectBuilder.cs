@@ -42,6 +42,7 @@
             {
                 return (ExpressionSyntax) new FactoryRewriter(
                         typeDescription,
+                        bindingExpressionStrategy,
                         factory.Parameter.Identifier,
                         additionalBindings)
                     .Visit(resultExpression);

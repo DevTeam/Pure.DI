@@ -281,6 +281,92 @@
             output.ShouldBe(new[] { "1.2.3" }, generatedCode);
         }
 
+        [Theory]
+        [InlineData("ICollection")]
+        [InlineData("IReadOnlyCollection")]
+        [InlineData("IList")]
+        [InlineData("IReadOnlyList")]
+        public void ShouldSupportCollections(string collectionType)
+        {
+            // Given
+
+            // When
+            var output = (GetFeaturesCode() + @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+                using System.Collections.Generic;
+
+                static partial class Composer
+                {
+                    // Models a random subatomic event that may or may not occur
+                    private static readonly Random Indeterminacy = new();
+
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .DependsOn(""Defaults"")
+                            .Bind<string>().Tag(1).To(_ => ""1"")
+                            .Bind<string>().To(_ => ""2"")                            
+                            .Bind<string>().Tag(3).To(_ => ""3"")
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(ICollection<string> value) => Value = String.Join(""."", value);
+                }
+            }").Replace("ICollection", collectionType).Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "1.2.3" }, generatedCode);
+        }
+
+        [Fact]
+        public void ShouldSupportSet()
+        {
+            // Given
+
+            // When
+            var output = (GetFeaturesCode() + @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+                using System.Collections.Generic;
+
+                static partial class Composer
+                {
+                    // Models a random subatomic event that may or may not occur
+                    private static readonly Random Indeterminacy = new();
+
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .DependsOn(""Defaults"")
+                            .Bind<string>().Tag(1).To(_ => ""1"")
+                            .Bind<string>().To(_ => ""2"")                            
+                            .Bind<string>().Tag(3).To(_ => ""3"")
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(ISet<string> value) => Value = String.Join(""."", value);
+                }
+            }").Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "1.2.3" }, generatedCode);
+        }
+
         private string GetFeaturesCode()
         {
             var assembly = GetType().Assembly;

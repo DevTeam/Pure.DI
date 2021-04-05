@@ -16,11 +16,11 @@
             _additionalBindings = additionalBindings;
         }
 
-        public IEnumerable<StatementSyntax> CreateStatements(BindingMetadata binding, INamedTypeSymbol contractType)
+        public IEnumerable<StatementSyntax> CreateStatements(BindingMetadata binding, ITypeSymbol contractType)
         {
             foreach (var tag in binding.Tags)
             {
-                var instance = _bindingExpressionStrategy.TryBuild(binding, contractType, tag, _additionalBindings);
+                var instance = _bindingExpressionStrategy.TryBuild(contractType, tag, _additionalBindings);
                 yield return SyntaxFactory.IfStatement(
                     SyntaxFactory.InvocationExpression(
                         SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, tag, SyntaxFactory.Token(SyntaxKind.DotToken), SyntaxFactory.IdentifierName("Equals"))

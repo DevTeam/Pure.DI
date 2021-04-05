@@ -6,15 +6,15 @@
 
     internal class BindingMetadata
     {
-        public INamedTypeSymbol? ImplementationType;
+        public ITypeSymbol? ImplementationType;
         public SimpleLambdaExpressionSyntax? Factory;
         public Lifetime Lifetime = Lifetime.Transient;
-        public readonly ISet<INamedTypeSymbol> ContractTypes = new HashSet<INamedTypeSymbol>(SymbolEqualityComparer.Default);
+        public readonly ISet<ITypeSymbol> ContractTypes = new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
         public readonly ISet<ExpressionSyntax> Tags = new HashSet<ExpressionSyntax>();
 
         public BindingMetadata() { }
 
-        public BindingMetadata(BindingMetadata binding, INamedTypeSymbol constructedType)
+        public BindingMetadata(BindingMetadata binding, ITypeSymbol constructedType)
         {
             ContractTypes.Add(constructedType);
             ImplementationType = binding.ImplementationType;
