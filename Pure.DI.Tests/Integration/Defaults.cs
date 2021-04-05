@@ -13,7 +13,7 @@
                 
                 // Enumerable
                 .Bind<TT[]>().To<TT[]>()
-                .Bind<System.Collections.Generic.IEnumerable<TT>>().To<System.Collections.Generic.IEnumerable<TT>>()
+                .Bind<System.Collections.Generic.IEnumerable<TT>>()  // TODO: should be lazy
                 .Bind<System.Collections.Generic.ICollection<TT>>()
                 .Bind<System.Collections.Generic.IReadOnlyCollection<TT>>()
                 .Bind<System.Collections.Generic.IList<TT>>()

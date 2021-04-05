@@ -286,6 +286,7 @@
         [InlineData("IReadOnlyCollection")]
         [InlineData("IList")]
         [InlineData("IReadOnlyList")]
+        [InlineData("IEnumerable")]
         public void ShouldSupportCollections(string collectionType)
         {
             // Given

@@ -116,5 +116,43 @@
             // Then
             output.ShouldBe(new []{"4"}, generatedCode);
         }
+
+        [Fact]
+        public void ShouldSupportSingletonsForSeveralContracts()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;               
+
+                public class CompositionRoot
+                {
+                    public readonly bool Value;
+                    internal CompositionRoot(IFoo value1, Foo value2) => Value = value1 == value2;        
+                }
+
+
+                public interface IFoo { }
+
+                public class Foo: IFoo { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<IFoo>().Bind<Foo>().As(Pure.DI.Lifetime.Singleton).To<Foo>()
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                    
+                }    
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "True" }, generatedCode);
+        }
     }
 }
