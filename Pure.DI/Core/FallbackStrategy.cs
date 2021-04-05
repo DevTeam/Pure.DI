@@ -42,10 +42,10 @@
 
             if (targetType != null)
             {
-                defaultExpression = SyntaxFactory.CastExpression(targetType, defaultExpression);
+                defaultExpression = SyntaxFactory.CastExpression(targetType, SyntaxFactory.ParenthesizedExpression(defaultExpression));
             }
 
-            return SyntaxFactory.ReturnStatement(defaultExpression);
+            return SyntaxFactory.ReturnStatement(SyntaxFactory.ParenthesizedExpression(defaultExpression));
         }
     }
 }

@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShroedingersCat", "Samples\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pure.DI.Tests", "Pure.DI.Tests\Pure.DI.Tests.csproj", "{17AFF62B-468C-4DA2-8628-F0050E3D4131}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pure.DI.Features", "Pure.DI.Features\Pure.DI.Features.csproj", "{AA87E9EA-6C67-402F-9A86-BD616B10AE15}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pure.DI.Contracts", "Pure.DI.Contracts\Pure.DI.Contracts.csproj", "{12BD68A6-9939-48E3-B0E4-9DAD3A03AE45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{17AFF62B-468C-4DA2-8628-F0050E3D4131}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17AFF62B-468C-4DA2-8628-F0050E3D4131}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17AFF62B-468C-4DA2-8628-F0050E3D4131}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AA87E9EA-6C67-402F-9A86-BD616B10AE15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AA87E9EA-6C67-402F-9A86-BD616B10AE15}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AA87E9EA-6C67-402F-9A86-BD616B10AE15}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AA87E9EA-6C67-402F-9A86-BD616B10AE15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12BD68A6-9939-48E3-B0E4-9DAD3A03AE45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12BD68A6-9939-48E3-B0E4-9DAD3A03AE45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12BD68A6-9939-48E3-B0E4-9DAD3A03AE45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12BD68A6-9939-48E3-B0E4-9DAD3A03AE45}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

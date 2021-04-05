@@ -17,7 +17,7 @@
             TargetTypeName = targetTypeName;
             Bindings = new List<BindingMetadata>();
             Fallback = new List<FallbackMetadata>();
-            DependsOn = new List<string>();
+            DependsOn = new List<string> { "DefaultFeature" };
         }
     }
 }

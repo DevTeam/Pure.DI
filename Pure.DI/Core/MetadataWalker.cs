@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -18,60 +17,7 @@
         public MetadataWalker(SemanticModel semanticModel) =>
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
 
-        public IReadOnlyCollection<ResolverMetadata> Metadata => 
-            _metadata.Select(CreateMetadata).ToList();
-
-        private ResolverMetadata CreateMetadata(ResolverMetadata metadata)
-        {
-            var newMetadata = new ResolverMetadata(metadata.SetupNode, metadata.TargetTypeName);
-            var dependencies = GetDependencies(metadata, new HashSet<string>(StringComparer.InvariantCultureIgnoreCase));
-            foreach (var dependency in dependencies)
-            {
-                foreach (var binding in dependency.Bindings)
-                {
-                    newMetadata.Bindings.Add(binding);
-                }
-
-                foreach (var fallback in dependency.Fallback)
-                {
-                    newMetadata.Fallback.Add(fallback);
-                }
-            }
-
-            foreach (var binding in metadata.Bindings)
-            {
-                newMetadata.Bindings.Add(binding);
-            }
-
-            foreach (var fallback in metadata.Fallback)
-            {
-                newMetadata.Fallback.Add(fallback);
-            }
-
-            return newMetadata;
-        }
-
-        private IEnumerable<ResolverMetadata> GetDependencies(ResolverMetadata metadata, ISet<string> names)
-        {
-            var dependencies =
-                from dependencyName in metadata.DependsOn
-                from dependency in _metadata
-                where dependencyName.Equals(dependency.TargetTypeName, StringComparison.InvariantCultureIgnoreCase)
-                select dependency;
-
-            foreach (var dependency in dependencies)
-            {
-                if (names.Add(dependency.TargetTypeName))
-                {
-                    yield return dependency;
-
-                    foreach (var nested in GetDependencies(dependency, names))
-                    {
-                        yield return nested;
-                    }
-                }
-            }
-        }
+        public IReadOnlyCollection<ResolverMetadata> Metadata => _metadata;
 
         public override void VisitInvocationExpression(InvocationExpressionSyntax node)
         {

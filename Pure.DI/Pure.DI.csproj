@@ -7,6 +7,7 @@
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
+		<RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
@@ -16,11 +17,10 @@
 		<DebugSymbols>false</DebugSymbols>
 	</PropertyGroup>
 
-	<PropertyGroup>
-		<!-- Generates a package at build -->
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-		<!-- Do not include the generator as a lib dependency -->
-
+		<IncludeBuildOutput>false</IncludeBuildOutput>
+		<SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
 		<IsPackable>true</IsPackable>
 		<PackageId>Pure.DI</PackageId>
 		<Authors>NikolayP</Authors>
@@ -32,11 +32,12 @@
 		<RepositoryUrl>https://github.com/DevTeam/Pure.DI.git</RepositoryUrl>
 		<PackageTags>di pure ioc container di</PackageTags>
 		<Product>IoC Container</Product>
-		<Copyright>Copyright (C) 2018-2021 Nikolay Pianikov</Copyright>
+		<Copyright>Copyright (C) 2021 Nikolay Pianikov</Copyright>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+		<EmbeddedResource Include="Features\DefaultFeature.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -44,27 +45,33 @@
 		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="all" />
 	</ItemGroup>
 
-	<PropertyGroup>
-		<RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-		<LangVersion>default</LangVersion>
-	</PropertyGroup>
-
 	<ItemGroup>
-		<None Include="icon.png">
+		<None Include="../Docs/Images/icon.png">
 			<Pack>true</Pack>
 			<PackagePath>common</PackagePath>
 		</None>
+	</ItemGroup>
 
-		<None Update="GenericTypeArguments.tt">
-			<LastGenOutput>GenericTypeArguments.cs</LastGenOutput>
-			<Generator>TextTemplatingFileGenerator</Generator>
-		</None>
+	<PropertyGroup>
+		<GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+	</PropertyGroup>
 
-		<Compile Update="GenericTypeArguments.cs">
-			<DesignTime>True</DesignTime>
-			<AutoGen>True</AutoGen>
-			<DependentUpon>GenericTypeArguments.tt</DependentUpon>
-		</Compile>
+	<Target Name="GetDependencyTargetPaths">
+		<ItemGroup Condition="'$(Configuration)'=='Release'">
+			<TargetPathWithTargetPlatformMoniker Include="$(PKGPure_DI_Contracts)\lib\netstandard1.0\Pure.DI.Contracts.dll" IncludeRuntimeDependency="false" />
+		</ItemGroup>
+
+		<ItemGroup Condition="'$(Configuration)'=='Debug'">
+			<TargetPathWithTargetPlatformMoniker Include="$(SolutionDir)\Pure.DI.Contracts\bin\$(Configuration)\netstandard1.0\Pure.DI.Contracts.dll" IncludeRuntimeDependency="false" />
+		</ItemGroup>
+	</Target>
+
+	<ItemGroup Condition="'$(Configuration)'=='Debug'">
+		<ProjectReference Include="..\Pure.DI.Contracts\Pure.DI.Contracts.csproj" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)'=='Release'">
+		<PackageReference Include="Pure.DI.Contracts" Version="1.0.0-beta1" GeneratePathProperty="true" />
 	</ItemGroup>
 
 	<ItemGroup>

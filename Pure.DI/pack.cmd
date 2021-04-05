@@ -1,1 +1,0 @@
-dotnet pack -c Release /p:version=1.0.0-beta1

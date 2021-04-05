@@ -1,24 +1,17 @@
 ﻿namespace Pure.DI
 {
     using System;
-    using System.Diagnostics;
-    using System.Text;
     using Core;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.Text;
 
     [Generator]
-    public class SourceGenerator: ISourceGenerator
+    public class SourceGenerator : ISourceGenerator
     {
-        private static readonly IConstructorsResolver ConstructorsResolver = new ConstructorsResolver();
-        private static readonly IObjectBuilder ConstructorObjectBuilder = new ConstructorObjectBuilder(ConstructorsResolver);
-        private static readonly IObjectBuilder FactoryObjectBuilder = new FactoryObjectBuilder();
-        private static readonly IObjectBuilder ArrayObjectBuilder = new ArrayObjectBuilder();
-        private static readonly IDefaultValueStrategy DefaultValueStrategy = new FallbackStrategy();
+        private static readonly ISourceBuilder SourceBuilder = new SourceBuilder();
 
         public void Initialize(GeneratorInitializationContext context)
         {
-#if DEBUG && A
+#if DEBUG && AA
             if (!Debugger.IsAttached)
             {
                 Debugger.Launch();
@@ -28,23 +21,11 @@
 
         public void Execute(GeneratorExecutionContext context)
         {
-            var builder = new ResolverBuilder(DefaultValueStrategy);
-            foreach (var tree in context.Compilation.SyntaxTrees)
+            foreach (var source in SourceBuilder.Build(context.Compilation))
             {
                 try
                 {
-                    var semanticModel = context.Compilation.GetSemanticModel(tree);
-                    var walker = new MetadataWalker(semanticModel);
-                    walker.Visit(tree.GetRoot());
-                    if (walker.Metadata.Count > 0)
-                    {
-                        foreach (var metadata in walker.Metadata)
-                        {
-                            var typeResolver = new TypeResolver(metadata, semanticModel, ConstructorObjectBuilder, FactoryObjectBuilder, ArrayObjectBuilder);
-                            var compilationUnitSyntax = builder.Build(metadata, semanticModel, typeResolver);
-                            context.AddSource(metadata.TargetTypeName, SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8));
-                        }
-                    }
+                    context.AddSource(source.HintName, source.Code);
                 }
                 catch (Exception ex)
                 {
@@ -55,10 +36,11 @@
                             ex.StackTrace,
                             "Unhandled",
                             DiagnosticSeverity.Error,
-                            true), tree.GetRoot().GetLocation(), (object)ex));
+                            true),
+                        source.Tree.GetRoot().GetLocation(),
+                        (object)ex));
                 }
             }
-
         }
     }
 }

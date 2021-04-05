@@ -41,7 +41,11 @@ namespace Pure.DI.Tests.Integration
         public void ShouldProvideBindings()
         {
             // Given
-            var compilation = TestExtensions.Compile(OutputKind.ConsoleApplication, CSharpSyntaxTree.ParseText(Code).GetCompilationUnitRoot());
+            var compilation = TestExtensions.CreateCompilation()
+                .AddSyntaxTrees(CSharpSyntaxTree.ParseText(Code))
+                .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication))
+                .Check();
+
             var semanticModel = compilation.GetSemanticModel(compilation.SyntaxTrees.First());
             var walker = new MetadataWalker(semanticModel);
 

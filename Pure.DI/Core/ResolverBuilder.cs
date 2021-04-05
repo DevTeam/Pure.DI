@@ -10,7 +10,7 @@
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
-    internal class ResolverBuilder
+    internal class ResolverBuilder : IResolverBuilder
     {
         private readonly IDefaultValueStrategy _defaultValueStrategy;
         internal const string SharedContextName = "SharedContext";
@@ -55,10 +55,7 @@
         private static readonly MethodDeclarationSyntax StaticResolveWithTagMethodSyntax =
             StaticResolveMethodSyntax.AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax));
 
-        public ResolverBuilder(IDefaultValueStrategy defaultValueStrategy)
-        {
-            _defaultValueStrategy = defaultValueStrategy;
-        }
+        public ResolverBuilder(IDefaultValueStrategy defaultValueStrategy) => _defaultValueStrategy = defaultValueStrategy;
 
         public CompilationUnitSyntax Build(ResolverMetadata metadata, SemanticModel semanticModel, ITypeResolver typeResolver)
         {

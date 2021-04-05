@@ -51,9 +51,6 @@ namespace Sample
         static Composer()
         {
             DI.Setup()
-                // .NET BCL types
-                .Bind<Func<TT>>().To(ctx => new Func<TT>(ctx.Resolve<TT>))
-                .Bind<Lazy<TT>>().To<Lazy<TT>>()
                 // Represents a quantum superposition of 2 states: Alive or Dead
                 .Bind<State>().To(_ => (State)Indeterminacy.Next(2))
                 // Represents schrodinger's cat
@@ -67,7 +64,7 @@ namespace Sample
 
     // Time to open boxes!
 
-    class Program
+    public class Program
     {
         // Composition Root, a single place in an application where the composition of the object graphs for an application take place
         public static void Main() => Composer.Resolve<Program>().Run();

@@ -1,11 +1,12 @@
-﻿namespace Pure.DI
+﻿// ReSharper disable PartialTypeWithSinglePart
+namespace Pure.DI.Features
 {
     // ReSharper disable once UnusedType.Global
-    internal static class Defaults
+    internal static partial class DefaultFeature
     {
-        static Defaults()
+        static DefaultFeature()
         {
-            DI.Setup("Defaults")
+            DI.Setup("DefaultFeature")
                 .Bind<System.Func<TT>>().To(ctx => new System.Func<TT>(ctx.Resolve<TT>))
                 .Bind<System.Lazy<TT>>().To<System.Lazy<TT>>()
                 .Bind<System.Threading.ThreadLocal<TT>>().To<System.Threading.ThreadLocal<TT>>()
@@ -13,7 +14,7 @@
                 
                 // Enumerable
                 .Bind<TT[]>().To<TT[]>()
-                .Bind<System.Collections.Generic.IEnumerable<TT>>().To<System.Collections.Generic.IEnumerable<TT>>()
+                .Bind<System.Collections.Generic.IEnumerable<TT>>()
                 .Bind<System.Collections.Generic.ICollection<TT>>()
                 .Bind<System.Collections.Generic.IReadOnlyCollection<TT>>()
                 .Bind<System.Collections.Generic.IList<TT>>()

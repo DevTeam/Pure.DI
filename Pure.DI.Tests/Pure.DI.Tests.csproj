@@ -7,17 +7,11 @@
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<IsPackable>false</IsPackable>
 		<Nullable>enable</Nullable>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Integration\Defaults.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Include="Integration\Defaults.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
+		<ProjectReference Include="..\Pure.DI.Contracts\Pure.DI.Contracts.csproj" />
 		<ProjectReference Include="..\Pure.DI\Pure.DI.csproj" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
 		<PackageReference Include="Moq" Version="4.16.1" />
@@ -33,5 +27,4 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" PrivateAssets="all" />
 	</ItemGroup>
-
 </Project>

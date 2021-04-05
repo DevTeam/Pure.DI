@@ -8,55 +8,41 @@
     using Core;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Xunit;
 
     public static class TestExtensions
     {
-        public static CSharpCompilation Compile(OutputKind outputKind, params CompilationUnitSyntax[] roots) =>
-            CheckErrors(
-                CSharpCompilation
-                    .Create("Sample")
-                    .AddReferences(
-                        MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-                        MetadataReference.CreateFromFile(GetSystemAssemblyPathByName("netstandard.dll")),
-                        MetadataReference.CreateFromFile(GetSystemAssemblyPathByName("System.Runtime.dll")),
-                        MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location),
-                        MetadataReference.CreateFromFile(typeof(IList<object>).Assembly.Location),
-                        MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
-                        MetadataReference.CreateFromFile(typeof(DI).Assembly.Location))
-                    .AddSyntaxTrees(roots.Select(root => CSharpSyntaxTree.Create(root)))
-                    .WithOptions(new CSharpCompilationOptions(outputKind)));
+        public static CSharpCompilation CreateCompilation() =>
+            CSharpCompilation
+                .Create("Sample")
+                .AddReferences(
+                    MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
+                    MetadataReference.CreateFromFile(GetSystemAssemblyPathByName("netstandard.dll")),
+                    MetadataReference.CreateFromFile(GetSystemAssemblyPathByName("System.Runtime.dll")),
+                    MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(IList<object>).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(DI).Assembly.Location));
 
         private const string Code = @"namespace Sample { public class Program { public static void Main() => System.Console.WriteLine(Composer.Resolve<CompositionRoot>().Value); } }";
 
         public static IReadOnlyList<string> Run(this string setupCode, out string generatedCode, string resolveName = "Composer")
         {
-            var setupRoot = CSharpSyntaxTree.ParseText(setupCode).GetCompilationUnitRoot();
-            var codeRoot = CSharpSyntaxTree.ParseText(Code.Replace("Composer", resolveName)).GetCompilationUnitRoot();
+            var setupCompilation = CreateCompilation()
+                .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
+                .AddSyntaxTrees(CSharpSyntaxTree.ParseText(setupCode))
+                .Check();
 
-            var setupCompilation = Compile(OutputKind.DynamicallyLinkedLibrary, setupRoot);
-            var setupTree = setupCompilation.SyntaxTrees.First();
-            var setupSemanticModel = setupCompilation.GetSemanticModel(setupTree);
-            
-            var builder = new ResolverBuilder(new FallbackStrategy());
-            var constructorObjectBuilder = new ConstructorObjectBuilder(new ConstructorsResolver());
-            var factoryObjectBuilder = new FactoryObjectBuilder();
-            var arrayObjectBuilder = new ArrayObjectBuilder();
-            var walker = new MetadataWalker(setupSemanticModel);
-            walker.Visit(setupTree.GetRoot());
-            var roots = new List<CompilationUnitSyntax> { setupRoot, codeRoot };
-            var generated = new List<string>();
-            foreach (var metadata in walker.Metadata)
-            {
-                var typeResolver = new TypeResolver(metadata, setupSemanticModel, constructorObjectBuilder, factoryObjectBuilder, arrayObjectBuilder);
-                var generatedExpression = builder.Build(metadata, setupSemanticModel, typeResolver);
-                generated.Add(generatedExpression.ToString());
-                roots.Add(generatedExpression);
-            }
+            var generatedSources = new SourceBuilder().Build(setupCompilation).ToList();
 
-            generatedCode = string.Join(Environment.NewLine, generated.Select((src, index) => $"Generated {index + 1}" + Environment.NewLine + Environment.NewLine + src));
-            var compilation = Compile(OutputKind.ConsoleApplication, roots.ToArray());
+            generatedCode = string.Join(Environment.NewLine, generatedSources.Select((src, index) => $"Generated {index + 1}" + Environment.NewLine + Environment.NewLine + src.Code));
+            var compilation = CreateCompilation()
+                .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication))
+                .AddSyntaxTrees(CSharpSyntaxTree.ParseText(setupCode))
+                .AddSyntaxTrees(CSharpSyntaxTree.ParseText(Code.Replace("Composer", resolveName)))
+                .AddSyntaxTrees(generatedSources.Select(i => CSharpSyntaxTree.ParseText(i.Code.ToString())).ToArray())
+                .Check();
+
             var tempFileName = Path.Combine(Environment.CurrentDirectory, Guid.NewGuid().ToString().Substring(0, 4));
             var assemblyPath = Path.ChangeExtension(tempFileName, "exe");
             var configPath = Path.ChangeExtension(tempFileName, "runtimeconfig.json");
@@ -131,7 +117,7 @@
             }
         }
 
-        private static CSharpCompilation CheckErrors(CSharpCompilation compilation)
+        public static CSharpCompilation Check(this CSharpCompilation compilation)
         {
             var errors = (
                 from diagnostic in compilation.GetDiagnostics()
@@ -150,9 +136,9 @@
             {
                 var source = diagnostic.Location.SourceTree.ToString();
                 var span = source.Substring(diagnostic.Location.SourceSpan.Start, diagnostic.Location.SourceSpan.Length);
-                return description 
-                       + Environment.NewLine + Environment.NewLine 
-                       + span 
+                return description
+                       + Environment.NewLine + Environment.NewLine
+                       + span
                        + Environment.NewLine
                        + Environment.NewLine
                        + "Line " + (diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line + 1)
@@ -165,7 +151,7 @@
                                    (line, number) => $"/*{number + 1:0000}*/ {line}")
                            );
             }
-            
+
             return description;
         }
 

@@ -2,8 +2,7 @@
 // ReSharper disable InconsistentNaming
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI
-{
-    using Core;
+{    
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>

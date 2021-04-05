@@ -10,6 +10,7 @@
 - High performance with all .NET compiler/JIT optimizations
 - Ultra-fine tuning of generic types
 - A predictable dependency graph which are building on the fly while you are writing your code
+- Supports .NET BCL types from the box
 
 ## [Schrödinger's cat](Samples/ShroedingersCat) shows how it works
 
@@ -80,9 +81,6 @@ static partial class Composer
   static Composer()
   {
     DI.Setup()
-      // .NET BCL types
-      .Bind<Func<TT>>().To(ctx => new Func<TT>(ctx.Resolve<TT>))
-      .Bind<Lazy<TT>>().To<Lazy<TT>>()
       // Represents a quantum superposition of 2 states: Alive or Dead
       .Bind<State>().To(_ => (State)Indeterminacy.Next(2))
       // Represents schrodinger's cat

@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard1.0</TargetFramework>
+		<RootNamespace>Pure.DI</RootNamespace>
+		<SignAssembly>True</SignAssembly>
+		<AssemblyOriginatorKeyFile>..\DevTeam.snk</AssemblyOriginatorKeyFile>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<TieredCompilation>false</TieredCompilation>
+		<Optimize>true</Optimize>
+		<DebugType>none</DebugType>
+		<DebugSymbols>false</DebugSymbols>
+	</PropertyGroup>
+
+	<PropertyGroup  Condition="'$(Configuration)'=='Release'">
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<IsPackable>true</IsPackable>
+		<PackageId>Pure.DI.Contracts</PackageId>
+		<Authors>NikolayP</Authors>
+		<Description>Pure DI contracts for .NET.</Description>
+		<PackageProjectUrl>https://github.com/DevTeam/Pure.DI/</PackageProjectUrl>
+		<PackageIcon>common\icon.png</PackageIcon>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/DevTeam/Pure.DI.git</RepositoryUrl>
+		<PackageTags>di pure ioc container di</PackageTags>
+		<Product>IoC Container</Product>
+		<Copyright>Copyright (C) 2021 Nikolay Pianikov</Copyright>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Update="GenericTypeArguments.cs">
+			<DependentUpon>GenericTypeArguments.tt</DependentUpon>
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="GenericTypeArguments.tt">
+			<LastGenOutput>GenericTypeArguments.cs</LastGenOutput>
+			<Generator>TextTemplatingFileGenerator</Generator>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="../Docs/Images/icon.png">
+			<Pack>true</Pack>
+			<PackagePath>common</PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+	</ItemGroup>
+
+</Project>

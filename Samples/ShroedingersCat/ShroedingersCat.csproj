@@ -5,18 +5,10 @@
 		<TargetFramework>net5.0</TargetFramework>
 		<RootNamespace>Sample</RootNamespace>
 		<Nullable>enable</Nullable>
-		<!--<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>-->
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)'=='Release'">
-		<TieredCompilation>false</TieredCompilation>
-		<Optimize>true</Optimize>
-		<DebugType>none</DebugType>
-		<DebugSymbols>false</DebugSymbols>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="true" />
+	  <ProjectReference Include="..\..\Pure.DI.Contracts\Pure.DI.Contracts.csproj" />
+	  <ProjectReference Include="..\..\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
 	</ItemGroup>
-
 </Project>
