@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     internal class TypesMap : ITypesMap
     {

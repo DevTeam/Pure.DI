@@ -1,6 +1,5 @@
 ﻿namespace Pure.DI.Core
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Microsoft.CodeAnalysis.CSharp;

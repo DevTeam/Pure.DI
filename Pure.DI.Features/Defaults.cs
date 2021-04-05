@@ -1,7 +1,5 @@
 ﻿namespace Pure.DI
 {
-    using System.Linq;
-
     // ReSharper disable once UnusedType.Global
     internal static class Defaults
     {

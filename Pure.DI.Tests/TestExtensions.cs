@@ -11,7 +11,7 @@
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Xunit;
 
-    public static class Compilation
+    public static class TestExtensions
     {
         public static CSharpCompilation Compile(OutputKind outputKind, params CompilationUnitSyntax[] roots) =>
             CheckErrors(

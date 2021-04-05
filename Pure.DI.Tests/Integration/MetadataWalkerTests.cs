@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Tests.Integration
+﻿// ReSharper disable StringLiteralTypo
+namespace Pure.DI.Tests.Integration
 {
     using System.Linq;
     using Core;
@@ -6,7 +7,6 @@
     using Microsoft.CodeAnalysis.CSharp;
     using Shouldly;
     using Xunit;
-    using Compilation = Compilation;
 
     public class MetadataWalkerTests
     {
@@ -41,7 +41,7 @@
         public void ShouldProvideBindings()
         {
             // Given
-            var compilation = Compilation.Compile(OutputKind.ConsoleApplication, CSharpSyntaxTree.ParseText(Code).GetCompilationUnitRoot());
+            var compilation = TestExtensions.Compile(OutputKind.ConsoleApplication, CSharpSyntaxTree.ParseText(Code).GetCompilationUnitRoot());
             var semanticModel = compilation.GetSemanticModel(compilation.SyntaxTrees.First());
             var walker = new MetadataWalker(semanticModel);
 
