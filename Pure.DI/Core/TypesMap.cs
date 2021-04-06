@@ -8,15 +8,12 @@
         private readonly SemanticModel _semanticModel;
         private readonly Dictionary<ITypeSymbol, ITypeSymbol> _map = new(SymbolEqualityComparer.Default);
 
-        public TypesMap(ITypeSymbol type, ITypeSymbol targetType, SemanticModel semanticModel)
-        {
-            _semanticModel = semanticModel;
-            CreateMap(type, targetType);
-        }
+        public TypesMap(SemanticModel semanticModel) => _semanticModel = semanticModel;
 
-        public TypesMap(SemanticModel semanticModel)
+        public void Initialize(ITypeSymbol type, ITypeSymbol targetType)
         {
-            _semanticModel = semanticModel;
+            _map.Clear();
+            CreateMap(type, targetType);
         }
 
         public int Count => _map.Count;

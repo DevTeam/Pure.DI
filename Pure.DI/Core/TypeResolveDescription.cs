@@ -3,7 +3,7 @@
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    internal class TypeResolveDescription
+    internal readonly struct TypeResolveDescription
     {
         public readonly BindingMetadata Binding;
         public readonly ITypeSymbol Type;
@@ -31,6 +31,6 @@
             IsResolved = isResolved;
         }
 
-        public override string ToString() => $"{Type}: {IsResolved}";
+        public override string ToString() => $"{Type}({Tag})";
     }
 }

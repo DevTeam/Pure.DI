@@ -6,16 +6,17 @@
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+    // ReSharper disable once ClassNeverInstantiated.Global
     internal class ArrayObjectBuilder: IObjectBuilder
     {
-        public ExpressionSyntax TryBuild(ITypeResolver typeResolver, IBindingExpressionStrategy bindingExpressionStrategy, TypeResolveDescription typeDescription, ISet<BindingMetadata> additionalBindings, int level = 0)
+        public ExpressionSyntax TryBuild(ITypeResolver typeResolver, IBindingExpressionStrategy bindingExpressionStrategy, TypeResolveDescription typeDescription)
         {
             var objectCreationExpressions = new List<ExpressionSyntax>();
             if (typeDescription.Type is IArrayTypeSymbol arrayTypeSymbol)
             {
                 objectCreationExpressions.AddRange(
                     from elementTypeDescriptor in typeResolver.Resolve(arrayTypeSymbol.ElementType)
-                    let objectCreationExpression = bindingExpressionStrategy.TryBuild(elementTypeDescriptor, additionalBindings)
+                    let objectCreationExpression = bindingExpressionStrategy.TryBuild(elementTypeDescriptor)
                     select objectCreationExpression);
 
                 return SyntaxFactory.ArrayCreationExpression(

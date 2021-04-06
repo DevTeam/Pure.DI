@@ -1,5 +1,6 @@
 ﻿namespace Pure.DI.Core
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
@@ -7,9 +8,11 @@
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
+    // ReSharper disable once ClassNeverInstantiated.Global
     internal class TypeResolver : ITypeResolver
     {
         private readonly SemanticModel _semanticModel;
+        private readonly Func<ITypesMap> _typesMapFactory;
         private readonly IObjectBuilder _constructorObjectBuilder;
         private readonly IObjectBuilder _factoryObjectBuilder;
         private readonly IObjectBuilder _arrayObjectBuilder;
@@ -17,13 +20,15 @@
         private readonly Dictionary<Key, Binding<SimpleLambdaExpressionSyntax>> _factories = new();
 
         public TypeResolver(
-            ResolverMetadata metadata,
             SemanticModel semanticModel,
-            IObjectBuilder constructorObjectBuilder,
-            IObjectBuilder factoryObjectBuilder,
-            IObjectBuilder arrayObjectBuilder)
+            ResolverMetadata metadata,
+            Func<ITypesMap> typesMapFactory,
+            [Tag(Tags.ConstructorBuilder)] IObjectBuilder constructorObjectBuilder,
+            [Tag(Tags.FactoryBuilder)] IObjectBuilder factoryObjectBuilder,
+            [Tag(Tags.ArrayBuilder)] IObjectBuilder arrayObjectBuilder)
         {
             _semanticModel = semanticModel;
+            _typesMapFactory = typesMapFactory;
             _constructorObjectBuilder = constructorObjectBuilder;
             _factoryObjectBuilder = factoryObjectBuilder;
             _arrayObjectBuilder = arrayObjectBuilder;
@@ -64,7 +69,8 @@
                     var key = new Key(contractType.ConstructUnboundGenericType(), tag, anyTag);
                     if (_map.TryGetValue(key, out implementationEntry))
                     {
-                        var typesMap = new TypesMap(implementationEntry.Details, contractType, _semanticModel);
+                        var typesMap = _typesMapFactory();
+                        typesMap.Initialize(implementationEntry.Details, contractType);
                         if (_factories.TryGetValue(key, out var factory))
                         {
                             return new TypeResolveDescription(factory.Metadata, contractType, tag, _factoryObjectBuilder, typesMap, _semanticModel);
@@ -77,7 +83,8 @@
                             var binding = new BindingMetadata
                             {
                                 ImplementationType = implementationType,
-                                Lifetime = implementationEntry.Metadata.Lifetime
+                                Lifetime = implementationEntry.Metadata.Lifetime,
+                                Location = implementationEntry.Metadata.Location
                             };
 
                             if (tag != null)
@@ -95,7 +102,8 @@
                     var key = new Key(contractType, tag);
                     if (_map.TryGetValue(key, out implementationEntry))
                     {
-                        var typesMap = new TypesMap(implementationEntry.Details, contractType, _semanticModel);
+                        var typesMap = _typesMapFactory();
+                        typesMap.Initialize(implementationEntry.Details, contractType);
                         if (_factories.TryGetValue(key, out var factory))
                         {
                             return new TypeResolveDescription(factory.Metadata, contractType, tag, _factoryObjectBuilder, typesMap, _semanticModel);
@@ -108,10 +116,10 @@
 
             if (contractTypeSymbol is IArrayTypeSymbol arrayType)
             {
-                return new TypeResolveDescription(new BindingMetadata(), arrayType, null, _arrayObjectBuilder, new TypesMap(_semanticModel), _semanticModel);
+                return new TypeResolveDescription(new BindingMetadata(), arrayType, null, _arrayObjectBuilder, _typesMapFactory(), _semanticModel);
             }
 
-            return new TypeResolveDescription(new BindingMetadata(), contractTypeSymbol, null, _constructorObjectBuilder, new TypesMap(_semanticModel), _semanticModel, false);
+            return new TypeResolveDescription(new BindingMetadata(), contractTypeSymbol, null, _constructorObjectBuilder, _typesMapFactory(), _semanticModel, false);
         }
 
         public IEnumerable<TypeResolveDescription> Resolve(ITypeSymbol contractTypeSymbol)

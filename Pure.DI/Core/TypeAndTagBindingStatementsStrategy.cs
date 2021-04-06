@@ -5,22 +5,17 @@
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+    // ReSharper disable once ClassNeverInstantiated.Global
     internal class TypeAndTagBindingStatementsStrategy : IBindingStatementsStrategy
     {
-        private readonly IBindingExpressionStrategy _bindingExpressionStrategy;
-        private readonly ISet<BindingMetadata> _additionalBindings;
-
-        public TypeAndTagBindingStatementsStrategy(IBindingExpressionStrategy bindingExpressionStrategy, ISet<BindingMetadata> additionalBindings)
-        {
-            _bindingExpressionStrategy = bindingExpressionStrategy;
-            _additionalBindings = additionalBindings;
-        }
-
-        public IEnumerable<StatementSyntax> CreateStatements(BindingMetadata binding, ITypeSymbol contractType)
+        public IEnumerable<StatementSyntax> CreateStatements(
+            IBindingExpressionStrategy bindingExpressionStrategy,
+            BindingMetadata binding,
+            ITypeSymbol contractType)
         {
             foreach (var tag in binding.Tags)
             {
-                var instance = _bindingExpressionStrategy.TryBuild(contractType, tag, _additionalBindings);
+                var instance = bindingExpressionStrategy.TryBuild(contractType, tag);
                 yield return SyntaxFactory.IfStatement(
                     SyntaxFactory.InvocationExpression(
                         SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, tag, SyntaxFactory.Token(SyntaxKind.DotToken), SyntaxFactory.IdentifierName("Equals"))

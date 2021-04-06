@@ -7,7 +7,7 @@
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Operations;
 
-    internal class MetadataWalker: CSharpSyntaxWalker
+    internal class MetadataWalker: CSharpSyntaxWalker, IMetadataWalker
     {
         private readonly SemanticModel _semanticModel;
         private readonly List<ResolverMetadata> _metadata = new();
@@ -84,6 +84,7 @@
                         && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol implementationType)
                     {
                         _binding.ImplementationType = implementationType;
+                        _binding.Location = node.GetLocation();
                         _resolver?.Bindings.Add(_binding);
                         _binding = new BindingMetadata();
                     }

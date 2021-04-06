@@ -5,6 +5,7 @@
     using System.Linq;
     using Microsoft.CodeAnalysis;
 
+    // ReSharper disable once ClassNeverInstantiated.Global
     internal class ConstructorsResolver : IConstructorsResolver
     {
         public IEnumerable<IMethodSymbol> Resolve(ITypeResolver typeResolver, TypeResolveDescription typeDescription)

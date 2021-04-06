@@ -5,20 +5,15 @@
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+    // ReSharper disable once ClassNeverInstantiated.Global
     internal class TypeBindingStatementsStrategy: IBindingStatementsStrategy
     {
-        private readonly IBindingExpressionStrategy _bindingExpressionStrategy;
-        private readonly ISet<BindingMetadata> _additionalBindings;
-
-        public TypeBindingStatementsStrategy(IBindingExpressionStrategy bindingExpressionStrategy, ISet<BindingMetadata> additionalBindings)
+        public IEnumerable<StatementSyntax> CreateStatements(
+            IBindingExpressionStrategy bindingExpressionStrategy,
+            BindingMetadata binding,
+            ITypeSymbol contractType)
         {
-            _bindingExpressionStrategy = bindingExpressionStrategy;
-            _additionalBindings = additionalBindings;
-        }
-
-        public IEnumerable<StatementSyntax> CreateStatements(BindingMetadata binding, ITypeSymbol contractType)
-        {
-            var instance = _bindingExpressionStrategy.TryBuild(contractType, null, _additionalBindings);
+            var instance = bindingExpressionStrategy.TryBuild(contractType, null);
             yield return SyntaxFactory.ReturnStatement(instance);
         }
     }

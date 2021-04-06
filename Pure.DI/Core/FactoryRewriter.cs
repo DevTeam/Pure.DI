@@ -13,19 +13,19 @@ namespace Pure.DI.Core
         private readonly TypeResolveDescription _typeDescription;
         private readonly IBindingExpressionStrategy _bindingExpressionStrategy;
         private readonly SyntaxToken _contextIdentifier;
-        private readonly ISet<BindingMetadata> _additionalBindings;
+        private readonly IBuildContext _buildContext;
 
         public FactoryRewriter(
             TypeResolveDescription typeDescription,
             IBindingExpressionStrategy bindingExpressionStrategy,
             SyntaxToken contextIdentifier,
-            ISet<BindingMetadata> additionalBindings)
+            IBuildContext buildContext)
             : base(true)
         {
             _typeDescription = typeDescription;
             _bindingExpressionStrategy = bindingExpressionStrategy;
             _contextIdentifier = contextIdentifier;
-            _additionalBindings = additionalBindings;
+            _buildContext = buildContext;
         }
 
         public override SyntaxNode? VisitInvocationExpression(InvocationExpressionSyntax node)
@@ -42,7 +42,7 @@ namespace Pure.DI.Core
                         && SymbolEqualityComparer.Default.Equals(invocationOperation.TargetMethod.TypeArguments[0], invocationOperation.TargetMethod.ReturnType))
                     {
                         var tag = invocationOperation.Arguments.Length == 1 ? invocationOperation.Arguments[0].Value.Syntax as ExpressionSyntax : null;
-                        return _bindingExpressionStrategy.TryBuild(_typeDescription.TypesMap.ConstructType(invocationOperation.TargetMethod.ReturnType), tag, _additionalBindings);
+                        return _bindingExpressionStrategy.TryBuild(_typeDescription.TypesMap.ConstructType(invocationOperation.TargetMethod.ReturnType), tag);
                     }
                 }
             }
@@ -80,7 +80,7 @@ namespace Pure.DI.Core
                     args[i] = constructedType.ToTypeSyntax(_typeDescription.SemanticModel);
                     if (!typeSymbol.Equals(constructedType, SymbolEqualityComparer.Default))
                     {
-                        _additionalBindings.Add(new BindingMetadata(_typeDescription.Binding, constructedType));
+                        _buildContext.AddBinding(new BindingMetadata(_typeDescription.Binding, constructedType));
                     }
                 }
 

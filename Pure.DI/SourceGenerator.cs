@@ -2,12 +2,13 @@
 {
     using System;
     using Core;
+    using IoC;
     using Microsoft.CodeAnalysis;
 
     [Generator]
     public class SourceGenerator : ISourceGenerator
     {
-        private static readonly ISourceBuilder SourceBuilder = new SourceBuilder();
+        private readonly IMutableContainer _container = Container.Create().Using<Configuration>();
 
         public void Initialize(GeneratorInitializationContext context)
         {
@@ -21,25 +22,27 @@
 
         public void Execute(GeneratorExecutionContext context)
         {
-            foreach (var source in SourceBuilder.Build(context.Compilation))
+            var container = _container
+                .Create()
+                .Bind<IDiagnostic>().To(ctx => new CompilationDiagnostic(context))
+                .Container;
+
+            var sourceBuilder = container.Resolve<ISourceBuilder>();
+            try
             {
-                try
+                foreach (var source in sourceBuilder.Build(context.Compilation))
                 {
                     context.AddSource(source.HintName, source.Code);
                 }
-                catch (Exception ex)
-                {
-                    context.ReportDiagnostic(Diagnostic.Create(
-                        new DiagnosticDescriptor(
-                            "DI-0001",
-                            ex.Message,
-                            ex.StackTrace,
-                            "Unhandled",
-                            DiagnosticSeverity.Error,
-                            true),
-                        source.Tree.GetRoot().GetLocation(),
-                        (object)ex));
-                }
+            }
+            catch (HandledException)
+            {
+            }
+            catch (Exception ex)
+            {
+                container
+                    .Resolve<IDiagnostic>()
+                    .Error(Diagnostics.Unhandled, ex.ToString());
             }
         }
     }

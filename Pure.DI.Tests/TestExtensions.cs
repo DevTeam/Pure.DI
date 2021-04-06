@@ -6,6 +6,7 @@
     using System.IO;
     using System.Linq;
     using Core;
+    using IoC;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Xunit;
@@ -33,7 +34,25 @@
                 .AddSyntaxTrees(CSharpSyntaxTree.ParseText(setupCode))
                 .Check();
 
-            var generatedSources = new SourceBuilder().Build(setupCompilation).ToList();
+            var stdErr = new StdErr();
+
+            var container = Container
+                .Create()
+                .Using<Configuration>()
+                .Create()
+                .Bind<IStdErr>().As(Lifetime.Singleton).To(ctx => stdErr)
+                .Container;
+
+            List<Source>? generatedSources;
+            try
+            {
+                generatedSources = container.Resolve<ISourceBuilder>().Build(setupCompilation).ToList();
+            }
+            catch (HandledException)
+            {
+                generatedCode = string.Empty;
+                return stdErr.Errors;
+            }
 
             generatedCode = string.Join(Environment.NewLine, generatedSources.Select((src, index) => $"Generated {index + 1}" + Environment.NewLine + Environment.NewLine + src.Code));
             var compilation = CreateCompilation()
@@ -101,6 +120,8 @@
                     process.ErrorDataReceived -= OnOutputDataReceived;
                 }
 
+                output.AddRange(stdErr.Info);
+                output.AddRange(stdErr.Errors);
                 return output;
             }
             finally
@@ -157,5 +178,19 @@
 
         private static string GetSystemAssemblyPathByName(string assemblyName) =>
             Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location) ?? string.Empty, assemblyName);
+
+        private class StdErr: IStdOut, IStdErr
+        {
+            private readonly List<string> _errors = new();
+            private readonly List<string> _lines = new();
+
+            public IReadOnlyList<string> Info => _errors;
+
+            public IReadOnlyList<string> Errors => _errors;
+
+            public void WriteLine(string line) => _lines.Add(line);
+
+            public void WriteErrorLine(string error) => _errors.Add(error);
+        }
     }
 }

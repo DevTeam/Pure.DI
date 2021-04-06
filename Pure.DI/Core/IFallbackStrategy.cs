@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    internal interface IDefaultValueStrategy
+    internal interface IFallbackStrategy
     {
         StatementSyntax Build(
             ICollection<FallbackMetadata> metadata,

@@ -6,6 +6,7 @@
 
     internal class BindingMetadata
     {
+        public Location? Location;
         public ITypeSymbol? ImplementationType;
         public SimpleLambdaExpressionSyntax? Factory;
         public Lifetime Lifetime = Lifetime.Transient;
@@ -19,6 +20,7 @@
             ContractTypes.Add(constructedType);
             ImplementationType = binding.ImplementationType;
             Factory = binding.Factory;
+            Location = binding.Location;
             foreach (var tag in binding.Tags)
             {
                 Tags.Add(tag);

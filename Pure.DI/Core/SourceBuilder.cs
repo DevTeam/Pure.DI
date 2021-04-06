@@ -5,18 +5,28 @@
     using System.IO;
     using System.Linq;
     using System.Text;
+    using System.Text.RegularExpressions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.Text;
 
+    // ReSharper disable once ClassNeverInstantiated.Global
     internal class SourceBuilder : ISourceBuilder
     {
-        private static readonly IConstructorsResolver ConstructorsResolver = new ConstructorsResolver();
-        private static readonly IObjectBuilder ConstructorObjectBuilder = new ConstructorObjectBuilder(ConstructorsResolver);
-        private static readonly IObjectBuilder FactoryObjectBuilder = new FactoryObjectBuilder();
-        private static readonly IObjectBuilder ArrayObjectBuilder = new ArrayObjectBuilder();
-        private static readonly IDefaultValueStrategy DefaultValueStrategy = new FallbackStrategy();
-        private static readonly IResolverBuilder ResolverBuilder = new ResolverBuilder(DefaultValueStrategy);
+        private readonly IBuildContext _context;
+        private readonly Func<IResolverBuilder> _resolverBuilderFactory;
+        private readonly Func<IMetadataWalker> _metadataWalkerFactory;
+        private static readonly Regex FeaturesRegex = new(@"Pure.DI.Features.[\w]+Feature.cs", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase);
+
+        public SourceBuilder(
+            IBuildContext context,
+            Func<IResolverBuilder> resolverBuilderFactory,
+            Func<IMetadataWalker> metadataWalkerFactory)
+        {
+            _context = context;
+            _resolverBuilderFactory = resolverBuilderFactory;
+            _metadataWalkerFactory = metadataWalkerFactory;
+        }
 
         public IEnumerable<Source> Build(Compilation contextCompilation)
         {
@@ -25,7 +35,7 @@
             var featuresCount = 0;
             foreach (var resourceName in assembly.GetManifestResourceNames())
             {
-                if (!resourceName.EndsWith("Feature.cs"))
+                if (!FeaturesRegex.IsMatch(resourceName))
                 {
                     continue;
                 }
@@ -38,35 +48,43 @@
             var compilation = CSharpCompilation
                 .Create(contextCompilation.AssemblyName)
                 .AddReferences(contextCompilation.References)
-                .AddReferences(MetadataReference.CreateFromFile(typeof(DI).Assembly.Location))
                 .WithOptions(contextCompilation.Options);
 
-            compilation = (
+            var treesWithMetadata = 
                 from tree in contextCompilation.SyntaxTrees
-                let code = tree.ToString()
-                where code.Contains($"{nameof(DI)}.{nameof(DI.Setup)}") 
-                select tree)
-                .Aggregate(
-                    compilation,
-                    (current, tree) 
-                        => current.AddSyntaxTrees(CSharpSyntaxTree.ParseText(features + Environment.NewLine + tree)));
+                where ContainsMetadata(contextCompilation, tree)
+                select tree;
+
+            foreach (var tree in treesWithMetadata)
+            {
+                compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(features + Environment.NewLine + tree));
+            }
 
             foreach (var tree in compilation.SyntaxTrees)
             {
-                var semanticModel = compilation.GetSemanticModel(tree);
-                var walker = new MetadataWalker(semanticModel);
+                _context.SemanticModel = compilation.GetSemanticModel(tree);
+                var walker = _metadataWalkerFactory();
                 walker.Visit(tree.GetRoot());
                 foreach (var rawMetadata in walker.Metadata.Skip(featuresCount))
                 {
                     var metadata = CreateMetadata(rawMetadata, walker.Metadata);
-                    var typeResolver = new TypeResolver(metadata, semanticModel, ConstructorObjectBuilder, FactoryObjectBuilder, ArrayObjectBuilder);
-                    var compilationUnitSyntax = ResolverBuilder.Build(metadata, semanticModel, typeResolver);
+                    _context.Metadata = metadata;
+                    var compilationUnitSyntax = _resolverBuilderFactory().Build();
                     yield return new Source(
                         metadata.TargetTypeName,
                         SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8),
                         tree);
                 }
             }
+        }
+
+        private static bool ContainsMetadata(Compilation compilation, SyntaxTree tree)
+        {
+            var semanticModel = compilation.GetSemanticModel(tree);
+            var walker = new MetadataWalker(semanticModel);
+            walker.Visit(tree.GetRoot());
+            return walker.Metadata.Any();
+
         }
 
         private static ResolverMetadata CreateMetadata(ResolverMetadata metadata, IReadOnlyCollection<ResolverMetadata> allMetadata)

@@ -1,18 +1,23 @@
-﻿namespace Pure.DI.Core
+﻿// ReSharper disable All
+namespace Pure.DI.Core
 {
     using System;
-    using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
+    // ReSharper disable once ClassNeverInstantiated.Global
     internal class FactoryObjectBuilder: IObjectBuilder
     {
+        private readonly IBuildContext _buildContext;
+
+        public FactoryObjectBuilder(IBuildContext buildContext) =>
+            _buildContext = buildContext;
+
         public ExpressionSyntax TryBuild(
             ITypeResolver typeResolver,
             IBindingExpressionStrategy bindingExpressionStrategy,
-            TypeResolveDescription typeDescription,
-            ISet<BindingMetadata> additionalBindings,
-            int level = 0)
+            TypeResolveDescription typeDescription)
         {
             var factory = typeDescription.Binding.Factory;
             ExpressionSyntax? resultExpression = factory;
@@ -24,17 +29,22 @@
             {
                 if (factory?.Block != null)
                 {
-                    var funcName = SyntaxFactory.GenericName(nameof(Func<object>))
-                        .WithTypeArgumentList(
-                            SyntaxFactory.TypeArgumentList()
-                                .AddArguments(ResolverBuilder.ContextTypeSyntax)
-                                .AddArguments(typeDescription.Type.ToTypeSyntax(typeDescription.SemanticModel)));
+                    var key = new MemberKey("Lambda", typeDescription.Type, null);
+                    var methotName = _buildContext.NameService.FindName(key);
+                    var method = _buildContext.GetOrAddMember(key, () =>
+                    {
+                        var type = typeDescription.Type.ToTypeSyntax(typeDescription.SemanticModel);
+                        return SyntaxFactory.MethodDeclaration(
+                                type,
+                                SyntaxFactory.Identifier(methotName))
+                            .AddParameterListParameters(factory.Parameter.WithType(SyntaxRepo.ContextTypeSyntax))
+                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword), SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
+                            .AddBodyStatements(factory.Block.Statements.ToArray());
+                    });
 
-                    var createFunc = SyntaxFactory.ObjectCreationExpression(funcName)
-                        .AddArgumentListArguments(SyntaxFactory.Argument(factory));
-
-                    resultExpression = SyntaxFactory.InvocationExpression(createFunc)
-                        .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName(ResolverBuilder.SharedContextName)));
+                    resultExpression = 
+                        SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(methotName))
+                            .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName(SyntaxRepo.SharedContextName)));
                 }
             }
 
@@ -44,7 +54,7 @@
                         typeDescription,
                         bindingExpressionStrategy,
                         factory.Parameter.Identifier,
-                        additionalBindings)
+                        _buildContext)
                     .Visit(resultExpression);
             }
 

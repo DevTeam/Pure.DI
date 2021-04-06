@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
 
+    // ReSharper disable once ClassNeverInstantiated.Global
     internal class NameService : INameService
     {
         private readonly Dictionary<MemberKey, string> _names = new();

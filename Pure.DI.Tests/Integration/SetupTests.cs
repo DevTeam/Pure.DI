@@ -125,5 +125,43 @@
             // Then
             output.ShouldBe(new [] { "xyz" }, generatedCode);
         }
+
+        [Fact]
+        public void ShouldBindUsingStatementsLambda()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                static partial class Composer
+                {
+                    // Models a random subatomic event that may or may not occur
+                    private static readonly Random Indeterminacy = new();
+
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<string>().Tag(1).To(_ => ""abc"")
+                            .Bind<string>().To(ctx => { return ctx.Resolve<string>(1) + ""_xyz""; })
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string value) => Value = value;        
+                }
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "abc_xyz" }, generatedCode);
+        }
     }
 }

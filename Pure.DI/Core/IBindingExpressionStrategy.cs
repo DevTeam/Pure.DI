@@ -1,18 +1,12 @@
 ﻿namespace Pure.DI.Core
 {
-    using System.Collections.Generic;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     internal interface IBindingExpressionStrategy
     {
-        ExpressionSyntax TryBuild(
-            ITypeSymbol contractType,
-            ExpressionSyntax? tag,
-            ISet<BindingMetadata> additionalBindings);
+        ExpressionSyntax TryBuild(ITypeSymbol contractType, ExpressionSyntax? tag);
 
-        ExpressionSyntax TryBuild(
-            TypeResolveDescription typeResolveDescription,
-            ISet<BindingMetadata> additionalBindings);
+        ExpressionSyntax TryBuild(TypeResolveDescription typeResolveDescription);
     }
 }

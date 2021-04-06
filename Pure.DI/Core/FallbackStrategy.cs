@@ -5,7 +5,8 @@
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    internal class FallbackStrategy : IDefaultValueStrategy
+    // ReSharper disable once ClassNeverInstantiated.Global
+    internal class FallbackStrategy : IFallbackStrategy
     {
         internal const string CannotResolveMessage = "Cannot resolve an instance of the required type.";
         private static readonly ExpressionSyntax CannotResolveException = SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName("System.ArgumentException"))

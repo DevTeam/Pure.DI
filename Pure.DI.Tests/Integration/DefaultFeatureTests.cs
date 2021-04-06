@@ -1,8 +1,5 @@
 ﻿namespace Pure.DI.Tests.Integration
 {
-    using System;
-    using System.IO;
-    using System.Linq;
     using Shouldly;
     using Xunit;
 
