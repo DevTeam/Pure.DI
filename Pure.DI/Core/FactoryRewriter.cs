@@ -69,6 +69,19 @@ namespace Pure.DI.Core
             return SyntaxFactory.GenericName(node.Identifier).AddTypeArgumentListArguments(args);
         }
 
+        public override SyntaxNode? VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
+        {
+            if (
+                node.Kind() == SyntaxKind.SimpleMemberAccessExpression
+                && node.Expression is IdentifierNameSyntax identifierName
+                && identifierName.ToString() == _contextIdentifier.Text)
+            {
+                return Visit(node.ChildNodes().OfType<GenericNameSyntax>().FirstOrDefault());
+            }
+
+            return base.VisitMemberAccessExpression(node);
+        }
+
         private void ReplaceTypes(IList<TypeSyntax> args)
         {
             for (var i = 0; i < args.Count; i++)
@@ -83,33 +96,7 @@ namespace Pure.DI.Core
                         _buildContext.AddBinding(new BindingMetadata(_typeDescription.Binding, constructedType));
                     }
                 }
-
-                /*if (typeSymbol is IArrayTypeSymbol arrayTypeSymbol)
-                {
-                    var constructedType = _typeDescription.TypesMap.ConstructType(arrayTypeSymbol.ElementType);
-                    var arrayType = SyntaxFactory.ArrayType(
-                        constructedType.ToTypeSyntax(_typeDescription.SemanticModel))
-                        .AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
-                    args[i] = arrayType;
-                    if (!arrayTypeSymbol.ElementType.Equals(constructedType, SymbolEqualityComparer.Default))
-                    {
-                        _additionalBindings.Add(new BindingMetadata(_typeDescription.Binding, constructedType));
-                    }
-                }*/
             }
-        }
-
-        public override SyntaxNode? VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
-        {
-            if (
-                node.Kind() == SyntaxKind.SimpleMemberAccessExpression
-                && node.Expression is IdentifierNameSyntax identifierName
-                && identifierName.ToString() == _contextIdentifier.Text)
-            {
-                return Visit(node.ChildNodes().OfType<GenericNameSyntax>().FirstOrDefault());
-            }
-
-            return base.VisitMemberAccessExpression(node);
         }
     }
 }

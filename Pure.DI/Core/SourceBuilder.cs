@@ -28,7 +28,7 @@
             _metadataWalkerFactory = metadataWalkerFactory;
         }
 
-        public IEnumerable<Source> Build(Compilation contextCompilation)
+        public IEnumerable<Source> Build(Compilation contextCompilation, IEnumerable<SyntaxTree> treesWithMetadata)
         {
             var assembly = GetType().Assembly;
             var features = new StringBuilder();
@@ -50,11 +50,6 @@
                 .AddReferences(contextCompilation.References)
                 .WithOptions(contextCompilation.Options);
 
-            var treesWithMetadata = 
-                from tree in contextCompilation.SyntaxTrees
-                where ContainsMetadata(contextCompilation, tree)
-                select tree;
-
             foreach (var tree in treesWithMetadata)
             {
                 compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(features + Environment.NewLine + tree));
@@ -72,19 +67,9 @@
                     var compilationUnitSyntax = _resolverBuilderFactory().Build();
                     yield return new Source(
                         metadata.TargetTypeName,
-                        SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8),
-                        tree);
+                        SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8));
                 }
             }
-        }
-
-        private static bool ContainsMetadata(Compilation compilation, SyntaxTree tree)
-        {
-            var semanticModel = compilation.GetSemanticModel(tree);
-            var walker = new MetadataWalker(semanticModel);
-            walker.Visit(tree.GetRoot());
-            return walker.Metadata.Any();
-
         }
 
         private static ResolverMetadata CreateMetadata(ResolverMetadata metadata, IReadOnlyCollection<ResolverMetadata> allMetadata)
@@ -102,6 +87,11 @@
                 {
                     newMetadata.Fallback.Add(fallback);
                 }
+
+                foreach (var attribute in dependency.Attributes)
+                {
+                    newMetadata.Attributes.Add(attribute);
+                }
             }
 
             foreach (var binding in metadata.Bindings)
@@ -112,6 +102,11 @@
             foreach (var fallback in metadata.Fallback)
             {
                 newMetadata.Fallback.Add(fallback);
+            }
+
+            foreach (var attribute in metadata.Attributes)
+            {
+                newMetadata.Attributes.Add(attribute);
             }
 
             return newMetadata;

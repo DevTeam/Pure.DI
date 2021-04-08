@@ -47,12 +47,13 @@
 
         public MemberDeclarationSyntax GetOrAddMember(MemberKey key, Func<MemberDeclarationSyntax> additionalMemberFactory)
         {
-            if (!_additionalMembers.TryGetValue(key, out var member))
+            if (_additionalMembers.TryGetValue(key, out var member))
             {
-                member = additionalMemberFactory();
-                _additionalMembers.Add(key, member);
+                return member;
             }
 
+            member = additionalMemberFactory();
+            _additionalMembers.Add(key, member);
             return member;
         }
     }

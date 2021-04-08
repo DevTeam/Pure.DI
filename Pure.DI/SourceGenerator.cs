@@ -1,6 +1,7 @@
 ﻿namespace Pure.DI
 {
     using System;
+    using System.Diagnostics;
     using Core;
     using IoC;
     using Microsoft.CodeAnalysis;
@@ -9,6 +10,19 @@
     public class SourceGenerator : ISourceGenerator
     {
         private readonly IMutableContainer _container = Container.Create().Using<Configuration>();
+        private readonly CompilationDiagnostic _diagnostic;
+        private readonly Func<ISourceBuilder> _builderFactory;
+
+        public SourceGenerator()
+        {
+            var container = _container
+                .Create()
+                .Bind<CompilationDiagnostic>().Bind<IDiagnostic>().As(IoC.Lifetime.Singleton).To<CompilationDiagnostic>()
+                .Container;
+
+            _diagnostic = container.Resolve<CompilationDiagnostic>();
+            _builderFactory = container.Resolve<Func<ISourceBuilder>>();
+        }
 
         public void Initialize(GeneratorInitializationContext context)
         {
@@ -18,19 +32,22 @@
                 Debugger.Launch();
             }
 #endif
+
+            context.RegisterForSyntaxNotifications(() => _container.Resolve<ISyntaxContextReceiver>());
         }
 
         public void Execute(GeneratorExecutionContext context)
         {
-            var container = _container
-                .Create()
-                .Bind<IDiagnostic>().To(ctx => new CompilationDiagnostic(context))
-                .Container;
+            if (context.SyntaxContextReceiver is not IGeneratorTargets target || target.Trees.Count == 0)
+            {
+                return;
+            }
 
-            var sourceBuilder = container.Resolve<ISourceBuilder>();
+            _diagnostic.Context = context;
+            var sourceBuilder = _builderFactory();
             try
             {
-                foreach (var source in sourceBuilder.Build(context.Compilation))
+                foreach (var source in sourceBuilder.Build(context.Compilation, target.Trees))
                 {
                     context.AddSource(source.HintName, source.Code);
                 }
@@ -40,9 +57,7 @@
             }
             catch (Exception ex)
             {
-                container
-                    .Resolve<IDiagnostic>()
-                    .Error(Diagnostics.Unhandled, ex.ToString());
+                _diagnostic.Error(Diagnostics.Unhandled, ex.ToString());
             }
         }
     }

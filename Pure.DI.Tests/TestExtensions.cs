@@ -40,13 +40,13 @@
                 .Create()
                 .Using<Configuration>()
                 .Create()
-                .Bind<IStdErr>().As(Lifetime.Singleton).To(ctx => stdErr)
+                .Bind<IStdOut>().Bind<IStdErr>().As(Lifetime.Singleton).To(ctx => stdErr)
                 .Container;
 
             List<Source>? generatedSources;
             try
             {
-                generatedSources = container.Resolve<ISourceBuilder>().Build(setupCompilation).ToList();
+                generatedSources = container.Resolve<ISourceBuilder>().Build(setupCompilation, setupCompilation.SyntaxTrees).ToList();
             }
             catch (HandledException)
             {
@@ -184,7 +184,7 @@
             private readonly List<string> _errors = new();
             private readonly List<string> _lines = new();
 
-            public IReadOnlyList<string> Info => _errors;
+            public IReadOnlyList<string> Info => _lines;
 
             public IReadOnlyList<string> Errors => _errors;
 

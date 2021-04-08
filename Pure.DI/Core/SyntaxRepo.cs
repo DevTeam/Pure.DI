@@ -15,8 +15,8 @@ namespace Pure.DI.Core
         public static readonly TypeSyntax ContextTypeSyntax = SyntaxFactory.ParseTypeName(ContextClassName);
         public static readonly TypeSyntax IContextTypeSyntax = SyntaxFactory.ParseTypeName("Pure.DI.IContext");
         public static readonly TypeSyntax ObjectTypeSyntax = SyntaxFactory.ParseTypeName("object");
-        public static readonly TypeSyntax TypeTypeSyntax = SyntaxFactory.ParseTypeName("System.Type");
-        public static readonly TypeParameterSyntax TTypeParameterSyntax = SyntaxFactory.TypeParameter("T");
+        private static readonly TypeSyntax TypeTypeSyntax = SyntaxFactory.ParseTypeName("System.Type");
+        private static readonly TypeParameterSyntax TTypeParameterSyntax = SyntaxFactory.TypeParameter("T");
 
         public static readonly AttributeSyntax AggressiveOptimizationAndInliningAttr = SyntaxFactory.Attribute(
             SyntaxFactory.IdentifierName(nameof(MethodImplAttribute)),
@@ -39,7 +39,7 @@ namespace Pure.DI.Core
         public static readonly MethodDeclarationSyntax GenericStaticResolveWithTagMethodSyntax =
             GenericStaticResolveMethodSyntax.AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax));
 
-        public static readonly MethodDeclarationSyntax ObjectResolveMethodSyntax =
+        private static readonly MethodDeclarationSyntax ObjectResolveMethodSyntax =
             SyntaxFactory.MethodDeclaration(ObjectTypeSyntax, nameof(IContext.Resolve))
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                 .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(AggressiveOptimizationAndInliningAttr))
@@ -50,6 +50,5 @@ namespace Pure.DI.Core
 
         public static readonly MethodDeclarationSyntax StaticResolveWithTagMethodSyntax =
             StaticResolveMethodSyntax.AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax));
-
     }
 }

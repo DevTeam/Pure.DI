@@ -56,11 +56,12 @@ var baseTypes = new Dictionary<string, string> {
     foreach(var baseType in baseTypes)
     {#>
 /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c><#=baseType.Key.Replace('<','[').Replace('>',']')#></c>.
     /// </summary>
     [GenericTypeArgument]
     public interface <#=baseType.Value.Replace("#", i == 0 ? "" : i.ToString())#>: <#=baseType.Key#> { }
-
+#endif
     <#}#>
 <#}#>
 

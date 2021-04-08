@@ -7,17 +7,15 @@
     {
         public string TargetTypeName;
         public readonly SyntaxNode SetupNode;
-        public readonly ICollection<BindingMetadata> Bindings;
-        public readonly ICollection<FallbackMetadata> Fallback;
-        public readonly ICollection<string> DependsOn;
+        public readonly ICollection<BindingMetadata> Bindings = new List<BindingMetadata>();
+        public readonly ICollection<FallbackMetadata> Fallback = new List<FallbackMetadata>();
+        public readonly ICollection<string> DependsOn = new List<string> { "DefaultFeature" };
+        public readonly ICollection<AttributeMetadata> Attributes = new List<AttributeMetadata>();
 
         public ResolverMetadata(SyntaxNode setupNode, string targetTypeName)
         {
             SetupNode = setupNode;
             TargetTypeName = targetTypeName;
-            Bindings = new List<BindingMetadata>();
-            Fallback = new List<FallbackMetadata>();
-            DependsOn = new List<string> { "DefaultFeature" };
         }
     }
 }

@@ -3,7 +3,7 @@
     internal enum Tags
     {
         Default,
-        ConstructorBuilder,
+        AutowiringBuilder,
         FactoryBuilder,
         ArrayBuilder,
         AsIsResult,

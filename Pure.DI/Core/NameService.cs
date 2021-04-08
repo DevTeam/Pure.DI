@@ -29,11 +29,5 @@
             _names.Add(memberKey, newName);
             return newName;
         }
-
-        public void Reset()
-        {
-            _ids.Clear();
-            _names.Clear();
-        }
     }
 }

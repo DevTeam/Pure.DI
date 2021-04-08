@@ -1,6 +1,7 @@
 ﻿namespace Pure.DI.Core
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -8,6 +9,16 @@
 
     internal static class TypeExtensions
     {
+        public static IEnumerable<AttributeData> GetAttributes(this ISymbol symbol, Type attributeType, SemanticModel semanticModel) =>
+            from attr in symbol.GetAttributes()
+            where attr.AttributeClass != null && attributeType.Equals(attr.AttributeClass, semanticModel)
+            select attr;
+
+        public static IEnumerable<AttributeData> GetAttributes(this ISymbol symbol, INamedTypeSymbol attributeType, SemanticModel semanticModel) =>
+            from attr in symbol.GetAttributes()
+            where attr.AttributeClass != null && SymbolEqualityComparer.Default.Equals(attr.AttributeClass, attributeType)
+            select attr;
+
         public static TypeSyntax ToTypeSyntax(this ITypeSymbol typeSymbol, SemanticModel semanticModel) =>
             SyntaxFactory.ParseTypeName(typeSymbol.ToMinimalDisplayString(semanticModel, 0));
 
@@ -46,7 +57,6 @@
 
             return unboundGeneric.Construct(typeArgSymbols);
         }
-
 
         public static bool IsComposedGenericTypeMarker(this ITypeSymbol typeSymbol, SemanticModel semanticModel)
         {

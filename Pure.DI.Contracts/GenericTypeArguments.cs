@@ -28,89 +28,103 @@ namespace Pure.DI
     public struct TTS { }
 
 /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IDisposable</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTDisposable: System.IDisposable { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IComparable</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparable: System.IComparable { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IComparable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparable<in T>: System.IComparable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IEquatable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEquatable<T>: System.IEquatable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEnumerable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEnumerable<out T>: System.Collections.Generic.IEnumerable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEnumerator[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEnumerator<out T>: System.Collections.Generic.IEnumerator<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.ICollection[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTCollection<T>: System.Collections.Generic.ICollection<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IList[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTList<T>: System.Collections.Generic.IList<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.ISet[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTSet<T>: System.Collections.Generic.ISet<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IComparer[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparer<in T>: System.Collections.Generic.IComparer<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEqualityComparer[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEqualityComparer<in T>: System.Collections.Generic.IEqualityComparer<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IDictionary[TKey, TValue]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTDictionary<TKey, TValue>: System.Collections.Generic.IDictionary<TKey, TValue> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IObservable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTObservable<out T>: System.IObservable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IObserver[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTObserver<in T>: System.IObserver<T> { }
-
+#endif
         /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
@@ -136,89 +150,103 @@ namespace Pure.DI
     public struct TTS1 { }
 
 /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IDisposable</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTDisposable1: System.IDisposable { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IComparable</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparable1: System.IComparable { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IComparable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparable1<in T>: System.IComparable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IEquatable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEquatable1<T>: System.IEquatable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEnumerable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEnumerable1<out T>: System.Collections.Generic.IEnumerable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEnumerator[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEnumerator1<out T>: System.Collections.Generic.IEnumerator<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.ICollection[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTCollection1<T>: System.Collections.Generic.ICollection<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IList[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTList1<T>: System.Collections.Generic.IList<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.ISet[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTSet1<T>: System.Collections.Generic.ISet<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IComparer[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparer1<in T>: System.Collections.Generic.IComparer<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEqualityComparer[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEqualityComparer1<in T>: System.Collections.Generic.IEqualityComparer<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IDictionary[TKey, TValue]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTDictionary1<TKey, TValue>: System.Collections.Generic.IDictionary<TKey, TValue> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IObservable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTObservable1<out T>: System.IObservable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IObserver[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTObserver1<in T>: System.IObserver<T> { }
-
+#endif
         /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
@@ -244,89 +272,103 @@ namespace Pure.DI
     public struct TTS2 { }
 
 /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IDisposable</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTDisposable2: System.IDisposable { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IComparable</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparable2: System.IComparable { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IComparable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparable2<in T>: System.IComparable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IEquatable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEquatable2<T>: System.IEquatable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEnumerable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEnumerable2<out T>: System.Collections.Generic.IEnumerable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEnumerator[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEnumerator2<out T>: System.Collections.Generic.IEnumerator<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.ICollection[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTCollection2<T>: System.Collections.Generic.ICollection<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IList[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTList2<T>: System.Collections.Generic.IList<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.ISet[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTSet2<T>: System.Collections.Generic.ISet<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IComparer[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparer2<in T>: System.Collections.Generic.IComparer<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEqualityComparer[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEqualityComparer2<in T>: System.Collections.Generic.IEqualityComparer<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IDictionary[TKey, TValue]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTDictionary2<TKey, TValue>: System.Collections.Generic.IDictionary<TKey, TValue> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IObservable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTObservable2<out T>: System.IObservable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IObserver[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTObserver2<in T>: System.IObserver<T> { }
-
+#endif
         /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
@@ -352,89 +394,103 @@ namespace Pure.DI
     public struct TTS3 { }
 
 /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IDisposable</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTDisposable3: System.IDisposable { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IComparable</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparable3: System.IComparable { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IComparable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparable3<in T>: System.IComparable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IEquatable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEquatable3<T>: System.IEquatable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEnumerable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEnumerable3<out T>: System.Collections.Generic.IEnumerable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEnumerator[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEnumerator3<out T>: System.Collections.Generic.IEnumerator<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.ICollection[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTCollection3<T>: System.Collections.Generic.ICollection<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IList[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTList3<T>: System.Collections.Generic.IList<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.ISet[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTSet3<T>: System.Collections.Generic.ISet<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IComparer[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparer3<in T>: System.Collections.Generic.IComparer<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEqualityComparer[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEqualityComparer3<in T>: System.Collections.Generic.IEqualityComparer<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IDictionary[TKey, TValue]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTDictionary3<TKey, TValue>: System.Collections.Generic.IDictionary<TKey, TValue> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IObservable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTObservable3<out T>: System.IObservable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IObserver[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTObserver3<in T>: System.IObserver<T> { }
-
+#endif
         /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
@@ -460,89 +516,103 @@ namespace Pure.DI
     public struct TTS4 { }
 
 /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IDisposable</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTDisposable4: System.IDisposable { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IComparable</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparable4: System.IComparable { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IComparable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparable4<in T>: System.IComparable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IEquatable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEquatable4<T>: System.IEquatable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEnumerable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEnumerable4<out T>: System.Collections.Generic.IEnumerable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEnumerator[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEnumerator4<out T>: System.Collections.Generic.IEnumerator<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.ICollection[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTCollection4<T>: System.Collections.Generic.ICollection<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IList[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTList4<T>: System.Collections.Generic.IList<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.ISet[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTSet4<T>: System.Collections.Generic.ISet<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IComparer[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparer4<in T>: System.Collections.Generic.IComparer<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEqualityComparer[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEqualityComparer4<in T>: System.Collections.Generic.IEqualityComparer<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IDictionary[TKey, TValue]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTDictionary4<TKey, TValue>: System.Collections.Generic.IDictionary<TKey, TValue> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IObservable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTObservable4<out T>: System.IObservable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IObserver[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTObserver4<in T>: System.IObserver<T> { }
-
+#endif
         /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
@@ -568,89 +638,103 @@ namespace Pure.DI
     public struct TTS5 { }
 
 /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IDisposable</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTDisposable5: System.IDisposable { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IComparable</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparable5: System.IComparable { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IComparable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparable5<in T>: System.IComparable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IEquatable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEquatable5<T>: System.IEquatable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEnumerable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEnumerable5<out T>: System.Collections.Generic.IEnumerable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEnumerator[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEnumerator5<out T>: System.Collections.Generic.IEnumerator<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.ICollection[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTCollection5<T>: System.Collections.Generic.ICollection<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IList[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTList5<T>: System.Collections.Generic.IList<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.ISet[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTSet5<T>: System.Collections.Generic.ISet<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IComparer[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparer5<in T>: System.Collections.Generic.IComparer<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEqualityComparer[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEqualityComparer5<in T>: System.Collections.Generic.IEqualityComparer<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IDictionary[TKey, TValue]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTDictionary5<TKey, TValue>: System.Collections.Generic.IDictionary<TKey, TValue> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IObservable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTObservable5<out T>: System.IObservable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IObserver[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTObserver5<in T>: System.IObserver<T> { }
-
+#endif
         /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
@@ -676,89 +760,103 @@ namespace Pure.DI
     public struct TTS6 { }
 
 /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IDisposable</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTDisposable6: System.IDisposable { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IComparable</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparable6: System.IComparable { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IComparable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparable6<in T>: System.IComparable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IEquatable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEquatable6<T>: System.IEquatable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEnumerable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEnumerable6<out T>: System.Collections.Generic.IEnumerable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEnumerator[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEnumerator6<out T>: System.Collections.Generic.IEnumerator<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.ICollection[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTCollection6<T>: System.Collections.Generic.ICollection<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IList[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTList6<T>: System.Collections.Generic.IList<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.ISet[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTSet6<T>: System.Collections.Generic.ISet<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IComparer[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparer6<in T>: System.Collections.Generic.IComparer<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEqualityComparer[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEqualityComparer6<in T>: System.Collections.Generic.IEqualityComparer<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IDictionary[TKey, TValue]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTDictionary6<TKey, TValue>: System.Collections.Generic.IDictionary<TKey, TValue> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IObservable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTObservable6<out T>: System.IObservable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IObserver[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTObserver6<in T>: System.IObserver<T> { }
-
+#endif
         /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
@@ -784,89 +882,103 @@ namespace Pure.DI
     public struct TTS7 { }
 
 /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IDisposable</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTDisposable7: System.IDisposable { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IComparable</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparable7: System.IComparable { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IComparable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparable7<in T>: System.IComparable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IEquatable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEquatable7<T>: System.IEquatable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEnumerable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEnumerable7<out T>: System.Collections.Generic.IEnumerable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEnumerator[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEnumerator7<out T>: System.Collections.Generic.IEnumerator<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.ICollection[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTCollection7<T>: System.Collections.Generic.ICollection<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IList[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTList7<T>: System.Collections.Generic.IList<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.ISet[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTSet7<T>: System.Collections.Generic.ISet<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IComparer[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparer7<in T>: System.Collections.Generic.IComparer<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEqualityComparer[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEqualityComparer7<in T>: System.Collections.Generic.IEqualityComparer<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IDictionary[TKey, TValue]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTDictionary7<TKey, TValue>: System.Collections.Generic.IDictionary<TKey, TValue> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IObservable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTObservable7<out T>: System.IObservable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IObserver[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTObserver7<in T>: System.IObserver<T> { }
-
+#endif
         /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
@@ -892,89 +1004,103 @@ namespace Pure.DI
     public struct TTS8 { }
 
 /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IDisposable</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTDisposable8: System.IDisposable { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IComparable</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparable8: System.IComparable { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IComparable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparable8<in T>: System.IComparable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IEquatable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEquatable8<T>: System.IEquatable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEnumerable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEnumerable8<out T>: System.Collections.Generic.IEnumerable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEnumerator[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEnumerator8<out T>: System.Collections.Generic.IEnumerator<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.ICollection[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTCollection8<T>: System.Collections.Generic.ICollection<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IList[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTList8<T>: System.Collections.Generic.IList<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.ISet[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTSet8<T>: System.Collections.Generic.ISet<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IComparer[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTComparer8<in T>: System.Collections.Generic.IComparer<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IEqualityComparer[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTEqualityComparer8<in T>: System.Collections.Generic.IEqualityComparer<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.Collections.Generic.IDictionary[TKey, TValue]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTDictionary8<TKey, TValue>: System.Collections.Generic.IDictionary<TKey, TValue> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IObservable[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTObservable8<out T>: System.IObservable<T> { }
-
+#endif
     /// <summary>
+#if !NET35
     /// Represents the generic type arguments marker for <c>System.IObserver[T]</c>.
     /// </summary>
     [GenericTypeArgument]
     public interface TTObserver8<in T>: System.IObserver<T> { }
-
+#endif
         /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>

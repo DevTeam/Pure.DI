@@ -2,20 +2,17 @@
 {
     using System;
 
+    // ReSharper disable once ClassNeverInstantiated.Global
     internal class Tracer : ITracer, IDisposable
     {
         private readonly IDiagnostic _diagnostic;
         private int _level;
 
-        public Tracer(IDiagnostic diagnostic)
-        {
-            _diagnostic = diagnostic;
-        }
+        public Tracer(IDiagnostic diagnostic) => _diagnostic = diagnostic;
 
         public IDisposable RegisterResolving(TypeResolveDescription typeResolveDescription)
         {
-            _level++;
-            if (_level <= 256)
+            if (_level++ <= 256)
             {
                 return this;
             }
@@ -25,9 +22,6 @@
             return this;
         }
 
-        void IDisposable.Dispose()
-        {
-            _level--;
-        }
+        void IDisposable.Dispose() => _level--;
     }
 }

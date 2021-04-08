@@ -28,8 +28,8 @@
                 .Bind<SemanticModel>().To(ctx => ctx.Container.Inject<IBuildContext>().SemanticModel)
                 .Bind<ResolverMetadata>().To(ctx => ctx.Container.Inject<IBuildContext>().Metadata)
                 .Bind<INameService>().To(ctx => ctx.Container.Inject<IBuildContext>().NameService)
-                .Bind<IConstructorsResolver>().As(Singleton).To<ConstructorsResolver>()
-                .Bind<IObjectBuilder>().As(Singleton).Tag(ConstructorBuilder).To<ConstructorObjectBuilder>()
+                .Bind<IConstructorsResolver>().To<ConstructorsResolver>()
+                .Bind<IObjectBuilder>().As(Singleton).Tag(AutowiringBuilder).To<AutowiringObjectBuilder>()
                 .Bind<IObjectBuilder>().As(Singleton).Tag(FactoryBuilder).To<FactoryObjectBuilder>()
                 .Bind<IObjectBuilder>().As(Singleton).Tag(ArrayBuilder).To<ArrayObjectBuilder>()
                 .Bind<IFallbackStrategy>().As(Singleton).To<FallbackStrategy>()
@@ -60,7 +60,9 @@
                         ctx.Container.Inject<IBindingExpressionStrategy>(SimpleExpressionStrategy)))
                 .Bind<IBindingStatementsStrategy>().As(Singleton).Tag(TypeStatementsStrategy).To<TypeBindingStatementsStrategy>()
                 .Bind<IBindingStatementsStrategy>().As(Singleton).Tag(TypeAndTagStatementsStrategy).To<TypeAndTagBindingStatementsStrategy>()
-                .Bind<ITypesMap>().To<TypesMap>();
+                .Bind<ITypesMap>().To<TypesMap>()
+                .Bind<IAttributesService>().To<AttributesService>()
+                .Bind<ISyntaxContextReceiver>().To<SyntaxContextReceiver>();
         }
     }
 }

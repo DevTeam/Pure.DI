@@ -56,18 +56,20 @@ _It is important to note that our abstraction and our implementation do not know
 
 ### Let's glue all together
 
-Just add a package reference to [Pure.DI](https://www.nuget.org/packages/Pure.DI). Using NuGet packages allows you to optimize your application to include only the necessary dependencies.
+Just add a package reference for a source generator [Pure.DI](https://www.nuget.org/packages/Pure.DI) and another one to the API [Pure.DI.Contracts](https://www.nuget.org/packages/Pure.DI.Contracts) to mak possible configure DI. Using NuGet packages allows you to optimize your application to include only the necessary dependencies.
 
 - Package Manager
 
   ```
   Install-Package Pure.DI
+  Install-Package Pure.DI.Contracts
   ```
   
 - .NET CLI
   
   ```
   dotnet add package Pure.DI
+  dotnet add package Pure.DI.Contracts
   ```
 
 Declare required dependencies in a class like:
@@ -111,7 +113,7 @@ class Program
 }
 ```
 
-This is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) - a single place in an application where the composition of the object graphs for an application take place. Each instance is resolved by a strongly-typed block of statements like the operator new which is compiled on the fly from the corresponding expression tree with minimal impact on performance or memory consumption. For instance, the creating of a composition root *__Program__* looks like this:
+_Program_ is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) here, a single place in an application where the composition of the object graphs for an application take place. To have an ability create multiple instances or to do it on demand you could use *__Func<>__* with required type specified. Each instance is resolved by a strongly-typed block of statements like the operator new which are compiled with all optimizations with minimal impact on performance or memory consumption. For instance, the creating of a composition root *__Program__* looks like this:
 ```csharp
 // Models a random subatomic event that may or may not occur
 Random Indeterminacy = new();
@@ -133,3 +135,10 @@ Take full advantage of Dependency Injection everywhere and every time without an
 | Contracts | [![NuGet](https://buildstats.info/nuget/Pure.DI.Contracts)](https://www.nuget.org/packages/Pure.DI.Contracts) |
 | Source generator | [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI) |
 
+## Supported frameworks
+
+- .NET 5.0+
+- [.NET Core](https://docs.microsoft.com/en-us/dotnet/core/) 1.0+
+- [.NET Standard](https://docs.microsoft.com/en-us/dotnet/standard/net-standard) 1.0+
+- .NET Framework 3.5+
+- [UWP](https://docs.microsoft.com/en-us/windows/uwp/index) 10+

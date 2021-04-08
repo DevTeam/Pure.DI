@@ -75,10 +75,7 @@
             return _resultStrategy.Build(objectExpression);
         }
 
-        public ExpressionSyntax TryBuild(ITypeSymbol contractType, ExpressionSyntax? tag)
-        {
-            var typeResolveDescription = _typeResolver.Resolve(contractType, tag);
-            return TryBuild(typeResolveDescription);
-        }
+        public ExpressionSyntax TryBuild(ITypeSymbol contractType, ExpressionSyntax? tag) =>
+            TryBuild(_typeResolver.Resolve(contractType, tag));
     }
 }

@@ -23,7 +23,7 @@
             SemanticModel semanticModel,
             ResolverMetadata metadata,
             Func<ITypesMap> typesMapFactory,
-            [Tag(Tags.ConstructorBuilder)] IObjectBuilder constructorObjectBuilder,
+            [Tag(Tags.AutowiringBuilder)] IObjectBuilder constructorObjectBuilder,
             [Tag(Tags.FactoryBuilder)] IObjectBuilder factoryObjectBuilder,
             [Tag(Tags.ArrayBuilder)] IObjectBuilder arrayObjectBuilder)
         {
@@ -70,13 +70,13 @@
                     if (_map.TryGetValue(key, out implementationEntry))
                     {
                         var typesMap = _typesMapFactory();
-                        typesMap.Initialize(implementationEntry.Details, contractType);
+                        var hasTypesMap = typesMap.Setup(implementationEntry.Details, contractType);
                         if (_factories.TryGetValue(key, out var factory))
                         {
                             return new TypeResolveDescription(factory.Metadata, contractType, tag, _factoryObjectBuilder, typesMap, _semanticModel);
                         }
 
-                        if (typesMap.Count > 0 && implementationEntry.Metadata.ImplementationType != null)
+                        if (hasTypesMap && implementationEntry.Metadata.ImplementationType != null)
                         {
                             var constructedContractType = typesMap.ConstructType(implementationEntry.Details);
                             var implementationType = typesMap.ConstructType(implementationEntry.Metadata.ImplementationType);
@@ -103,7 +103,7 @@
                     if (_map.TryGetValue(key, out implementationEntry))
                     {
                         var typesMap = _typesMapFactory();
-                        typesMap.Initialize(implementationEntry.Details, contractType);
+                        typesMap.Setup(implementationEntry.Details, contractType);
                         if (_factories.TryGetValue(key, out var factory))
                         {
                             return new TypeResolveDescription(factory.Metadata, contractType, tag, _factoryObjectBuilder, typesMap, _semanticModel);
@@ -153,25 +153,30 @@
             public readonly ITypeSymbol ContractType;
             public readonly ExpressionSyntax? Tag;
             private readonly bool _anyTag;
+            private readonly string _tagStr;
 
             public Key(ITypeSymbol contractType, ExpressionSyntax? tag, bool anyTag = false)
             {
                 ContractType = contractType;
                 Tag = tag;
+                _tagStr = tag?.ToString() ?? string.Empty;
                 _anyTag = anyTag;
             }
 
             private bool Equals(Key other) =>
                 ContractType.Equals(other.ContractType, SymbolEqualityComparer.Default)
-                && (_anyTag || other._anyTag || Equals(Tag, other.Tag));
+                && (_anyTag || other._anyTag || Equals(_tagStr, other._tagStr));
 
             public override bool Equals(object obj) =>
                 obj is Key other
                 && Equals(other);
 
-            public override int GetHashCode()
+            public override int GetHashCode() => SymbolEqualityComparer.Default.GetHashCode(ContractType);
+
+            public override string ToString()
             {
-                return SymbolEqualityComparer.Default.GetHashCode(ContractType);
+                var tag = _anyTag ? "Any" : Tag?.ToString();
+                return $"{ContractType}({tag})";
             }
         }
     }

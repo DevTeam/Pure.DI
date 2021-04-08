@@ -7,6 +7,10 @@ namespace Pure.DI.Features
         static DefaultFeature()
         {
             DI.Setup("DefaultFeature")
+                .TypeAttribute<TypeAttribute>()
+                .TagAttribute<TagAttribute>()
+                .OrderAttribute<OrderAttribute>()
+
                 .Bind<System.Func<TT>>().To(ctx => new System.Func<TT>(ctx.Resolve<TT>))
                 .Bind<System.Lazy<TT>>().To<System.Lazy<TT>>()
                 .Bind<System.Threading.ThreadLocal<TT>>().To<System.Threading.ThreadLocal<TT>>()

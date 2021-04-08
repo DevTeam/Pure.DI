@@ -4,9 +4,7 @@
 
     internal interface ITypesMap
     {
-        int Count { get; }
-
-        void Initialize(ITypeSymbol type, ITypeSymbol targetType);
+        bool Setup(ITypeSymbol type, ITypeSymbol targetType);
 
         ITypeSymbol ConstructType(ITypeSymbol type);
     }

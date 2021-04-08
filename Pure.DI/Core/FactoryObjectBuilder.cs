@@ -29,21 +29,20 @@ namespace Pure.DI.Core
             {
                 if (factory?.Block != null)
                 {
-                    var key = new MemberKey("Lambda", typeDescription.Type, null);
-                    var methotName = _buildContext.NameService.FindName(key);
-                    var method = _buildContext.GetOrAddMember(key, () =>
+                    var memberKey = new MemberKey($"Create{typeDescription.Type.Name}", typeDescription.Type, null);
+                    var factoryName = _buildContext.NameService.FindName(memberKey);
+                    var factoryMethod = _buildContext.GetOrAddMember(memberKey, () =>
                     {
                         var type = typeDescription.Type.ToTypeSyntax(typeDescription.SemanticModel);
-                        return SyntaxFactory.MethodDeclaration(
-                                type,
-                                SyntaxFactory.Identifier(methotName))
+                        return SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
+                            .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveOptimizationAndInliningAttr))
                             .AddParameterListParameters(factory.Parameter.WithType(SyntaxRepo.ContextTypeSyntax))
                             .AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword), SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
                             .AddBodyStatements(factory.Block.Statements.ToArray());
                     });
 
                     resultExpression = 
-                        SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(methotName))
+                        SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryName))
                             .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName(SyntaxRepo.SharedContextName)));
                 }
             }

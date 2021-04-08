@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using Microsoft.CodeAnalysis;
 
+    // ReSharper disable once ClassNeverInstantiated.Global
     internal class TypesMap : ITypesMap
     {
         private readonly SemanticModel _semanticModel;
@@ -10,13 +11,12 @@
 
         public TypesMap(SemanticModel semanticModel) => _semanticModel = semanticModel;
 
-        public void Initialize(ITypeSymbol type, ITypeSymbol targetType)
+        public bool Setup(ITypeSymbol type, ITypeSymbol targetType)
         {
             _map.Clear();
             CreateMap(type, targetType);
+            return _map.Count > 0;
         }
-
-        public int Count => _map.Count;
 
         private void CreateMap(ITypeSymbol type, ITypeSymbol targetType)
         {

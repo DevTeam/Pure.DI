@@ -5,13 +5,11 @@
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class CompilationDiagnostic : IDiagnostic
     {
-        private readonly GeneratorExecutionContext _context;
+        public GeneratorExecutionContext Context { get; set; }
 
-        public CompilationDiagnostic(GeneratorExecutionContext context) => _context = context;
-
-        public void Error(string id, string message, Location? location)
+        public void Error(string id, string message, Location? location = null)
         {
-            _context.ReportDiagnostic(Diagnostic.Create(
+            Context.ReportDiagnostic(Diagnostic.Create(
                 new DiagnosticDescriptor(
                     id,
                     "Error",
@@ -24,8 +22,8 @@
             throw new HandledException(message);
         }
 
-        public void Warning(string id, string message, Location? location) =>
-            _context.ReportDiagnostic(Diagnostic.Create(
+        public void Warning(string id, string message, Location? location = null) =>
+            Context.ReportDiagnostic(Diagnostic.Create(
                 new DiagnosticDescriptor(
                     id,
                     "Warning",

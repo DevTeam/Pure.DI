@@ -5,6 +5,6 @@
 
     internal interface ISourceBuilder
     {
-        IEnumerable<Source> Build(Compilation contextCompilation);
+        IEnumerable<Source> Build(Compilation contextCompilation, IEnumerable<SyntaxTree> treesWithMetadata);
     }
 }

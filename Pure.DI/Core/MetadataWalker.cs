@@ -97,8 +97,11 @@
                     {
                         _binding.ContractTypes.Add(contractType);
                     }
+
+                    return;
                 }
-                else
+                
+                if (invocationOperation.TargetMethod.Parameters.Length == 1)
                 {
                     // To<>(ctx => new ...())
                     if (invocationOperation.TargetMethod.Name == nameof(IBinding.To)
@@ -117,6 +120,41 @@
                         _resolver?.Bindings.Add(_binding);
                         _binding = new BindingMetadata();
                     }
+
+                    // TagIs<>(...)
+                    if (invocationOperation.TargetMethod.Parameters.Length == 1
+                        && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel)
+                        && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
+                        && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol attributeType
+                        && TryGetValue(invocationOperation.Arguments[0], _semanticModel, out var argumentPosition, 0))
+                    {
+                        AttributeKind? attributeKind;
+                        switch (invocationOperation.TargetMethod.Name)
+                        {
+                            case nameof(IConfiguration.TagAttribute):
+                                attributeKind = AttributeKind.Tag;
+                                break;
+
+                            case nameof(IConfiguration.TypeAttribute):
+                                attributeKind = AttributeKind.Type;
+                                break;
+
+                            case nameof(IConfiguration.OrderAttribute):
+                                attributeKind = AttributeKind.Order;
+                                break;
+
+                            default:
+                                attributeKind = null;
+                                break;
+                        }
+
+                        if (attributeKind != null)
+                        {
+                            _resolver?.Attributes.Add(new AttributeMetadata((AttributeKind)attributeKind, attributeType, argumentPosition));
+                        }
+                    }
+
+                    return;
                 }
 
                 return;

@@ -2,7 +2,7 @@
 {
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    internal class FallbackMetadata
+    internal readonly struct FallbackMetadata
     {
         public readonly ExpressionSyntax Factory;
 
