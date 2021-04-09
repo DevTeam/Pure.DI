@@ -103,7 +103,7 @@ _Defining generic type arguments using special marker types like [*__TT__*](Pure
 class Program
 {
   // Composition Root, a single place in an application where the composition of the object graphs for an application take place
-  public static void Main() => Composer.Resolve<Program>().Run();
+  public static void Main() => Glue.Resolve<Program>().Run();
 
   private readonly IBox<ICat> _box;
 

@@ -13,10 +13,29 @@
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class SourceBuilder : ISourceBuilder
     {
+        private static readonly Regex FeaturesRegex = new(@"Pure.DI.Features.[\w]+Feature.cs", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase);
+        private static readonly int FeaturesCount;
+        private static readonly StringBuilder Features = new();
         private readonly IBuildContext _context;
         private readonly Func<IResolverBuilder> _resolverBuilderFactory;
         private readonly Func<IMetadataWalker> _metadataWalkerFactory;
-        private static readonly Regex FeaturesRegex = new(@"Pure.DI.Features.[\w]+Feature.cs", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase);
+
+        static SourceBuilder()
+        {
+            var assembly = typeof(SourceGenerator).Assembly;
+            FeaturesCount = 0;
+            foreach (var resourceName in assembly.GetManifestResourceNames())
+            {
+                if (!FeaturesRegex.IsMatch(resourceName))
+                {
+                    continue;
+                }
+
+                using var reader = new StreamReader(assembly.GetManifestResourceStream(resourceName) ?? throw new InvalidOperationException($"Cannot read {resourceName}."));
+                Features.AppendLine(reader.ReadToEnd());
+                FeaturesCount++;
+            }
+        }
 
         public SourceBuilder(
             IBuildContext context,
@@ -30,21 +49,6 @@
 
         public IEnumerable<Source> Build(Compilation contextCompilation, IEnumerable<SyntaxTree> treesWithMetadata)
         {
-            var assembly = GetType().Assembly;
-            var features = new StringBuilder();
-            var featuresCount = 0;
-            foreach (var resourceName in assembly.GetManifestResourceNames())
-            {
-                if (!FeaturesRegex.IsMatch(resourceName))
-                {
-                    continue;
-                }
-
-                using var reader = new StreamReader(assembly.GetManifestResourceStream(resourceName) ?? throw new InvalidOperationException($"Cannot read {resourceName}."));
-                features.AppendLine(reader.ReadToEnd());
-                featuresCount++;
-            }
-
             var compilation = CSharpCompilation
                 .Create(contextCompilation.AssemblyName)
                 .AddReferences(contextCompilation.References)
@@ -52,7 +56,7 @@
 
             foreach (var tree in treesWithMetadata)
             {
-                compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(features + Environment.NewLine + tree));
+                compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(Features + Environment.NewLine + tree));
             }
 
             foreach (var tree in compilation.SyntaxTrees)
@@ -60,7 +64,7 @@
                 _context.SemanticModel = compilation.GetSemanticModel(tree);
                 var walker = _metadataWalkerFactory();
                 walker.Visit(tree.GetRoot());
-                foreach (var rawMetadata in walker.Metadata.Skip(featuresCount))
+                foreach (var rawMetadata in walker.Metadata.Skip(FeaturesCount))
                 {
                     var metadata = CreateMetadata(rawMetadata, walker.Metadata);
                     _context.Metadata = metadata;

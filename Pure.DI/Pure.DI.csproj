@@ -39,7 +39,6 @@
 
 	<ItemGroup>
 		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-		<None Include="$(SolutionDir)\Pure.DI.Contracts\bin\$(Configuration)\netstandard2.0\Pure.DI.Contracts.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 		<None Include="$(PKGIoC_Container)\lib\netstandard2.0\IoC.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 		<EmbeddedResource Include="Features\DefaultFeature.cs" />
 	</ItemGroup>
@@ -62,14 +61,25 @@
 	</PropertyGroup>
 
 	<Target Name="GetDependencyTargetPaths">
-		<ItemGroup>
+		<ItemGroup Condition="'$(Configuration)'=='Debug'">
 			<TargetPathWithTargetPlatformMoniker Include="$(SolutionDir)\Pure.DI.Contracts\bin\$(Configuration)\netstandard2.0\Pure.DI.Contracts.dll" IncludeRuntimeDependency="false" />
+		</ItemGroup>
+		<ItemGroup Condition="'$(Configuration)'=='Release'">
+			<TargetPathWithTargetPlatformMoniker Include="$(PKGPure_DI_Contracts)\lib\netstandard2.0\Pure.DI.Contracts.dll" IncludeRuntimeDependency="false" />
+		</ItemGroup>
+		<ItemGroup>
 			<TargetPathWithTargetPlatformMoniker Include="$(PKGIoC_Container)\lib\netstandard2.0\IoC.dll" IncludeRuntimeDependency="false" />
 		</ItemGroup>
 	</Target>
 
-	<ItemGroup>
+	<ItemGroup Condition="'$(Configuration)'=='Debug'">
 		<ProjectReference Include="..\Pure.DI.Contracts\Pure.DI.Contracts.csproj" />
+		<None Include="$(SolutionDir)\Pure.DI.Contracts\bin\$(Configuration)\netstandard2.0\Pure.DI.Contracts.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)'=='Release'">
+		<PackageReference Include="Pure.DI.Contracts" Version="1.0.0-beta1" GeneratePathProperty="true" PrivateAssets="all" />
+		<None Include="$(PKGPure_DI_Contracts)\lib\netstandard2.0\Pure.DI.Contracts.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 	</ItemGroup>
 
 	<ItemGroup>
