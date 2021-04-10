@@ -56,7 +56,7 @@
 
             foreach (var tree in treesWithMetadata)
             {
-                compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(Features + Environment.NewLine + tree));
+                compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(tree + Environment.NewLine + Features));
             }
 
             foreach (var tree in compilation.SyntaxTrees)
@@ -64,7 +64,7 @@
                 _context.SemanticModel = compilation.GetSemanticModel(tree);
                 var walker = _metadataWalkerFactory();
                 walker.Visit(tree.GetRoot());
-                foreach (var rawMetadata in walker.Metadata.Skip(FeaturesCount))
+                foreach (var rawMetadata in walker.Metadata.Reverse().Skip(FeaturesCount))
                 {
                     var metadata = CreateMetadata(rawMetadata, walker.Metadata);
                     _context.Metadata = metadata;

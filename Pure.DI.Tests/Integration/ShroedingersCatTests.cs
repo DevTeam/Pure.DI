@@ -12,13 +12,13 @@
             // Given
 
             // When
-            var output =@"
+            var output = @"
+            using System;
+            using static Pure.DI.Lifetime;
+            using Pure.DI;
+                           
             namespace Sample
-            {
-                using System;
-                using Pure.DI;
-                using static Pure.DI.Lifetime;
-
+            {         
                 // Let's create an abstraction
 
                 interface IBox<out T> { T Content { get; } }

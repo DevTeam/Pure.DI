@@ -49,7 +49,12 @@
 
             var unboundGeneric = typeSymbol.ConstructUnboundGenericType();
             var typeName = string.Join("", unboundGeneric.ToDisplayParts().TakeWhile(i => i.ToString() != "<")) + "`" + typeSymbol.TypeArguments.Length;
-            unboundGeneric = semanticModel.Compilation.GetTypeByMetadataName(typeName);
+            unboundGeneric = (
+                from ns in new [] {string.Empty}.Concat(semanticModel.LookupNamespacesAndTypes(0).Select(i => $"{i}."))
+                let generic = semanticModel.Compilation.GetTypeByMetadataName($"{ns}{typeName}")
+                where generic != null
+                select generic).FirstOrDefault();
+
             if (unboundGeneric == null)
             {
                 throw new InvalidOperationException($"Cannot construct {typeSymbol}");
