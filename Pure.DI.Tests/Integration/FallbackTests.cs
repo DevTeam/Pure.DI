@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.Tests.Integration
 {
+    using System;
+    using System.Linq;
+    using Core;
     using Shouldly;
     using Xunit;
 
@@ -40,7 +43,8 @@
             }".Run(out var generatedCode);
 
             // Then
-            output.ShouldBe(new []{"2"}, generatedCode);
+            output.ShouldContain("2", generatedCode);
+            output.Any(i => i.Contains(Diagnostics.CannotResolveDependencyWarning)).ShouldBeTrue(generatedCode);
         }
 
         [Fact]
@@ -76,7 +80,9 @@
             }".Run(out var generatedCode);
 
             // Then
-            output.ShouldBe(new[] { "1" }, generatedCode);
+            output.ShouldContain("1", generatedCode);
+            output.Any(i => i.Contains(Diagnostics.CannotResolveDependencyWarning)).ShouldBeTrue(generatedCode);
+
         }
 
         [Fact]
@@ -112,7 +118,9 @@
             }".Run(out var generatedCode);
 
             // Then
-            output.ShouldBe(new[] { "1" }, generatedCode);
+            output.ShouldContain("1", generatedCode);
+            output.Any(i => i.Contains(Diagnostics.CannotResolveDependencyWarning)).ShouldBeTrue(generatedCode);
+
         }
 
         [Fact]
@@ -148,7 +156,9 @@
             }".Run(out var generatedCode);
 
             // Then
-            output.ShouldBe(new[] { "1" }, generatedCode);
+            output.ShouldContain("1", generatedCode);
+            output.Any(i => i.Contains(Diagnostics.CannotResolveDependencyWarning)).ShouldBeTrue(generatedCode);
+
         }
     }
 }

@@ -6,7 +6,7 @@
 
     internal interface ITypeResolver
     {
-        TypeResolveDescription Resolve(ITypeSymbol typeSymbol, ExpressionSyntax? tag, bool anyTag = false);
+        TypeResolveDescription Resolve(ITypeSymbol typeSymbol, ExpressionSyntax? tag, bool anyTag = false, bool suppressWarnings = false);
 
         IEnumerable<TypeResolveDescription> Resolve(ITypeSymbol contractTypeSymbol);
     }

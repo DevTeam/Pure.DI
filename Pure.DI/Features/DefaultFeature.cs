@@ -12,8 +12,8 @@ namespace Pure.DI.Features
                 .OrderAttribute<OrderAttribute>()
 
                 .Bind<System.Func<TT>>().To(ctx => new System.Func<TT>(ctx.Resolve<TT>))
-                .Bind<System.Lazy<TT>>().To<System.Lazy<TT>>()
-                .Bind<System.Threading.ThreadLocal<TT>>().To<System.Threading.ThreadLocal<TT>>()
+                .Bind<System.Lazy<TT>>().To(ctx => new System.Lazy<TT>(ctx.Resolve<System.Func<TT>>(), System.Threading.LazyThreadSafetyMode.ExecutionAndPublication))
+                .Bind<System.Threading.ThreadLocal<TT>>().To(ctx => new System.Threading.ThreadLocal<TT>(ctx.Resolve<System.Func<TT>>()))
                 .Bind<System.Threading.Tasks.Task<TT>>().To(ctx => System.Threading.Tasks.Task.Run(ctx.Resolve<System.Func<TT>>()))
                 
                 // Enumerable

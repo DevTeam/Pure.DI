@@ -1,6 +1,5 @@
 ﻿namespace Pure.DI.Tests.Integration
 {
-    using System;
     using System.Linq;
     using Core;
     using Shouldly;
@@ -11,7 +10,7 @@
         [Theory]
         [InlineData("int")]
         [InlineData("string")]
-        public void ShouldThrowArgumentExceptionWhenCannotResolve(string type)
+        public void ShouldShowCompilationErrorWhenCannotResolve(string type)
         {
             // Given
 
@@ -40,7 +39,46 @@
             }".Replace("string", type).Run(out var generatedCode);
 
             // Then
-            output.Any(i => i.Contains(FallbackStrategy.CannotResolveMessage) && i.Contains(nameof(ArgumentException))).ShouldBeTrue(generatedCode);
+            output.Any(i => i.Contains(Diagnostics.CannotResolveDependencyError)).ShouldBeTrue(generatedCode);
+        }
+
+        [Theory]
+        [InlineData("int")]
+        [InlineData("string")]
+        public void ShouldShowCompilationWarningWhenCannotResolve(string type)
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+                using static Pure.DI.Lifetime;
+
+                public class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string value) => Value = value;
+                }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Fallback(Fallback)
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }           
+
+                    private static object Fallback(Type type, object tag) => throw new InvalidOperationException(""Cannot resolve!!!"");
+                }    
+            }".Replace("string", type).Run(out var generatedCode);
+
+            // Then
+            output.Any(i => i.Contains(Diagnostics.CannotResolveDependencyWarning)).ShouldBeTrue(generatedCode);
+            output.Any(i => i.Contains("Cannot resolve!!!")).ShouldBeTrue(generatedCode);
         }
 
         [Fact]

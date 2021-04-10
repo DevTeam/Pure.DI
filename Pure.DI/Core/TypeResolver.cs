@@ -12,6 +12,8 @@
     internal class TypeResolver : ITypeResolver
     {
         private readonly SemanticModel _semanticModel;
+        private readonly ResolverMetadata _metadata;
+        private readonly IDiagnostic _diagnostic;
         private readonly Func<ITypesMap> _typesMapFactory;
         private readonly IObjectBuilder _constructorObjectBuilder;
         private readonly IObjectBuilder _factoryObjectBuilder;
@@ -23,12 +25,15 @@
         public TypeResolver(
             SemanticModel semanticModel,
             ResolverMetadata metadata,
+            IDiagnostic diagnostic,
             Func<ITypesMap> typesMapFactory,
             [Tag(Tags.AutowiringBuilder)] IObjectBuilder constructorObjectBuilder,
             [Tag(Tags.FactoryBuilder)] IObjectBuilder factoryObjectBuilder,
             [Tag(Tags.ArrayBuilder)] IObjectBuilder arrayObjectBuilder)
         {
             _semanticModel = semanticModel;
+            _metadata = metadata;
+            _diagnostic = diagnostic;
             _typesMapFactory = typesMapFactory;
             _constructorObjectBuilder = constructorObjectBuilder;
             _factoryObjectBuilder = factoryObjectBuilder;
@@ -71,7 +76,7 @@
             }
         }
 
-        public TypeResolveDescription Resolve(ITypeSymbol contractTypeSymbol, ExpressionSyntax? tag, bool anyTag = false)
+        public TypeResolveDescription Resolve(ITypeSymbol contractTypeSymbol, ExpressionSyntax? tag, bool anyTag = false, bool suppressWarnings = false)
         {
             if (contractTypeSymbol is INamedTypeSymbol contractType)
             {
@@ -143,6 +148,18 @@
             if (contractTypeSymbol is IArrayTypeSymbol arrayType)
             {
                 return new TypeResolveDescription(new BindingMetadata(), arrayType, null, _arrayObjectBuilder, _typesMapFactory(), _semanticModel);
+            }
+
+            if (!suppressWarnings)
+            {
+                if (_metadata.Fallback.Any())
+                {
+                    _diagnostic.Warning(Diagnostics.CannotResolveDependencyWarning, $"Cannot resolve a dependency {contractTypeSymbol}({tag}). Will use a fallback resolve method.");
+                }
+                else
+                {
+                    _diagnostic.Error(Diagnostics.CannotResolveDependencyError, $"Cannot resolve a dependency {contractTypeSymbol}({tag}). Please add an appropriate binding or a fallback resolve method.");
+                }
             }
 
             return new TypeResolveDescription(new BindingMetadata(), contractTypeSymbol, null, _constructorObjectBuilder, _typesMapFactory(), _semanticModel, false);

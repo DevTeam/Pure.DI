@@ -30,7 +30,7 @@
                     let parameters = ctor.Parameters
                     let canBeResolved = (
                             from parameter in parameters
-                            let paramTypeDescription = typeResolver.Resolve(parameter.Type, null, true)
+                            let paramTypeDescription = typeResolver.Resolve(parameter.Type, null, true, true)
                             select parameter.IsOptional || parameter.HasExplicitDefaultValue || paramTypeDescription.IsResolved)
                         .All(isResolved => isResolved)
                     orderby 
