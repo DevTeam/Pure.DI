@@ -580,5 +580,40 @@
             // Then
             output.ShouldBe(new[] { "xyz" }, generatedCode);
         }
+
+        [Fact]
+        public void ShouldResolveInstanceWithoutBinding()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+ 
+                public class MyClass { }
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(MyClass value) => Value = value.ToString();
+                }
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "Sample.MyClass" }, generatedCode);
+        }
     }
 }

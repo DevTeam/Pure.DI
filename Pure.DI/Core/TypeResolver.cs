@@ -18,6 +18,7 @@
         private readonly IObjectBuilder _arrayObjectBuilder;
         private readonly Dictionary<Key, Binding<ITypeSymbol>> _map = new();
         private readonly Dictionary<Key, Binding<SimpleLambdaExpressionSyntax>> _factories = new();
+        private readonly HashSet<INamedTypeSymbol> _specialTypes = new(SymbolEqualityComparer.Default);
 
         public TypeResolver(
             SemanticModel semanticModel,
@@ -32,6 +33,17 @@
             _constructorObjectBuilder = constructorObjectBuilder;
             _factoryObjectBuilder = factoryObjectBuilder;
             _arrayObjectBuilder = arrayObjectBuilder;
+
+            var specialTypes= 
+                from specialType in Enum.GetValues(typeof(SpecialType)).OfType<SpecialType>()
+                where specialType != SpecialType.None
+                select _semanticModel.Compilation.GetSpecialType(specialType);
+
+            foreach (var specialType in specialTypes)
+            {
+                _specialTypes.Add(specialType);
+            }
+
             foreach (var binding in metadata.Bindings)
             {
                 if (binding.ImplementationType == null)
@@ -111,6 +123,20 @@
 
                         return new TypeResolveDescription(implementationEntry.Metadata, implementationEntry.Details, tag, _constructorObjectBuilder, typesMap, _semanticModel);
                     }
+                }
+
+                if (
+                    !contractTypeSymbol.IsAbstract
+                    && !_specialTypes.Contains(contractTypeSymbol)
+                    && contractTypeSymbol.IsValidTypeToResolve(_semanticModel))
+                {
+                    var typesMap = _typesMapFactory();
+                    var newBinding = new BindingMetadata
+                    {
+                        ImplementationType = contractType
+                    };
+
+                    return new TypeResolveDescription(newBinding, contractTypeSymbol, null, _constructorObjectBuilder, typesMap, _semanticModel);
                 }
             }
 
