@@ -13,14 +13,17 @@
     internal class ResolverBuilder : IResolverBuilder
     {
         private readonly IResolverMethodsBuilder _resolverMethodsBuilder;
+        private readonly IDiagnostic _diagnostic;
         private readonly ResolverMetadata _metadata;
         
         public ResolverBuilder(
             ResolverMetadata metadata,
-            IResolverMethodsBuilder resolverMethodsBuilder)
+            IResolverMethodsBuilder resolverMethodsBuilder,
+            IDiagnostic diagnostic)
         {
             _metadata = metadata;
             _resolverMethodsBuilder = resolverMethodsBuilder;
+            _diagnostic = diagnostic;
         }
 
         public CompilationUnitSyntax Build()
@@ -47,6 +50,7 @@
                         .FirstOrDefault(i => !string.IsNullOrWhiteSpace(i));
                     
                     _metadata.TargetTypeName = $"{parentNodeName}DI";
+                    _diagnostic.Information(Diagnostics.CannotUseCurrentType, $"It is not possible to use the current type as DI. Please make sure it is static partial and has public or internal access modifiers. {_metadata.TargetTypeName} will be used instead. You may change this name by passing the optional argument to DI.Setup(string targetTypeName).");
                 }
             }
             else
@@ -133,6 +137,8 @@
                 compilationUnit = compilationUnit.AddMembers(resolverClass);
             }
 
+            var sampleContractType = _metadata.Bindings.LastOrDefault()?.ContractTypes.FirstOrDefault()?.ToString() ?? "T";
+            _diagnostic.Information(Diagnostics.Generated, $"{_metadata.TargetTypeName} was generated. Please use a method like {_metadata.TargetTypeName}.Resolve<{sampleContractType}>() to create a composition root.");
             return compilationUnit.NormalizeWhitespace();
         }
 

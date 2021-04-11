@@ -5,7 +5,7 @@ namespace Pure.DI
 
     public static class DI
     {
-        public static IConfiguration Setup(string configurationName = "") => Configuration.Shared;
+        public static IConfiguration Setup(string targetTypeName = "") => Configuration.Shared;
 
         private class Configuration : IConfiguration
         {

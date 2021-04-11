@@ -33,6 +33,17 @@
                     true),
                 location));
 
+        public void Information(string id, string message, Location? location = null) =>
+            Context.ReportDiagnostic(Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    id,
+                    "Info",
+                    message + GetLine(location),
+                    "Info",
+                    DiagnosticSeverity.Info,
+                    true),
+                location));
+
         private static string GetLine(Location? location)
         {
             if (location == null || !location.IsInSource)

@@ -23,6 +23,8 @@
         public void Warning(string id, string message, Location? location) =>
             _stdOut.WriteLine($"Warning {id}: {message}{GetLine(location)}");
 
+        public void Information(string id, string message, Location? location = null) { }
+
         private static string GetLine(Location? location)
         {
             if (location == null || !location.IsInSource)
