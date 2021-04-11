@@ -12,6 +12,7 @@
         public readonly ITypesMap TypesMap;
         public readonly SemanticModel SemanticModel;
         public readonly bool IsResolved;
+        public readonly int Index;
 
         public TypeDescription(
             BindingMetadata binding,
@@ -20,7 +21,8 @@
             IObjectBuilder objectBuilder,
             ITypesMap typesMap,
             SemanticModel semanticModel,
-            bool isResolved = true)
+            bool isResolved = true,
+            int index = 0)
         {
             Binding = binding;
             Type = type;
@@ -29,6 +31,7 @@
             TypesMap = typesMap;
             SemanticModel = semanticModel;
             IsResolved = isResolved;
+            Index = index;
         }
 
         public override string ToString() => $"{Type}({Tag})";

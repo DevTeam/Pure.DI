@@ -65,6 +65,11 @@
                                 ? new Key(namedType.ConstructUnboundGenericType(), tag)
                                 : new Key(bindingContractType, tag);
 
+                        if (_map.TryGetValue(key, out _))
+                        {
+                            _diagnostic.Warning(Diagnostics.BindingIsAlreadyExist, $"{key} binding was exist and will be overridden by a new one.");
+                        }
+
                         _map[key] = new Binding<ITypeSymbol>(binding, binding.ImplementationType);
 
                         if (binding.Factory != null)

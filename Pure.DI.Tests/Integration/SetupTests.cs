@@ -1,5 +1,8 @@
 ﻿namespace Pure.DI.Tests.Integration
 {
+    using System.Linq;
+    using Core;
+    using Microsoft.CodeAnalysis;
     using Shouldly;
     using Xunit;
 
@@ -117,7 +120,8 @@
             }".Run(out var generatedCode);
 
             // Then
-            output.ShouldBe(new [] { "xyz" }, generatedCode);
+            output.Any(i => i == "xyz").ShouldBeTrue(generatedCode);
+            output.Any(i => i.Contains(Diagnostics.BindingIsAlreadyExist)).ShouldBeTrue(generatedCode);
         }
 
         [Fact]

@@ -13,5 +13,6 @@
         // Warnings
         public const string CannotResolveDependencyWarning = "DIW0001";
         public const string CtorIsObsoleted = "DIW0002";
+        public const string BindingIsAlreadyExist = "DIW0003";
     }
 }
