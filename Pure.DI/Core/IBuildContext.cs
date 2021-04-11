@@ -15,6 +15,8 @@
 
         INameService NameService { get; }
 
+        ITypeResolver TypeResolver { get; }
+
         IEnumerable<BindingMetadata> AdditionalBindings { get; }
         
         IEnumerable<MemberDeclarationSyntax> AdditionalMembers { get; }

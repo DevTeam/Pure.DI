@@ -9,12 +9,16 @@
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class ConstructorsResolver : IConstructorsResolver
     {
+        private readonly ITypeResolver _typeResolver;
         private readonly IAttributesService _attributesService;
 
-        public ConstructorsResolver(IAttributesService attributesService) =>
+        public ConstructorsResolver(ITypeResolver typeResolver, IAttributesService attributesService)
+        {
+            _typeResolver = typeResolver;
             _attributesService = attributesService;
+        }
 
-        public IEnumerable<IMethodSymbol> Resolve(ITypeResolver typeResolver, TypeResolveDescription typeDescription)
+        public IEnumerable<IMethodSymbol> Resolve(TypeResolveDescription typeDescription)
         {
             if (typeDescription.Type is INamedTypeSymbol type)
             {
@@ -30,7 +34,7 @@
                     let parameters = ctor.Parameters
                     let canBeResolved = (
                             from parameter in parameters
-                            let paramTypeDescription = typeResolver.Resolve(parameter.Type, null, true, true)
+                            let paramTypeDescription = _typeResolver.Resolve(parameter.Type, null, true, true)
                             select parameter.IsOptional || parameter.HasExplicitDefaultValue || paramTypeDescription.IsResolved)
                         .All(isResolved => isResolved)
                     orderby 

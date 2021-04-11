@@ -11,12 +11,19 @@
         private readonly Dictionary<MemberKey, MemberDeclarationSyntax> _additionalMembers = new();
         private readonly HashSet<BindingMetadata> _additionalBindings = new();
         private readonly Func<INameService> _nameServiceFactory;
+        private readonly Func<ITypeResolver> _typeResolverFactory;
         private ResolverMetadata? _metadata;
         private SemanticModel? _semanticModel;
         private INameService? _nameService;
+        private ITypeResolver? _typeResolver;
 
-        public BuildContext([Tag(Tags.Default)] Func<INameService> nameServiceFactory) =>
+        public BuildContext(
+            [Tag(Tags.Default)] Func<INameService> nameServiceFactory,
+            [Tag(Tags.Default)] Func<ITypeResolver> typeResolverFactory)
+        {
             _nameServiceFactory = nameServiceFactory;
+            _typeResolverFactory = typeResolverFactory;
+        }
 
         public ResolverMetadata Metadata
         {
@@ -32,6 +39,8 @@
 
         public INameService NameService => _nameService ?? throw new InvalidOperationException("Not ready.");
 
+        public ITypeResolver TypeResolver => _typeResolver ?? throw new InvalidOperationException("Not ready.");
+
         public IEnumerable<BindingMetadata> AdditionalBindings => _additionalBindings;
 
         public IEnumerable<MemberDeclarationSyntax> AdditionalMembers => _additionalMembers.Values;
@@ -40,6 +49,7 @@
         {
             _additionalBindings.Clear();
             _nameService = _nameServiceFactory();
+            _typeResolver = _typeResolverFactory();
             _additionalMembers.Clear();
         }
 

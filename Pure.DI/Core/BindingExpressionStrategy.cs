@@ -31,7 +31,7 @@
         public ExpressionSyntax TryBuild(TypeResolveDescription typeResolveDescription)
         {
             using var traceToken = _tracer.RegisterResolving(typeResolveDescription);
-            var objectExpression = typeResolveDescription.ObjectBuilder.TryBuild(_typeResolver, _dependencyBindingExpressionStrategy, typeResolveDescription);
+            var objectExpression = typeResolveDescription.ObjectBuilder.TryBuild(_dependencyBindingExpressionStrategy, typeResolveDescription);
             switch (typeResolveDescription.Binding.Lifetime)
             {
                 case Lifetime.Singleton:

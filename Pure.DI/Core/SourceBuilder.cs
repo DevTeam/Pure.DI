@@ -68,6 +68,7 @@
                 {
                     var metadata = CreateMetadata(rawMetadata, walker.Metadata);
                     _context.Metadata = metadata;
+                    _context.Prepare();
                     var compilationUnitSyntax = _resolverBuilderFactory().Build();
                     yield return new Source(
                         metadata.TargetTypeName,

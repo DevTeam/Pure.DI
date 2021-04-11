@@ -9,13 +9,17 @@
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class ArrayObjectBuilder: IObjectBuilder
     {
-        public ExpressionSyntax TryBuild(ITypeResolver typeResolver, IBindingExpressionStrategy bindingExpressionStrategy, TypeResolveDescription typeDescription)
+        private readonly ITypeResolver _typeResolver;
+
+        public ArrayObjectBuilder(ITypeResolver typeResolver) => _typeResolver = typeResolver;
+
+        public ExpressionSyntax TryBuild(IBindingExpressionStrategy bindingExpressionStrategy, TypeResolveDescription typeDescription)
         {
             var objectCreationExpressions = new List<ExpressionSyntax>();
             if (typeDescription.Type is IArrayTypeSymbol arrayTypeSymbol)
             {
                 objectCreationExpressions.AddRange(
-                    from elementTypeDescriptor in typeResolver.Resolve(arrayTypeSymbol.ElementType)
+                    from elementTypeDescriptor in _typeResolver.Resolve(arrayTypeSymbol.ElementType)
                     let objectCreationExpression = bindingExpressionStrategy.TryBuild(elementTypeDescriptor)
                     select objectCreationExpression);
 

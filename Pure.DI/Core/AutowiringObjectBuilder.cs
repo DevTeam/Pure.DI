@@ -28,14 +28,11 @@
             _attributesService = attributesService;
         }
 
-        public ExpressionSyntax TryBuild(
-            ITypeResolver typeResolver,
-            IBindingExpressionStrategy bindingExpressionStrategy,
-            TypeResolveDescription typeDescription)
+        public ExpressionSyntax TryBuild(IBindingExpressionStrategy bindingExpressionStrategy, TypeResolveDescription typeDescription)
         {
             var ctorInfo = (
-                from ctor in _constructorsResolver.Resolve(typeResolver, typeDescription)
-                let parameters = ResolveMethodParameters(typeResolver, bindingExpressionStrategy, typeDescription, ctor)
+                from ctor in _constructorsResolver.Resolve(typeDescription)
+                let parameters = ResolveMethodParameters(_buildContext.TypeResolver, bindingExpressionStrategy, typeDescription, ctor)
                 where parameters.All(i => i != null)
                 let arguments = SyntaxFactory.SeparatedList(
                     from parameter in parameters
@@ -77,7 +74,7 @@
                     {
                         case IMethodSymbol method:
                             var arguments =
-                                from parameter in ResolveMethodParameters(typeResolver, bindingExpressionStrategy, typeDescription, method)
+                                from parameter in ResolveMethodParameters(_buildContext.TypeResolver, bindingExpressionStrategy, typeDescription, method)
                                 select SyntaxFactory.Argument(parameter);
 
                             var call = SyntaxFactory.InvocationExpression(
@@ -94,7 +91,7 @@
                         case IFieldSymbol filed:
                             if (!filed.IsReadOnly && !filed.IsStatic && !filed.IsConst)
                             {
-                                var fieldValue = ResolveInstance(filed, typeDescription, filed.Type, typeResolver, bindingExpressionStrategy);
+                                var fieldValue = ResolveInstance(filed, typeDescription, filed.Type, _buildContext.TypeResolver, bindingExpressionStrategy);
                                 var assignmentExpression = SyntaxFactory.AssignmentExpression(
                                     SyntaxKind.SimpleAssignmentExpression,
                                     SyntaxFactory.MemberAccessExpression(
@@ -112,7 +109,7 @@
                         case IPropertySymbol property:
                             if (property.SetMethod != null && !property.IsReadOnly && !property.IsStatic)
                             {
-                                var propertyValue = ResolveInstance(property, typeDescription, property.Type, typeResolver, bindingExpressionStrategy);
+                                var propertyValue = ResolveInstance(property, typeDescription, property.Type, _buildContext.TypeResolver, bindingExpressionStrategy);
                                 var assignmentExpression = SyntaxFactory.AssignmentExpression(
                                     SyntaxKind.SimpleAssignmentExpression,
                                     SyntaxFactory.MemberAccessExpression(
