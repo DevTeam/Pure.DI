@@ -10,15 +10,15 @@
 
         public Tracer(IDiagnostic diagnostic) => _diagnostic = diagnostic;
 
-        public IDisposable RegisterResolving(TypeResolveDescription typeResolveDescription)
+        public IDisposable RegisterResolving(TypeDescription typeDescription)
         {
             if (_level++ <= 256)
             {
                 return this;
             }
 
-            var message = $"Circular dependency detected resolving {typeResolveDescription}.";
-            _diagnostic.Error(Diagnostics.CircularDependency, message, typeResolveDescription.Binding.Location);
+            var message = $"Circular dependency detected resolving {typeDescription}.";
+            _diagnostic.Error(Diagnostics.CircularDependency, message, typeDescription.Binding.Location);
             return this;
         }
 

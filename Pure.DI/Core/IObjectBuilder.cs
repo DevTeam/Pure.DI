@@ -4,6 +4,6 @@
 
     internal interface IObjectBuilder
     {
-        ExpressionSyntax TryBuild(IBindingExpressionStrategy bindingExpressionStrategy, TypeResolveDescription typeDescription);
+        ExpressionSyntax TryBuild(IBindingExpressionStrategy bindingExpressionStrategy, TypeDescription typeDescription);
     }
 }

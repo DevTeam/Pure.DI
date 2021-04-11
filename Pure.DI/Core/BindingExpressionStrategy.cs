@@ -28,20 +28,20 @@
             _dependencyBindingExpressionStrategy = dependencyBindingExpressionStrategy ?? this;
         }
 
-        public ExpressionSyntax TryBuild(TypeResolveDescription typeResolveDescription)
+        public ExpressionSyntax TryBuild(TypeDescription typeDescription)
         {
-            using var traceToken = _tracer.RegisterResolving(typeResolveDescription);
-            var objectExpression = typeResolveDescription.ObjectBuilder.TryBuild(_dependencyBindingExpressionStrategy, typeResolveDescription);
-            switch (typeResolveDescription.Binding.Lifetime)
+            using var traceToken = _tracer.RegisterResolving(typeDescription);
+            var objectExpression = typeDescription.ObjectBuilder.TryBuild(_dependencyBindingExpressionStrategy, typeDescription);
+            switch (typeDescription.Binding.Lifetime)
             {
                 case Lifetime.Singleton:
                     {
-                        var resolvedType = typeResolveDescription.Type;
+                        var resolvedType = typeDescription.Type;
                         var classParts = resolvedType.ToMinimalDisplayParts(_buildContext.SemanticModel, 0).Where(i => i.Kind == SymbolDisplayPartKind.ClassName).Select(i => i.ToString());
                         var memberKey = new MemberKey(
                             string.Join("_", classParts) + "Singleton",
                             resolvedType,
-                            typeResolveDescription.Tag);
+                            typeDescription.Tag);
 
                         var expression = objectExpression;
                         var singletonClass = _buildContext.GetOrAddMember(memberKey, () =>

@@ -13,7 +13,7 @@
 
         public ArrayObjectBuilder(ITypeResolver typeResolver) => _typeResolver = typeResolver;
 
-        public ExpressionSyntax TryBuild(IBindingExpressionStrategy bindingExpressionStrategy, TypeResolveDescription typeDescription)
+        public ExpressionSyntax TryBuild(IBindingExpressionStrategy bindingExpressionStrategy, TypeDescription typeDescription)
         {
             var objectCreationExpressions = new List<ExpressionSyntax>();
             if (typeDescription.Type is IArrayTypeSymbol arrayTypeSymbol)

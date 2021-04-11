@@ -7,6 +7,6 @@
     {
         ExpressionSyntax TryBuild(ITypeSymbol contractType, ExpressionSyntax? tag);
 
-        ExpressionSyntax TryBuild(TypeResolveDescription typeResolveDescription);
+        ExpressionSyntax TryBuild(TypeDescription typeDescription);
     }
 }

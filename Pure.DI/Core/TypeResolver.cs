@@ -76,7 +76,7 @@
             }
         }
 
-        public TypeResolveDescription Resolve(ITypeSymbol contractTypeSymbol, ExpressionSyntax? tag, bool anyTag = false, bool suppressWarnings = false)
+        public TypeDescription Resolve(ITypeSymbol contractTypeSymbol, ExpressionSyntax? tag, bool anyTag = false, bool suppressWarnings = false)
         {
             if (contractTypeSymbol is INamedTypeSymbol contractType)
             {
@@ -90,7 +90,7 @@
                         var hasTypesMap = typesMap.Setup(implementationEntry.Details, contractType);
                         if (_factories.TryGetValue(key, out var factory))
                         {
-                            return new TypeResolveDescription(factory.Metadata, contractType, tag, _factoryObjectBuilder(), typesMap, _semanticModel);
+                            return new TypeDescription(factory.Metadata, contractType, tag, _factoryObjectBuilder(), typesMap, _semanticModel);
                         }
 
                         if (hasTypesMap && implementationEntry.Metadata.ImplementationType != null)
@@ -110,7 +110,7 @@
                             }
 
                             binding.ContractTypes.Add(constructedContractType);
-                            return new TypeResolveDescription(implementationEntry.Metadata, implementationType, tag, _constructorObjectBuilder(), typesMap, _semanticModel);
+                            return new TypeDescription(implementationEntry.Metadata, implementationType, tag, _constructorObjectBuilder(), typesMap, _semanticModel);
                         }
                     }
                 }
@@ -123,10 +123,10 @@
                         typesMap.Setup(implementationEntry.Details, contractType);
                         if (_factories.TryGetValue(key, out var factory))
                         {
-                            return new TypeResolveDescription(factory.Metadata, contractType, tag, _factoryObjectBuilder(), typesMap, _semanticModel);
+                            return new TypeDescription(factory.Metadata, contractType, tag, _factoryObjectBuilder(), typesMap, _semanticModel);
                         }
 
-                        return new TypeResolveDescription(implementationEntry.Metadata, implementationEntry.Details, tag, _constructorObjectBuilder(), typesMap, _semanticModel);
+                        return new TypeDescription(implementationEntry.Metadata, implementationEntry.Details, tag, _constructorObjectBuilder(), typesMap, _semanticModel);
                     }
                 }
 
@@ -141,13 +141,13 @@
                         ImplementationType = contractType
                     };
 
-                    return new TypeResolveDescription(newBinding, contractTypeSymbol, null, _constructorObjectBuilder(), typesMap, _semanticModel);
+                    return new TypeDescription(newBinding, contractTypeSymbol, null, _constructorObjectBuilder(), typesMap, _semanticModel);
                 }
             }
 
             if (contractTypeSymbol is IArrayTypeSymbol arrayType)
             {
-                return new TypeResolveDescription(new BindingMetadata(), arrayType, null, _arrayObjectBuilder(), _typesMapFactory(), _semanticModel);
+                return new TypeDescription(new BindingMetadata(), arrayType, null, _arrayObjectBuilder(), _typesMapFactory(), _semanticModel);
             }
 
             if (!suppressWarnings)
@@ -162,10 +162,10 @@
                 }
             }
 
-            return new TypeResolveDescription(new BindingMetadata(), contractTypeSymbol, null, _constructorObjectBuilder(), _typesMapFactory(), _semanticModel, false);
+            return new TypeDescription(new BindingMetadata(), contractTypeSymbol, null, _constructorObjectBuilder(), _typesMapFactory(), _semanticModel, false);
         }
 
-        public IEnumerable<TypeResolveDescription> Resolve(ITypeSymbol contractTypeSymbol)
+        public IEnumerable<TypeDescription> Resolve(ITypeSymbol contractTypeSymbol)
         {
             var keyToFind = new Key(contractTypeSymbol, null, true);
             var registeredKeys =

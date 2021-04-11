@@ -6,6 +6,7 @@
     internal interface IMetadataWalker
     {
         IReadOnlyCollection<ResolverMetadata> Metadata { get; }
+
         void Visit(SyntaxNode? node);
     }
 }

@@ -10,13 +10,13 @@ namespace Pure.DI.Core
 
     internal class FactoryRewriter: CSharpSyntaxRewriter
     {
-        private readonly TypeResolveDescription _typeDescription;
+        private readonly TypeDescription _typeDescription;
         private readonly IBindingExpressionStrategy _bindingExpressionStrategy;
         private readonly SyntaxToken _contextIdentifier;
         private readonly IBuildContext _buildContext;
 
         public FactoryRewriter(
-            TypeResolveDescription typeDescription,
+            TypeDescription typeDescription,
             IBindingExpressionStrategy bindingExpressionStrategy,
             SyntaxToken contextIdentifier,
             IBuildContext buildContext)

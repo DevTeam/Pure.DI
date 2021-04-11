@@ -3,7 +3,7 @@
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    internal readonly struct TypeResolveDescription
+    internal readonly struct TypeDescription
     {
         public readonly BindingMetadata Binding;
         public readonly ITypeSymbol Type;
@@ -13,7 +13,7 @@
         public readonly SemanticModel SemanticModel;
         public readonly bool IsResolved;
 
-        public TypeResolveDescription(
+        public TypeDescription(
             BindingMetadata binding,
             ITypeSymbol type,
             ExpressionSyntax? tag,

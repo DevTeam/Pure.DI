@@ -18,7 +18,7 @@
             _attributesService = attributesService;
         }
 
-        public IEnumerable<IMethodSymbol> Resolve(TypeResolveDescription typeDescription)
+        public IEnumerable<IMethodSymbol> Resolve(TypeDescription typeDescription)
         {
             if (typeDescription.Type is INamedTypeSymbol type)
             {

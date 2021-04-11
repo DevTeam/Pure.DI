@@ -28,7 +28,7 @@
             _attributesService = attributesService;
         }
 
-        public ExpressionSyntax TryBuild(IBindingExpressionStrategy bindingExpressionStrategy, TypeResolveDescription typeDescription)
+        public ExpressionSyntax TryBuild(IBindingExpressionStrategy bindingExpressionStrategy, TypeDescription typeDescription)
         {
             var ctorInfo = (
                 from ctor in _constructorsResolver.Resolve(typeDescription)
@@ -155,7 +155,7 @@
 
         private ExpressionSyntax ResolveInstance(
             ISymbol target,
-            TypeResolveDescription targetTypeDescription,
+            TypeDescription targetTypeDescription,
             ITypeSymbol defaultType,
             ITypeResolver typeResolver,
             IBindingExpressionStrategy bindingExpressionStrategy)
@@ -195,7 +195,7 @@
             throw new InvalidOperationException("Diagnostic.Error should throw an exception.");
         }
 
-        private IEnumerable<ExpressionSyntax?> ResolveMethodParameters(ITypeResolver typeResolver, IBindingExpressionStrategy bindingExpressionStrategy, TypeResolveDescription typeDescription, IMethodSymbol method) =>
+        private IEnumerable<ExpressionSyntax?> ResolveMethodParameters(ITypeResolver typeResolver, IBindingExpressionStrategy bindingExpressionStrategy, TypeDescription typeDescription, IMethodSymbol method) =>
             from parameter in method.Parameters
             select ResolveInstance(parameter, typeDescription, parameter.Type, typeResolver, bindingExpressionStrategy);
 
@@ -208,7 +208,7 @@
             where typeSymbol != null
             select typeSymbol).FirstOrDefault();
 
-        private ExpressionSyntax CreateObject(IMethodSymbol ctor, TypeResolveDescription typeDescription, SeparatedSyntaxList<ArgumentSyntax> arguments)
+        private ExpressionSyntax CreateObject(IMethodSymbol ctor, TypeDescription typeDescription, SeparatedSyntaxList<ArgumentSyntax> arguments)
         {
             var typeSyntax = typeDescription.Type.ToTypeSyntax(typeDescription.SemanticModel);
             if (typeSyntax.IsKind(SyntaxKind.TupleType))

@@ -14,7 +14,7 @@ namespace Pure.DI.Core
         public FactoryObjectBuilder(IBuildContext buildContext) =>
             _buildContext = buildContext;
 
-        public ExpressionSyntax TryBuild(IBindingExpressionStrategy bindingExpressionStrategy, TypeResolveDescription typeDescription)
+        public ExpressionSyntax TryBuild(IBindingExpressionStrategy bindingExpressionStrategy, TypeDescription typeDescription)
         {
             var factory = typeDescription.Binding.Factory;
             ExpressionSyntax? resultExpression = factory;
