@@ -7,7 +7,7 @@
     internal interface IBindingStatementsStrategy
     {
         IEnumerable<StatementSyntax> CreateStatements(
-            IBindingExpressionStrategy bindingExpressionStrategy,
+            IBuildStrategy buildStrategy,
             BindingMetadata binding,
             ITypeSymbol contractType);
     }

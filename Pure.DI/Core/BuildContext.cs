@@ -10,6 +10,7 @@
     {
         private readonly Dictionary<MemberKey, MemberDeclarationSyntax> _additionalMembers = new();
         private readonly HashSet<BindingMetadata> _additionalBindings = new();
+        private readonly HashSet<StatementSyntax> _finalizationStatements = new();
         private readonly Func<INameService> _nameServiceFactory;
         private readonly Func<ITypeResolver> _typeResolverFactory;
         private ResolverMetadata? _metadata;
@@ -45,6 +46,8 @@
 
         public IEnumerable<MemberDeclarationSyntax> AdditionalMembers => _additionalMembers.Values;
 
+        public IEnumerable<StatementSyntax> FinalizationStatements => _finalizationStatements;
+
         public void Prepare()
         {
             _additionalBindings.Clear();
@@ -66,5 +69,8 @@
             _additionalMembers.Add(key, member);
             return member;
         }
+
+        public void AddFinalizationStatement(StatementSyntax finalizationStatement) =>
+            _finalizationStatements.Add(finalizationStatement);
     }
 }

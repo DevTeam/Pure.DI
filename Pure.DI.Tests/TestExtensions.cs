@@ -25,10 +25,9 @@
                     MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
                     MetadataReference.CreateFromFile(typeof(DI).Assembly.Location));
 
-        private const string Code = @"namespace Sample { public class Program { public static void Main() => System.Console.WriteLine(Composer.Resolve<CompositionRoot>().Value); } }";
-
-        public static IReadOnlyList<string> Run(this string setupCode, out string generatedCode, string resolveName = "Composer")
+        public static IReadOnlyList<string> Run(this string setupCode, out string generatedCode, RunOptions? options = default)
         {
+            var curOptions = options ?? new RunOptions();
             var setupCompilation = CreateCompilation()
                 .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
                 .AddSyntaxTrees(CSharpSyntaxTree.ParseText(setupCode))
@@ -55,10 +54,12 @@
             }
 
             generatedCode = string.Join(Environment.NewLine, generatedSources.Select((src, index) => $"Generated {index + 1}" + Environment.NewLine + Environment.NewLine + src.Code));
+            var hostCode = @"namespace Sample { public class Program { public static void Main() {" + curOptions.Statements + @"} } }";
+
             var compilation = CreateCompilation()
                 .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication))
                 .AddSyntaxTrees(CSharpSyntaxTree.ParseText(setupCode))
-                .AddSyntaxTrees(CSharpSyntaxTree.ParseText(Code.Replace("Composer", resolveName)))
+                .AddSyntaxTrees(CSharpSyntaxTree.ParseText(hostCode))
                 .AddSyntaxTrees(generatedSources.Select(i => CSharpSyntaxTree.ParseText(i.Code.ToString())).ToArray())
                 .Check();
 

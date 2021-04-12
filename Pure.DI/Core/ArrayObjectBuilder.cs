@@ -13,14 +13,14 @@
 
         public ArrayObjectBuilder(ITypeResolver typeResolver) => _typeResolver = typeResolver;
 
-        public ExpressionSyntax TryBuild(IBindingExpressionStrategy bindingExpressionStrategy, TypeDescription typeDescription)
+        public ExpressionSyntax Build(IBuildStrategy buildStrategy, TypeDescription typeDescription)
         {
             var objectCreationExpressions = new List<ExpressionSyntax>();
             if (typeDescription.Type is IArrayTypeSymbol arrayTypeSymbol)
             {
                 objectCreationExpressions.AddRange(
                     from elementTypeDescriptor in _typeResolver.Resolve(arrayTypeSymbol.ElementType)
-                    let objectCreationExpression = bindingExpressionStrategy.TryBuild(elementTypeDescriptor)
+                    let objectCreationExpression = buildStrategy.Build(elementTypeDescriptor)
                     select objectCreationExpression);
 
                 return SyntaxFactory.ArrayCreationExpression(

@@ -78,7 +78,7 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)'=='Release'">
-		<PackageReference Include="Pure.DI.Contracts" Version="1.0.0-beta1" GeneratePathProperty="true" PrivateAssets="all" />
+		<PackageReference Include="Pure.DI.Contracts" Version="1.0.0-beta2" GeneratePathProperty="true" PrivateAssets="all" />
 		<None Include="$(PKGPure_DI_Contracts)\lib\netstandard2.0\Pure.DI.Contracts.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 	</ItemGroup>
 

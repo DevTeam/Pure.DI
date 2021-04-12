@@ -11,19 +11,19 @@ namespace Pure.DI.Core
     internal class FactoryRewriter: CSharpSyntaxRewriter
     {
         private readonly TypeDescription _typeDescription;
-        private readonly IBindingExpressionStrategy _bindingExpressionStrategy;
+        private readonly IBuildStrategy _buildStrategy;
         private readonly SyntaxToken _contextIdentifier;
         private readonly IBuildContext _buildContext;
 
         public FactoryRewriter(
             TypeDescription typeDescription,
-            IBindingExpressionStrategy bindingExpressionStrategy,
+            IBuildStrategy buildStrategy,
             SyntaxToken contextIdentifier,
             IBuildContext buildContext)
             : base(true)
         {
             _typeDescription = typeDescription;
-            _bindingExpressionStrategy = bindingExpressionStrategy;
+            _buildStrategy = buildStrategy;
             _contextIdentifier = contextIdentifier;
             _buildContext = buildContext;
         }
@@ -42,7 +42,8 @@ namespace Pure.DI.Core
                         && SymbolEqualityComparer.Default.Equals(invocationOperation.TargetMethod.TypeArguments[0], invocationOperation.TargetMethod.ReturnType))
                     {
                         var tag = invocationOperation.Arguments.Length == 1 ? invocationOperation.Arguments[0].Value.Syntax as ExpressionSyntax : null;
-                        return _bindingExpressionStrategy.TryBuild(_typeDescription.TypesMap.ConstructType(invocationOperation.TargetMethod.ReturnType), tag);
+                        var typeDescription = _buildContext.TypeResolver.Resolve(_typeDescription.TypesMap.ConstructType(invocationOperation.TargetMethod.ReturnType), tag);
+                        return _buildStrategy.Build(typeDescription);
                     }
                 }
             }

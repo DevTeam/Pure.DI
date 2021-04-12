@@ -6,7 +6,7 @@
     public class SingletonTests
     {
         [Fact]
-        public void ShouldSupportSingletons()
+        public void ShouldSupportSingleton()
         {
             // Given
 
@@ -41,7 +41,7 @@
         }
 
         [Fact]
-        public void ShouldSupportSingletonsWhenNested()
+        public void ShouldSupportSingletonWhenNested()
         {
             // Given
 
@@ -83,7 +83,7 @@
         }
 
         [Fact]
-        public void ShouldSupportSingletonsWhenFactory()
+        public void ShouldSupportSingletonWhenFactory()
         {
             // Given
 
@@ -118,7 +118,7 @@
         }
 
         [Fact]
-        public void ShouldSupportSingletonsForSeveralContracts()
+        public void ShouldSupportSingletonForSeveralContracts()
         {
             // Given
 

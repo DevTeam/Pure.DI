@@ -2,8 +2,29 @@
 {
     public enum Lifetime
     {
-        Transient = 0,
+        /// <summary>
+        /// Creates a new object of the requested type every time.
+        /// </summary>
+        Transient,
 
-        Singleton = 1
+        /// <summary>
+        /// Creates a singleton object first time you and then returns the same object.
+        /// </summary>
+        Singleton,
+
+        /// <summary>
+        /// Creates a singleton object per thread. It returns different objects on different threads.
+        /// </summary>
+        PerThread,
+
+        /// <summary>
+        /// Similar to the Transient, but it reuses the same object in the recursive object graph.
+        /// </summary>
+        PerResolve,
+
+        /// <summary>
+        /// This lifetime allows to apply a custom lifetime to a binding. Just realize the interface <c>ILifetime&lt;T&gt;</c> and bind, for example: .Bind&lt;ILifetime&lt;IMyInterface&gt;&gt;().To&lt;MyLifetime&gt;()
+        /// </summary>
+        Binding
     }
 }

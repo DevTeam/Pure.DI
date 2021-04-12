@@ -12,9 +12,14 @@
         StaticWithTag,
         GenericStaticResolve,
         GenericStaticWithTag,
-        SimpleExpressionStrategy,
-        GenericExpressionStrategy,
+        SimpleBuildStrategy,
+        GenericBuildStrategy,
         TypeStatementsStrategy,
-        TypeAndTagStatementsStrategy
+        TypeAndTagStatementsStrategy,
+        TransientLifetime,
+        SingletonLifetime,
+        ThreadSingletonLifetime,
+        ResolveSingletonLifetime,
+        CustomLifetime
     }
 }

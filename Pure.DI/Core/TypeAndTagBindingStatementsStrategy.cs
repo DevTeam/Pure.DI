@@ -8,14 +8,20 @@
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class TypeAndTagBindingStatementsStrategy : IBindingStatementsStrategy
     {
+        private readonly ITypeResolver _typeResolver;
+
+        public TypeAndTagBindingStatementsStrategy(ITypeResolver typeResolver) =>
+            _typeResolver = typeResolver;
+
         public IEnumerable<StatementSyntax> CreateStatements(
-            IBindingExpressionStrategy bindingExpressionStrategy,
+            IBuildStrategy buildStrategy,
             BindingMetadata binding,
             ITypeSymbol contractType)
         {
             foreach (var tag in binding.Tags)
             {
-                var instance = bindingExpressionStrategy.TryBuild(contractType, tag);
+                var instanceTypeDescriptor = _typeResolver.Resolve(contractType, tag);
+                var instance = buildStrategy.Build(instanceTypeDescriptor);
                 yield return SyntaxFactory.IfStatement(
                     SyntaxFactory.InvocationExpression(
                         SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, tag, SyntaxFactory.Token(SyntaxKind.DotToken), SyntaxFactory.IdentifierName("Equals"))

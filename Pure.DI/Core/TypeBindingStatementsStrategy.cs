@@ -8,12 +8,18 @@
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class TypeBindingStatementsStrategy: IBindingStatementsStrategy
     {
+        private readonly ITypeResolver _typeResolver;
+
+        public TypeBindingStatementsStrategy(ITypeResolver typeResolver) =>
+            _typeResolver = typeResolver;
+
         public IEnumerable<StatementSyntax> CreateStatements(
-            IBindingExpressionStrategy bindingExpressionStrategy,
+            IBuildStrategy buildStrategy,
             BindingMetadata binding,
             ITypeSymbol contractType)
         {
-            var instance = bindingExpressionStrategy.TryBuild(contractType, null);
+            var instanceTypeDescriptor = _typeResolver.Resolve(contractType, null);
+            var instance = buildStrategy.Build(instanceTypeDescriptor);
             yield return SyntaxFactory.ReturnStatement(instance);
         }
     }

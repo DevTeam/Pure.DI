@@ -7,25 +7,25 @@
     {
         private readonly ResolverMetadata _metadata;
         private readonly IFallbackStrategy _fallbackStrategy;
-        private readonly IBindingExpressionStrategy _bindingExpressionStrategy;
+        private readonly IBuildStrategy _buildStrategy;
         private readonly IBindingStatementsStrategy _bindingStatementsStrategy;
 
         public StaticResolveMethodBuilder(
             ResolverMetadata metadata,
             IFallbackStrategy fallbackStrategy,
-            [Tag(Tags.SimpleExpressionStrategy)] IBindingExpressionStrategy bindingExpressionStrategy,
+            [Tag(Tags.SimpleBuildStrategy)] IBuildStrategy buildStrategy,
             [Tag(Tags.TypeStatementsStrategy)] IBindingStatementsStrategy bindingStatementsStrategy)
         {
             _metadata = metadata;
             _fallbackStrategy = fallbackStrategy;
-            _bindingExpressionStrategy = bindingExpressionStrategy;
+            _buildStrategy = buildStrategy;
             _bindingStatementsStrategy = bindingStatementsStrategy;
         }
 
         public ResolveMethod Build()
         {
             var returnDefault = _fallbackStrategy.Build(_metadata.Fallback, null, SyntaxFactory.ParseTypeName("type"), SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax));
-            return new ResolveMethod(SyntaxRepo.StaticResolveMethodSyntax, true, _bindingExpressionStrategy, _bindingStatementsStrategy, SyntaxFactory.ParseName("type"), returnDefault);
+            return new ResolveMethod(SyntaxRepo.StaticResolveMethodSyntax, true, _buildStrategy, _bindingStatementsStrategy, SyntaxFactory.ParseName("type"), returnDefault);
         }
     }
 }

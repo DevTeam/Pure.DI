@@ -7,25 +7,25 @@
     {
         private readonly ResolverMetadata _metadata;
         private readonly IFallbackStrategy _fallbackStrategy;
-        private readonly IBindingExpressionStrategy _bindingExpressionStrategy;
+        private readonly IBuildStrategy _buildStrategy;
         private readonly IBindingStatementsStrategy _bindingStatementsStrategy;
 
         public GenericStaticResolveMethodBuilder(
             ResolverMetadata metadata,
             IFallbackStrategy fallbackStrategy,
-            [Tag(Tags.GenericExpressionStrategy)] IBindingExpressionStrategy bindingExpressionStrategy,
+            [Tag(Tags.GenericBuildStrategy)] IBuildStrategy buildStrategy,
             [Tag(Tags.TypeStatementsStrategy)] IBindingStatementsStrategy bindingStatementsStrategy)
         {
             _metadata = metadata;
             _fallbackStrategy = fallbackStrategy;
-            _bindingExpressionStrategy = bindingExpressionStrategy;
+            _buildStrategy = buildStrategy;
             _bindingStatementsStrategy = bindingStatementsStrategy;
         }
 
         public ResolveMethod Build()
         {
             var genericReturnDefault = _fallbackStrategy.Build(_metadata.Fallback, SyntaxRepo.TTypeSyntax, SyntaxFactory.TypeOfExpression(SyntaxRepo.TTypeSyntax), SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax));
-            return new ResolveMethod(SyntaxRepo.GenericStaticResolveMethodSyntax, true, _bindingExpressionStrategy, _bindingStatementsStrategy, SyntaxFactory.TypeOfExpression(SyntaxRepo.TTypeSyntax), genericReturnDefault);
+            return new ResolveMethod(SyntaxRepo.GenericStaticResolveMethodSyntax, true, _buildStrategy, _bindingStatementsStrategy, SyntaxFactory.TypeOfExpression(SyntaxRepo.TTypeSyntax), genericReturnDefault);
         }
     }
 }

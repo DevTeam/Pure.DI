@@ -2,7 +2,6 @@
 {
     using System.Linq;
     using Core;
-    using Microsoft.CodeAnalysis;
     using Shouldly;
     using Xunit;
 
@@ -42,7 +41,7 @@
                     public readonly string Value;
                     internal CompositionRoot(string value) => Value = value;        
                 }
-            }".Replace("static partial class", classDefinition).Run(out var generatedCode, "ComposerDI");
+            }".Replace("static partial class", classDefinition).Run(out var generatedCode, new RunOptions { Statements = @"System.Console.WriteLine(ComposerDI.Resolve<CompositionRoot>().Value);" });
 
             // Then
             output.ShouldBe(new[] { "abc" }, generatedCode);
@@ -50,6 +49,46 @@
 
         [Fact]
         public void ShouldSetupForNestedClass()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public partial class Foo
+                {
+                    public static partial class Composer
+                    {
+                        // Models a random subatomic event that may or may not occur
+                        private static readonly Random Indeterminacy = new();
+
+                        static Composer()
+                        {
+                            DI.Setup()
+                                .Bind<string>().To(_ => ""abc"")
+                                // Composition Root
+                                .Bind<CompositionRoot>().To<CompositionRoot>();
+                        }
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string value) => Value = value;        
+                }                
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "abc" }, generatedCode);
+        }
+
+        [Fact]
+        public void ShouldSetupForNestedClassWhenTargetTypeNameIsSpecified()
         {
             // Given
 
@@ -82,7 +121,7 @@
                     public readonly string Value;
                     internal CompositionRoot(string value) => Value = value;        
                 }                
-            }".Run(out var generatedCode, "Resolver");
+            }".Run(out var generatedCode, new RunOptions { Statements = @"System.Console.WriteLine(Resolver.Resolve<CompositionRoot>().Value);" });
 
             // Then
             output.ShouldBe(new[] { "abc" }, generatedCode);
@@ -618,6 +657,78 @@
 
             // Then
             output.ShouldBe(new[] { "Sample.MyClass" }, generatedCode);
+        }
+
+        [Fact]
+        public void ShouldSupportSpecifiedGenerics()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+ 
+                public interface IMyClass<T> { }
+                public class MyClass<T>: IMyClass<T> { }
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            // Composition Root
+                            .Bind<IMyClass<string>>().To<MyClass<string>>()
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(IMyClass<string> value) => Value = value.ToString();
+                }
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "Sample.MyClass`1[System.String]" }, generatedCode);
+        }
+
+        [Fact]
+        public void ShouldSupportGenericsWithoutBinding()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+ 
+                public class MyClass<T> { }
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(MyClass<string> value) => Value = value.ToString();
+                }
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "Sample.MyClass`1[System.String]" }, generatedCode);
         }
     }
 }

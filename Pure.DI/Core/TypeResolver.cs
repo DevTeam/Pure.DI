@@ -88,34 +88,43 @@
                 Binding<ITypeSymbol> implementationEntry;
                 if (contractType.IsGenericType)
                 {
-                    var key = new Key(contractType.ConstructUnboundGenericType(), tag, anyTag);
-                    if (_map.TryGetValue(key, out implementationEntry))
+                    var keys = new[]
                     {
-                        var typesMap = _typesMapFactory();
-                        var hasTypesMap = typesMap.Setup(implementationEntry.Details, contractType);
-                        if (_factories.TryGetValue(key, out var factory))
-                        {
-                            return new TypeDescription(factory.Metadata, contractType, tag, _factoryObjectBuilder(), typesMap, _semanticModel);
-                        }
+                        new Key(contractType, tag, anyTag),
+                        new Key(contractType.ConstructUnboundGenericType(), tag, anyTag)
+                    };
 
-                        if (hasTypesMap && implementationEntry.Metadata.ImplementationType != null)
-                        {
-                            var constructedContractType = typesMap.ConstructType(implementationEntry.Details);
-                            var implementationType = typesMap.ConstructType(implementationEntry.Metadata.ImplementationType);
-                            var binding = new BindingMetadata
-                            {
-                                ImplementationType = implementationType,
-                                Lifetime = implementationEntry.Metadata.Lifetime,
-                                Location = implementationEntry.Metadata.Location
-                            };
+                    foreach (var key in keys)
+                    {
 
-                            if (tag != null)
+                        if (_map.TryGetValue(key, out implementationEntry))
+                        {
+                            var typesMap = _typesMapFactory();
+                            var hasTypesMap = typesMap.Setup(implementationEntry.Details, contractType);
+                            if (_factories.TryGetValue(key, out var factory))
                             {
-                                binding.Tags.Add(tag);
+                                return new TypeDescription(factory.Metadata, contractType, tag, _factoryObjectBuilder(), typesMap, _semanticModel);
                             }
 
-                            binding.ContractTypes.Add(constructedContractType);
-                            return new TypeDescription(implementationEntry.Metadata, implementationType, tag, _constructorObjectBuilder(), typesMap, _semanticModel);
+                            if (hasTypesMap && implementationEntry.Metadata.ImplementationType != null)
+                            {
+                                var constructedContractType = typesMap.ConstructType(implementationEntry.Details);
+                                var implementationType = typesMap.ConstructType(implementationEntry.Metadata.ImplementationType);
+                                var binding = new BindingMetadata
+                                {
+                                    ImplementationType = implementationType,
+                                    Lifetime = implementationEntry.Metadata.Lifetime,
+                                    Location = implementationEntry.Metadata.Location
+                                };
+
+                                if (tag != null)
+                                {
+                                    binding.Tags.Add(tag);
+                                }
+
+                                binding.ContractTypes.Add(constructedContractType);
+                                return new TypeDescription(implementationEntry.Metadata, implementationType, tag, _constructorObjectBuilder(), typesMap, _semanticModel);
+                            }
                         }
                     }
                 }

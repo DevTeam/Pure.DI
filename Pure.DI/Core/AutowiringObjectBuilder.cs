@@ -28,11 +28,11 @@
             _attributesService = attributesService;
         }
 
-        public ExpressionSyntax TryBuild(IBindingExpressionStrategy bindingExpressionStrategy, TypeDescription typeDescription)
+        public ExpressionSyntax Build(IBuildStrategy buildStrategy, TypeDescription typeDescription)
         {
             var ctorInfo = (
                 from ctor in _constructorsResolver.Resolve(typeDescription)
-                let parameters = ResolveMethodParameters(_buildContext.TypeResolver, bindingExpressionStrategy, typeDescription, ctor)
+                let parameters = ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, typeDescription, ctor)
                 where parameters.All(i => i != null)
                 let arguments = SyntaxFactory.SeparatedList(
                     from parameter in parameters
@@ -74,7 +74,7 @@
                     {
                         case IMethodSymbol method:
                             var arguments =
-                                from parameter in ResolveMethodParameters(_buildContext.TypeResolver, bindingExpressionStrategy, typeDescription, method)
+                                from parameter in ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, typeDescription, method)
                                 select SyntaxFactory.Argument(parameter);
 
                             var call = SyntaxFactory.InvocationExpression(
@@ -91,7 +91,7 @@
                         case IFieldSymbol filed:
                             if (!filed.IsReadOnly && !filed.IsStatic && !filed.IsConst)
                             {
-                                var fieldValue = ResolveInstance(filed, typeDescription, filed.Type, _buildContext.TypeResolver, bindingExpressionStrategy);
+                                var fieldValue = ResolveInstance(filed, typeDescription, filed.Type, _buildContext.TypeResolver, buildStrategy);
                                 var assignmentExpression = SyntaxFactory.AssignmentExpression(
                                     SyntaxKind.SimpleAssignmentExpression,
                                     SyntaxFactory.MemberAccessExpression(
@@ -109,7 +109,7 @@
                         case IPropertySymbol property:
                             if (property.SetMethod != null && !property.IsReadOnly && !property.IsStatic)
                             {
-                                var propertyValue = ResolveInstance(property, typeDescription, property.Type, _buildContext.TypeResolver, bindingExpressionStrategy);
+                                var propertyValue = ResolveInstance(property, typeDescription, property.Type, _buildContext.TypeResolver, buildStrategy);
                                 var assignmentExpression = SyntaxFactory.AssignmentExpression(
                                     SyntaxKind.SimpleAssignmentExpression,
                                     SyntaxFactory.MemberAccessExpression(
@@ -158,7 +158,7 @@
             TypeDescription targetTypeDescription,
             ITypeSymbol defaultType,
             ITypeResolver typeResolver,
-            IBindingExpressionStrategy bindingExpressionStrategy)
+            IBuildStrategy buildStrategy)
         {
             var type = GetContractType(target, targetTypeDescription.SemanticModel) ?? defaultType;
             var tag = (ExpressionSyntax?) _attributesService.GetAttributeArgumentExpressions(AttributeKind.Tag, target).FirstOrDefault();
@@ -173,7 +173,7 @@
 
                 if (typeDescription.IsResolved)
                 {
-                    return bindingExpressionStrategy.TryBuild(constructedType, typeDescription.Tag);
+                    return buildStrategy.Build(_buildContext.TypeResolver.Resolve(constructedType, typeDescription.Tag));
                 }
 
                 var contractType = typeDescription.Type.ToTypeSyntax(typeDescription.SemanticModel);
@@ -187,17 +187,17 @@
                 var arrayTypeDescription = typeResolver.Resolve(arrayType, null);
                 if (arrayTypeDescription.IsResolved)
                 {
-                    return bindingExpressionStrategy.TryBuild(arrayTypeDescription);
+                    return buildStrategy.Build(arrayTypeDescription);
                 }
             }
 
             _diagnostic.Error(Diagnostics.Unsupported, $"Unsupported type {typeDescription.Type}.", target.Locations.FirstOrDefault());
-            throw new InvalidOperationException("Diagnostic.Error should throw an exception.");
+            throw Diagnostics.ErrorShouldTrowException;
         }
 
-        private IEnumerable<ExpressionSyntax?> ResolveMethodParameters(ITypeResolver typeResolver, IBindingExpressionStrategy bindingExpressionStrategy, TypeDescription typeDescription, IMethodSymbol method) =>
+        private IEnumerable<ExpressionSyntax?> ResolveMethodParameters(ITypeResolver typeResolver, IBuildStrategy buildStrategy, TypeDescription typeDescription, IMethodSymbol method) =>
             from parameter in method.Parameters
-            select ResolveInstance(parameter, typeDescription, parameter.Type, typeResolver, bindingExpressionStrategy);
+            select ResolveInstance(parameter, typeDescription, parameter.Type, typeResolver, buildStrategy);
 
         private ITypeSymbol? GetContractType(ISymbol type, SemanticModel semanticModel) =>
         (

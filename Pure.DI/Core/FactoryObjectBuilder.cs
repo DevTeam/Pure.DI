@@ -14,7 +14,7 @@ namespace Pure.DI.Core
         public FactoryObjectBuilder(IBuildContext buildContext) =>
             _buildContext = buildContext;
 
-        public ExpressionSyntax TryBuild(IBindingExpressionStrategy bindingExpressionStrategy, TypeDescription typeDescription)
+        public ExpressionSyntax Build(IBuildStrategy buildStrategy, TypeDescription typeDescription)
         {
             var factory = typeDescription.Binding.Factory;
             ExpressionSyntax? resultExpression = factory;
@@ -27,9 +27,9 @@ namespace Pure.DI.Core
                 if (factory?.Block != null)
                 {
                     var memberKey = new MemberKey($"Create{typeDescription.Type.Name}", typeDescription.Type, null);
-                    var factoryName = _buildContext.NameService.FindName(memberKey);
-                    var factoryMethod = _buildContext.GetOrAddMember(memberKey, () =>
+                    var factoryMethod = (MethodDeclarationSyntax)_buildContext.GetOrAddMember(memberKey, () =>
                     {
+                        var factoryName = _buildContext.NameService.FindName(memberKey);
                         var type = typeDescription.Type.ToTypeSyntax(typeDescription.SemanticModel);
                         return SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
                             .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveOptimizationAndInliningAttr))
@@ -39,7 +39,7 @@ namespace Pure.DI.Core
                     });
 
                     resultExpression = 
-                        SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryName))
+                        SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryMethod.Identifier))
                             .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName(SyntaxRepo.SharedContextName)));
                 }
             }
@@ -48,7 +48,7 @@ namespace Pure.DI.Core
             {
                 return (ExpressionSyntax) new FactoryRewriter(
                         typeDescription,
-                        bindingExpressionStrategy,
+                        buildStrategy,
                         factory.Parameter.Identifier,
                         _buildContext)
                     .Visit(resultExpression);

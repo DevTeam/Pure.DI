@@ -45,25 +45,30 @@
                 .Bind<IResolveMethodBuilder>().Tag(StaticWithTag).To<StaticWithTagResolveMethodBuilder>()
                 .Bind<IResolveMethodBuilder>().Tag(GenericStaticResolve).To<GenericStaticResolveMethodBuilder>()
                 .Bind<IResolveMethodBuilder>().Tag(GenericStaticWithTag).To<GenericStaticWithTagResolveMethodBuilder>()
-                .Bind<IBindingExpressionStrategy>().Tag(SimpleExpressionStrategy).To<BindingExpressionStrategy>(
-                    ctx => new BindingExpressionStrategy(
-                        ctx.Container.Inject<IBuildContext>(),
+                .Bind<IBuildStrategy>().Tag(SimpleBuildStrategy).To<BuildStrategy>(
+                    ctx => new BuildStrategy(
+                        ctx.Container.Inject<IDiagnostic>(),
                         ctx.Container.Inject<ITracer>(),
-                        ctx.Container.Inject<ITypeResolver>(),
+                        ctx.Container.Inject<IEnumerable<ILifetimeStrategy>>(),
                         ctx.Container.Inject<IBindingResultStrategy>(AsIsResult),
                         null))
-                .Bind<IBindingExpressionStrategy>().Tag(GenericExpressionStrategy).To<BindingExpressionStrategy>(
-                    ctx => new BindingExpressionStrategy(
-                        ctx.Container.Inject<IBuildContext>(),
+                .Bind<IBuildStrategy>().Tag(GenericBuildStrategy).To<BuildStrategy>(
+                    ctx => new BuildStrategy(
+                        ctx.Container.Inject<IDiagnostic>(),
                         ctx.Container.Inject<ITracer>(),
-                        ctx.Container.Inject<ITypeResolver>(),
+                        ctx.Container.Inject<IEnumerable<ILifetimeStrategy>>(),
                         ctx.Container.Inject<IBindingResultStrategy>(GenericResult),
-                        ctx.Container.Inject<IBindingExpressionStrategy>(SimpleExpressionStrategy)))
+                        ctx.Container.Inject<IBuildStrategy>(SimpleBuildStrategy)))
                 .Bind<IBindingStatementsStrategy>().As(Singleton).Tag(TypeStatementsStrategy).To<TypeBindingStatementsStrategy>()
                 .Bind<IBindingStatementsStrategy>().As(Singleton).Tag(TypeAndTagStatementsStrategy).To<TypeAndTagBindingStatementsStrategy>()
                 .Bind<ITypesMap>().To<TypesMap>()
                 .Bind<IAttributesService>().To<AttributesService>()
-                .Bind<ISyntaxContextReceiver>().To<SyntaxContextReceiver>();
+                .Bind<ISyntaxContextReceiver>().To<SyntaxContextReceiver>()
+                .Bind<ILifetimeStrategy>().As(Singleton).Tag(TransientLifetime).To<TransientLifetimeStrategy>()
+                .Bind<ILifetimeStrategy>().Tag(SingletonLifetime).To<SingletonLifetimeStrategy>()
+                .Bind<ILifetimeStrategy>().Tag(ThreadSingletonLifetime).To<PerThreadLifetimeStrategy>()
+                .Bind<ILifetimeStrategy>().Tag(ResolveSingletonLifetime).To<PerResolveLifetimeStrategy>()
+                .Bind<ILifetimeStrategy>().Tag(CustomLifetime).To<BindingLifetimeStrategy>();
         }
     }
 }

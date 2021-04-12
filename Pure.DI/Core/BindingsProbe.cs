@@ -7,14 +7,14 @@
     internal class BindingsProbe : IBindingsProbe
     {
         private readonly IBuildContext _buildContext;
-        private readonly IBindingExpressionStrategy _bindingExpressionStrategy;
+        private readonly IBuildStrategy _buildStrategy;
 
         public BindingsProbe(
             IBuildContext buildContext,
-            [Tag(Tags.SimpleExpressionStrategy)] IBindingExpressionStrategy bindingExpressionStrategy)
+            [Tag(Tags.SimpleBuildStrategy)] IBuildStrategy buildStrategy)
         {
             _buildContext = buildContext;
-            _bindingExpressionStrategy = bindingExpressionStrategy;
+            _buildStrategy = buildStrategy;
         }
 
         public void Probe()
@@ -26,7 +26,7 @@
                 where contractType.IsValidTypeToResolve(_buildContext.SemanticModel)
                 // ReSharper disable once RedundantTypeArgumentsOfMethod
                 from tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null)
-                select _bindingExpressionStrategy.TryBuild(contractType, tag))
+                select _buildStrategy.Build(_buildContext.TypeResolver.Resolve(contractType, tag)))
                 // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
                 .ToList();
         }
