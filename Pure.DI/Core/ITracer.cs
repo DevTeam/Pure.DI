@@ -4,6 +4,6 @@
 
     internal interface ITracer
     {
-        IDisposable RegisterResolving(TypeDescription typeDescription);
+        IDisposable RegisterResolving(Dependency dependency);
     }
 }

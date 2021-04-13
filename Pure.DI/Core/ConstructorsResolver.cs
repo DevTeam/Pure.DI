@@ -18,9 +18,9 @@
             _attributesService = attributesService;
         }
 
-        public IEnumerable<IMethodSymbol> Resolve(TypeDescription typeDescription)
+        public IEnumerable<IMethodSymbol> Resolve(Dependency dependency)
         {
-            if (typeDescription.Type is INamedTypeSymbol type)
+            if (dependency.Implementation.Type is INamedTypeSymbol type)
             {
                 return from ctor in type.Constructors
                     where ctor.DeclaredAccessibility != Accessibility.Private
@@ -30,11 +30,11 @@
                         select order).LastOrDefault()
                     let isObsoleted = (
                         from attr in ctor.GetAttributes()
-                        where attr.AttributeClass != null && typeof(ObsoleteAttribute).Equals(attr.AttributeClass, typeDescription.SemanticModel) select attr).Any()
+                        where attr.AttributeClass != null && new SemanticType(attr.AttributeClass, dependency.Implementation).Equals(typeof(ObsoleteAttribute)) select attr).Any()
                     let parameters = ctor.Parameters
                     let canBeResolved = (
                             from parameter in parameters
-                            let paramTypeDescription = _typeResolver.Resolve(parameter.Type, null, true, true)
+                            let paramTypeDescription = _typeResolver.Resolve(new SemanticType(parameter.Type, dependency.Implementation), null, true, true)
                             select parameter.IsOptional || parameter.HasExplicitDefaultValue || paramTypeDescription.IsResolved)
                         .All(isResolved => isResolved)
                     orderby 

@@ -1,15 +1,14 @@
 ﻿namespace Pure.DI.Core
 {
-    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     internal readonly struct MemberKey
     {
-        private readonly ITypeSymbol _type;
+        private readonly SemanticType _type;
         private readonly ExpressionSyntax? _tag;
         public readonly string Prefix;
 
-        public MemberKey(string prefix, ITypeSymbol contractType, ExpressionSyntax? tag)
+        public MemberKey(string prefix, SemanticType contractType, ExpressionSyntax? tag)
         {
             _type = contractType;
             _tag = tag;
@@ -17,7 +16,7 @@
         }
 
         private bool Equals(MemberKey other) =>
-            _type.Equals(other._type, SymbolEqualityComparer.Default) && _tag?.ToString() == other._tag?.ToString() && Prefix == other.Prefix;
+            _type.Equals(other._type) && _tag?.ToString() == other._tag?.ToString() && Prefix == other.Prefix;
 
         public override bool Equals(object obj) =>
             obj is MemberKey other && Equals(other);

@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core
+﻿// ReSharper disable LoopCanBeConvertedToQuery
+namespace Pure.DI.Core
 {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
@@ -137,27 +138,18 @@
                 compilationUnit = compilationUnit.AddMembers(resolverClass);
             }
 
-            var sampleContractType = _metadata.Bindings.LastOrDefault()?.ContractTypes.FirstOrDefault()?.ToString() ?? "T";
+            var sampleContractType = _metadata.Bindings.LastOrDefault()?.Dependencies.FirstOrDefault()?.ToString() ?? "T";
             _diagnostic.Information(Diagnostics.Generated, $"{_metadata.TargetTypeName} was generated. Please use a method like {_metadata.TargetTypeName}.Resolve<{sampleContractType}>() to create a composition root.");
             return compilationUnit.NormalizeWhitespace();
         }
 
-        private static string? TryGetNodeName(SyntaxNode node)
-        {
-            switch (node)
+        private static string? TryGetNodeName(SyntaxNode node) =>
+            node switch
             {
-                case ClassDeclarationSyntax classDeclaration:
-                    return classDeclaration.Identifier.Text;
-
-                case StructDeclarationSyntax structDeclaration:
-                    return structDeclaration.Identifier.Text;
-
-                case RecordDeclarationSyntax recordDeclaration:
-                    return recordDeclaration.Identifier.Text;
-
-                default:
-                    return null;
-            }
-        }
+                ClassDeclarationSyntax classDeclaration => classDeclaration.Identifier.Text,
+                StructDeclarationSyntax structDeclaration => structDeclaration.Identifier.Text,
+                RecordDeclarationSyntax recordDeclaration => recordDeclaration.Identifier.Text,
+                _ => null
+            };
     }
 }

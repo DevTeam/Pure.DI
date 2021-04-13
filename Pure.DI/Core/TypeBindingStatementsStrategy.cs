@@ -1,7 +1,6 @@
 ﻿namespace Pure.DI.Core
 {
     using System.Collections.Generic;
-    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -16,10 +15,9 @@
         public IEnumerable<StatementSyntax> CreateStatements(
             IBuildStrategy buildStrategy,
             BindingMetadata binding,
-            ITypeSymbol contractType)
+            SemanticType dependency)
         {
-            var instanceTypeDescriptor = _typeResolver.Resolve(contractType, null);
-            var instance = buildStrategy.Build(instanceTypeDescriptor);
+            var instance = buildStrategy.Build(_typeResolver.Resolve(dependency, null));
             yield return SyntaxFactory.ReturnStatement(instance);
         }
     }

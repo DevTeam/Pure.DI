@@ -1,10 +1,9 @@
-﻿namespace Pure.DI.Core
+﻿// ReSharper disable InvertIf
+namespace Pure.DI.Core
 {
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using System.Runtime.InteropServices;
-    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -13,20 +12,17 @@
     internal class ResolverMethodsBuilder : IResolverMethodsBuilder
     {
         private readonly ResolverMetadata _metadata;
-        private readonly SemanticModel _semanticModel;
         private readonly IBindingsProbe _bindingsProbe;
         private readonly IResolveMethodBuilder[] _resolveMethodBuilders;
         private readonly IBuildContext _buildContext;
 
         public ResolverMethodsBuilder(
             ResolverMetadata metadata,
-            SemanticModel semanticModel,
             IBindingsProbe bindingsProbe,
             IResolveMethodBuilder[] resolveMethodBuilders,
             IBuildContext buildContext)
         {
             _metadata = metadata;
-            _semanticModel = semanticModel;
             _bindingsProbe = bindingsProbe;
             _resolveMethodBuilders = resolveMethodBuilders;
             _buildContext = buildContext;
@@ -41,12 +37,12 @@
 
             var resolvedMethods =
                 from binding in _metadata.Bindings.Reverse().Concat(_buildContext.AdditionalBindings).Distinct().ToList()
-                from contractType in binding.ContractTypes
-                where contractType.IsValidTypeToResolve(_semanticModel)
+                from contractType in binding.Dependencies
+                where contractType.IsValidTypeToResolve
                 from tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null)
                 from method in allMethods
                 where method.HasDefaultTag == (tag == null)
-                let statement = ResolveStatement(_semanticModel, contractType, method, binding)
+                let statement = ResolveStatement(contractType, method, binding)
                 group (method, statement) by (method.TargetMethod.ToString(), statement.ToString(), contractType.ToString(), tag?.ToString()) into groupedByStatement
                 // Avoid duplication of statements
                 select groupedByStatement.First();
@@ -70,7 +66,7 @@
             {
                 const string deepnessFieldName = "_deepness";
                 var deepnessField = SyntaxFactory.FieldDeclaration(
-                        SyntaxFactory.VariableDeclaration(_semanticModel.Compilation.GetSpecialType(SpecialType.System_Int32).ToTypeSyntax(_semanticModel))
+                        SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName("int"))
                             .AddVariables(
                                 SyntaxFactory.VariableDeclarator(deepnessFieldName)
                             )
@@ -124,16 +120,15 @@
         }
 
         private static IfStatementSyntax ResolveStatement(
-            SemanticModel semanticModel,
-            ITypeSymbol contractType,
+            SemanticType dependency,
             ResolveMethod resolveMethod,
             BindingMetadata binding) =>
             SyntaxFactory.IfStatement(
                 SyntaxFactory.BinaryExpression(
                     SyntaxKind.EqualsExpression,
-                    SyntaxFactory.TypeOfExpression(contractType.ToTypeSyntax(semanticModel)),
+                    SyntaxFactory.TypeOfExpression(dependency.TypeSyntax),
                     resolveMethod.TypeExpression),
-                SyntaxFactory.Block(resolveMethod.BindingStatementsStrategy.CreateStatements(resolveMethod.BuildStrategy, binding, contractType))
+                SyntaxFactory.Block(resolveMethod.BindingStatementsStrategy.CreateStatements(resolveMethod.BuildStrategy, binding, dependency))
             );
     }
 }

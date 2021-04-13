@@ -14,9 +14,9 @@ namespace Pure.DI.Core
         public FactoryObjectBuilder(IBuildContext buildContext) =>
             _buildContext = buildContext;
 
-        public ExpressionSyntax Build(IBuildStrategy buildStrategy, TypeDescription typeDescription)
+        public ExpressionSyntax Build(IBuildStrategy buildStrategy, Dependency dependency)
         {
-            var factory = typeDescription.Binding.Factory;
+            var factory = dependency.Binding.Factory;
             ExpressionSyntax? resultExpression = factory;
             if (factory?.ExpressionBody != null)
             {
@@ -26,11 +26,11 @@ namespace Pure.DI.Core
             {
                 if (factory?.Block != null)
                 {
-                    var memberKey = new MemberKey($"Create{typeDescription.Type.Name}", typeDescription.Type, null);
+                    var memberKey = new MemberKey($"Create{dependency.Implementation.Type.Name}", dependency.Implementation, null);
                     var factoryMethod = (MethodDeclarationSyntax)_buildContext.GetOrAddMember(memberKey, () =>
                     {
                         var factoryName = _buildContext.NameService.FindName(memberKey);
-                        var type = typeDescription.Type.ToTypeSyntax(typeDescription.SemanticModel);
+                        var type = dependency.Implementation.TypeSyntax;
                         return SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
                             .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveOptimizationAndInliningAttr))
                             .AddParameterListParameters(factory.Parameter.WithType(SyntaxRepo.ContextTypeSyntax))
@@ -47,14 +47,14 @@ namespace Pure.DI.Core
             if (factory != null && resultExpression != null)
             {
                 return (ExpressionSyntax) new FactoryRewriter(
-                        typeDescription,
+                        dependency,
                         buildStrategy,
                         factory.Parameter.Identifier,
                         _buildContext)
                     .Visit(resultExpression);
             }
 
-            return SyntaxFactory.DefaultExpression(SyntaxFactory.ParseTypeName(typeDescription.Type.Name));
+            return SyntaxFactory.DefaultExpression(SyntaxFactory.ParseTypeName(dependency.Implementation.Type.Name));
         }
     }
 }

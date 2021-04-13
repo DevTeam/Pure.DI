@@ -15,18 +15,18 @@
 
         public Lifetime Lifetime => Lifetime.PerResolve;
 
-        public ExpressionSyntax Build(TypeDescription typeDescription, ExpressionSyntax objectBuildExpression)
+        public ExpressionSyntax Build(Dependency dependency, ExpressionSyntax objectBuildExpression)
         {
-            var resolvedType = typeDescription.Type;
-            var classParts = resolvedType.ToMinimalDisplayParts(_buildContext.SemanticModel, 0).Where(i => i.Kind == SymbolDisplayPartKind.ClassName).Select(i => i.ToString()).ToList();
+            var resolvedType = dependency.Implementation;
+            var classParts = resolvedType.Type.ToMinimalDisplayParts(resolvedType, 0).Where(i => i.Kind == SymbolDisplayPartKind.ClassName).Select(i => i.ToString()).ToList();
             var fieldKey = new MemberKey(
                 string.Join("_", classParts) + "__PerResolve__",
                 resolvedType,
-                typeDescription.Tag);
+                dependency.Tag);
 
 
-            var fieldType = resolvedType.IsReferenceType
-                ? resolvedType.ToTypeSyntax(_buildContext.SemanticModel)
+            var fieldType = resolvedType.Type.IsReferenceType
+                ? resolvedType.TypeSyntax
                 : SyntaxRepo.ObjectTypeSyntax;
 
             var perResolveField = (FieldDeclarationSyntax) _buildContext.GetOrAddMember(fieldKey, () =>
@@ -46,7 +46,7 @@
             var lockObjectKey = new MemberKey(
                 string.Join("_", classParts) + "PerResolveLockObject",
                 resolvedType,
-                typeDescription.Tag);
+                dependency.Tag);
 
             var lockObjectField = (FieldDeclarationSyntax)_buildContext.GetOrAddMember(lockObjectKey, () =>
             {
@@ -64,17 +64,17 @@
                         SyntaxFactory.Token(SyntaxKind.StaticKeyword));
             });
 
-            var methodKey = new MemberKey($"GetPerResolve{typeDescription.Type.Name}", typeDescription.Type, null);
+            var methodKey = new MemberKey($"GetPerResolve{dependency.Implementation.Type.Name}", dependency.Implementation, null);
             var factoryMethod = (MethodDeclarationSyntax)_buildContext.GetOrAddMember(methodKey, () =>
             {
                 var factoryName = _buildContext.NameService.FindName(methodKey);
-                var type = resolvedType.ToTypeSyntax(typeDescription.SemanticModel);
+                var type = resolvedType.TypeSyntax;
                 var method = SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
                     .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveOptimizationAndInliningAttr))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword), SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
 
                 var resolveInstanceFieldIdentifier = SyntaxFactory.IdentifierName(perResolveField.Declaration.Variables.First().Identifier);
-                ExpressionSyntax fieldExpression = resolvedType.IsReferenceType
+                ExpressionSyntax fieldExpression = resolvedType.Type.IsReferenceType
                     ? resolveInstanceFieldIdentifier 
                     : SyntaxFactory.CastExpression(type, resolveInstanceFieldIdentifier);
                 var returnStatement = SyntaxFactory.ReturnStatement(fieldExpression);

@@ -1,4 +1,5 @@
 ﻿// ReSharper disable IdentifierTypo
+// ReSharper disable InvertIf
 namespace Pure.DI.Core
 {
     using System.Collections.Generic;
@@ -10,19 +11,19 @@ namespace Pure.DI.Core
 
     internal class FactoryRewriter: CSharpSyntaxRewriter
     {
-        private readonly TypeDescription _typeDescription;
+        private readonly Dependency _dependency;
         private readonly IBuildStrategy _buildStrategy;
         private readonly SyntaxToken _contextIdentifier;
         private readonly IBuildContext _buildContext;
 
         public FactoryRewriter(
-            TypeDescription typeDescription,
+            Dependency dependency,
             IBuildStrategy buildStrategy,
             SyntaxToken contextIdentifier,
             IBuildContext buildContext)
             : base(true)
         {
-            _typeDescription = typeDescription;
+            _dependency = dependency;
             _buildStrategy = buildStrategy;
             _contextIdentifier = contextIdentifier;
             _buildContext = buildContext;
@@ -30,7 +31,8 @@ namespace Pure.DI.Core
 
         public override SyntaxNode? VisitInvocationExpression(InvocationExpressionSyntax node)
         {
-            var operation = _typeDescription.SemanticModel.GetOperation(node);
+            var semanticModel = GetSemanticModel(node);
+            var operation = semanticModel.GetOperation(node);
             if (operation is IInvocationOperation invocationOperation)
             {
                 if (
@@ -38,11 +40,11 @@ namespace Pure.DI.Core
                     && invocationOperation.TargetMethod.TypeArguments.Length == 1)
                 {
                     if (invocationOperation.TargetMethod.Name == nameof(IContext.Resolve)
-                        && typeof(IContext).Equals(invocationOperation.TargetMethod.ContainingType, _typeDescription.SemanticModel)
+                        && new SemanticType(invocationOperation.TargetMethod.ContainingType, _dependency.Implementation.SemanticModel).Equals(typeof(IContext))
                         && SymbolEqualityComparer.Default.Equals(invocationOperation.TargetMethod.TypeArguments[0], invocationOperation.TargetMethod.ReturnType))
                     {
                         var tag = invocationOperation.Arguments.Length == 1 ? invocationOperation.Arguments[0].Value.Syntax as ExpressionSyntax : null;
-                        var typeDescription = _buildContext.TypeResolver.Resolve(_typeDescription.TypesMap.ConstructType(invocationOperation.TargetMethod.ReturnType), tag);
+                        var typeDescription = _buildContext.TypeResolver.Resolve(_dependency.TypesMap.ConstructType(new SemanticType(invocationOperation.TargetMethod.ReturnType, semanticModel)), tag);
                         return _buildStrategy.Build(typeDescription);
                     }
                 }
@@ -87,17 +89,23 @@ namespace Pure.DI.Core
         {
             for (var i = 0; i < args.Count; i++)
             {
-                var typeSymbol = _typeDescription.SemanticModel.GetTypeInfo(args[i]).Type;
+                var semanticModel = GetSemanticModel(args[i].SyntaxTree.GetRoot());
+                var typeSymbol = semanticModel.GetTypeInfo(args[i]).Type;
                 if (typeSymbol is INamedTypeSymbol namedTypeSymbol)
                 {
-                    var constructedType = _typeDescription.TypesMap.ConstructType(namedTypeSymbol);
-                    args[i] = constructedType.ToTypeSyntax(_typeDescription.SemanticModel);
-                    if (!typeSymbol.Equals(constructedType, SymbolEqualityComparer.Default))
+                    var constructedType = _dependency.TypesMap.ConstructType(new SemanticType(namedTypeSymbol, _dependency.Implementation));
+                    args[i] = constructedType.TypeSyntax;
+                    if (!typeSymbol.Equals(constructedType.Type, SymbolEqualityComparer.Default))
                     {
-                        _buildContext.AddBinding(new BindingMetadata(_typeDescription.Binding, constructedType));
+                        _buildContext.AddBinding(new BindingMetadata(_dependency.Binding, constructedType));
                     }
                 }
             }
         }
+
+        private SemanticModel GetSemanticModel(SyntaxNode node) => 
+            _dependency.Implementation.SemanticModel.Compilation.SyntaxTrees.Contains(node.SyntaxTree)
+                ? _dependency.Implementation.SemanticModel.Compilation.GetSemanticModel(node.SyntaxTree)
+                : _dependency.Implementation.SemanticModel;
     }
 }

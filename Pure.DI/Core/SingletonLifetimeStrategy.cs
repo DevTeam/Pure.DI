@@ -16,14 +16,14 @@
 
         public Lifetime Lifetime => Lifetime.Singleton;
 
-        public ExpressionSyntax Build(TypeDescription typeDescription, ExpressionSyntax objectBuildExpression)
+        public ExpressionSyntax Build(Dependency dependency, ExpressionSyntax objectBuildExpression)
         {
-            var resolvedType = typeDescription.Type;
-            var classParts = resolvedType.ToMinimalDisplayParts(_buildContext.SemanticModel, 0).Where(i => i.Kind == SymbolDisplayPartKind.ClassName).Select(i => i.ToString());
+            var resolvedType = dependency.Implementation;
+            var classParts = resolvedType.Type.ToMinimalDisplayParts(resolvedType, 0).Where(i => i.Kind == SymbolDisplayPartKind.ClassName).Select(i => i.ToString());
             var classKey = new MemberKey(
                 string.Join("_", classParts) + "__Singleton__",
                 resolvedType,
-                typeDescription.Tag);
+                dependency.Tag);
 
             var singletonClass = _buildContext.GetOrAddMember(classKey, () =>
             {
@@ -34,7 +34,7 @@
                         SyntaxFactory.Token(SyntaxKind.StaticKeyword))
                     .AddMembers(
                         SyntaxFactory.FieldDeclaration(
-                                SyntaxFactory.VariableDeclaration(resolvedType.ToTypeSyntax(_buildContext.SemanticModel))
+                                SyntaxFactory.VariableDeclaration(resolvedType.TypeSyntax)
                                     .AddVariables(
                                         SyntaxFactory.VariableDeclarator(ValueName)
                                             .WithInitializer(SyntaxFactory.EqualsValueClause(objectBuildExpression))

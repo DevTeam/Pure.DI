@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Tests
+﻿// ReSharper disable StringLiteralTypo
+namespace Pure.DI.Tests
 {
     using System;
     using System.Collections.Generic;
@@ -28,9 +29,13 @@
         public static IReadOnlyList<string> Run(this string setupCode, out string generatedCode, RunOptions? options = default)
         {
             var curOptions = options ?? new RunOptions();
-            var setupCompilation = CreateCompilation()
+            var hostCode = @"namespace Sample { public class Program { public static void Main() {" + curOptions.Statements + @"} } }";
+            var additionalCode = curOptions.AdditionalCode.Select(code => CSharpSyntaxTree.ParseText(code)).ToArray();
+
+            var compilation = CreateCompilation()
                 .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
                 .AddSyntaxTrees(CSharpSyntaxTree.ParseText(setupCode))
+                .AddSyntaxTrees(additionalCode)
                 .Check();
 
             var stdErr = new StdErr();
@@ -45,7 +50,7 @@
             List<Source>? generatedSources;
             try
             {
-                generatedSources = container.Resolve<ISourceBuilder>().Build(setupCompilation, setupCompilation.SyntaxTrees).ToList();
+                generatedSources = container.Resolve<ISourceBuilder>().Build(compilation).ToList();
             }
             catch (HandledException)
             {
@@ -54,11 +59,9 @@
             }
 
             generatedCode = string.Join(Environment.NewLine, generatedSources.Select((src, index) => $"Generated {index + 1}" + Environment.NewLine + Environment.NewLine + src.Code));
-            var hostCode = @"namespace Sample { public class Program { public static void Main() {" + curOptions.Statements + @"} } }";
-
-            var compilation = CreateCompilation()
+            
+            compilation = compilation
                 .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication))
-                .AddSyntaxTrees(CSharpSyntaxTree.ParseText(setupCode))
                 .AddSyntaxTrees(CSharpSyntaxTree.ParseText(hostCode))
                 .AddSyntaxTrees(generatedSources.Select(i => CSharpSyntaxTree.ParseText(i.Code.ToString())).ToArray())
                 .Check();
@@ -67,7 +70,7 @@
             var assemblyPath = Path.ChangeExtension(tempFileName, "exe");
             var configPath = Path.ChangeExtension(tempFileName, "runtimeconfig.json");
 
-            var config = @"
+            const string? config = @"
 {
   ""runtimeOptions"": {
             ""tfm"": ""net5.0"",
@@ -154,27 +157,28 @@
         private static string GetErrorMessage(Diagnostic diagnostic)
         {
             var description = diagnostic.GetMessage();
-            if (diagnostic.Location.IsInSource)
+            if (!diagnostic.Location.IsInSource)
             {
-                var source = diagnostic.Location.SourceTree.ToString();
-                var span = source.Substring(diagnostic.Location.SourceSpan.Start, diagnostic.Location.SourceSpan.Length);
-                return description
-                       + Environment.NewLine + Environment.NewLine
-                       + span
-                       + Environment.NewLine
-                       + Environment.NewLine
-                       + "Line " + (diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line + 1)
-                       + Environment.NewLine
-                       + Environment.NewLine
-                       + string.Join(
-                           Environment.NewLine,
-                           source.Split(Environment.NewLine)
-                               .Select(
-                                   (line, number) => $"/*{number + 1:0000}*/ {line}")
-                           );
+                return description;
             }
 
-            return description;
+            var source = diagnostic.Location.SourceTree.ToString();
+            var span = source.Substring(diagnostic.Location.SourceSpan.Start, diagnostic.Location.SourceSpan.Length);
+            return description
+                   + Environment.NewLine + Environment.NewLine
+                   + span
+                   + Environment.NewLine
+                   + Environment.NewLine
+                   + "Line " + (diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line + 1)
+                   + Environment.NewLine
+                   + Environment.NewLine
+                   + string.Join(
+                       Environment.NewLine,
+                       source.Split(Environment.NewLine)
+                           .Select(
+                               (line, number) => $"/*{number + 1:0000}*/ {line}")
+                   );
+
         }
 
         private static string GetSystemAssemblyPathByName(string assemblyName) =>
@@ -185,7 +189,7 @@
             private readonly List<string> _errors = new();
             private readonly List<string> _lines = new();
 
-            public IReadOnlyList<string> Info => _lines;
+            public IEnumerable<string> Info => _lines;
 
             public IReadOnlyList<string> Errors => _errors;
 

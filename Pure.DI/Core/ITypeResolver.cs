@@ -1,13 +1,12 @@
 ﻿namespace Pure.DI.Core
 {
     using System.Collections.Generic;
-    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     internal interface ITypeResolver
     {
-        TypeDescription Resolve(ITypeSymbol typeSymbol, ExpressionSyntax? tag, bool anyTag = false, bool suppressWarnings = false);
+        Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, bool anyTag = false, bool suppressWarnings = false);
 
-        IEnumerable<TypeDescription> Resolve(ITypeSymbol contractTypeSymbol);
+        IEnumerable<Dependency> Resolve(SemanticType dependency);
     }
 }

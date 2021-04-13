@@ -13,26 +13,26 @@
 
         public ArrayObjectBuilder(ITypeResolver typeResolver) => _typeResolver = typeResolver;
 
-        public ExpressionSyntax Build(IBuildStrategy buildStrategy, TypeDescription typeDescription)
+        public ExpressionSyntax Build(IBuildStrategy buildStrategy, Dependency dependency)
         {
             var objectCreationExpressions = new List<ExpressionSyntax>();
-            if (typeDescription.Type is IArrayTypeSymbol arrayTypeSymbol)
+            if (dependency.Implementation.Type is not IArrayTypeSymbol arrayTypeSymbol)
             {
-                objectCreationExpressions.AddRange(
-                    from elementTypeDescriptor in _typeResolver.Resolve(arrayTypeSymbol.ElementType)
-                    let objectCreationExpression = buildStrategy.Build(elementTypeDescriptor)
-                    select objectCreationExpression);
-
-                return SyntaxFactory.ArrayCreationExpression(
-                        SyntaxFactory.ArrayType(arrayTypeSymbol.ElementType.ToTypeSyntax(typeDescription.SemanticModel)))
-                    .AddTypeRankSpecifiers(SyntaxFactory.ArrayRankSpecifier().AddSizes(SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(objectCreationExpressions.Count))))
-                    .WithInitializer(
-                        SyntaxFactory.InitializerExpression(SyntaxKind.ArrayInitializerExpression)
-                            .AddExpressions(objectCreationExpressions.ToArray()));
+                return SyntaxFactory.ImplicitArrayCreationExpression(SyntaxFactory.InitializerExpression(SyntaxKind.ArrayInitializerExpression)
+                    .AddExpressions(objectCreationExpressions.ToArray()));
             }
-            
-            return SyntaxFactory.ImplicitArrayCreationExpression(SyntaxFactory.InitializerExpression(SyntaxKind.ArrayInitializerExpression)
-                .AddExpressions(objectCreationExpressions.ToArray()));
+
+            objectCreationExpressions.AddRange(
+                from element in _typeResolver.Resolve(new SemanticType(arrayTypeSymbol.ElementType, dependency.Implementation))
+                let objectCreationExpression = buildStrategy.Build(element)
+                select objectCreationExpression);
+
+            return SyntaxFactory.ArrayCreationExpression(
+                    SyntaxFactory.ArrayType(new SemanticType(arrayTypeSymbol.ElementType, dependency.Implementation).TypeSyntax))
+                .AddTypeRankSpecifiers(SyntaxFactory.ArrayRankSpecifier().AddSizes(SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(objectCreationExpressions.Count))))
+                .WithInitializer(
+                    SyntaxFactory.InitializerExpression(SyntaxKind.ArrayInitializerExpression)
+                        .AddExpressions(objectCreationExpressions.ToArray()));
         }
     }
 }

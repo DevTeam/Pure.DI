@@ -7,18 +7,18 @@
     internal class BindingMetadata
     {
         public Location? Location;
-        public ITypeSymbol? ImplementationType;
+        public SemanticType? Implementation;
         public SimpleLambdaExpressionSyntax? Factory;
         public Lifetime Lifetime = Lifetime.Transient;
-        public readonly ISet<ITypeSymbol> ContractTypes = new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
+        public readonly ISet<SemanticType> Dependencies = new HashSet<SemanticType>(SemanticTypeEqualityComparer.Default);
         public readonly ISet<ExpressionSyntax> Tags = new HashSet<ExpressionSyntax>();
 
         public BindingMetadata() { }
 
-        public BindingMetadata(BindingMetadata binding, ITypeSymbol constructedType)
+        public BindingMetadata(BindingMetadata binding, SemanticType dependency)
         {
-            ContractTypes.Add(constructedType);
-            ImplementationType = binding.ImplementationType;
+            Dependencies.Add(dependency);
+            Implementation = binding.Implementation;
             Factory = binding.Factory;
             Location = binding.Location;
             foreach (var tag in binding.Tags)

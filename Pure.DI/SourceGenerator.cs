@@ -1,7 +1,6 @@
 ﻿namespace Pure.DI
 {
     using System;
-    using System.Diagnostics;
     using Core;
     using IoC;
     using Microsoft.CodeAnalysis;
@@ -32,22 +31,15 @@
                 Debugger.Launch();
             }
 #endif
-
-            context.RegisterForSyntaxNotifications(() => _container.Resolve<ISyntaxContextReceiver>());
         }
 
         public void Execute(GeneratorExecutionContext context)
         {
-            if (context.SyntaxContextReceiver is not IGeneratorTargets target || target.Trees.Count == 0)
-            {
-                return;
-            }
-
             _diagnostic.Context = context;
             var sourceBuilder = _builderFactory();
             try
             {
-                foreach (var source in sourceBuilder.Build(context.Compilation, target.Trees))
+                foreach (var source in sourceBuilder.Build(context.Compilation))
                 {
                     context.AddSource(source.HintName, source.Code);
                 }

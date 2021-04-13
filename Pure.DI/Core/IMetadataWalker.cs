@@ -5,7 +5,7 @@
 
     internal interface IMetadataWalker
     {
-        IReadOnlyCollection<ResolverMetadata> Metadata { get; }
+        IEnumerable<ResolverMetadata> Metadata { get; }
 
         void Visit(SyntaxNode? node);
     }

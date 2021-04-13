@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     // ReSharper disable once ClassNeverInstantiated.Global
@@ -14,7 +13,6 @@
         private readonly Func<INameService> _nameServiceFactory;
         private readonly Func<ITypeResolver> _typeResolverFactory;
         private ResolverMetadata? _metadata;
-        private SemanticModel? _semanticModel;
         private INameService? _nameService;
         private ITypeResolver? _typeResolver;
 
@@ -30,12 +28,6 @@
         {
             get => _metadata ?? throw new InvalidOperationException("Not initialized.");
             set => _metadata = value;
-        }
-
-        public SemanticModel SemanticModel
-        {
-            get => _semanticModel ?? throw new InvalidOperationException("Not initialized.");
-            set => _semanticModel = value;
         }
 
         public INameService NameService => _nameService ?? throw new InvalidOperationException("Not ready.");

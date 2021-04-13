@@ -1,58 +1,57 @@
-﻿namespace Pure.DI.Core
+﻿// ReSharper disable InvertIf
+namespace Pure.DI.Core
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.CodeAnalysis;
 
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class TypesMap : ITypesMap
     {
-        private readonly SemanticModel _semanticModel;
-        private readonly Dictionary<ITypeSymbol, ITypeSymbol> _map = new(SymbolEqualityComparer.Default);
+        private readonly Dictionary<SemanticType, SemanticType> _map = new(SemanticTypeEqualityComparer.Default);
 
-        public TypesMap(SemanticModel semanticModel) => _semanticModel = semanticModel;
-
-        public bool Setup(ITypeSymbol type, ITypeSymbol targetType)
+        public bool Setup(SemanticType dependency, SemanticType implementation)
         {
             _map.Clear();
-            CreateMap(type, targetType);
+            CreateMap(dependency, implementation);
             return _map.Count > 0;
         }
 
-        private void CreateMap(ITypeSymbol type, ITypeSymbol targetType)
+        private void CreateMap(SemanticType dependency, SemanticType implementation)
         {
             if (
-                type is INamedTypeSymbol namedType
-                && targetType is INamedTypeSymbol targetNamedType)
+                dependency.Type is INamedTypeSymbol dependencyNamedType
+                && implementation.Type is INamedTypeSymbol implementationNamedType)
             {
-                if (!namedType.IsGenericType && type.Equals(targetType, SymbolEqualityComparer.Default))
+                if (!dependencyNamedType.IsGenericType && dependency.Equals(implementation))
                 {
                     return;
                 }
 
-                if (_map.ContainsKey(type))
+                if (_map.ContainsKey(dependency))
                 {
                     return;
                 }
 
-                if (namedType.IsGenericTypeMarker(_semanticModel))
+                if (dependency.IsGenericTypeMarker)
                 {
-                    _map[type] = targetType;
+                    _map[dependency] = implementation;
                     return;
                 }
 
                 // Constructed generic
-                if (namedType.IsGenericType && targetNamedType.IsGenericType)
+                if (dependencyNamedType.IsGenericType && implementationNamedType.IsGenericType)
                 {
-                    if (namedType.ConstructUnboundGenericType().Equals(targetNamedType.ConstructUnboundGenericType(), SymbolEqualityComparer.Default))
+                    if (dependencyNamedType.ConstructUnboundGenericType().Equals(implementationNamedType.ConstructUnboundGenericType(), SymbolEqualityComparer.Default))
                     {
-                        _map[type] = targetType;
-                        var typeArgs = namedType.TypeArguments;
-                        var targetTypeArgs = targetNamedType.TypeArguments;
-                        if (typeArgs.Length == targetTypeArgs.Length)
+                        _map[dependency] = implementation;
+                        var dependencyArgs = dependencyNamedType.TypeArguments;
+                        var implementationArgs = implementationNamedType.TypeArguments;
+                        if (dependencyArgs.Length == implementationArgs.Length)
                         {
-                            for (var i = 0; i < typeArgs.Length; i++)
+                            for (var i = 0; i < dependencyArgs.Length; i++)
                             {
-                                CreateMap(typeArgs[i], targetTypeArgs[i]);
+                                CreateMap(new SemanticType(dependencyArgs[i], dependency), new SemanticType(implementationArgs[i], implementation));
                             }
                         }
 
@@ -62,53 +61,58 @@
             }
 
             if (
-                type is IArrayTypeSymbol namedArrayType
-                && targetType is IArrayTypeSymbol targetArrayType)
+                dependency.Type is IArrayTypeSymbol dependencyArrayType
+                && implementation.Type is IArrayTypeSymbol implementationArrayType)
             {
-                _map[namedArrayType.ElementType] = targetArrayType.ElementType;
-                CreateMap(namedArrayType.ElementType, targetArrayType.ElementType);
+                var dependencyArray = new SemanticType(dependencyArrayType.ElementType, dependency);
+                var implementationArray = new SemanticType(implementationArrayType.ElementType, implementation);
+                _map[dependencyArray] = implementationArray;
+                CreateMap(new SemanticType(dependencyArrayType.ElementType, dependencyArray), new SemanticType(implementationArrayType.ElementType, implementationArray));
             }
 
-            foreach (var implementedInterface in targetType.Interfaces)
+            foreach (var implementationInterfaceType in implementation.Type.Interfaces)
             {
-                CreateMap(type, implementedInterface);
+                CreateMap(dependency, new SemanticType(implementationInterfaceType, implementation));
             }
 
-            foreach (var implementedInterface in type.Interfaces)
+            foreach (var dependencyInterfaceType in dependency.Type.Interfaces)
             {
-                CreateMap(implementedInterface, targetType);
+                CreateMap(new SemanticType(dependencyInterfaceType, dependency), implementation);
             }
         }
 
-        public ITypeSymbol ConstructType(ITypeSymbol type)
+        public SemanticType ConstructType(SemanticType type)
         {
             if (_map.TryGetValue(type, out var newType))
             {
                 return newType;
             }
 
-            if (type is INamedTypeSymbol namedType)
+            switch (type.Type)
             {
-                if (!namedType.IsGenericType)
-                {
+                case INamedTypeSymbol {IsGenericType: false}:
                     return type;
-                }
 
-                var args = new List<ITypeSymbol>();
-                foreach (var arg in namedType.TypeArguments)
+                case INamedTypeSymbol namedType:
                 {
-                    args.Add(ConstructType(arg));
+                    var args = namedType.TypeArguments.Select(arg => ConstructType(new SemanticType(arg, type)));
+                    return new SemanticType(namedType, type).Construct(args.ToArray());
                 }
 
-                return namedType.Construct(_semanticModel, args.ToArray());
-            }
+                case IArrayTypeSymbol arrayTypeSymbol:
+                {
+                    var originalElementType = new SemanticType(arrayTypeSymbol.ElementType, type);
+                    if (!_map.TryGetValue(originalElementType, out var elementType))
+                    {
+                        elementType = originalElementType;
+                    }
 
-            if (type is IArrayTypeSymbol arrayTypeSymbol)
-            {
-                return _semanticModel.Compilation.CreateArrayTypeSymbol(ConstructType(arrayTypeSymbol.ElementType), arrayTypeSymbol.Rank);
-            }
+                    return new SemanticType(type.SemanticModel.Compilation.CreateArrayTypeSymbol(elementType.Type, arrayTypeSymbol.Rank), elementType);
+                }
 
-            return type;
+                default:
+                    return type;
+            }
         }
     }
 }

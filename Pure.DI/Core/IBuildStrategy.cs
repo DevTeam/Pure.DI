@@ -4,6 +4,6 @@
 
     internal interface IBuildStrategy
     {
-        ExpressionSyntax Build(TypeDescription typeDescription);
+        ExpressionSyntax Build(Dependency dependency);
     }
 }

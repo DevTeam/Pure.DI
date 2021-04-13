@@ -23,7 +23,7 @@
             else
             {
                 _ids[newName] = id + 1;
-                newName = newName + id;
+                newName += id;
             }
 
             _names.Add(memberKey, newName);

@@ -1,6 +1,5 @@
 ﻿namespace Pure.DI.Tests.Integration
 {
-    using System;
     using System.Linq;
     using Core;
     using Shouldly;

@@ -8,8 +8,9 @@
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class FallbackStrategy : IFallbackStrategy
     {
-        internal const string CannotResolveMessage = "Cannot resolve an instance of the required type.";
-        private static readonly ExpressionSyntax CannotResolveException = SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName("System.ArgumentException"))
+        private const string CannotResolveMessage = "Cannot resolve an instance of the required type.";
+        // ReSharper disable once InconsistentNaming
+        private static readonly ExpressionSyntax CannotResolveExpression = SyntaxFactory.ObjectCreationExpression(SyntaxFactory.ParseTypeName("System.ArgumentException"))
             .WithArgumentList(
                 SyntaxFactory.ArgumentList().AddArguments(
                     SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression).WithToken(SyntaxFactory.Literal(CannotResolveMessage)))));
@@ -22,14 +23,14 @@
         {
             if (metadata.Count == 0)
             {
-                return SyntaxFactory.ThrowStatement().WithExpression(CannotResolveException);
+                return SyntaxFactory.ThrowStatement().WithExpression(CannotResolveExpression);
             }
 
             var rewriter = new FallbackRewriter(typeExpression, tagExpression);
             var factories = metadata
                 .Select(i => (ExpressionSyntax)rewriter.Visit(i.Factory))
                 .Reverse()
-                .Concat(new []{ SyntaxFactory.ThrowExpression(CannotResolveException) }).ToList();
+                .Concat(new []{ SyntaxFactory.ThrowExpression(CannotResolveExpression) }).ToList();
 
             var defaultExpression = factories.Skip(1)
                 .Aggregate(

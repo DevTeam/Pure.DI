@@ -9,15 +9,14 @@
         public void ShouldSupportPerThread()
         {
             // Given
-            var statements =
-                "var task1 = System.Threading.Tasks.Task.Run(() => { System.Threading.Thread.Sleep(10); return Composer.Resolve<CompositionRoot>(); });" +
-                "var task2 = System.Threading.Tasks.Task.Run(() => { System.Threading.Thread.Sleep(20); return Composer.Resolve<CompositionRoot>(); });" +
-                "var task3 = System.Threading.Tasks.Task.Run(() => { System.Threading.Thread.Sleep(30); return (Composer.Resolve<CompositionRoot>(), Composer.Resolve<CompositionRoot>()); });" +
-                "System.Threading.Tasks.Task.WaitAll(task1, task2);" +
-                "System.Console.WriteLine(task1.Result.EqValue);" +
-                "System.Console.WriteLine(task2.Result.EqValue);" +
-                "System.Console.WriteLine(task1.Result.Value == task2.Result.Value);" +
-                "System.Console.WriteLine(task3.Result.Item1.Value == task3.Result.Item2.Value);";
+            const string? statements = "var task1 = System.Threading.Tasks.Task.Run(() => { System.Threading.Thread.Sleep(10); return Composer.Resolve<CompositionRoot>(); });" +
+                                       "var task2 = System.Threading.Tasks.Task.Run(() => { System.Threading.Thread.Sleep(20); return Composer.Resolve<CompositionRoot>(); });" +
+                                       "var task3 = System.Threading.Tasks.Task.Run(() => { System.Threading.Thread.Sleep(30); return (Composer.Resolve<CompositionRoot>(), Composer.Resolve<CompositionRoot>()); });" +
+                                       "System.Threading.Tasks.Task.WaitAll(task1, task2);" +
+                                       "System.Console.WriteLine(task1.Result.EqValue);" +
+                                       "System.Console.WriteLine(task2.Result.EqValue);" +
+                                       "System.Console.WriteLine(task1.Result.Value == task2.Result.Value);" +
+                                       "System.Console.WriteLine(task3.Result.Item1.Value == task3.Result.Item2.Value);";
 
             // When
 
@@ -63,13 +62,12 @@
         public void ShouldSupportPerThreadWhenFactory()
         {
             // Given
-            var statements =
-                "var task1 = System.Threading.Tasks.Task.Run(() => { System.Threading.Thread.Sleep(10); return Composer.Resolve<CompositionRoot>(); });" +
-                "var task2 = System.Threading.Tasks.Task.Run(() => { System.Threading.Thread.Sleep(20); return Composer.Resolve<CompositionRoot>(); });" +
-                "System.Threading.Tasks.Task.WaitAll(task1, task2);" +
-                "System.Console.WriteLine(task1.Result.EqValue);" +
-                "System.Console.WriteLine(task2.Result.EqValue);" +
-                "System.Console.WriteLine(task1.Result.Value == task2.Result.Value);";
+            const string? statements = "var task1 = System.Threading.Tasks.Task.Run(() => { System.Threading.Thread.Sleep(10); return Composer.Resolve<CompositionRoot>(); });" +
+                                       "var task2 = System.Threading.Tasks.Task.Run(() => { System.Threading.Thread.Sleep(20); return Composer.Resolve<CompositionRoot>(); });" +
+                                       "System.Threading.Tasks.Task.WaitAll(task1, task2);" +
+                                       "System.Console.WriteLine(task1.Result.EqValue);" +
+                                       "System.Console.WriteLine(task2.Result.EqValue);" +
+                                       "System.Console.WriteLine(task1.Result.Value == task2.Result.Value);";
 
             // When
 

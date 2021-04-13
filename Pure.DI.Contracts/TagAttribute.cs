@@ -1,4 +1,6 @@
-﻿namespace Pure.DI
+﻿// ReSharper disable NotAccessedField.Global
+// ReSharper disable UnusedType.Global
+namespace Pure.DI
 {
     using System;
 

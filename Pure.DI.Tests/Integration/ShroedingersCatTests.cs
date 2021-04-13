@@ -21,9 +21,7 @@
             {         
                 // Let's create an abstraction
 
-                interface IBox<out T> { T Content { get; } }
-
-                interface ICat { State State { get; } }
+                interface IBox<out T> { T Content { get; } }            
 
                 enum State { Alive, Dead }
 
@@ -61,9 +59,6 @@
                     static Composer()
                     {
                         DI.Setup()
-                            // .NET BCL types
-                            .Bind<Func<TT>>().To(ctx => new Func<TT>(ctx.Resolve<TT>))
-                            .Bind<Lazy<TT>>().To<Lazy<TT>>()
                             // Represents a quantum superposition of 2 states: Alive or Dead
                             .Bind<State>().To(_ => (State)Indeterminacy.Next(2))
                             // Represents schrodinger's cat
@@ -82,7 +77,7 @@
                     public readonly IBox<ICat> Value;
                     internal CompositionRoot(IBox<ICat> box) => Value = box;        
                 }
-            }".Run(out var generatedCode);
+            }".Run(out var generatedCode, new RunOptions { AdditionalCode = { "namespace Sample { interface ICat { State State { get; } } }" } });
 
             // Then
             (output.Contains("[Dead cat]") || output.Contains("[Alive cat]")).ShouldBeTrue(generatedCode);

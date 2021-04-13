@@ -2,6 +2,9 @@
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable InvalidXmlDocComment
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UnusedType.Global
 namespace Pure.DI
 {    
 <#
@@ -30,7 +33,7 @@ var baseTypes = new Dictionary<string, string> {
     public abstract class TT<#=i == 0 ? "" : i.ToString()#> { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC<#=i == 0 ? "" : i.ToString()#> { }
@@ -64,14 +67,4 @@ var baseTypes = new Dictionary<string, string> {
 #endif
     <#}#>
 <#}#>
-
-    internal static class GenericTypeArguments
-    {
-        internal static readonly System.Type[] Arguments =
-        {
-<#for(var i = 0; i <= 32; i++) {#>
-            typeof(TT<#=i == 0 ? "" : i.ToString()#>),
-<#}#>
-        };
-    }
 }

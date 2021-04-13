@@ -9,12 +9,11 @@
         public void ShouldSupportPerResolve()
         {
             // Given
-            var statements =
-                "var root1 = Composer.Resolve<CompositionRoot>();" +
-                "var root2 = Composer.Resolve<CompositionRoot>();" +
-                "System.Console.WriteLine(root1.Value1 == root1.Value2);" +
-                "System.Console.WriteLine(root2.Value1 == root2.Value2);" +
-                "System.Console.WriteLine(root1.Value1 != root2.Value1);";
+            const string? statements = "var root1 = Composer.Resolve<CompositionRoot>();" +
+                                       "var root2 = Composer.Resolve<CompositionRoot>();" +
+                                       "System.Console.WriteLine(root1.Value1 == root1.Value2);" +
+                                       "System.Console.WriteLine(root2.Value1 == root2.Value2);" +
+                                       "System.Console.WriteLine(root1.Value1 != root2.Value1);";
 
             // When
             var output = @"

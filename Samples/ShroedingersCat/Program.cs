@@ -3,6 +3,9 @@
 // ReSharper disable UnusedMember.Global
 // ReSharper disable IdentifierTypo
 // ReSharper disable CommentTypo
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable UnusedMember.Local
 namespace Sample
 {
     using System;

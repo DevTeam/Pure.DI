@@ -27,16 +27,16 @@
             _lifetimes = lifetimeStrategies.ToDictionary(i => i.Lifetime, i => i);
         }
 
-        public ExpressionSyntax Build(TypeDescription typeDescription)
+        public ExpressionSyntax Build(Dependency dependency)
         {
-            using var traceToken = _tracer.RegisterResolving(typeDescription);
-            var objectBuildExpression = typeDescription.ObjectBuilder.Build(_dependencyBuildStrategy, typeDescription);
-            if (!_lifetimes.TryGetValue(typeDescription.Binding.Lifetime, out var lifetimeStrategy))
+            using var traceToken = _tracer.RegisterResolving(dependency);
+            var objectBuildExpression = dependency.ObjectBuilder.Build(_dependencyBuildStrategy, dependency);
+            if (!_lifetimes.TryGetValue(dependency.Binding.Lifetime, out var lifetimeStrategy))
             {
-                _diagnostic.Error(Diagnostics.Unsupported, $"{typeDescription.Binding.Lifetime} lifetime is not supported.");
+                _diagnostic.Error(Diagnostics.Unsupported, $"{dependency.Binding.Lifetime} lifetime is not supported.");
             }
 
-            objectBuildExpression = lifetimeStrategy.Build(typeDescription, objectBuildExpression);
+            objectBuildExpression = lifetimeStrategy.Build(dependency, objectBuildExpression);
             return _resultStrategy.Build(objectBuildExpression);
         }
     }

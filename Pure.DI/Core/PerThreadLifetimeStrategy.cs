@@ -16,18 +16,18 @@
 
         public Lifetime Lifetime => Lifetime.PerThread;
 
-        public ExpressionSyntax Build(TypeDescription typeDescription, ExpressionSyntax objectBuildExpression)
+        public ExpressionSyntax Build(Dependency dependency, ExpressionSyntax objectBuildExpression)
         {
-            var resolvedType = typeDescription.Type;
-            var classParts = resolvedType.ToMinimalDisplayParts(_buildContext.SemanticModel, 0).Where(i => i.Kind == SymbolDisplayPartKind.ClassName).Select(i => i.ToString());
+            var resolvedType = dependency.Implementation;
+            var classParts = resolvedType.Type.ToMinimalDisplayParts(resolvedType, 0).Where(i => i.Kind == SymbolDisplayPartKind.ClassName).Select(i => i.ToString());
             var memberKey = new MemberKey(
                 string.Join("_", classParts) + "__PerThread__",
                 resolvedType,
-                typeDescription.Tag);
+                dependency.Tag);
 
             var perThreadField = (FieldDeclarationSyntax)_buildContext.GetOrAddMember(memberKey, () =>
             {
-                var type = resolvedType.ToTypeSyntax(_buildContext.SemanticModel);
+                var type = resolvedType.TypeSyntax;
                 var threadLocalType = SyntaxFactory.GenericName("System.Threading.ThreadLocal").AddTypeArgumentListArguments(type);
                 var lambda = SyntaxFactory.ParenthesizedLambdaExpression(objectBuildExpression);
                 var threadLocalObject = SyntaxFactory.ObjectCreationExpression(threadLocalType).AddArgumentListArguments(SyntaxFactory.Argument(lambda));

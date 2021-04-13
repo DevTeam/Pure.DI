@@ -1,4 +1,7 @@
-﻿namespace Pure.DI.Core
+﻿// ReSharper disable InvertIf
+// ReSharper disable ConvertIfStatementToSwitchStatement
+// ReSharper disable MergeIntoPattern
+namespace Pure.DI.Core
 {
     using System;
     using System.Collections.Generic;
@@ -17,7 +20,7 @@
         public MetadataWalker(SemanticModel semanticModel) =>
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
 
-        public IReadOnlyCollection<ResolverMetadata> Metadata => _metadata;
+        public IEnumerable<ResolverMetadata> Metadata => _metadata;
 
         public override void VisitInvocationExpression(InvocationExpressionSyntax node)
         {
@@ -36,8 +39,8 @@
                     invocationOperation.TargetMethod.Parameters.Length == 1
                     && !invocationOperation.TargetMethod.IsGenericMethod
                     && invocationOperation.TargetMethod.Name == nameof(DI.Setup)
-                    && typeof(DI).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel)
-                    && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
+                    && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(DI))
+                    && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
                     && TryGetValue(invocationOperation.Arguments[0], _semanticModel, out var targetTypeName, string.Empty))
                 {
                     _resolver = new ResolverMetadata(node, targetTypeName);
@@ -63,8 +66,8 @@
                 && invocationOperation.TargetMethod.Parameters.Length == 1
                 && !invocationOperation.TargetMethod.IsGenericMethod
                 && invocationOperation.TargetMethod.Name == nameof(IConfiguration.DependsOn)
-                && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel)
-                && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
+                && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IConfiguration))
+                && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
                 && TryGetValue(invocationOperation.Arguments[0], _semanticModel, out var dependencyName, string.Empty)
                 && !string.IsNullOrWhiteSpace(dependencyName))
             {
@@ -79,11 +82,11 @@
                 {
                     // To<>()
                     if (invocationOperation.TargetMethod.Name == nameof(IBinding.To)
-                        && typeof(IBinding).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel)
-                        && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
+                        && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IBinding))
+                        && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
                         && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol implementationType)
                     {
-                        _binding.ImplementationType = implementationType;
+                        _binding.Implementation = new SemanticType(implementationType, _semanticModel);
                         _binding.Location = node.GetLocation();
                         _resolver?.Bindings.Add(_binding);
                         _binding = new BindingMetadata();
@@ -91,11 +94,11 @@
 
                     // Bind<>()
                     if (invocationOperation.TargetMethod.Name == nameof(IBinding.Bind)
-                        && (typeof(IBinding).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel) || typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel))
-                        && typeof(IBinding).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
-                        && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol contractType)
+                        && (new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IBinding)) || new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IConfiguration)))
+                        && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IBinding))
+                        && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol dependencyType)
                     {
-                        _binding.ContractTypes.Add(contractType);
+                        _binding.Dependencies.Add(new SemanticType(dependencyType, _semanticModel));
                     }
 
                     return;
@@ -105,11 +108,11 @@
                 {
                     // To<>(ctx => new ...())
                     if (invocationOperation.TargetMethod.Name == nameof(IBinding.To)
-                        && typeof(IBinding).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel)
-                        && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
+                        && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IBinding))
+                        && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
                         && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol implementationType)
                     {
-                        _binding.ImplementationType = implementationType;
+                        _binding.Implementation = new SemanticType(implementationType, _semanticModel);
                         if (
                             invocationOperation.Arguments[0].Syntax is ArgumentSyntax factory
                             && factory.Expression is SimpleLambdaExpressionSyntax lambda)
@@ -123,30 +126,18 @@
 
                     // TagIs<>(...)
                     if (invocationOperation.TargetMethod.Parameters.Length == 1
-                        && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel)
-                        && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
+                        && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IConfiguration))
+                        && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
                         && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol attributeType
                         && TryGetValue(invocationOperation.Arguments[0], _semanticModel, out var argumentPosition, 0))
                     {
-                        AttributeKind? attributeKind;
-                        switch (invocationOperation.TargetMethod.Name)
+                        AttributeKind? attributeKind = invocationOperation.TargetMethod.Name switch
                         {
-                            case nameof(IConfiguration.TagAttribute):
-                                attributeKind = AttributeKind.Tag;
-                                break;
-
-                            case nameof(IConfiguration.TypeAttribute):
-                                attributeKind = AttributeKind.Type;
-                                break;
-
-                            case nameof(IConfiguration.OrderAttribute):
-                                attributeKind = AttributeKind.Order;
-                                break;
-
-                            default:
-                                attributeKind = null;
-                                break;
-                        }
+                            nameof(IConfiguration.TagAttribute) => AttributeKind.Tag,
+                            nameof(IConfiguration.TypeAttribute) => AttributeKind.Type,
+                            nameof(IConfiguration.OrderAttribute) => AttributeKind.Order,
+                            _ => null
+                        };
 
                         if (attributeKind != null)
                         {
@@ -163,10 +154,10 @@
             if (invocationOperation.Arguments.Length == 1
                 && !invocationOperation.TargetMethod.IsGenericMethod)
             {
-                // As(Lifitime)
+                // As(Lifetime)
                 if (invocationOperation.TargetMethod.Name == nameof(IBinding.As)
-                    && typeof(IBinding).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel)
-                    && typeof(IBinding).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
+                    && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IBinding))
+                    && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IBinding))
                     && TryGetValue(invocationOperation.Arguments[0], _semanticModel, out var lifetime, Lifetime.Transient))
                 {
                     _binding.Lifetime = lifetime;
@@ -174,17 +165,17 @@
 
                 // Tag(object tag)
                 if (invocationOperation.TargetMethod.Name == nameof(IBinding.Tag)
-                    && typeof(IBinding).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel)
-                    && typeof(IBinding).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
+                    && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IBinding))
+                    && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IBinding))
                     && invocationOperation.Arguments[0].Syntax is ArgumentSyntax tag)
                 {
                     _binding.Tags.Add(tag.Expression);
                 }
 
-                // Using(Func<Type, object, object> resolver)
+                // Fallback(Func<Type, object, object> resolver)
                 if (invocationOperation.TargetMethod.Name == nameof(IConfiguration.Fallback)
-                    && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ContainingType, _semanticModel)
-                    && typeof(IConfiguration).Equals(invocationOperation.TargetMethod.ReturnType, _semanticModel)
+                    && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IConfiguration))
+                    && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
                     && invocationOperation.Arguments[0].Syntax is ArgumentSyntax factory)
                 {
                     _resolver?.Fallback.Add(new FallbackMetadata(factory.Expression));

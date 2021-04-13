@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core
+﻿// ReSharper disable InvertIf
+namespace Pure.DI.Core
 {
     using System;
     using System.Collections.Generic;
@@ -11,19 +12,17 @@
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class TypeResolver : ITypeResolver
     {
-        private readonly SemanticModel _semanticModel;
         private readonly ResolverMetadata _metadata;
         private readonly IDiagnostic _diagnostic;
         private readonly Func<ITypesMap> _typesMapFactory;
         private readonly Func<IObjectBuilder> _constructorObjectBuilder;
         private readonly Func<IObjectBuilder> _factoryObjectBuilder;
         private readonly Func<IObjectBuilder> _arrayObjectBuilder;
-        private readonly Dictionary<Key, Binding<ITypeSymbol>> _map = new();
+        private readonly Dictionary<Key, Binding<SemanticType>> _map = new();
         private readonly Dictionary<Key, Binding<SimpleLambdaExpressionSyntax>> _factories = new();
-        private readonly HashSet<INamedTypeSymbol> _specialTypes = new(SymbolEqualityComparer.Default);
+        private readonly HashSet<SemanticType> _specialTypes = new(SemanticTypeEqualityComparer.Default);
 
         public TypeResolver(
-            SemanticModel semanticModel,
             ResolverMetadata metadata,
             IDiagnostic diagnostic,
             Func<ITypesMap> typesMapFactory,
@@ -31,7 +30,6 @@
             [Tag(Tags.FactoryBuilder)] Func<IObjectBuilder> factoryObjectBuilder,
             [Tag(Tags.ArrayBuilder)] Func<IObjectBuilder> arrayObjectBuilder)
         {
-            _semanticModel = semanticModel;
             _metadata = metadata;
             _diagnostic = diagnostic;
             _typesMapFactory = typesMapFactory;
@@ -39,38 +37,28 @@
             _factoryObjectBuilder = factoryObjectBuilder;
             _arrayObjectBuilder = arrayObjectBuilder;
 
-            var specialTypes= 
-                from specialType in Enum.GetValues(typeof(SpecialType)).OfType<SpecialType>()
-                where specialType != SpecialType.None
-                select _semanticModel.Compilation.GetSpecialType(specialType);
-
-            foreach (var specialType in specialTypes)
-            {
-                _specialTypes.Add(specialType);
-            }
-
             foreach (var binding in metadata.Bindings)
             {
-                if (binding.ImplementationType == null)
+                if (binding.Implementation == null)
                 {
                     continue;
                 }
                 
-                foreach (var bindingContractType in binding.ContractTypes)
+                foreach (var dependency in binding.Dependencies)
                 {
                     foreach (var tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null))
                     {
-                        var key = bindingContractType.IsComposedGenericTypeMarker(semanticModel)
-                                  && bindingContractType is INamedTypeSymbol namedType
-                                ? new Key(namedType.ConstructUnboundGenericType(), tag)
-                                : new Key(bindingContractType, tag);
+                        var key = dependency.IsComposedGenericTypeMarker
+                                  && dependency.Type is INamedTypeSymbol namedType
+                                ? new Key(new SemanticType(namedType.ConstructUnboundGenericType(), dependency.SemanticModel), tag)
+                                : new Key(dependency, tag);
 
                         if (_map.TryGetValue(key, out _))
                         {
                             _diagnostic.Warning(Diagnostics.BindingIsAlreadyExist, $"{key} binding was exist and will be overridden by a new one.");
                         }
 
-                        _map[key] = new Binding<ITypeSymbol>(binding, binding.ImplementationType);
+                        _map[key] = new Binding<SemanticType>(binding, binding.Implementation);
 
                         if (binding.Factory != null)
                         {
@@ -81,107 +69,107 @@
             }
         }
 
-        public TypeDescription Resolve(ITypeSymbol contractTypeSymbol, ExpressionSyntax? tag, bool anyTag = false, bool suppressWarnings = false)
+        public Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, bool anyTag = false, bool suppressWarnings = false)
         {
-            if (contractTypeSymbol is INamedTypeSymbol contractType)
+            switch (dependency.Type)
             {
-                Binding<ITypeSymbol> implementationEntry;
-                if (contractType.IsGenericType)
+                case INamedTypeSymbol namedType:
                 {
-                    var keys = new[]
+                    Binding<SemanticType> implementationEntry;
+                    if (namedType.IsGenericType)
                     {
-                        new Key(contractType, tag, anyTag),
-                        new Key(contractType.ConstructUnboundGenericType(), tag, anyTag)
-                    };
+                        var keys = new[]
+                        {
+                            new Key(dependency, tag, anyTag),
+                            new Key(new SemanticType(namedType.ConstructUnboundGenericType(), dependency), tag, anyTag)
+                        };
 
-                    foreach (var key in keys)
+                        foreach (var key in keys)
+                        {
+
+                            if (_map.TryGetValue(key, out implementationEntry))
+                            {
+                                var typesMap = _typesMapFactory();
+                                var hasTypesMap = typesMap.Setup(implementationEntry.Details, dependency);
+                                if (_factories.TryGetValue(key, out var factory))
+                                {
+                                    return new Dependency(factory.Metadata, dependency, tag, _factoryObjectBuilder(), typesMap);
+                                }
+
+                                if (hasTypesMap && implementationEntry.Metadata.Implementation != null)
+                                {
+                                    var constructedContractType = typesMap.ConstructType(implementationEntry.Details);
+                                    var implementationType = typesMap.ConstructType(implementationEntry.Metadata.Implementation);
+                                    var binding = new BindingMetadata
+                                    {
+                                        Implementation = implementationType,
+                                        Lifetime = implementationEntry.Metadata.Lifetime,
+                                        Location = implementationEntry.Metadata.Location
+                                    };
+
+                                    if (tag != null)
+                                    {
+                                        binding.Tags.Add(tag);
+                                    }
+
+                                    binding.Dependencies.Add(constructedContractType);
+                                    return new Dependency(implementationEntry.Metadata, implementationType, tag, _constructorObjectBuilder(), typesMap);
+                                }
+                            }
+                        }
+                    }
+                    else
                     {
-
+                        var key = new Key(dependency, tag);
                         if (_map.TryGetValue(key, out implementationEntry))
                         {
                             var typesMap = _typesMapFactory();
-                            var hasTypesMap = typesMap.Setup(implementationEntry.Details, contractType);
-                            if (_factories.TryGetValue(key, out var factory))
-                            {
-                                return new TypeDescription(factory.Metadata, contractType, tag, _factoryObjectBuilder(), typesMap, _semanticModel);
-                            }
-
-                            if (hasTypesMap && implementationEntry.Metadata.ImplementationType != null)
-                            {
-                                var constructedContractType = typesMap.ConstructType(implementationEntry.Details);
-                                var implementationType = typesMap.ConstructType(implementationEntry.Metadata.ImplementationType);
-                                var binding = new BindingMetadata
-                                {
-                                    ImplementationType = implementationType,
-                                    Lifetime = implementationEntry.Metadata.Lifetime,
-                                    Location = implementationEntry.Metadata.Location
-                                };
-
-                                if (tag != null)
-                                {
-                                    binding.Tags.Add(tag);
-                                }
-
-                                binding.ContractTypes.Add(constructedContractType);
-                                return new TypeDescription(implementationEntry.Metadata, implementationType, tag, _constructorObjectBuilder(), typesMap, _semanticModel);
-                            }
+                            typesMap.Setup(implementationEntry.Details, dependency);
+                            return _factories.TryGetValue(key, out var factory)
+                                ? new Dependency(factory.Metadata, dependency, tag, _factoryObjectBuilder(), typesMap)
+                                : new Dependency(implementationEntry.Metadata, implementationEntry.Details, tag, _constructorObjectBuilder(), typesMap);
                         }
                     }
-                }
-                else
-                {
-                    var key = new Key(contractType, tag);
-                    if (_map.TryGetValue(key, out implementationEntry))
+
+                    if (
+                        !dependency.Type.IsAbstract
+                        && !GetSpecialTypes(dependency.SemanticModel).Contains(dependency)
+                        && dependency.IsValidTypeToResolve)
                     {
                         var typesMap = _typesMapFactory();
-                        typesMap.Setup(implementationEntry.Details, contractType);
-                        if (_factories.TryGetValue(key, out var factory))
+                        var newBinding = new BindingMetadata
                         {
-                            return new TypeDescription(factory.Metadata, contractType, tag, _factoryObjectBuilder(), typesMap, _semanticModel);
-                        }
+                            Implementation = dependency
+                        };
 
-                        return new TypeDescription(implementationEntry.Metadata, implementationEntry.Details, tag, _constructorObjectBuilder(), typesMap, _semanticModel);
+                        return new Dependency(newBinding, dependency, null, _constructorObjectBuilder(), typesMap);
                     }
+
+                    break;
                 }
 
-                if (
-                    !contractTypeSymbol.IsAbstract
-                    && !_specialTypes.Contains(contractTypeSymbol)
-                    && contractTypeSymbol.IsValidTypeToResolve(_semanticModel))
-                {
-                    var typesMap = _typesMapFactory();
-                    var newBinding = new BindingMetadata
-                    {
-                        ImplementationType = contractType
-                    };
-
-                    return new TypeDescription(newBinding, contractTypeSymbol, null, _constructorObjectBuilder(), typesMap, _semanticModel);
-                }
-            }
-
-            if (contractTypeSymbol is IArrayTypeSymbol arrayType)
-            {
-                return new TypeDescription(new BindingMetadata(), arrayType, null, _arrayObjectBuilder(), _typesMapFactory(), _semanticModel);
+                case IArrayTypeSymbol:
+                    return new Dependency(new BindingMetadata(), dependency, null, _arrayObjectBuilder(), _typesMapFactory());
             }
 
             if (!suppressWarnings)
             {
                 if (_metadata.Fallback.Any())
                 {
-                    _diagnostic.Warning(Diagnostics.CannotResolveDependencyWarning, $"Cannot resolve a dependency {contractTypeSymbol}({tag}). Will use a fallback resolve method.");
+                    _diagnostic.Warning(Diagnostics.CannotResolveDependencyWarning, $"Cannot resolve a dependency {dependency}({tag}). Will use a fallback resolve method.");
                 }
                 else
                 {
-                    _diagnostic.Error(Diagnostics.CannotResolveDependencyError, $"Cannot resolve a dependency {contractTypeSymbol}({tag}). Please add an appropriate binding or a fallback resolve method.");
+                    _diagnostic.Error(Diagnostics.CannotResolveDependencyError, $"Cannot resolve a dependency {dependency}({tag}). Please add an appropriate binding or a fallback resolve method.");
                 }
             }
 
-            return new TypeDescription(new BindingMetadata(), contractTypeSymbol, null, _constructorObjectBuilder(), _typesMapFactory(), _semanticModel, false);
+            return new Dependency(new BindingMetadata(), dependency, null, _constructorObjectBuilder(), _typesMapFactory(), false);
         }
 
-        public IEnumerable<TypeDescription> Resolve(ITypeSymbol contractTypeSymbol)
+        public IEnumerable<Dependency> Resolve(SemanticType dependency)
         {
-            var keyToFind = new Key(contractTypeSymbol, null, true);
+            var keyToFind = new Key(dependency, null, true);
             var registeredKeys =
                 from key in _factories.Keys.Concat(_map.Keys).Distinct()
                 where keyToFind.Equals(key)
@@ -189,7 +177,7 @@
 
             foreach (var registeredKey in registeredKeys)
             {
-                yield return Resolve(registeredKey.ContractType, registeredKey.Tag);
+                yield return Resolve(registeredKey.Dependency, registeredKey.Tag);
             }
         }
 
@@ -205,35 +193,55 @@
             }
         }
 
+        private IEnumerable<SemanticType> GetSpecialTypes(SemanticModel semanticModel)
+        {
+            if (_specialTypes.Count > 0)
+            {
+                return _specialTypes;
+            }
+
+            var specialTypes =
+                from specialType in Enum.GetValues(typeof(SpecialType)).OfType<SpecialType>()
+                where specialType != SpecialType.None
+                select semanticModel.Compilation.GetSpecialType(specialType);
+
+            foreach (var specialType in specialTypes)
+            {
+                _specialTypes.Add(new SemanticType(specialType, semanticModel));
+            }
+
+            return _specialTypes;
+        }
+
         private readonly struct Key
         {
-            public readonly ITypeSymbol ContractType;
+            public readonly SemanticType Dependency;
             public readonly ExpressionSyntax? Tag;
             private readonly bool _anyTag;
             private readonly string _tagStr;
 
-            public Key(ITypeSymbol contractType, ExpressionSyntax? tag, bool anyTag = false)
+            public Key(SemanticType dependency, ExpressionSyntax? tag, bool anyTag = false)
             {
-                ContractType = contractType;
+                Dependency = dependency;
                 Tag = tag;
                 _tagStr = tag?.ToString() ?? string.Empty;
                 _anyTag = anyTag;
             }
 
             private bool Equals(Key other) =>
-                ContractType.Equals(other.ContractType, SymbolEqualityComparer.Default)
+                Dependency.Equals(other.Dependency)
                 && (_anyTag || other._anyTag || Equals(_tagStr, other._tagStr));
 
             public override bool Equals(object obj) =>
                 obj is Key other
                 && Equals(other);
 
-            public override int GetHashCode() => SymbolEqualityComparer.Default.GetHashCode(ContractType);
+            public override int GetHashCode() => Dependency.GetHashCode();
 
             public override string ToString()
             {
                 var tag = _anyTag ? "Any" : Tag?.ToString();
-                return $"{ContractType}({tag})";
+                return $"{Dependency}({tag})";
             }
         }
     }

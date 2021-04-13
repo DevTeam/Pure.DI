@@ -7,7 +7,7 @@
     {
         public Lifetime Lifetime => Lifetime.Transient;
 
-        public ExpressionSyntax Build(TypeDescription typeDescription, ExpressionSyntax objectBuildExpression) =>
+        public ExpressionSyntax Build(Dependency dependency, ExpressionSyntax objectBuildExpression) =>
             objectBuildExpression;
     }
 }

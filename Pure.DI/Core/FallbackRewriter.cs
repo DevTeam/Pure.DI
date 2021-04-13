@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core
+﻿// ReSharper disable InvertIf
+namespace Pure.DI.Core
 {
     using System.Collections.Generic;
     using System.Linq;

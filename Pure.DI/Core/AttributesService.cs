@@ -15,7 +15,7 @@
         public IEnumerable<ExpressionSyntax> GetAttributeArgumentExpressions(AttributeKind attributeKind, ISymbol type) =>
             from attrMetadata in _buildContext.Metadata.Attributes
             where attrMetadata.Kind == attributeKind
-            from attr in type.GetAttributes(attrMetadata.Type, _buildContext.SemanticModel)
+            from attr in type.GetAttributes(attrMetadata.Type)
             let args = (attr.ApplicationSyntaxReference?.GetSyntax() as AttributeSyntax)?.ArgumentList?.Arguments
             where args != null
             where attrMetadata.ArgumentPosition < (args?.Count ?? 0)

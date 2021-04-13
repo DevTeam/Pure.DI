@@ -1,7 +1,6 @@
 ﻿// ReSharper disable RedundantNameQualifier
 namespace Pure.DI.Core
 {
-    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.CompilerServices;
     using Microsoft.CodeAnalysis.CSharp;

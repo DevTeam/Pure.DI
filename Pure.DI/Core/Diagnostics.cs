@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core
+﻿// ReSharper disable InconsistentNaming
+namespace Pure.DI.Core
 {
     using System;
 
@@ -22,6 +23,6 @@
         public const string Generated = "DII0001";
         public const string CannotUseCurrentType = "DII0002";
 
-        public static readonly InvalidOperationException ErrorShouldTrowException = new InvalidOperationException("Diagnostic.Error should throw an exception.");
+        public static readonly InvalidOperationException ErrorShouldTrowException = new("Diagnostic.Error should throw an exception.");
     }
 }

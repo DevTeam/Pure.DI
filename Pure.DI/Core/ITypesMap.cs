@@ -1,11 +1,9 @@
 ﻿namespace Pure.DI.Core
 {
-    using Microsoft.CodeAnalysis;
-
     internal interface ITypesMap
     {
-        bool Setup(ITypeSymbol type, ITypeSymbol targetType);
+        bool Setup(SemanticType dependency, SemanticType implementation);
 
-        ITypeSymbol ConstructType(ITypeSymbol type);
+        SemanticType ConstructType(SemanticType type);
     }
 }

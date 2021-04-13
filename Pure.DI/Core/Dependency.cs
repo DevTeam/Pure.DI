@@ -1,39 +1,32 @@
 ﻿namespace Pure.DI.Core
 {
-    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    internal readonly struct TypeDescription
+    internal readonly struct Dependency
     {
         public readonly BindingMetadata Binding;
-        public readonly ITypeSymbol Type;
+        public readonly SemanticType Implementation;
         public readonly ExpressionSyntax? Tag;
         public readonly IObjectBuilder ObjectBuilder;
         public readonly ITypesMap TypesMap;
-        public readonly SemanticModel SemanticModel;
         public readonly bool IsResolved;
-        public readonly int Index;
-
-        public TypeDescription(
+        
+        public Dependency(
             BindingMetadata binding,
-            ITypeSymbol type,
+            SemanticType implementation,
             ExpressionSyntax? tag,
             IObjectBuilder objectBuilder,
             ITypesMap typesMap,
-            SemanticModel semanticModel,
-            bool isResolved = true,
-            int index = 0)
+            bool isResolved = true)
         {
             Binding = binding;
-            Type = type;
+            Implementation = implementation;
             Tag = tag;
             ObjectBuilder = objectBuilder;
             TypesMap = typesMap;
-            SemanticModel = semanticModel;
             IsResolved = isResolved;
-            Index = index;
         }
 
-        public override string ToString() => $"{Type}({Tag})";
+        public override string ToString() => $"{Implementation}({Tag})";
     }
 }

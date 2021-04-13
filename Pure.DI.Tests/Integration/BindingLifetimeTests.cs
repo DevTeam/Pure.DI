@@ -9,11 +9,10 @@
         public void ShouldImplementDisposingViaCustomLifetime()
         {
             // Given
-            var statements =
-                "var root = Composer.Resolve<CompositionRoot>();" +
-                "System.Console.WriteLine(root.Value.IsDisposed);" +
-                "Composer.MyLifetime.Dispose();" +
-                "System.Console.WriteLine(root.Value.IsDisposed);";
+            const string? statements = "var root = Composer.Resolve<CompositionRoot>();" +
+                                       "System.Console.WriteLine(root.Value.IsDisposed);" +
+                                       "Composer.MyLifetime.Dispose();" +
+                                       "System.Console.WriteLine(root.Value.IsDisposed);";
 
             // When
             var output = @"

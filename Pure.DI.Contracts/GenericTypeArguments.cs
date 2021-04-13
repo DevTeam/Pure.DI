@@ -1,6 +1,9 @@
 ﻿
 // ReSharper disable InconsistentNaming
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable InvalidXmlDocComment
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UnusedType.Global
 namespace Pure.DI
 {    
     /// <summary>
@@ -10,7 +13,7 @@ namespace Pure.DI
     public abstract class TT { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC { }
@@ -132,7 +135,7 @@ namespace Pure.DI
     public abstract class TT1 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC1 { }
@@ -254,7 +257,7 @@ namespace Pure.DI
     public abstract class TT2 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC2 { }
@@ -376,7 +379,7 @@ namespace Pure.DI
     public abstract class TT3 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC3 { }
@@ -498,7 +501,7 @@ namespace Pure.DI
     public abstract class TT4 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC4 { }
@@ -620,7 +623,7 @@ namespace Pure.DI
     public abstract class TT5 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC5 { }
@@ -742,7 +745,7 @@ namespace Pure.DI
     public abstract class TT6 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC6 { }
@@ -864,7 +867,7 @@ namespace Pure.DI
     public abstract class TT7 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC7 { }
@@ -986,7 +989,7 @@ namespace Pure.DI
     public abstract class TT8 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC8 { }
@@ -1108,7 +1111,7 @@ namespace Pure.DI
     public abstract class TT9 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC9 { }
@@ -1132,7 +1135,7 @@ namespace Pure.DI
     public abstract class TT10 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC10 { }
@@ -1156,7 +1159,7 @@ namespace Pure.DI
     public abstract class TT11 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC11 { }
@@ -1180,7 +1183,7 @@ namespace Pure.DI
     public abstract class TT12 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC12 { }
@@ -1204,7 +1207,7 @@ namespace Pure.DI
     public abstract class TT13 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC13 { }
@@ -1228,7 +1231,7 @@ namespace Pure.DI
     public abstract class TT14 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC14 { }
@@ -1252,7 +1255,7 @@ namespace Pure.DI
     public abstract class TT15 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC15 { }
@@ -1276,7 +1279,7 @@ namespace Pure.DI
     public abstract class TT16 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC16 { }
@@ -1300,7 +1303,7 @@ namespace Pure.DI
     public abstract class TT17 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC17 { }
@@ -1324,7 +1327,7 @@ namespace Pure.DI
     public abstract class TT18 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC18 { }
@@ -1348,7 +1351,7 @@ namespace Pure.DI
     public abstract class TT19 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC19 { }
@@ -1372,7 +1375,7 @@ namespace Pure.DI
     public abstract class TT20 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC20 { }
@@ -1396,7 +1399,7 @@ namespace Pure.DI
     public abstract class TT21 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC21 { }
@@ -1420,7 +1423,7 @@ namespace Pure.DI
     public abstract class TT22 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC22 { }
@@ -1444,7 +1447,7 @@ namespace Pure.DI
     public abstract class TT23 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC23 { }
@@ -1468,7 +1471,7 @@ namespace Pure.DI
     public abstract class TT24 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC24 { }
@@ -1492,7 +1495,7 @@ namespace Pure.DI
     public abstract class TT25 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC25 { }
@@ -1516,7 +1519,7 @@ namespace Pure.DI
     public abstract class TT26 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC26 { }
@@ -1540,7 +1543,7 @@ namespace Pure.DI
     public abstract class TT27 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC27 { }
@@ -1564,7 +1567,7 @@ namespace Pure.DI
     public abstract class TT28 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC28 { }
@@ -1588,7 +1591,7 @@ namespace Pure.DI
     public abstract class TT29 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC29 { }
@@ -1612,7 +1615,7 @@ namespace Pure.DI
     public abstract class TT30 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC30 { }
@@ -1636,7 +1639,7 @@ namespace Pure.DI
     public abstract class TT31 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC31 { }
@@ -1660,7 +1663,7 @@ namespace Pure.DI
     public abstract class TT32 { }
 
     /// <summary>
-    /// Represents the generic type arguments marker for a reference type with defaul constructor.
+    /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
     public class TTC32 { }
@@ -1677,44 +1680,4 @@ namespace Pure.DI
     [GenericTypeArgument]
     public struct TTS32 { }
 
-
-    internal static class GenericTypeArguments
-    {
-        internal static readonly System.Type[] Arguments =
-        {
-            typeof(TT),
-            typeof(TT1),
-            typeof(TT2),
-            typeof(TT3),
-            typeof(TT4),
-            typeof(TT5),
-            typeof(TT6),
-            typeof(TT7),
-            typeof(TT8),
-            typeof(TT9),
-            typeof(TT10),
-            typeof(TT11),
-            typeof(TT12),
-            typeof(TT13),
-            typeof(TT14),
-            typeof(TT15),
-            typeof(TT16),
-            typeof(TT17),
-            typeof(TT18),
-            typeof(TT19),
-            typeof(TT20),
-            typeof(TT21),
-            typeof(TT22),
-            typeof(TT23),
-            typeof(TT24),
-            typeof(TT25),
-            typeof(TT26),
-            typeof(TT27),
-            typeof(TT28),
-            typeof(TT29),
-            typeof(TT30),
-            typeof(TT31),
-            typeof(TT32),
-        };
-    }
 }

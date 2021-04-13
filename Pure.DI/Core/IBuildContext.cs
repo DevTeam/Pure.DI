@@ -2,14 +2,11 @@
 {
     using System;
     using System.Collections.Generic;
-    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     internal interface IBuildContext
     {
         ResolverMetadata Metadata { get; set; }
-
-        SemanticModel SemanticModel { get; set; }
 
         void Prepare();
 

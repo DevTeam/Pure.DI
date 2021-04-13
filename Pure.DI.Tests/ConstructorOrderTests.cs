@@ -33,27 +33,27 @@
 
         [Theory]
         [MemberData(nameof(Data))]
-        internal void A(ConstructorOrder order1, ConstructorOrder order2, bool? makeReorder)
+        internal void ShouldProvideOrder(ConstructorOrder order1, ConstructorOrder order2, bool? makeReorder)
         {
             // Given
 
             // When
             var result = order1.CompareTo(order2);
 
-            // Then
-            if (makeReorder == true)
+            switch (makeReorder)
             {
-                result.ShouldBeGreaterThan(0);
-            }
+                // Then
+                case true:
+                    result.ShouldBeGreaterThan(0);
+                    break;
 
-            if (makeReorder == false)
-            {
-                result.ShouldBeLessThan(0);
-            }
+                case false:
+                    result.ShouldBeLessThan(0);
+                    break;
 
-            if (makeReorder == null)
-            {
-                result.ShouldBe(0);
+                case null:
+                    result.ShouldBe(0);
+                    break;
             }
         }
     }

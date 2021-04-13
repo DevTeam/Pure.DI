@@ -5,6 +5,6 @@
 
     internal interface IConstructorsResolver
     {
-        IEnumerable<IMethodSymbol> Resolve(TypeDescription typeDescription);
+        IEnumerable<IMethodSymbol> Resolve(Dependency dependency);
     }
 }

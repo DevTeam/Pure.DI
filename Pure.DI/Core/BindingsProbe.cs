@@ -22,8 +22,8 @@
             // Find additional bindings
             (
                 from binding in _buildContext.Metadata.Bindings
-                from contractType in binding.ContractTypes
-                where contractType.IsValidTypeToResolve(_buildContext.SemanticModel)
+                from contractType in binding.Dependencies
+                where contractType.IsValidTypeToResolve
                 // ReSharper disable once RedundantTypeArgumentsOfMethod
                 from tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null)
                 select _buildStrategy.Build(_buildContext.TypeResolver.Resolve(contractType, tag)))
