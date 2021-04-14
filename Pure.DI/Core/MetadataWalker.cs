@@ -171,17 +171,7 @@ namespace Pure.DI.Core
                 {
                     _binding.Tags.Add(tag.Expression);
                 }
-
-                // Fallback(Func<Type, object, object> resolver)
-                if (invocationOperation.TargetMethod.Name == nameof(IConfiguration.Fallback)
-                    && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IConfiguration))
-                    && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
-                    && invocationOperation.Arguments[0].Syntax is ArgumentSyntax factory)
-                {
-                    _resolver?.Fallback.Add(new FallbackMetadata(factory.Expression));
-                }
             }
-
         }
 
         private static bool TryGetValue<T>(IArgumentOperation arg, SemanticModel semanticModel, out T value, T defaultValue)

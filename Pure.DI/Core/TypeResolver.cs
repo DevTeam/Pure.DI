@@ -154,7 +154,19 @@ namespace Pure.DI.Core
 
             if (!suppressWarnings)
             {
-                if (_metadata.Fallback.Any())
+                var hasFallback = false;
+                var fallbackType = dependency.SemanticModel.Compilation.GetTypeByMetadataName(typeof(IFallback).ToString());
+                if (fallbackType != null)
+                {
+                    var fallbackKey = new SemanticType(fallbackType, dependency.SemanticModel);
+                    if (_map.ContainsKey(new Key(fallbackKey, null, true)))
+                    {
+                        hasFallback = true;
+                    }
+                }
+
+
+                if (hasFallback)
                 {
                     _diagnostic.Warning(Diagnostics.CannotResolveDependencyWarning, $"Cannot resolve a dependency {dependency}({tag}). Will use a fallback resolve method.");
                 }

@@ -55,7 +55,7 @@
                 public class CompositionRoot
                 {
                     public readonly bool Value;
-                    internal CompositionRoot(Foo value1, Foo value2) => Value = value1.Foo2 == value2.Foo2;        
+                    internal CompositionRoot(Foo value1, Foo value2, Foo2 value3) => Value = value1.Foo2 == value2.Foo2 && value1.Foo2 == value3;        
                 }
 
                 public class Foo

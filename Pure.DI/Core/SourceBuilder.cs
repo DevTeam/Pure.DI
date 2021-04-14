@@ -69,6 +69,7 @@
 
             foreach (var tree in compilation.SyntaxTrees.Reverse().Skip(1))
             {
+                var semanticModel = compilation.GetSemanticModel(tree);
                 var walker = _metadataWalkerFactory(compilation.GetSemanticModel(tree));
                 walker.Visit(tree.GetRoot());
                 foreach (var rawMetadata in walker.Metadata)
@@ -76,7 +77,7 @@
                     var allMetadata = new List<ResolverMetadata>(featuresMetadata) { rawMetadata };
                     var metadata = CreateMetadata(rawMetadata, allMetadata);
                     _context.Prepare(metadata);
-                    var compilationUnitSyntax = _resolverBuilderFactory().Build();
+                    var compilationUnitSyntax = _resolverBuilderFactory().Build(semanticModel);
                     yield return new Source(
                         metadata.TargetTypeName,
                         SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8));
@@ -95,11 +96,6 @@
                     newMetadata.Bindings.Add(binding);
                 }
 
-                foreach (var fallback in dependency.Fallback)
-                {
-                    newMetadata.Fallback.Add(fallback);
-                }
-
                 foreach (var attribute in dependency.Attributes)
                 {
                     newMetadata.Attributes.Add(attribute);
@@ -109,11 +105,6 @@
             foreach (var binding in metadata.Bindings)
             {
                 newMetadata.Bindings.Add(binding);
-            }
-
-            foreach (var fallback in metadata.Fallback)
-            {
-                newMetadata.Fallback.Add(fallback);
             }
 
             foreach (var attribute in metadata.Attributes)

@@ -128,6 +128,46 @@
         }
 
         [Fact]
+        public void ShouldAddPostfixDIWhenCannotUseOwnerClass()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class Foo
+                {
+                    public static class Composer
+                    {
+                        // Models a random subatomic event that may or may not occur
+                        private static readonly Random Indeterminacy = new();
+
+                        static Composer()
+                        {
+                            DI.Setup()
+                                .Bind<string>().To(_ => ""abc"")
+                                // Composition Root
+                                .Bind<CompositionRoot>().To<CompositionRoot>();
+                        }
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string value) => Value = value;        
+                }                
+            }".Run(out var generatedCode, new RunOptions { Statements = @"System.Console.WriteLine(ComposerDI.Resolve<CompositionRoot>().Value);" });
+
+            // Then
+            output.ShouldBe(new[] { "abc" }, generatedCode);
+        }
+
+        [Fact]
         public void ShouldOverrideBinding()
         {
             // Given

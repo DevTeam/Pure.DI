@@ -15,8 +15,6 @@ namespace Pure.DI
 
             public IBinding Bind<T>() => new Binding(this);
 
-            public IConfiguration Fallback(Func<Type, object, object> factory) => this;
-
             public IConfiguration DependsOn(string configurationName) => this;
 
             public IConfiguration TypeAttribute<T>(int typeArgumentPosition = 0) where T : Attribute => this;

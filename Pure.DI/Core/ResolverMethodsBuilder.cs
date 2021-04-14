@@ -4,6 +4,7 @@ namespace Pure.DI.Core
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -25,9 +26,9 @@ namespace Pure.DI.Core
             _buildContext = buildContext;
         }
 
-        public IEnumerable<MemberDeclarationSyntax> CreateResolveMethods()
+        public IEnumerable<MemberDeclarationSyntax> CreateResolveMethods(SemanticModel semanticModel)
         {
-            var allMethods = _resolveMethodBuilders.Select(i => i.Build()).ToArray();
+            var allMethods = _resolveMethodBuilders.Select(i => i.Build(semanticModel)).ToArray();
 
             var resolvedMethods =
                 from binding in _metadata.Bindings.Reverse().Concat(_buildContext.AdditionalBindings).Distinct().ToList()

@@ -30,7 +30,7 @@ namespace Pure.DI.Core
             _bindingsProbe = bindingsProbe;
         }
 
-        public CompilationUnitSyntax Build()
+        public CompilationUnitSyntax Build(SemanticModel semanticModel)
         {
             var ownerClass = (
                 from cls in _metadata.SetupNode.Ancestors().OfType<ClassDeclarationSyntax>()
@@ -100,7 +100,7 @@ namespace Pure.DI.Core
                                     SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
                                     SyntaxFactory.Token(SyntaxKind.StaticKeyword),
                                     SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword)))
-                .AddMembers(_resolverMethodsBuilder.CreateResolveMethods().ToArray())
+                .AddMembers(_resolverMethodsBuilder.CreateResolveMethods(semanticModel).ToArray())
                 .AddMembers(
                     SyntaxFactory.ClassDeclaration(SyntaxRepo.ContextClassName)
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))

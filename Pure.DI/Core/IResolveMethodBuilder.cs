@@ -1,7 +1,9 @@
 ﻿namespace Pure.DI.Core
 {
+    using Microsoft.CodeAnalysis;
+
     internal interface IResolveMethodBuilder
     {
-        ResolveMethod Build();
+        ResolveMethod Build(SemanticModel semanticModel);
     }
 }

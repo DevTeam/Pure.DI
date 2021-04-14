@@ -27,7 +27,7 @@
                     public readonly string Value;
                     internal CompositionRoot(string value) => Value = value;
                 }
-
+                
                 internal static partial class Composer
                 {
                     static Composer()
@@ -63,12 +63,17 @@
                     internal CompositionRoot(string value) => Value = value;
                 }
 
+                public class Fallback: IFallback
+                {
+                    public object Resolve(Type type, object tag) => throw new Exception(""Cannot resolve!!!"");                  
+                }
+
                 internal static partial class Composer
                 {
                     static Composer()
                     {
                         DI.Setup()
-                            .Fallback(Fallback)
+                            .Bind<IFallback>().To<Fallback>()
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }           
 

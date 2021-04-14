@@ -1,6 +1,7 @@
 ﻿// ReSharper disable RedundantNameQualifier
 namespace Pure.DI.Core
 {
+    using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.CompilerServices;
     using Microsoft.CodeAnalysis.CSharp;
@@ -13,9 +14,9 @@ namespace Pure.DI.Core
         public const string ContextClassName = "Context";
         public static readonly TypeSyntax TTypeSyntax = SyntaxFactory.ParseTypeName("T");
         public static readonly TypeSyntax ContextTypeSyntax = SyntaxFactory.ParseTypeName(ContextClassName);
-        public static readonly TypeSyntax IContextTypeSyntax = SyntaxFactory.ParseTypeName("Pure.DI.IContext");
+        public static readonly TypeSyntax IContextTypeSyntax = SyntaxFactory.ParseTypeName(typeof(IContext).ToString());
         public static readonly TypeSyntax ObjectTypeSyntax = SyntaxFactory.ParseTypeName("object");
-        private static readonly TypeSyntax TypeTypeSyntax = SyntaxFactory.ParseTypeName("System.Type");
+        private static readonly TypeSyntax TypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(Type).ToString());
         private static readonly TypeParameterSyntax TTypeParameterSyntax = SyntaxFactory.TypeParameter("T");
 
         public static readonly AttributeSyntax AggressiveOptimizationAndInliningAttr = SyntaxFactory.Attribute(

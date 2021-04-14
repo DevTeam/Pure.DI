@@ -8,7 +8,6 @@
         public string TargetTypeName;
         public readonly SyntaxNode SetupNode;
         public readonly ICollection<BindingMetadata> Bindings = new List<BindingMetadata>();
-        public readonly ICollection<FallbackMetadata> Fallback = new List<FallbackMetadata>();
         public readonly ICollection<string> DependsOn = new List<string> { "DefaultFeature" };
         public readonly ICollection<AttributeMetadata> Attributes = new List<AttributeMetadata>();
 

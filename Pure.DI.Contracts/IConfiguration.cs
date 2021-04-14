@@ -8,8 +8,6 @@ namespace Pure.DI
     {
         IBinding Bind<T>();
 
-        IConfiguration Fallback(Func<Type, object, object> factory);
-
         IConfiguration DependsOn(string configurationName);
 
         IConfiguration TypeAttribute<T>(int typeArgumentPosition = 0) where T : Attribute;
