@@ -55,25 +55,26 @@
                 public class CompositionRoot
                 {
                     public readonly bool Value;
-                    internal CompositionRoot(Foo value1, Foo value2, Foo2 value3) => Value = value1.Foo2 == value2.Foo2 && value1.Foo2 == value3;        
+                    internal CompositionRoot(Foo value1, Foo value2, IFoo2 value3) => Value = value1.Foo2 == value2.Foo2 && value1.Foo2 == value3;        
                 }
 
                 public class Foo
                 {
-                    public Foo2 Foo2;
-                    public Foo(Foo2 foo2) { Foo2 = foo2; }
+                    public IFoo2 Foo2;
+                    public Foo(IFoo2 foo2) { Foo2 = foo2; }
                 }
 
-                public class Foo2 { }
+                public interface IFoo2 {}
+                public class Foo2: IFoo2 { }
 
                 internal static partial class Composer
                 {
                     static Composer()
                     {
                         DI.Setup()
-                            .Bind<Foo2>().As(Pure.DI.Lifetime.Singleton).To<Foo2>()
                             .Bind<Foo>().To<Foo>()
-                            .Bind<CompositionRoot>().As(Pure.DI.Lifetime.Singleton).To<CompositionRoot>();
+                            .Bind<IFoo2>().As(Pure.DI.Lifetime.Singleton).To<Foo2>()                            
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
                     }                    
                 }    
             }".Run(out var generatedCode);

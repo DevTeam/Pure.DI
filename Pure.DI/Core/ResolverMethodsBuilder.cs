@@ -32,6 +32,7 @@ namespace Pure.DI.Core
 
             var resolvedMethods =
                 from binding in _metadata.Bindings.Reverse().Concat(_buildContext.AdditionalBindings).Distinct().ToList()
+                orderby binding.Weight descending
                 from dependency in binding.Dependencies
                 where dependency.IsValidTypeToResolve
                 from tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null)

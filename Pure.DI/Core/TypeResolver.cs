@@ -12,8 +12,8 @@ namespace Pure.DI.Core
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class TypeResolver : ITypeResolver
     {
-        private readonly ResolverMetadata _metadata;
         private readonly IDiagnostic _diagnostic;
+        private readonly IBuildContext _buildContext;
         private readonly Func<ITypesMap> _typesMapFactory;
         private readonly Func<IObjectBuilder> _constructorObjectBuilder;
         private readonly Func<IObjectBuilder> _factoryObjectBuilder;
@@ -25,13 +25,14 @@ namespace Pure.DI.Core
         public TypeResolver(
             ResolverMetadata metadata,
             IDiagnostic diagnostic,
+            IBuildContext buildContext,
             Func<ITypesMap> typesMapFactory,
             [Tag(Tags.AutowiringBuilder)] Func<IObjectBuilder> constructorObjectBuilder,
             [Tag(Tags.FactoryBuilder)] Func<IObjectBuilder> factoryObjectBuilder,
             [Tag(Tags.ArrayBuilder)] Func<IObjectBuilder> arrayObjectBuilder)
         {
-            _metadata = metadata;
             _diagnostic = diagnostic;
+            _buildContext = buildContext;
             _typesMapFactory = typesMapFactory;
             _constructorObjectBuilder = constructorObjectBuilder;
             _factoryObjectBuilder = factoryObjectBuilder;
@@ -69,7 +70,7 @@ namespace Pure.DI.Core
             }
         }
 
-        public Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, bool anyTag = false, bool suppressWarnings = false)
+        public Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, bool anyTag = false, bool probe = false)
         {
             switch (dependency.Type)
             {
@@ -86,9 +87,9 @@ namespace Pure.DI.Core
 
                         foreach (var key in keys)
                         {
-
                             if (_map.TryGetValue(key, out implementationEntry))
                             {
+                                implementationEntry.Metadata.Weight++;
                                 var typesMap = _typesMapFactory();
                                 var hasTypesMap = typesMap.Setup(implementationEntry.Details, dependency);
                                 if (_factories.TryGetValue(key, out var factory))
@@ -123,6 +124,7 @@ namespace Pure.DI.Core
                         var key = new Key(dependency, tag);
                         if (_map.TryGetValue(key, out implementationEntry))
                         {
+                            implementationEntry.Metadata.Weight++;
                             var typesMap = _typesMapFactory();
                             typesMap.Setup(implementationEntry.Details, dependency);
                             return _factories.TryGetValue(key, out var factory)
@@ -139,9 +141,12 @@ namespace Pure.DI.Core
                         var typesMap = _typesMapFactory();
                         var newBinding = new BindingMetadata
                         {
-                            Implementation = dependency
+                            Implementation = dependency,
+                            Lifetime = Lifetime.Transient,
+                            Dependencies = { dependency }
                         };
 
+                        _buildContext.AddBinding(newBinding);
                         return new Dependency(newBinding, dependency, null, _constructorObjectBuilder(), typesMap);
                     }
 
@@ -152,7 +157,7 @@ namespace Pure.DI.Core
                     return new Dependency(new BindingMetadata(), dependency, null, _arrayObjectBuilder(), _typesMapFactory());
             }
 
-            if (!suppressWarnings)
+            if (!probe)
             {
                 var hasFallback = false;
                 var fallbackType = dependency.SemanticModel.Compilation.GetTypeByMetadataName(typeof(IFallback).ToString());
@@ -168,11 +173,11 @@ namespace Pure.DI.Core
 
                 if (hasFallback)
                 {
-                    _diagnostic.Warning(Diagnostics.CannotResolveDependencyWarning, $"Cannot resolve a dependency {dependency}({tag}). Will use a fallback resolve method.");
+                    _diagnostic.Warning(Diagnostics.CannotResolveDependencyWarning, $"Cannot resolve a dependency {dependency}({tag}). Will use a fallback strategy.");
                 }
                 else
                 {
-                    _diagnostic.Error(Diagnostics.CannotResolveDependencyError, $"Cannot resolve a dependency {dependency}({tag}). Please add an appropriate binding or a fallback resolve method.");
+                    _diagnostic.Error(Diagnostics.CannotResolveDependencyError, $"Cannot resolve a dependency {dependency}({tag}). Please add an appropriate binding or a binding to fallback strategy implementing {nameof(IFallback)}.");
                 }
             }
 

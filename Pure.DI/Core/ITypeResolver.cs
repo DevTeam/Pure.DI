@@ -5,7 +5,7 @@
 
     internal interface ITypeResolver
     {
-        Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, bool anyTag = false, bool suppressWarnings = false);
+        Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, bool anyTag = false, bool probe = false);
 
         IEnumerable<Dependency> Resolve(SemanticType dependency);
     }

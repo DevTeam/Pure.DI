@@ -12,6 +12,7 @@
         public Lifetime Lifetime = Lifetime.Transient;
         public readonly ISet<SemanticType> Dependencies = new HashSet<SemanticType>(SemanticTypeEqualityComparer.Default);
         public readonly ISet<ExpressionSyntax> Tags = new HashSet<ExpressionSyntax>();
+        public int Weight = 0;
 
         public BindingMetadata() { }
 

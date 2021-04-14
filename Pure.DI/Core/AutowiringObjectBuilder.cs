@@ -176,7 +176,8 @@
 
                     if (typeDescription.IsResolved)
                     {
-                        return buildStrategy.Build(_buildContext.TypeResolver.Resolve(constructedType, typeDescription.Tag));
+                        var dependency = _buildContext.TypeResolver.Resolve(type, typeDescription.Tag);
+                        return buildStrategy.Build(dependency);
                     }
 
                     var dependencyType = typeDescription.Implementation.TypeSyntax;
