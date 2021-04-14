@@ -21,6 +21,7 @@ namespace Pure.DI.Features
                 .Bind<System.Collections.Generic.IEnumerable<TT>>()
                 .Bind<System.Collections.Generic.ICollection<TT>>()
                 .Bind<System.Collections.Generic.IReadOnlyCollection<TT>>()
+                    .To(ctx => ctx.Resolve<TT[]>())
                 .Bind<System.Collections.Generic.IList<TT>>()
                 .Bind<System.Collections.Generic.IReadOnlyList<TT>>()
                     .To(ctx => new System.Collections.Generic.List<TT>(ctx.Resolve<TT[]>()))
