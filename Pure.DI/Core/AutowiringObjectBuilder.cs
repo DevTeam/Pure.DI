@@ -161,7 +161,7 @@
             ITypeResolver typeResolver,
             IBuildStrategy buildStrategy)
         {
-            var type = GetContractType(target, targetDependency.Implementation) ?? new SemanticType(defaultType, targetDependency.Implementation);
+            var type = GetDependencyType(target, targetDependency.Implementation) ?? new SemanticType(defaultType, targetDependency.Implementation);
             var tag = (ExpressionSyntax?) _attributesService.GetAttributeArgumentExpressions(AttributeKind.Tag, target).FirstOrDefault();
             var typeDescription = typeResolver.Resolve(type, tag);
             switch (typeDescription.Implementation.Type)
@@ -179,10 +179,10 @@
                         return buildStrategy.Build(_buildContext.TypeResolver.Resolve(constructedType, typeDescription.Tag));
                     }
 
-                    var contractType = typeDescription.Implementation.TypeSyntax;
-                    return SyntaxFactory.CastExpression(contractType,
+                    var dependencyType = typeDescription.Implementation.TypeSyntax;
+                    return SyntaxFactory.CastExpression(dependencyType,
                         SyntaxFactory.InvocationExpression(SyntaxFactory.ParseName(nameof(IContext.Resolve)))
-                            .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(contractType))));
+                            .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependencyType))));
                 }
 
                 case IArrayTypeSymbol arrayType:
@@ -205,14 +205,15 @@
             from parameter in method.Parameters
             select ResolveInstance(parameter, dependency, parameter.Type, typeResolver, buildStrategy);
 
-        private SemanticType? GetContractType(ISymbol type, SemanticModel semanticModel) =>
+        private SemanticType? GetDependencyType(ISymbol type, SemanticModel semanticModel) =>
         (
             from expression in _attributesService.GetAttributeArgumentExpressions(AttributeKind.Type, type)
             let typeExpression = (expression as TypeOfExpressionSyntax)?.Type
             where typeExpression != null
-            let typeSymbol = semanticModel.GetTypeInfo(typeExpression).Type
+            let typeSemanticModel = typeExpression.GetSemanticModel(semanticModel)
+            let typeSymbol = typeSemanticModel.GetTypeInfo(typeExpression).Type
             where typeSymbol != null
-            select new SemanticType(typeSymbol, semanticModel)).FirstOrDefault();
+            select new SemanticType(typeSymbol, typeSemanticModel)).FirstOrDefault();
 
         // ReSharper disable once SuggestBaseTypeForParameter
         private ExpressionSyntax CreateObject(IMethodSymbol ctor, Dependency dependency, SeparatedSyntaxList<ArgumentSyntax> arguments)

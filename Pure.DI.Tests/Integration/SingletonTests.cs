@@ -118,7 +118,7 @@
         }
 
         [Fact]
-        public void ShouldSupportSingletonForSeveralContracts()
+        public void ShouldSupportSingletonForSeveralDependencies()
         {
             // Given
 

@@ -37,13 +37,13 @@ namespace Pure.DI.Core
 
             var resolvedMethods =
                 from binding in _metadata.Bindings.Reverse().Concat(_buildContext.AdditionalBindings).Distinct().ToList()
-                from contractType in binding.Dependencies
-                where contractType.IsValidTypeToResolve
+                from dependency in binding.Dependencies
+                where dependency.IsValidTypeToResolve
                 from tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null)
                 from method in allMethods
                 where method.HasDefaultTag == (tag == null)
-                let statement = ResolveStatement(contractType, method, binding)
-                group (method, statement) by (method.TargetMethod.ToString(), statement.ToString(), contractType.ToString(), tag?.ToString()) into groupedByStatement
+                let statement = ResolveStatement(dependency, method, binding)
+                group (method, statement) by (method.TargetMethod.ToString(), statement.ToString(), dependency.ToString(), tag?.ToString()) into groupedByStatement
                 // Avoid duplication of statements
                 select groupedByStatement.First();
 

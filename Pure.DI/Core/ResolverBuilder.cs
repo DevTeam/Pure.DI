@@ -138,8 +138,8 @@ namespace Pure.DI.Core
                 compilationUnit = compilationUnit.AddMembers(resolverClass);
             }
 
-            var sampleContractType = _metadata.Bindings.LastOrDefault()?.Dependencies.FirstOrDefault()?.ToString() ?? "T";
-            _diagnostic.Information(Diagnostics.Generated, $"{_metadata.TargetTypeName} was generated. Please use a method like {_metadata.TargetTypeName}.Resolve<{sampleContractType}>() to create a composition root.");
+            var sampleDependency = _metadata.Bindings.LastOrDefault()?.Dependencies.FirstOrDefault()?.ToString() ?? "T";
+            _diagnostic.Information(Diagnostics.Generated, $"{_metadata.TargetTypeName} was generated. Please use a method like {_metadata.TargetTypeName}.Resolve<{sampleDependency}>() to create a composition root.");
             return compilationUnit.NormalizeWhitespace();
         }
 

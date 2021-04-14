@@ -36,17 +36,17 @@
 
             var lifetimeField = (FieldDeclarationSyntax)_buildContext.GetOrAddMember(memberKey, () =>
             {
-                var lifetimeContractType = resolvedType.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.ILifetime`1")?.Construct(resolvedType.Type);
-                if (lifetimeContractType == null)
+                var lifetimeDependencyType = resolvedType.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.ILifetime`1")?.Construct(resolvedType.Type);
+                if (lifetimeDependencyType == null)
                 {
                     _diagnostic.Error(Diagnostics.CannotResolveLifetime, $"Cannot resolve a lifetime for {resolvedType}.");
                     throw Diagnostics.ErrorShouldTrowException;
                 }
 
-                var lifetimeTypeDescription = _buildContext.TypeResolver.Resolve(new SemanticType(lifetimeContractType, resolvedType), dependency.Tag);
+                var lifetimeTypeDescription = _buildContext.TypeResolver.Resolve(new SemanticType(lifetimeDependencyType, resolvedType), dependency.Tag);
                 if (!lifetimeTypeDescription.IsResolved)
                 {
-                    _diagnostic.Error(Diagnostics.CannotResolveLifetime, $"Cannot find a lifetime for {resolvedType}. Please add a binding for {lifetimeContractType}, for example .Bind<ILifetime<{resolvedType}>>().To<MyLifetime<{resolvedType}>>().");
+                    _diagnostic.Error(Diagnostics.CannotResolveLifetime, $"Cannot find a lifetime for {resolvedType}. Please add a binding for {lifetimeDependencyType}, for example .Bind<ILifetime<{resolvedType}>>().To<MyLifetime<{resolvedType}>>().");
                     throw Diagnostics.ErrorShouldTrowException;
                 }
 

@@ -31,7 +31,7 @@ namespace Pure.DI.Core
 
         public override SyntaxNode? VisitInvocationExpression(InvocationExpressionSyntax node)
         {
-            var semanticModel = GetSemanticModel(node);
+            var semanticModel = node.GetSemanticModel(_dependency.Implementation);
             var operation = semanticModel.GetOperation(node);
             if (operation is IInvocationOperation invocationOperation)
             {
@@ -89,7 +89,7 @@ namespace Pure.DI.Core
         {
             for (var i = 0; i < args.Count; i++)
             {
-                var semanticModel = GetSemanticModel(args[i].SyntaxTree.GetRoot());
+                var semanticModel = args[i].SyntaxTree.GetRoot().GetSemanticModel(_dependency.Implementation);
                 var typeSymbol = semanticModel.GetTypeInfo(args[i]).Type;
                 if (typeSymbol is INamedTypeSymbol namedTypeSymbol)
                 {
@@ -102,10 +102,5 @@ namespace Pure.DI.Core
                 }
             }
         }
-
-        private SemanticModel GetSemanticModel(SyntaxNode node) => 
-            _dependency.Implementation.SemanticModel.Compilation.SyntaxTrees.Contains(node.SyntaxTree)
-                ? _dependency.Implementation.SemanticModel.Compilation.GetSemanticModel(node.SyntaxTree)
-                : _dependency.Implementation.SemanticModel;
     }
 }

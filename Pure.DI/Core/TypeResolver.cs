@@ -98,11 +98,11 @@ namespace Pure.DI.Core
 
                                 if (hasTypesMap && implementationEntry.Metadata.Implementation != null)
                                 {
-                                    var constructedContractType = typesMap.ConstructType(implementationEntry.Details);
-                                    var implementationType = typesMap.ConstructType(implementationEntry.Metadata.Implementation);
+                                    var constructedDependency = typesMap.ConstructType(implementationEntry.Details);
+                                    var constructedImplementation = typesMap.ConstructType(implementationEntry.Metadata.Implementation);
                                     var binding = new BindingMetadata
                                     {
-                                        Implementation = implementationType,
+                                        Implementation = constructedImplementation,
                                         Lifetime = implementationEntry.Metadata.Lifetime,
                                         Location = implementationEntry.Metadata.Location
                                     };
@@ -112,8 +112,8 @@ namespace Pure.DI.Core
                                         binding.Tags.Add(tag);
                                     }
 
-                                    binding.Dependencies.Add(constructedContractType);
-                                    return new Dependency(implementationEntry.Metadata, implementationType, tag, _constructorObjectBuilder(), typesMap);
+                                    binding.Dependencies.Add(constructedDependency);
+                                    return new Dependency(implementationEntry.Metadata, constructedImplementation, tag, _constructorObjectBuilder(), typesMap);
                                 }
                             }
                         }
