@@ -15,16 +15,19 @@ namespace Pure.DI.Core
     {
         private readonly IResolverMethodsBuilder _resolverMethodsBuilder;
         private readonly IDiagnostic _diagnostic;
+        private readonly IBindingsProbe _bindingsProbe;
         private readonly ResolverMetadata _metadata;
         
         public ResolverBuilder(
             ResolverMetadata metadata,
             IResolverMethodsBuilder resolverMethodsBuilder,
-            IDiagnostic diagnostic)
+            IDiagnostic diagnostic,
+            IBindingsProbe bindingsProbe)
         {
             _metadata = metadata;
             _resolverMethodsBuilder = resolverMethodsBuilder;
             _diagnostic = diagnostic;
+            _bindingsProbe = bindingsProbe;
         }
 
         public CompilationUnitSyntax Build()
@@ -82,6 +85,8 @@ namespace Pure.DI.Core
 
                 prevNamespaceNode = prevNamespaceNode == null ? namespaceNode : prevNamespaceNode.AddMembers(namespaceNode);
             }
+
+            _bindingsProbe.Probe();
 
             var resolverClass = SyntaxFactory.ClassDeclaration(_metadata.TargetTypeName)
                 .AddModifiers(classModifiers.ToArray())

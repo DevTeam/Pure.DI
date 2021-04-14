@@ -6,9 +6,9 @@
 
     internal interface IBuildContext
     {
-        ResolverMetadata Metadata { get; set; }
+        ResolverMetadata Metadata { get; }
 
-        void Prepare();
+        void Prepare(ResolverMetadata metadata);
 
         INameService NameService { get; }
 

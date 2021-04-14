@@ -14,15 +14,16 @@
     internal class SourceBuilder : ISourceBuilder
     {
         private static readonly Regex FeaturesRegex = new(@"Pure.DI.Features.[\w]+Feature.cs", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase);
-        private static readonly SyntaxTree Features;
+        private static readonly string Features;
         private readonly IBuildContext _context;
+        private readonly IDiagnostic _diagnostic;
         private readonly Func<IResolverBuilder> _resolverBuilderFactory;
         private readonly Func<SemanticModel, IMetadataWalker> _metadataWalkerFactory;
 
         static SourceBuilder()
         {
             var assembly = typeof(SourceGenerator).Assembly;
-            StringBuilder sb = new();
+            var sb = new StringBuilder();
             foreach (var resourceName in assembly.GetManifestResourceNames())
             {
                 if (!FeaturesRegex.IsMatch(resourceName))
@@ -34,23 +35,31 @@
                 sb.AppendLine(reader.ReadToEnd());
             }
 
-            Features = CSharpSyntaxTree.ParseText(sb.ToString());
+            Features = sb.ToString();
         }
 
         public SourceBuilder(
             IBuildContext context,
+            IDiagnostic diagnostic,
             Func<IResolverBuilder> resolverBuilderFactory,
             Func<SemanticModel, IMetadataWalker> metadataWalkerFactory)
         {
             _context = context;
+            _diagnostic = diagnostic;
             _resolverBuilderFactory = resolverBuilderFactory;
             _metadataWalkerFactory = metadataWalkerFactory;
         }
 
         public IEnumerable<Source> Build(Compilation compilation)
         {
-            compilation = compilation.AddSyntaxTrees(Features);
-            List<ResolverMetadata> featuresMetadata = new();
+            if (!(compilation is CSharpCompilation csharpCompilation))
+            {
+                _diagnostic.Error(Diagnostics.Unsupported, $"{compilation.Language} is not supported.");
+                throw Diagnostics.ErrorShouldTrowException;
+            }
+
+            compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(Features, new CSharpParseOptions(csharpCompilation.LanguageVersion)));
+            var featuresMetadata = new List<ResolverMetadata>();
             foreach (var tree in compilation.SyntaxTrees.Reverse().Take(1))
             {
                 var walker = _metadataWalkerFactory(compilation.GetSemanticModel(tree));
@@ -66,8 +75,7 @@
                 {
                     var allMetadata = new List<ResolverMetadata>(featuresMetadata) { rawMetadata };
                     var metadata = CreateMetadata(rawMetadata, allMetadata);
-                    _context.Metadata = metadata;
-                    _context.Prepare();
+                    _context.Prepare(metadata);
                     var compilationUnitSyntax = _resolverBuilderFactory().Build();
                     yield return new Source(
                         metadata.TargetTypeName,

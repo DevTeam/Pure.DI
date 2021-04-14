@@ -12,27 +12,21 @@ namespace Pure.DI.Core
     internal class ResolverMethodsBuilder : IResolverMethodsBuilder
     {
         private readonly ResolverMetadata _metadata;
-        private readonly IBindingsProbe _bindingsProbe;
         private readonly IResolveMethodBuilder[] _resolveMethodBuilders;
         private readonly IBuildContext _buildContext;
 
         public ResolverMethodsBuilder(
             ResolverMetadata metadata,
-            IBindingsProbe bindingsProbe,
             IResolveMethodBuilder[] resolveMethodBuilders,
             IBuildContext buildContext)
         {
             _metadata = metadata;
-            _bindingsProbe = bindingsProbe;
             _resolveMethodBuilders = resolveMethodBuilders;
             _buildContext = buildContext;
         }
 
         public IEnumerable<MemberDeclarationSyntax> CreateResolveMethods()
         {
-            _buildContext.Prepare();
-            _bindingsProbe.Probe();
-
             var allMethods = _resolveMethodBuilders.Select(i => i.Build()).ToArray();
 
             var resolvedMethods =

@@ -24,11 +24,7 @@
             _typeResolverFactory = typeResolverFactory;
         }
 
-        public ResolverMetadata Metadata
-        {
-            get => _metadata ?? throw new InvalidOperationException("Not initialized.");
-            set => _metadata = value;
-        }
+        public ResolverMetadata Metadata => _metadata ?? throw new InvalidOperationException("Not initialized.");
 
         public INameService NameService => _nameService ?? throw new InvalidOperationException("Not ready.");
 
@@ -40,8 +36,9 @@
 
         public IEnumerable<StatementSyntax> FinalizationStatements => _finalizationStatements;
 
-        public void Prepare()
+        public void Prepare(ResolverMetadata metadata)
         {
+            _metadata = metadata;
             _additionalBindings.Clear();
             _nameService = _nameServiceFactory();
             _typeResolver = _typeResolverFactory();
