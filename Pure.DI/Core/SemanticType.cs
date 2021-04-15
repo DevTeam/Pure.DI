@@ -113,8 +113,7 @@ namespace Pure.DI.Core
                 _ => false
             };
 
-        public bool Equals(Type type) =>
-            SymbolEqualityComparer.Default.Equals(ToTypeSymbol(type), Type);
+        public bool Equals(Type type) => SymbolEqualityComparer.Default.Equals(ToTypeSymbol(type), Type);
 
         public TypeSyntax TypeSyntax => SyntaxFactory.ParseTypeName(Type.ToMinimalDisplayString(SemanticModel, 0));
 
@@ -123,6 +122,11 @@ namespace Pure.DI.Core
             if (type.FullName == null)
             {
                 throw new ArgumentException(nameof(type));
+            }
+
+            if (type.IsGenericTypeDefinition)
+            {
+                return SemanticModel.Compilation.GetTypeByMetadataName(type.FullName)?.ConstructUnboundGenericType() ?? throw new InvalidOperationException("Cannot convert type.");
             }
 
             if (!type.IsConstructedGenericType)

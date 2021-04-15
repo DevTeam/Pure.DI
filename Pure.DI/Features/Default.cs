@@ -17,8 +17,6 @@ namespace Pure.DI.Features
                 .Bind<System.Threading.Tasks.Task<TT>>().To(ctx => System.Threading.Tasks.Task.Run(ctx.Resolve<System.Func<TT>>()))
                 
                 // Enumerable
-                .Bind<TT[]>().To<TT[]>()
-                .Bind<System.Collections.Generic.IEnumerable<TT>>()
                 .Bind<System.Collections.Generic.ICollection<TT>>()
                 .Bind<System.Collections.Generic.IReadOnlyCollection<TT>>()
                     .To(ctx => ctx.Resolve<TT[]>())

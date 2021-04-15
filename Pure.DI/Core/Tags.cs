@@ -6,6 +6,7 @@
         AutowiringBuilder,
         FactoryBuilder,
         ArrayBuilder,
+        EnumerableBuilder,
         AsIsResult,
         GenericResult,
         StaticResolve,

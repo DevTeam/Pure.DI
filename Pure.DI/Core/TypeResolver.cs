@@ -18,6 +18,7 @@ namespace Pure.DI.Core
         private readonly Func<IObjectBuilder> _constructorObjectBuilder;
         private readonly Func<IObjectBuilder> _factoryObjectBuilder;
         private readonly Func<IObjectBuilder> _arrayObjectBuilder;
+        private readonly Func<IObjectBuilder> _enumerableObjectBuilder;
         private readonly Dictionary<Key, Binding<SemanticType>> _map = new();
         private readonly Dictionary<Key, Binding<SimpleLambdaExpressionSyntax>> _factories = new();
         private readonly HashSet<SemanticType> _specialTypes = new(SemanticTypeEqualityComparer.Default);
@@ -29,7 +30,8 @@ namespace Pure.DI.Core
             Func<ITypesMap> typesMapFactory,
             [Tag(Tags.AutowiringBuilder)] Func<IObjectBuilder> constructorObjectBuilder,
             [Tag(Tags.FactoryBuilder)] Func<IObjectBuilder> factoryObjectBuilder,
-            [Tag(Tags.ArrayBuilder)] Func<IObjectBuilder> arrayObjectBuilder)
+            [Tag(Tags.ArrayBuilder)] Func<IObjectBuilder> arrayObjectBuilder,
+            [Tag(Tags.EnumerableBuilder)] Func<IObjectBuilder> enumerableObjectBuilder)
         {
             _diagnostic = diagnostic;
             _buildContext = buildContext;
@@ -37,6 +39,7 @@ namespace Pure.DI.Core
             _constructorObjectBuilder = constructorObjectBuilder;
             _factoryObjectBuilder = factoryObjectBuilder;
             _arrayObjectBuilder = arrayObjectBuilder;
+            _enumerableObjectBuilder = enumerableObjectBuilder;
 
             foreach (var binding in metadata.Bindings)
             {
@@ -79,10 +82,11 @@ namespace Pure.DI.Core
                     Binding<SemanticType> implementationEntry;
                     if (namedType.IsGenericType)
                     {
+                        var unboundDependency = new SemanticType(namedType.ConstructUnboundGenericType(), dependency);
                         var keys = new[]
                         {
                             new Key(dependency, tag, anyTag),
-                            new Key(new SemanticType(namedType.ConstructUnboundGenericType(), dependency), tag, anyTag)
+                            new Key(unboundDependency, tag, anyTag)
                         };
 
                         foreach (var key in keys)
@@ -117,6 +121,11 @@ namespace Pure.DI.Core
                                     return new Dependency(implementationEntry.Metadata, constructedImplementation, tag, _constructorObjectBuilder(), typesMap);
                                 }
                             }
+                        }
+
+                        if (unboundDependency.Equals(typeof(IEnumerable<>)))
+                        {
+                            return new Dependency(new BindingMetadata(), dependency, null, _enumerableObjectBuilder(), _typesMapFactory());
                         }
                     }
                     else

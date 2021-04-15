@@ -33,6 +33,7 @@
                 .Bind<IObjectBuilder>().As(Singleton).Tag(AutowiringBuilder).To<AutowiringObjectBuilder>()
                 .Bind<IObjectBuilder>().As(Singleton).Tag(FactoryBuilder).To<FactoryObjectBuilder>()
                 .Bind<IObjectBuilder>().As(Singleton).Tag(ArrayBuilder).To<ArrayObjectBuilder>()
+                .Bind<IObjectBuilder>().As(Singleton).Tag(EnumerableBuilder).To<EnumerableObjectBuilder>()
                 .Bind<IFallbackStrategy>().As(Singleton).To<FallbackStrategy>()
                 .Bind<IResolverBuilder>().As(Singleton).To<ResolverBuilder>()
                 .Bind<IMetadataWalker>().To(ctx => new MetadataWalker((SemanticModel)ctx.Args[0]))
