@@ -18,22 +18,21 @@
 
             var varDeclaration = SyntaxFactory.LocalDeclarationStatement(
                 SyntaxFactory.VariableDeclaration(SyntaxRepo.FuncObjectTypeSyntax)
-                    .AddVariables(SyntaxFactory.VariableDeclarator("factory"))
+                    .AddVariables(SyntaxFactory.VariableDeclarator("factory")
+                        .WithInitializer(SyntaxFactory.EqualsValueClause(
+                            SyntaxFactory.InvocationExpression(
+                                    SyntaxFactory.MemberAccessExpression(
+                                        SyntaxKind.SimpleMemberAccessExpression,
+                                        SyntaxFactory.ParseName(SyntaxRepo.ResolversTableName),
+                                        SyntaxFactory.Token(SyntaxKind.DotToken),
+                                        SyntaxFactory.IdentifierName(nameof(ResolversTable.Get))))
+                                .AddArgumentListArguments(
+                                    SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(SyntaxRepo.TTypeSyntax))
+                                ))))
             );
 
             var ifStatement = SyntaxFactory.IfStatement(
-                SyntaxFactory.InvocationExpression(
-                        SyntaxFactory.MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            SyntaxFactory.ParseName(SyntaxRepo.ResolversTableName),
-                            SyntaxFactory.Token(SyntaxKind.DotToken),
-                            SyntaxFactory.IdentifierName(nameof(ResolversTable.TryGet))))
-                    .AddArgumentListArguments(
-                        SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(SyntaxRepo.TTypeSyntax)),
-                        SyntaxFactory.Argument(SyntaxFactory.IdentifierName("factory"))
-                            .WithRefKindKeyword(SyntaxFactory.Token(SyntaxKind.OutKeyword))
-                    ),
-                
+                SyntaxFactory.BinaryExpression(SyntaxKind.NotEqualsExpression, SyntaxFactory.IdentifierName("factory"), SyntaxFactory.DefaultExpression(SyntaxRepo.FuncObjectTypeSyntax)),
                 SyntaxFactory.ReturnStatement(
                     SyntaxFactory.CastExpression(
                         SyntaxRepo.TTypeSyntax, 

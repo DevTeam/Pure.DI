@@ -23,11 +23,10 @@
             // Then
             for (var index = -count; index < count; index++)
             {
-                table.TryGet(index, out var val).ShouldBeTrue();
-                val.ShouldBe(index);
+                table.Get(index).ShouldBe(index);
             }
 
-            table.TryGet(count, out _).ShouldBeFalse();
+            table.Get(count).ShouldBe(0);
         }
 
         [Fact]
@@ -36,10 +35,10 @@
             // Given
 
             // When
-            var table = new Table<long, long>(new List<KeyValuePair<long, long>>());
+            var table = new Table<string, string>(new List<KeyValuePair<string, string>>());
 
             // Then
-            table.TryGet(10, out _).ShouldBeFalse();
+            table.Get("aa").ShouldBeNull();
         }
     }
 }

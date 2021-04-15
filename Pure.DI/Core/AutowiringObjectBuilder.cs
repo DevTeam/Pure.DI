@@ -133,7 +133,7 @@
                     var factoryName = _buildContext.NameService.FindName(memberKey);
                     var type = dependency.Implementation.TypeSyntax;
                     var factoryMethod = SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
-                        .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveOptimizationAndInliningAttr))
+                        .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword), SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
                         .AddBodyStatements(
                             SyntaxFactory.LocalDeclarationStatement(

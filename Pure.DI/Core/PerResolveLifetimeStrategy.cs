@@ -70,7 +70,7 @@
                 var factoryName = _buildContext.NameService.FindName(methodKey);
                 var type = resolvedType.TypeSyntax;
                 var method = SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
-                    .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveOptimizationAndInliningAttr))
+                    .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword), SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
 
                 var resolveInstanceFieldIdentifier = SyntaxFactory.IdentifierName(perResolveField.Declaration.Variables.First().Identifier);

@@ -16,29 +16,28 @@
         {
             var genericWithTagReturnDefault = _fallbackStrategy.Build(semanticModel, SyntaxRepo.TTypeSyntax, SyntaxFactory.TypeOfExpression(SyntaxRepo.TTypeSyntax), SyntaxFactory.ParseTypeName("tag"));
 
-            var varDeclaration = SyntaxFactory.LocalDeclarationStatement(
-                SyntaxFactory.VariableDeclaration(SyntaxRepo.FuncObjectTypeSyntax)
-                    .AddVariables(SyntaxFactory.VariableDeclarator("factory"))
-            );
-
             var key = SyntaxFactory.ObjectCreationExpression(SyntaxRepo.TagTypeTypeSyntax)
                 .AddArgumentListArguments(
                     SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(SyntaxRepo.TTypeSyntax)),
                     SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")));
 
+            var varDeclaration = SyntaxFactory.LocalDeclarationStatement(
+                SyntaxFactory.VariableDeclaration(SyntaxRepo.FuncObjectTypeSyntax)
+                    .AddVariables(SyntaxFactory.VariableDeclarator("factory")
+                        .WithInitializer(SyntaxFactory.EqualsValueClause(
+                            SyntaxFactory.InvocationExpression(
+                                    SyntaxFactory.MemberAccessExpression(
+                                        SyntaxKind.SimpleMemberAccessExpression,
+                                        SyntaxFactory.ParseName(SyntaxRepo.ResolversWithTagTableName),
+                                        SyntaxFactory.Token(SyntaxKind.DotToken),
+                                        SyntaxFactory.IdentifierName(nameof(ResolversWithTagTable.Get))))
+                                .AddArgumentListArguments(
+                                    SyntaxFactory.Argument(key)
+                                ))))
+            );
+
             var ifStatement = SyntaxFactory.IfStatement(
-                SyntaxFactory.InvocationExpression(
-                        SyntaxFactory.MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            SyntaxFactory.ParseName(SyntaxRepo.ResolversWithTagTableName),
-                            SyntaxFactory.Token(SyntaxKind.DotToken),
-                            SyntaxFactory.IdentifierName(nameof(ResolversWithTagTable.TryGet))))
-                    .AddArgumentListArguments(
-                        SyntaxFactory.Argument(key),
-                        SyntaxFactory.Argument(SyntaxFactory.IdentifierName("factory"))
-                            .WithRefKindKeyword(SyntaxFactory.Token(SyntaxKind.OutKeyword))
-                    ),
-                
+                SyntaxFactory.BinaryExpression(SyntaxKind.NotEqualsExpression, SyntaxFactory.IdentifierName("factory"), SyntaxFactory.DefaultExpression(SyntaxRepo.FuncObjectTypeSyntax)),
                 SyntaxFactory.ReturnStatement(
                     SyntaxFactory.CastExpression(
                         SyntaxRepo.TTypeSyntax, 

@@ -29,19 +29,19 @@ namespace Pure.DI.Core
         public static readonly TypeSyntax TypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(Type).ToString());
         private static readonly TypeParameterSyntax TTypeParameterSyntax = SyntaxFactory.TypeParameter("T");
 
-        public static readonly AttributeSyntax AggressiveOptimizationAndInliningAttr = SyntaxFactory.Attribute(
+        public static readonly AttributeSyntax AggressiveInliningAttr = SyntaxFactory.Attribute(
             SyntaxFactory.IdentifierName(nameof(MethodImplAttribute)),
     SyntaxFactory.AttributeArgumentList()
             .AddArguments(
                     SyntaxFactory.AttributeArgument(
                         SyntaxFactory.CastExpression(
                             SyntaxFactory.ParseTypeName(nameof(MethodImplOptions)),
-                            SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0x100 | 0x200))))));
+                            SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0x100))))));
 
         public static readonly MethodDeclarationSyntax TResolveMethodSyntax =
             SyntaxFactory.MethodDeclaration(TTypeSyntax, nameof(IContext.Resolve))
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(AggressiveOptimizationAndInliningAttr))
+                .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(AggressiveInliningAttr))
                 .AddTypeParameterListParameters(TTypeParameterSyntax);
 
         public static readonly MethodDeclarationSyntax GenericStaticResolveMethodSyntax =
@@ -53,7 +53,7 @@ namespace Pure.DI.Core
         private static readonly MethodDeclarationSyntax ObjectResolveMethodSyntax =
             SyntaxFactory.MethodDeclaration(ObjectTypeSyntax, nameof(IContext.Resolve))
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(AggressiveOptimizationAndInliningAttr))
+                .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(AggressiveInliningAttr))
                 .AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("type")).WithType(TypeTypeSyntax));
 
         public static readonly MethodDeclarationSyntax StaticResolveMethodSyntax =

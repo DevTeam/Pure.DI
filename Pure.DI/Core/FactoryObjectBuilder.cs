@@ -32,7 +32,7 @@ namespace Pure.DI.Core
                         var factoryName = _buildContext.NameService.FindName(memberKey);
                         var type = dependency.Implementation.TypeSyntax;
                         return SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
-                            .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveOptimizationAndInliningAttr))
+                            .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
                             .AddParameterListParameters(factory.Parameter.WithType(SyntaxRepo.ContextTypeSyntax))
                             .AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword), SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
                             .AddBodyStatements(factory.Block.Statements.ToArray());

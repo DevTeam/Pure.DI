@@ -37,8 +37,8 @@ namespace Pure.DI.Components
 #pragma warning restore
         }
 
-        [MethodImpl((MethodImplOptions)0x200)]
-        public bool TryGet(TKey key, out TValue value)
+        [MethodImpl((MethodImplOptions)0x100)]
+        public TValue Get(TKey key)
         {
 #pragma warning disable 8602
             var pairs = Buckets[key.GetHashCode() % Divisor];
@@ -48,15 +48,13 @@ namespace Pure.DI.Components
                 var pair = pairs[index];
                 if (Equals(pair.Key, key))
                 {
-                    value = pair.Value;
-                    return true;
+                    return pair.Value;
                 }
             }
 
-#pragma warning disable 8601
-            value = default(TValue);
-#pragma warning restore 8601
-            return false;
+#pragma warning disable 8603
+            return default(TValue);
+#pragma warning restore 8603
         }
     }
 
@@ -64,8 +62,8 @@ namespace Pure.DI.Components
     {
         public ResolversTable(ICollection<KeyValuePair<Type, Func<object>>> pairs) : base(pairs) { }
 
-        [MethodImpl((MethodImplOptions)0x200)]
-        public new bool TryGet(Type key, out Func<object> value)
+        [MethodImpl((MethodImplOptions)0x100)]
+        public new Func<object> Get(Type key)
         {
 #pragma warning disable 8602
             var pairs = Buckets[key.GetHashCode() % Divisor];
@@ -75,15 +73,13 @@ namespace Pure.DI.Components
                 var pair = pairs[index];
                 if (pair.Key == key)
                 {
-                    value = pair.Value;
-                    return true;
+                    return pair.Value;
                 }
             }
 
-#pragma warning disable 8625
-            value = default(Func<object>);
-#pragma warning restore 8625
-            return false;
+#pragma warning disable 8603
+            return default(Func<object>);
+#pragma warning restore 8603
         }
     }
 
