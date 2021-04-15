@@ -737,6 +737,57 @@
         }
 
         [Fact]
+        public void ShouldSupportResolveOfGenericDependencies()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+ 
+                public interface IMyClass2<T> { }
+                public class MyClass2<T>: IMyClass2<T> { }
+
+                public interface IMyClass<T> { }
+                public class MyClass<T>: IMyClass<T>
+                {
+                    public MyClass(IMyClass2<int> val)
+                    {
+                    }
+                }
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            // Composition Root
+                            .Bind<IMyClass2<TT>>().To<MyClass2<TT>>()
+                            .Bind<IMyClass<TT>>().To<MyClass<TT>>()
+                            .Bind<ICompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal interface ICompositionRoot { }
+
+                internal class CompositionRoot: ICompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(IMyClass<string> value) => Value = value.ToString();
+                }
+            }".Run(out var generatedCode, new RunOptions { Statements = 
+                @"System.Console.WriteLine(Composer.Resolve<IMyClass2<int>>());
+                  System.Console.WriteLine(Composer.Resolve<IMyClass<string>>());"
+            });
+
+            // Then
+            output.ShouldBe(new[] { "Sample.MyClass2`1[System.Int32]", "Sample.MyClass`1[System.String]" }, generatedCode);
+        }
+
+        [Fact]
         public void ShouldSupportGenericsWithoutBinding()
         {
             // Given

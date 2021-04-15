@@ -96,15 +96,15 @@ namespace Pure.DI.Core
                                 implementationEntry.Metadata.Weight++;
                                 var typesMap = _typesMapFactory();
                                 var hasTypesMap = typesMap.Setup(implementationEntry.Details, dependency);
+                                var constructedImplementation = typesMap.ConstructType(implementationEntry.Details);
+                                var constructedDependency = typesMap.ConstructType(dependency);
                                 if (_factories.TryGetValue(key, out var factory))
                                 {
-                                    return new Dependency(factory.Metadata, dependency, tag, _factoryObjectBuilder(), typesMap);
+                                   return new Dependency(factory.Metadata, dependency, tag, _factoryObjectBuilder(), typesMap);
                                 }
 
                                 if (hasTypesMap && implementationEntry.Metadata.Implementation != null)
                                 {
-                                    var constructedDependency = typesMap.ConstructType(implementationEntry.Details);
-                                    var constructedImplementation = typesMap.ConstructType(implementationEntry.Metadata.Implementation);
                                     var binding = new BindingMetadata
                                     {
                                         Implementation = constructedImplementation,
@@ -118,6 +118,9 @@ namespace Pure.DI.Core
                                     }
 
                                     binding.Dependencies.Add(constructedDependency);
+                                    binding.Dependencies.Add(constructedImplementation);
+
+                                    _buildContext.AddBinding(binding);
                                     return new Dependency(implementationEntry.Metadata, constructedImplementation, tag, _constructorObjectBuilder(), typesMap);
                                 }
                             }
