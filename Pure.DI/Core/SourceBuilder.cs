@@ -13,8 +13,10 @@
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class SourceBuilder : ISourceBuilder
     {
-        private static readonly Regex FeaturesRegex = new(@"Pure.DI.Features.[\w]+Feature.cs", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase);
-        private static readonly string Features;
+        private static readonly Regex FeaturesRegex = new(@"Pure.DI.Features.[\w]+.cs", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase);
+        private static readonly Regex ComponentsRegex = new(@"Pure.DI.Components.[\w]+.cs", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase);
+        private static readonly Source Features;
+        private static readonly IEnumerable<Source> Components;
         private readonly IBuildContext _context;
         private readonly IDiagnostic _diagnostic;
         private readonly Func<IResolverBuilder> _resolverBuilderFactory;
@@ -22,20 +24,24 @@
 
         static SourceBuilder()
         {
+            Features = new Source("Features.cs",SourceText.From(string.Join(Environment.NewLine, GetResources(FeaturesRegex)), Encoding.UTF8));
+            Components = GetResources(ComponentsRegex).Select(i => new Source(i.file, SourceText.From(i.code, Encoding.UTF8))).ToArray();
+        }
+
+        private static IEnumerable<(string file, string code)> GetResources(Regex filter)
+        {
             var assembly = typeof(SourceGenerator).Assembly;
-            var sb = new StringBuilder();
+
             foreach (var resourceName in assembly.GetManifestResourceNames())
             {
-                if (!FeaturesRegex.IsMatch(resourceName))
+                if (!filter.IsMatch(resourceName))
                 {
                     continue;
                 }
 
                 using var reader = new StreamReader(assembly.GetManifestResourceStream(resourceName) ?? throw new InvalidOperationException($"Cannot read {resourceName}."));
-                sb.AppendLine(reader.ReadToEnd());
+                yield return (resourceName, reader.ReadToEnd());
             }
-
-            Features = sb.ToString();
         }
 
         public SourceBuilder(
@@ -52,13 +58,21 @@
 
         public IEnumerable<Source> Build(Compilation compilation)
         {
-            if (!(compilation is CSharpCompilation csharpCompilation))
+            if (compilation is not CSharpCompilation csharpCompilation)
             {
                 _diagnostic.Error(Diagnostics.Unsupported, $"{compilation.Language} is not supported.");
                 throw Diagnostics.ErrorShouldTrowException;
             }
 
-            compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(Features, new CSharpParseOptions(csharpCompilation.LanguageVersion)));
+            var parseOptions = new CSharpParseOptions(csharpCompilation.LanguageVersion);
+            foreach (var component in Components)
+            {
+                compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(component.Code, parseOptions));
+                yield return component;
+            }
+
+            compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(Features.Code, parseOptions));
+
             var featuresMetadata = new List<ResolverMetadata>();
             foreach (var tree in compilation.SyntaxTrees.Reverse().Take(1))
             {
@@ -67,7 +81,7 @@
                 featuresMetadata.AddRange(walker.Metadata);
             }
 
-            foreach (var tree in compilation.SyntaxTrees.Reverse().Skip(1))
+            foreach (var tree in compilation.SyntaxTrees.Reverse().Skip(1 + Components.Count()))
             {
                 var semanticModel = compilation.GetSemanticModel(tree);
                 var walker = _metadataWalkerFactory(compilation.GetSemanticModel(tree));

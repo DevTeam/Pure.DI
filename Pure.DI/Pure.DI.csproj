@@ -38,9 +38,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Features\TableFeature.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 		<None Include="$(PKGIoC_Container)\lib\netstandard2.0\IoC.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-		<EmbeddedResource Include="Features\DefaultFeature.cs" />
+		<EmbeddedResource Include="Features\Default.cs" />
+		<EmbeddedResource Include="Components\Table.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

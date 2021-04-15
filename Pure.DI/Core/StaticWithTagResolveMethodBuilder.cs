@@ -1,5 +1,6 @@
 ﻿namespace Pure.DI.Core
 {
+    using Components;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
 
@@ -7,23 +8,44 @@
     internal class StaticWithTagResolveMethodBuilder : IResolveMethodBuilder
     {
         private readonly IFallbackStrategy _fallbackStrategy;
-        private readonly IBuildStrategy _buildStrategy;
-        private readonly IBindingStatementsStrategy _bindingStatementsStrategy;
 
-        public StaticWithTagResolveMethodBuilder(
-            IFallbackStrategy fallbackStrategy,
-            [Tag(Tags.SimpleBuildStrategy)] IBuildStrategy buildStrategy,
-            [Tag(Tags.TypeAndTagStatementsStrategy)] IBindingStatementsStrategy bindingStatementsStrategy)
-        {
+        public StaticWithTagResolveMethodBuilder(IFallbackStrategy fallbackStrategy) =>
             _fallbackStrategy = fallbackStrategy;
-            _buildStrategy = buildStrategy;
-            _bindingStatementsStrategy = bindingStatementsStrategy;
-        }
 
         public ResolveMethod Build(SemanticModel semanticModel)
         {
             var returnWithTagDefault = _fallbackStrategy.Build(semanticModel, null, SyntaxFactory.ParseTypeName("type"), SyntaxFactory.ParseTypeName("type"));
-            return new ResolveMethod(SyntaxRepo.StaticResolveWithTagMethodSyntax, false, _buildStrategy, _bindingStatementsStrategy, SyntaxFactory.ParseName("type"), returnWithTagDefault);
+
+            var varDeclaration = SyntaxFactory.LocalDeclarationStatement(
+                SyntaxFactory.VariableDeclaration(SyntaxRepo.FuncObjectTypeSyntax)
+                    .AddVariables(SyntaxFactory.VariableDeclarator("factory"))
+            );
+
+            var key = SyntaxFactory.ObjectCreationExpression(SyntaxRepo.TagTypeTypeSyntax)
+                .AddArgumentListArguments(
+                    SyntaxFactory.Argument(SyntaxFactory.IdentifierName("type")),
+                    SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")));
+
+            var ifStatement = SyntaxFactory.IfStatement(
+                SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            SyntaxFactory.ParseName(SyntaxRepo.ResolversWithTagTableName),
+                            SyntaxFactory.Token(SyntaxKind.DotToken),
+                            SyntaxFactory.IdentifierName(nameof(ResolversWithTagTable.TryGet))))
+                    .AddArgumentListArguments(
+                        SyntaxFactory.Argument(key),
+                        SyntaxFactory.Argument(SyntaxFactory.IdentifierName("factory"))
+                            .WithRefKindKeyword(SyntaxFactory.Token(SyntaxKind.OutKeyword))
+                    ),
+                SyntaxFactory.ReturnStatement(
+                    SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.IdentifierName("factory")).AddArgumentListArguments())
+            );
+
+            return new ResolveMethod(
+                SyntaxRepo.StaticResolveWithTagMethodSyntax.AddBodyStatements(varDeclaration, ifStatement), 
+                returnWithTagDefault);
         }
     }
 }

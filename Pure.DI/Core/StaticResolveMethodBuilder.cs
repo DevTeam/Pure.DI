@@ -1,5 +1,6 @@
 ﻿namespace Pure.DI.Core
 {
+    using Components;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
 
@@ -7,23 +8,38 @@
     internal class StaticResolveMethodBuilder : IResolveMethodBuilder
     {
         private readonly IFallbackStrategy _fallbackStrategy;
-        private readonly IBuildStrategy _buildStrategy;
-        private readonly IBindingStatementsStrategy _bindingStatementsStrategy;
 
-        public StaticResolveMethodBuilder(
-            IFallbackStrategy fallbackStrategy,
-            [Tag(Tags.SimpleBuildStrategy)] IBuildStrategy buildStrategy,
-            [Tag(Tags.TypeStatementsStrategy)] IBindingStatementsStrategy bindingStatementsStrategy)
-        {
+        public StaticResolveMethodBuilder(IFallbackStrategy fallbackStrategy) =>
             _fallbackStrategy = fallbackStrategy;
-            _buildStrategy = buildStrategy;
-            _bindingStatementsStrategy = bindingStatementsStrategy;
-        }
 
         public ResolveMethod Build(SemanticModel semanticModel)
         {
             var returnDefault = _fallbackStrategy.Build(semanticModel, null, SyntaxFactory.ParseTypeName("type"), SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax));
-            return new ResolveMethod(SyntaxRepo.StaticResolveMethodSyntax, true, _buildStrategy, _bindingStatementsStrategy, SyntaxFactory.ParseName("type"), returnDefault);
+            var varDeclaration = SyntaxFactory.LocalDeclarationStatement(
+                SyntaxFactory.VariableDeclaration(SyntaxRepo.FuncObjectTypeSyntax)
+                    .AddVariables(SyntaxFactory.VariableDeclarator("factory"))
+            );
+
+            var ifStatement = SyntaxFactory.IfStatement(
+                SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            SyntaxFactory.ParseName(SyntaxRepo.ResolversTableName),
+                            SyntaxFactory.Token(SyntaxKind.DotToken),
+                            SyntaxFactory.IdentifierName(nameof(ResolversTable.TryGet))))
+                    .AddArgumentListArguments(
+                        SyntaxFactory.Argument(SyntaxFactory.IdentifierName("type")),
+                        SyntaxFactory.Argument(SyntaxFactory.IdentifierName("factory"))
+                            .WithRefKindKeyword(SyntaxFactory.Token(SyntaxKind.OutKeyword))
+                    ),
+                SyntaxFactory.ReturnStatement(
+                    SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.IdentifierName("factory")).AddArgumentListArguments())
+            );
+
+            return new ResolveMethod(
+                SyntaxRepo.StaticResolveMethodSyntax.AddBodyStatements(varDeclaration, ifStatement),
+                returnDefault);
         }
     }
 }

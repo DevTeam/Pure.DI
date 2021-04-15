@@ -15,40 +15,43 @@ namespace Pure.DI.Core
         private readonly ResolverMetadata _metadata;
         private readonly IResolveMethodBuilder[] _resolveMethodBuilders;
         private readonly IBuildContext _buildContext;
+        private readonly IBuildStrategy _buildStrategy;
+        private readonly IBindingStatementsStrategy _bindingStatementsStrategy;
+        private readonly IBindingStatementsStrategy _tagBindingStatementsStrategy;
 
         public ResolverMethodsBuilder(
             ResolverMetadata metadata,
             IResolveMethodBuilder[] resolveMethodBuilders,
-            IBuildContext buildContext)
+            IBuildContext buildContext,
+            [Tag(Tags.SimpleBuildStrategy)] IBuildStrategy buildStrategy,
+            [Tag(Tags.TypeStatementsStrategy)] IBindingStatementsStrategy bindingStatementsStrategy,
+            [Tag(Tags.TypeAndTagStatementsStrategy)] IBindingStatementsStrategy tagBindingStatementsStrategy)
         {
             _metadata = metadata;
             _resolveMethodBuilders = resolveMethodBuilders;
             _buildContext = buildContext;
+            _buildStrategy = buildStrategy;
+            _bindingStatementsStrategy = bindingStatementsStrategy;
+            _tagBindingStatementsStrategy = tagBindingStatementsStrategy;
         }
 
         public IEnumerable<MemberDeclarationSyntax> CreateResolveMethods(SemanticModel semanticModel)
         {
-            var allMethods = _resolveMethodBuilders.Select(i => i.Build(semanticModel)).ToArray();
-
-            var resolvedMethods =
+            var items = (
                 from binding in _metadata.Bindings.Reverse().Concat(_buildContext.AdditionalBindings).Distinct().ToList()
                 orderby binding.Weight descending
                 from dependency in binding.Dependencies
                 where dependency.IsValidTypeToResolve
                 from tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null)
-                from method in allMethods
-                where method.HasDefaultTag == (tag == null)
-                let statement = ResolveStatement(dependency, method, binding)
-                group (method, statement) by (method.TargetMethod.ToString(), statement.ToString(), dependency.ToString(), tag?.ToString()) into groupedByStatement
-                // Avoid duplication of statements
-                select groupedByStatement.First();
+                group (binding, dependency, tag) by (dependency, tag) into grouped
+                    // Avoid duplication of statements
+                select grouped.First())
+                .ToArray();
 
-            // Body
-            foreach (var (method, statement) in resolvedMethods)
-            {
-                method.TargetMethod = method.TargetMethod
-                    .AddBodyStatements(statement);
-            }
+            yield return CreateResolversTable(items);
+            yield return CreateResolversWithTagTable(items);
+
+            var allMethods = _resolveMethodBuilders.Select(i => i.Build(semanticModel)).ToArray();
 
             // Post statements
             foreach (var method in allMethods)
@@ -95,7 +98,7 @@ namespace Pure.DI.Core
                                     SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, SyntaxFactory.IdentifierName(deepnessFieldName), SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0))),
                                         SyntaxFactory.Block().AddStatements(_buildContext.FinalizationStatements.ToArray())
                                 ));
-                        
+
                         var tryStatement = SyntaxFactory.TryStatement(
                             curStatements,
                             SyntaxFactory.List<CatchClauseSyntax>(),
@@ -109,22 +112,113 @@ namespace Pure.DI.Core
                 }
             }
 
-            return allMethods
+            var members =
+                allMethods
                 .Select(strategy => strategy.TargetMethod)
                 .Concat(_buildContext.AdditionalMembers)
                 .Concat(internalMembers);
+
+            foreach (var member in members)
+            {
+                yield return member;
+            }
         }
 
-        private static IfStatementSyntax ResolveStatement(
-            SemanticType dependency,
-            ResolveMethod resolveMethod,
-            BindingMetadata binding) =>
-            SyntaxFactory.IfStatement(
-                SyntaxFactory.BinaryExpression(
-                    SyntaxKind.EqualsExpression,
-                    SyntaxFactory.TypeOfExpression(dependency.TypeSyntax),
-                    resolveMethod.TypeExpression),
-                SyntaxFactory.Block(resolveMethod.BindingStatementsStrategy.CreateStatements(resolveMethod.BuildStrategy, binding, dependency))
-            );
+        private FieldDeclarationSyntax CreateResolversTable((BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)[] items)
+        {
+            var funcType = SyntaxFactory.GenericName(
+                    SyntaxRepo.FuncTypeToken)
+                .AddTypeArgumentListArguments(SyntaxRepo.ObjectTypeSyntax);
+
+            var keyValuePairType = SyntaxFactory.GenericName(
+                    SyntaxRepo.KeyValuePairTypeToken)
+                .AddTypeArgumentListArguments(SyntaxRepo.TypeTypeSyntax, funcType);
+
+            var keyValuePairs = new List<ExpressionSyntax>();
+            foreach (var item in items)
+            {
+                if (item.tag != null)
+                {
+                    continue;
+                }
+
+                var statements = _bindingStatementsStrategy.CreateStatements(_buildStrategy, item.binding, item.dependency);
+                var keyValuePair = SyntaxFactory.ObjectCreationExpression(keyValuePairType)
+                    .AddArgumentListArguments(
+                        SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(item.dependency.TypeSyntax)),
+                        SyntaxFactory.Argument(SyntaxFactory.ParenthesizedLambdaExpression()
+                            .WithBody(SyntaxFactory.Block(statements))));
+
+                keyValuePairs.Add(keyValuePair);
+            }
+
+            var arr = SyntaxFactory.ArrayCreationExpression(
+                    SyntaxFactory.ArrayType(keyValuePairType),
+                    SyntaxFactory.InitializerExpression(SyntaxKind.ArrayInitializerExpression).AddExpressions(keyValuePairs.ToArray()))
+                .AddTypeRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
+
+            var resolversTable = SyntaxFactory.FieldDeclaration(
+                    SyntaxFactory.VariableDeclaration(SyntaxRepo.ResolversTableTypeSyntax)
+                        .AddVariables(
+                            SyntaxFactory.VariableDeclarator(SyntaxRepo.ResolversTableName)
+                                .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(SyntaxRepo.ResolversTableTypeSyntax).AddArgumentListArguments(SyntaxFactory.Argument(arr))))))
+                .AddModifiers(
+                    SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
+                    SyntaxFactory.Token(SyntaxKind.StaticKeyword),
+                    SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword));
+
+            return resolversTable;
+        }
+
+        private FieldDeclarationSyntax CreateResolversWithTagTable((BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)[] items)
+        {
+            var funcType = SyntaxFactory.GenericName(
+                    SyntaxRepo.FuncTypeToken)
+                .AddTypeArgumentListArguments(SyntaxRepo.ObjectTypeSyntax);
+
+            var keyValuePairType = SyntaxFactory.GenericName(
+                    SyntaxRepo.KeyValuePairTypeToken)
+                .AddTypeArgumentListArguments(SyntaxRepo.TagTypeTypeSyntax, funcType);
+
+            var keyValuePairs = new List<ExpressionSyntax>();
+            foreach (var item in items)
+            {
+                if (item.tag == null)
+                {
+                    continue;
+                }
+
+                var key = SyntaxFactory.ObjectCreationExpression(SyntaxRepo.TagTypeTypeSyntax)
+                    .AddArgumentListArguments(
+                        SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(item.dependency.TypeSyntax)),
+                        SyntaxFactory.Argument(item.tag));
+
+                var statements = _tagBindingStatementsStrategy.CreateStatements(_buildStrategy, item.binding, item.dependency);
+                var keyValuePair = SyntaxFactory.ObjectCreationExpression(keyValuePairType)
+                    .AddArgumentListArguments(
+                        SyntaxFactory.Argument(key),
+                        SyntaxFactory.Argument(SyntaxFactory.ParenthesizedLambdaExpression()
+                            .WithBody(SyntaxFactory.Block(statements))));
+
+                keyValuePairs.Add(keyValuePair);
+            }
+
+            var arr = SyntaxFactory.ArrayCreationExpression(
+                    SyntaxFactory.ArrayType(keyValuePairType),
+                    SyntaxFactory.InitializerExpression(SyntaxKind.ArrayInitializerExpression).AddExpressions(keyValuePairs.ToArray()))
+                .AddTypeRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
+
+            var resolversTable = SyntaxFactory.FieldDeclaration(
+                    SyntaxFactory.VariableDeclaration(SyntaxRepo.ResolversWithTagTableTypeSyntax)
+                        .AddVariables(
+                            SyntaxFactory.VariableDeclarator(SyntaxRepo.ResolversWithTagTableName)
+                                .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(SyntaxRepo.ResolversWithTagTableTypeSyntax).AddArgumentListArguments(SyntaxFactory.Argument(arr))))))
+                .AddModifiers(
+                    SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
+                    SyntaxFactory.Token(SyntaxKind.StaticKeyword),
+                    SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword));
+
+            return resolversTable;
+        }
     }
 }

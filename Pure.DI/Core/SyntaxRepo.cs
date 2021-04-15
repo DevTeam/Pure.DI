@@ -4,6 +4,8 @@ namespace Pure.DI.Core
     using System;
     using System.Diagnostics.CodeAnalysis;
     using System.Runtime.CompilerServices;
+    using Components;
+    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -12,11 +14,19 @@ namespace Pure.DI.Core
     {
         public const string SharedContextName = "SharedContext";
         public const string ContextClassName = "Context";
+        public const string ResolversTableName = "Resolvers";
+        public const string ResolversWithTagTableName = "ResolversWithTag";
         public static readonly TypeSyntax TTypeSyntax = SyntaxFactory.ParseTypeName("T");
+        public static readonly TypeSyntax ObjectTypeSyntax = SyntaxFactory.ParseTypeName("object");
+        public static readonly SyntaxToken KeyValuePairTypeToken = SyntaxFactory.Identifier("System.Collections.Generic.KeyValuePair");
+        public static readonly TypeSyntax TagTypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(TagKey).ToString());
+        public static readonly SyntaxToken FuncTypeToken = SyntaxFactory.Identifier("System.Func");
+        public static readonly TypeSyntax FuncObjectTypeSyntax = SyntaxFactory.GenericName("System.Func").AddTypeArgumentListArguments(ObjectTypeSyntax);
+        public static readonly TypeSyntax ResolversTableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(ResolversTable).ToString());
+        public static readonly TypeSyntax ResolversWithTagTableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(ResolversWithTagTable).ToString());
         public static readonly TypeSyntax ContextTypeSyntax = SyntaxFactory.ParseTypeName(ContextClassName);
         public static readonly TypeSyntax IContextTypeSyntax = SyntaxFactory.ParseTypeName(typeof(IContext).ToString());
-        public static readonly TypeSyntax ObjectTypeSyntax = SyntaxFactory.ParseTypeName("object");
-        private static readonly TypeSyntax TypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(Type).ToString());
+        public static readonly TypeSyntax TypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(Type).ToString());
         private static readonly TypeParameterSyntax TTypeParameterSyntax = SyntaxFactory.TypeParameter("T");
 
         public static readonly AttributeSyntax AggressiveOptimizationAndInliningAttr = SyntaxFactory.Attribute(
