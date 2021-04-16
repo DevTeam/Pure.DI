@@ -5,10 +5,6 @@
 
     internal interface IFallbackStrategy
     {
-        StatementSyntax Build(
-            SemanticModel semanticModel,
-            TypeSyntax? targetType,
-            ExpressionSyntax typeExpression,
-            ExpressionSyntax tagExpression);
+        ExpressionSyntax Build(SemanticModel semanticModel);
     }
 }

@@ -17,6 +17,7 @@ namespace Pure.DI.Tests
         public static CSharpCompilation CreateCompilation() =>
             CSharpCompilation
                 .Create("Sample")
+                
                 .AddReferences(
                     MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
                     MetadataReference.CreateFromFile(GetSystemAssemblyPathByName("netstandard.dll")),
@@ -29,12 +30,14 @@ namespace Pure.DI.Tests
         public static IReadOnlyList<string> Run(this string setupCode, out string generatedCode, RunOptions? options = default)
         {
             var curOptions = options ?? new RunOptions();
+            var parseOptions = CSharpParseOptions.Default.WithLanguageVersion(curOptions.LanguageVersion);
+
             var hostCode = @"namespace Sample { public class Program { public static void Main() {" + curOptions.Statements + @"} } }";
-            var additionalCode = curOptions.AdditionalCode.Select(code => CSharpSyntaxTree.ParseText(code)).ToArray();
+            var additionalCode = curOptions.AdditionalCode.Select(code => CSharpSyntaxTree.ParseText(code, parseOptions)).ToArray();
 
             var compilation = CreateCompilation()
                 .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
-                .AddSyntaxTrees(CSharpSyntaxTree.ParseText(setupCode))
+                .AddSyntaxTrees(CSharpSyntaxTree.ParseText(setupCode, parseOptions))
                 .AddSyntaxTrees(additionalCode)
                 .Check();
 
@@ -62,8 +65,8 @@ namespace Pure.DI.Tests
             
             compilation = compilation
                 .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication))
-                .AddSyntaxTrees(CSharpSyntaxTree.ParseText(hostCode))
-                .AddSyntaxTrees(generatedSources.Select(i => CSharpSyntaxTree.ParseText(i.Code.ToString())).ToArray())
+                .AddSyntaxTrees(CSharpSyntaxTree.ParseText(hostCode, parseOptions))
+                .AddSyntaxTrees(generatedSources.Select(i => CSharpSyntaxTree.ParseText(i.Code.ToString(), parseOptions)).ToArray())
                 .Check();
 
             var tempFileName = Path.Combine(Environment.CurrentDirectory, Guid.NewGuid().ToString().Substring(0, 4));

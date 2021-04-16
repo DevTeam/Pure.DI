@@ -6,11 +6,12 @@
 
 #### Base concepts:
 
-- DI without any IoC/DI containers, frameworks, dependencies, and thus without any performance impacts
+- DI without any IoC/DI containers, frameworks, dependencies, and thus without any performance impacts and side-effects
+- A predictable and validated dependencies graph which is building and validating on the fly while you are writing your code
 - High performance with all .NET compiler/JIT optimizations
+- Easy to use
 - Ultra-fine tuning of generic types
-- A predictable dependency graph which are building on the fly while you are writing your code
-- Supports .NET BCL types from the box
+- Supports major .NET BCL types from the box
 
 ## [Schrödinger's cat](Samples/ShroedingersCat) shows how it works
 
@@ -56,7 +57,7 @@ _It is important to note that our abstraction and our implementation do not know
 
 ### Let's glue all together
 
-Just add a package reference for a source generator [Pure.DI](https://www.nuget.org/packages/Pure.DI) and another one to the API [Pure.DI.Contracts](https://www.nuget.org/packages/Pure.DI.Contracts) to mak possible configure DI. Using NuGet packages allows you to optimize your application to include only the necessary dependencies.
+Just add a package reference for a source generator [Pure.DI](https://www.nuget.org/packages/Pure.DI) and another one for API [Pure.DI.Contracts](https://www.nuget.org/packages/Pure.DI.Contracts). Using NuGet packages allows you to optimize your application to include only the necessary dependencies.
 
 - Package Manager
 
@@ -115,7 +116,6 @@ class Program
 
 _Program_ is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) here, a single place in an application where the composition of the object graphs for an application take place. To have an ability create multiple instances or to do it on demand you could use *__Func<>__* with required type specified. Each instance is resolved by a strongly-typed block of statements like the operator new which are compiled with all optimizations with minimal impact on performance or memory consumption. For instance, the creating of a composition root *__Program__* looks like this:
 ```csharp
-// Models a random subatomic event that may or may not occur
 Random Indeterminacy = new();
 
 new Program(
@@ -126,19 +126,20 @@ new Program(
           () => (State)Indeterminacy.Next(2)))));
 ```
 
-Take full advantage of Dependency Injection everywhere and every time without any compromise. Inject them all!
+Take full advantage of Dependency Injection everywhere and every time without any compromise.
 
 ## NuGet packages
 
 |     | packages |
 | --- | --- |
-| Contracts | [![NuGet](https://buildstats.info/nuget/Pure.DI.Contracts)](https://www.nuget.org/packages/Pure.DI.Contracts) |
+| API | [![NuGet](https://buildstats.info/nuget/Pure.DI.Contracts)](https://www.nuget.org/packages/Pure.DI.Contracts) |
 | Source generator | [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI) |
 
-## Supported frameworks
+## Supported frameworks and languages
 
 - .NET 5.0+
 - [.NET Core](https://docs.microsoft.com/en-us/dotnet/core/) 1.0+
 - [.NET Standard](https://docs.microsoft.com/en-us/dotnet/standard/net-standard) 1.0+
 - .NET Framework 3.5+
 - [UWP](https://docs.microsoft.com/en-us/windows/uwp/index) 10+
+- [C# 7.0](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-version-history#c-version-70)+

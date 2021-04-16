@@ -19,9 +19,6 @@
 
                 static partial class Composer
                 {
-                    // Models a random subatomic event that may or may not occur
-                    private static readonly Random Indeterminacy = new();
-
                     static Composer()
                     {
                         DI.Setup()
@@ -56,9 +53,6 @@
 
                 static partial class Composer
                 {
-                    // Models a random subatomic event that may or may not occur
-                    private static readonly Random Indeterminacy = new();
-
                     static Composer()
                     {
                         DI.Setup()
@@ -94,9 +88,6 @@
 
                 static partial class Composer
                 {
-                    // Models a random subatomic event that may or may not occur
-                    private static readonly Random Indeterminacy = new();
-
                     static Composer()
                     {
                         DI.Setup()
@@ -133,9 +124,6 @@
 
                 static partial class Composer
                 {
-                    // Models a random subatomic event that may or may not occur
-                    private static readonly Random Indeterminacy = new();
-
                     static Composer()
                     {
                         DI.Setup()
@@ -170,9 +158,6 @@
 
                 static partial class Composer
                 {
-                    // Models a random subatomic event that may or may not occur
-                    private static readonly Random Indeterminacy = new();
-
                     static Composer()
                     {
                         DI.Setup()
@@ -208,9 +193,6 @@
 
                 static partial class Composer
                 {
-                    // Models a random subatomic event that may or may not occur
-                    private static readonly Random Indeterminacy = new();
-
                     static Composer()
                     {
                         DI.Setup()
@@ -247,9 +229,6 @@
 
                 static partial class Composer
                 {
-                    // Models a random subatomic event that may or may not occur
-                    private static readonly Random Indeterminacy = new();
-
                     static Composer()
                     {
                         DI.Setup()
@@ -292,9 +271,6 @@
 
                 static partial class Composer
                 {
-                    // Models a random subatomic event that may or may not occur
-                    private static readonly Random Indeterminacy = new();
-
                     static Composer()
                     {
                         DI.Setup()
@@ -332,9 +308,6 @@
 
                 static partial class Composer
                 {
-                    // Models a random subatomic event that may or may not occur
-                    private static readonly Random Indeterminacy = new();
-
                     static Composer()
                     {
                         DI.Setup()

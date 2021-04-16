@@ -15,6 +15,7 @@ namespace Pure.DI.Core
         private readonly ResolverMetadata _metadata;
         private readonly IResolveMethodBuilder[] _resolveMethodBuilders;
         private readonly IBuildContext _buildContext;
+        private readonly IFallbackStrategy _fallbackStrategy;
         private readonly IBuildStrategy _buildStrategy;
         private readonly IBindingStatementsStrategy _bindingStatementsStrategy;
         private readonly IBindingStatementsStrategy _tagBindingStatementsStrategy;
@@ -23,6 +24,7 @@ namespace Pure.DI.Core
             ResolverMetadata metadata,
             IResolveMethodBuilder[] resolveMethodBuilders,
             IBuildContext buildContext,
+            IFallbackStrategy fallbackStrategy,
             [Tag(Tags.SimpleBuildStrategy)] IBuildStrategy buildStrategy,
             [Tag(Tags.TypeStatementsStrategy)] IBindingStatementsStrategy bindingStatementsStrategy,
             [Tag(Tags.TypeAndTagStatementsStrategy)] IBindingStatementsStrategy tagBindingStatementsStrategy)
@@ -30,6 +32,7 @@ namespace Pure.DI.Core
             _metadata = metadata;
             _resolveMethodBuilders = resolveMethodBuilders;
             _buildContext = buildContext;
+            _fallbackStrategy = fallbackStrategy;
             _buildStrategy = buildStrategy;
             _bindingStatementsStrategy = bindingStatementsStrategy;
             _tagBindingStatementsStrategy = tagBindingStatementsStrategy;
@@ -48,8 +51,9 @@ namespace Pure.DI.Core
                 select grouped.First())
                 .ToArray();
 
-            yield return CreateResolversTable(items);
-            yield return CreateResolversWithTagTable(items);
+            
+            yield return CreateResolversTable(semanticModel, items);
+            yield return CreateResolversWithTagTable(semanticModel, items);
 
             var allMethods = _resolveMethodBuilders.Select(i => i.Build(semanticModel)).ToArray();
 
@@ -124,7 +128,7 @@ namespace Pure.DI.Core
             }
         }
 
-        private FieldDeclarationSyntax CreateResolversTable((BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)[] items)
+        private FieldDeclarationSyntax CreateResolversTable(SemanticModel semanticModel, (BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)[] items)
         {
             var funcType = SyntaxFactory.GenericName(
                     SyntaxRepo.FuncTypeToken)
@@ -161,7 +165,12 @@ namespace Pure.DI.Core
                     SyntaxFactory.VariableDeclaration(SyntaxRepo.ResolversTableTypeSyntax)
                         .AddVariables(
                             SyntaxFactory.VariableDeclarator(SyntaxRepo.ResolversTableName)
-                                .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(SyntaxRepo.ResolversTableTypeSyntax).AddArgumentListArguments(SyntaxFactory.Argument(arr))))))
+                                .WithInitializer(
+                                    SyntaxFactory.EqualsValueClause(
+                                        SyntaxFactory.ObjectCreationExpression(SyntaxRepo.ResolversTableTypeSyntax)
+                                            .AddArgumentListArguments(
+                                                SyntaxFactory.Argument(arr),
+                                                SyntaxFactory.Argument(_fallbackStrategy.Build(semanticModel)))))))
                 .AddModifiers(
                     SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
                     SyntaxFactory.Token(SyntaxKind.StaticKeyword),
@@ -170,7 +179,7 @@ namespace Pure.DI.Core
             return resolversTable;
         }
 
-        private FieldDeclarationSyntax CreateResolversWithTagTable((BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)[] items)
+        private FieldDeclarationSyntax CreateResolversWithTagTable(SemanticModel semanticModel, (BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)[] items)
         {
             var funcType = SyntaxFactory.GenericName(
                     SyntaxRepo.FuncTypeToken)
@@ -212,7 +221,10 @@ namespace Pure.DI.Core
                     SyntaxFactory.VariableDeclaration(SyntaxRepo.ResolversWithTagTableTypeSyntax)
                         .AddVariables(
                             SyntaxFactory.VariableDeclarator(SyntaxRepo.ResolversWithTagTableName)
-                                .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(SyntaxRepo.ResolversWithTagTableTypeSyntax).AddArgumentListArguments(SyntaxFactory.Argument(arr))))))
+                                .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(SyntaxRepo.ResolversWithTagTableTypeSyntax)
+                                    .AddArgumentListArguments(
+                                        SyntaxFactory.Argument(arr),
+                                        SyntaxFactory.Argument(_fallbackStrategy.Build(semanticModel)))))))
                 .AddModifiers(
                     SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
                     SyntaxFactory.Token(SyntaxKind.StaticKeyword),

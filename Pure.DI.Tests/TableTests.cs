@@ -1,6 +1,5 @@
 ﻿namespace Pure.DI.Tests
 {
-    using System.Collections.Generic;
     using System.Linq;
     using Components;
     using Shouldly;
@@ -13,9 +12,9 @@
         {
             // Given
             var count = 10;
-            var pairs =
-                (from index in Enumerable.Range(-count, count * 2)
-                    select new KeyValuePair<long, long>(index, index)).ToArray();
+            var pairs = (
+                from index in Enumerable.Range(-count, count * 2)
+                select new KeyValuePair<long, long>(index, index)).ToArray();
 
             // When
             var table = new Table<long, long>(pairs);
@@ -35,7 +34,7 @@
             // Given
 
             // When
-            var table = new Table<string, string>(new List<KeyValuePair<string, string>>());
+            var table = new Table<string, string>(new KeyValuePair<string, string>[0]);
 
             // Then
             table.Get("aa").ShouldBeNull();
