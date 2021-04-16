@@ -12,9 +12,9 @@
             var resolve = SyntaxFactory.InvocationExpression(
                 SyntaxFactory.MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
-                            SyntaxFactory.ParseName(SyntaxRepo.ResolversTableName),
+                            SyntaxFactory.ParseName(SyntaxRepo.FactoriesTableName),
                             SyntaxFactory.Token(SyntaxKind.DotToken),
-                            SyntaxFactory.IdentifierName(nameof(DependencyTable.Resolve))))
+                            SyntaxFactory.IdentifierName(nameof(ResolversTable.Resolve))))
                     .AddArgumentListArguments(
                         SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(SyntaxRepo.TTypeSyntax))
                     );

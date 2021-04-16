@@ -14,10 +14,10 @@
             var count = 10;
             var pairs = (
                 from index in Enumerable.Range(-count, count * 2)
-                select new KeyValuePair<long, long>(index, index)).ToArray();
+                select new Pair<long, long>(index, index)).ToArray();
 
             // When
-            var table = new Table<long, long>(pairs);
+            var table = new Table<long, long>(pairs, 0, 0);
 
             // Then
             for (var index = -count; index < count; index++)
@@ -34,7 +34,7 @@
             // Given
 
             // When
-            var table = new Table<string, string>(new KeyValuePair<string, string>[0]);
+            var table = new Table<string, string>(new Pair<string, string>[0], "", "");
 
             // Then
             table.Get("aa").ShouldBeNull();

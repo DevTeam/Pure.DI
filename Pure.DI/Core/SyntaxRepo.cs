@@ -14,17 +14,17 @@ namespace Pure.DI.Core
     {
         public const string SharedContextName = "SharedContext";
         public const string ContextClassName = "Context";
-        public const string ResolversTableName = "Dependencies";
-        public const string ResolversWithTagTableName = "TagDependencies";
+        public const string FactoriesTableName = "Resolvers";
+        public const string FactoriesByTagTableName = "ResolversByTag";
         public static readonly TypeSyntax TTypeSyntax = SyntaxFactory.ParseTypeName("T");
         public static readonly TypeSyntax TypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(Type).ToString());
         public static readonly TypeSyntax ObjectTypeSyntax = SyntaxFactory.ParseTypeName("object");
-        public static readonly SyntaxToken KeyValuePairTypeToken = SyntaxFactory.Identifier("Pure.DI.Components.KeyValuePair");
+        public static readonly SyntaxToken KeyValuePairTypeToken = SyntaxFactory.Identifier("Pure.DI.Components.Pair");
         public static readonly TypeSyntax TagTypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(TagKey).ToString());
         public static readonly SyntaxToken FuncTypeToken = SyntaxFactory.Identifier("System.Func");
         public static readonly TypeSyntax FuncTypeObjectObjectTypeSyntax = SyntaxFactory.GenericName("System.Func").AddTypeArgumentListArguments(TypeTypeSyntax, ObjectTypeSyntax, ObjectTypeSyntax);
-        public static readonly TypeSyntax ResolversTableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(DependencyTable).ToString());
-        public static readonly TypeSyntax ResolversWithTagTableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(TagDependencyTable).ToString());
+        public static readonly TypeSyntax ResolversTableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(ResolversTable).ToString());
+        public static readonly TypeSyntax ResolversWithTagTableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(ResolversByTagTable).ToString());
         public static readonly TypeSyntax ContextTypeSyntax = SyntaxFactory.ParseTypeName(ContextClassName);
         public static readonly TypeSyntax IContextTypeSyntax = SyntaxFactory.ParseTypeName(typeof(IContext).ToString());
         private static readonly TypeParameterSyntax TTypeParameterSyntax = SyntaxFactory.TypeParameter("T");
@@ -36,7 +36,7 @@ namespace Pure.DI.Core
                     SyntaxFactory.AttributeArgument(
                         SyntaxFactory.CastExpression(
                             SyntaxFactory.ParseTypeName(nameof(MethodImplOptions)),
-                            SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0x100))))));
+                            SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0x300))))));
 
         public static readonly MethodDeclarationSyntax TResolveMethodSyntax =
             SyntaxFactory.MethodDeclaration(TTypeSyntax, nameof(IContext.Resolve))

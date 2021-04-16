@@ -17,9 +17,9 @@
             var resolve = SyntaxFactory.InvocationExpression(
                     SyntaxFactory.MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
-                            SyntaxFactory.ParseName(SyntaxRepo.ResolversWithTagTableName),
+                            SyntaxFactory.ParseName(SyntaxRepo.FactoriesByTagTableName),
                             SyntaxFactory.Token(SyntaxKind.DotToken),
-                            SyntaxFactory.IdentifierName(nameof(TagDependencyTable.Resolve))))
+                            SyntaxFactory.IdentifierName(nameof(ResolversByTagTable.Resolve))))
                     .AddArgumentListArguments(
                         SyntaxFactory.Argument(key));
 

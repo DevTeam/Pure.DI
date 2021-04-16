@@ -70,7 +70,13 @@ namespace Sample
     public class Program
     {
         // Composition Root, a single place in an application where the composition of the object graphs for an application take place
-        public static void Main() => Glue.Resolve<Program>().Run();
+        public static void Main()
+        {
+            for (int i = 0; i < 100000000; i++)
+            {
+                Glue.Resolve<Program>();
+            }
+        }
 
         private readonly IBox<ICat> _box;
 

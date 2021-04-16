@@ -7,8 +7,10 @@
 // ReSharper disable ConditionIsAlwaysTrueOrFalse
 // ReSharper disable MergeConditionalExpression
 // ReSharper disable UnusedMember.Global
-// ReSharper disable FieldCanBeMadeReadOnly.Global
 // ReSharper disable UseIndexFromEndExpression
+// ReSharper disable ConvertToLambdaExpression
+#pragma warning disable 8618
+#pragma warning disable 8604
 #pragma warning disable 8603
 #pragma warning disable 8602
 #pragma warning disable 8625
@@ -18,13 +20,13 @@ namespace Pure.DI.Components
     using System.Linq;
     using System.Runtime.CompilerServices;
 
-    internal class KeyValuePair<TKey, TValue>
+    internal class Pair<TKey, TValue>
     {
         public readonly TKey Key;
         public readonly TValue Value;
-        public KeyValuePair<TKey, TValue> Next = null;
+        public Pair<TKey, TValue> Next;
 
-        public KeyValuePair(TKey key, TValue value)
+        public Pair(TKey key, TValue value)
         {
             Key = key;
             Value = value;
@@ -35,16 +37,16 @@ namespace Pure.DI.Components
 
     internal class Table<TKey, TValue>
     {
-        protected uint Divisor;
-        protected KeyValuePair<TKey, TValue>[] Buckets;
+        protected readonly uint Divisor;
+        protected readonly Pair<TKey, TValue>[] Buckets;
 
-        public Table(KeyValuePair<TKey, TValue>[] pairs)
+        public Table(Pair<TKey, TValue>[] pairs, TKey defaultKey, TValue defaultValue)
         {
-            Divisor = (uint)pairs.Length + 1;
-            Buckets = new KeyValuePair<TKey, TValue>[Divisor];
+            Divisor = (uint)(pairs.Length + 1) * 4;
+            Buckets = new Pair<TKey, TValue>[Divisor];
             for (var i = 0; i < Buckets.Length; i++)
             {
-                Buckets[i] = null; // Empty
+                Buckets[i] = new Pair<TKey, TValue>(defaultKey, defaultValue);
             }
 
             var buckets = (
@@ -62,7 +64,7 @@ namespace Pure.DI.Components
             }
         }
 
-        [MethodImpl((MethodImplOptions)0x100)]
+        [MethodImpl((MethodImplOptions)0x300)]
         public TValue Get(TKey key)
         {
             var pair = Buckets[(uint)key.GetHashCode() % Divisor];
@@ -80,19 +82,20 @@ namespace Pure.DI.Components
         }
     }
 
-    internal sealed class DependencyTable : Table<Type, Func<object>>
+    internal sealed class ResolversTable : Table<Type, Func<object>>
     {
         private Func<Type, object, object> _defaultFactory;
-        public DependencyTable(KeyValuePair<Type, Func<object>>[] pairs, Func<Type, object, object> defaultFactory) : base(pairs)
+        public ResolversTable(Pair<Type, Func<object>>[] pairs, Func<Type, object, object> defaultFactory)
+            : base(pairs, typeof(ResolversTable), null)
         {
             _defaultFactory = defaultFactory;
         }
 
-        [MethodImpl((MethodImplOptions)0x100)]
+        [MethodImpl((MethodImplOptions)0x300)]
         public object Resolve(Type key)
         {
             var pair = Buckets[(uint)key.GetHashCode() % Divisor];
-            while (pair != null)
+            do
             {
                 if (pair.Key == key)
                 {
@@ -100,7 +103,8 @@ namespace Pure.DI.Components
                 }
 
                 pair = pair.Next;
-            }
+            } 
+            while (pair != null);
 
             return _defaultFactory !=null ? 
                 _defaultFactory(key, null) ?? new ArgumentException($"Cannot resolve an instance of the type {key.Name}.")
@@ -108,10 +112,11 @@ namespace Pure.DI.Components
         }
     }
 
-    internal sealed class TagDependencyTable : Table<TagKey, Func<object>>
+    internal sealed class ResolversByTagTable : Table<TagKey, Func<object>>
     {
         private Func<Type, object, object> _defaultFactory;
-        public TagDependencyTable(KeyValuePair<TagKey, Func<object>>[] pairs, Func<Type, object, object> defaultFactory) : base(pairs)
+        public ResolversByTagTable(Pair<TagKey, Func<object>>[] pairs, Func<Type, object, object> defaultFactory)
+            : base(pairs, new TagKey(typeof(ResolversByTagTable), null), null)
         {
             _defaultFactory = defaultFactory;
         }
@@ -120,8 +125,8 @@ namespace Pure.DI.Components
         public object Resolve(TagKey key)
         {
             var pair = Buckets[(uint)key.GetHashCode() % Divisor];
-            while (pair != null)
-            {
+            do {
+                // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
                 if (pair.Key.Equals(key))
                 {
                     return pair.Value();
@@ -129,10 +134,11 @@ namespace Pure.DI.Components
 
                 pair = pair.Next;
             }
+            while (pair != null) ;
 
             return _defaultFactory != null ?
-                _defaultFactory(key.Type, key.Tag) ?? new ArgumentException($"Cannot resolve an instance of the type {key.Type.Name} with tag {key.Tag}.")
-                : throw new ArgumentException($"Cannot resolve an instance of the type {key.Type.Name} with tag {key.Tag}.");
+            _defaultFactory(key.Type, key.Tag) ?? new ArgumentException($"Cannot resolve an instance of the type {key.Type.Name} with tag {key.Tag}.")
+            : throw new ArgumentException($"Cannot resolve an instance of the type {key.Type.Name} with tag {key.Tag}.");
         }
     }
 
@@ -150,9 +156,10 @@ namespace Pure.DI.Components
         }
 
         [MethodImpl((MethodImplOptions)0x100)]
-        public bool Equals(ref TagKey other) => Type == other.Type && Tag.Equals(other.Tag);
+        // ReSharper disable once MemberCanBePrivate.Global
+        public bool Equals(TagKey other) => Type == other.Type && Tag.Equals(other.Tag);
 
-        public override bool Equals(object obj) => obj is TagKey other && Equals(ref other);
+        public override bool Equals(object obj) => obj is TagKey other && Equals(other);
 
         public override int GetHashCode() => _hashCode;
     }

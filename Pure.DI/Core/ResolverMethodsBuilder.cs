@@ -164,7 +164,7 @@ namespace Pure.DI.Core
             var resolversTable = SyntaxFactory.FieldDeclaration(
                     SyntaxFactory.VariableDeclaration(SyntaxRepo.ResolversTableTypeSyntax)
                         .AddVariables(
-                            SyntaxFactory.VariableDeclarator(SyntaxRepo.ResolversTableName)
+                            SyntaxFactory.VariableDeclarator(SyntaxRepo.FactoriesTableName)
                                 .WithInitializer(
                                     SyntaxFactory.EqualsValueClause(
                                         SyntaxFactory.ObjectCreationExpression(SyntaxRepo.ResolversTableTypeSyntax)
@@ -220,7 +220,7 @@ namespace Pure.DI.Core
             var resolversTable = SyntaxFactory.FieldDeclaration(
                     SyntaxFactory.VariableDeclaration(SyntaxRepo.ResolversWithTagTableTypeSyntax)
                         .AddVariables(
-                            SyntaxFactory.VariableDeclarator(SyntaxRepo.ResolversWithTagTableName)
+                            SyntaxFactory.VariableDeclarator(SyntaxRepo.FactoriesByTagTableName)
                                 .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(SyntaxRepo.ResolversWithTagTableTypeSyntax)
                                     .AddArgumentListArguments(
                                         SyntaxFactory.Argument(arr),
