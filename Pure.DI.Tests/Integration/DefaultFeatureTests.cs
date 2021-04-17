@@ -1,5 +1,6 @@
 ﻿namespace Pure.DI.Tests.Integration
 {
+    using System.Threading.Tasks;
     using Shouldly;
     using Xunit;
 
@@ -136,7 +137,11 @@
                 internal class CompositionRoot
                 {
                     public readonly string Value;
-                    internal CompositionRoot(Task<string> value) => Value = value.Result;        
+                    internal CompositionRoot(Task<string> task) 
+                    {
+                        task.RunSynchronously();
+                        Value = task.Result;        
+                    }
                 }
             }".Run(out var generatedCode);
 
