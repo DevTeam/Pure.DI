@@ -26,6 +26,18 @@ namespace Pure.DI
         /// <summary>
         /// This lifetime allows to apply a custom lifetime to a binding. Just realize the interface <c>ILifetime&lt;T&gt;</c> and bind, for example: .Bind&lt;ILifetime&lt;IMyInterface&gt;&gt;().To&lt;MyLifetime&gt;()
         /// </summary>
-        Binding
+        Binding,
+
+        /// <summary>
+        /// This lifetime is applicable for integration with Microsoft Dependency Injection.
+        /// Specifies that a single instance of the service will be created.
+        /// </summary>
+        ContainerSingleton,
+
+        /// <summary>
+        /// This lifetime is applicable for integration with Microsoft Dependency Injection.
+        /// Specifies that a new instance of the service will be created for each scope.
+        /// </summary>
+        Scoped
     }
 }

@@ -21,6 +21,8 @@
         SingletonLifetime,
         ThreadSingletonLifetime,
         ResolveSingletonLifetime,
-        CustomLifetime
+        CustomLifetime,
+        Resolvers,
+        MicrosoftDependencyInjection
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Pure.DI.Tests
+﻿namespace Pure.DI.Tests.Integration
 {
     using System.Collections.Generic;
     using Microsoft.CodeAnalysis.CSharp;

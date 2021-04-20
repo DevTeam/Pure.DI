@@ -4,8 +4,10 @@
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    internal interface IResolverMethodsBuilder
+    internal interface IMembersBuilder
     {
-        IEnumerable<MemberDeclarationSyntax> CreateResolveMethods(SemanticModel semanticModel);
+        int Order { get; }
+
+        IEnumerable<MemberDeclarationSyntax> BuildMembers(SemanticModel semanticModel);
     }
 }

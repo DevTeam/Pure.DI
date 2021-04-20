@@ -19,7 +19,7 @@
         private static readonly IEnumerable<Source> Components;
         private readonly IBuildContext _context;
         private readonly IDiagnostic _diagnostic;
-        private readonly Func<IResolverBuilder> _resolverBuilderFactory;
+        private readonly Func<IClassBuilder> _resolverBuilderFactory;
         private readonly Func<SemanticModel, IMetadataWalker> _metadataWalkerFactory;
 
         static SourceBuilder()
@@ -47,7 +47,7 @@
         public SourceBuilder(
             IBuildContext context,
             IDiagnostic diagnostic,
-            Func<IResolverBuilder> resolverBuilderFactory,
+            Func<IClassBuilder> resolverBuilderFactory,
             Func<SemanticModel, IMetadataWalker> metadataWalkerFactory)
         {
             _context = context;

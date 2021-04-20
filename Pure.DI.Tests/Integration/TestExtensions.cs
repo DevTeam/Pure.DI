@@ -1,15 +1,20 @@
 ﻿// ReSharper disable StringLiteralTypo
-namespace Pure.DI.Tests
+namespace Pure.DI.Tests.Integration
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Net.Http;
     using Core;
     using IoC;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.TestHost;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.Extensions.DependencyInjection;
     using Xunit;
 
     public static class TestExtensions
@@ -25,6 +30,18 @@ namespace Pure.DI.Tests
                     MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location),
                     MetadataReference.CreateFromFile(typeof(IList<object>).Assembly.Location),
                     MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(IServiceCollection).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(IServiceProvider).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(MvcServiceCollectionExtensions).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(HttpClient).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(Uri).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(IApplicationBuilder).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(Microsoft.Extensions.Configuration.IConfiguration).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(IMvcBuilder).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(EndpointRoutingApplicationBuilderExtensions).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(WebHostBuilder).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(IWebHostEnvironment).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(TestServer).Assembly.Location),
                     MetadataReference.CreateFromFile(typeof(DI).Assembly.Location));
 
         public static IReadOnlyList<string> Run(this string setupCode, out string generatedCode, RunOptions? options = default)
@@ -32,7 +49,18 @@ namespace Pure.DI.Tests
             var curOptions = options ?? new RunOptions();
             var parseOptions = CSharpParseOptions.Default.WithLanguageVersion(curOptions.LanguageVersion);
 
-            var hostCode = @"namespace Sample { public class Program { public static void Main() {" + curOptions.Statements + @"} } }";
+            var hostCode = @"
+            using Microsoft.AspNetCore.Builder;
+            using Microsoft.AspNetCore.Hosting;
+            using Microsoft.AspNetCore.Mvc;
+            using Microsoft.AspNetCore.TestHost;
+            using Microsoft.Extensions.Configuration;
+            using Microsoft.Extensions.DependencyInjection;
+            using System;
+            using System.Threading.Tasks;
+            using Pure.DI;
+
+            namespace Sample { public class Program { public static void Main() {" + curOptions.Statements + @"} } }";
             var additionalCode = curOptions.AdditionalCode.Select(code => CSharpSyntaxTree.ParseText(code, parseOptions)).ToArray();
 
             var compilation = CreateCompilation()

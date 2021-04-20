@@ -3,7 +3,7 @@
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    internal interface IResolverBuilder
+    internal interface IClassBuilder
     {
         CompilationUnitSyntax Build(SemanticModel semanticModel);
     }

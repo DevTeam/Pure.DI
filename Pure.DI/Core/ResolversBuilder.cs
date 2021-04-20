@@ -10,7 +10,7 @@ namespace Pure.DI.Core
 
     // ReSharper disable once ClassNeverInstantiated.Global
     [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
-    internal class ResolverMethodsBuilder : IResolverMethodsBuilder
+    internal class ResolversBuilder : IMembersBuilder
     {
         private readonly ResolverMetadata _metadata;
         private readonly IResolveMethodBuilder[] _resolveMethodBuilders;
@@ -20,7 +20,7 @@ namespace Pure.DI.Core
         private readonly IBindingStatementsStrategy _bindingStatementsStrategy;
         private readonly IBindingStatementsStrategy _tagBindingStatementsStrategy;
 
-        public ResolverMethodsBuilder(
+        public ResolversBuilder(
             ResolverMetadata metadata,
             IResolveMethodBuilder[] resolveMethodBuilders,
             IBuildContext buildContext,
@@ -38,7 +38,9 @@ namespace Pure.DI.Core
             _tagBindingStatementsStrategy = tagBindingStatementsStrategy;
         }
 
-        public IEnumerable<MemberDeclarationSyntax> CreateResolveMethods(SemanticModel semanticModel)
+        public int Order => 0;
+
+        public IEnumerable<MemberDeclarationSyntax> BuildMembers(SemanticModel semanticModel)
         {
             var items = (
                 from binding in _metadata.Bindings.Reverse().Concat(_buildContext.AdditionalBindings).Distinct().ToList()

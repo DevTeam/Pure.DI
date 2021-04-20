@@ -1,6 +1,7 @@
 ﻿namespace Pure.DI
 {
     using System;
+    using System.IO;
     using Core;
     using IoC;
     using Microsoft.CodeAnalysis;
@@ -42,6 +43,9 @@
                 foreach (var source in sourceBuilder.Build(context.Compilation))
                 {
                     context.AddSource(source.HintName, source.Code);
+                    /*var fileName = @"C:\Projects\DevTeam\Pure.DI\out\" + source.HintName;
+                    File.Delete(fileName);
+                    File.AppendAllText(fileName, source.Code.ToString());*/
                 }
             }
             catch (HandledException)

@@ -1,0 +1,15 @@
+﻿@page "/"
+@using global::Clock.ViewModels
+@using System.ComponentModel
+@inject IClockViewModel ClockViewModel
+
+<p>Date: @ClockViewModel.Date</p>
+<p>Time: @ClockViewModel.Time</p>
+
+@code {                             
+    protected override void OnInitialized()
+    {
+        ((INotifyPropertyChanged)ClockViewModel).PropertyChanged += (sender, args) => InvokeAsync(StateHasChanged);
+        base.OnInitialized();
+    }
+}

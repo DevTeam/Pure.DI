@@ -11,21 +11,21 @@ namespace Pure.DI.Core
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
     // ReSharper disable once ClassNeverInstantiated.Global
-    internal class ResolverBuilder : IResolverBuilder
+    internal class ClassBuilder : IClassBuilder
     {
-        private readonly IResolverMethodsBuilder _resolverMethodsBuilder;
+        private readonly IMembersBuilder[] _membersBuilder;
         private readonly IDiagnostic _diagnostic;
         private readonly IBindingsProbe _bindingsProbe;
         private readonly ResolverMetadata _metadata;
         
-        public ResolverBuilder(
+        public ClassBuilder(
             ResolverMetadata metadata,
-            IResolverMethodsBuilder resolverMethodsBuilder,
+            IEnumerable<IMembersBuilder> membersBuilder,
             IDiagnostic diagnostic,
             IBindingsProbe bindingsProbe)
         {
             _metadata = metadata;
-            _resolverMethodsBuilder = resolverMethodsBuilder;
+            _membersBuilder = membersBuilder.OrderBy(i => i.Order).ToArray();
             _diagnostic = diagnostic;
             _bindingsProbe = bindingsProbe;
         }
@@ -100,7 +100,7 @@ namespace Pure.DI.Core
                                     SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
                                     SyntaxFactory.Token(SyntaxKind.StaticKeyword),
                                     SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword)))
-                .AddMembers(_resolverMethodsBuilder.CreateResolveMethods(semanticModel).ToArray())
+                .AddMembers(_membersBuilder.SelectMany(i => i.BuildMembers(semanticModel)).ToArray())
                 .AddMembers(
                     SyntaxFactory.ClassDeclaration(SyntaxRepo.ContextClassName)
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
