@@ -64,11 +64,13 @@
                 .Bind<IBindingStatementsStrategy>().As(Singleton).Tag(TypeAndTagStatementsStrategy).To<TypeAndTagBindingStatementsStrategy>()
                 .Bind<ITypesMap>().To<TypesMap>()
                 .Bind<IAttributesService>().To<AttributesService>()
-                .Bind<ILifetimeStrategy>().As(Singleton).Tag(TransientLifetime).To<TransientLifetimeStrategy>()
-                .Bind<ILifetimeStrategy>().Tag(SingletonLifetime).To<SingletonLifetimeStrategy>()
-                .Bind<ILifetimeStrategy>().Tag(ThreadSingletonLifetime).To<PerThreadLifetimeStrategy>()
-                .Bind<ILifetimeStrategy>().Tag(ResolveSingletonLifetime).To<PerResolveLifetimeStrategy>()
-                .Bind<ILifetimeStrategy>().Tag(CustomLifetime).To<BindingLifetimeStrategy>();
+                .Bind<ILifetimeStrategy>().As(Singleton).Tag(Lifetime.Transient).To(ctx => new TransientLifetimeStrategy(Lifetime.Transient))
+                .Bind<ILifetimeStrategy>().As(Singleton).Tag(Lifetime.ContainerSingleton).To(ctx => new TransientLifetimeStrategy(Lifetime.ContainerSingleton))
+                .Bind<ILifetimeStrategy>().As(Singleton).Tag(Lifetime.Scoped).To(ctx => new TransientLifetimeStrategy(Lifetime.Scoped))
+                .Bind<ILifetimeStrategy>().Tag(Lifetime.Singleton).To<SingletonLifetimeStrategy>()
+                .Bind<ILifetimeStrategy>().Tag(Lifetime.PerThread).To<PerThreadLifetimeStrategy>()
+                .Bind<ILifetimeStrategy>().Tag(Lifetime.PerResolve).To<PerResolveLifetimeStrategy>()
+                .Bind<ILifetimeStrategy>().Tag(Lifetime.Binding).To<BindingLifetimeStrategy>();
         }
     }
 }

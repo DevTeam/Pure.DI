@@ -125,6 +125,7 @@
                     from binding in _metadata.Bindings.Concat(_buildContext.AdditionalBindings)
                     where !binding.Tags.Any()
                     from dependency in binding.Dependencies
+                    where dependency.Type.IsReferenceType
                     group binding.Lifetime by dependency;
 
             foreach (var dependency in dependencies)

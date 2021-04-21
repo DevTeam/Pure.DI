@@ -17,11 +17,6 @@
         GenericBuildStrategy,
         TypeStatementsStrategy,
         TypeAndTagStatementsStrategy,
-        TransientLifetime,
-        SingletonLifetime,
-        ThreadSingletonLifetime,
-        ResolveSingletonLifetime,
-        CustomLifetime,
         Resolvers,
         MicrosoftDependencyInjection
     }

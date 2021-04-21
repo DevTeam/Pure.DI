@@ -70,7 +70,7 @@
             }".Run(out var generatedCode, new RunOptions { Statements = statements});
 
             // Then
-            output.ShouldBe(new[] { "Abc" }, generatedCode);
+            output.ShouldBeEmpty(generatedCode);
         }
     }
 }
