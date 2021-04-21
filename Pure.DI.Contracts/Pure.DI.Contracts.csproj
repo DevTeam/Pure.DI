@@ -35,21 +35,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Update="GenericTypeArguments.cs">
-			<DependentUpon>GenericTypeArguments.tt</DependentUpon>
-			<DesignTime>True</DesignTime>
-			<AutoGen>True</AutoGen>
-		</Compile>
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Update="GenericTypeArguments.tt">
-			<LastGenOutput>GenericTypeArguments.cs</LastGenOutput>
-			<Generator>TextTemplatingFileGenerator</Generator>
-		</None>
-	</ItemGroup>
-
-	<ItemGroup>
 		<None Include="../Docs/Images/icon.png">
 			<Pack>true</Pack>
 			<PackagePath>common</PackagePath>

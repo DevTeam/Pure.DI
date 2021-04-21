@@ -40,7 +40,15 @@
 	<ItemGroup>
 		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 		<None Include="$(PKGIoC_Container)\lib\netstandard2.0\IoC.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+		
+		<None Update="GenericTypeArguments.tt">
+			<LastGenOutput>GenericTypeArguments.cs</LastGenOutput>
+			<Generator>TextTemplatingFileGenerator</Generator>
+		</None>
+
+		<EmbeddedResource Include="Components\GenericTypeArguments.cs" />
 		<EmbeddedResource Include="Components\Tables.cs" />
+		<EmbeddedResource Include="Components\Contracts.cs" />
 		<EmbeddedResource Include="Features\Default.cs" />
 	</ItemGroup>
 
@@ -62,26 +70,10 @@
 	</PropertyGroup>
 
 	<Target Name="GetDependencyTargetPaths">
-		<ItemGroup Condition="'$(Configuration)'=='Debug'">
-			<TargetPathWithTargetPlatformMoniker Include="$(SolutionDir)\Pure.DI.Contracts\bin\$(Configuration)\netstandard2.0\Pure.DI.Contracts.dll" IncludeRuntimeDependency="false" />
-		</ItemGroup>
-		<ItemGroup Condition="'$(Configuration)'=='Release'">
-			<TargetPathWithTargetPlatformMoniker Include="$(PKGPure_DI_Contracts)\lib\netstandard2.0\Pure.DI.Contracts.dll" IncludeRuntimeDependency="false" />
-		</ItemGroup>
 		<ItemGroup>
 			<TargetPathWithTargetPlatformMoniker Include="$(PKGIoC_Container)\lib\netstandard2.0\IoC.dll" IncludeRuntimeDependency="false" />
 		</ItemGroup>
 	</Target>
-
-	<ItemGroup Condition="'$(Configuration)'=='Debug'">
-		<ProjectReference Include="..\Pure.DI.Contracts\Pure.DI.Contracts.csproj" />
-		<None Include="$(SolutionDir)\Pure.DI.Contracts\bin\$(Configuration)\netstandard2.0\Pure.DI.Contracts.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(Configuration)'=='Release'">
-		<PackageReference Include="Pure.DI.Contracts" Version="1.0.0-beta3" GeneratePathProperty="true" PrivateAssets="all" />
-		<None Include="$(PKGPure_DI_Contracts)\lib\netstandard2.0\Pure.DI.Contracts.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />

@@ -57,20 +57,18 @@ _It is important to note that our abstraction and our implementation do not know
 
 ### Let's glue all together
 
-Just add a package reference for a source generator [Pure.DI](https://www.nuget.org/packages/Pure.DI) and another one for API [Pure.DI.Contracts](https://www.nuget.org/packages/Pure.DI.Contracts). Using NuGet packages allows you to optimize your application to include only the necessary dependencies.
+Just add a package reference to [Pure.DI](https://www.nuget.org/packages/Pure.DI). Using NuGet packages allows you to optimize your application to include only the necessary dependencies.
 
 - Package Manager
 
   ```
   Install-Package Pure.DI
-  Install-Package Pure.DI.Contracts
   ```
   
 - .NET CLI
   
   ```
   dotnet add package Pure.DI
-  dotnet add package Pure.DI.Contracts
   ```
 
 Declare required dependencies in a class like:
@@ -128,12 +126,9 @@ new Program(
 
 Take full advantage of Dependency Injection everywhere and every time without any compromise.
 
-## NuGet packages
+## NuGet package
 
-|     | packages |
-| --- | --- |
-| API | [![NuGet](https://buildstats.info/nuget/Pure.DI.Contracts)](https://www.nuget.org/packages/Pure.DI.Contracts) |
-| Source generator | [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI) |
+[![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
 
 ## Supported frameworks and languages
 
