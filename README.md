@@ -8,6 +8,7 @@
 
 - DI without any IoC/DI containers, frameworks, dependencies, and thus without any performance impacts and side-effects
 - A predictable and validated dependencies graph which is building and validating on the fly while you are writing your code
+- Does not add dependencies to any other assemblies
 - High performance with all .NET compiler/JIT optimizations
 - Easy to use
 - Ultra-fine tuning of generic types
@@ -130,6 +131,11 @@ Take full advantage of Dependency Injection everywhere and every time without an
 
 [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
 
+## Development environment requirements
+
+- [.NET 5.0.102+](https://dotnet.microsoft.com/download/dotnet/5.0)
+- [Visual Studio 16.8+](https://visualstudio.microsoft.com/vs)
+
 ## Supported frameworks and languages
 
 - .NET 5.0+
@@ -138,3 +144,7 @@ Take full advantage of Dependency Injection everywhere and every time without an
 - .NET Framework 3.5+
 - [UWP](https://docs.microsoft.com/en-us/windows/uwp/index) 10+
 - [C# 7.0](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-version-history#c-version-70)+
+
+## ASP.NET Support
+
+When a targeting project is an ASP.NET project, a special extension method is generated automatically. This extension method could be used to integrate DI into a web application infrastructure. Pay attention to [this single statement](https://github.com/DevTeam/Pure.DI/blob/6c7e1688ed182cdd2c12a7907377b22bdf07270b/Samples/BlazorServerApp/Startup.cs#L21)  that makes all magic. For more details, please take a look at this [sample](https://github.com/DevTeam/Pure.DI/tree/master/Samples/BlazorServerApp).
