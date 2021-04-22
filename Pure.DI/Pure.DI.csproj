@@ -49,6 +49,7 @@
 		<EmbeddedResource Include="Components\GenericTypeArguments.cs" />
 		<EmbeddedResource Include="Components\Tables.cs" />
 		<EmbeddedResource Include="Components\Contracts.cs" />
+		<EmbeddedResource Include="Components\ServiceProviderInstance.cs" />
 		<EmbeddedResource Include="Features\Default.cs" />
 	</ItemGroup>
 

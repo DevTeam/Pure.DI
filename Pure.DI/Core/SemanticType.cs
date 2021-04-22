@@ -49,7 +49,7 @@ namespace Pure.DI.Core
                 Type is not INamedTypeSymbol namedTypeSymbol
                 || !namedTypeSymbol.IsGenericType)
             {
-                throw new ArgumentException($"{Type} is nt generic type.");
+                throw new ArgumentException($"{Type} is not a generic type.");
             }
 
             var unboundGeneric = namedTypeSymbol.ConstructUnboundGenericType();

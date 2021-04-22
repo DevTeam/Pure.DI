@@ -14,17 +14,30 @@
 
         public IDisposable Subscribe(IObserver<Tick> observer)
         {
-            _observers.Add(observer);
-            return new Token(() => _observers.Remove(observer));
+            lock (_observers)
+            {
+                _observers.Add(observer);
+            }
+
+            return new Token(() =>
+            {
+                lock (observer)
+                {
+                    _observers.Remove(observer);
+                }
+            });
         }
 
         public void Dispose() => _timer.Dispose();
 
         private void Tick(object state)
         {
-            foreach (var observer in _observers)
+            lock (_observers)
             {
-                observer.OnNext(Models.Tick.Shared);
+                foreach (var observer in _observers)
+                {
+                    observer.OnNext(Models.Tick.Shared);
+                }
             }
         }
 

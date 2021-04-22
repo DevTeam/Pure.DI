@@ -5,6 +5,7 @@ namespace Pure.DI.Core
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using Components;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -15,10 +16,10 @@ namespace Pure.DI.Core
         private readonly IDiagnostic _diagnostic;
         private readonly IBuildContext _buildContext;
         private readonly Func<ITypesMap> _typesMapFactory;
-        private readonly Func<IObjectBuilder> _constructorObjectBuilder;
-        private readonly Func<IObjectBuilder> _factoryObjectBuilder;
-        private readonly Func<IObjectBuilder> _arrayObjectBuilder;
-        private readonly Func<IObjectBuilder> _enumerableObjectBuilder;
+        private readonly Func<IObjectBuilder> _constructorBuilder;
+        private readonly Func<IObjectBuilder> _factoryBuilder;
+        private readonly Func<IObjectBuilder> _arrayBuilder;
+        private readonly Func<IObjectBuilder> _enumerableBuilder;
         private readonly Dictionary<Key, Binding<SemanticType>> _map = new();
         private readonly Dictionary<Key, Binding<SimpleLambdaExpressionSyntax>> _factories = new();
         private readonly HashSet<SemanticType> _specialTypes = new(SemanticTypeEqualityComparer.Default);
@@ -28,18 +29,18 @@ namespace Pure.DI.Core
             IDiagnostic diagnostic,
             IBuildContext buildContext,
             Func<ITypesMap> typesMapFactory,
-            [Tag(Tags.AutowiringBuilder)] Func<IObjectBuilder> constructorObjectBuilder,
-            [Tag(Tags.FactoryBuilder)] Func<IObjectBuilder> factoryObjectBuilder,
-            [Tag(Tags.ArrayBuilder)] Func<IObjectBuilder> arrayObjectBuilder,
-            [Tag(Tags.EnumerableBuilder)] Func<IObjectBuilder> enumerableObjectBuilder)
+            [Tag(Tags.AutowiringBuilder)] Func<IObjectBuilder> constructorBuilder,
+            [Tag(Tags.FactoryBuilder)] Func<IObjectBuilder> factoryBuilder,
+            [Tag(Tags.ArrayBuilder)] Func<IObjectBuilder> arrayBuilder,
+            [Tag(Tags.EnumerableBuilder)] Func<IObjectBuilder> enumerableBuilder)
         {
             _diagnostic = diagnostic;
             _buildContext = buildContext;
             _typesMapFactory = typesMapFactory;
-            _constructorObjectBuilder = constructorObjectBuilder;
-            _factoryObjectBuilder = factoryObjectBuilder;
-            _arrayObjectBuilder = arrayObjectBuilder;
-            _enumerableObjectBuilder = enumerableObjectBuilder;
+            _constructorBuilder = constructorBuilder;
+            _factoryBuilder = factoryBuilder;
+            _arrayBuilder = arrayBuilder;
+            _enumerableBuilder = enumerableBuilder;
 
             foreach (var binding in metadata.Bindings)
             {
@@ -67,6 +68,12 @@ namespace Pure.DI.Core
                         if (binding.Factory != null)
                         {
                             _factories[key] = new Binding<SimpleLambdaExpressionSyntax>(binding, binding.Factory);
+                        }
+
+                        if (binding.Lifetime == Lifetime.Scoped || binding.Lifetime == Lifetime.ContainerSingleton)
+                        {
+                            var serviceProviderInstance = new SemanticType(dependency.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.Components.ServiceProviderInstance`1")!, dependency.SemanticModel).Construct(dependency);
+                            _buildContext.AddBinding(new BindingMetadata(binding, serviceProviderInstance));
                         }
                     }
                 }
@@ -100,7 +107,7 @@ namespace Pure.DI.Core
                                 var constructedDependency = typesMap.ConstructType(dependency);
                                 if (_factories.TryGetValue(key, out var factory))
                                 {
-                                   return new Dependency(factory.Metadata, dependency, tag, _factoryObjectBuilder(), typesMap);
+                                   return new Dependency(factory.Metadata, dependency, tag, _factoryBuilder(), typesMap);
                                 }
 
                                 if (hasTypesMap && implementationEntry.Metadata.Implementation != null)
@@ -121,14 +128,14 @@ namespace Pure.DI.Core
                                     binding.Dependencies.Add(constructedImplementation);
 
                                     _buildContext.AddBinding(binding);
-                                    return new Dependency(implementationEntry.Metadata, constructedImplementation, tag, _constructorObjectBuilder(), typesMap);
+                                    return new Dependency(implementationEntry.Metadata, constructedImplementation, tag, _constructorBuilder(), typesMap);
                                 }
                             }
                         }
 
                         if (unboundDependency.Equals(typeof(IEnumerable<>)))
                         {
-                            return new Dependency(new BindingMetadata(), dependency, null, _enumerableObjectBuilder(), _typesMapFactory());
+                            return new Dependency(new BindingMetadata(), dependency, null, _enumerableBuilder(), _typesMapFactory());
                         }
                     }
                     else
@@ -140,8 +147,8 @@ namespace Pure.DI.Core
                             var typesMap = _typesMapFactory();
                             typesMap.Setup(implementationEntry.Details, dependency);
                             return _factories.TryGetValue(key, out var factory)
-                                ? new Dependency(factory.Metadata, dependency, tag, _factoryObjectBuilder(), typesMap)
-                                : new Dependency(implementationEntry.Metadata, implementationEntry.Details, tag, _constructorObjectBuilder(), typesMap);
+                                ? new Dependency(factory.Metadata, dependency, tag, _factoryBuilder(), typesMap)
+                                : new Dependency(implementationEntry.Metadata, implementationEntry.Details, tag, _constructorBuilder(), typesMap);
                         }
                     }
 
@@ -159,14 +166,14 @@ namespace Pure.DI.Core
                         };
 
                         _buildContext.AddBinding(newBinding);
-                        return new Dependency(newBinding, dependency, null, _constructorObjectBuilder(), typesMap);
+                        return new Dependency(newBinding, dependency, null, _constructorBuilder(), typesMap);
                     }
 
                     break;
                 }
 
                 case IArrayTypeSymbol:
-                    return new Dependency(new BindingMetadata(), dependency, null, _arrayObjectBuilder(), _typesMapFactory());
+                    return new Dependency(new BindingMetadata(), dependency, null, _arrayBuilder(), _typesMapFactory());
             }
 
             if (!probe)
@@ -193,7 +200,7 @@ namespace Pure.DI.Core
                 }
             }
 
-            return new Dependency(new BindingMetadata(), dependency, null, _constructorObjectBuilder(), _typesMapFactory(), false);
+            return new Dependency(new BindingMetadata(), dependency, null, _constructorBuilder(), _typesMapFactory(), false);
         }
 
         public IEnumerable<Dependency> Resolve(SemanticType dependency)

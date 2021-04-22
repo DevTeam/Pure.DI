@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Components;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -11,11 +12,19 @@
     {
         private readonly ResolverMetadata _metadata;
         private readonly IBuildContext _buildContext;
+        private readonly ITypeResolver _typeResolver;
+        private readonly IBuildStrategy _buildStrategy;
 
-        public MicrosoftDependencyInjectionBuilder(ResolverMetadata metadata, IBuildContext buildContext)
+        public MicrosoftDependencyInjectionBuilder(
+            ResolverMetadata metadata,
+            IBuildContext buildContext,
+            ITypeResolver typeResolver,
+            [Tag(Tags.SimpleBuildStrategy)] IBuildStrategy buildStrategy)
         {
             _metadata = metadata;
             _buildContext = buildContext;
+            _typeResolver = typeResolver;
+            _buildStrategy = buildStrategy;
         }
 
         public int Order => 1;
@@ -31,7 +40,7 @@
             var controllerActivatorType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Mvc.Controllers.IControllerActivator");
             var serviceBasedControllerActivatorType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Mvc.Controllers.ServiceBasedControllerActivator");
             var serviceCollectionServiceExtensionsType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions");
-
+            
             if (
                 serviceCollectionType == null
                 || serviceDescriptorType == null
@@ -55,7 +64,7 @@
             var controllerActivator = new SemanticType(controllerActivatorType, semanticModel);
             var serviceBasedControllerActivator = new SemanticType(serviceBasedControllerActivatorType, semanticModel);
             var serviceCollectionServiceExtensions = new SemanticType(serviceCollectionServiceExtensionsType, semanticModel);
-
+            
             var thisParameter = SyntaxFactory.Parameter(
                 SyntaxFactory.List<AttributeListSyntax>(),
                 SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ThisKeyword)), 
@@ -121,16 +130,16 @@
 
             method = method.AddBodyStatements(SyntaxFactory.ExpressionStatement(bindControllerActivator));
 
-            var dependencies =
+            var dependencies = (
                     from binding in _metadata.Bindings.Concat(_buildContext.AdditionalBindings)
                     where !binding.Tags.Any()
                     from dependency in binding.Dependencies
-                    where dependency.Type.IsReferenceType
-                    group binding.Lifetime by dependency;
+                    where dependency.Type.IsReferenceType && !dependency.IsComposedGenericTypeMarker
+                    group binding.Lifetime by dependency).ToArray();
 
             foreach (var dependency in dependencies)
             {
-                var lifetime = dependency.Last();
+                var lifetime = dependency.First();
                 string lifetimeName;
                 switch (lifetime)
                 {
@@ -147,15 +156,34 @@
                         break;
                 }
 
+                var curDependency = _typeResolver.Resolve(dependency.Key, null);
 
-                var resolve = 
-                    SyntaxFactory.InvocationExpression(
-                        SyntaxFactory.MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            SyntaxFactory.IdentifierName(_metadata.TargetTypeName),
-                            SyntaxFactory.GenericName("Resolve").AddTypeArgumentListArguments(dependency.Key)));
+                var resolve = SyntaxFactory.CastExpression(dependency.Key, curDependency.ObjectBuilder.Build(_buildStrategy, curDependency));
 
-                var resolveLambda = SyntaxFactory.SimpleLambdaExpression(SyntaxFactory.Parameter(SyntaxFactory.Identifier("i")), resolve);
+                var serviceProviderInstance = new SemanticType(semanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance).ToString())!, semanticModel);
+
+                var serviceProviderValue = SyntaxFactory.MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    serviceProviderInstance,
+                    SyntaxFactory.IdentifierName(nameof(ServiceProviderInstance.ServiceProvider)));
+
+                var tryBlock = SyntaxFactory.Block()
+                    .AddStatements(SyntaxFactory.ExpressionStatement(
+                        SyntaxFactory.AssignmentExpression(
+                            SyntaxKind.SimpleAssignmentExpression, serviceProviderValue, SyntaxFactory.IdentifierName("serviceProvider"))))
+                    .AddStatements(SyntaxFactory.ReturnStatement(resolve));
+
+                var finallyBlock = SyntaxFactory.Block()
+                    .AddStatements(SyntaxFactory.ExpressionStatement(
+                        SyntaxFactory.AssignmentExpression(
+                            SyntaxKind.SimpleAssignmentExpression, serviceProviderValue, SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression, SyntaxFactory.Token(SyntaxKind.NullKeyword)))));
+
+                var tryStatement = SyntaxFactory.TryStatement(
+                    tryBlock,
+                    SyntaxFactory.List<CatchClauseSyntax>(),
+                    SyntaxFactory.FinallyClause(finallyBlock));
+
+                var resolveLambda = SyntaxFactory.SimpleLambdaExpression(SyntaxFactory.Parameter(SyntaxFactory.Identifier("serviceProvider")), SyntaxFactory.Block().AddStatements(tryStatement));
 
                 var bind= 
                     SyntaxFactory.InvocationExpression(

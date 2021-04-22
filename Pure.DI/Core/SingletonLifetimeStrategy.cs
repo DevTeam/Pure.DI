@@ -21,7 +21,7 @@
             var resolvedType = dependency.Implementation;
             var classParts = resolvedType.Type.ToMinimalDisplayParts(resolvedType, 0).Where(i => i.Kind == SymbolDisplayPartKind.ClassName).Select(i => i.ToString());
             var classKey = new MemberKey(
-                string.Join("_", classParts) + "__Singleton__",
+                string.Join("_", classParts) + "__Singleton",
                 resolvedType,
                 dependency.Tag);
 

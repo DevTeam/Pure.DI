@@ -18,7 +18,7 @@ namespace BlazorServerApp
                 .Bind<IClockViewModel>().As(Scoped).To<ClockViewModel>()
 
                 // Models
-                .Bind<ITimer>().As(Singleton).To(_ => new Timer(TimeSpan.FromSeconds(1)))
+                .Bind<ITimer>().As(ContainerSingleton).To(_ => new Timer(TimeSpan.FromSeconds(1)))
                 .Bind<IClock>().As(Singleton).To<SimpleClock>();
         }
     }

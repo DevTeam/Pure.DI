@@ -9,3 +9,4 @@
 *.user
 _ReSharper.Caches/
 .idea
+out/

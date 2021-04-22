@@ -20,7 +20,7 @@
             var resolvedType = dependency.Implementation;
             var classParts = resolvedType.Type.ToMinimalDisplayParts(resolvedType, 0).Where(i => i.Kind == SymbolDisplayPartKind.ClassName).Select(i => i.ToString()).ToList();
             var fieldKey = new MemberKey(
-                string.Join("_", classParts) + "__PerResolve__",
+                string.Join("_", classParts) + "__PerResolve",
                 resolvedType,
                 dependency.Tag);
 

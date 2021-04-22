@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
+    using Components;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -163,24 +164,34 @@
         {
             var type = GetDependencyType(target, targetDependency.Implementation) ?? new SemanticType(defaultType, targetDependency.Implementation);
             var tag = (ExpressionSyntax?) _attributesService.GetAttributeArgumentExpressions(AttributeKind.Tag, target).FirstOrDefault();
-            var typeDescription = typeResolver.Resolve(type, tag);
-            switch (typeDescription.Implementation.Type)
+            var dependency = typeResolver.Resolve(type, tag);
+            switch (dependency.Implementation.Type)
             {
                 case INamedTypeSymbol namedType:
                 {
-                    var constructedType = typeDescription.TypesMap.ConstructType(new SemanticType(namedType, targetDependency.Implementation));
-                    if (!typeDescription.Implementation.Equals(constructedType))
+                    var constructedType = dependency.TypesMap.ConstructType(new SemanticType(namedType, targetDependency.Implementation));
+                    if (!dependency.Implementation.Equals(constructedType))
                     {
-                        _buildContext.AddBinding(new BindingMetadata(typeDescription.Binding, constructedType));
+                        _buildContext.AddBinding(new BindingMetadata(dependency.Binding, constructedType));
                     }
 
-                    if (typeDescription.IsResolved)
+                    if (dependency.IsResolved)
                     {
-                        var dependency = _buildContext.TypeResolver.Resolve(type, typeDescription.Tag);
+                        if (dependency.Binding.Lifetime == Lifetime.Scoped || dependency.Binding.Lifetime == Lifetime.ContainerSingleton)
+                        {
+                            var serviceProviderInstance = new SemanticType(dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.Components.ServiceProviderInstance`1")!, dependency.Implementation.SemanticModel);
+                            var instanceType = serviceProviderInstance.Construct(type);
+                            var serviceProviderDependency = typeResolver.Resolve(instanceType, dependency.Tag);
+                            return SyntaxFactory.MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                buildStrategy.Build(serviceProviderDependency),
+                                SyntaxFactory.IdentifierName(nameof(ServiceProviderInstance<object>.Value)));
+                        }
+
                         return buildStrategy.Build(dependency);
                     }
 
-                    var dependencyType = typeDescription.Implementation.TypeSyntax;
+                    var dependencyType = dependency.Implementation.TypeSyntax;
                     return SyntaxFactory.CastExpression(dependencyType,
                         SyntaxFactory.InvocationExpression(SyntaxFactory.ParseName(nameof(IContext.Resolve)))
                             .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependencyType))));
@@ -198,7 +209,7 @@
                 }
             }
 
-            _diagnostic.Error(Diagnostics.Unsupported, $"Unsupported type {typeDescription.Implementation}.", target.Locations.FirstOrDefault());
+            _diagnostic.Error(Diagnostics.Unsupported, $"Unsupported type {dependency.Implementation}.", target.Locations.FirstOrDefault());
             throw Diagnostics.ErrorShouldTrowException;
         }
 

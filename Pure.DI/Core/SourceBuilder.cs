@@ -93,7 +93,7 @@
                     _context.Prepare(metadata);
                     var compilationUnitSyntax = _resolverBuilderFactory().Build(semanticModel);
                     yield return new Source(
-                        metadata.TargetTypeName,
+                        $"{metadata.TargetTypeName}.cs",
                         SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8));
                 }
             }

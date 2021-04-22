@@ -30,7 +30,7 @@
             var resolvedType = dependency.Implementation;
             var classParts = resolvedType.Type.ToMinimalDisplayParts(resolvedType.SemanticModel, 0).Where(i => i.Kind == SymbolDisplayPartKind.ClassName).Select(i => i.ToString());
             var memberKey = new MemberKey(
-                string.Join("_", classParts) + "__Lifetime__",
+                string.Join("_", classParts) + "__Lifetime",
                 resolvedType,
                 dependency.Tag);
 

@@ -31,10 +31,15 @@
                 using System.Threading.Tasks;
                 using Pure.DI;
 
+                public interface IMyClass<T> { }
+                public class MyClass<T>: IMyClass<T> { }
+
                 [ApiController]
                 [Route(""[controller]"")]
                 public class Controller : ControllerBase
                 {
+                    public Controller(IMyClass<string> myClass) {}
+
                     [HttpGet] public string Get() => ""Abc"";
                 }
 
@@ -64,7 +69,8 @@
                     static Composer()
                     {
                         DI.Setup()
-                            .Bind<Controller>().To<Controller>();
+                            .Bind<IMyClass<string>>().As(Lifetime.ContainerSingleton).To<MyClass<string>>()
+                            .Bind<Controller>().As(Lifetime.Scoped).To<Controller>();
                     }
                 }                                    
             }".Run(out var generatedCode, new RunOptions { Statements = statements});

@@ -21,7 +21,7 @@
             var resolvedType = dependency.Implementation;
             var classParts = resolvedType.Type.ToMinimalDisplayParts(resolvedType, 0).Where(i => i.Kind == SymbolDisplayPartKind.ClassName).Select(i => i.ToString());
             var memberKey = new MemberKey(
-                string.Join("_", classParts) + "__PerThread__",
+                string.Join("_", classParts) + "__PerThread",
                 resolvedType,
                 dependency.Tag);
 
