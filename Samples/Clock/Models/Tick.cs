@@ -1,9 +1,7 @@
 ﻿namespace Clock.Models
 {
-    public class Tick
+    public struct Tick
     {
-        public static readonly Tick Shared = new Tick();
-
-        private Tick() { }
+        public static readonly Tick Shared = new();
     }
 }

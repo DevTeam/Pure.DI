@@ -1,4 +1,5 @@
-﻿namespace Clock.ViewModels
+﻿// ReSharper disable ClassNeverInstantiated.Global
+namespace Clock.ViewModels
 {
     using System;
 

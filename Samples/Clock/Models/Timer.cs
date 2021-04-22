@@ -7,7 +7,7 @@
     internal class Timer : ITimer, IDisposable
     {
         private readonly System.Threading.Timer _timer;
-        private readonly List<IObserver<Tick>> _observers = new List<IObserver<Tick>>();
+        private readonly List<IObserver<Tick>> _observers = new();
 
         // ReSharper disable once MemberCanBePrivate.Global
         public Timer(TimeSpan period) => _timer = new System.Threading.Timer(Tick, null, TimeSpan.Zero, period);
