@@ -22,7 +22,5 @@ namespace Pure.DI.Core
         // Information
         public const string Generated = "DII0001";
         public const string CannotUseCurrentType = "DII0002";
-
-        public static readonly InvalidOperationException ErrorShouldTrowException = new("Diagnostic.Error should throw an exception.");
     }
 }

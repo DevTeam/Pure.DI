@@ -17,9 +17,9 @@
                 return this;
             }
 
-            var message = $"Circular dependency detected resolving {dependency}.";
-            _diagnostic.Error(Diagnostics.CircularDependency, message, dependency.Binding.Location);
-            return this;
+            var error = $"Circular dependency detected resolving {dependency}.";
+            _diagnostic.Error(Diagnostics.CircularDependency, error, dependency.Binding.Location);
+            throw new HandledException(error);
         }
 
         void IDisposable.Dispose() => _level--;

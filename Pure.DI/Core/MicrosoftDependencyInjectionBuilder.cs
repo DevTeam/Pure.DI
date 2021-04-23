@@ -14,23 +14,35 @@
         private readonly IBuildContext _buildContext;
         private readonly ITypeResolver _typeResolver;
         private readonly IBuildStrategy _buildStrategy;
+        private readonly IDiagnostic _diagnostic;
 
         public MicrosoftDependencyInjectionBuilder(
             ResolverMetadata metadata,
             IBuildContext buildContext,
             ITypeResolver typeResolver,
-            [Tag(Tags.SimpleBuildStrategy)] IBuildStrategy buildStrategy)
+            [Tag(Tags.SimpleBuildStrategy)] IBuildStrategy buildStrategy,
+            IDiagnostic diagnostic)
         {
             _metadata = metadata;
             _buildContext = buildContext;
             _typeResolver = typeResolver;
             _buildStrategy = buildStrategy;
+            _diagnostic = diagnostic;
         }
 
         public int Order => 1;
 
         public IEnumerable<MemberDeclarationSyntax> BuildMembers(SemanticModel semanticModel)
         {
+            var dependencies = (
+                from binding in _metadata.Bindings.Concat(_buildContext.AdditionalBindings)
+                where !binding.Tags.Any()
+                from dependency in binding.Dependencies
+                where dependency.Type.IsReferenceType && !dependency.IsComposedGenericTypeMarker
+                group binding by dependency into groups    
+                let binding = groups.First()
+                select (dependency: groups.Key, lifetime: binding.Lifetime, binding)).ToArray();
+
             var serviceCollectionType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.IServiceCollection");
             var serviceDescriptorType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.ServiceDescriptor");
             var mvcBuilderType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.IMvcBuilder");
@@ -52,6 +64,12 @@
                 || serviceBasedControllerActivatorType == null
                 || serviceCollectionServiceExtensionsType == null)
             {
+                foreach (var (dependency, lifetime, binding) in dependencies.Where(i => i.lifetime == Lifetime.Scoped || i.lifetime == Lifetime.ContainerSingleton))
+                {
+                    var error = $"Impossible to use the lifetime {lifetime} for {dependency} outside an ASP.NET context.";
+                    _diagnostic.Error(Diagnostics.Unsupported, error, binding.Location);
+                }
+
                 yield break;
             }
 
@@ -130,16 +148,8 @@
 
             method = method.AddBodyStatements(SyntaxFactory.ExpressionStatement(bindControllerActivator));
 
-            var dependencies = (
-                    from binding in _metadata.Bindings.Concat(_buildContext.AdditionalBindings)
-                    where !binding.Tags.Any()
-                    from dependency in binding.Dependencies
-                    where dependency.Type.IsReferenceType && !dependency.IsComposedGenericTypeMarker
-                    group binding.Lifetime by dependency).ToArray();
-
-            foreach (var dependency in dependencies)
+            foreach (var (dependency, lifetime, _) in dependencies)
             {
-                var lifetime = dependency.First();
                 string lifetimeName = lifetime switch
                 {
                     Lifetime.ContainerSingleton => "AddSingleton",
@@ -147,9 +157,9 @@
                     _ => "AddTransient"
                 };
 
-                var curDependency = _typeResolver.Resolve(dependency.Key, null, dependency.Key.Type.Locations);
+                var curDependency = _typeResolver.Resolve(dependency, null, dependency.Type.Locations);
 
-                var resolve = SyntaxFactory.CastExpression(dependency.Key, curDependency.ObjectBuilder.Build(_buildStrategy, curDependency));
+                var resolve = SyntaxFactory.CastExpression(dependency, curDependency.ObjectBuilder.Build(_buildStrategy, curDependency));
 
                 var serviceProviderInstance = new SemanticType(semanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance).ToString())!, semanticModel);
 

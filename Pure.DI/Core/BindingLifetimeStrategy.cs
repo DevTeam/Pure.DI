@@ -39,15 +39,17 @@
                 var lifetimeDependencyType = resolvedType.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.ILifetime`1")?.Construct(resolvedType.Type);
                 if (lifetimeDependencyType == null)
                 {
-                    _diagnostic.Error(Diagnostics.CannotResolveLifetime, $"Cannot resolve a lifetime for {resolvedType}.");
-                    throw Diagnostics.ErrorShouldTrowException;
+                    var error = $"Cannot resolve a lifetime for {resolvedType}.";
+                    _diagnostic.Error(Diagnostics.CannotResolveLifetime, error);
+                    throw new HandledException(error);
                 }
 
                 var lifetimeTypeDescription = _buildContext.TypeResolver.Resolve(new SemanticType(lifetimeDependencyType, resolvedType), dependency.Tag, dependency.Implementation.Type.Locations);
                 if (!lifetimeTypeDescription.IsResolved)
                 {
-                    _diagnostic.Error(Diagnostics.CannotResolveLifetime, $"Cannot find a lifetime for {resolvedType}. Please add a binding for {lifetimeDependencyType}, for example .Bind<ILifetime<{resolvedType}>>().To<MyLifetime<{resolvedType}>>().");
-                    throw Diagnostics.ErrorShouldTrowException;
+                    var error = $"Cannot find a lifetime for {resolvedType}. Please add a binding for {lifetimeDependencyType}, for example .Bind<ILifetime<{resolvedType}>>().To<MyLifetime<{resolvedType}>>().";
+                    _diagnostic.Error(Diagnostics.CannotResolveLifetime, error);
+                    throw new HandledException(error);
                 }
 
                 var lifetimeObject = _buildStrategy().Build(lifetimeTypeDescription);

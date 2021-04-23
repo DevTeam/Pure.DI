@@ -196,7 +196,9 @@ namespace Pure.DI.Core
                 }
                 else
                 {
-                    _diagnostic.Error(Diagnostics.CannotResolveDependencyError, $"Cannot resolve a dependency of the type {GetDependencyName(dependency, tag)}. Please add an appropriate binding, remove this dependency or rely on a fallback strategy.", resolveLocations.FirstOrDefault());
+                    var error = $"Cannot resolve a dependency of the type {GetDependencyName(dependency, tag)}. Please add an appropriate binding, remove this dependency or rely on a fallback strategy.";
+                    _diagnostic.Error(Diagnostics.CannotResolveDependencyError, error, resolveLocations.FirstOrDefault());
+                    throw new HandledException(error);
                 }
             }
 

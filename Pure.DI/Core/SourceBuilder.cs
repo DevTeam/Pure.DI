@@ -60,8 +60,9 @@
         {
             if (compilation is not CSharpCompilation csharpCompilation)
             {
-                _diagnostic.Error(Diagnostics.Unsupported, $"{compilation.Language} is not supported.");
-                throw Diagnostics.ErrorShouldTrowException;
+                var error = $"{compilation.Language} is not supported.";
+                _diagnostic.Error(Diagnostics.Unsupported, error);
+                throw new HandledException(error);
             }
 
             var parseOptions = new CSharpParseOptions(csharpCompilation.LanguageVersion);

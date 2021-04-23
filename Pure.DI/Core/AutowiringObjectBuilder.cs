@@ -46,9 +46,9 @@
 
             if (Equals(objectCreationExpression, default))
             {
-                var message = $"Cannot find an accessible constructor for {dependency}.";
-                _diagnostic.Error(Diagnostics.CannotFindCtor, message, dependency.Implementation.Type.Locations.FirstOrDefault() ?? dependency.Binding.Location);
-                return SyntaxFactory.ParseName(message);
+                var error = $"Cannot find an accessible constructor for {dependency}.";
+                _diagnostic.Error(Diagnostics.CannotFindCtor, error, dependency.Implementation.Type.Locations.FirstOrDefault() ?? dependency.Binding.Location);
+                throw new HandledException(error);
             }
 
             var members = (
@@ -69,8 +69,9 @@
                 {
                     if (member.IsStatic || member.DeclaredAccessibility != Accessibility.Public && member.DeclaredAccessibility != Accessibility.Internal)
                     {
-                        _diagnostic.Error(Diagnostics.MemberIsInaccessible, $"{member} is inaccessible in {dependency.Implementation}.", member.Locations.FirstOrDefault());
-                        continue;
+                        var error = $"{member} is inaccessible in {dependency.Implementation}.";
+                        _diagnostic.Error(Diagnostics.MemberIsInaccessible, error, member.Locations.FirstOrDefault());
+                        throw new HandledException(error);
                     }
 
                     switch (member)
@@ -222,8 +223,10 @@
                 }
             }
 
-            _diagnostic.Error(Diagnostics.Unsupported, $"Unsupported type {dependency.Implementation}.", resolveLocations.FirstOrDefault());
-            throw Diagnostics.ErrorShouldTrowException;
+
+            var error = $"Unsupported type {dependency.Implementation}.";
+            _diagnostic.Error(Diagnostics.Unsupported, error, resolveLocations.FirstOrDefault());
+            throw new HandledException(error);
         }
 
         private IEnumerable<ExpressionSyntax?> ResolveMethodParameters(ITypeResolver typeResolver, IBuildStrategy buildStrategy, Dependency dependency, IMethodSymbol method) =>

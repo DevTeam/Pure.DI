@@ -5,6 +5,6 @@
     [Serializable]
     internal class HandledException: Exception
     {
-        public HandledException(string message) : base(message) { }
+        public HandledException(string error) : base(error) { }
     }
 }
