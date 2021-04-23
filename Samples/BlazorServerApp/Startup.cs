@@ -1,3 +1,6 @@
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable CommentTypo
 namespace BlazorServerApp
 {
     using Microsoft.AspNetCore.Builder;
@@ -18,7 +21,7 @@ namespace BlazorServerApp
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddGlue();
+            services.AddClockDomain();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

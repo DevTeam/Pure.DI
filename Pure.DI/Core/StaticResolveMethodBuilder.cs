@@ -1,13 +1,12 @@
 ﻿namespace Pure.DI.Core
 {
     using Components;
-    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
 
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class StaticResolveMethodBuilder : IResolveMethodBuilder
     {
-        public ResolveMethod Build(SemanticModel semanticModel)
+        public ResolveMethod Build()
         {
             var resolve = SyntaxFactory.InvocationExpression(
                 SyntaxFactory.MemberAccessExpression(

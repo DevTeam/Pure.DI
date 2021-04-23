@@ -1,6 +1,5 @@
 ﻿namespace Pure.DI.Tests.Integration
 {
-    using System.Threading.Tasks;
     using Shouldly;
     using Xunit;
 

@@ -1,13 +1,12 @@
 ﻿namespace Pure.DI.Core
 {
     using Components;
-    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
 
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class StaticWithTagResolveMethodBuilder : IResolveMethodBuilder
     {
-        public ResolveMethod Build(SemanticModel semanticModel)
+        public ResolveMethod Build()
         {
             var key = SyntaxFactory.ObjectCreationExpression(SyntaxRepo.TagTypeTypeSyntax)
                 .AddArgumentListArguments(

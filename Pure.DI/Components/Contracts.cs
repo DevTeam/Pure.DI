@@ -1,6 +1,8 @@
 ﻿// ReSharper disable UnusedParameter.Global
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable NotAccessedField.Global
 namespace Pure.DI
 {
     using System;

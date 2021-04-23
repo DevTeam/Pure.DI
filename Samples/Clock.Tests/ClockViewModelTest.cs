@@ -44,7 +44,7 @@ namespace Clock.Tests
 
             var viewModel = new ClockViewModel(Mock.Of<IClock>(), timer.Object);
             var propertyNames = new List<string>();
-            viewModel.PropertyChanged += (sender, args) => { propertyNames.Add(args.PropertyName); };
+            viewModel.PropertyChanged += (_, args) => { propertyNames.Add(args.PropertyName); };
 
             // When
             observer?.OnNext(Tick.Shared);

@@ -9,6 +9,7 @@
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UseIndexFromEndExpression
 // ReSharper disable ConvertToLambdaExpression
+// ReSharper disable SuggestBaseTypeForParameter
 #pragma warning disable 8618
 #pragma warning disable 8604
 #pragma warning disable 8603
@@ -50,10 +51,10 @@ namespace Pure.DI.Components
                 Buckets[i] = new Pair<TKey, TValue>(defaultKey, defaultValue);
             }
 
-            var buckets = (
+            var buckets = 
                 from pair in pairs
                 group pair by (uint)pair.Key.GetHashCode() % Divisor into groups
-                select new { number = groups.Key, pairs = groups.ToArray()});
+                select new { number = groups.Key, pairs = groups.ToArray()};
 
             foreach (var bucket in buckets)
             {

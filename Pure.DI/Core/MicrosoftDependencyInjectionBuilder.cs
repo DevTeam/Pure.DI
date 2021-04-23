@@ -140,21 +140,12 @@
             foreach (var dependency in dependencies)
             {
                 var lifetime = dependency.First();
-                string lifetimeName;
-                switch (lifetime)
+                string lifetimeName = lifetime switch
                 {
-                    case Lifetime.ContainerSingleton:
-                        lifetimeName = "AddSingleton";
-                        break;
-
-                    case Lifetime.Scoped:
-                        lifetimeName = "AddScoped";
-                        break;
-
-                    default:
-                        lifetimeName = "AddTransient";
-                        break;
-                }
+                    Lifetime.ContainerSingleton => "AddSingleton",
+                    Lifetime.Scoped => "AddScoped",
+                    _ => "AddTransient"
+                };
 
                 var curDependency = _typeResolver.Resolve(dependency.Key, null, dependency.Key.Type.Locations);
 

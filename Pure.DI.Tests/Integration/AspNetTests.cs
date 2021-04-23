@@ -9,7 +9,7 @@
         public void ShouldSupportAspNet()
         {
             // Given
-            string statements = @"
+            const string statements = @"
             //var hostBuilder = new WebHostBuilder()
             //    .ConfigureServices(x => x.AddTransient<Controller>())
             //    .UseStartup<Startup>();

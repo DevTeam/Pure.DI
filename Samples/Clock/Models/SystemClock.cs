@@ -3,7 +3,7 @@
     using System;
 
     // ReSharper disable once ClassNeverInstantiated.Global
-    internal class SimpleClock : IClock
+    internal class SystemClock : IClock
     {
         public DateTimeOffset Now => DateTimeOffset.Now;
     }

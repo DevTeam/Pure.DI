@@ -11,7 +11,7 @@
         public void ShouldProvideTryGet()
         {
             // Given
-            var count = 10;
+            const int count = 10;
             var pairs = (
                 from index in Enumerable.Range(-count, count * 2)
                 select new Pair<long, long>(index, index)).ToArray();

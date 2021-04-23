@@ -57,7 +57,7 @@ namespace Pure.DI.Core
             yield return CreateResolversTable(semanticModel, items);
             yield return CreateResolversWithTagTable(semanticModel, items);
 
-            var allMethods = _resolveMethodBuilders.Select(i => i.Build(semanticModel)).ToArray();
+            var allMethods = _resolveMethodBuilders.Select(i => i.Build()).ToArray();
 
             // Post statements
             foreach (var method in allMethods)
@@ -130,7 +130,7 @@ namespace Pure.DI.Core
             }
         }
 
-        private FieldDeclarationSyntax CreateResolversTable(SemanticModel semanticModel, (BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)[] items)
+        private FieldDeclarationSyntax CreateResolversTable(SemanticModel semanticModel, IEnumerable<(BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
         {
             var funcType = SyntaxFactory.GenericName(
                     SyntaxRepo.FuncTypeToken)
@@ -141,17 +141,17 @@ namespace Pure.DI.Core
                 .AddTypeArgumentListArguments(SyntaxRepo.TypeTypeSyntax, funcType);
 
             var keyValuePairs = new List<ExpressionSyntax>();
-            foreach (var item in items)
+            foreach (var (binding, dependency, tag) in items)
             {
-                if (item.tag != null)
+                if (tag != null)
                 {
                     continue;
                 }
 
-                var statements = _bindingStatementsStrategy.CreateStatements(_buildStrategy, item.binding, item.dependency);
+                var statements = _bindingStatementsStrategy.CreateStatements(_buildStrategy, binding, dependency);
                 var keyValuePair = SyntaxFactory.ObjectCreationExpression(keyValuePairType)
                     .AddArgumentListArguments(
-                        SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(item.dependency.TypeSyntax)),
+                        SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependency.TypeSyntax)),
                         SyntaxFactory.Argument(SyntaxFactory.ParenthesizedLambdaExpression()
                             .WithBody(SyntaxFactory.Block(statements))));
 
@@ -181,7 +181,7 @@ namespace Pure.DI.Core
             return resolversTable;
         }
 
-        private FieldDeclarationSyntax CreateResolversWithTagTable(SemanticModel semanticModel, (BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)[] items)
+        private FieldDeclarationSyntax CreateResolversWithTagTable(SemanticModel semanticModel, IEnumerable<(BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
         {
             var funcType = SyntaxFactory.GenericName(
                     SyntaxRepo.FuncTypeToken)
@@ -192,19 +192,19 @@ namespace Pure.DI.Core
                 .AddTypeArgumentListArguments(SyntaxRepo.TagTypeTypeSyntax, funcType);
 
             var keyValuePairs = new List<ExpressionSyntax>();
-            foreach (var item in items)
+            foreach (var (binding, dependency, tag) in items)
             {
-                if (item.tag == null)
+                if (tag == null)
                 {
                     continue;
                 }
 
                 var key = SyntaxFactory.ObjectCreationExpression(SyntaxRepo.TagTypeTypeSyntax)
                     .AddArgumentListArguments(
-                        SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(item.dependency.TypeSyntax)),
-                        SyntaxFactory.Argument(item.tag));
+                        SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependency.TypeSyntax)),
+                        SyntaxFactory.Argument(tag));
 
-                var statements = _tagBindingStatementsStrategy.CreateStatements(_buildStrategy, item.binding, item.dependency);
+                var statements = _tagBindingStatementsStrategy.CreateStatements(_buildStrategy, binding, dependency);
                 var keyValuePair = SyntaxFactory.ObjectCreationExpression(keyValuePairType)
                     .AddArgumentListArguments(
                         SyntaxFactory.Argument(key),

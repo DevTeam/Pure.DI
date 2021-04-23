@@ -1,3 +1,4 @@
+// ReSharper disable UnusedType.Global
 namespace BlazorServerApp
 {
     using System;
@@ -6,9 +7,9 @@ namespace BlazorServerApp
     using Pure.DI;
     using static Pure.DI.Lifetime;
 
-    internal static partial class Glue
+    internal static partial class ClockDomain
     {
-        static Glue()
+        static ClockDomain()
         {
             DI.Setup()
                 // Infrastructure
@@ -19,7 +20,7 @@ namespace BlazorServerApp
 
                 // Models
                 .Bind<ITimer>().As(ContainerSingleton).To(_ => new Timer(TimeSpan.FromSeconds(1)))
-                .Bind<IClock>().As(Singleton).To<SimpleClock>();
+                .Bind<IClock>().As(Singleton).To<SystemClock>();
         }
     }
 }
