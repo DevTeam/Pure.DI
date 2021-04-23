@@ -88,7 +88,15 @@ namespace Pure.DI.Core
 
             _bindingsProbe.Probe();
 
+            var pragmaWarningDisable8625 = SyntaxFactory.PragmaWarningDirectiveTrivia(
+                SyntaxFactory.Token(SyntaxKind.DisableKeyword),
+                SyntaxFactory.SeparatedList<ExpressionSyntax>()
+                    .Add(SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(8625))),
+            false);
+
             var resolverClass = SyntaxFactory.ClassDeclaration(_metadata.TargetTypeName)
+                .WithKeyword(SyntaxFactory.Token(SyntaxKind.ClassKeyword))
+                .WithLeadingTrivia(SyntaxFactory.TriviaList().Add(SyntaxFactory.Trivia(pragmaWarningDisable8625)))
                 .AddModifiers(classModifiers.ToArray())
                 .AddMembers(
                     SyntaxFactory.FieldDeclaration(

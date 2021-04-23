@@ -9,6 +9,7 @@
 #pragma warning disable 8618
 #pragma warning disable 8600
 #pragma warning disable 8603
+#pragma warning disable 0436
 namespace Pure.DI.Components
 {
     internal struct ServiceProviderInstance

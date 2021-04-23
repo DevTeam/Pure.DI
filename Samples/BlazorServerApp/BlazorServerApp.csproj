@@ -7,6 +7,7 @@
 		<DockerfileContext>..\..</DockerfileContext>
 		<BlazorCacheBootResources>false</BlazorCacheBootResources>
 		<LangVersion>latest</LangVersion>
+		<IsPackable>true</IsPackable>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -3,6 +3,7 @@
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable NotAccessedField.Global
+#pragma warning disable 0436
 namespace Pure.DI
 {
     using System;

@@ -4,6 +4,7 @@
 // ReSharper disable InvalidXmlDocComment
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedType.Global
+#pragma warning disable 0436
 namespace Pure.DI
 {    
     /// <summary>
