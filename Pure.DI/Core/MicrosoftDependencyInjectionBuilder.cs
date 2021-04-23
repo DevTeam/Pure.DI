@@ -1,5 +1,6 @@
 ﻿namespace Pure.DI.Core
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Components;
@@ -43,6 +44,7 @@
                 let binding = groups.First()
                 select (dependency: groups.Key, lifetime: binding.Lifetime, binding)).ToArray();
 
+            var serviceProviderType = semanticModel.Compilation.GetTypeByMetadataName("System.IServiceProvider");
             var serviceCollectionType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.IServiceCollection");
             var serviceDescriptorType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.ServiceDescriptor");
             var mvcBuilderType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.IMvcBuilder");
@@ -54,7 +56,8 @@
             var serviceCollectionServiceExtensionsType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions");
             
             if (
-                serviceCollectionType == null
+                serviceProviderType == null
+                || serviceCollectionType == null
                 || serviceDescriptorType == null
                 || mvcBuilderType == null
                 || mvcServiceCollectionExtensionsType == null
@@ -73,6 +76,7 @@
                 yield break;
             }
 
+            var serviceProvider = new SemanticType(serviceProviderType, semanticModel);
             var serviceCollection = new SemanticType(serviceCollectionType, semanticModel);
             var serviceDescriptor = new SemanticType(serviceDescriptorType, semanticModel);
             var mvcBuilder = new SemanticType(mvcBuilderType, semanticModel);
@@ -169,6 +173,7 @@
                     SyntaxFactory.IdentifierName(nameof(ServiceProviderInstance.ServiceProvider)));
 
                 var tryBlock = SyntaxFactory.Block()
+                    .AddStatements()
                     .AddStatements(SyntaxFactory.ExpressionStatement(
                         SyntaxFactory.AssignmentExpression(
                             SyntaxKind.SimpleAssignmentExpression, serviceProviderValue, SyntaxFactory.IdentifierName("serviceProvider"))))
@@ -177,14 +182,26 @@
                 var finallyBlock = SyntaxFactory.Block()
                     .AddStatements(SyntaxFactory.ExpressionStatement(
                         SyntaxFactory.AssignmentExpression(
-                            SyntaxKind.SimpleAssignmentExpression, serviceProviderValue, SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression, SyntaxFactory.Token(SyntaxKind.NullKeyword)))));
+                            SyntaxKind.SimpleAssignmentExpression, serviceProviderValue, SyntaxFactory.IdentifierName("prevServiceProvider"))));
 
-                var tryStatement = SyntaxFactory.TryStatement(
-                    tryBlock,
-                    SyntaxFactory.List<CatchClauseSyntax>(),
-                    SyntaxFactory.FinallyClause(finallyBlock));
+                var lambdaBlock =
+                    SyntaxFactory.Block()
+                        .AddStatements(
+                            SyntaxFactory.LocalDeclarationStatement(
+                                SyntaxFactory.VariableDeclaration(serviceProvider)
+                                    .AddVariables(
+                                        SyntaxFactory.VariableDeclarator("prevServiceProvider")
+                                            .WithInitializer(SyntaxFactory.EqualsValueClause(serviceProviderValue))
+                                    )
+                                )
+                        )
+                        .AddStatements(
+                            SyntaxFactory.TryStatement(
+                                tryBlock,
+                                SyntaxFactory.List<CatchClauseSyntax>(),
+                                SyntaxFactory.FinallyClause(finallyBlock)));
 
-                var resolveLambda = SyntaxFactory.SimpleLambdaExpression(SyntaxFactory.Parameter(SyntaxFactory.Identifier("serviceProvider")), SyntaxFactory.Block().AddStatements(tryStatement));
+                var resolveLambda = SyntaxFactory.SimpleLambdaExpression(SyntaxFactory.Parameter(SyntaxFactory.Identifier("serviceProvider")), lambdaBlock);
 
                 var bind= 
                     SyntaxFactory.InvocationExpression(

@@ -76,7 +76,7 @@ namespace Pure.DI.Core
                 {
                     if (
                         attr.AttributeClass != null
-                        && new SemanticType(attr.AttributeClass, SemanticModel).Equals(typeof(GenericTypeArgumentAttribute)))
+                        && attr.AttributeClass.Name == nameof(GenericTypeArgumentAttribute))
                     {
                         return true;
                     }

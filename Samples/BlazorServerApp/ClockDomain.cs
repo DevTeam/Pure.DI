@@ -16,11 +16,11 @@ namespace BlazorServerApp
                 .Bind<IDispatcher>().As(Singleton).To<Dispatcher>()
 
                 // View Models
-                .Bind<IClockViewModel>().As(Scoped).To<ClockViewModel>()
+                .Bind<IClockViewModel>().To<ClockViewModel>()
 
                 // Models
-                .Bind<ITimer>().As(ContainerSingleton).To(_ => new Timer(TimeSpan.FromSeconds(1)))
-                .Bind<IClock>().As(Singleton).To<SystemClock>();
+                .Bind<ITimer>().As(Scoped).To(_ => new Timer(TimeSpan.FromSeconds(1)))
+                .Bind<IClock>().As(ContainerSingleton).To<SystemClock>();
         }
     }
 }

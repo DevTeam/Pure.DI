@@ -11,12 +11,12 @@
 #pragma warning disable 8603
 namespace Pure.DI.Components
 {
-    public struct ServiceProviderInstance
+    internal struct ServiceProviderInstance
     {
         [System.ThreadStatic] public static System.IServiceProvider ServiceProvider;
     }
 
-    public struct ServiceProviderInstance<T>
+    internal struct ServiceProviderInstance<T>
     {
         public T Value => ServiceProviderInstance.ServiceProvider != null ? (T)ServiceProviderInstance.ServiceProvider.GetService(typeof(T)) : throw new System.InvalidOperationException("Cannot resolve an instance outside a container.");
     }

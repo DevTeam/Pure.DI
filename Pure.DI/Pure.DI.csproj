@@ -38,13 +38,21 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-		<None Include="$(PKGIoC_Container)\lib\netstandard2.0\IoC.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-		
-		<None Update="GenericTypeArguments.tt">
+		<None Update="Components\GenericTypeArguments.tt">
 			<LastGenOutput>GenericTypeArguments.cs</LastGenOutput>
 			<Generator>TextTemplatingFileGenerator</Generator>
 		</None>
+
+		<Compile Update="Components\GenericTypeArguments.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>GenericTypeArguments.tt</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+		<None Include="$(PKGIoC_Container)\lib\netstandard2.0\IoC.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 
 		<EmbeddedResource Include="Components\GenericTypeArguments.cs" />
 		<EmbeddedResource Include="Components\Tables.cs" />
