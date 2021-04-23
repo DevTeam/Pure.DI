@@ -5,7 +5,6 @@
     using System.Collections.Immutable;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using Components;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -196,7 +195,7 @@
                             return buildStrategy.Build(dependency);
                         }
 
-                        var serviceProviderInstance = new SemanticType(dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.Components.ServiceProviderInstance`1")!, dependency.Implementation.SemanticModel);
+                        var serviceProviderInstance = new SemanticType(dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.ServiceProviderInstance`1")!, dependency.Implementation.SemanticModel);
                         var instanceType = serviceProviderInstance.Construct(type);
                         var serviceProviderDependency = typeResolver.Resolve(instanceType, dependency.Tag, resolveLocations);
                         return SyntaxFactory.MemberAccessExpression(

@@ -1,7 +1,6 @@
 ﻿namespace Pure.DI.Tests
 {
     using System.Linq;
-    using Components;
     using Shouldly;
     using Xunit;
 

@@ -1,6 +1,5 @@
 ﻿namespace Pure.DI.Core
 {
-    using Components;
     using Microsoft.CodeAnalysis.CSharp;
 
     // ReSharper disable once ClassNeverInstantiated.Global
