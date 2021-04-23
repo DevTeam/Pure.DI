@@ -34,7 +34,7 @@
                     let parameters = ctor.Parameters
                     let canBeResolved = (
                             from parameter in parameters
-                            let paramTypeDescription = _typeResolver.Resolve(new SemanticType(parameter.Type, dependency.Implementation), null, true, true)
+                            let paramTypeDescription = _typeResolver.Resolve(new SemanticType(parameter.Type, dependency.Implementation), null, dependency.Implementation.Type.Locations, true, true)
                             select parameter.IsOptional || parameter.HasExplicitDefaultValue || paramTypeDescription.IsResolved)
                         .All(isResolved => isResolved)
                     orderby 

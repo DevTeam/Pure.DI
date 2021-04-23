@@ -13,7 +13,7 @@
                 new DiagnosticDescriptor(
                     id,
                     "Error",
-                    message + GetLine(location),
+                    message,
                     "Error",
                     DiagnosticSeverity.Error,
                     true),
@@ -27,7 +27,7 @@
                 new DiagnosticDescriptor(
                     id,
                     "Warning",
-                    message + GetLine(location),
+                    message,
                     "Warning",
                     DiagnosticSeverity.Warning,
                     true),
@@ -38,21 +38,10 @@
                 new DiagnosticDescriptor(
                     id,
                     "Info",
-                    message + GetLine(location),
+                    message,
                     "Info",
                     DiagnosticSeverity.Info,
                     true),
                 location));
-
-        private static string GetLine(Location? location)
-        {
-            if (location == null || !location.IsInSource)
-            {
-                return string.Empty;
-            }
-
-            var line = location.SourceTree.ToString().Substring(location.SourceSpan.Start, location.SourceSpan.Length);
-            return $" at line {location.GetMappedLineSpan().StartLinePosition.Line + 1}: {line}";
-        }
     }
 }

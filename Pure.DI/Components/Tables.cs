@@ -14,6 +14,7 @@
 #pragma warning disable 8603
 #pragma warning disable 8602
 #pragma warning disable 8625
+#pragma warning disable 8765
 namespace Pure.DI.Components
 {
     using System;

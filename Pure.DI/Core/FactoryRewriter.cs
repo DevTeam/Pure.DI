@@ -3,6 +3,7 @@
 namespace Pure.DI.Core
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -44,8 +45,9 @@ namespace Pure.DI.Core
                         && SymbolEqualityComparer.Default.Equals(invocationOperation.TargetMethod.TypeArguments[0], invocationOperation.TargetMethod.ReturnType))
                     {
                         var tag = invocationOperation.Arguments.Length == 1 ? invocationOperation.Arguments[0].Value.Syntax as ExpressionSyntax : null;
-                        var typeDescription = _buildContext.TypeResolver.Resolve(_dependency.TypesMap.ConstructType(new SemanticType(invocationOperation.TargetMethod.ReturnType, semanticModel)), tag);
-                        return _buildStrategy.Build(typeDescription);
+                        var dependencyType = _dependency.TypesMap.ConstructType(new SemanticType(invocationOperation.TargetMethod.ReturnType, semanticModel));
+                        var dependency = _buildContext.TypeResolver.Resolve(dependencyType, tag, ImmutableArray.Create(node.GetLocation()));
+                        return _buildStrategy.Build(dependency);
                     }
                 }
             }

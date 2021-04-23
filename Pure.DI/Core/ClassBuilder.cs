@@ -54,7 +54,7 @@ namespace Pure.DI.Core
                         .FirstOrDefault(i => !string.IsNullOrWhiteSpace(i));
                     
                     _metadata.TargetTypeName = $"{parentNodeName}DI";
-                    _diagnostic.Information(Diagnostics.CannotUseCurrentType, $"It is not possible to use the current type as DI. Please make sure it is static partial and has public or internal access modifiers. {_metadata.TargetTypeName} will be used instead. You may change this name by passing the optional argument to DI.Setup(string targetTypeName).");
+                    _diagnostic.Information(Diagnostics.CannotUseCurrentType, $"It is not possible to use the current type as DI. Please make sure it is static partial and has public or internal access modifiers. {_metadata.TargetTypeName} will be used instead. You may change this name by passing the optional argument to DI.Setup(string targetTypeName).", _metadata.Bindings.FirstOrDefault()?.Location);
                 }
             }
             else
@@ -144,7 +144,7 @@ namespace Pure.DI.Core
             }
 
             var sampleDependency = _metadata.Bindings.LastOrDefault()?.Dependencies.FirstOrDefault()?.ToString() ?? "T";
-            _diagnostic.Information(Diagnostics.Generated, $"{_metadata.TargetTypeName} was generated. Please use a method like {_metadata.TargetTypeName}.Resolve<{sampleDependency}>() to create a composition root.");
+            _diagnostic.Information(Diagnostics.Generated, $"{_metadata.TargetTypeName} was generated. Please use a method like {_metadata.TargetTypeName}.Resolve<{sampleDependency}>() to create a composition root.", _metadata.Bindings.FirstOrDefault()?.Location);
             return compilationUnit.NormalizeWhitespace();
         }
 

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Components;
@@ -46,7 +47,7 @@
             if (Equals(objectCreationExpression, default))
             {
                 var message = $"Cannot find an accessible constructor for {dependency}.";
-                _diagnostic.Error(Diagnostics.CannotFindCtor, message, dependency.Binding.Location);
+                _diagnostic.Error(Diagnostics.CannotFindCtor, message, dependency.Implementation.Type.Locations.FirstOrDefault() ?? dependency.Binding.Location);
                 return SyntaxFactory.ParseName(message);
             }
 
@@ -93,7 +94,7 @@
                         case IFieldSymbol filed:
                             if (!filed.IsReadOnly && !filed.IsStatic && !filed.IsConst)
                             {
-                                var fieldValue = ResolveInstance(filed, dependency, filed.Type, _buildContext.TypeResolver, buildStrategy);
+                                var fieldValue = ResolveInstance(filed, dependency, filed.Type, _buildContext.TypeResolver, buildStrategy, filed.Locations);
                                 var assignmentExpression = SyntaxFactory.AssignmentExpression(
                                     SyntaxKind.SimpleAssignmentExpression,
                                     SyntaxFactory.MemberAccessExpression(
@@ -111,7 +112,7 @@
                         case IPropertySymbol property:
                             if (property.SetMethod != null && !property.IsReadOnly && !property.IsStatic)
                             {
-                                var propertyValue = ResolveInstance(property, dependency, property.Type, _buildContext.TypeResolver, buildStrategy);
+                                var propertyValue = ResolveInstance(property, dependency, property.Type, _buildContext.TypeResolver, buildStrategy, property.Locations);
                                 var assignmentExpression = SyntaxFactory.AssignmentExpression(
                                     SyntaxKind.SimpleAssignmentExpression,
                                     SyntaxFactory.MemberAccessExpression(
@@ -160,11 +161,25 @@
             Dependency targetDependency,
             ITypeSymbol defaultType,
             ITypeResolver typeResolver,
-            IBuildStrategy buildStrategy)
+            IBuildStrategy buildStrategy,
+            ImmutableArray<Location> resolveLocations)
         {
+            LiteralExpressionSyntax? defaultValue = null;
+            if (
+                target is IParameterSymbol parameter
+                && parameter.HasExplicitDefaultValue)
+            {
+                defaultValue = parameter.ExplicitDefaultValue.ToLiteralExpression();
+            }
+
             var type = GetDependencyType(target, targetDependency.Implementation) ?? new SemanticType(defaultType, targetDependency.Implementation);
             var tag = (ExpressionSyntax?) _attributesService.GetAttributeArgumentExpressions(AttributeKind.Tag, target).FirstOrDefault();
-            var dependency = typeResolver.Resolve(type, tag);
+            var dependency = typeResolver.Resolve(type, tag, resolveLocations, false, defaultValue != null);
+            if (!dependency.IsResolved && defaultValue != null)
+            {
+                return defaultValue;
+            }
+
             switch (dependency.Implementation.Type)
             {
                 case INamedTypeSymbol namedType:
@@ -181,7 +196,7 @@
                         {
                             var serviceProviderInstance = new SemanticType(dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.Components.ServiceProviderInstance`1")!, dependency.Implementation.SemanticModel);
                             var instanceType = serviceProviderInstance.Construct(type);
-                            var serviceProviderDependency = typeResolver.Resolve(instanceType, dependency.Tag);
+                            var serviceProviderDependency = typeResolver.Resolve(instanceType, dependency.Tag, resolveLocations);
                             return SyntaxFactory.MemberAccessExpression(
                                 SyntaxKind.SimpleMemberAccessExpression,
                                 buildStrategy.Build(serviceProviderDependency),
@@ -199,7 +214,7 @@
 
                 case IArrayTypeSymbol arrayType:
                 {
-                    var arrayTypeDescription = typeResolver.Resolve(new SemanticType(arrayType, targetDependency.Implementation), null);
+                    var arrayTypeDescription = typeResolver.Resolve(new SemanticType(arrayType, targetDependency.Implementation), null, arrayType.Locations);
                     if (arrayTypeDescription.IsResolved)
                     {
                         return buildStrategy.Build(arrayTypeDescription);
@@ -209,13 +224,13 @@
                 }
             }
 
-            _diagnostic.Error(Diagnostics.Unsupported, $"Unsupported type {dependency.Implementation}.", target.Locations.FirstOrDefault());
+            _diagnostic.Error(Diagnostics.Unsupported, $"Unsupported type {dependency.Implementation}.", resolveLocations.FirstOrDefault());
             throw Diagnostics.ErrorShouldTrowException;
         }
 
         private IEnumerable<ExpressionSyntax?> ResolveMethodParameters(ITypeResolver typeResolver, IBuildStrategy buildStrategy, Dependency dependency, IMethodSymbol method) =>
             from parameter in method.Parameters
-            select ResolveInstance(parameter, dependency, parameter.Type, typeResolver, buildStrategy);
+            select ResolveInstance(parameter, dependency, parameter.Type, typeResolver, buildStrategy, parameter.Locations);
 
         private SemanticType? GetDependencyType(ISymbol type, SemanticModel semanticModel) =>
         (
@@ -239,7 +254,7 @@
 
             if (ctor.GetAttributes(typeof(ObsoleteAttribute), dependency.Implementation.SemanticModel).Any())
             {
-                _diagnostic.Warning(Diagnostics.CtorIsObsoleted, $"Constructor {ctor} is obsoleted.", dependency.Binding.Location);
+                _diagnostic.Warning(Diagnostics.CtorIsObsoleted, $"The constructor {ctor} marked as obsoleted is used.", ctor.Locations.FirstOrDefault());
             }
 
             return SyntaxFactory.ObjectCreationExpression(typeSyntax)

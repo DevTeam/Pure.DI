@@ -156,7 +156,7 @@
                         break;
                 }
 
-                var curDependency = _typeResolver.Resolve(dependency.Key, null);
+                var curDependency = _typeResolver.Resolve(dependency.Key, null, dependency.Key.Type.Locations);
 
                 var resolve = SyntaxFactory.CastExpression(dependency.Key, curDependency.ObjectBuilder.Build(_buildStrategy, curDependency));
 

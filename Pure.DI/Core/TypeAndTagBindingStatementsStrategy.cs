@@ -19,7 +19,7 @@ namespace Pure.DI.Core
         {
             foreach (var tag in binding.Tags)
             {
-                var instance = buildStrategy.Build(_typeResolver.Resolve(dependency, tag));
+                var instance = buildStrategy.Build(_typeResolver.Resolve(dependency, tag, dependency.Type.Locations));
                 yield return SyntaxFactory.ReturnStatement(instance);
             }
         }

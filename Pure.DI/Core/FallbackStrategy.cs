@@ -27,7 +27,7 @@
             var fallbackType = semanticModel.Compilation.GetTypeByMetadataName(typeof(IFallback).ToString());
             if (fallbackType != null)
             {
-                var fallbackDependency = _typeResolver.Resolve(new SemanticType(fallbackType, semanticModel), null, true, true);
+                var fallbackDependency = _typeResolver.Resolve(new SemanticType(fallbackType, semanticModel), null, fallbackType.Locations, true, true);
                 if (fallbackDependency.IsResolved)
                 {
                     var fallbackInstance = _objectBuilder.Build(_buildStrategy, fallbackDependency);

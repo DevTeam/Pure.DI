@@ -7,6 +7,8 @@
 // ReSharper disable UnassignedField.Global
 #pragma warning disable 649
 #pragma warning disable 8618
+#pragma warning disable 8600
+#pragma warning disable 8603
 namespace Pure.DI.Components
 {
     public struct ServiceProviderInstance

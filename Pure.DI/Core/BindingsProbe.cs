@@ -26,7 +26,7 @@
                 where dependency.IsValidTypeToResolve
                 // ReSharper disable once RedundantTypeArgumentsOfMethod
                 from tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null)
-                select _buildStrategy.Build(_buildContext.TypeResolver.Resolve(dependency, tag)))
+                select _buildStrategy.Build(_buildContext.TypeResolver.Resolve(dependency, tag, dependency.Type.Locations)))
                 // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
                 .ToList();
         }

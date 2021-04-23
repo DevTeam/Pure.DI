@@ -3,9 +3,9 @@ namespace Pure.DI.Core
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
-    using Components;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -80,7 +80,7 @@ namespace Pure.DI.Core
             }
         }
 
-        public Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, bool anyTag = false, bool probe = false)
+        public Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, ImmutableArray<Location> resolveLocations, bool anyTag = false, bool probe = false)
         {
             switch (dependency.Type)
             {
@@ -192,16 +192,19 @@ namespace Pure.DI.Core
 
                 if (hasFallback)
                 {
-                    _diagnostic.Warning(Diagnostics.CannotResolveDependencyWarning, $"Cannot resolve a dependency {dependency}({tag}). Will use a fallback strategy.");
+                    _diagnostic.Warning(Diagnostics.CannotResolveDependencyWarning, $"Cannot resolve a dependency of the type {GetDependencyName(dependency, tag)}. Will use a fallback strategy.", resolveLocations.FirstOrDefault());
                 }
                 else
                 {
-                    _diagnostic.Error(Diagnostics.CannotResolveDependencyError, $"Cannot resolve a dependency {dependency}({tag}). Please add an appropriate binding or a binding to fallback strategy implementing {nameof(IFallback)}.");
+                    _diagnostic.Error(Diagnostics.CannotResolveDependencyError, $"Cannot resolve a dependency of the type {GetDependencyName(dependency, tag)}. Please add an appropriate binding, remove this dependency or rely on a fallback strategy.", resolveLocations.FirstOrDefault());
                 }
             }
 
             return new Dependency(new BindingMetadata(), dependency, null, _constructorBuilder(), _typesMapFactory(), false);
         }
+
+        private static string GetDependencyName(SemanticType dependency, ExpressionSyntax? tag) => 
+            tag == null ? dependency.ToString() : $"{dependency} and tag {tag}";
 
         public IEnumerable<Dependency> Resolve(SemanticType dependency)
         {
@@ -213,7 +216,7 @@ namespace Pure.DI.Core
 
             foreach (var registeredKey in registeredKeys)
             {
-                yield return Resolve(registeredKey.Dependency, registeredKey.Tag);
+                yield return Resolve(registeredKey.Dependency, registeredKey.Tag, ImmutableArray.Create<Location>());
             }
         }
 

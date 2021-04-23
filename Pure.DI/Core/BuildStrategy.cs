@@ -33,7 +33,7 @@
             var objectBuildExpression = dependency.ObjectBuilder.Build(_dependencyBuildStrategy, dependency);
             if (!_lifetimes.TryGetValue(dependency.Binding.Lifetime, out var lifetimeStrategy))
             {
-                _diagnostic.Error(Diagnostics.Unsupported, $"{dependency.Binding.Lifetime} lifetime is not supported.");
+                _diagnostic.Error(Diagnostics.Unsupported, $"{dependency.Binding.Lifetime} lifetime is not supported.", dependency.Implementation.Type.Locations.FirstOrDefault());
             }
 
             objectBuildExpression = lifetimeStrategy.Build(dependency, objectBuildExpression);
