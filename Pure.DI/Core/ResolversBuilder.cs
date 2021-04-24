@@ -12,10 +12,12 @@ namespace Pure.DI.Core
     [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
     internal class ResolversBuilder : IMembersBuilder
     {
+        private const uint AttributeArgumentListSyntax = 10;
         private readonly ResolverMetadata _metadata;
         private readonly IResolveMethodBuilder[] _resolveMethodBuilders;
         private readonly IBuildContext _buildContext;
         private readonly IFallbackStrategy _fallbackStrategy;
+        private readonly ISyntaxRegistry _syntaxRegistry;
         private readonly IBuildStrategy _buildStrategy;
         private readonly IBindingStatementsStrategy _bindingStatementsStrategy;
         private readonly IBindingStatementsStrategy _tagBindingStatementsStrategy;
@@ -25,6 +27,7 @@ namespace Pure.DI.Core
             IResolveMethodBuilder[] resolveMethodBuilders,
             IBuildContext buildContext,
             IFallbackStrategy fallbackStrategy,
+            ISyntaxRegistry syntaxRegistry,
             [Tag(Tags.SimpleBuildStrategy)] IBuildStrategy buildStrategy,
             [Tag(Tags.TypeStatementsStrategy)] IBindingStatementsStrategy bindingStatementsStrategy,
             [Tag(Tags.TypeAndTagStatementsStrategy)] IBindingStatementsStrategy tagBindingStatementsStrategy)
@@ -33,6 +36,7 @@ namespace Pure.DI.Core
             _resolveMethodBuilders = resolveMethodBuilders;
             _buildContext = buildContext;
             _fallbackStrategy = fallbackStrategy;
+            _syntaxRegistry = syntaxRegistry;
             _buildStrategy = buildStrategy;
             _bindingStatementsStrategy = bindingStatementsStrategy;
             _tagBindingStatementsStrategy = tagBindingStatementsStrategy;
@@ -53,10 +57,16 @@ namespace Pure.DI.Core
                 select grouped.First())
                 .ToArray();
 
-            
-            yield return CreateResolversTable(semanticModel, items);
-            yield return CreateResolversWithTagTable(semanticModel, items);
+            foreach (var member in CreateResolversTable(semanticModel, items))
+            {
+                yield return member;
+            }
 
+            foreach (var member in CreateResolversWithTagTable(semanticModel, items))
+            {
+                yield return member;
+            }
+            
             var allMethods = _resolveMethodBuilders.Select(i => i.Build()).ToArray();
 
             // Post statements
@@ -130,7 +140,7 @@ namespace Pure.DI.Core
             }
         }
 
-        private FieldDeclarationSyntax CreateResolversTable(SemanticModel semanticModel, IEnumerable<(BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
+        private IEnumerable<MemberDeclarationSyntax> CreateResolversTable(SemanticModel semanticModel, IEnumerable<(BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
         {
             var funcType = SyntaxFactory.GenericName(
                     SyntaxRepo.FuncTypeToken)
@@ -178,10 +188,20 @@ namespace Pure.DI.Core
                     SyntaxFactory.Token(SyntaxKind.StaticKeyword),
                     SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword));
 
-            return resolversTable;
+            yield return resolversTable;
+
+            var divisor = SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(ResolversTable.GetDivisor(keyValuePairs.Count)));
+            yield return CreateField(SyntaxRepo.UIntTypeSyntax, nameof(ResolversTable.ResolversDivisor), divisor, SyntaxKind.ConstKeyword);
+            var bucketsType = SyntaxFactory.ArrayType(keyValuePairType).AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
+            yield return CreateField(bucketsType, nameof(ResolversTable.ResolversBuckets), GetFiled(SyntaxRepo.FactoriesTableName, nameof(ResolversTable.ResolversBuckets)), SyntaxKind.StaticKeyword);
+            var fallbackType = SyntaxFactory.GenericName(SyntaxRepo.FuncTypeToken)
+                .AddTypeArgumentListArguments(SyntaxRepo.TypeTypeSyntax)
+                .AddTypeArgumentListArguments(SyntaxRepo.ObjectTypeSyntax)
+                .AddTypeArgumentListArguments(SyntaxRepo.ObjectTypeSyntax);
+            yield return CreateField(fallbackType, nameof(ResolversTable.ResolversDefaultFactory), GetFiled(SyntaxRepo.FactoriesTableName, nameof(ResolversTable.ResolversDefaultFactory)), SyntaxKind.StaticKeyword);
         }
 
-        private FieldDeclarationSyntax CreateResolversWithTagTable(SemanticModel semanticModel, IEnumerable<(BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
+        private IEnumerable<MemberDeclarationSyntax> CreateResolversWithTagTable(SemanticModel semanticModel, IEnumerable<(BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
         {
             var funcType = SyntaxFactory.GenericName(
                     SyntaxRepo.FuncTypeToken)
@@ -232,7 +252,33 @@ namespace Pure.DI.Core
                     SyntaxFactory.Token(SyntaxKind.StaticKeyword),
                     SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword));
 
-            return resolversTable;
+            yield return resolversTable;
+
+            var divisor = SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(ResolversTable.GetDivisor(keyValuePairs.Count)));
+            yield return CreateField(SyntaxRepo.UIntTypeSyntax, nameof(ResolversByTagTable.ResolversByTagDivisor), divisor, SyntaxKind.ConstKeyword);
+            var bucketsType = SyntaxFactory.ArrayType(keyValuePairType).AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
+            yield return CreateField(bucketsType, nameof(ResolversByTagTable.ResolversByTagBuckets), GetFiled(SyntaxRepo.FactoriesByTagTableName, nameof(ResolversByTagTable.ResolversByTagBuckets)), SyntaxKind.StaticKeyword);
+            var fallbackType = SyntaxFactory.GenericName(SyntaxRepo.FuncTypeToken)
+                .AddTypeArgumentListArguments(SyntaxRepo.TypeTypeSyntax)
+                .AddTypeArgumentListArguments(SyntaxRepo.ObjectTypeSyntax)
+                .AddTypeArgumentListArguments(SyntaxRepo.ObjectTypeSyntax);
+            yield return CreateField(fallbackType, nameof(ResolversByTagTable.ResolversByTagDefaultFactory), GetFiled(SyntaxRepo.FactoriesByTagTableName, nameof(ResolversByTagTable.ResolversByTagDefaultFactory)), SyntaxKind.StaticKeyword);
         }
+
+        private static MemberAccessExpressionSyntax GetFiled(string tableName, string fieldName) =>
+            SyntaxFactory.MemberAccessExpression(
+                SyntaxKind.SimpleMemberAccessExpression,
+                SyntaxFactory.IdentifierName(tableName),
+                SyntaxFactory.IdentifierName(fieldName));
+
+        private static FieldDeclarationSyntax CreateField(TypeSyntax type, string name, ExpressionSyntax initExpression, SyntaxKind modifier) =>
+            SyntaxFactory.FieldDeclaration(
+                SyntaxFactory.VariableDeclaration(type)
+                    .AddVariables(
+                        SyntaxFactory.VariableDeclarator(name)
+                            .WithInitializer(SyntaxFactory.EqualsValueClause(initExpression))))
+                .WithModifiers(SyntaxFactory.TokenList()
+                    .Add(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
+                    .Add(SyntaxFactory.Token(modifier)));
     }
 }

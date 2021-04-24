@@ -17,6 +17,7 @@ namespace Pure.DI.Core
         public const string FactoriesByTagTableName = "ResolversByTag";
         public static readonly TypeSyntax TTypeSyntax = SyntaxFactory.ParseTypeName("T");
         public static readonly TypeSyntax TypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(Type).ToString());
+        public static readonly TypeSyntax UIntTypeSyntax = SyntaxFactory.ParseTypeName(typeof(uint).ToString());
         public static readonly TypeSyntax ObjectTypeSyntax = SyntaxFactory.ParseTypeName("object");
         public static readonly SyntaxToken KeyValuePairTypeToken = SyntaxFactory.Identifier("Pure.DI.Pair");
         public static readonly TypeSyntax TagTypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(TagKey).ToString());

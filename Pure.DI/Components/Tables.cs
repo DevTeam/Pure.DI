@@ -42,12 +42,17 @@ namespace Pure.DI
 
     internal class Table<TKey, TValue>
     {
-        public readonly uint Divisor;
-        public readonly Pair<TKey, TValue>[] Buckets;
+        protected readonly uint Divisor;
+        protected readonly Pair<TKey, TValue>[] Buckets;
+
+        public static uint GetDivisor(int count)
+        {
+            return (uint) (count + 1) * 4;
+        }
 
         public Table(Pair<TKey, TValue>[] pairs, TKey defaultKey, TValue defaultValue)
         {
-            Divisor = (uint)(pairs.Length + 1) * 4;
+            Divisor = GetDivisor(pairs.Length);
             Buckets = new Pair<TKey, TValue>[Divisor];
             for (var i = 0; i < Buckets.Length; i++)
             {
@@ -89,17 +94,22 @@ namespace Pure.DI
 
     internal sealed class ResolversTable : Table<Type, Func<object>>
     {
-        public readonly Func<Type, object, object> DefaultFactory;
+        public readonly Func<Type, object, object> ResolversDefaultFactory;
+        public readonly Pair<Type, Func<object>>[] ResolversBuckets;
+        public readonly uint ResolversDivisor;
+
         public ResolversTable(Pair<Type, Func<object>>[] pairs, Func<Type, object, object> defaultFactory)
             : base(pairs, typeof(ResolversTable), null)
         {
-            DefaultFactory = defaultFactory;
+            ResolversDefaultFactory = defaultFactory;
+            ResolversBuckets = Buckets;
+            ResolversDivisor = Divisor;
         }
 
         [MethodImpl((MethodImplOptions)0x100)]
-        public static object Resolve(ResolversTable Resolvers, Type type)
+        public object Resolve(Type type)
         {
-            var pair = Resolvers.Buckets[(uint)type.GetHashCode() % Resolvers.Divisor];
+            var pair = ResolversBuckets[(uint)type.GetHashCode() % ResolversDivisor];
             do
             {
                 if (pair.Key == type)
@@ -111,25 +121,30 @@ namespace Pure.DI
             } 
             while (pair != null);
 
-            return Resolvers.DefaultFactory !=null ?
-                Resolvers.DefaultFactory(type, null) ?? new ArgumentException($"Cannot resolve an instance of the type {type.Name}.")
+            return ResolversDefaultFactory !=null ?
+                ResolversDefaultFactory(type, null) ?? new ArgumentException($"Cannot resolve an instance of the type {type.Name}.")
                 : throw new ArgumentException($"Cannot resolve an instance of the type {type.Name}.");
         }
     }
 
     internal sealed class ResolversByTagTable : Table<TagKey, Func<object>>
     {
-        public readonly Func<Type, object, object> DefaultFactory;
+        public readonly Func<Type, object, object> ResolversByTagDefaultFactory;
+        public readonly Pair<TagKey, Func<object>>[] ResolversByTagBuckets;
+        public readonly uint ResolversByTagDivisor;
+
         public ResolversByTagTable(Pair<TagKey, Func<object>>[] pairs, Func<Type, object, object> defaultFactory)
             : base(pairs, new TagKey(typeof(ResolversByTagTable), null), null)
         {
-            DefaultFactory = defaultFactory;
+            ResolversByTagDefaultFactory = defaultFactory;
+            ResolversByTagBuckets = Buckets;
+            ResolversByTagDivisor = Divisor;
         }
 
         [MethodImpl((MethodImplOptions)0x100)]
-        public static object Resolve(ResolversByTagTable ResolversByTag, TagKey key)
+        public object Resolve(TagKey key)
         {
-            var pair = ResolversByTag.Buckets[(uint)key.GetHashCode() % ResolversByTag.Divisor];
+            var pair = ResolversByTagBuckets[(uint)key.GetHashCode() % ResolversByTagDivisor];
             do {
                 // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
                 if (pair.Key.Equals(key))
@@ -141,8 +156,8 @@ namespace Pure.DI
             }
             while (pair != null) ;
 
-            return ResolversByTag.DefaultFactory != null ? 
-                ResolversByTag.DefaultFactory(key.Type, key.Tag) ?? new ArgumentException($"Cannot resolve an instance of the type {key.Type.Name} with tag {key.Tag}.")
+            return ResolversByTagDefaultFactory != null ? 
+                ResolversByTagDefaultFactory(key.Type, key.Tag) ?? new ArgumentException($"Cannot resolve an instance of the type {key.Type.Name} with tag {key.Tag}.")
                 : throw new ArgumentException($"Cannot resolve an instance of the type {key.Type.Name} with tag {key.Tag}.");
         }
     }
