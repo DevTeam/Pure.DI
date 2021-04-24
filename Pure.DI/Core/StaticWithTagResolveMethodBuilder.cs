@@ -1,10 +1,16 @@
 ﻿namespace Pure.DI.Core
 {
+    using System.Linq;
     using Microsoft.CodeAnalysis.CSharp;
 
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class StaticWithTagResolveMethodBuilder : IResolveMethodBuilder
     {
+        private readonly ISyntaxRegistry _syntaxRegistry;
+
+        public StaticWithTagResolveMethodBuilder(ISyntaxRegistry syntaxRegistry) =>
+            _syntaxRegistry = syntaxRegistry;
+
         public ResolveMethod Build()
         {
             var key = SyntaxFactory.ObjectCreationExpression(SyntaxRepo.TagTypeTypeSyntax)
@@ -12,18 +18,18 @@
                     SyntaxFactory.Argument(SyntaxFactory.IdentifierName("type")),
                     SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")));
 
-            var resolve = SyntaxFactory.InvocationExpression(
-                    SyntaxFactory.MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                            SyntaxFactory.ParseName(SyntaxRepo.FactoriesByTagTableName),
-                            SyntaxFactory.Token(SyntaxKind.DotToken),
-                            SyntaxFactory.IdentifierName(nameof(ResolversByTagTable.Resolve))))
-                    .AddArgumentListArguments(
-                        SyntaxFactory.Argument(key));
+            var keyVar = SyntaxFactory.LocalDeclarationStatement(
+                SyntaxFactory.VariableDeclaration(SyntaxRepo.TagTypeTypeSyntax)
+                    .AddVariables(
+                        SyntaxFactory.VariableDeclarator("key")
+                            .WithInitializer(SyntaxFactory.EqualsValueClause(key))));
+
+            var methodBlock = SyntaxFactory.Block()
+                .AddStatements(keyVar)
+                .AddStatements(_syntaxRegistry.FindMethod(nameof(ResolversByTagTable), nameof(ResolversByTagTable.Resolve)).Body!.Statements.ToArray());
 
             return new ResolveMethod(
-                SyntaxRepo.StaticResolveWithTagMethodSyntax.AddBodyStatements(
-                    SyntaxFactory.ReturnStatement(resolve)));
+                SyntaxRepo.StaticResolveWithTagMethodSyntax.AddBodyStatements(methodBlock.Statements.ToArray()));
         }
     }
 }

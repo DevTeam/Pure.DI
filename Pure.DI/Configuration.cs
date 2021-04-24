@@ -70,7 +70,8 @@
                 .Bind<ILifetimeStrategy>().Tag(Lifetime.Singleton).To<SingletonLifetimeStrategy>()
                 .Bind<ILifetimeStrategy>().Tag(Lifetime.PerThread).To<PerThreadLifetimeStrategy>()
                 .Bind<ILifetimeStrategy>().Tag(Lifetime.PerResolve).To<PerResolveLifetimeStrategy>()
-                .Bind<ILifetimeStrategy>().Tag(Lifetime.Binding).To<BindingLifetimeStrategy>();
+                .Bind<ILifetimeStrategy>().Tag(Lifetime.Binding).To<BindingLifetimeStrategy>()
+                .Bind<ISyntaxRegistry>().To<SyntaxRegistry>();
         }
     }
 }

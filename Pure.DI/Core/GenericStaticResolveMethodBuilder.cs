@@ -10,10 +10,11 @@
             var resolve = SyntaxFactory.InvocationExpression(
                 SyntaxFactory.MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
-                            SyntaxFactory.ParseName(SyntaxRepo.FactoriesTableName),
+                            SyntaxRepo.ResolversTableTypeSyntax,
                             SyntaxFactory.Token(SyntaxKind.DotToken),
                             SyntaxFactory.IdentifierName(nameof(ResolversTable.Resolve))))
                     .AddArgumentListArguments(
+                        SyntaxFactory.Argument(SyntaxFactory.IdentifierName(SyntaxRepo.FactoriesTableName)),
                         SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(SyntaxRepo.TTypeSyntax))
                     );
 

@@ -15,10 +15,11 @@
             var resolve = SyntaxFactory.InvocationExpression(
                 SyntaxFactory.MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
-                            SyntaxFactory.ParseName(SyntaxRepo.FactoriesByTagTableName),
+                            SyntaxRepo.ResolversWithTagTableTypeSyntax,
                             SyntaxFactory.Token(SyntaxKind.DotToken),
                             SyntaxFactory.IdentifierName(nameof(ResolversByTagTable.Resolve))))
                     .AddArgumentListArguments(
+                        SyntaxFactory.Argument(SyntaxFactory.IdentifierName(SyntaxRepo.FactoriesByTagTableName)),
                         SyntaxFactory.Argument(key)
                     );
 

@@ -2,13 +2,16 @@
 {
     using System;
     using System.Collections.Generic;
+    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     internal interface IBuildContext
     {
+        Compilation Compilation { get; }
+
         ResolverMetadata Metadata { get; }
 
-        void Prepare(ResolverMetadata metadata);
+        void Prepare(Compilation compilation, ResolverMetadata metadata);
 
         INameService NameService { get; }
 

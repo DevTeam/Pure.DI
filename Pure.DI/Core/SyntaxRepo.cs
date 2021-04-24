@@ -35,7 +35,7 @@ namespace Pure.DI.Core
                     SyntaxFactory.AttributeArgument(
                         SyntaxFactory.CastExpression(
                             SyntaxFactory.ParseTypeName(nameof(MethodImplOptions)),
-                            SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0x300))))));
+                            SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0x100))))));
 
         public static readonly MethodDeclarationSyntax TResolveMethodSyntax =
             SyntaxFactory.MethodDeclaration(TTypeSyntax, nameof(IContext.Resolve))

@@ -1,24 +1,16 @@
 ﻿namespace Pure.DI.Core
 {
-    using Microsoft.CodeAnalysis.CSharp;
+    using System.Linq;
 
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class StaticResolveMethodBuilder : IResolveMethodBuilder
     {
-        public ResolveMethod Build()
-        {
-            var resolve = SyntaxFactory.InvocationExpression(
-                SyntaxFactory.MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            SyntaxFactory.ParseName(SyntaxRepo.FactoriesTableName),
-                            SyntaxFactory.Token(SyntaxKind.DotToken),
-                            SyntaxFactory.IdentifierName(nameof(ResolversTable.Resolve))))
-                    .AddArgumentListArguments(
-                        SyntaxFactory.Argument(SyntaxFactory.IdentifierName("type")));
+        private readonly ISyntaxRegistry _syntaxRegistry;
 
-            return new ResolveMethod(
-                SyntaxRepo.StaticResolveMethodSyntax.AddBodyStatements(
-                    SyntaxFactory.ReturnStatement(resolve)));
-        }
+        public StaticResolveMethodBuilder(ISyntaxRegistry syntaxRegistry) => 
+            _syntaxRegistry = syntaxRegistry;
+
+        public ResolveMethod Build() =>
+            new(SyntaxRepo.StaticResolveMethodSyntax.AddBodyStatements(_syntaxRegistry.FindMethod(nameof(ResolversTable), nameof(ResolversTable.Resolve)).Body!.Statements.ToArray()));
     }
 }

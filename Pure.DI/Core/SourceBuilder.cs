@@ -91,7 +91,7 @@
                 {
                     var allMetadata = new List<ResolverMetadata>(featuresMetadata) { rawMetadata };
                     var metadata = CreateMetadata(rawMetadata, allMetadata);
-                    _context.Prepare(metadata);
+                    _context.Prepare(compilation, metadata);
                     var compilationUnitSyntax = _resolverBuilderFactory().Build(semanticModel);
                     yield return new Source(
                         $"{metadata.TargetTypeName}.cs",

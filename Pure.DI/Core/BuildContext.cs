@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     // ReSharper disable once ClassNeverInstantiated.Global
@@ -12,6 +13,7 @@
         private readonly HashSet<StatementSyntax> _finalizationStatements = new();
         private readonly Func<INameService> _nameServiceFactory;
         private readonly Func<ITypeResolver> _typeResolverFactory;
+        private Compilation? _compilation;
         private ResolverMetadata? _metadata;
         private INameService? _nameService;
         private ITypeResolver? _typeResolver;
@@ -23,6 +25,8 @@
             _nameServiceFactory = nameServiceFactory;
             _typeResolverFactory = typeResolverFactory;
         }
+
+        public Compilation Compilation => _compilation ?? throw new InvalidOperationException("Not initialized.");
 
         public ResolverMetadata Metadata => _metadata ?? throw new InvalidOperationException("Not initialized.");
 
@@ -36,8 +40,9 @@
 
         public IEnumerable<StatementSyntax> FinalizationStatements => _finalizationStatements;
 
-        public void Prepare(ResolverMetadata metadata)
+        public void Prepare(Compilation compilation, ResolverMetadata metadata)
         {
+            _compilation = compilation;
             _metadata = metadata;
             _additionalBindings.Clear();
             _nameService = _nameServiceFactory();
