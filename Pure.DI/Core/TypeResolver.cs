@@ -53,11 +53,19 @@ namespace Pure.DI.Core
                 {
                     foreach (var tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null))
                     {
-                        var key = dependency.IsComposedGenericTypeMarker
+                        var semanticType = dependency.IsComposedGenericTypeMarker
                                   && dependency.Type is INamedTypeSymbol namedType
-                                ? new Key(new SemanticType(namedType.ConstructUnboundGenericType(), dependency.SemanticModel), tag)
-                                : new Key(dependency, tag);
+                                ? new SemanticType(namedType.ConstructUnboundGenericType(), dependency.SemanticModel)
+                                : dependency;
+                        
+                        if (
+                            !GetSpecialTypes(semanticType).Contains(semanticType)
+                            && dependency.SemanticModel.Compilation.GetTypeByMetadataName(semanticType.Name) == null)
+                        {
+                            continue;
+                        }
 
+                        var key = new Key(semanticType, tag);
                         if (_map.TryGetValue(key, out _))
                         {
                             _diagnostic.Warning(Diagnostics.BindingIsAlreadyExist, $"{key} binding was exist and will be overridden by a new one.");

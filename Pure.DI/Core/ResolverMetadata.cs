@@ -8,7 +8,7 @@
         public string TargetTypeName;
         public readonly SyntaxNode SetupNode;
         public readonly ICollection<BindingMetadata> Bindings = new List<BindingMetadata>();
-        public readonly ICollection<string> DependsOn = new List<string> { "DefaultFeature" };
+        public readonly ICollection<string> DependsOn = new List<string> { "DefaultFeature", "AspNetFeature" };
         public readonly ICollection<AttributeMetadata> Attributes = new List<AttributeMetadata>();
 
         public ResolverMetadata(SyntaxNode setupNode, string targetTypeName)

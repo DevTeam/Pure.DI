@@ -821,6 +821,46 @@
         }
 
         [Fact]
+        public void ShouldSupportTypeOfT()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+ 
+                public class MyClass<T>
+                {
+                    public Type Type;
+                    public MyClass(Type type) { Type = type; }
+                }
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            // Composition Root
+                            .Bind<MyClass<TT>>().To(_ => new MyClass<TT>(typeof(TT)))
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public string Value;
+                    internal CompositionRoot(MyClass<string> value) => Value = value.Type.ToString();
+                }
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "System.String" }, generatedCode);
+        }
+
+        [Fact]
         public void ShouldSupportGenericsWithoutBinding()
         {
             // Given

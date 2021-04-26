@@ -43,6 +43,22 @@ namespace Pure.DI.Core
 
         public override int GetHashCode() => SemanticTypeEqualityComparer.Default.GetHashCode();
 
+        public string Name
+        {
+            get
+            {
+                if (
+                    Type is not INamedTypeSymbol namedTypeSymbol
+                    || !namedTypeSymbol.IsGenericType)
+                {
+                    return Type.ToDisplayString();
+                }
+
+                var unboundGeneric = namedTypeSymbol.ConstructUnboundGenericType();
+                return string.Join("", unboundGeneric.ToDisplayParts().TakeWhile(i => i.ToString() != "<")) + "`" + namedTypeSymbol.TypeArguments.Length;
+            }
+        }
+
         public SemanticType Construct(params SemanticType[] typeArg)
         {
             if (
@@ -108,7 +124,9 @@ namespace Pure.DI.Core
         public bool IsValidTypeToResolve =>
             Type switch
             {
-                INamedTypeSymbol namedTypeSymbol => !namedTypeSymbol.IsUnboundGenericType && !IsComposedGenericTypeMarker,
+                INamedTypeSymbol namedTypeSymbol => 
+                    !namedTypeSymbol.IsUnboundGenericType
+                    && !IsComposedGenericTypeMarker,
                 IArrayTypeSymbol arrayTypeSymbol => new SemanticType(arrayTypeSymbol, SemanticModel).IsValidTypeToResolve,
                 _ => false
             };

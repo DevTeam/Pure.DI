@@ -12,12 +12,10 @@ namespace Pure.DI.Core
     [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
     internal class ResolversBuilder : IMembersBuilder
     {
-        private const uint AttributeArgumentListSyntax = 10;
         private readonly ResolverMetadata _metadata;
         private readonly IResolveMethodBuilder[] _resolveMethodBuilders;
         private readonly IBuildContext _buildContext;
         private readonly IFallbackStrategy _fallbackStrategy;
-        private readonly ISyntaxRegistry _syntaxRegistry;
         private readonly IBuildStrategy _buildStrategy;
         private readonly IBindingStatementsStrategy _bindingStatementsStrategy;
         private readonly IBindingStatementsStrategy _tagBindingStatementsStrategy;
@@ -27,7 +25,6 @@ namespace Pure.DI.Core
             IResolveMethodBuilder[] resolveMethodBuilders,
             IBuildContext buildContext,
             IFallbackStrategy fallbackStrategy,
-            ISyntaxRegistry syntaxRegistry,
             [Tag(Tags.SimpleBuildStrategy)] IBuildStrategy buildStrategy,
             [Tag(Tags.TypeStatementsStrategy)] IBindingStatementsStrategy bindingStatementsStrategy,
             [Tag(Tags.TypeAndTagStatementsStrategy)] IBindingStatementsStrategy tagBindingStatementsStrategy)
@@ -36,7 +33,6 @@ namespace Pure.DI.Core
             _resolveMethodBuilders = resolveMethodBuilders;
             _buildContext = buildContext;
             _fallbackStrategy = fallbackStrategy;
-            _syntaxRegistry = syntaxRegistry;
             _buildStrategy = buildStrategy;
             _bindingStatementsStrategy = bindingStatementsStrategy;
             _tagBindingStatementsStrategy = tagBindingStatementsStrategy;

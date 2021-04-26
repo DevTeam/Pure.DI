@@ -38,6 +38,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Features\AspNet.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Update="Components\GenericTypeArguments.tt">
 			<LastGenOutput>GenericTypeArguments.cs</LastGenOutput>
 			<Generator>TextTemplatingFileGenerator</Generator>
@@ -58,6 +62,7 @@
 		<EmbeddedResource Include="Components\Tables.cs" />
 		<EmbeddedResource Include="Components\Contracts.cs" />
 		<EmbeddedResource Include="Components\ServiceProviderInstance.cs" />
+		<EmbeddedResource Include="Features\AspNet.cs" />
 		<EmbeddedResource Include="Features\Default.cs" />
 	</ItemGroup>
 

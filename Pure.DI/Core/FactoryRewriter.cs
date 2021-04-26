@@ -87,22 +87,29 @@ namespace Pure.DI.Core
             return base.VisitMemberAccessExpression(node);
         }
 
+        public override SyntaxNode? VisitTypeOfExpression(TypeOfExpressionSyntax node) => 
+            SyntaxFactory.TypeOfExpression(ReplaceType(node.Type));
+
         private void ReplaceTypes(IList<TypeSyntax> args)
         {
             for (var i = 0; i < args.Count; i++)
             {
-                var semanticModel = args[i].SyntaxTree.GetRoot().GetSemanticModel(_dependency.Implementation);
-                var typeSymbol = semanticModel.GetTypeInfo(args[i]).Type;
-                if (typeSymbol is INamedTypeSymbol namedTypeSymbol)
-                {
-                    var constructedType = _dependency.TypesMap.ConstructType(new SemanticType(namedTypeSymbol, _dependency.Implementation));
-                    args[i] = constructedType.TypeSyntax;
-                    if (!typeSymbol.Equals(constructedType.Type, SymbolEqualityComparer.Default))
-                    {
-                        _buildContext.AddBinding(new BindingMetadata(_dependency.Binding, constructedType));
-                    }
-                }
+                args[i] = ReplaceType(args[i]);
             }
+        }
+
+        private TypeSyntax ReplaceType(TypeSyntax typeSyntax)
+        {
+            var semanticModel = typeSyntax.SyntaxTree.GetRoot().GetSemanticModel(_dependency.Implementation);
+            var typeSymbol = semanticModel.GetTypeInfo(typeSyntax).Type;
+            if (typeSymbol is INamedTypeSymbol namedTypeSymbol)
+            {
+                var curType = new SemanticType(namedTypeSymbol, _dependency.Implementation);
+                var constructedType = _dependency.TypesMap.ConstructType(curType);
+                return constructedType.TypeSyntax;
+            }
+
+            return typeSyntax;
         }
     }
 }
