@@ -48,8 +48,9 @@ namespace Pure.DI.Core
                 {
                     continue;
                 }
-                
-                foreach (var dependency in binding.Dependencies)
+
+                var dependencies = new HashSet<SemanticType>(binding.Dependencies);
+                foreach (var dependency in dependencies)
                 {
                     foreach (var tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null))
                     {
@@ -81,7 +82,7 @@ namespace Pure.DI.Core
                         if (binding.Lifetime == Lifetime.Scoped || binding.Lifetime == Lifetime.ContainerSingleton)
                         {
                             var serviceProviderInstance = new SemanticType(dependency.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.ServiceProviderInstance`1")!, dependency.SemanticModel).Construct(dependency);
-                            _buildContext.AddBinding(new BindingMetadata(binding, serviceProviderInstance));
+                            _buildContext.AddBinding(new BindingMetadata(binding, serviceProviderInstance, true));
                         }
                     }
                 }
@@ -143,7 +144,7 @@ namespace Pure.DI.Core
 
                         if (unboundDependency.Equals(typeof(IEnumerable<>)))
                         {
-                            return new Dependency(new BindingMetadata(), dependency, null, _enumerableBuilder(), _typesMapFactory());
+                            return new Dependency(new BindingMetadata(dependency), dependency, null, _enumerableBuilder(), _typesMapFactory());
                         }
                     }
                     else
@@ -174,14 +175,14 @@ namespace Pure.DI.Core
                         };
 
                         _buildContext.AddBinding(newBinding);
-                        return new Dependency(newBinding, dependency, null, _constructorBuilder(), typesMap);
+                        return new Dependency(newBinding, dependency, tag, _constructorBuilder(), typesMap);
                     }
 
                     break;
                 }
 
                 case IArrayTypeSymbol:
-                    return new Dependency(new BindingMetadata(), dependency, null, _arrayBuilder(), _typesMapFactory());
+                    return new Dependency(new BindingMetadata(dependency), dependency, null, _arrayBuilder(), _typesMapFactory());
             }
 
             if (!probe)
@@ -210,7 +211,7 @@ namespace Pure.DI.Core
                 }
             }
 
-            return new Dependency(new BindingMetadata(), dependency, null, _constructorBuilder(), _typesMapFactory(), false);
+            return new Dependency(new BindingMetadata(dependency), dependency, null, _constructorBuilder(), _typesMapFactory(), false);
         }
 
         private static string GetDependencyName(SemanticType dependency, ExpressionSyntax? tag) => 

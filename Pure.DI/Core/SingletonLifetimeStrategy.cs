@@ -18,13 +18,8 @@
 
         public ExpressionSyntax Build(Dependency dependency, ExpressionSyntax objectBuildExpression)
         {
-            var resolvedType = dependency.Implementation;
-            var classParts = resolvedType.Type.ToMinimalDisplayParts(resolvedType, 0).Where(i => i.Kind == SymbolDisplayPartKind.ClassName).Select(i => i.ToString());
-            var classKey = new MemberKey(
-                string.Join("_", classParts) + "__Singleton",
-                resolvedType,
-                dependency.Tag);
-
+            var resolvedType = dependency.Binding.Implementation ?? dependency.Implementation;
+            var classKey = new MemberKey($"Singleton{dependency.Binding.Implementation}", dependency);
             var singletonClass = _buildContext.GetOrAddMember(classKey, () =>
             {
                 var singletonClassName = _buildContext.NameService.FindName(classKey);

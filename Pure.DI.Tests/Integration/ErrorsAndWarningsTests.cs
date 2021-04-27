@@ -189,6 +189,7 @@
                     internal CompositionRoot(MyClass value) { }
                 }
 
+                #pragma warning disable 0612
                 internal static partial class Composer
                 {
                     static Composer()

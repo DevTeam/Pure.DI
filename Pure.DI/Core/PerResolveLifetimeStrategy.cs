@@ -18,13 +18,7 @@
         public ExpressionSyntax Build(Dependency dependency, ExpressionSyntax objectBuildExpression)
         {
             var resolvedType = dependency.Implementation;
-            var classParts = resolvedType.Type.ToMinimalDisplayParts(resolvedType, 0).Where(i => i.Kind == SymbolDisplayPartKind.ClassName).Select(i => i.ToString()).ToList();
-            var fieldKey = new MemberKey(
-                string.Join("_", classParts) + "__PerResolve",
-                resolvedType,
-                dependency.Tag);
-
-
+            var fieldKey = new MemberKey($"PerResolve{dependency.Binding.Implementation}", dependency);
             var fieldType = resolvedType.Type.IsReferenceType
                 ? resolvedType.TypeSyntax
                 : SyntaxRepo.ObjectTypeSyntax;
@@ -43,11 +37,7 @@
                         SyntaxFactory.Token(SyntaxKind.StaticKeyword));
             });
 
-            var lockObjectKey = new MemberKey(
-                string.Join("_", classParts) + "PerResolveLockObject",
-                resolvedType,
-                dependency.Tag);
-
+            var lockObjectKey = new MemberKey($"PerResolveLockObject{dependency.Binding.Implementation}", dependency);
             var lockObjectField = (FieldDeclarationSyntax)_buildContext.GetOrAddMember(lockObjectKey, () =>
             {
                 var lockObjectFieldName = _buildContext.NameService.FindName(lockObjectKey);
@@ -64,7 +54,7 @@
                         SyntaxFactory.Token(SyntaxKind.StaticKeyword));
             });
 
-            var methodKey = new MemberKey($"GetPerResolve{dependency.Implementation.Type.Name}", dependency.Implementation, null);
+            var methodKey = new MemberKey($"GetPerResolve{dependency.Binding.Implementation}", dependency);
             var factoryMethod = (MethodDeclarationSyntax)_buildContext.GetOrAddMember(methodKey, () =>
             {
                 var factoryName = _buildContext.NameService.FindName(methodKey);

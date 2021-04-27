@@ -28,5 +28,23 @@
         }
 
         public override string ToString() => $"{Implementation}({Tag})";
+
+        public bool Equals(Dependency other)
+        {
+            return Implementation.Equals(other.Implementation) && Equals(Tag?.ToString(), other.Tag?.ToString());
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is Dependency other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (Implementation.GetHashCode() * 397) ^ (Tag != null ? Tag.ToString().GetHashCode() : 0);
+            }
+        }
     }
 }

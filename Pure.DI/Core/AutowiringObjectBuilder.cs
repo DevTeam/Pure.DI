@@ -131,7 +131,7 @@
 
                 if (factoryStatements.Any())
                 {
-                    var memberKey = new MemberKey($"Create{dependency.Implementation.Type.Name}", dependency.Implementation, dependency.Tag);
+                    var memberKey = new MemberKey($"Create{dependency.Binding.Implementation}", dependency);
                     var factoryName = _buildContext.NameService.FindName(memberKey);
                     var type = dependency.Implementation.TypeSyntax;
                     var factoryMethod = SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
@@ -185,7 +185,7 @@
                     var constructedType = dependency.TypesMap.ConstructType(new SemanticType(namedType, targetDependency.Implementation));
                     if (!dependency.Implementation.Equals(constructedType))
                     {
-                        _buildContext.AddBinding(new BindingMetadata(dependency.Binding, constructedType));
+                        _buildContext.AddBinding(new BindingMetadata(dependency.Binding, constructedType, false));
                     }
 
                     if (dependency.IsResolved)

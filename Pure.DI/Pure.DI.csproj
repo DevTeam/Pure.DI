@@ -17,7 +17,7 @@
 		<DebugSymbols>false</DebugSymbols>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+	<PropertyGroup>
 		<DevelopmentDependency>true</DevelopmentDependency>
 		<NoPackageAnalysis>true</NoPackageAnalysis>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -38,10 +38,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Features\AspNet.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<None Update="Components\GenericTypeArguments.tt">
 			<LastGenOutput>GenericTypeArguments.cs</LastGenOutput>
 			<Generator>TextTemplatingFileGenerator</Generator>
@@ -58,11 +54,13 @@
 		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 		<None Include="$(PKGIoC_Container)\lib\netstandard2.0\IoC.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 
+		<EmbeddedResource Include="Components\Contracts.cs" />
 		<EmbeddedResource Include="Components\GenericTypeArguments.cs" />
 		<EmbeddedResource Include="Components\Tables.cs" />
-		<EmbeddedResource Include="Components\Contracts.cs" />
 		<EmbeddedResource Include="Components\ServiceProviderInstance.cs" />
+		<Compile Remove="Features\AspNet.cs" />
 		<EmbeddedResource Include="Features\AspNet.cs" />
+		<Compile Remove="Features\Default.cs" />
 		<EmbeddedResource Include="Features\Default.cs" />
 	</ItemGroup>
 

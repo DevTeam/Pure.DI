@@ -307,6 +307,51 @@
         }
 
         [Fact]
+        public void ShouldUsePredefinedTagAttributeAdv()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public interface IMyClass1 {}
+                public interface IMyClass2 {}
+                    
+                public class MyClass: IMyClass1, IMyClass2
+                { 
+                    public MyClass() {}
+                    public MyClass(IMyClass1 myClass1, IMyClass2 myClass2) {}
+                }
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<IMyClass1>().Bind<IMyClass2>().Tag(1).Tag(3).To<MyClass>(_ => new MyClass())
+                            .Bind<IMyClass1>().Bind<IMyClass2>().Tag(2).Tag(4).As(Lifetime.Singleton).To<MyClass>(_ => new MyClass())
+                            .Bind<IMyClass1>().Bind<IMyClass2>().As(Lifetime.Singleton).To(ctx => new MyClass(ctx.Resolve<IMyClass1>(1), ctx.Resolve<IMyClass2>(2)))
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly IMyClass1 Value;
+                    internal CompositionRoot(IMyClass1 value) => Value = value;        
+                }
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "Sample.MyClass" }, generatedCode);
+        }
+
+        [Fact]
         public void ShouldUseCustomTagAttribute()
         {
             // Given

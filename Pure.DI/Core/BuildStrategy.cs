@@ -12,6 +12,7 @@
         private readonly IBindingResultStrategy _resultStrategy;
         private readonly IBuildStrategy _dependencyBuildStrategy;
         private readonly Dictionary<Lifetime, ILifetimeStrategy> _lifetimes;
+        private readonly Dictionary<Dependency, ExpressionSyntax> _cache = new();
 
         public BuildStrategy(
             IDiagnostic diagnostic,
@@ -29,6 +30,11 @@
 
         public ExpressionSyntax Build(Dependency dependency)
         {
+            if (_cache.TryGetValue(dependency, out var result))
+            {
+                return result;
+            }
+
             using var traceToken = _tracer.RegisterResolving(dependency);
             var objectBuildExpression = dependency.ObjectBuilder.Build(_dependencyBuildStrategy, dependency);
             if (!_lifetimes.TryGetValue(dependency.Binding.Lifetime, out var lifetimeStrategy))
@@ -39,7 +45,9 @@
             }
 
             objectBuildExpression = lifetimeStrategy.Build(dependency, objectBuildExpression);
-            return _resultStrategy.Build(objectBuildExpression);
+            result =_resultStrategy.Build(objectBuildExpression);
+            _cache.Add(dependency, result);
+            return result;
         }
     }
 }

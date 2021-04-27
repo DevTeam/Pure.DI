@@ -31,25 +31,25 @@ var baseTypes = new Dictionary<string, string> {
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
-    public abstract class TT<#=i == 0 ? "" : i.ToString()#> { }
+    internal abstract class TT<#=i == 0 ? "" : i.ToString()#> { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
-    public class TTC<#=i == 0 ? "" : i.ToString()#> { }
+    internal class TTC<#=i == 0 ? "" : i.ToString()#> { }
 
     /// <summary>
     /// Represents the generic type arguments marker for an interface.
     /// </summary>
     [GenericTypeArgument]
-    public interface TTI<#=i == 0 ? "" : i.ToString()#> { }
+    internal interface TTI<#=i == 0 ? "" : i.ToString()#> { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
-    public struct TTS<#=i == 0 ? "" : i.ToString()#> { }
+    internal struct TTS<#=i == 0 ? "" : i.ToString()#> { }
 
 <#
     if (i > 8)
@@ -64,7 +64,7 @@ var baseTypes = new Dictionary<string, string> {
     /// Represents the generic type arguments marker for <c><#=baseType.Key.Replace('<','[').Replace('>',']')#></c>.
     /// </summary>
     [GenericTypeArgument]
-    public interface <#=baseType.Value.Replace("#", i == 0 ? "" : i.ToString())#>: <#=baseType.Key#> { }
+    internal interface <#=baseType.Value.Replace("#", i == 0 ? "" : i.ToString())#>: <#=baseType.Key#> { }
 #endif
     <#}#>
 <#}#>

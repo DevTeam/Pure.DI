@@ -30,7 +30,7 @@
             }
 
             var elementType = namedTypeSymbol.TypeArguments[0];
-            var memberKey = new MemberKey($"EnumerableOf{elementType.Name}", dependency.Implementation, null);
+            var memberKey = new MemberKey($"EnumerableOf{elementType.Name}", dependency);
 
             var factoryMethod = (MethodDeclarationSyntax)_buildContext.GetOrAddMember(memberKey, () => {
                 var yields =

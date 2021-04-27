@@ -8,7 +8,7 @@ namespace Pure.DI
 {
     using System;
 
-    public enum Lifetime
+    internal enum Lifetime
     {
         /// <summary>
         /// Creates a new object of the requested type every time.
@@ -52,10 +52,10 @@ namespace Pure.DI
     /// Represents the generic type arguments marker.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Struct)]
-    public sealed class GenericTypeArgumentAttribute : Attribute { }
+    internal sealed class GenericTypeArgumentAttribute : Attribute { }
 
     [AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Field | AttributeTargets.Property)]
-    public class OrderAttribute : Attribute
+    internal class OrderAttribute : Attribute
     {
         // ReSharper disable once MemberCanBePrivate.Global
         public readonly int Order;
@@ -64,7 +64,7 @@ namespace Pure.DI
     }
 
     [AttributeUsage(AttributeTargets.Parameter)]
-    public class TagAttribute : Attribute
+    internal class TagAttribute : Attribute
     {
         // ReSharper disable once MemberCanBePrivate.Global
         public readonly object Tag;
@@ -73,7 +73,7 @@ namespace Pure.DI
     }
 
     [AttributeUsage(AttributeTargets.Parameter)]
-    public class TypeAttribute : Attribute
+    internal class TypeAttribute : Attribute
     {
         // ReSharper disable once MemberCanBePrivate.Global
         public readonly Type Type;
@@ -81,9 +81,9 @@ namespace Pure.DI
         public TypeAttribute(Type type) => Type = type;
     }
 
-    public static class DI
+    internal static class DI
     {
-        public static IConfiguration Setup(string targetTypeName = "") => Configuration.Shared;
+        internal static IConfiguration Setup(string targetTypeName = "") => Configuration.Shared;
 
         private class Configuration : IConfiguration
         {
@@ -118,7 +118,7 @@ namespace Pure.DI
         }
     }
 
-    public interface IConfiguration
+    internal interface IConfiguration
     {
         IBinding Bind<T>();
 
@@ -131,7 +131,7 @@ namespace Pure.DI
         IConfiguration OrderAttribute<T>(int orderArgumentPosition = 0) where T : Attribute;
     }
 
-    public interface IBinding
+    internal interface IBinding
     {
         IBinding Bind<T>();
 
@@ -144,19 +144,19 @@ namespace Pure.DI
         IConfiguration To<T>(Func<IContext, T> factory);
     }
 
-    public interface IContext
+    internal interface IContext
     {
         T Resolve<T>();
 
         T Resolve<T>(object tag);
     }
 
-    public interface IFallback
+    internal interface IFallback
     {
         object Resolve(Type type, object tag);
     }
 
-    public interface ILifetime<T>
+    internal interface ILifetime<T>
     {
         T Resolve(Func<T> factory);
     }

@@ -64,10 +64,8 @@ namespace Pure.DI.Tests.Integration
             var additionalCode = curOptions.AdditionalCode.Select(code => CSharpSyntaxTree.ParseText(code, parseOptions)).ToArray();
 
             var compilation = CreateCompilation()
-                .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
                 .AddSyntaxTrees(CSharpSyntaxTree.ParseText(setupCode, parseOptions))
-                .AddSyntaxTrees(additionalCode)
-                .Check();
+                .AddSyntaxTrees(additionalCode);
 
             var stdErr = new StdErr();
 
@@ -177,7 +175,7 @@ namespace Pure.DI.Tests.Integration
         {
             var errors = (
                 from diagnostic in compilation.GetDiagnostics()
-                where diagnostic.Severity == DiagnosticSeverity.Error
+                where diagnostic.Severity == DiagnosticSeverity.Error || diagnostic.Severity == DiagnosticSeverity.Warning
                 select GetErrorMessage(diagnostic))
                 .ToList();
 
@@ -197,9 +195,10 @@ namespace Pure.DI.Tests.Integration
             var span = source.Substring(diagnostic.Location.SourceSpan.Start, diagnostic.Location.SourceSpan.Length);
             return description
                    + Environment.NewLine + Environment.NewLine
+                   + diagnostic
+                   + Environment.NewLine + Environment.NewLine
                    + span
-                   + Environment.NewLine
-                   + Environment.NewLine
+                   + Environment.NewLine + Environment.NewLine
                    + "Line " + (diagnostic.Location.GetMappedLineSpan().StartLinePosition.Line + 1)
                    + Environment.NewLine
                    + Environment.NewLine

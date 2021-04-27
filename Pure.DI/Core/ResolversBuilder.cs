@@ -48,17 +48,22 @@ namespace Pure.DI.Core
                 from dependency in binding.Dependencies
                 where dependency.IsValidTypeToResolve
                 from tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null)
-                group (binding, dependency, tag) by (dependency, tag) into grouped
-                    // Avoid duplication of statements
+                group (binding, dependency, tag) by (dependency, tag) into grouped 
+                // Avoid duplication of statements
                 select grouped.First())
                 .ToArray();
 
-            foreach (var member in CreateResolversTable(semanticModel, items))
+            var tableItems = (
+                from item in items
+                group item by item.binding.Id into grp
+                select grp.First()).ToArray();
+                        
+            foreach (var member in CreateDependencyTable(semanticModel, tableItems))
             {
                 yield return member;
             }
 
-            foreach (var member in CreateResolversWithTagTable(semanticModel, items))
+            foreach (var member in CreateDependencyWithTagTable(semanticModel, tableItems))
             {
                 yield return member;
             }
@@ -136,7 +141,7 @@ namespace Pure.DI.Core
             }
         }
 
-        private IEnumerable<MemberDeclarationSyntax> CreateResolversTable(SemanticModel semanticModel, IEnumerable<(BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
+        private IEnumerable<MemberDeclarationSyntax> CreateDependencyTable(SemanticModel semanticModel, IEnumerable<(BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
         {
             var funcType = SyntaxFactory.GenericName(
                     SyntaxRepo.FuncTypeToken)
@@ -197,7 +202,7 @@ namespace Pure.DI.Core
             yield return CreateField(fallbackType, nameof(ResolversTable.ResolversDefaultFactory), GetFiled(SyntaxRepo.FactoriesTableName, nameof(ResolversTable.ResolversDefaultFactory)), SyntaxKind.StaticKeyword);
         }
 
-        private IEnumerable<MemberDeclarationSyntax> CreateResolversWithTagTable(SemanticModel semanticModel, IEnumerable<(BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
+        private IEnumerable<MemberDeclarationSyntax> CreateDependencyWithTagTable(SemanticModel semanticModel, IEnumerable<(BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
         {
             var funcType = SyntaxFactory.GenericName(
                     SyntaxRepo.FuncTypeToken)

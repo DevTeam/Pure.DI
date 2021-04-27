@@ -19,16 +19,20 @@
 
         public void Probe()
         {
-            // Find additional bindings
-            (
-                from binding in _buildContext.Metadata.Bindings
-                from dependency in binding.Dependencies
-                where dependency.IsValidTypeToResolve
-                // ReSharper disable once RedundantTypeArgumentsOfMethod
-                from tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null)
-                select _buildStrategy.Build(_buildContext.TypeResolver.Resolve(dependency, tag, dependency.Type.Locations)))
-                // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-                .ToList();
+            var dependencies = (
+                    from binding in _buildContext.Metadata.Bindings
+                    from dependency in binding.Dependencies
+                    where dependency.IsValidTypeToResolve
+                    // ReSharper disable once RedundantTypeArgumentsOfMethod
+                    from tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null)
+                    select (dependency, tag))
+                .Distinct()
+                .ToArray();
+
+            foreach (var (dependency, tag) in dependencies)
+            {
+                _buildStrategy.Build(_buildContext.TypeResolver.Resolve(dependency, tag, dependency.Type.Locations));
+            }
         }
     }
 }

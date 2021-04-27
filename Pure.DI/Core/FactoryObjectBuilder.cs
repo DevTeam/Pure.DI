@@ -26,7 +26,7 @@ namespace Pure.DI.Core
             {
                 if (factory?.Block != null)
                 {
-                    var memberKey = new MemberKey($"Create{dependency.Implementation.Type.Name}", dependency.Implementation, null);
+                    var memberKey = new MemberKey($"Create{dependency.Binding.Implementation}", dependency);
                     var factoryMethod = (MethodDeclarationSyntax)_buildContext.GetOrAddMember(memberKey, () =>
                     {
                         var factoryName = _buildContext.NameService.FindName(memberKey);

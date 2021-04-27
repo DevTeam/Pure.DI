@@ -30,31 +30,6 @@ namespace Pure.DI.Core
             _buildContext = buildContext;
         }
 
-        public override SyntaxNode? VisitInvocationExpression(InvocationExpressionSyntax node)
-        {
-            var semanticModel = node.GetSemanticModel(_dependency.Implementation);
-            var operation = semanticModel.GetOperation(node);
-            if (operation is IInvocationOperation invocationOperation)
-            {
-                if (
-                    invocationOperation.TargetMethod.IsGenericMethod
-                    && invocationOperation.TargetMethod.TypeArguments.Length == 1)
-                {
-                    if (invocationOperation.TargetMethod.Name == nameof(IContext.Resolve)
-                        && new SemanticType(invocationOperation.TargetMethod.ContainingType, _dependency.Implementation.SemanticModel).Equals(typeof(IContext))
-                        && SymbolEqualityComparer.Default.Equals(invocationOperation.TargetMethod.TypeArguments[0], invocationOperation.TargetMethod.ReturnType))
-                    {
-                        var tag = invocationOperation.Arguments.Length == 1 ? invocationOperation.Arguments[0].Value.Syntax as ExpressionSyntax : null;
-                        var dependencyType = _dependency.TypesMap.ConstructType(new SemanticType(invocationOperation.TargetMethod.ReturnType, semanticModel));
-                        var dependency = _buildContext.TypeResolver.Resolve(dependencyType, tag, ImmutableArray.Create(node.GetLocation()));
-                        return _buildStrategy.Build(dependency);
-                    }
-                }
-            }
-
-            return base.VisitInvocationExpression(node);
-        }
-
         public override SyntaxNode VisitTypeArgumentList(TypeArgumentListSyntax node)
         {
             var args = node.Arguments.ToArray();
@@ -87,8 +62,45 @@ namespace Pure.DI.Core
             return base.VisitMemberAccessExpression(node);
         }
 
-        public override SyntaxNode? VisitTypeOfExpression(TypeOfExpressionSyntax node) => 
+        public override SyntaxNode Visit(SyntaxNode? node)
+        {
+            if (node is GenericNameSyntax genericName)
+            {
+                var args = genericName.TypeArgumentList.Arguments.ToArray();
+                ReplaceTypes(args);
+                return SyntaxFactory.GenericName(genericName.Identifier).AddTypeArgumentListArguments(args);
+            }
+
+            return base.Visit(node)!;
+        }
+
+        public override SyntaxNode VisitTypeOfExpression(TypeOfExpressionSyntax node) => 
             SyntaxFactory.TypeOfExpression(ReplaceType(node.Type));
+
+        public override SyntaxNode? VisitInvocationExpression(InvocationExpressionSyntax node)
+        {
+            var semanticModel = node.GetSemanticModel(_dependency.Implementation);
+            var operation = semanticModel.GetOperation(node);
+            if (operation is IInvocationOperation invocationOperation)
+            {
+                if (
+                    invocationOperation.TargetMethod.IsGenericMethod
+                    && invocationOperation.TargetMethod.TypeArguments.Length == 1)
+                {
+                    if (invocationOperation.TargetMethod.Name == nameof(IContext.Resolve)
+                        && new SemanticType(invocationOperation.TargetMethod.ContainingType, _dependency.Implementation.SemanticModel).Equals(typeof(IContext))
+                        && SymbolEqualityComparer.Default.Equals(invocationOperation.TargetMethod.TypeArguments[0], invocationOperation.TargetMethod.ReturnType))
+                    {
+                        var tag = invocationOperation.Arguments.Length == 1 ? invocationOperation.Arguments[0].Value.Syntax as ExpressionSyntax : null;
+                        var dependencyType = _dependency.TypesMap.ConstructType(new SemanticType(invocationOperation.TargetMethod.ReturnType, semanticModel));
+                        var dependency = _buildContext.TypeResolver.Resolve(dependencyType, tag, ImmutableArray.Create(node.GetLocation()));
+                        return _buildStrategy.Build(dependency);
+                    }
+                }
+            }
+
+            return base.VisitInvocationExpression(node);
+        }
 
         private void ReplaceTypes(IList<TypeSyntax> args)
         {
@@ -107,6 +119,13 @@ namespace Pure.DI.Core
                 var curType = new SemanticType(namedTypeSymbol, _dependency.Implementation);
                 var constructedType = _dependency.TypesMap.ConstructType(curType);
                 return constructedType.TypeSyntax;
+            }
+
+            if (typeSymbol is IArrayTypeSymbol arrayTypeSymbol)
+            {
+                var curType = new SemanticType(arrayTypeSymbol.ElementType, _dependency.Implementation);
+                var constructedType = _dependency.TypesMap.ConstructType(curType);
+                return SyntaxFactory.ArrayType(constructedType).AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
             }
 
             return typeSyntax;

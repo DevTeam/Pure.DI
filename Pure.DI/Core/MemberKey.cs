@@ -1,34 +1,27 @@
 ﻿namespace Pure.DI.Core
 {
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+    using System.Linq;
 
     internal readonly struct MemberKey
     {
-        private readonly SemanticType _implementation;
-        private readonly ExpressionSyntax? _tag;
         public readonly string Prefix;
+        private readonly object _id;
 
-        public MemberKey(string prefix, SemanticType implementation, ExpressionSyntax? tag)
+        public MemberKey(string prefix, Dependency dependency)
         {
-            _implementation = implementation;
-            _tag = tag;
-            Prefix = prefix;
+            Prefix = new string(prefix.Where(i => char.IsLetterOrDigit(i) || i == '_').ToArray());
+            _id = dependency.Binding.Id;
         }
 
-        private bool Equals(MemberKey other) =>
-            _implementation.Equals(other._implementation) && _tag?.ToString() == other._tag?.ToString() && Prefix == other.Prefix;
+        public bool Equals(MemberKey other) => Prefix == other.Prefix && _id.Equals(other._id);
 
-        public override bool Equals(object obj) =>
-            obj is MemberKey other && Equals(other);
+        public override bool Equals(object? obj) => obj is MemberKey other && Equals(other);
 
         public override int GetHashCode()
         {
             unchecked
             {
-                var hashCode = _implementation.GetHashCode();
-                hashCode = (hashCode * 397) ^ (_tag != null ? _tag.ToString().GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ Prefix.GetHashCode();
-                return hashCode;
+                return (Prefix.GetHashCode() * 397) ^ _id.GetHashCode();
             }
         }
     }

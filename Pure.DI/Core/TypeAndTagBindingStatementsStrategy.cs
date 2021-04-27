@@ -2,6 +2,7 @@
 namespace Pure.DI.Core
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -17,11 +18,8 @@ namespace Pure.DI.Core
             BindingMetadata binding,
             SemanticType dependency)
         {
-            foreach (var tag in binding.Tags)
-            {
-                var instance = buildStrategy.Build(_typeResolver.Resolve(dependency, tag, dependency.Type.Locations));
-                yield return SyntaxFactory.ReturnStatement(instance);
-            }
+            var instance = buildStrategy.Build(_typeResolver.Resolve(dependency, binding.Tags.First(), dependency.Type.Locations));
+            yield return SyntaxFactory.ReturnStatement(instance);
         }
     }
 }

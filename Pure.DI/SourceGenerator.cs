@@ -10,7 +10,6 @@
     {
         private readonly IMutableContainer _container = Container.Create().Using<Configuration>();
         private readonly CompilationDiagnostic _diagnostic;
-        private readonly Func<ISourceBuilder> _builderFactory;
 
         public SourceGenerator()
         {
@@ -20,7 +19,6 @@
                 .Container;
 
             _diagnostic = container.Resolve<CompilationDiagnostic>();
-            _builderFactory = container.Resolve<Func<ISourceBuilder>>();
         }
 
         public void Initialize(GeneratorInitializationContext context)
@@ -36,9 +34,10 @@
         public void Execute(GeneratorExecutionContext context)
         {
             _diagnostic.Context = context;
-            var sourceBuilder = _builderFactory();
+            using var container = _container.Create();
             try
             {
+                var sourceBuilder = container.Resolve<ISourceBuilder>();
                 foreach (var source in sourceBuilder.Build(context.Compilation))
                 {
                     context.AddSource(source.HintName, source.Code);
