@@ -3,6 +3,7 @@ namespace Pure.DI.Core
 {
     using System;
     using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Runtime.CompilerServices;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -61,5 +62,19 @@ namespace Pure.DI.Core
 
         public static readonly MethodDeclarationSyntax StaticResolveWithTagMethodSyntax =
             StaticResolveMethodSyntax.AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax));
+
+        public static T WithCommentBefore<T>(this T node, params string[] comments) where T: SyntaxNode =>
+            node.WithLeadingTrivia(node.GetLeadingTrivia().Concat(comments.Select(SyntaxFactory.Comment)));
+
+        public static T WithCommentAfter<T>(this T node, params string[] comments) where T : SyntaxNode =>
+            node.WithTrailingTrivia(node.GetTrailingTrivia().Concat(comments.Select(SyntaxFactory.Comment)));
+
+        public static T WithPragmaWarningDisable<T>(this T node, int warningNumber) where T : SyntaxNode =>
+            node.WithLeadingTrivia(node.GetLeadingTrivia().Add(SyntaxFactory.Trivia(
+                SyntaxFactory.PragmaWarningDirectiveTrivia(
+                SyntaxFactory.Token(SyntaxKind.DisableKeyword),
+                SyntaxFactory.SeparatedList<ExpressionSyntax>()
+                    .Add(SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(warningNumber))),
+                false))));
     }
 }

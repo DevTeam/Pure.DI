@@ -2,20 +2,23 @@
 {
     using System.Collections.Generic;
     using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    internal class ResolverMetadata
+    internal record ResolverMetadata
     {
-        public string TargetTypeName;
+        public readonly string TargetTypeName;
+        public readonly ClassDeclarationSyntax? Owner;
         public readonly SyntaxNode SetupNode;
         public readonly ICollection<BindingMetadata> Bindings = new List<BindingMetadata>();
         public readonly ICollection<string> DependsOn = new List<string> { "DefaultFeature", "AspNetFeature" };
         public readonly ICollection<AttributeMetadata> Attributes = new List<AttributeMetadata>();
         public readonly IDictionary<Setting, string> Settings = new Dictionary<Setting, string>();
 
-        public ResolverMetadata(SyntaxNode setupNode, string targetTypeName)
+        public ResolverMetadata(SyntaxNode setupNode, string targetTypeName, ClassDeclarationSyntax? owner)
         {
             SetupNode = setupNode;
             TargetTypeName = targetTypeName;
+            Owner = owner;
         }
     }
 }

@@ -27,7 +27,11 @@
             IsResolved = isResolved;
         }
 
-        public override string ToString() => $"{Implementation}({Tag})";
+        public override string ToString()
+        {
+            var tag = Tag != null ? $"({Tag})" : string.Empty;
+            return $"{Implementation}{tag}";
+        }
 
         public bool Equals(Dependency other)
         {

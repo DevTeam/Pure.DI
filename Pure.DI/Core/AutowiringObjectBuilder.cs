@@ -149,11 +149,13 @@
                                 SyntaxFactory.IdentifierName(InstanceVarName)));
 
                     _buildContext.GetOrAddMember(memberKey, () => factoryMethod);
-                    return SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryName));
+                    return SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryName))
+                        .WithCommentBefore($"// {dependency.Binding}");
                 }
             }
 
-            return objectCreationExpression;
+            return objectCreationExpression
+                .WithCommentBefore($"// {dependency.Binding}");
         }
 
         private ExpressionSyntax ResolveInstance(

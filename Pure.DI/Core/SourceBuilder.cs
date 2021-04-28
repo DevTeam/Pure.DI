@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Text;
@@ -21,6 +22,7 @@
         private readonly ISettings _settings;
         private readonly IFileSystem _fileSystem;
         private readonly IDiagnostic _diagnostic;
+        private readonly ILog<SourceBuilder> _log;
         private readonly Func<IClassBuilder> _resolverBuilderFactory;
         private readonly Func<SemanticModel, IMetadataWalker> _metadataWalkerFactory;
 
@@ -35,6 +37,7 @@
             ISettings settings,
             IFileSystem fileSystem,
             IDiagnostic diagnostic,
+            ILog<SourceBuilder> log,
             Func<IClassBuilder> resolverBuilderFactory,
             Func<SemanticModel, IMetadataWalker> metadataWalkerFactory)
         {
@@ -42,6 +45,7 @@
             _settings = settings;
             _fileSystem = fileSystem;
             _diagnostic = diagnostic;
+            _log = log;
             _resolverBuilderFactory = resolverBuilderFactory;
             _metadataWalkerFactory = metadataWalkerFactory;
         }
@@ -82,13 +86,40 @@
                     var allMetadata = new List<ResolverMetadata>(featuresMetadata) { rawMetadata };
                     var metadata = CreateMetadata(rawMetadata, allMetadata);
                     _context.Prepare(compilation, metadata);
-                    var compilationUnitSyntax = _resolverBuilderFactory().Build(semanticModel);
+
+                    if (_settings.Debug)
+                    {
+                        if (!Debugger.IsAttached)
+                        {
+                            _log.Info(() => new []{ "Launch a debugger." });
+                            Debugger.Launch();
+                        }
+                        else
+                        {
+                            _log.Info(() => new []{ "A debugger is already attached" });
+                        }
+                    }
+
+                    _log.Info(() =>
+                    {
+                        var messages = new List<string>
+                        {
+                            $"Processing {rawMetadata.TargetTypeName}",
+                            $"{nameof(DI)}.{nameof(DI.Setup)}()"
+                        };
+                        messages.AddRange(metadata.Bindings.Select(binding => $"  .{binding}"));
+                        return messages.ToArray();
+                    });
+
+                    var compilationUnitSyntax = _resolverBuilderFactory().Build(semanticModel).NormalizeWhitespace();
+                    
                     var source = new Source(
                         $"{metadata.TargetTypeName}.cs",
                         SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8));
 
                     if (_settings.TryGetOutputPath(out var outputPath))
                     {
+                        _log.Info(() => new []{ $"The output path: {outputPath}" });
                         _fileSystem.WriteFile(Path.Combine(outputPath, source.HintName), source.Code.ToString());
                         _fileSystem.WriteFile(Path.Combine(outputPath, Features.HintName), Features.Code.ToString());
                         foreach (var component in Components)
@@ -96,7 +127,7 @@
                             _fileSystem.WriteFile(Path.Combine(outputPath, component.HintName), component.Code.ToString());
                         }
                     }
-                    
+
                     yield return source;
                 }
             }
@@ -104,7 +135,7 @@
 
         private static ResolverMetadata CreateMetadata(ResolverMetadata metadata, IReadOnlyCollection<ResolverMetadata> allMetadata)
         {
-            var newMetadata = new ResolverMetadata(metadata.SetupNode, metadata.TargetTypeName);
+            var newMetadata = new ResolverMetadata(metadata.SetupNode, metadata.TargetTypeName, metadata.Owner);
             var dependencies = GetDependencies(metadata, new HashSet<ResolverMetadata>(), allMetadata);
             foreach (var dependency in dependencies)
             {

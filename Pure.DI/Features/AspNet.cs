@@ -7,8 +7,10 @@ namespace Pure.DI.Features
         static AspNet()
         {
             DI.Setup("AspNetFeature")
-                .Bind<System.IServiceProvider>().To(ctx => ServiceProviderInstance.ServiceProvider)
-                .Bind<Microsoft.Extensions.Logging.ILogger<TT>>().To(ctx => (Microsoft.Extensions.Logging.ILogger<TT>)ctx.Resolve<System.IServiceProvider>()?.GetService(typeof(Microsoft.Extensions.Logging.ILogger<TT>)));
+                .Bind<Microsoft.Extensions.Logging.ILogger<TT>>()
+                    .To(ctx => (Microsoft.Extensions.Logging.ILogger<TT>)ctx.Resolve<System.IServiceProvider>().GetService(typeof(Microsoft.Extensions.Logging.ILogger<TT>)))
+                .Bind<System.IServiceProvider>()
+                    .To(ctx => ServiceProviderInstance.ServiceProvider);
         }
     }
 }

@@ -11,6 +11,9 @@ namespace BlazorServerApp
     {
         static ClockDomain()
         {
+            // #output = C:\Projects\DevTeam\Pure.DI\out
+            // #verbosity = normal
+            // #debug=true
             DI.Setup()
                 // Infrastructure
                 .Bind<IDispatcher>().As(Singleton).To<Dispatcher>()

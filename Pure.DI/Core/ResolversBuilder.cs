@@ -19,6 +19,7 @@ namespace Pure.DI.Core
         private readonly IBuildStrategy _buildStrategy;
         private readonly IBindingStatementsStrategy _bindingStatementsStrategy;
         private readonly IBindingStatementsStrategy _tagBindingStatementsStrategy;
+        private const string Comments = "\n\t//- - - - - - - - - - - - - - - - - - - - - - - - -";
 
         public ResolversBuilder(
             ResolverMetadata metadata,
@@ -162,9 +163,12 @@ namespace Pure.DI.Core
                 var statements = _bindingStatementsStrategy.CreateStatements(_buildStrategy, binding, dependency);
                 var keyValuePair = SyntaxFactory.ObjectCreationExpression(keyValuePairType)
                     .AddArgumentListArguments(
-                        SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependency.TypeSyntax)),
+                        SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependency.TypeSyntax))
+                            .WithCommentBefore(Comments),
                         SyntaxFactory.Argument(SyntaxFactory.ParenthesizedLambdaExpression()
-                            .WithBody(SyntaxFactory.Block(statements))));
+                            .WithBody(SyntaxFactory.Block(statements)))
+                            .WithCommentBefore(Comments))
+                    .WithCommentBefore(Comments);
 
                 keyValuePairs.Add(keyValuePair);
             }
@@ -228,9 +232,12 @@ namespace Pure.DI.Core
                 var statements = _tagBindingStatementsStrategy.CreateStatements(_buildStrategy, binding, dependency);
                 var keyValuePair = SyntaxFactory.ObjectCreationExpression(keyValuePairType)
                     .AddArgumentListArguments(
-                        SyntaxFactory.Argument(key),
+                        SyntaxFactory.Argument(key)
+                            .WithCommentBefore(Comments),
                         SyntaxFactory.Argument(SyntaxFactory.ParenthesizedLambdaExpression()
-                            .WithBody(SyntaxFactory.Block(statements))));
+                            .WithBody(SyntaxFactory.Block(statements)))
+                            .WithCommentBefore(Comments))
+                    .WithCommentBefore(Comments);
 
                 keyValuePairs.Add(keyValuePair);
             }

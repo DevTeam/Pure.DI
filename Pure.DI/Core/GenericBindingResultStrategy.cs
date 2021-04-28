@@ -7,6 +7,6 @@
     internal class GenericBindingResultStrategy : IBindingResultStrategy
     {
         public ExpressionSyntax Build(ExpressionSyntax objectExpression) =>
-            SyntaxFactory.CastExpression(SyntaxRepo.TTypeSyntax, SyntaxFactory.CastExpression(SyntaxRepo.ObjectTypeSyntax, SyntaxFactory.ParenthesizedExpression(objectExpression)));
+            SyntaxFactory.CastExpression(SyntaxRepo.TTypeSyntax, SyntaxFactory.CastExpression(SyntaxRepo.ObjectTypeSyntax, objectExpression));
     }
 }

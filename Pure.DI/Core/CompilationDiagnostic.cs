@@ -5,6 +5,10 @@
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class CompilationDiagnostic : IDiagnostic
     {
+        private readonly ILog<CompilationDiagnostic> _log;
+
+        public CompilationDiagnostic(ILog<CompilationDiagnostic> log) => _log = log;
+
         public GeneratorExecutionContext Context { get; set; }
 
         public void Error(string id, string message, Location? location = null)
@@ -19,10 +23,14 @@
                     true),
                 location));
 
-            throw new HandledException(message);
+            if (id != Diagnostics.Unhandled)
+            {
+                _log.Trace(() => new []{ $"{id} {message}"});
+            }
         }
 
-        public void Warning(string id, string message, Location? location = null) =>
+        public void Warning(string id, string message, Location? location = null)
+        {
             Context.ReportDiagnostic(Diagnostic.Create(
                 new DiagnosticDescriptor(
                     id,
@@ -33,7 +41,11 @@
                     true),
                 location));
 
-        public void Information(string id, string message, Location? location = null) =>
+            _log.Trace(() => new []{ $"{id} {message}" });
+        }
+
+        public void Information(string id, string message, Location? location = null)
+        {
             Context.ReportDiagnostic(Diagnostic.Create(
                 new DiagnosticDescriptor(
                     id,
@@ -43,5 +55,8 @@
                     DiagnosticSeverity.Info,
                     true),
                 location));
+
+            _log.Trace(() => new []{ $"{id} {message}" });
+        }
     }
 }

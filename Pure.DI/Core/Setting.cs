@@ -2,6 +2,10 @@
 {
     internal enum Setting
     {
-        Output
+        Output,
+
+        Debug,
+
+        Verbosity
     }
 }

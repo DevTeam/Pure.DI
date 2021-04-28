@@ -46,12 +46,13 @@ namespace Pure.DI.Core
 
             if (factory != null && resultExpression != null)
             {
-                return (ExpressionSyntax) new FactoryRewriter(
+                return ((ExpressionSyntax) new FactoryRewriter(
                         dependency,
                         buildStrategy,
                         factory.Parameter.Identifier,
                         _buildContext)
-                    .Visit(resultExpression);
+                    .Visit(resultExpression))
+                    .WithCommentBefore($"// {dependency.Binding}");
             }
 
             return SyntaxFactory.DefaultExpression(SyntaxFactory.ParseTypeName(dependency.Implementation.Type.Name));

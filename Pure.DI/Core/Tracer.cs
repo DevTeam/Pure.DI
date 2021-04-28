@@ -2,22 +2,39 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
 
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class Tracer : ITracer, IDisposable
     {
         private readonly IDiagnostic _diagnostic;
+        private readonly ILog<Tracer> _log;
         private readonly Stack<Dependency> _path = new();
 
-        public Tracer(IDiagnostic diagnostic) => _diagnostic = diagnostic;
+        public Tracer(
+            IDiagnostic diagnostic,
+            ILog<Tracer> log)
+        {
+            _diagnostic = diagnostic;
+            _log = log;
+        }
 
         public IDisposable RegisterResolving(Dependency dependency)
         {
             if (_path.Count <= 256)
             {
                 _path.Push(dependency);
-                System.Diagnostics.Debug.WriteLine(String.Join(" <- ", _path.Select(i => i.ToString())));
+                _log.Trace(() => 
+                {
+                    List<string> messages = new();
+                    var offset = 0;
+                    foreach (var item in _path)
+                    {
+                        messages.Add($"{new string(' ', offset)}{item}");
+                        offset += 2;
+                    }
+
+                    return messages.ToArray();
+                });
                 return this;
             }
 
@@ -30,7 +47,7 @@
         {
             if (_path.Count == 0)
             {
-                System.Diagnostics.Debug.Assert(_path.Count == 0, "The path is empty.");
+                _log.Warning("The path is empty.");
                 return;
             }
 

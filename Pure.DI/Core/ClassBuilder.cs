@@ -32,38 +32,16 @@ namespace Pure.DI.Core
 
         public CompilationUnitSyntax Build(SemanticModel semanticModel)
         {
-            var ownerClass = (
-                from cls in _metadata.SetupNode.Ancestors().OfType<ClassDeclarationSyntax>()
-                where
-                    cls.Modifiers.Any(i => i.Kind() == SyntaxKind.StaticKeyword)
-                    && cls.Modifiers.Any(i => i.Kind() == SyntaxKind.PartialKeyword)
-                    && cls.Modifiers.All(i => i.Kind() != SyntaxKind.PrivateKeyword)
-                select cls).FirstOrDefault();
-
             var classModifiers = new List<SyntaxToken>();
-            if (ownerClass == null)
+            if (_metadata.Owner == null)
             {
                 classModifiers.Add(SyntaxFactory.Token(SyntaxKind.InternalKeyword));
                 classModifiers.Add(SyntaxFactory.Token(SyntaxKind.StaticKeyword));
                 classModifiers.Add(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
-                if (string.IsNullOrWhiteSpace(_metadata.TargetTypeName))
-                {
-                    var parentNodeName = _metadata.SetupNode
-                        .Ancestors()
-                        .Select(TryGetNodeName)
-                        .FirstOrDefault(i => !string.IsNullOrWhiteSpace(i));
-                    
-                    _metadata.TargetTypeName = $"{parentNodeName}DI";
-                    _diagnostic.Information(Diagnostics.CannotUseCurrentType, $"It is not possible to use the current type as DI. Please make sure it is static partial and has public or internal access modifiers. {_metadata.TargetTypeName} will be used instead. You may change this name by passing the optional argument to DI.Setup(string targetTypeName).", _metadata.Bindings.FirstOrDefault()?.Location);
-                }
             }
             else
             {
-                classModifiers.AddRange(ownerClass.Modifiers);
-                if (string.IsNullOrWhiteSpace(_metadata.TargetTypeName))
-                {
-                    _metadata.TargetTypeName = ownerClass.Identifier.Text;
-                }
+                classModifiers.AddRange(_metadata.Owner.Modifiers);
             }
 
             var compilationUnit = SyntaxFactory.CompilationUnit()
@@ -88,15 +66,8 @@ namespace Pure.DI.Core
 
             _bindingsProbe.Probe();
 
-            var pragmaWarningDisable8625 = SyntaxFactory.PragmaWarningDirectiveTrivia(
-                SyntaxFactory.Token(SyntaxKind.DisableKeyword),
-                SyntaxFactory.SeparatedList<ExpressionSyntax>()
-                    .Add(SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(8625))),
-            false);
-
             var resolverClass = SyntaxFactory.ClassDeclaration(_metadata.TargetTypeName)
                 .WithKeyword(SyntaxFactory.Token(SyntaxKind.ClassKeyword))
-                .WithLeadingTrivia(SyntaxFactory.TriviaList().Add(SyntaxFactory.Trivia(pragmaWarningDisable8625)))
                 .AddModifiers(classModifiers.ToArray())
                 .AddMembers(
                     SyntaxFactory.FieldDeclaration(
@@ -104,10 +75,11 @@ namespace Pure.DI.Core
                                 .AddVariables(
                                     SyntaxFactory.VariableDeclarator(SyntaxRepo.SharedContextName)
                                         .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(SyntaxRepo.ContextTypeSyntax).AddArgumentListArguments()))))
-                                .AddModifiers(
-                                    SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                                    SyntaxFactory.Token(SyntaxKind.StaticKeyword),
-                                    SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword)))
+                        .AddModifiers(
+                            SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
+                            SyntaxFactory.Token(SyntaxKind.StaticKeyword),
+                            SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword))
+                        .WithCommentBefore("// Shared context to use in factories"))
                 .AddMembers(_membersBuilder.SelectMany(i => i.BuildMembers(semanticModel)).ToArray())
                 .AddMembers(
                     SyntaxFactory.ClassDeclaration(SyntaxRepo.ContextClassName)
@@ -121,8 +93,8 @@ namespace Pure.DI.Core
                                         .WithExpression(
                                             SyntaxFactory.InvocationExpression(
                                                 SyntaxFactory.MemberAccessExpression(
-                                                    SyntaxKind.SimpleMemberAccessExpression, 
-                                                    SyntaxFactory.ParseName(_metadata.TargetTypeName), 
+                                                    SyntaxKind.SimpleMemberAccessExpression,
+                                                    SyntaxFactory.ParseName(_metadata.TargetTypeName),
                                                     SyntaxFactory.Token(SyntaxKind.DotToken),
                                                     SyntaxFactory.GenericName(nameof(IContext.Resolve))
                                                         .AddTypeArgumentListArguments(SyntaxRepo.TTypeSyntax))))))
@@ -134,12 +106,13 @@ namespace Pure.DI.Core
                                         .WithExpression(
                                             SyntaxFactory.InvocationExpression(
                                                     SyntaxFactory.MemberAccessExpression(
-                                                        SyntaxKind.SimpleMemberAccessExpression, 
+                                                        SyntaxKind.SimpleMemberAccessExpression,
                                                         SyntaxFactory.ParseName(_metadata.TargetTypeName),
-                                                        SyntaxFactory.Token(SyntaxKind.DotToken), 
+                                                        SyntaxFactory.Token(SyntaxKind.DotToken),
                                                         SyntaxFactory.GenericName(nameof(IContext.Resolve))
                                                             .AddTypeArgumentListArguments(SyntaxRepo.TTypeSyntax)))
-                                                .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")))))));
+                                                .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")))))))
+                .WithPragmaWarningDisable(8625);
 
             if (prevNamespaceNode != null)
             {
@@ -153,16 +126,7 @@ namespace Pure.DI.Core
 
             var sampleDependency = _metadata.Bindings.LastOrDefault()?.Dependencies.FirstOrDefault()?.ToString() ?? "T";
             _diagnostic.Information(Diagnostics.Generated, $"{_metadata.TargetTypeName} was generated. Please use a method like {_metadata.TargetTypeName}.Resolve<{sampleDependency}>() to create a composition root.", _metadata.Bindings.FirstOrDefault()?.Location);
-            return compilationUnit.NormalizeWhitespace();
+            return compilationUnit;
         }
-
-        private static string? TryGetNodeName(SyntaxNode node) =>
-            node switch
-            {
-                ClassDeclarationSyntax classDeclaration => classDeclaration.Identifier.Text,
-                StructDeclarationSyntax structDeclaration => structDeclaration.Identifier.Text,
-                RecordDeclarationSyntax recordDeclaration => recordDeclaration.Identifier.Text,
-                _ => null
-            };
     }
 }

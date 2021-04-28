@@ -36,7 +36,7 @@
                 .Bind<IObjectBuilder>().As(Singleton).Tag(EnumerableBuilder).To<EnumerableObjectBuilder>()
                 .Bind<IFallbackStrategy>().As(Singleton).To<FallbackStrategy>()
                 .Bind<IClassBuilder>().As(Singleton).To<ClassBuilder>()
-                .Bind<IMetadataWalker>().To(ctx => new MetadataWalker((SemanticModel)ctx.Args[0]))
+                .Bind<IMetadataWalker>().To(ctx => new MetadataWalker((SemanticModel) ctx.Args[0], ctx.Container.Inject<IOwnerProvider>(), ctx.Container.Inject<ITargetClassNameProvider>()))
                 .Bind<IMembersBuilder>().Tag(Resolvers).To<ResolversBuilder>()
                 .Bind<IMembersBuilder>().Tag(MicrosoftDependencyInjection).To<MicrosoftDependencyInjectionBuilder>()
                 .Bind<IBindingsProbe>().As(Singleton).To<BindingsProbe>()
@@ -50,6 +50,7 @@
                     ctx => new BuildStrategy(
                         ctx.Container.Inject<IDiagnostic>(),
                         ctx.Container.Inject<ITracer>(),
+                        ctx.Container.Inject<ILog<BuildStrategy>>(),
                         ctx.Container.Inject<IEnumerable<ILifetimeStrategy>>(),
                         ctx.Container.Inject<IBindingResultStrategy>(AsIsResult),
                         null))
@@ -57,9 +58,12 @@
                     ctx => new BuildStrategy(
                         ctx.Container.Inject<IDiagnostic>(),
                         ctx.Container.Inject<ITracer>(),
+                        ctx.Container.Inject<ILog<BuildStrategy>>(),
                         ctx.Container.Inject<IEnumerable<ILifetimeStrategy>>(),
                         ctx.Container.Inject<IBindingResultStrategy>(GenericResult),
-                        ctx.Container.Inject<IBuildStrategy>(SimpleBuildStrategy)))
+                        ctx.Container.Inject<IBuildStrategy>(SimpleBuildStrategy)));
+            
+            yield return container
                 .Bind<IBindingStatementsStrategy>().As(Singleton).Tag(TypeStatementsStrategy).To<TypeBindingStatementsStrategy>()
                 .Bind<IBindingStatementsStrategy>().As(Singleton).Tag(TypeAndTagStatementsStrategy).To<TypeAndTagBindingStatementsStrategy>()
                 .Bind<ITypesMap>().To<TypesMap>()
@@ -73,7 +77,10 @@
                 .Bind<ILifetimeStrategy>().Tag(Lifetime.Binding).To<BindingLifetimeStrategy>()
                 .Bind<ISyntaxRegistry>().To<SyntaxRegistry>()
                 .Bind<ISettings>().To<Settings>()
-                .Bind<IFileSystem>().As(Singleton).To<FileSystem>();
+                .Bind<ILog<IoC.TT>>().To<Log<IoC.TT>>()
+                .Bind<IFileSystem>().As(Singleton).To<FileSystem>()
+                .Bind<ITargetClassNameProvider>().To<TargetClassNameProvider>()
+                .Bind<IOwnerProvider>().As(Singleton).To<OwnerProvider>();
         }
     }
 }

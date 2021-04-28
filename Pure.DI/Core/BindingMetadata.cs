@@ -1,6 +1,7 @@
 ﻿namespace Pure.DI.Core
 {
     using System.Collections.Generic;
+    using System.Text;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -13,8 +14,8 @@
         public readonly ISet<SemanticType> Dependencies = new HashSet<SemanticType>(SemanticTypeEqualityComparer.Default);
         public readonly ISet<ExpressionSyntax> Tags = new HashSet<ExpressionSyntax>();
         public int Weight = 0;
+        public readonly object Id;
         private static int _currentId;
-        public object Id;
 
         public BindingMetadata(object? id = null)
         {
@@ -37,6 +38,32 @@
             {
                 Tags.Add(tag);
             }
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+            foreach (var dependency in Dependencies)
+            {
+                sb.Append($"{nameof(IBinding.Bind)}<{dependency}>().");
+            }
+            
+            sb.Append($"{nameof(IBinding.As)}({Lifetime}).");
+            foreach (var tag in Tags)
+            {
+                sb.Append($"{nameof(IBinding.Tag)}<{tag.ToString()}>().");
+            }
+            
+            if (Factory != null)
+            {
+                sb.Append($"{nameof(IBinding.To)}({Factory.ToString()})");
+            }
+            else
+            {
+                sb.Append($"{nameof(IBinding.To)}<{Implementation}>()");
+            }
+
+            return sb.ToString();
         }
     }
 }

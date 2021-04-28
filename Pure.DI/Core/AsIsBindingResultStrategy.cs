@@ -7,7 +7,6 @@ namespace Pure.DI.Core
     // ReSharper disable once ClassNeverInstantiated.Global
     class AsIsBindingResultStrategy : IBindingResultStrategy
     {
-        public ExpressionSyntax Build(ExpressionSyntax objectExpression) =>
-            SyntaxFactory.ParenthesizedExpression(objectExpression);
+        public ExpressionSyntax Build(ExpressionSyntax objectExpression) => objectExpression;
     }
 }

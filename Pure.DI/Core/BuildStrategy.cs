@@ -2,6 +2,8 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     // ReSharper disable once ClassNeverInstantiated.Global
@@ -9,6 +11,7 @@
     {
         private readonly IDiagnostic _diagnostic;
         private readonly ITracer _tracer;
+        private readonly ILog<BuildStrategy> _log;
         private readonly IBindingResultStrategy _resultStrategy;
         private readonly IBuildStrategy _dependencyBuildStrategy;
         private readonly Dictionary<Lifetime, ILifetimeStrategy> _lifetimes;
@@ -17,12 +20,14 @@
         public BuildStrategy(
             IDiagnostic diagnostic,
             ITracer tracer,
+            ILog<BuildStrategy> log,
             IEnumerable<ILifetimeStrategy> lifetimeStrategies,
             IBindingResultStrategy resultStrategy,
             IBuildStrategy? dependencyBindingExpressionStrategy = null)
         {
             _diagnostic = diagnostic;
             _tracer = tracer;
+            _log = log;
             _resultStrategy = resultStrategy;
             _dependencyBuildStrategy = dependencyBindingExpressionStrategy ?? this;
             _lifetimes = lifetimeStrategies.ToDictionary(i => i.Lifetime, i => i);
@@ -47,6 +52,7 @@
             objectBuildExpression = lifetimeStrategy.Build(dependency, objectBuildExpression);
             result =_resultStrategy.Build(objectBuildExpression);
             _cache.Add(dependency, result);
+            _log.Info(() => new []{ $"{dependency} => {result.NormalizeWhitespace()}"});
             return result;
         }
     }

@@ -5,6 +5,7 @@ namespace Pure.DI.Core
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text.RegularExpressions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -15,12 +16,21 @@ namespace Pure.DI.Core
     {
         private static readonly Regex CommentRegex = new(@"//\s*(\w+)\s*=\s*(.+)\s*", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         private readonly SemanticModel _semanticModel;
+        private readonly IOwnerProvider _ownerProvider;
+        private readonly ITargetClassNameProvider _targetClassNameProvider;
         private readonly List<ResolverMetadata> _metadata = new();
         private ResolverMetadata? _resolver;
         private BindingMetadata _binding = new();
 
-        public MetadataWalker(SemanticModel semanticModel) =>
+        public MetadataWalker(
+            SemanticModel semanticModel,
+            IOwnerProvider ownerProvider,
+            ITargetClassNameProvider targetClassNameProvider)
+        {
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
+            _ownerProvider = ownerProvider;
+            _targetClassNameProvider = targetClassNameProvider;
+        }
 
         public IEnumerable<ResolverMetadata> Metadata => _metadata;
 
@@ -29,7 +39,13 @@ namespace Pure.DI.Core
             base.VisitInvocationExpression(node);
 
             var operation = _semanticModel.GetOperation(node);
-            if (operation?.Type == null || !(operation is IInvocationOperation invocationOperation))
+            if (operation is IInvalidOperation)
+            {
+                _binding = new BindingMetadata();
+                return;
+            }
+
+            if (operation?.Type == null || operation is not IInvocationOperation invocationOperation)
             {
                 return;
             }
@@ -45,8 +61,17 @@ namespace Pure.DI.Core
                     && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
                     && TryGetValue(invocationOperation.Arguments[0], _semanticModel, out var targetTypeName, string.Empty))
                 {
-                    _resolver = new ResolverMetadata(node, targetTypeName);
-                    _metadata.Add(_resolver);
+                    var owner = _ownerProvider.TryGetOwner(node);
+                    targetTypeName = _targetClassNameProvider.TryGetName(targetTypeName, node, owner) ?? targetTypeName;
+                    _resolver = _metadata.FirstOrDefault(i => i.TargetTypeName.Equals(targetTypeName, StringComparison.InvariantCultureIgnoreCase));
+                    if (_resolver == null)
+                    {
+                        _resolver = new ResolverMetadata(node, targetTypeName, owner);
+                        _metadata.Add(_resolver);
+                    }
+
+                    _binding = new BindingMetadata();
+
                     if (node.HasLeadingTrivia)
                     {
                         foreach (var trivia in node.GetLeadingTrivia())
@@ -148,7 +173,7 @@ namespace Pure.DI.Core
                         _binding = new BindingMetadata();
                     }
 
-                    // TagIs<>(...)
+                    // TagAttribute<>(...)
                     if (invocationOperation.TargetMethod.Parameters.Length == 1
                         && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IConfiguration))
                         && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))

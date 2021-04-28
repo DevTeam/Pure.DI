@@ -1,5 +1,6 @@
 ﻿namespace Pure.DI.Tests
 {
+    using System;
     using System.Linq;
     using Shouldly;
     using Xunit;
@@ -33,7 +34,7 @@
             // Given
 
             // When
-            var table = new Table<string, string>(new Pair<string, string>[0], "", "");
+            var table = new Table<string, string>(Array.Empty<Pair<string, string>>(), "", "");
 
             // Then
             table.Get("aa").ShouldBeNull();
