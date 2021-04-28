@@ -58,10 +58,10 @@
 		<EmbeddedResource Include="Components\GenericTypeArguments.cs" />
 		<EmbeddedResource Include="Components\Tables.cs" />
 		<EmbeddedResource Include="Components\ServiceProviderInstance.cs" />
-		<Compile Remove="Features\AspNet.cs" />
 		<EmbeddedResource Include="Features\AspNet.cs" />
-		<Compile Remove="Features\Default.cs" />
+		<Compile Remove="Features\AspNet.cs" />
 		<EmbeddedResource Include="Features\Default.cs" />
+		<Compile Remove="Features\Default.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

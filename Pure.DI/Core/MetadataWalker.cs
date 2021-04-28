@@ -5,6 +5,7 @@ namespace Pure.DI.Core
 {
     using System;
     using System.Collections.Generic;
+    using System.Text.RegularExpressions;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -12,6 +13,7 @@ namespace Pure.DI.Core
 
     internal class MetadataWalker: CSharpSyntaxWalker, IMetadataWalker
     {
+        private static readonly Regex CommentRegex = new(@"//\s*(\w+)\s*=\s*(.+)\s*", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         private readonly SemanticModel _semanticModel;
         private readonly List<ResolverMetadata> _metadata = new();
         private ResolverMetadata? _resolver;
@@ -45,6 +47,28 @@ namespace Pure.DI.Core
                 {
                     _resolver = new ResolverMetadata(node, targetTypeName);
                     _metadata.Add(_resolver);
+                    if (node.HasLeadingTrivia)
+                    {
+                        foreach (var trivia in node.GetLeadingTrivia())
+                        {
+                            if (trivia.Kind() != SyntaxKind.SingleLineCommentTrivia)
+                            {
+                                continue;
+                            }
+
+                            var comment = trivia.ToFullString().Trim();
+                            var match = CommentRegex.Match(comment);
+                            if (!match.Success)
+                            {
+                                continue;
+                            }
+
+                            if (Enum.TryParse(match.Groups[1].Value, true, out Setting setting))
+                            {
+                                _resolver.Settings[setting] = match.Groups[2].Value;
+                            }
+                        }
+                    }
                 }
 
                 return;

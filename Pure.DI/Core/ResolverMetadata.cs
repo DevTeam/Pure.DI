@@ -10,6 +10,7 @@
         public readonly ICollection<BindingMetadata> Bindings = new List<BindingMetadata>();
         public readonly ICollection<string> DependsOn = new List<string> { "DefaultFeature", "AspNetFeature" };
         public readonly ICollection<AttributeMetadata> Attributes = new List<AttributeMetadata>();
+        public readonly IDictionary<Setting, string> Settings = new Dictionary<Setting, string>();
 
         public ResolverMetadata(SyntaxNode setupNode, string targetTypeName)
         {

@@ -18,39 +18,29 @@
         private static readonly Source Features;
         private static readonly IEnumerable<Source> Components;
         private readonly IBuildContext _context;
+        private readonly ISettings _settings;
+        private readonly IFileSystem _fileSystem;
         private readonly IDiagnostic _diagnostic;
         private readonly Func<IClassBuilder> _resolverBuilderFactory;
         private readonly Func<SemanticModel, IMetadataWalker> _metadataWalkerFactory;
 
         static SourceBuilder()
         {
-            Features = new Source("Features.cs",SourceText.From(string.Join(Environment.NewLine, GetResources(FeaturesRegex)), Encoding.UTF8));
+            Features = new Source("Features.cs",SourceText.From(string.Join(Environment.NewLine, GetResources(FeaturesRegex).Select(i => i.code)), Encoding.UTF8));
             Components = GetResources(ComponentsRegex).Select(i => new Source(i.file, SourceText.From(i.code, Encoding.UTF8))).ToArray();
-        }
-
-        private static IEnumerable<(string file, string code)> GetResources(Regex filter)
-        {
-            var assembly = typeof(SourceGenerator).Assembly;
-
-            foreach (var resourceName in assembly.GetManifestResourceNames())
-            {
-                if (!filter.IsMatch(resourceName))
-                {
-                    continue;
-                }
-
-                using var reader = new StreamReader(assembly.GetManifestResourceStream(resourceName) ?? throw new InvalidOperationException($"Cannot read {resourceName}."));
-                yield return (resourceName, reader.ReadToEnd());
-            }
         }
 
         public SourceBuilder(
             IBuildContext context,
+            ISettings settings,
+            IFileSystem fileSystem,
             IDiagnostic diagnostic,
             Func<IClassBuilder> resolverBuilderFactory,
             Func<SemanticModel, IMetadataWalker> metadataWalkerFactory)
         {
             _context = context;
+            _settings = settings;
+            _fileSystem = fileSystem;
             _diagnostic = diagnostic;
             _resolverBuilderFactory = resolverBuilderFactory;
             _metadataWalkerFactory = metadataWalkerFactory;
@@ -93,9 +83,21 @@
                     var metadata = CreateMetadata(rawMetadata, allMetadata);
                     _context.Prepare(compilation, metadata);
                     var compilationUnitSyntax = _resolverBuilderFactory().Build(semanticModel);
-                    yield return new Source(
+                    var source = new Source(
                         $"{metadata.TargetTypeName}.cs",
                         SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8));
+
+                    if (_settings.TryGetOutputPath(out var outputPath))
+                    {
+                        _fileSystem.WriteFile(Path.Combine(outputPath, source.HintName), source.Code.ToString());
+                        _fileSystem.WriteFile(Path.Combine(outputPath, Features.HintName), Features.Code.ToString());
+                        foreach (var component in Components)
+                        {
+                            _fileSystem.WriteFile(Path.Combine(outputPath, component.HintName), component.Code.ToString());
+                        }
+                    }
+                    
+                    yield return source;
                 }
             }
         }
@@ -115,6 +117,11 @@
                 {
                     newMetadata.Attributes.Add(attribute);
                 }
+
+                foreach (var setting in dependency.Settings)
+                {
+                    newMetadata.Settings.Add(setting);
+                }
             }
 
             foreach (var binding in metadata.Bindings)
@@ -125,6 +132,11 @@
             foreach (var attribute in metadata.Attributes)
             {
                 newMetadata.Attributes.Add(attribute);
+            }
+
+            foreach (var setting in metadata.Settings)
+            {
+                newMetadata.Settings.Add(setting);
             }
 
             return newMetadata;
@@ -151,6 +163,23 @@
                 {
                     yield return nested;
                 }
+            }
+        }
+
+        private static IEnumerable<(string file, string code)> GetResources(Regex filter)
+        {
+            var assembly = typeof(SourceGenerator).Assembly;
+
+            foreach (var resourceName in assembly.GetManifestResourceNames())
+            {
+                if (!filter.IsMatch(resourceName))
+                {
+                    continue;
+                }
+
+                using var reader = new StreamReader(assembly.GetManifestResourceStream(resourceName) ?? throw new InvalidOperationException($"Cannot read {resourceName}."));
+                var code = reader.ReadToEnd();
+                yield return (resourceName, code);
             }
         }
     }

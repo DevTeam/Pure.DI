@@ -71,7 +71,9 @@
                 .Bind<ILifetimeStrategy>().Tag(Lifetime.PerThread).To<PerThreadLifetimeStrategy>()
                 .Bind<ILifetimeStrategy>().Tag(Lifetime.PerResolve).To<PerResolveLifetimeStrategy>()
                 .Bind<ILifetimeStrategy>().Tag(Lifetime.Binding).To<BindingLifetimeStrategy>()
-                .Bind<ISyntaxRegistry>().To<SyntaxRegistry>();
+                .Bind<ISyntaxRegistry>().To<SyntaxRegistry>()
+                .Bind<ISettings>().To<Settings>()
+                .Bind<IFileSystem>().As(Singleton).To<FileSystem>();
         }
     }
 }
