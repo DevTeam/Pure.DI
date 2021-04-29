@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class Tracer : ITracer, IDisposable
@@ -20,25 +21,14 @@
 
         public IDisposable RegisterResolving(Dependency dependency)
         {
-            if (_path.Count <= 256)
+            if (!_path.Contains(dependency))
             {
                 _path.Push(dependency);
-                _log.Trace(() => 
-                {
-                    List<string> messages = new();
-                    var offset = 0;
-                    foreach (var item in _path)
-                    {
-                        messages.Add($"{new string(' ', offset)}{item}");
-                        offset += 2;
-                    }
-
-                    return messages.ToArray();
-                });
+                _log.Trace(GetMessages);
                 return this;
             }
 
-            var error = $"Circular dependency detected resolving {dependency}.";
+            var error = $"Circular dependency detected for {this}.";
             _diagnostic.Error(Diagnostics.CircularDependency, error, dependency.Binding.Location);
             throw new HandledException(error);
         }
@@ -52,6 +42,22 @@
             }
 
             _path.Pop();
+        }
+
+        public override string ToString() => 
+            string.Join(" <- ", _path.Select(i => i.ToString()));
+
+        private string[] GetMessages()
+        {
+            List<string> messages = new();
+            var offset = 0;
+            foreach (var item in _path)
+            {
+                messages.Add($"{new string(' ', offset)}{item}");
+                offset += 2;
+            }
+
+            return messages.ToArray();
         }
     }
 }

@@ -15,9 +15,6 @@ namespace BlazorServerApp
             // #verbosity = normal
             // #debug=true
             DI.Setup()
-                // Infrastructure
-                .Bind<IDispatcher>().As(Singleton).To<Dispatcher>()
-
                 // View Models
                 .Bind<IClockViewModel>().To<ClockViewModel>()
 
