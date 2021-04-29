@@ -7,7 +7,7 @@
     public class LanguageTests
     {
         [Fact]
-        public void ShouldSupportCSharp7()
+        public void ShouldSupportCSharp4()
         {
             // Given
 
@@ -34,7 +34,7 @@
                     public readonly string Value;
                     internal CompositionRoot(Func<string> value) { Value = value(); }        
                 }
-            }".Run(out var generatedCode, new RunOptions { LanguageVersion = LanguageVersion.CSharp7 });
+            }".Run(out var generatedCode, new RunOptions { LanguageVersion = LanguageVersion.CSharp4 });
 
             // Then
             output.ShouldBe(new [] { "abc" }, generatedCode);

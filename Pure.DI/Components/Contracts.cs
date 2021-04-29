@@ -60,7 +60,10 @@ namespace Pure.DI
         // ReSharper disable once MemberCanBePrivate.Global
         public readonly int Order;
 
-        public OrderAttribute(int order) => Order = order;
+        public OrderAttribute(int order)
+        {
+            Order = order;
+        }
     }
 
     [AttributeUsage(AttributeTargets.Parameter)]
@@ -69,7 +72,10 @@ namespace Pure.DI
         // ReSharper disable once MemberCanBePrivate.Global
         public readonly object Tag;
 
-        public TagAttribute(object tag) => Tag = tag;
+        public TagAttribute(object tag)
+        {
+            Tag = tag;
+        }
     }
 
     [AttributeUsage(AttributeTargets.Parameter)]
@@ -78,43 +84,82 @@ namespace Pure.DI
         // ReSharper disable once MemberCanBePrivate.Global
         public readonly Type Type;
 
-        public TypeAttribute(Type type) => Type = type;
+        public TypeAttribute(Type type)
+        {
+            Type = type;
+        }
     }
 
     internal static class DI
     {
-        internal static IConfiguration Setup(string targetTypeName = "") => Configuration.Shared;
+        internal static IConfiguration Setup(string targetTypeName = "")
+        {
+            return Configuration.Shared;
+        }
 
         private class Configuration : IConfiguration
         {
             public static readonly IConfiguration Shared = new Configuration();
 
-            public IBinding Bind<T>() => new Binding(this);
+            public IBinding Bind<T>()
+            {
+                return new Binding(this);
+            }
 
-            public IConfiguration DependsOn(string configurationName) => this;
+            public IConfiguration DependsOn(string configurationName)
+            {
+                return this;
+            }
 
-            public IConfiguration TypeAttribute<T>(int typeArgumentPosition = 0) where T : Attribute => this;
+            public IConfiguration TypeAttribute<T>(int typeArgumentPosition = 0) where T : Attribute
+            {
+                return this;
+            }
 
-            public IConfiguration TagAttribute<T>(int tagArgumentPosition = 0) where T : Attribute => this;
+            public IConfiguration TagAttribute<T>(int tagArgumentPosition = 0) where T : Attribute
+            {
+                return this;
+            }
 
-            public IConfiguration OrderAttribute<T>(int orderArgumentPosition = 0) where T : Attribute => this;
+            public IConfiguration OrderAttribute<T>(int orderArgumentPosition = 0) where T : Attribute
+            {
+                return this;
+            }
         }
 
         private class Binding : IBinding
         {
             private readonly IConfiguration _configuration;
 
-            public Binding(IConfiguration configuration) => _configuration = configuration;
+            public Binding(IConfiguration configuration)
+            {
+                _configuration = configuration;
+            }
 
-            public IBinding Bind<T>() => this;
+            public IBinding Bind<T>()
+            {
+                return this;
+            }
 
-            public IBinding As(Lifetime lifetime) => this;
+            public IBinding As(Lifetime lifetime)
+            {
+                return this;
+            }
 
-            public IBinding Tag(object tag) => this;
+            public IBinding Tag(object tag)
+            {
+                return this;
+            }
 
-            public IConfiguration To<T>() => _configuration;
+            public IConfiguration To<T>()
+            {
+                return _configuration;
+            }
 
-            public IConfiguration To<T>(Func<IContext, T> factory) => _configuration;
+            public IConfiguration To<T>(Func<IContext, T> factory)
+            {
+                return _configuration;
+            }
         }
     }
 

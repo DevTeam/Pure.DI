@@ -37,7 +37,10 @@ namespace Pure.DI
             Value = value;
         }
 
-        public override string ToString() => $"#{Key}={Value} -> {Next}";
+        public override string ToString()
+        {
+            return "#" + Key + "=" + Value + "->" + Next;
+        }
     }
 
     internal class Table<TKey, TValue>
@@ -121,9 +124,16 @@ namespace Pure.DI
             } 
             while (pair != null);
 
-            return ResolversDefaultFactory !=null ?
-                ResolversDefaultFactory(type, null) ?? new ArgumentException($"Cannot resolve an instance of the type {type.Name}.")
-                : throw new ArgumentException($"Cannot resolve an instance of the type {type.Name}.");
+            if (ResolversDefaultFactory != null)
+            {
+                var factory = ResolversDefaultFactory(type, null);
+                if (factory != null)
+                {
+                    return factory;
+                }
+            }
+
+            throw new ArgumentException("Cannot resolve an instance of the type" + type.Name + ".");
         }
     }
 
@@ -156,9 +166,16 @@ namespace Pure.DI
             }
             while (pair != null) ;
 
-            return ResolversByTagDefaultFactory != null ? 
-                ResolversByTagDefaultFactory(key.Type, key.Tag) ?? new ArgumentException($"Cannot resolve an instance of the type {key.Type.Name} with tag {key.Tag}.")
-                : throw new ArgumentException($"Cannot resolve an instance of the type {key.Type.Name} with tag {key.Tag}.");
+            if (ResolversByTagDefaultFactory != null)
+            {
+                var factory = ResolversByTagDefaultFactory(key.Type, key.Tag);
+                if (factory != null)
+                {
+                    return factory;
+                }
+            }
+
+            throw new ArgumentException("Cannot resolve an instance of the type " + key.Type.Name  + " with tag " + key.Tag + ".");
         }
     }
 
@@ -177,10 +194,20 @@ namespace Pure.DI
 
         [MethodImpl((MethodImplOptions)0x100)]
         // ReSharper disable once MemberCanBePrivate.Global
-        public bool Equals(TagKey other) => Type == other.Type && Tag.Equals(other.Tag);
+        public bool Equals(TagKey other)
+        {
+            return Type == other.Type && Tag.Equals(other.Tag);
+        }
 
-        public override bool Equals(object obj) => obj is TagKey other && Equals(other);
+        public override bool Equals(object obj)
+        {
+            var key = obj as TagKey?;
+            return key != null && Equals(key);
+        }
 
-        public override int GetHashCode() => _hashCode;
+        public override int GetHashCode()
+        {
+            return _hashCode;
+        }
     }
 }
