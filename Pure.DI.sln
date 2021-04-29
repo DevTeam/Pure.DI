@@ -22,6 +22,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Clock.Tests", "Samples\Cloc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorServerApp", "Samples\BlazorServerApp\BlazorServerApp.csproj", "{689114D0-0A3F-44CD-9B71-EC53A3C7FEC1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfAppNetCore", "Samples\WpfAppNetCore\WpfAppNetCore.csproj", "{B4485446-DAD5-4726-BEB0-972FDCD66EFF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,10 @@ Global
 		{689114D0-0A3F-44CD-9B71-EC53A3C7FEC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{689114D0-0A3F-44CD-9B71-EC53A3C7FEC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{689114D0-0A3F-44CD-9B71-EC53A3C7FEC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4485446-DAD5-4726-BEB0-972FDCD66EFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4485446-DAD5-4726-BEB0-972FDCD66EFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4485446-DAD5-4726-BEB0-972FDCD66EFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4485446-DAD5-4726-BEB0-972FDCD66EFF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -61,6 +67,7 @@ Global
 		{4521A616-5604-472A-B0EB-663A4193F07E} = {74517480-AEFB-4252-B8E9-B753B14BABCD}
 		{FDDB28A7-902B-4C91-B527-1EC6E3A39EA5} = {74517480-AEFB-4252-B8E9-B753B14BABCD}
 		{689114D0-0A3F-44CD-9B71-EC53A3C7FEC1} = {74517480-AEFB-4252-B8E9-B753B14BABCD}
+		{B4485446-DAD5-4726-BEB0-972FDCD66EFF} = {74517480-AEFB-4252-B8E9-B753B14BABCD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {479A7692-3C4A-45EF-ADF6-1B4EEF78C04D}

@@ -939,5 +939,55 @@
             // Then
             output.ShouldBe(new[] { "Sample.MyClass`1[System.String]" }, generatedCode);
         }
+
+        [Fact]
+        public void ShouldUseDependsOn()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+                
+                static partial class Composer1
+                {
+                    static Composer1()
+                    {
+                        // output = C:\Projects\DevTeam\Pure.DI\out
+                        // verbosity = normal
+                        DI.Setup()
+                            .Bind<string>().To(_ => ""abc"")
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        // output = C:\Projects\DevTeam\Pure.DI\out
+                        // verbosity = normal
+                        DI.Setup()
+                            .DependsOn(nameof(Composer1))
+                            .Bind<string>().To(_ => ""xyz"");
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string value ) => Value = value;        
+                }
+            }".Run(out var generatedCode);
+
+            // Then
+            output.Count.ShouldBe(2, generatedCode);
+            output[0].ShouldBe("xyz", generatedCode);
+            output[1].Contains("DIW0003").ShouldBeTrue(generatedCode);
+        }
     }
 }

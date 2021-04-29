@@ -44,14 +44,13 @@ namespace Pure.DI.Core
         public IEnumerable<MemberDeclarationSyntax> BuildMembers(SemanticModel semanticModel)
         {
             var items = (
-                from binding in _metadata.Bindings.Reverse().Concat(_buildContext.AdditionalBindings).Distinct().ToList()
-                orderby binding.Weight descending
+                from binding in _metadata.Bindings.Concat(_buildContext.AdditionalBindings)
                 from dependency in binding.Dependencies
                 where dependency.IsValidTypeToResolve
                 from tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null)
                 group (binding, dependency, tag) by (dependency, tag) into grouped 
                 // Avoid duplication of statements
-                select grouped.First())
+                select grouped.Last())
                 .ToArray();
 
             var tableItems = (
@@ -253,6 +252,7 @@ namespace Pure.DI.Core
                             SyntaxFactory.VariableDeclarator(SyntaxRepo.FactoriesByTagTableName)
                                 .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(SyntaxRepo.ResolversWithTagTableTypeSyntax)
                                     .AddArgumentListArguments(
+                                        SyntaxFactory.Argument(SyntaxFactory.IdentifierName(SyntaxRepo.FactoriesTableName)),
                                         SyntaxFactory.Argument(arr),
                                         SyntaxFactory.Argument(_fallbackStrategy.Build(semanticModel)))))))
                 .AddModifiers(

@@ -112,7 +112,6 @@ namespace Pure.DI.Core
                         {
                             if (_map.TryGetValue(key, out implementationEntry))
                             {
-                                implementationEntry.Metadata.Weight++;
                                 var typesMap = _typesMapFactory();
                                 var hasTypesMap = typesMap.Setup(implementationEntry.Details, dependency);
                                 var constructedImplementation = typesMap.ConstructType(implementationEntry.Details);
@@ -155,7 +154,6 @@ namespace Pure.DI.Core
                         var key = new Key(dependency, tag);
                         if (_map.TryGetValue(key, out implementationEntry))
                         {
-                            implementationEntry.Metadata.Weight++;
                             var typesMap = _typesMapFactory();
                             typesMap.Setup(implementationEntry.Details, dependency);
                             return _factories.TryGetValue(key, out var factory)
@@ -243,6 +241,8 @@ namespace Pure.DI.Core
                 Metadata = metadata;
                 Details = details;
             }
+
+            public override string ToString() => Metadata.ToString();
         }
 
         private IEnumerable<SemanticType> GetSpecialTypes(SemanticModel semanticModel)

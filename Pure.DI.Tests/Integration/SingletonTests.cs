@@ -41,6 +41,41 @@
         }
 
         [Fact]
+        public void ShouldSupportGenericSingleton()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;               
+
+                public class CompositionRoot
+                {
+                    public readonly bool Value;
+                    internal CompositionRoot(Foo<int> value1, Foo<string> value2, Foo<int> value3, Foo<string> value4) => Value = value1 == value3 && value2 == value4;        
+                }
+
+                public class Foo<T> { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<Foo<TT>>().As(Pure.DI.Lifetime.Singleton).To<Foo<TT>>()
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                    
+                }    
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "True" }, generatedCode);
+        }
+
+        [Fact]
         public void ShouldSupportSingletonWhenNested()
         {
             // Given

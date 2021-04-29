@@ -76,60 +76,64 @@
                 featuresMetadata.AddRange(walker.Metadata);
             }
 
+            var allMetadata = new List<ResolverMetadata>(featuresMetadata);
+            List<(SyntaxTree tree, ResolverMetadata rawMetadata)> items = new();
             foreach (var tree in compilation.SyntaxTrees.Reverse().Skip(1 + Components.Count()))
             {
-                var semanticModel = compilation.GetSemanticModel(tree);
                 var walker = _metadataWalkerFactory(compilation.GetSemanticModel(tree));
                 walker.Visit(tree.GetRoot());
-                foreach (var rawMetadata in walker.Metadata)
+                allMetadata.AddRange(walker.Metadata);
+                items.AddRange(walker.Metadata.Select(rawMetadata => (tree, rawMetadata)));
+            }
+
+            foreach (var (tree, rawMetadata) in items)
+            {
+                var semanticModel = compilation.GetSemanticModel(tree);
+                var metadata = CreateMetadata(rawMetadata, allMetadata);
+                _context.Prepare(compilation, metadata);
+
+                if (_settings.Debug)
                 {
-                    var allMetadata = new List<ResolverMetadata>(featuresMetadata) { rawMetadata };
-                    var metadata = CreateMetadata(rawMetadata, allMetadata);
-                    _context.Prepare(compilation, metadata);
-
-                    if (_settings.Debug)
+                    if (!Debugger.IsAttached)
                     {
-                        if (!Debugger.IsAttached)
-                        {
-                            _log.Info(() => new []{ "Launch a debugger." });
-                            Debugger.Launch();
-                        }
-                        else
-                        {
-                            _log.Info(() => new []{ "A debugger is already attached" });
-                        }
+                        _log.Info(() => new[] {"Launch a debugger."});
+                        Debugger.Launch();
                     }
-
-                    _log.Info(() =>
+                    else
                     {
-                        var messages = new List<string>
-                        {
-                            $"Processing {rawMetadata.TargetTypeName}",
-                            $"{nameof(DI)}.{nameof(DI.Setup)}()"
-                        };
-                        messages.AddRange(metadata.Bindings.Select(binding => $"  .{binding}"));
-                        return messages.ToArray();
-                    });
-
-                    var compilationUnitSyntax = _resolverBuilderFactory().Build(semanticModel).NormalizeWhitespace();
-                    
-                    var source = new Source(
-                        $"{metadata.TargetTypeName}.cs",
-                        SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8));
-
-                    if (_settings.TryGetOutputPath(out var outputPath))
-                    {
-                        _log.Info(() => new []{ $"The output path: {outputPath}" });
-                        _fileSystem.WriteFile(Path.Combine(outputPath, source.HintName), source.Code.ToString());
-                        _fileSystem.WriteFile(Path.Combine(outputPath, Features.HintName), Features.Code.ToString());
-                        foreach (var component in Components)
-                        {
-                            _fileSystem.WriteFile(Path.Combine(outputPath, component.HintName), component.Code.ToString());
-                        }
+                        _log.Info(() => new[] {"A debugger is already attached"});
                     }
-
-                    yield return source;
                 }
+
+                _log.Info(() =>
+                {
+                    var messages = new List<string>
+                    {
+                        $"Processing {rawMetadata.TargetTypeName}",
+                        $"{nameof(DI)}.{nameof(DI.Setup)}()"
+                    };
+                    messages.AddRange(metadata.Bindings.Select(binding => $"  .{binding}"));
+                    return messages.ToArray();
+                });
+
+                var compilationUnitSyntax = _resolverBuilderFactory().Build(semanticModel).NormalizeWhitespace();
+
+                var source = new Source(
+                    $"{metadata.TargetTypeName}.cs",
+                    SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8));
+
+                if (_settings.TryGetOutputPath(out var outputPath))
+                {
+                    _log.Info(() => new[] {$"The output path: {outputPath}"});
+                    _fileSystem.WriteFile(Path.Combine(outputPath, source.HintName), source.Code.ToString());
+                    _fileSystem.WriteFile(Path.Combine(outputPath, Features.HintName), Features.Code.ToString());
+                    foreach (var component in Components)
+                    {
+                        _fileSystem.WriteFile(Path.Combine(outputPath, component.HintName), component.Code.ToString());
+                    }
+                }
+
+                yield return source;
             }
         }
 
@@ -139,6 +143,11 @@
             var dependencies = GetDependencies(metadata, new HashSet<ResolverMetadata>(), allMetadata);
             foreach (var dependency in dependencies)
             {
+                foreach (var dependsOn in dependency.DependsOn)
+                {
+                    newMetadata.DependsOn.Add(dependsOn);
+                }
+
                 foreach (var binding in dependency.Bindings)
                 {
                     newMetadata.Bindings.Add(binding);
@@ -151,8 +160,13 @@
 
                 foreach (var setting in dependency.Settings)
                 {
-                    newMetadata.Settings.Add(setting);
+                    newMetadata.Settings[setting.Key] = setting.Value;
                 }
+            }
+
+            foreach (var dependsOn in metadata.DependsOn)
+            {
+                newMetadata.DependsOn.Add(dependsOn);
             }
 
             foreach (var binding in metadata.Bindings)
@@ -167,7 +181,7 @@
 
             foreach (var setting in metadata.Settings)
             {
-                newMetadata.Settings.Add(setting);
+                newMetadata.Settings[setting.Key] = setting.Value;
             }
 
             return newMetadata;

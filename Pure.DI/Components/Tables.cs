@@ -12,6 +12,8 @@
 // ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable InconsistentNaming
 // ReSharper disable MemberCanBeProtected.Global
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UsePatternMatching
 #pragma warning disable 8618
 #pragma warning disable 8604
 #pragma warning disable 8603
@@ -21,10 +23,6 @@
 #pragma warning disable 0436
 namespace Pure.DI
 {
-    using System;
-    using System.Linq;
-    using System.Runtime.CompilerServices;
-
     internal class Pair<TKey, TValue>
     {
         public readonly TKey Key;
@@ -62,10 +60,7 @@ namespace Pure.DI
                 Buckets[i] = new Pair<TKey, TValue>(defaultKey, defaultValue);
             }
 
-            var buckets = 
-                from pair in pairs
-                group pair by (uint)pair.Key.GetHashCode() % Divisor into groups
-                select new { number = groups.Key, pairs = groups.ToArray()};
+            var buckets = System.Linq.Enumerable.Select(System.Linq.Enumerable.GroupBy(pairs, pair => (uint) pair.Key.GetHashCode() % Divisor), groups => new {number = groups.Key, pairs = System.Linq.Enumerable.ToArray(groups)});
 
             foreach (var bucket in buckets)
             {
@@ -77,7 +72,7 @@ namespace Pure.DI
             }
         }
 
-        [MethodImpl((MethodImplOptions)0x300)]
+        [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
         public TValue Get(TKey key)
         {
             var pair = Buckets[(uint)key.GetHashCode() % Divisor];
@@ -95,13 +90,13 @@ namespace Pure.DI
         }
     }
 
-    internal sealed class ResolversTable : Table<Type, Func<object>>
+    internal sealed class ResolversTable : Table<System.Type, System.Func<object>>
     {
-        public readonly Func<Type, object, object> ResolversDefaultFactory;
-        public readonly Pair<Type, Func<object>>[] ResolversBuckets;
+        public readonly System.Func<System.Type, object, object> ResolversDefaultFactory;
+        public readonly Pair<System.Type, System.Func<object>>[] ResolversBuckets;
         public readonly uint ResolversDivisor;
 
-        public ResolversTable(Pair<Type, Func<object>>[] pairs, Func<Type, object, object> defaultFactory)
+        public ResolversTable(Pair<System.Type, System.Func<object>>[] pairs, System.Func<System.Type, object, object> defaultFactory)
             : base(pairs, typeof(ResolversTable), null)
         {
             ResolversDefaultFactory = defaultFactory;
@@ -109,8 +104,8 @@ namespace Pure.DI
             ResolversDivisor = Divisor;
         }
 
-        [MethodImpl((MethodImplOptions)0x100)]
-        public object Resolve(Type type)
+        [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+        public object Resolve(System.Type type)
         {
             var pair = ResolversBuckets[(uint)type.GetHashCode() % ResolversDivisor];
             do
@@ -133,25 +128,29 @@ namespace Pure.DI
                 }
             }
 
-            throw new ArgumentException("Cannot resolve an instance of the type" + type.Name + ".");
+            throw new System.ArgumentException("Cannot resolve an instance of the type " + type.Name + ".");
         }
     }
 
-    internal sealed class ResolversByTagTable : Table<TagKey, Func<object>>
+    internal sealed class ResolversByTagTable : Table<TagKey, System.Func<object>>
     {
-        public readonly Func<Type, object, object> ResolversByTagDefaultFactory;
-        public readonly Pair<TagKey, Func<object>>[] ResolversByTagBuckets;
+        public readonly System.Func<System.Type, object, object> ResolversByTagDefaultFactory;
+        public readonly Pair<TagKey, System.Func<object>>[] ResolversByTagBuckets;
         public readonly uint ResolversByTagDivisor;
+        public readonly Pair<System.Type, System.Func<object>>[] ResolversBuckets;
+        public readonly uint ResolversDivisor;
 
-        public ResolversByTagTable(Pair<TagKey, Func<object>>[] pairs, Func<Type, object, object> defaultFactory)
+        public ResolversByTagTable(ResolversTable resolversTable, Pair<TagKey, System.Func<object>>[] pairs, System.Func<System.Type, object, object> defaultFactory)
             : base(pairs, new TagKey(typeof(ResolversByTagTable), null), null)
         {
             ResolversByTagDefaultFactory = defaultFactory;
             ResolversByTagBuckets = Buckets;
             ResolversByTagDivisor = Divisor;
+            ResolversBuckets = resolversTable.ResolversBuckets;
+            ResolversDivisor = resolversTable.ResolversDivisor;
         }
 
-        [MethodImpl((MethodImplOptions)0x100)]
+        [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x100)]
         public object Resolve(TagKey key)
         {
             var pair = ResolversByTagBuckets[(uint)key.GetHashCode() % ResolversByTagDivisor];
@@ -164,7 +163,23 @@ namespace Pure.DI
 
                 pair = pair.Next;
             }
-            while (pair != null) ;
+            while (pair != null);
+
+            if (key.Tag == null)
+            {
+                var keyType = key.Type;
+                var typePair = ResolversBuckets[(uint)keyType.GetHashCode() % ResolversDivisor];
+                do
+                {
+                    if (typePair.Key == keyType)
+                    {
+                        return typePair.Value();
+                    }
+
+                    typePair = typePair.Next;
+                }
+                while (typePair != null);
+            }
 
             if (ResolversByTagDefaultFactory != null)
             {
@@ -175,24 +190,24 @@ namespace Pure.DI
                 }
             }
 
-            throw new ArgumentException("Cannot resolve an instance of the type " + key.Type.Name  + " with tag " + key.Tag + ".");
+            throw new System.ArgumentException("Cannot resolve an instance of the type " + key.Type.Name  + " with tag " + key.Tag + ".");
         }
     }
 
     internal struct TagKey
     {
-        public readonly Type Type;
+        public readonly System.Type Type;
         public readonly object Tag;
         private readonly int _hashCode;
 
-        public TagKey(Type type, object tag)
+        public TagKey(System.Type type, object tag)
         {
             Type = type;
             Tag = tag;
             unchecked { _hashCode = (type.GetHashCode() * 397) ^ (tag != null ? tag.GetHashCode() : 0); }
         }
 
-        [MethodImpl((MethodImplOptions)0x100)]
+        [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x100)]
         // ReSharper disable once MemberCanBePrivate.Global
         public bool Equals(TagKey other)
         {

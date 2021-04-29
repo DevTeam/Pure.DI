@@ -10,7 +10,7 @@
         public readonly ClassDeclarationSyntax? Owner;
         public readonly SyntaxNode SetupNode;
         public readonly ICollection<BindingMetadata> Bindings = new List<BindingMetadata>();
-        public readonly ICollection<string> DependsOn = new List<string> { "DefaultFeature", "AspNetFeature" };
+        public readonly ICollection<string> DependsOn = new HashSet<string> { "DefaultFeature", "AspNetFeature" };
         public readonly ICollection<AttributeMetadata> Attributes = new List<AttributeMetadata>();
         public readonly IDictionary<Setting, string> Settings = new Dictionary<Setting, string>();
 
