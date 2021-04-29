@@ -12,7 +12,7 @@
 
         protected override void BeginQuery() => OnQueryFinished(
             Application.Current is App 
-                ? ClockDomain.Resolve(ObjectType, Tag)              // Real-time
-                : ClockDomainDesignTime.Resolve(ObjectType, Tag));  // Design-time
+                ? ClockDomain.Resolve(ObjectType, Tag)              // Running mode
+                : ClockDomainDesignTime.Resolve(ObjectType, Tag));  // Design-time mode
     }
 }
