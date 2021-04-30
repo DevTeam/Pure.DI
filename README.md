@@ -131,6 +131,49 @@ Take full advantage of Dependency Injection everywhere and every time without an
 
 [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
 
+## Simple and powerful API
+
+```csharp
+// Starts a configuration chain
+// This method contains a single optional argument to specify generating type name
+// By default it is a name of a class owner
+DI.Setup("MyComposer")
+  
+  // You could select a base configuration
+  .DependsOn(nameof(BasicComposer))
+  
+  // You could specify your own attribute to override an injection type
+  .TypeAttribure<MyTypeAttribute>()
+  
+  // Or your own attribute to override an injection tag
+  .TagAttribure<MyTagAttribute>()
+  
+  // Or your own attribute to override an injection order
+  .OrderAttribure<MyOrderAttribute>()
+  
+  // This is basic binding format
+  .Bind<IMyInterface>().To<MyImplementation>()
+   
+  // You could specify a lifetime for a binding
+  .Bind<IMyInterface>().As(Lifetime.Singleton).To<MyImplementation>()
+  
+  // You could specify few tags for each binding
+  .Bind<IMyInterface>().Tag("MyImpl").Tag(123).To<MyImplementation>()
+
+  // This advanced binding format 
+  // which allows to create instance manually and inject all required dependenciesinvoke methods, initialize properties and etc
+  .Bind<IMyInterface>().To(ctx => new MyImplementation(ctx.Resolve<ISomeDependency1>(), "Some value", ctx.Resolve<ISomeDependency2>()))
+```
+
+The list of life times:
+- Transient - creates a new object of the requested type every time, it is default
+- Singleton - creates a singleton object first time you and then returns the same object
+- PerThread - creates a singleton object per thread. It returns different objects on different threads
+- PerResolve - similar to the Transient, but it reuses the same object in the recursive object graph 
+- Binding - this lifetime allows to apply a custom lifetime to a binding, just realize the interface ILifetime<T> and bind, for example `.Bind<ILifetime<IMyInterface>>().To<MyLifetime>()`
+- ContainerSingleton - this lifetime is applicable for ASP.NET, specifies that a single instance of the service will be created
+- Scoped - this lifetime is applicable for ASP.NET, specifies that a new instance of the service will be created for each scope
+
 ## Development environment requirements
 
 - [.NET 5.0.102+](https://dotnet.microsoft.com/download/dotnet/5.0)
