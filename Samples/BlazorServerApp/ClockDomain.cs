@@ -12,9 +12,6 @@ namespace BlazorServerApp
     {
         static ClockDomain()
         {
-            // output=C:\Projects\DevTeam\Pure.DI\out
-            // verbosity=normal
-            // #debug=true
             DI.Setup()
 
                 // View Models

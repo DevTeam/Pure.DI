@@ -14,7 +14,7 @@
             ILog<ClockViewModel> log,
             IClock clock,
             ITimer timer,
-            IDispatcher dispatcher = null)
+            IDispatcher? dispatcher = null)
             :base(dispatcher)
         {
             _log = log;

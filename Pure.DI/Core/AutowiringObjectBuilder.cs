@@ -187,7 +187,7 @@
                     var constructedType = dependency.TypesMap.ConstructType(new SemanticType(namedType, targetDependency.Implementation));
                     if (!dependency.Implementation.Equals(constructedType))
                     {
-                        _buildContext.AddBinding(new BindingMetadata(dependency.Binding, constructedType, false));
+                        _buildContext.AddBinding(new BindingMetadata(dependency.Binding, constructedType, null));
                     }
 
                     if (dependency.IsResolved)

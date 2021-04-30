@@ -32,12 +32,15 @@
 
         private void Tick(object state)
         {
+            IObserver<Tick>[] observers;
             lock (_observers)
             {
-                foreach (var observer in _observers)
-                {
-                    observer.OnNext(Models.Tick.Shared);
-                }
+                observers = _observers.ToArray();
+            }
+
+            foreach (var observer in observers)
+            {
+                observer.OnNext(Models.Tick.Shared);
             }
         }
 

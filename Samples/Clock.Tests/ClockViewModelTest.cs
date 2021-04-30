@@ -20,7 +20,7 @@ namespace Clock.Tests
             var clock = new Mock<IClock>();
             clock.SetupGet(i => i.Now).Returns(now);
 
-            var viewModel = new ClockViewModel(clock.Object, Mock.Of<ITimer>());
+            var viewModel = new ClockViewModel(Mock.Of<ILog<ClockViewModel>>(), clock.Object, Mock.Of<ITimer>());
 
             // When
             var date = viewModel.Date;
@@ -36,14 +36,14 @@ namespace Clock.Tests
         {
             // Given
             var timer = new Mock<ITimer>();
-            IObserver<Tick> observer = null;
+            IObserver<Tick>? observer = null;
             timer
                 .Setup(i => i.Subscribe(It.IsAny<IObserver<Tick>>()))
                 .Callback(new Action<IObserver<Tick>>(o => { observer = o; }))
                 .Returns(Mock.Of<IDisposable>());
 
-            var viewModel = new ClockViewModel(Mock.Of<IClock>(), timer.Object);
-            var propertyNames = new List<string>();
+            var viewModel = new ClockViewModel(Mock.Of<ILog<ClockViewModel>>(), Mock.Of<IClock>(), timer.Object);
+            var propertyNames = new List<string?>();
             viewModel.PropertyChanged += (_, args) => { propertyNames.Add(args.PropertyName); };
 
             // When
@@ -65,7 +65,7 @@ namespace Clock.Tests
                 .Setup(i => i.Subscribe(It.IsAny<IObserver<Tick>>()))
                 .Returns(subscription.Object);
 
-            var viewModel = new ClockViewModel(Mock.Of<IClock>(), timer.Object);
+            var viewModel = new ClockViewModel(Mock.Of<ILog<ClockViewModel>>(),Mock.Of<IClock>(), timer.Object);
           
             // When
             ((IDisposable) viewModel).Dispose();

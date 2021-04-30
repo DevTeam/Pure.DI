@@ -233,7 +233,6 @@
 
             // Then
             output.Any(i => i == "xyz").ShouldBeTrue(generatedCode);
-            output.Any(i => i.Contains(Diagnostics.BindingIsAlreadyExist)).ShouldBeTrue(generatedCode);
         }
 
         [Fact]
@@ -985,9 +984,7 @@
             }".Run(out var generatedCode);
 
             // Then
-            output.Count.ShouldBe(2, generatedCode);
-            output[0].ShouldBe("xyz", generatedCode);
-            output[1].Contains("DIW0003").ShouldBeTrue(generatedCode);
+            output.ShouldBe(new []{ "xyz" }, generatedCode);
         }
     }
 }

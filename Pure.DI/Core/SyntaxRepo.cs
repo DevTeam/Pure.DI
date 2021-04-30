@@ -69,12 +69,19 @@ namespace Pure.DI.Core
         public static T WithCommentAfter<T>(this T node, params string[] comments) where T : SyntaxNode =>
             node.WithTrailingTrivia(node.GetTrailingTrivia().Concat(comments.Select(SyntaxFactory.Comment)));
 
-        public static T WithPragmaWarningDisable<T>(this T node, int warningNumber) where T : SyntaxNode =>
-            node.WithLeadingTrivia(node.GetLeadingTrivia().Add(SyntaxFactory.Trivia(
-                SyntaxFactory.PragmaWarningDirectiveTrivia(
-                SyntaxFactory.Token(SyntaxKind.DisableKeyword),
-                SyntaxFactory.SeparatedList<ExpressionSyntax>()
-                    .Add(SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(warningNumber))),
-                false))));
+        public static T WithPragmaWarningDisable<T>(this T node, params int[] warningNumbers) where T : SyntaxNode =>
+            node.WithLeadingTrivia(
+                warningNumbers.Aggregate(
+                    node.GetLeadingTrivia(),
+                    (current, warningNumber) =>
+                        current.Add(
+                            SyntaxFactory.Trivia(
+                                SyntaxFactory.PragmaWarningDirectiveTrivia(
+                                    SyntaxFactory.Token(SyntaxKind.DisableKeyword),
+                                    SyntaxFactory.SeparatedList<ExpressionSyntax>().Add(
+                                        SyntaxFactory.LiteralExpression(
+                                            SyntaxKind.NumericLiteralExpression,
+                                            SyntaxFactory.Literal(warningNumber))),
+                                    false)))));
     }
 }

@@ -143,47 +143,10 @@
             var dependencies = GetDependencies(metadata, new HashSet<ResolverMetadata>(), allMetadata);
             foreach (var dependency in dependencies)
             {
-                foreach (var dependsOn in dependency.DependsOn)
-                {
-                    newMetadata.DependsOn.Add(dependsOn);
-                }
-
-                foreach (var binding in dependency.Bindings)
-                {
-                    newMetadata.Bindings.Add(binding);
-                }
-
-                foreach (var attribute in dependency.Attributes)
-                {
-                    newMetadata.Attributes.Add(attribute);
-                }
-
-                foreach (var setting in dependency.Settings)
-                {
-                    newMetadata.Settings[setting.Key] = setting.Value;
-                }
+                newMetadata.Merge(dependency);
             }
 
-            foreach (var dependsOn in metadata.DependsOn)
-            {
-                newMetadata.DependsOn.Add(dependsOn);
-            }
-
-            foreach (var binding in metadata.Bindings)
-            {
-                newMetadata.Bindings.Add(binding);
-            }
-
-            foreach (var attribute in metadata.Attributes)
-            {
-                newMetadata.Attributes.Add(attribute);
-            }
-
-            foreach (var setting in metadata.Settings)
-            {
-                newMetadata.Settings[setting.Key] = setting.Value;
-            }
-
+            newMetadata.Merge(metadata);
             return newMetadata;
         }
 

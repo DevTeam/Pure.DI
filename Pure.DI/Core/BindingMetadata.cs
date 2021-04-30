@@ -28,7 +28,7 @@
             {
                 Id = binding.Id;
             }
-            
+
             Dependencies.Add(dependency);
             Implementation = binding.Implementation;
             Factory = binding.Factory;

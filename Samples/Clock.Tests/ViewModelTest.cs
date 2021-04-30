@@ -45,14 +45,14 @@
 
         private class TestViewModel : ViewModel
         {
-            private readonly List<string> _propertyNames = new();
+            private readonly List<string?> _propertyNames = new();
 
-            public TestViewModel(IDispatcher dispatcher = null) : base(dispatcher) =>
+            public TestViewModel(IDispatcher? dispatcher = null) : base(dispatcher) =>
                 PropertyChanged += (_, args) => { _propertyNames.Add(args.PropertyName); };
 
-            public IReadOnlyList<string> PropertyNames => _propertyNames.AsReadOnly();
+            public IReadOnlyList<string?> PropertyNames => _propertyNames.AsReadOnly();
 
-            public void RaiseOnPropertyChanged(string propertyName = null) =>
+            public void RaiseOnPropertyChanged(string? propertyName = null) =>
                 OnPropertyChanged(propertyName);
         }
     }

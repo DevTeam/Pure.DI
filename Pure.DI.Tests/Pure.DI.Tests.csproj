@@ -5,8 +5,9 @@
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>..\DevTeam.snk</AssemblyOriginatorKeyFile>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<IsPackable>false</IsPackable>
+		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
+		<IsPackable>false</IsPackable>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 

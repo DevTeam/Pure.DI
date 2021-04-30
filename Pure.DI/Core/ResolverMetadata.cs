@@ -20,5 +20,28 @@
             TargetTypeName = targetTypeName;
             Owner = owner;
         }
+
+        public void Merge(ResolverMetadata dependency)
+        {
+            foreach (var dependsOn in dependency.DependsOn)
+            {
+                DependsOn.Add(dependsOn);
+            }
+
+            foreach (var binding in dependency.Bindings)
+            {
+                Bindings.Add(binding);
+            }
+
+            foreach (var attribute in dependency.Attributes)
+            {
+                Attributes.Add(attribute);
+            }
+
+            foreach (var setting in dependency.Settings)
+            {
+                Settings[setting.Key] = setting.Value;
+            }
+        }
     }
 }

@@ -197,12 +197,12 @@ namespace Pure.DI.Core
             var divisor = SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(ResolversTable.GetDivisor(keyValuePairs.Count)));
             yield return CreateField(SyntaxRepo.UIntTypeSyntax, nameof(ResolversTable.ResolversDivisor), divisor, SyntaxKind.ConstKeyword);
             var bucketsType = SyntaxFactory.ArrayType(keyValuePairType).AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
-            yield return CreateField(bucketsType, nameof(ResolversTable.ResolversBuckets), GetFiled(SyntaxRepo.FactoriesTableName, nameof(ResolversTable.ResolversBuckets)), SyntaxKind.StaticKeyword);
+            yield return CreateField(bucketsType, nameof(ResolversTable.ResolversBuckets), GetFiled(SyntaxRepo.FactoriesTableName, nameof(ResolversTable.ResolversBuckets)), SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword);
             var fallbackType = SyntaxFactory.GenericName(SyntaxRepo.FuncTypeToken)
                 .AddTypeArgumentListArguments(SyntaxRepo.TypeTypeSyntax)
                 .AddTypeArgumentListArguments(SyntaxRepo.ObjectTypeSyntax)
                 .AddTypeArgumentListArguments(SyntaxRepo.ObjectTypeSyntax);
-            yield return CreateField(fallbackType, nameof(ResolversTable.ResolversDefaultFactory), GetFiled(SyntaxRepo.FactoriesTableName, nameof(ResolversTable.ResolversDefaultFactory)), SyntaxKind.StaticKeyword);
+            yield return CreateField(fallbackType, nameof(ResolversTable.ResolversDefaultFactory), GetFiled(SyntaxRepo.FactoriesTableName, nameof(ResolversTable.ResolversDefaultFactory)), SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword);
         }
 
         private IEnumerable<MemberDeclarationSyntax> CreateDependencyWithTagTable(SemanticModel semanticModel, IEnumerable<(BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
@@ -265,12 +265,12 @@ namespace Pure.DI.Core
             var divisor = SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(ResolversTable.GetDivisor(keyValuePairs.Count)));
             yield return CreateField(SyntaxRepo.UIntTypeSyntax, nameof(ResolversByTagTable.ResolversByTagDivisor), divisor, SyntaxKind.ConstKeyword);
             var bucketsType = SyntaxFactory.ArrayType(keyValuePairType).AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
-            yield return CreateField(bucketsType, nameof(ResolversByTagTable.ResolversByTagBuckets), GetFiled(SyntaxRepo.FactoriesByTagTableName, nameof(ResolversByTagTable.ResolversByTagBuckets)), SyntaxKind.StaticKeyword);
+            yield return CreateField(bucketsType, nameof(ResolversByTagTable.ResolversByTagBuckets), GetFiled(SyntaxRepo.FactoriesByTagTableName, nameof(ResolversByTagTable.ResolversByTagBuckets)), SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword);
             var fallbackType = SyntaxFactory.GenericName(SyntaxRepo.FuncTypeToken)
                 .AddTypeArgumentListArguments(SyntaxRepo.TypeTypeSyntax)
                 .AddTypeArgumentListArguments(SyntaxRepo.ObjectTypeSyntax)
                 .AddTypeArgumentListArguments(SyntaxRepo.ObjectTypeSyntax);
-            yield return CreateField(fallbackType, nameof(ResolversByTagTable.ResolversByTagDefaultFactory), GetFiled(SyntaxRepo.FactoriesByTagTableName, nameof(ResolversByTagTable.ResolversByTagDefaultFactory)), SyntaxKind.StaticKeyword);
+            yield return CreateField(fallbackType, nameof(ResolversByTagTable.ResolversByTagDefaultFactory), GetFiled(SyntaxRepo.FactoriesByTagTableName, nameof(ResolversByTagTable.ResolversByTagDefaultFactory)), SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword);
         }
 
         private static MemberAccessExpressionSyntax GetFiled(string tableName, string fieldName) =>
@@ -279,14 +279,13 @@ namespace Pure.DI.Core
                 SyntaxFactory.IdentifierName(tableName),
                 SyntaxFactory.IdentifierName(fieldName));
 
-        private static FieldDeclarationSyntax CreateField(TypeSyntax type, string name, ExpressionSyntax initExpression, SyntaxKind modifier) =>
+        private static FieldDeclarationSyntax CreateField(TypeSyntax type, string name, ExpressionSyntax initExpression, params SyntaxKind[] modifiers) =>
             SyntaxFactory.FieldDeclaration(
-                SyntaxFactory.VariableDeclaration(type)
-                    .AddVariables(
-                        SyntaxFactory.VariableDeclarator(name)
-                            .WithInitializer(SyntaxFactory.EqualsValueClause(initExpression))))
+                    SyntaxFactory.VariableDeclaration(type)
+                        .AddVariables(
+                            SyntaxFactory.VariableDeclarator(name)
+                                .WithInitializer(SyntaxFactory.EqualsValueClause(initExpression))))
                 .WithModifiers(SyntaxFactory.TokenList()
-                    .Add(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
-                    .Add(SyntaxFactory.Token(modifier)));
+                    .AddRange(Enumerable.Repeat(SyntaxKind.PrivateKeyword, 1).Concat(modifiers).Select(SyntaxFactory.Token)));
     }
 }

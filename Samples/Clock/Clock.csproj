@@ -2,7 +2,10 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard1.2</TargetFramework>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 
 </Project>

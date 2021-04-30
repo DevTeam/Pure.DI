@@ -70,9 +70,9 @@ namespace Pure.DI.Core
                         }
 
                         var key = new Key(semanticType, tag);
-                        if (_map.TryGetValue(key, out _))
+                        if (_map.TryGetValue(key, out var prev))
                         {
-                            _diagnostic.Warning(Diagnostics.BindingIsAlreadyExist, $"{key} binding was exist and will be overridden by a new one.");
+                            _diagnostic.Information(Diagnostics.BindingIsAlreadyExist, $"{prev.Metadata} exists and will be overridden by a new one {binding}.");
                         }
 
                         _map[key] = new Binding<SemanticType>(binding, binding.Implementation);
@@ -85,7 +85,7 @@ namespace Pure.DI.Core
                         if (binding.Lifetime == Lifetime.Scoped || binding.Lifetime == Lifetime.ContainerSingleton)
                         {
                             var serviceProviderInstance = new SemanticType(dependency.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.ServiceProviderInstance`1")!, dependency.SemanticModel).Construct(dependency);
-                            _buildContext.AddBinding(new BindingMetadata(binding, serviceProviderInstance, true));
+                            _buildContext.AddBinding(new BindingMetadata(binding, serviceProviderInstance, binding.Id));
                         }
                     }
                 }
