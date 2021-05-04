@@ -2,6 +2,7 @@
 namespace Pure.DI.Core
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Runtime.CompilerServices;
@@ -64,10 +65,10 @@ namespace Pure.DI.Core
             StaticResolveMethodSyntax.AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax));
 
         public static T WithCommentBefore<T>(this T node, params string[] comments) where T: SyntaxNode =>
-            node.WithLeadingTrivia(node.GetLeadingTrivia().Concat(comments.Select(SyntaxFactory.Comment)));
+            node.WithLeadingTrivia(node.GetLeadingTrivia().Concat(SplitLines(comments).Select(SyntaxFactory.Comment)));
 
         public static T WithCommentAfter<T>(this T node, params string[] comments) where T : SyntaxNode =>
-            node.WithTrailingTrivia(node.GetTrailingTrivia().Concat(comments.Select(SyntaxFactory.Comment)));
+            node.WithTrailingTrivia(node.GetTrailingTrivia().Concat(SplitLines(comments).Select(SyntaxFactory.Comment)));
 
         public static T WithPragmaWarningDisable<T>(this T node, params int[] warningNumbers) where T : SyntaxNode =>
             node.WithLeadingTrivia(
@@ -83,5 +84,16 @@ namespace Pure.DI.Core
                                             SyntaxKind.NumericLiteralExpression,
                                             SyntaxFactory.Literal(warningNumber))),
                                     false)))));
+
+        private static IEnumerable<string> SplitLines(IEnumerable<string> strings)
+        {
+            foreach (var str in strings)
+            {
+                foreach (var subStr in str.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    yield return subStr.TrimStart().StartsWith("//") ? subStr : $"// {subStr}";
+                }
+            }
+        }
     }
 }

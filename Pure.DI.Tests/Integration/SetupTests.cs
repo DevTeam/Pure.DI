@@ -30,7 +30,9 @@
                     static Composer()
                     {
                         DI.Setup()
-                            .Bind<string>().To(_ => ""abc"")
+                            .Bind<string>().To(_ => {
+                                return ""abc"";
+                            })
                             // Composition Root
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }
