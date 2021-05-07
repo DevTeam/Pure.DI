@@ -219,15 +219,36 @@ namespace Pure.DI.Core
 
         public IEnumerable<Dependency> Resolve(SemanticType dependency)
         {
-            var keyToFind = new Key(dependency, null, true);
+            List<SemanticType> dependencies = new();
+            if (!dependency.IsComposedGenericTypeMarker)
+            {
+                dependencies.Add(dependency);
+            }
+
+            if (dependency.Type is INamedTypeSymbol namedTypeSymbol && namedTypeSymbol.IsGenericType)
+            {
+                var unboundDependency = new SemanticType(namedTypeSymbol.ConstructUnboundGenericType(), dependency);
+                dependencies.Add(unboundDependency);
+            }
+
+            var fromFactories =
+                from pair in _factories
+                select (pair.Key, pair.Value.Metadata.Id);
+
+            var fromAuto =
+                from pair in _map
+                select (pair.Key, pair.Value.Metadata.Id);
+
             var registeredKeys =
-                from key in _factories.Keys.Concat(_map.Keys).Distinct()
-                where keyToFind.Equals(key)
-                select key;
+                from item in fromFactories.Concat(fromAuto)
+                from dep in dependencies
+                where item.Key.Dependency.Equals(dep)
+                group item.Key by item.Id into grouped
+                select grouped.First();
 
             foreach (var registeredKey in registeredKeys)
             {
-                yield return Resolve(registeredKey.Dependency, registeredKey.Tag, ImmutableArray.Create<Location>());
+                yield return Resolve(dependency, registeredKey.Tag, ImmutableArray.Create<Location>());
             }
         }
 

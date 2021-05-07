@@ -24,7 +24,7 @@ namespace Pure.DI.Core
 
         public bool TryGetOutputPath(out string outputPath)
         {
-            if (!TryGet(Setting.Output, out outputPath))
+            if (!TryGet(Setting.Out, out outputPath))
             {
                 outputPath = string.Empty;
                 return false;

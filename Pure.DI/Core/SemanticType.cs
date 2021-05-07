@@ -2,6 +2,7 @@
 namespace Pure.DI.Core
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -48,14 +49,48 @@ namespace Pure.DI.Core
             get
             {
                 if (
-                    Type is not INamedTypeSymbol namedTypeSymbol
+                    Type is not INamedTypeSymbol namedTypeSymbol 
                     || !namedTypeSymbol.IsGenericType)
                 {
-                    return Type.ToDisplayString();
+                    return string.Join("", GetParts(Type));
                 }
 
                 var unboundGeneric = namedTypeSymbol.ConstructUnboundGenericType();
-                return string.Join("", unboundGeneric.ToDisplayParts().TakeWhile(i => i.ToString() != "<")) + "`" + namedTypeSymbol.TypeArguments.Length;
+                return string.Join("", GetParts(unboundGeneric).TakeWhile(i => i.ToString() != "<")) + "`" + namedTypeSymbol.TypeArguments.Length;
+            }
+        }
+
+        private static IEnumerable<string> GetParts(ISymbol namedTypeSymbol)
+        {
+#pragma warning disable 219
+            var isNested = false;
+#pragma warning restore 219
+            foreach (var part in namedTypeSymbol.ToDisplayParts())
+            {
+                switch (part.Kind)
+                {
+                    case SymbolDisplayPartKind.ClassName:
+                    case SymbolDisplayPartKind.RecordClassName:
+                        isNested = true;
+                        yield return part.ToString();
+                        break;
+
+                    case SymbolDisplayPartKind.Punctuation:
+                        if (isNested && part.ToString() == ".")
+                        {
+                            yield return "+";
+                        }
+                        else
+                        {
+                            yield return part.ToString();
+                        }
+
+                        break;
+
+                    default:
+                        yield return part.ToString();
+                        break;
+                }
             }
         }
 

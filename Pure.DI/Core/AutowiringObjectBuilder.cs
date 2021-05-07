@@ -35,8 +35,10 @@
         {
             var objectCreationExpression = (
                 from ctor in _constructorsResolver.Resolve(dependency)
-                let parameters = ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, dependency, ctor)
-                where parameters.All(i => i != null)
+                let probeParameters = ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, dependency, ctor, true).ToList()
+                let unresolvedParams = probeParameters.Count(i => i == null)
+                orderby unresolvedParams
+                let parameters = ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, dependency, ctor, false)
                 let arguments = SyntaxFactory.SeparatedList(
                     from parameter in parameters
                     select SyntaxFactory.Argument(parameter))
@@ -77,7 +79,7 @@
                     {
                         case IMethodSymbol method:
                             var arguments =
-                                from parameter in ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, dependency, method)
+                                from parameter in ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, dependency, method, false)
                                 select SyntaxFactory.Argument(parameter);
 
                             var call = SyntaxFactory.InvocationExpression(
@@ -94,7 +96,7 @@
                         case IFieldSymbol filed:
                             if (!filed.IsReadOnly && !filed.IsStatic && !filed.IsConst)
                             {
-                                var fieldValue = ResolveInstance(filed, dependency, filed.Type, _buildContext.TypeResolver, buildStrategy, filed.Locations);
+                                var fieldValue = ResolveInstance(filed, dependency, filed.Type, _buildContext.TypeResolver, buildStrategy, filed.Locations, false);
                                 var assignmentExpression = SyntaxFactory.AssignmentExpression(
                                     SyntaxKind.SimpleAssignmentExpression,
                                     SyntaxFactory.MemberAccessExpression(
@@ -102,7 +104,7 @@
                                         SyntaxFactory.IdentifierName(InstanceVarName),
                                         SyntaxFactory.Token(SyntaxKind.DotToken),
                                         SyntaxFactory.IdentifierName(filed.Name)),
-                                    fieldValue);
+                                    fieldValue!);
 
                                 factoryStatements.Add(SyntaxFactory.ExpressionStatement(assignmentExpression));
                             }
@@ -112,7 +114,7 @@
                         case IPropertySymbol property:
                             if (property.SetMethod != null && !property.IsReadOnly && !property.IsStatic)
                             {
-                                var propertyValue = ResolveInstance(property, dependency, property.Type, _buildContext.TypeResolver, buildStrategy, property.Locations);
+                                var propertyValue = ResolveInstance(property, dependency, property.Type, _buildContext.TypeResolver, buildStrategy, property.Locations, false);
                                 var assignmentExpression = SyntaxFactory.AssignmentExpression(
                                     SyntaxKind.SimpleAssignmentExpression,
                                     SyntaxFactory.MemberAccessExpression(
@@ -120,7 +122,7 @@
                                         SyntaxFactory.IdentifierName(InstanceVarName),
                                         SyntaxFactory.Token(SyntaxKind.DotToken),
                                         SyntaxFactory.IdentifierName(property.Name)),
-                                    propertyValue);
+                                    propertyValue!);
 
                                 factoryStatements.Add(SyntaxFactory.ExpressionStatement(assignmentExpression));
                             }
@@ -158,13 +160,14 @@
                 .WithCommentBefore($"// {dependency.Binding}");
         }
 
-        private ExpressionSyntax ResolveInstance(
+        private ExpressionSyntax? ResolveInstance(
             ISymbol target,
             Dependency targetDependency,
             ITypeSymbol defaultType,
             ITypeResolver typeResolver,
             IBuildStrategy buildStrategy,
-            ImmutableArray<Location> resolveLocations)
+            ImmutableArray<Location> resolveLocations,
+            bool probe)
         {
             LiteralExpressionSyntax? defaultValue = null;
             if (target is IParameterSymbol {HasExplicitDefaultValue: true} parameter)
@@ -174,7 +177,7 @@
 
             var type = GetDependencyType(target, targetDependency.Implementation) ?? new SemanticType(defaultType, targetDependency.Implementation);
             var tag = (ExpressionSyntax?) _attributesService.GetAttributeArgumentExpressions(AttributeKind.Tag, target).FirstOrDefault();
-            var dependency = typeResolver.Resolve(type, tag, resolveLocations, false, defaultValue != null);
+            var dependency = typeResolver.Resolve(type, tag, resolveLocations, false, probe || defaultValue != null);
             if (!dependency.IsResolved && defaultValue != null)
             {
                 return defaultValue;
@@ -206,6 +209,11 @@
                             SyntaxFactory.IdentifierName(nameof(ServiceProviderInstance<object>.Value)));
                     }
 
+                    if (probe)
+                    {
+                        return null;
+                    }
+
                     var dependencyType = dependency.Implementation.TypeSyntax;
                     return SyntaxFactory.CastExpression(dependencyType,
                         SyntaxFactory.InvocationExpression(SyntaxFactory.ParseName(nameof(IContext.Resolve)))
@@ -230,9 +238,9 @@
             throw new HandledException(error);
         }
 
-        private IEnumerable<ExpressionSyntax?> ResolveMethodParameters(ITypeResolver typeResolver, IBuildStrategy buildStrategy, Dependency dependency, IMethodSymbol method) =>
+        private IEnumerable<ExpressionSyntax?> ResolveMethodParameters(ITypeResolver typeResolver, IBuildStrategy buildStrategy, Dependency dependency, IMethodSymbol method, bool probe) =>
             from parameter in method.Parameters
-            select ResolveInstance(parameter, dependency, parameter.Type, typeResolver, buildStrategy, parameter.Locations);
+            select ResolveInstance(parameter, dependency, parameter.Type, typeResolver, buildStrategy, parameter.Locations, probe);
 
         private SemanticType? GetDependencyType(ISymbol type, SemanticModel semanticModel) =>
         (

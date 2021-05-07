@@ -2,7 +2,7 @@
 {
     internal enum Setting
     {
-        Output,
+        Out,
 
         Debug,
 

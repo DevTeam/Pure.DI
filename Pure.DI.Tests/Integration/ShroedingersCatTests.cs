@@ -58,7 +58,6 @@
 
                     static Composer()
                     {
-                        // output=out
                         DI.Setup()
                             // Represents a quantum superposition of 2 states: Alive or Dead
                             .Bind<State>().To(_ => (State)Indeterminacy.Next(2))

@@ -53,17 +53,12 @@ namespace Pure.DI.Core
                 select grouped.Last())
                 .ToArray();
 
-            var tableItems = (
-                from item in items
-                group item by item.binding.Id into grp
-                select grp.First()).ToArray();
-                        
-            foreach (var member in CreateDependencyTable(semanticModel, tableItems))
+            foreach (var member in CreateDependencyTable(semanticModel, items))
             {
                 yield return member;
             }
 
-            foreach (var member in CreateDependencyWithTagTable(semanticModel, tableItems))
+            foreach (var member in CreateDependencyWithTagTable(semanticModel, items))
             {
                 yield return member;
             }

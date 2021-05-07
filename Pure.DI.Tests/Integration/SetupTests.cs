@@ -957,8 +957,6 @@
                 {
                     static Composer1()
                     {
-                        // output = C:\Projects\DevTeam\Pure.DI\out
-                        // verbosity = normal
                         DI.Setup()
                             .Bind<string>().To(_ => ""abc"")
                             // Composition Root
@@ -970,8 +968,6 @@
                 {
                     static Composer()
                     {
-                        // output = C:\Projects\DevTeam\Pure.DI\out
-                        // verbosity = normal
                         DI.Setup()
                             .DependsOn(nameof(Composer1))
                             .Bind<string>().To(_ => ""xyz"");

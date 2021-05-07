@@ -112,7 +112,7 @@ namespace Pure.DI.Core
                                                         SyntaxFactory.GenericName(nameof(IContext.Resolve))
                                                             .AddTypeArgumentListArguments(SyntaxRepo.TTypeSyntax)))
                                                 .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")))))))
-                .WithPragmaWarningDisable(8600, 8604, 8625);
+                .WithPragmaWarningDisable(8600, 8602, 8603, 8604, 8625);
 
             if (prevNamespaceNode != null)
             {
