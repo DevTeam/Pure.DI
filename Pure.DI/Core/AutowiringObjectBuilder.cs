@@ -48,7 +48,7 @@
             if (Equals(objectCreationExpression, default))
             {
                 var error = $"Cannot find an accessible constructor for {dependency}.";
-                _diagnostic.Error(Diagnostics.CannotFindCtor, error, dependency.Implementation.Type.Locations.FirstOrDefault() ?? dependency.Binding.Location);
+                _diagnostic.Error(Diagnostics.Error.CannotFindCtor, error, dependency.Implementation.Type.Locations.FirstOrDefault() ?? dependency.Binding.Location);
                 throw new HandledException(error);
             }
 
@@ -71,7 +71,7 @@
                     if (member.IsStatic || member.DeclaredAccessibility != Accessibility.Public && member.DeclaredAccessibility != Accessibility.Internal)
                     {
                         var error = $"{member} is inaccessible in {dependency.Implementation}.";
-                        _diagnostic.Error(Diagnostics.MemberIsInaccessible, error, member.Locations.FirstOrDefault());
+                        _diagnostic.Error(Diagnostics.Error.MemberIsInaccessible, error, member.Locations.FirstOrDefault());
                         throw new HandledException(error);
                     }
 
@@ -234,7 +234,7 @@
 
 
             var error = $"Unsupported type {dependency.Implementation}.";
-            _diagnostic.Error(Diagnostics.Unsupported, error, resolveLocations.FirstOrDefault());
+            _diagnostic.Error(Diagnostics.Error.Unsupported, error, resolveLocations.FirstOrDefault());
             throw new HandledException(error);
         }
 
@@ -264,7 +264,7 @@
 
             if (ctor.GetAttributes(typeof(ObsoleteAttribute), dependency.Implementation.SemanticModel).Any())
             {
-                _diagnostic.Warning(Diagnostics.CtorIsObsoleted, $"The constructor {ctor} marked as obsoleted is used.", ctor.Locations.FirstOrDefault());
+                _diagnostic.Warning(Diagnostics.Warning.CtorIsObsoleted, $"The constructor {ctor} marked as obsoleted is used.", ctor.Locations.FirstOrDefault());
             }
 
             return SyntaxFactory.ObjectCreationExpression(typeSyntax)

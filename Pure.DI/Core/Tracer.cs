@@ -29,7 +29,7 @@
             }
 
             var error = $"Circular dependency detected for {this}.";
-            _diagnostic.Error(Diagnostics.CircularDependency, error, dependency.Binding.Location);
+            _diagnostic.Error(Diagnostics.Error.CircularDependency, error, dependency.Binding.Location);
             throw new HandledException(error);
         }
 

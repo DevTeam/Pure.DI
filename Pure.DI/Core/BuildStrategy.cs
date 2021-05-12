@@ -45,7 +45,7 @@
             if (!_lifetimes.TryGetValue(dependency.Binding.Lifetime, out var lifetimeStrategy))
             {
                 var error = $"{dependency.Binding.Lifetime} lifetime is not supported.";
-                _diagnostic.Error(Diagnostics.Unsupported, error, dependency.Implementation.Type.Locations.FirstOrDefault());
+                _diagnostic.Error(Diagnostics.Error.Unsupported, error, dependency.Implementation.Type.Locations.FirstOrDefault());
                 throw new HandledException(error);
             }
 

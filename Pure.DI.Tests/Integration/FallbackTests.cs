@@ -44,7 +44,7 @@
 
             // Then
             output.ShouldContain("1", generatedCode);
-            output.Any(i => i.Contains(Diagnostics.CannotResolveDependencyWarning)).ShouldBeTrue(generatedCode);
+            output.Any(i => i.Contains(Diagnostics.Warning.CannotResolveDependency)).ShouldBeTrue(generatedCode);
         }
     }
 }

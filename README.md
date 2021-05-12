@@ -213,7 +213,7 @@ When a targeting project is an ASP.NET project, a special extension method is ge
   - [Injection of default parameters](#injection-of-default-parameters-)
 - Lifetimes
   - [Singleton lifetime](#singleton-lifetime-)
-  - [Custom lifetime: thread Singleton](#custom-lifetime:-thread-singleton-)
+  - [Per thread singleton](#per-thread-singleton-)
 - BCL types
   - [Arrays](#arrays-)
   - [Collections](#collections-)
@@ -563,16 +563,16 @@ instance1.ShouldBe(instance2);
 
 
 
-### Custom lifetime: thread Singleton [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/ThreadSingletonLifetime.cs)
+### Per thread singleton [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/ThreadSingletonLifetime.cs)
 
-Sometimes it is useful to have a [singleton](https://en.wikipedia.org/wiki/Singleton_pattern) instance per a thread (or more generally a singleton per something else). There is no special "lifetime" type in this framework to achieve this requirement. Still, it is quite easy to create your own "lifetime" type for that using base type [_KeyBasedLifetime<>_](IoC/Lifetimes/KeyBasedLifetime.cs).
+
 
 ``` CSharp
 public void Run()
 {
     DI.Setup()
         .Bind<IDependency>().To<Dependency>()
-        // Bind an interface to an implementation using the singleton per a thread lifetime
+        // Bind an interface to an implementation using the per thread singleton lifetime
         .Bind<IService>().As(Lifetime.PerThread).To<Service>();
 
     // Resolve the singleton twice

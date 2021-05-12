@@ -68,7 +68,7 @@
                 foreach (var (dependency, lifetime, binding) in dependencies.Where(i => i.lifetime == Lifetime.Scoped || i.lifetime == Lifetime.ContainerSingleton))
                 {
                     var error = $"Impossible to use the lifetime {lifetime} for {dependency} outside an ASP.NET context.";
-                    _diagnostic.Error(Diagnostics.Unsupported, error, binding.Location);
+                    _diagnostic.Error(Diagnostics.Error.Unsupported, error, binding.Location);
                 }
 
                 yield break;

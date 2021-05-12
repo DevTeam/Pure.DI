@@ -46,7 +46,9 @@
             }".Replace("static partial class", classDefinition).Run(out var generatedCode, new RunOptions { Statements = @"System.Console.WriteLine(ComposerDI.Resolve<CompositionRoot>().Value);" });
 
             // Then
-            output.ShouldBe(new[] { "abc" }, generatedCode);
+            output.Count.ShouldBe(2, generatedCode);
+            output[0].ShouldBe("abc", generatedCode);
+            output[1].Contains(Diagnostics.Warning.CannotUseCurrentTypeAsDI).ShouldBeTrue(generatedCode);
         }
 
         [Fact]
@@ -199,7 +201,9 @@
             }".Run(out var generatedCode, new RunOptions { Statements = @"System.Console.WriteLine(ComposerDI.Resolve<CompositionRoot>().Value);" });
 
             // Then
-            output.ShouldBe(new[] { "abc" }, generatedCode);
+            output.Count.ShouldBe(2, generatedCode);
+            output[0].ShouldBe("abc", generatedCode);
+            output[1].Contains(Diagnostics.Warning.CannotUseCurrentTypeAsDI).ShouldBeTrue(generatedCode);
         }
 
         [Fact]

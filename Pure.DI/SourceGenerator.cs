@@ -48,7 +48,7 @@
             }
             catch (Exception ex)
             {
-                _diagnostic.Error(Diagnostics.Unhandled, ex.ToString());
+                _diagnostic.Error(Diagnostics.Error.Unhandled, ex.ToString());
             }
         }
     }

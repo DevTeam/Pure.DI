@@ -39,7 +39,7 @@
             }".Replace("string", type).Run(out var generatedCode);
 
             // Then
-            output.Any(i => i.Contains(Diagnostics.CannotResolveDependencyError)).ShouldBeTrue(generatedCode);
+            output.Any(i => i.Contains(Diagnostics.Error.CannotResolveDependency)).ShouldBeTrue(generatedCode);
         }
 
         [Theory]
@@ -82,7 +82,7 @@
             }".Replace("string", type).Run(out var generatedCode);
 
             // Then
-            output.Any(i => i.Contains(Diagnostics.CannotResolveDependencyWarning)).ShouldBeTrue(generatedCode);
+            output.Any(i => i.Contains(Diagnostics.Warning.CannotResolveDependency)).ShouldBeTrue(generatedCode);
             output.Any(i => i.Contains("Cannot resolve!!!")).ShouldBeTrue(generatedCode);
         }
 
@@ -122,7 +122,7 @@
             }".Run(out var generatedCode);
 
             // Then
-            output.Any(i => i.Contains(Diagnostics.CircularDependency)).ShouldBeTrue(generatedCode);
+            output.Any(i => i.Contains(Diagnostics.Error.CircularDependency)).ShouldBeTrue(generatedCode);
         }
 
         [Fact]
@@ -161,7 +161,7 @@
             }".Run(out var generatedCode);
 
             // Then
-            output.Any(i => i.Contains(Diagnostics.CannotFindCtor)).ShouldBeTrue(generatedCode);
+            output.Any(i => i.Contains(Diagnostics.Error.CannotFindCtor)).ShouldBeTrue(generatedCode);
         }
 
         [Fact]
@@ -202,7 +202,7 @@
             }".Run(out var generatedCode);
 
             // Then
-            output.Any(i => i.Contains(Diagnostics.CtorIsObsoleted)).ShouldBeTrue(generatedCode);
+            output.Any(i => i.Contains(Diagnostics.Warning.CtorIsObsoleted)).ShouldBeTrue(generatedCode);
         }
 
         [Fact]
@@ -238,7 +238,7 @@
             }".Run(out var generatedCode);
 
             // Then
-            output.Any(i => i.Contains(Diagnostics.MemberIsInaccessible)).ShouldBeTrue(generatedCode);
+            output.Any(i => i.Contains(Diagnostics.Error.MemberIsInaccessible)).ShouldBeTrue(generatedCode);
         }
     }
 }

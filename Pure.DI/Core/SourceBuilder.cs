@@ -55,7 +55,7 @@
             if (compilation is not CSharpCompilation csharpCompilation)
             {
                 var error = $"{compilation.Language} is not supported.";
-                _diagnostic.Error(Diagnostics.Unsupported, error);
+                _diagnostic.Error(Diagnostics.Error.Unsupported, error);
                 throw new HandledException(error);
             }
 

@@ -125,7 +125,7 @@ namespace Pure.DI.Core
             }
 
             var sampleDependency = _metadata.Bindings.LastOrDefault()?.Dependencies.FirstOrDefault()?.ToString() ?? "T";
-            _diagnostic.Information(Diagnostics.Generated, $"{_metadata.TargetTypeName} was generated. Please use a method like {_metadata.TargetTypeName}.Resolve<{sampleDependency}>() to create a composition root.", _metadata.Bindings.FirstOrDefault()?.Location);
+            _diagnostic.Information(Diagnostics.Information.Generated, $"{_metadata.TargetTypeName} was generated. Please use a method like {_metadata.TargetTypeName}.Resolve<{sampleDependency}>() to create a composition root.", _metadata.Bindings.FirstOrDefault()?.Location);
             return compilationUnit;
         }
     }

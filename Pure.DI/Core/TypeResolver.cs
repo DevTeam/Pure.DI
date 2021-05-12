@@ -72,7 +72,7 @@ namespace Pure.DI.Core
                         var key = new Key(semanticType, tag);
                         if (_map.TryGetValue(key, out var prev))
                         {
-                            _diagnostic.Information(Diagnostics.BindingIsAlreadyExist, $"{prev.Metadata} exists and will be overridden by a new one {binding}.");
+                            _diagnostic.Information(Diagnostics.Information.BindingAlreadyExists, $"{prev.Metadata} exists and will be overridden by a new one {binding}.");
                         }
 
                         _map[key] = new Binding<SemanticType>(binding, binding.Implementation);
@@ -201,12 +201,12 @@ namespace Pure.DI.Core
 
                 if (hasFallback)
                 {
-                    _diagnostic.Warning(Diagnostics.CannotResolveDependencyWarning, $"Cannot resolve a dependency of the type {GetDependencyName(dependency, tag)} for {_tracer}. Will use a fallback strategy.", resolveLocations.FirstOrDefault());
+                    _diagnostic.Warning(Diagnostics.Warning.CannotResolveDependency, $"Cannot resolve a dependency of the type {GetDependencyName(dependency, tag)} for {_tracer}. Will use a fallback strategy.", resolveLocations.FirstOrDefault());
                 }
                 else
                 {
                     var error = $"Cannot resolve a dependency of the type {GetDependencyName(dependency, tag)} for {_tracer}. Please add an appropriate binding, remove this dependency or rely on a fallback strategy.";
-                    _diagnostic.Error(Diagnostics.CannotResolveDependencyError, error, resolveLocations.FirstOrDefault());
+                    _diagnostic.Error(Diagnostics.Error.CannotResolveDependency, error, resolveLocations.FirstOrDefault());
                     throw new HandledException(error);
                 }
             }

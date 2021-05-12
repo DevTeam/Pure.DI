@@ -23,7 +23,7 @@
                     true),
                 location));
 
-            if (id != Diagnostics.Unhandled)
+            if (id != Diagnostics.Error.Unhandled)
             {
                 _log.Trace(() => new []{ $"{id} {message}"});
             }

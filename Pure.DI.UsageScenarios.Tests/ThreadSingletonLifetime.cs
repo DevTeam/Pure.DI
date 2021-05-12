@@ -11,14 +11,13 @@ namespace Pure.DI.UsageScenarios.Tests
         // $visible=true
         // $tag=2 Lifetimes
         // $priority=10
-        // $description=Custom lifetime: thread Singleton
-        // $header=Sometimes it is useful to have a [singleton](https://en.wikipedia.org/wiki/Singleton_pattern) instance per a thread (or more generally a singleton per something else). There is no special "lifetime" type in this framework to achieve this requirement. Still, it is quite easy to create your own "lifetime" type for that using base type [_KeyBasedLifetime<>_](IoC/Lifetimes/KeyBasedLifetime.cs).
+        // $description=Per thread singleton
         // {
         public void Run()
         {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
-                // Bind an interface to an implementation using the singleton per a thread lifetime
+                // Bind an interface to an implementation using the per thread singleton lifetime
                 .Bind<IService>().As(Lifetime.PerThread).To<Service>();
 
             // Resolve the singleton twice

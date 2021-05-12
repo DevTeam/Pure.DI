@@ -33,7 +33,7 @@
                 if (lifetimeDependencyType == null)
                 {
                     var error = $"Cannot resolve a lifetime for {resolvedType}.";
-                    _diagnostic.Error(Diagnostics.CannotResolveLifetime, error);
+                    _diagnostic.Error(Diagnostics.Error.CannotResolveLifetime, error);
                     throw new HandledException(error);
                 }
 
@@ -41,7 +41,7 @@
                 if (!lifetimeTypeDescription.IsResolved)
                 {
                     var error = $"Cannot find a lifetime for {resolvedType}. Please add a binding for {lifetimeDependencyType}, for example .Bind<ILifetime<{resolvedType}>>().To<MyLifetime<{resolvedType}>>().";
-                    _diagnostic.Error(Diagnostics.CannotResolveLifetime, error);
+                    _diagnostic.Error(Diagnostics.Error.CannotResolveLifetime, error);
                     throw new HandledException(error);
                 }
 
