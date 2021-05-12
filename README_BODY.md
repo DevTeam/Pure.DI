@@ -160,6 +160,9 @@ DI.Setup("MyComposer")
   // You could specify few tags for each binding
   .Bind<IMyInterface>().Tag("MyImpl").Tag(123).To<MyImplementation>()
 
+  // Or a binding relating to any tag
+  .Bind<IMyInterface>().AnyTag().To<MyImplementation>()
+
   // This advanced binding format 
   // which allows to create instance manually and inject all required dependenciesinvoke methods, initialize properties and etc
   .Bind<IMyInterface>().To(ctx => new MyImplementation(ctx.Resolve<ISomeDependency1>(), "Some value", ctx.Resolve<ISomeDependency2>()))
@@ -191,7 +194,6 @@ The list of life times:
 ## ASP.NET Support
 
 When a targeting project is an ASP.NET project, a special extension method is generated automatically. This extension method could be used to integrate DI into a web application infrastructure. Pay attention to [this single statement](https://github.com/DevTeam/Pure.DI/blob/d1c4cdf3d6d7015f809cf7f9153d091a1d42dc34/Samples/BlazorServerApp/Startup.cs#L24)  that makes all magic. For more details, please take a look at this [sample](https://github.com/DevTeam/Pure.DI/tree/master/Samples/BlazorServerApp).
-
 
 ## WPF Support
 

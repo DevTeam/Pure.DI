@@ -69,7 +69,7 @@ namespace Pure.DI.Core
                             continue;
                         }
 
-                        var key = new Key(semanticType, tag);
+                        var key = new Key(semanticType, tag, binding.AnyTag);
                         if (_map.TryGetValue(key, out var prev))
                         {
                             _diagnostic.Information(Diagnostics.Information.BindingAlreadyExists, $"{prev.Metadata} exists and will be overridden by a new one {binding}.");

@@ -14,6 +14,7 @@
         public readonly ISet<SemanticType> Dependencies = new HashSet<SemanticType>(SemanticTypeEqualityComparer.Default);
         public readonly ISet<ExpressionSyntax> Tags = new HashSet<ExpressionSyntax>();
         public readonly object Id;
+        public bool AnyTag = false;
         private static int _currentId;
 
         public BindingMetadata(object? id = null)

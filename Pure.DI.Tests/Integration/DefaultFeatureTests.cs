@@ -40,6 +40,40 @@
         }
 
         [Fact]
+        public void ShouldSupportFuncWithTag()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<string>().Tag(1).To(_ => ""abc"")
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot([Tag(1)] Func<string> value) => Value = value();        
+                }
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "abc" }, generatedCode);
+        }
+
+        [Fact]
         public void ShouldSupportLazy()
         {
             // Given

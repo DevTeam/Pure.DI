@@ -56,7 +56,15 @@ namespace Pure.DI.Core
                 && node.Expression is IdentifierNameSyntax identifierName
                 && identifierName.ToString() == _contextIdentifier.Text)
             {
-                return Visit(node.ChildNodes().OfType<GenericNameSyntax>().FirstOrDefault());
+                var method = node.ChildNodes().OfType<GenericNameSyntax>().FirstOrDefault();
+                if (method != null && _dependency.Binding.AnyTag && _dependency.Tag != null)
+                {
+                    return SyntaxFactory.ParenthesizedLambdaExpression(
+                        SyntaxFactory.InvocationExpression((GenericNameSyntax)VisitGenericName(method))
+                            .AddArgumentListArguments(SyntaxFactory.Argument(_dependency.Tag)));
+                }
+
+                return Visit(method);
             }
 
             return base.VisitMemberAccessExpression(node);

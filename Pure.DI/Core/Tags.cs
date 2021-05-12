@@ -2,6 +2,7 @@
 {
     internal enum Tags
     {
+        Any,
         Default,
         AutowiringBuilder,
         FactoryBuilder,

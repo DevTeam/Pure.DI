@@ -12,8 +12,10 @@ namespace Pure.DI.Features
                 .OrderAttribute<OrderAttribute>()
 
                 .Bind<System.Func<TT>>()
+                    .AnyTag()
                     .To(ctx => new System.Func<TT>(ctx.Resolve<TT>))
                 .Bind<System.Threading.Tasks.Task<TT>>()
+                    .AnyTag()
                     .To(ctx => new System.Threading.Tasks.Task<TT>(ctx.Resolve<TT>))
                 
                 // Enumerable

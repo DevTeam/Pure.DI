@@ -221,6 +221,18 @@ namespace Pure.DI.Core
                     _binding.Tags.Add(tag.Expression);
                 }
             }
+
+            if (invocationOperation.Arguments.Length == 0
+                && !invocationOperation.TargetMethod.IsGenericMethod)
+            {
+                // AnyTag()
+                if (invocationOperation.TargetMethod.Name == nameof(IBinding.AnyTag)
+                    && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IBinding))
+                    && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IBinding)))
+                {
+                    _binding.AnyTag = true;
+                }
+            }
         }
 
         private static bool TryGetValue<T>(IArgumentOperation arg, SemanticModel semanticModel, out T value, T defaultValue)

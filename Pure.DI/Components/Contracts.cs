@@ -151,6 +151,11 @@ namespace Pure.DI
                 return this;
             }
 
+            public IBinding AnyTag()
+            {
+                return this;
+            }
+
             public IConfiguration To<T>()
             {
                 return _configuration;
@@ -183,6 +188,8 @@ namespace Pure.DI
         IBinding As(Lifetime lifetime);
 
         IBinding Tag(object tag);
+
+        IBinding AnyTag();
 
         IConfiguration To<T>();
 

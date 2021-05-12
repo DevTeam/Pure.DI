@@ -988,5 +988,39 @@
             // Then
             output.ShouldBe(new []{ "xyz" }, generatedCode);
         }
+
+        [Fact]
+        public void ShouldSupportAnyTag()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<string>().AnyTag().To(_ => ""abc"")
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot([Tag(1)] string value) => Value = value;
+                }
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "abc" }, generatedCode);
+        }
     }
 }
