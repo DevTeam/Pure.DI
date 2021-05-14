@@ -190,5 +190,41 @@
             // Then
             output.ShouldBe(new[] { "True" }, generatedCode);
         }
+
+        [Fact]
+        public void ShouldSupportSingletonWhenFuncAndGeneric()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class Foo<T> { }
+
+                public class CompositionRoot
+                {
+                    public readonly bool Value;
+                    internal CompositionRoot(Func<Foo<string>> value1, Func<Foo<string>> value2) => Value = value1().Equals(value2());        
+                }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        //out=C:\Projects\DevTeam\Pure.DI\out
+                        DI.Setup()
+                            .Bind<Foo<TT>>().As(Pure.DI.Lifetime.Singleton).To<Foo<TT>>()
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                    
+                }    
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "True" }, generatedCode);
+        }
     }
 }

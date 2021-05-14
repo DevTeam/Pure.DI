@@ -57,11 +57,16 @@ namespace Pure.DI.Core
                 && identifierName.ToString() == _contextIdentifier.Text)
             {
                 var method = node.ChildNodes().OfType<GenericNameSyntax>().FirstOrDefault();
-                if (method != null && _dependency.Binding.AnyTag && _dependency.Tag != null)
+                if (method != null)
                 {
-                    return SyntaxFactory.ParenthesizedLambdaExpression(
-                        SyntaxFactory.InvocationExpression((GenericNameSyntax)VisitGenericName(method))
-                            .AddArgumentListArguments(SyntaxFactory.Argument(_dependency.Tag)));
+                    var args = method.TypeArgumentList.Arguments.ToArray();
+                    ReplaceTypes(args, true);
+                    if (_dependency.Binding.AnyTag && _dependency.Tag != null)
+                    {
+                        return SyntaxFactory.ParenthesizedLambdaExpression(
+                            SyntaxFactory.InvocationExpression((GenericNameSyntax) VisitGenericName(method))
+                                .AddArgumentListArguments(SyntaxFactory.Argument(_dependency.Tag)));
+                    }
                 }
 
                 return Visit(method);
@@ -110,15 +115,15 @@ namespace Pure.DI.Core
             return base.VisitInvocationExpression(node);
         }
 
-        private void ReplaceTypes(IList<TypeSyntax> args)
+        private void ReplaceTypes(IList<TypeSyntax> args, bool addBinding = false)
         {
             for (var i = 0; i < args.Count; i++)
             {
-                args[i] = ReplaceType(args[i]);
+                args[i] = ReplaceType(args[i], addBinding);
             }
         }
 
-        private TypeSyntax ReplaceType(TypeSyntax typeSyntax)
+        private TypeSyntax ReplaceType(TypeSyntax typeSyntax, bool addBinding = false)
         {
             var semanticModel = typeSyntax.SyntaxTree.GetRoot().GetSemanticModel(_dependency.Implementation);
             var typeSymbol = semanticModel.GetTypeInfo(typeSyntax).Type;
@@ -126,6 +131,11 @@ namespace Pure.DI.Core
             {
                 var curType = new SemanticType(namedTypeSymbol, _dependency.Implementation);
                 var constructedType = _dependency.TypesMap.ConstructType(curType);
+                if (addBinding)
+                {
+                    AddBinding(constructedType);
+                }
+
                 return constructedType.TypeSyntax;
             }
 
@@ -133,10 +143,26 @@ namespace Pure.DI.Core
             {
                 var curType = new SemanticType(arrayTypeSymbol.ElementType, _dependency.Implementation);
                 var constructedType = _dependency.TypesMap.ConstructType(curType);
+                if (addBinding)
+                {
+                    AddBinding(constructedType);
+                }
+
                 return SyntaxFactory.ArrayType(constructedType).AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
             }
 
             return typeSyntax;
+        }
+
+        private void AddBinding(SemanticType constructedType)
+        {
+            var binding = new BindingMetadata(_dependency.Binding, constructedType, null);
+            if (_dependency.Tag != null)
+            {
+                binding.Tags.Add(_dependency.Tag);
+            }
+
+            _buildContext.AddBinding(binding);
         }
     }
 }
