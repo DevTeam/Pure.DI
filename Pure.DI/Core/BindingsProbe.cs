@@ -8,13 +8,16 @@
     {
         private readonly IBuildContext _buildContext;
         private readonly IBuildStrategy _buildStrategy;
+        private readonly Log<BindingsProbe> _log;
 
         public BindingsProbe(
             IBuildContext buildContext,
-            [Tag(Tags.SimpleBuildStrategy)] IBuildStrategy buildStrategy)
+            [Tag(Tags.SimpleBuildStrategy)] IBuildStrategy buildStrategy,
+            Log<BindingsProbe> log)
         {
             _buildContext = buildContext;
             _buildStrategy = buildStrategy;
+            _log = log;
         }
 
         public void Probe()
@@ -31,6 +34,12 @@
 
             foreach (var (dependency, tag) in dependencies)
             {
+                if (_buildContext.IsCancellationRequested)
+                {
+                    _log.Trace(() => new []{ "Build canceled" });
+                    break;
+                }
+
                 _buildStrategy.Build(_buildContext.TypeResolver.Resolve(dependency, tag, dependency.Type.Locations));
             }
         }

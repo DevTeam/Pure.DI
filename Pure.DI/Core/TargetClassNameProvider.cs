@@ -7,11 +7,6 @@ namespace Pure.DI.Core
 
     internal class TargetClassNameProvider : ITargetClassNameProvider
     {
-        private readonly IDiagnostic _diagnostic;
-
-        public TargetClassNameProvider(IDiagnostic diagnostic) =>
-            _diagnostic = diagnostic;
-
         public string? TryGetName(string targetTypeName, SyntaxNode node, ClassDeclarationSyntax? ownerClass)
         {
             if (ownerClass == null)
@@ -24,7 +19,6 @@ namespace Pure.DI.Core
                             .FirstOrDefault(i => !string.IsNullOrWhiteSpace(i));
 
                     targetTypeName = $"{parentNodeName}DI";
-                    _diagnostic.Warning(Diagnostics.Warning.CannotUseCurrentTypeAsDI, $"It is not possible to use the current type as DI. Please make sure it is static partial and has public or internal access modifiers. {targetTypeName} will be used instead. You may change this name by passing the optional argument to DI.Setup(string targetTypeName).", node.GetLocation());
                     return targetTypeName;
                 }
             }

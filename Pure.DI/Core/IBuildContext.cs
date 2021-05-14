@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -9,9 +10,11 @@
     {
         Compilation Compilation { get; }
 
+        bool IsCancellationRequested { get; }
+
         ResolverMetadata Metadata { get; }
 
-        void Prepare(Compilation compilation, ResolverMetadata metadata);
+        void Prepare(Compilation compilation, CancellationToken cancellationToken, ResolverMetadata metadata);
 
         INameService NameService { get; }
 

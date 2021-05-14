@@ -1,6 +1,7 @@
 ﻿namespace Pure.DI
 {
     using System;
+    using System.Diagnostics;
     using Core;
     using IoC;
     using Microsoft.CodeAnalysis;
@@ -8,18 +9,14 @@
     [Generator]
     public class SourceGenerator : ISourceGenerator
     {
-        private readonly IMutableContainer _container = Container.Create().Using<Configuration>();
-        private readonly CompilationDiagnostic _diagnostic;
+        private static readonly IMutableContainer Container = IoC.Container
+            .Create()
+            .Using<Configuration>()
+            .Create()
+            .Bind<CompilationDiagnostic>().Bind<IDiagnostic>().As(IoC.Lifetime.ContainerSingleton).To<CompilationDiagnostic>()
+            .Container;
 
-        public SourceGenerator()
-        {
-            var container = _container
-                .Create()
-                .Bind<CompilationDiagnostic>().Bind<IDiagnostic>().As(IoC.Lifetime.Singleton).To<CompilationDiagnostic>()
-                .Container;
-
-            _diagnostic = container.Resolve<CompilationDiagnostic>();
-        }
+        private static readonly Func<IGenerator> CreateGenerator = Container.Resolve<Func<IGenerator>>();
 
         public void Initialize(GeneratorInitializationContext context)
         {
@@ -31,25 +28,6 @@
 #endif
         }
 
-        public void Execute(GeneratorExecutionContext context)
-        {
-            _diagnostic.Context = context;
-            using var container = _container.Create();
-            try
-            {
-                var sourceBuilder = container.Resolve<ISourceBuilder>();
-                foreach (var source in sourceBuilder.Build(context.Compilation))
-                {
-                    context.AddSource(source.HintName, source.Code);
-                }
-            }
-            catch (HandledException)
-            {
-            }
-            catch (Exception ex)
-            {
-                _diagnostic.Error(Diagnostics.Error.Unhandled, ex.ToString());
-            }
-        }
+        public void Execute(GeneratorExecutionContext context) => CreateGenerator().Generate(context);
     }
 }

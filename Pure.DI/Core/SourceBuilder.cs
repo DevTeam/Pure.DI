@@ -7,6 +7,7 @@
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
+    using System.Threading;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.Text;
@@ -50,8 +51,10 @@
             _metadataWalkerFactory = metadataWalkerFactory;
         }
 
-        public IEnumerable<Source> Build(Compilation compilation)
+        public IEnumerable<Source> Build(Compilation compilation, CancellationToken cancellationToken)
         {
+            Stopwatch stopwatch = new();
+            stopwatch.Start();
             if (compilation is not CSharpCompilation csharpCompilation)
             {
                 var error = $"{compilation.Language} is not supported.";
@@ -62,78 +65,119 @@
             var parseOptions = new CSharpParseOptions(csharpCompilation.LanguageVersion);
             foreach (var component in Components)
             {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
+
                 compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(component.Code, parseOptions));
                 yield return component;
             }
 
-            compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(Features.Code, parseOptions));
-
-            var featuresMetadata = new List<ResolverMetadata>();
-            foreach (var tree in compilation.SyntaxTrees.Reverse().Take(1))
+            if (!cancellationToken.IsCancellationRequested)
             {
-                var walker = _metadataWalkerFactory(compilation.GetSemanticModel(tree));
-                walker.Visit(tree.GetRoot());
-                featuresMetadata.AddRange(walker.Metadata);
-            }
+                compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(Features.Code, parseOptions));
 
-            var allMetadata = new List<ResolverMetadata>(featuresMetadata);
-            List<(SyntaxTree tree, ResolverMetadata rawMetadata)> items = new();
-            foreach (var tree in compilation.SyntaxTrees.Reverse().Skip(1 + Components.Count()))
-            {
-                var walker = _metadataWalkerFactory(compilation.GetSemanticModel(tree));
-                walker.Visit(tree.GetRoot());
-                allMetadata.AddRange(walker.Metadata);
-                items.AddRange(walker.Metadata.Select(rawMetadata => (tree, rawMetadata)));
-            }
-
-            foreach (var (tree, rawMetadata) in items)
-            {
-                var semanticModel = compilation.GetSemanticModel(tree);
-                var metadata = CreateMetadata(rawMetadata, allMetadata);
-                _context.Prepare(compilation, metadata);
-
-                if (_settings.Debug)
+                var featuresMetadata = new List<ResolverMetadata>();
+                foreach (var tree in compilation.SyntaxTrees.Reverse().Take(1))
                 {
-                    if (!Debugger.IsAttached)
+                    if (cancellationToken.IsCancellationRequested)
                     {
-                        _log.Info(() => new[] {"Launch a debugger."});
-                        Debugger.Launch();
+                        break;
                     }
-                    else
-                    {
-                        _log.Info(() => new[] {"A debugger is already attached"});
-                    }
+
+                    var walker = _metadataWalkerFactory(compilation.GetSemanticModel(tree));
+                    walker.Visit(tree.GetRoot());
+                    featuresMetadata.AddRange(walker.Metadata);
                 }
 
-                _log.Info(() =>
+                if (!cancellationToken.IsCancellationRequested)
                 {
-                    var messages = new List<string>
+                    var allMetadata = new List<ResolverMetadata>(featuresMetadata);
+                    List<(SyntaxTree tree, ResolverMetadata rawMetadata)> items = new();
+                    foreach (var tree in compilation.SyntaxTrees.Reverse().Skip(1 + Components.Count()))
                     {
-                        $"Processing {rawMetadata.TargetTypeName}",
-                        $"{nameof(DI)}.{nameof(DI.Setup)}()"
-                    };
-                    messages.AddRange(metadata.Bindings.Select(binding => $"  .{binding}"));
-                    return messages.ToArray();
-                });
+                        if (cancellationToken.IsCancellationRequested)
+                        {
+                            break;
+                        }
 
-                var compilationUnitSyntax = _resolverBuilderFactory().Build(semanticModel).NormalizeWhitespace();
+                        var walker = _metadataWalkerFactory(compilation.GetSemanticModel(tree));
+                        walker.Visit(tree.GetRoot());
+                        allMetadata.AddRange(walker.Metadata);
+                        items.AddRange(walker.Metadata.Select(rawMetadata => (tree, rawMetadata)));
+                    }
 
-                var source = new Source(
-                    $"{metadata.TargetTypeName}.cs",
-                    SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8));
-
-                if (_settings.TryGetOutputPath(out var outputPath))
-                {
-                    _log.Info(() => new[] {$"The output path: {outputPath}"});
-                    _fileSystem.WriteFile(Path.Combine(outputPath, source.HintName), source.Code.ToString());
-                    _fileSystem.WriteFile(Path.Combine(outputPath, Features.HintName), Features.Code.ToString());
-                    foreach (var component in Components)
+                    if (!cancellationToken.IsCancellationRequested)
                     {
-                        _fileSystem.WriteFile(Path.Combine(outputPath, component.HintName), component.Code.ToString());
+                        stopwatch.Stop();
+                        var initDuration = stopwatch.ElapsedMilliseconds;
+
+                        foreach (var (tree, rawMetadata) in items)
+                        {
+                            stopwatch.Start();
+                            var semanticModel = compilation.GetSemanticModel(tree);
+                            var metadata = CreateMetadata(rawMetadata, allMetadata);
+                            _context.Prepare(compilation, cancellationToken, metadata);
+
+                            if (cancellationToken.IsCancellationRequested)
+                            {
+                                _log.Trace(() => new[] { "Build canceled" });
+                                break;
+                            }
+
+                            if (_settings.Debug)
+                            {
+                                if (!Debugger.IsAttached)
+                                {
+                                    _log.Info(() => new[] {"Launch a debugger."});
+                                    Debugger.Launch();
+                                }
+                                else
+                                {
+                                    _log.Info(() => new[] {"A debugger is already attached"});
+                                }
+                            }
+
+                            _log.Info(() =>
+                            {
+                                var messages = new List<string>
+                                {
+                                    $"Processing {rawMetadata.TargetTypeName}",
+                                    $"{nameof(DI)}.{nameof(DI.Setup)}()"
+                                };
+                                messages.AddRange(metadata.Bindings.Select(binding => $"  .{binding}"));
+                                return messages.ToArray();
+                            });
+
+                            var compilationUnitSyntax = _resolverBuilderFactory().Build(semanticModel).NormalizeWhitespace();
+
+                            var source = new Source(
+                                $"{metadata.TargetTypeName}.cs",
+                                SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8));
+
+                            if (_settings.TryGetOutputPath(out var outputPath))
+                            {
+                                _log.Info(() => new[] {$"The output path: {outputPath}"});
+                                _fileSystem.WriteFile(Path.Combine(outputPath, source.HintName), source.Code.ToString());
+                                _fileSystem.WriteFile(Path.Combine(outputPath, Features.HintName), Features.Code.ToString());
+                                foreach (var component in Components)
+                                {
+                                    _fileSystem.WriteFile(Path.Combine(outputPath, component.HintName), component.Code.ToString());
+                                }
+                            }
+
+                            stopwatch.Stop();
+                            _log.Trace(() => new[]
+                            {
+                                $"Initialize {initDuration} ms.",
+                                $"Generate {stopwatch.ElapsedMilliseconds} ms."
+                            });
+
+                            yield return source;
+                        }
                     }
                 }
-
-                yield return source;
             }
         }
 

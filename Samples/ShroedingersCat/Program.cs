@@ -9,6 +9,7 @@
 namespace Sample
 {
     using System;
+    using System.Diagnostics;
     using Pure.DI;
     using static Pure.DI.Lifetime;
 

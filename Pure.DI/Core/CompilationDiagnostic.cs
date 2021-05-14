@@ -13,15 +13,22 @@
 
         public void Error(string id, string message, Location? location = null)
         {
-            Context.ReportDiagnostic(Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    id,
-                    "Error",
-                    message,
-                    "Error",
-                    DiagnosticSeverity.Error,
-                    true),
-                location));
+            try
+            {
+                Context.ReportDiagnostic(Diagnostic.Create(
+                    new DiagnosticDescriptor(
+                        id,
+                        "Error",
+                        message,
+                        "Error",
+                        DiagnosticSeverity.Error,
+                        true),
+                    location));
+            }
+            catch
+            {
+                // ignored
+            }
 
             if (id != Diagnostics.Error.Unhandled)
             {
@@ -31,30 +38,44 @@
 
         public void Warning(string id, string message, Location? location = null)
         {
-            Context.ReportDiagnostic(Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    id,
-                    "Warning",
-                    message,
-                    "Warning",
-                    DiagnosticSeverity.Warning,
-                    true),
-                location));
+            try
+            {
+                Context.ReportDiagnostic(Diagnostic.Create(
+                    new DiagnosticDescriptor(
+                        id,
+                        "Warning",
+                        message,
+                        "Warning",
+                        DiagnosticSeverity.Warning,
+                        true),
+                    location));
+            }
+            catch
+            {
+                // ignored
+            }
 
             _log.Trace(() => new []{ $"{id} {message}" });
         }
 
         public void Information(string id, string message, Location? location = null)
         {
-            Context.ReportDiagnostic(Diagnostic.Create(
-                new DiagnosticDescriptor(
-                    id,
-                    "Info",
-                    message,
-                    "Info",
-                    DiagnosticSeverity.Info,
-                    true),
-                location));
+            try
+            {
+                Context.ReportDiagnostic(Diagnostic.Create(
+                    new DiagnosticDescriptor(
+                        id,
+                        "Info",
+                        message,
+                        "Info",
+                        DiagnosticSeverity.Info,
+                        true),
+                    location));
+            }
+            catch
+            {
+                // ignored
+            }
 
             _log.Trace(() => new []{ $"{id} {message}" });
         }

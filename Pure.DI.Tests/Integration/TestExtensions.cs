@@ -7,6 +7,7 @@ namespace Pure.DI.Tests.Integration
     using System.IO;
     using System.Linq;
     using System.Net.Http;
+    using System.Threading;
     using Core;
     using IoC;
     using Microsoft.AspNetCore.Builder;
@@ -79,7 +80,7 @@ namespace Pure.DI.Tests.Integration
             List<Source>? generatedSources;
             try
             {
-                generatedSources = container.Resolve<ISourceBuilder>().Build(compilation).ToList();
+                generatedSources = container.Resolve<ISourceBuilder>().Build(compilation, CancellationToken.None).ToList();
             }
             catch (HandledException)
             {

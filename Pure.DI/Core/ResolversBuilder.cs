@@ -19,6 +19,7 @@ namespace Pure.DI.Core
         private readonly IBuildStrategy _buildStrategy;
         private readonly IBindingStatementsStrategy _bindingStatementsStrategy;
         private readonly IBindingStatementsStrategy _tagBindingStatementsStrategy;
+        private readonly ILog<ResolversBuilder> _log;
         private const string Comments = "\n\t//- - - - - - - - - - - - - - - - - - - - - - - - -";
 
         public ResolversBuilder(
@@ -28,7 +29,8 @@ namespace Pure.DI.Core
             IFallbackStrategy fallbackStrategy,
             [Tag(Tags.SimpleBuildStrategy)] IBuildStrategy buildStrategy,
             [Tag(Tags.TypeStatementsStrategy)] IBindingStatementsStrategy bindingStatementsStrategy,
-            [Tag(Tags.TypeAndTagStatementsStrategy)] IBindingStatementsStrategy tagBindingStatementsStrategy)
+            [Tag(Tags.TypeAndTagStatementsStrategy)] IBindingStatementsStrategy tagBindingStatementsStrategy,
+            ILog<ResolversBuilder> log)
         {
             _metadata = metadata;
             _resolveMethodBuilders = resolveMethodBuilders;
@@ -37,6 +39,7 @@ namespace Pure.DI.Core
             _buildStrategy = buildStrategy;
             _bindingStatementsStrategy = bindingStatementsStrategy;
             _tagBindingStatementsStrategy = tagBindingStatementsStrategy;
+            _log = log;
         }
 
         public int Order => 0;
@@ -62,7 +65,7 @@ namespace Pure.DI.Core
             {
                 yield return member;
             }
-            
+
             var allMethods = _resolveMethodBuilders.Select(i => i.Build()).ToArray();
 
             // Post statements
@@ -72,67 +75,80 @@ namespace Pure.DI.Core
                     .AddBodyStatements(method.PostStatements);
             }
 
-            List<MemberDeclarationSyntax> internalMembers = new();
-            if (_buildContext.FinalizationStatements.Any())
+            if (!_buildContext.IsCancellationRequested)
             {
-                const string deepnessFieldName = "_deepness";
-                var deepnessField = SyntaxFactory.FieldDeclaration(
-                        SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName("int"))
-                            .AddVariables(
-                                SyntaxFactory.VariableDeclarator(deepnessFieldName)
-                            )
-                    )
-                    .AddModifiers(
-                        SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                        SyntaxFactory.Token(SyntaxKind.StaticKeyword));
-
-                internalMembers.Add(deepnessField);
-
-                var refToDeepness = SyntaxFactory.Argument(SyntaxFactory.IdentifierName(deepnessFieldName)).WithRefKindKeyword(SyntaxFactory.Token(SyntaxKind.RefKeyword));
-
-                var incrementStatement = SyntaxFactory.InvocationExpression(
-                    SyntaxFactory.IdentifierName("System.Threading.Interlocked.Increment"),
-                    SyntaxFactory.ArgumentList().AddArguments(refToDeepness));
-
-                var decrementStatement = SyntaxFactory.InvocationExpression(
-                    SyntaxFactory.IdentifierName("System.Threading.Interlocked.Decrement"),
-                    SyntaxFactory.ArgumentList().AddArguments(refToDeepness));
-
-                foreach (var method in allMethods)
+                List<MemberDeclarationSyntax> internalMembers = new();
+                if (_buildContext.FinalizationStatements.Any())
                 {
-                    var curStatements = method.TargetMethod.Body;
-                    if (curStatements != null)
+                    const string deepnessFieldName = "_deepness";
+                    var deepnessField = SyntaxFactory.FieldDeclaration(
+                            SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName("int"))
+                                .AddVariables(
+                                    SyntaxFactory.VariableDeclarator(deepnessFieldName)
+                                )
+                        )
+                        .AddModifiers(
+                            SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
+                            SyntaxFactory.Token(SyntaxKind.StaticKeyword));
+
+                    internalMembers.Add(deepnessField);
+
+                    var refToDeepness = SyntaxFactory.Argument(SyntaxFactory.IdentifierName(deepnessFieldName)).WithRefKindKeyword(SyntaxFactory.Token(SyntaxKind.RefKeyword));
+
+                    var incrementStatement = SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.IdentifierName("System.Threading.Interlocked.Increment"),
+                        SyntaxFactory.ArgumentList().AddArguments(refToDeepness));
+
+                    var decrementStatement = SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.IdentifierName("System.Threading.Interlocked.Decrement"),
+                        SyntaxFactory.ArgumentList().AddArguments(refToDeepness));
+
+                    foreach (var method in allMethods)
                     {
-                        var releaseBlock = SyntaxFactory.Block()
-                            .AddStatements(SyntaxFactory.ExpressionStatement(decrementStatement))
-                            .AddStatements(
-                                SyntaxFactory.IfStatement(
-                                    SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, SyntaxFactory.IdentifierName(deepnessFieldName), SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0))),
+                        if (_buildContext.IsCancellationRequested)
+                        {
+                            _log.Trace(() => new[] { "Build canceled" });
+                            break;
+                        }
+
+                        var curStatements = method.TargetMethod.Body;
+                        if (curStatements != null)
+                        {
+                            var releaseBlock = SyntaxFactory.Block()
+                                .AddStatements(SyntaxFactory.ExpressionStatement(decrementStatement))
+                                .AddStatements(
+                                    SyntaxFactory.IfStatement(
+                                        SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, SyntaxFactory.IdentifierName(deepnessFieldName), SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0))),
                                         SyntaxFactory.Block().AddStatements(_buildContext.FinalizationStatements.ToArray())
-                                ));
+                                    ));
 
-                        var tryStatement = SyntaxFactory.TryStatement(
-                            curStatements,
-                            SyntaxFactory.List<CatchClauseSyntax>(),
-                            SyntaxFactory.FinallyClause(releaseBlock));
+                            var tryStatement = SyntaxFactory.TryStatement(
+                                curStatements,
+                                SyntaxFactory.List<CatchClauseSyntax>(),
+                                SyntaxFactory.FinallyClause(releaseBlock));
 
-                        method.TargetMethod = method.TargetMethod.WithBody(
-                            SyntaxFactory.Block()
-                                .AddStatements(SyntaxFactory.ExpressionStatement(incrementStatement))
-                                .AddStatements(tryStatement));
+                            method.TargetMethod = method.TargetMethod.WithBody(
+                                SyntaxFactory.Block()
+                                    .AddStatements(SyntaxFactory.ExpressionStatement(incrementStatement))
+                                    .AddStatements(tryStatement));
+                        }
                     }
                 }
+
+                var members =
+                    allMethods
+                        .Select(strategy => strategy.TargetMethod)
+                        .Concat(_buildContext.AdditionalMembers)
+                        .Concat(internalMembers);
+
+                foreach (var member in members)
+                {
+                    yield return member;
+                }
             }
-
-            var members =
-                allMethods
-                .Select(strategy => strategy.TargetMethod)
-                .Concat(_buildContext.AdditionalMembers)
-                .Concat(internalMembers);
-
-            foreach (var member in members)
+            else
             {
-                yield return member;
+                _log.Trace(() => new[] { "Build canceled" });
             }
         }
 
@@ -149,6 +165,12 @@ namespace Pure.DI.Core
             var keyValuePairs = new List<ExpressionSyntax>();
             foreach (var (binding, dependency, tag) in items)
             {
+                if (_buildContext.IsCancellationRequested)
+                {
+                    _log.Trace(() => new[] { "Build canceled" });
+                    break;
+                }
+
                 if (tag != null)
                 {
                     continue;
@@ -213,6 +235,12 @@ namespace Pure.DI.Core
             var keyValuePairs = new List<ExpressionSyntax>();
             foreach (var (binding, dependency, tag) in items)
             {
+                if (_buildContext.IsCancellationRequested)
+                {
+                    _log.Trace(() => new[] { "Build canceled" });
+                    break;
+                }
+
                 if (tag == null)
                 {
                     continue;

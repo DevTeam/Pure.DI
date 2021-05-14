@@ -14,19 +14,22 @@
         private readonly ITypeResolver _typeResolver;
         private readonly IBuildStrategy _buildStrategy;
         private readonly IDiagnostic _diagnostic;
+        private readonly Log<MicrosoftDependencyInjectionBuilder> _log;
 
         public MicrosoftDependencyInjectionBuilder(
             ResolverMetadata metadata,
             IBuildContext buildContext,
             ITypeResolver typeResolver,
             [Tag(Tags.SimpleBuildStrategy)] IBuildStrategy buildStrategy,
-            IDiagnostic diagnostic)
+            IDiagnostic diagnostic,
+            Log<MicrosoftDependencyInjectionBuilder> log)
         {
             _metadata = metadata;
             _buildContext = buildContext;
             _typeResolver = typeResolver;
             _buildStrategy = buildStrategy;
             _diagnostic = diagnostic;
+            _log = log;
         }
 
         public int Order => 1;
@@ -70,153 +73,159 @@
                     var error = $"Impossible to use the lifetime {lifetime} for {dependency} outside an ASP.NET context.";
                     _diagnostic.Error(Diagnostics.Error.Unsupported, error, binding.Location);
                 }
-
-                yield break;
             }
-
-            var serviceProvider = new SemanticType(serviceProviderType, semanticModel);
-            var serviceCollection = new SemanticType(serviceCollectionType, semanticModel);
-            var serviceDescriptor = new SemanticType(serviceDescriptorType, semanticModel);
-            var mvcBuilder = new SemanticType(mvcBuilderType, semanticModel);
-            var mvcServiceCollectionExtensions = new SemanticType(mvcServiceCollectionExtensionsType, semanticModel);
-            var serviceCollectionDescriptorExtensions = new SemanticType(serviceCollectionDescriptorExtensionsType, semanticModel);
-            var controllerFeature = new SemanticType(controllerFeatureType, semanticModel);
-            var controllerActivator = new SemanticType(controllerActivatorType, semanticModel);
-            var serviceBasedControllerActivator = new SemanticType(serviceBasedControllerActivatorType, semanticModel);
-            var serviceCollectionServiceExtensions = new SemanticType(serviceCollectionServiceExtensionsType, semanticModel);
-            
-            var thisParameter = SyntaxFactory.Parameter(
-                SyntaxFactory.List<AttributeListSyntax>(),
-                SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ThisKeyword)), 
-                serviceCollection,
-                SyntaxFactory.Identifier("services"),
-                null);
-
-            var method = SyntaxFactory.MethodDeclaration(serviceCollection, $"Add{_metadata.TargetTypeName}")
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
-                .AddParameterListParameters(thisParameter);
-
-            var getBuilder = SyntaxFactory.InvocationExpression(
-                    SyntaxFactory.MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        mvcServiceCollectionExtensions,
-                        SyntaxFactory.IdentifierName("AddControllers")))
-                .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("services")));
-
-            var declareBuilder = SyntaxFactory.LocalDeclarationStatement(
-                SyntaxFactory.VariableDeclaration(mvcBuilder)
-                    .AddVariables(
-                        SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier("builder"))
-                            .WithInitializer(SyntaxFactory.EqualsValueClause(getBuilder))));
-
-            method = method.AddBodyStatements(declareBuilder);
-
-            var populateFeature =
-                SyntaxFactory.InvocationExpression(
-                    SyntaxFactory.MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        SyntaxFactory.MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            SyntaxFactory.IdentifierName("builder"),
-                            SyntaxFactory.IdentifierName("PartManager")),
-                        SyntaxFactory.IdentifierName("PopulateFeature")))
-                    .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.ObjectCreationExpression(controllerFeature).AddArgumentListArguments()));
-
-            method = method.AddBodyStatements(SyntaxFactory.ExpressionStatement(populateFeature));
-
-            var transient = SyntaxFactory.InvocationExpression(
-                SyntaxFactory.MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    serviceDescriptor,
-                    SyntaxFactory.GenericName("Transient")
-                        .AddTypeArgumentListArguments(
-                            controllerActivator, serviceBasedControllerActivator)))
-                .AddArgumentListArguments();
-            
-            var bindControllerActivator = SyntaxFactory.InvocationExpression(
-                SyntaxFactory.MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    serviceCollectionDescriptorExtensions,
-                    SyntaxFactory.IdentifierName("Replace")))
-                .AddArgumentListArguments(
-                    SyntaxFactory.Argument(
-                        SyntaxFactory.MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            SyntaxFactory.IdentifierName("builder"),
-                            SyntaxFactory.IdentifierName("Services"))
-                        ),
-                    SyntaxFactory.Argument(transient)
-                    );
-
-            method = method.AddBodyStatements(SyntaxFactory.ExpressionStatement(bindControllerActivator));
-
-            foreach (var (dependency, lifetime, _) in dependencies)
+            else
             {
-                string lifetimeName = lifetime switch
-                {
-                    Lifetime.ContainerSingleton => "AddSingleton",
-                    Lifetime.Scoped => "AddScoped",
-                    _ => "AddTransient"
-                };
+                var serviceProvider = new SemanticType(serviceProviderType, semanticModel);
+                var serviceCollection = new SemanticType(serviceCollectionType, semanticModel);
+                var serviceDescriptor = new SemanticType(serviceDescriptorType, semanticModel);
+                var mvcBuilder = new SemanticType(mvcBuilderType, semanticModel);
+                var mvcServiceCollectionExtensions = new SemanticType(mvcServiceCollectionExtensionsType, semanticModel);
+                var serviceCollectionDescriptorExtensions = new SemanticType(serviceCollectionDescriptorExtensionsType, semanticModel);
+                var controllerFeature = new SemanticType(controllerFeatureType, semanticModel);
+                var controllerActivator = new SemanticType(controllerActivatorType, semanticModel);
+                var serviceBasedControllerActivator = new SemanticType(serviceBasedControllerActivatorType, semanticModel);
+                var serviceCollectionServiceExtensions = new SemanticType(serviceCollectionServiceExtensionsType, semanticModel);
 
-                var curDependency = _typeResolver.Resolve(dependency, null, dependency.Type.Locations);
+                var thisParameter = SyntaxFactory.Parameter(
+                    SyntaxFactory.List<AttributeListSyntax>(),
+                    SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ThisKeyword)),
+                    serviceCollection,
+                    SyntaxFactory.Identifier("services"),
+                    null);
 
-                var resolve = SyntaxFactory.CastExpression(dependency, curDependency.ObjectBuilder.Build(_buildStrategy, curDependency));
+                var method = SyntaxFactory.MethodDeclaration(serviceCollection, $"Add{_metadata.TargetTypeName}")
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                    .AddParameterListParameters(thisParameter);
 
-                var serviceProviderInstance = new SemanticType(semanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance).ToString())!, semanticModel);
+                var getBuilder = SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            mvcServiceCollectionExtensions,
+                            SyntaxFactory.IdentifierName("AddControllers")))
+                    .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("services")));
 
-                var serviceProviderValue = SyntaxFactory.MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    serviceProviderInstance,
-                    SyntaxFactory.IdentifierName(nameof(ServiceProviderInstance.ServiceProvider)));
+                var declareBuilder = SyntaxFactory.LocalDeclarationStatement(
+                    SyntaxFactory.VariableDeclaration(mvcBuilder)
+                        .AddVariables(
+                            SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier("builder"))
+                                .WithInitializer(SyntaxFactory.EqualsValueClause(getBuilder))));
 
-                var tryBlock = SyntaxFactory.Block()
-                    .AddStatements()
-                    .AddStatements(SyntaxFactory.ExpressionStatement(
-                        SyntaxFactory.AssignmentExpression(
-                            SyntaxKind.SimpleAssignmentExpression, serviceProviderValue, SyntaxFactory.IdentifierName("serviceProvider"))))
-                    .AddStatements(SyntaxFactory.ReturnStatement(resolve));
+                method = method.AddBodyStatements(declareBuilder);
 
-                var finallyBlock = SyntaxFactory.Block()
-                    .AddStatements(SyntaxFactory.ExpressionStatement(
-                        SyntaxFactory.AssignmentExpression(
-                            SyntaxKind.SimpleAssignmentExpression, serviceProviderValue, SyntaxFactory.IdentifierName("prevServiceProvider"))));
-
-                var lambdaBlock =
-                    SyntaxFactory.Block()
-                        .AddStatements(
-                            SyntaxFactory.LocalDeclarationStatement(
-                                SyntaxFactory.VariableDeclaration(serviceProvider)
-                                    .AddVariables(
-                                        SyntaxFactory.VariableDeclarator("prevServiceProvider")
-                                            .WithInitializer(SyntaxFactory.EqualsValueClause(serviceProviderValue))
-                                    )
-                                )
-                        )
-                        .AddStatements(
-                            SyntaxFactory.TryStatement(
-                                tryBlock,
-                                SyntaxFactory.List<CatchClauseSyntax>(),
-                                SyntaxFactory.FinallyClause(finallyBlock)));
-
-                var resolveLambda = SyntaxFactory.SimpleLambdaExpression(SyntaxFactory.Parameter(SyntaxFactory.Identifier("serviceProvider")), lambdaBlock);
-
-                var bind= 
+                var populateFeature =
                     SyntaxFactory.InvocationExpression(
                             SyntaxFactory.MemberAccessExpression(
                                 SyntaxKind.SimpleMemberAccessExpression,
-                                serviceCollectionServiceExtensions,
-                                SyntaxFactory.IdentifierName(lifetimeName)))
-                        .AddArgumentListArguments(
-                            SyntaxFactory.Argument(SyntaxFactory.IdentifierName("services")),
-                            SyntaxFactory.Argument(resolveLambda)
-                        );
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    SyntaxFactory.IdentifierName("builder"),
+                                    SyntaxFactory.IdentifierName("PartManager")),
+                                SyntaxFactory.IdentifierName("PopulateFeature")))
+                        .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.ObjectCreationExpression(controllerFeature).AddArgumentListArguments()));
 
-                method = method.AddBodyStatements(SyntaxFactory.ExpressionStatement(bind));
+                method = method.AddBodyStatements(SyntaxFactory.ExpressionStatement(populateFeature));
+
+                var transient = SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            serviceDescriptor,
+                            SyntaxFactory.GenericName("Transient")
+                                .AddTypeArgumentListArguments(
+                                    controllerActivator, serviceBasedControllerActivator)))
+                    .AddArgumentListArguments();
+
+                var bindControllerActivator = SyntaxFactory.InvocationExpression(
+                        SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            serviceCollectionDescriptorExtensions,
+                            SyntaxFactory.IdentifierName("Replace")))
+                    .AddArgumentListArguments(
+                        SyntaxFactory.Argument(
+                            SyntaxFactory.MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                SyntaxFactory.IdentifierName("builder"),
+                                SyntaxFactory.IdentifierName("Services"))
+                        ),
+                        SyntaxFactory.Argument(transient)
+                    );
+
+                method = method.AddBodyStatements(SyntaxFactory.ExpressionStatement(bindControllerActivator));
+
+                foreach (var (dependency, lifetime, _) in dependencies)
+                {
+                    if (_buildContext.IsCancellationRequested)
+                    {
+                        _log.Trace(() => new[] { "Build canceled" });
+                        break;
+                    }
+
+                    string lifetimeName = lifetime switch
+                    {
+                        Lifetime.ContainerSingleton => "AddSingleton",
+                        Lifetime.Scoped => "AddScoped",
+                        _ => "AddTransient"
+                    };
+
+                    var curDependency = _typeResolver.Resolve(dependency, null, dependency.Type.Locations);
+
+                    var resolve = SyntaxFactory.CastExpression(dependency, curDependency.ObjectBuilder.Build(_buildStrategy, curDependency));
+
+                    var serviceProviderInstance = new SemanticType(semanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance).ToString())!, semanticModel);
+
+                    var serviceProviderValue = SyntaxFactory.MemberAccessExpression(
+                        SyntaxKind.SimpleMemberAccessExpression,
+                        serviceProviderInstance,
+                        SyntaxFactory.IdentifierName(nameof(ServiceProviderInstance.ServiceProvider)));
+
+                    var tryBlock = SyntaxFactory.Block()
+                        .AddStatements()
+                        .AddStatements(SyntaxFactory.ExpressionStatement(
+                            SyntaxFactory.AssignmentExpression(
+                                SyntaxKind.SimpleAssignmentExpression, serviceProviderValue, SyntaxFactory.IdentifierName("serviceProvider"))))
+                        .AddStatements(SyntaxFactory.ReturnStatement(resolve));
+
+                    var finallyBlock = SyntaxFactory.Block()
+                        .AddStatements(SyntaxFactory.ExpressionStatement(
+                            SyntaxFactory.AssignmentExpression(
+                                SyntaxKind.SimpleAssignmentExpression, serviceProviderValue, SyntaxFactory.IdentifierName("prevServiceProvider"))));
+
+                    var lambdaBlock =
+                        SyntaxFactory.Block()
+                            .AddStatements(
+                                SyntaxFactory.LocalDeclarationStatement(
+                                    SyntaxFactory.VariableDeclaration(serviceProvider)
+                                        .AddVariables(
+                                            SyntaxFactory.VariableDeclarator("prevServiceProvider")
+                                                .WithInitializer(SyntaxFactory.EqualsValueClause(serviceProviderValue))
+                                        )
+                                )
+                            )
+                            .AddStatements(
+                                SyntaxFactory.TryStatement(
+                                    tryBlock,
+                                    SyntaxFactory.List<CatchClauseSyntax>(),
+                                    SyntaxFactory.FinallyClause(finallyBlock)));
+
+                    var resolveLambda = SyntaxFactory.SimpleLambdaExpression(SyntaxFactory.Parameter(SyntaxFactory.Identifier("serviceProvider")), lambdaBlock);
+
+                    var bind =
+                        SyntaxFactory.InvocationExpression(
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    serviceCollectionServiceExtensions,
+                                    SyntaxFactory.IdentifierName(lifetimeName)))
+                            .AddArgumentListArguments(
+                                SyntaxFactory.Argument(SyntaxFactory.IdentifierName("services")),
+                                SyntaxFactory.Argument(resolveLambda)
+                            );
+
+                    method = method.AddBodyStatements(SyntaxFactory.ExpressionStatement(bind));
+                }
+
+                method = method.AddBodyStatements(SyntaxFactory.ReturnStatement(SyntaxFactory.IdentifierName("services")));
+                yield return method;
             }
-
-            method = method.AddBodyStatements(SyntaxFactory.ReturnStatement(SyntaxFactory.IdentifierName("services")));
-            yield return method;
         }
     }
 }

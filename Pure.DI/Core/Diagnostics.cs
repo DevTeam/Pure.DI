@@ -18,7 +18,6 @@ namespace Pure.DI.Core
         {
             public const string CannotResolveDependency = "DIW0001";
             public const string CtorIsObsoleted = "DIW0002";
-            public const string CannotUseCurrentTypeAsDI = "DIW0003";
         }
 
         internal static class Information

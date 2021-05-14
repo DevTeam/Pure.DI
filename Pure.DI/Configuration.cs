@@ -18,6 +18,7 @@
 
             yield return container
                 .Bind<IAutowiringStrategy>().To(ctx => autowiringStrategy)
+                .Bind<IGenerator>().To<Generator>()
                 .Bind<IStdOut>().As(Singleton).To<StdOut>()
                 .Bind<IStdErr>().As(Singleton).To<StdErr>()
                 .Bind<ITracer>().As(Singleton).To<Tracer>()

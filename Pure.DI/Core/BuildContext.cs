@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -14,6 +15,7 @@
         private readonly Func<INameService> _nameServiceFactory;
         private readonly Func<ITypeResolver> _typeResolverFactory;
         private Compilation? _compilation;
+        private CancellationToken? _cancellationToken;
         private ResolverMetadata? _metadata;
         private INameService? _nameService;
         private ITypeResolver? _typeResolver;
@@ -28,6 +30,20 @@
 
         public Compilation Compilation => _compilation ?? throw new InvalidOperationException("Not initialized.");
 
+        public bool IsCancellationRequested
+        {
+            get
+            {
+                var cancellationToken = _cancellationToken;
+                if (cancellationToken == null)
+                {
+                    return false;
+                }
+
+                return cancellationToken.Value.IsCancellationRequested;
+            }
+        }
+
         public ResolverMetadata Metadata => _metadata ?? throw new InvalidOperationException("Not initialized.");
 
         public INameService NameService => _nameService ?? throw new InvalidOperationException("Not ready.");
@@ -40,9 +56,10 @@
 
         public IEnumerable<StatementSyntax> FinalizationStatements => _finalizationStatements;
 
-        public void Prepare(Compilation compilation, ResolverMetadata metadata)
+        public void Prepare(Compilation compilation, CancellationToken cancellationToken, ResolverMetadata metadata)
         {
             _compilation = compilation;
+            _cancellationToken = cancellationToken;
             _metadata = metadata;
             _additionalBindings.Clear();
             _nameService = _nameServiceFactory();
