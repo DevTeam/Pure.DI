@@ -289,6 +289,39 @@
             output.ShouldBe(new[] { "1.2.3" }, generatedCode);
         }
 
+        [Fact]
+        public void ShouldSupportArrayWhenHasNoBindings()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string[] value) => Value = String.Join(""."", value);
+                }
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "" }, generatedCode);
+        }
+
         [Theory]
         [InlineData("ICollection")]
         [InlineData("IReadOnlyCollection")]
@@ -329,6 +362,40 @@
 
             // Then
             output.ShouldBe(new[] { "1.2.3" }, generatedCode);
+        }
+
+        [Fact]
+        public void ShouldSupportEnumerablesWhenHasNoBindings()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+                using System.Collections.Generic;
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(IEnumerable<string> value) => Value = String.Join(""."", value);
+                }
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "" }, generatedCode);
         }
 
         [Fact]

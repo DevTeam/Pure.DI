@@ -44,7 +44,7 @@
                     .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
                     .AddParameterListParameters()
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword), SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
-                    .AddBodyStatements(yields.ToArray());
+                    .AddBodyStatements(yields.DefaultIfEmpty(SyntaxFactory.YieldStatement(SyntaxKind.YieldBreakStatement)).ToArray());
             });
 
             return SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryMethod.Identifier.Text));
