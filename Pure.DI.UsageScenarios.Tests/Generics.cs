@@ -12,7 +12,7 @@
             // $tag=1 Basics
             // $priority=01
             // $description=Generics
-            // $header=Autowring of generic types via binding of open generic types or generic type markers are working the same way.
+            // $header=Auto-wring of generic types via binding of open generic types or generic type markers are working the same way.
             // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()

@@ -20,7 +20,7 @@
   - [Arrays](#arrays-)
   - [Collections](#collections-)
   - [Enumerables](#enumerables-)
-  - [Funcs](#funcs-)
+  - [Func](#func-)
   - [Lazy](#lazy-)
   - [Sets](#sets-)
   - [ThreadLocal](#threadlocal-)
@@ -30,7 +30,7 @@
 
 ### Autowiring [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Autowiring.cs)
 
-Autowring is the most natural way to use containers. In the first step, we should create a container. At the second step, we bind interfaces to their implementations. After that, the container is ready to resolve dependencies.
+Auto-wring is the most natural way to use containers. In the first step, we should create a container. At the second step, we bind interfaces to their implementations. After that, the container is ready to resolve dependencies.
 
 ``` CSharp
 // Create the container and configure it, using full autowiring
@@ -79,7 +79,7 @@ val.ShouldBe(10);
 
 ### Generics [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Generics.cs)
 
-Autowring of generic types via binding of open generic types or generic type markers are working the same way.
+Auto-wring of generic types via binding of open generic types or generic type markers are working the same way.
 
 ``` CSharp
 DI.Setup()
@@ -232,7 +232,7 @@ Sometimes instances required some actions before you give them to use - some met
 // Create a container and configure it using full autowiring
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
-    .Bind<INamedService>().To<InitializingNamedService>(
+    .Bind<INamedService>().To(
         ctx =>
         {
             var service = new InitializingNamedService(ctx.Resolve<IDependency>());
@@ -468,7 +468,7 @@ DI.Setup()
     .Bind<IService>().Tag(2).Tag("abc").To<Service>()
     // Bind to the implementation #3
     .Bind<IService>().Tag(3).To<Service>()
-    .Bind<CompositionRoot<IEnumerable<IService>>>().To<CompositionRoot<IEnumerable<IService>>>(); ;
+    .Bind<CompositionRoot<IEnumerable<IService>>>().To<CompositionRoot<IEnumerable<IService>>>();
 
 // Resolve all appropriate instances
 var instances = EnumerablesDI.Resolve<CompositionRoot<IEnumerable<IService>>>().Root.ToList();
@@ -479,7 +479,7 @@ instances.Count.ShouldBe(3);
 
 
 
-### Funcs [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Funcs.cs)
+### Func [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Func.cs)
 
 _Func<>_ helps when a logic needs to inject some type of instances on-demand or solve circular dependency issues.
 
@@ -490,7 +490,7 @@ DI.Setup()
     .Bind<CompositionRoot<Func<IService>>>().To<CompositionRoot<Func<IService>>>();
 
 // Resolve function to create instances
-var factory = FuncsDI.Resolve<CompositionRoot<Func<IService>>>().Root;
+var factory = FuncDI.Resolve<CompositionRoot<Func<IService>>>().Root;
 
 // Resolve few instances
 var instance1 = factory();
@@ -569,11 +569,11 @@ var instance = threadLocal.Value;
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>()
-    .Bind<INamedService>().To<NamedService>(ctx => new NamedService(ctx.Resolve<IDependency>(), "some name"))
+    .Bind<INamedService>().To(ctx => new NamedService(ctx.Resolve<IDependency>(), "some name"))
     .Bind<CompositionRoot<Tuple<IService, INamedService>>>().To<CompositionRoot<Tuple<IService, INamedService>>>();
 
 // Resolve an instance of type Tuple<IService, INamedService>
-var tuple = TuplesDI.Resolve<CompositionRoot<Tuple<IService, INamedService>>>().Root;
+var (service, namedService) = TuplesDI.Resolve<CompositionRoot<Tuple<IService, INamedService>>>().Root;
 ```
 
 

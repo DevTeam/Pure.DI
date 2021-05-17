@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core
+﻿// ReSharper disable MemberCanBePrivate.Global
+namespace Pure.DI.Core
 {
     using System.Linq;
 

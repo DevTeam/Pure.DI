@@ -74,20 +74,14 @@ namespace Pure.DI.Core
 
                     if (node.HasLeadingTrivia)
                     {
-                        foreach (var trivia in node.GetLeadingTrivia())
+                        foreach (
+                            var match in from trivia in node.GetLeadingTrivia()
+                            where trivia.Kind() == SyntaxKind.SingleLineCommentTrivia
+                            select trivia.ToFullString().Trim() into comment
+                            select CommentRegex.Match(comment) into match 
+                            where match.Success
+                            select match)
                         {
-                            if (trivia.Kind() != SyntaxKind.SingleLineCommentTrivia)
-                            {
-                                continue;
-                            }
-
-                            var comment = trivia.ToFullString().Trim();
-                            var match = CommentRegex.Match(comment);
-                            if (!match.Success)
-                            {
-                                continue;
-                            }
-
                             if (Enum.TryParse(match.Groups[1].Value, true, out Setting setting))
                             {
                                 _resolver.Settings[setting] = match.Groups[2].Value;

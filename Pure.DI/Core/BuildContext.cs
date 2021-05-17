@@ -30,19 +30,7 @@
 
         public Compilation Compilation => _compilation ?? throw new InvalidOperationException("Not initialized.");
 
-        public bool IsCancellationRequested
-        {
-            get
-            {
-                var cancellationToken = _cancellationToken;
-                if (cancellationToken == null)
-                {
-                    return false;
-                }
-
-                return cancellationToken.Value.IsCancellationRequested;
-            }
-        }
+        public bool IsCancellationRequested => _cancellationToken is {IsCancellationRequested: true};
 
         public ResolverMetadata Metadata => _metadata ?? throw new InvalidOperationException("Not initialized.");
 

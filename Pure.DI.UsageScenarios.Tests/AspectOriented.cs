@@ -1,6 +1,8 @@
 ﻿// ReSharper disable RedundantTypeArgumentsOfMethod
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable CA2211
+// ReSharper disable MemberCanBePrivate.Global
 namespace Pure.DI.UsageScenarios.Tests
 {
     using System;

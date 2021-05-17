@@ -6,7 +6,7 @@
     using Xunit;
 
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-    public class Funcs
+    public class Func
     {
         [Fact]
         public void Run()
@@ -14,7 +14,7 @@
             // $visible=true
             // $tag=3 BCL types
             // $priority=01
-            // $description=Funcs
+            // $description=Func
             // $header=_Func<>_ helps when a logic needs to inject some type of instances on-demand or solve circular dependency issues.
             // {
             DI.Setup()
@@ -23,7 +23,7 @@
                 .Bind<CompositionRoot<Func<IService>>>().To<CompositionRoot<Func<IService>>>();
 
             // Resolve function to create instances
-            var factory = FuncsDI.Resolve<CompositionRoot<Func<IService>>>().Root;
+            var factory = FuncDI.Resolve<CompositionRoot<Func<IService>>>().Root;
 
             // Resolve few instances
             var instance1 = factory();

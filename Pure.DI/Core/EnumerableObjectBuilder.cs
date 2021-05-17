@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core
+﻿// ReSharper disable MergeIntoNegatedPattern
+namespace Pure.DI.Core
 {
     using System;
     using System.Linq;

@@ -1,4 +1,5 @@
-﻿namespace Clock.Models
+﻿// ReSharper disable ClassNeverInstantiated.Global
+namespace Clock.Models
 {
     using System.Diagnostics;
 

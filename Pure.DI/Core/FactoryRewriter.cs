@@ -127,31 +127,35 @@ namespace Pure.DI.Core
         {
             var semanticModel = typeSyntax.SyntaxTree.GetRoot().GetSemanticModel(_dependency.Implementation);
             var typeSymbol = semanticModel.GetTypeInfo(typeSyntax).Type;
-            if (typeSymbol is INamedTypeSymbol namedTypeSymbol)
+            switch (typeSymbol)
             {
-                var curType = new SemanticType(namedTypeSymbol, _dependency.Implementation);
-                var constructedType = _dependency.TypesMap.ConstructType(curType);
-                if (addBinding)
+                case INamedTypeSymbol namedTypeSymbol:
                 {
-                    AddBinding(constructedType);
+                    var curType = new SemanticType(namedTypeSymbol, _dependency.Implementation);
+                    var constructedType = _dependency.TypesMap.ConstructType(curType);
+                    if (addBinding)
+                    {
+                        AddBinding(constructedType);
+                    }
+
+                    return constructedType.TypeSyntax;
                 }
-
-                return constructedType.TypeSyntax;
-            }
-
-            if (typeSymbol is IArrayTypeSymbol arrayTypeSymbol)
-            {
-                var curType = new SemanticType(arrayTypeSymbol.ElementType, _dependency.Implementation);
-                var constructedType = _dependency.TypesMap.ConstructType(curType);
-                if (addBinding)
+                
+                case IArrayTypeSymbol arrayTypeSymbol:
                 {
-                    AddBinding(constructedType);
+                    var curType = new SemanticType(arrayTypeSymbol.ElementType, _dependency.Implementation);
+                    var constructedType = _dependency.TypesMap.ConstructType(curType);
+                    if (addBinding)
+                    {
+                        AddBinding(constructedType);
+                    }
+
+                    return SyntaxFactory.ArrayType(constructedType).AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
                 }
-
-                return SyntaxFactory.ArrayType(constructedType).AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
+                
+                default:
+                    return typeSyntax;
             }
-
-            return typeSyntax;
         }
 
         private void AddBinding(SemanticType constructedType)

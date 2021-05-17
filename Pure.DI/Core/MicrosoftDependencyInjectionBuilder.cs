@@ -68,7 +68,7 @@
                 || serviceBasedControllerActivatorType == null
                 || serviceCollectionServiceExtensionsType == null)
             {
-                foreach (var (dependency, lifetime, binding) in dependencies.Where(i => i.lifetime == Lifetime.Scoped || i.lifetime == Lifetime.ContainerSingleton))
+                foreach (var (dependency, lifetime, binding) in dependencies.Where(i => i.lifetime is Lifetime.Scoped or Lifetime.ContainerSingleton))
                 {
                     var error = $"Impossible to use the lifetime {lifetime} for {dependency} outside an ASP.NET context.";
                     _diagnostic.Error(Diagnostics.Error.Unsupported, error, binding.Location);

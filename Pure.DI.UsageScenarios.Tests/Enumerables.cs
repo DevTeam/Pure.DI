@@ -24,7 +24,7 @@
                 .Bind<IService>().Tag(2).Tag("abc").To<Service>()
                 // Bind to the implementation #3
                 .Bind<IService>().Tag(3).To<Service>()
-                .Bind<CompositionRoot<IEnumerable<IService>>>().To<CompositionRoot<IEnumerable<IService>>>(); ;
+                .Bind<CompositionRoot<IEnumerable<IService>>>().To<CompositionRoot<IEnumerable<IService>>>();
 
             // Resolve all appropriate instances
             var instances = EnumerablesDI.Resolve<CompositionRoot<IEnumerable<IService>>>().Root.ToList();

@@ -82,7 +82,7 @@ namespace Pure.DI.Core
                             _factories[key] = new Binding<SimpleLambdaExpressionSyntax>(binding, binding.Factory);
                         }
 
-                        if (binding.Lifetime == Lifetime.Scoped || binding.Lifetime == Lifetime.ContainerSingleton)
+                        if (binding.Lifetime is Lifetime.Scoped or Lifetime.ContainerSingleton)
                         {
                             var serviceProviderInstance = new SemanticType(dependency.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.ServiceProviderInstance`1")!, dependency.SemanticModel).Construct(dependency);
                             _buildContext.AddBinding(new BindingMetadata(binding, serviceProviderInstance, binding.Id));
@@ -225,7 +225,7 @@ namespace Pure.DI.Core
                 dependencies.Add(dependency);
             }
 
-            if (dependency.Type is INamedTypeSymbol namedTypeSymbol && namedTypeSymbol.IsGenericType)
+            if (dependency.Type is INamedTypeSymbol {IsGenericType: true} namedTypeSymbol)
             {
                 var unboundDependency = new SemanticType(namedTypeSymbol.ConstructUnboundGenericType(), dependency);
                 dependencies.Add(unboundDependency);

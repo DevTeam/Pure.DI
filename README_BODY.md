@@ -95,7 +95,7 @@ static partial class Glue
 }
 ```
 
-_Defining generic type arguments using special marker types like [*__TT__*](Pure.DI/GenericTypeArguments.cs) in the sample above is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints._
+_Defining generic type arguments using special marker types like *__TT__* in the sample above is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints._
 
 ### Time to open boxes!
 

@@ -53,16 +53,8 @@
             {
                 sb.Append($"{nameof(IBinding.Tag)}<{tag.ToString()}>().");
             }
-            
-            if (Factory != null)
-            {
-                sb.Append($"{nameof(IBinding.To)}({Factory.ToString()})");
-            }
-            else
-            {
-                sb.Append($"{nameof(IBinding.To)}<{Implementation}>()");
-            }
 
+            sb.Append(Factory != null ? $"{nameof(IBinding.To)}({Factory.ToString()})" : $"{nameof(IBinding.To)}<{Implementation}>()");
             return sb.ToString();
         }
     }

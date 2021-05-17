@@ -60,7 +60,7 @@
                 where order != null
                 orderby order 
                 select member)
-                .Distinct()
+                .Distinct(SymbolEqualityComparer.Default)
                 .ToList();
 
             if (members.Any())

@@ -1,6 +1,5 @@
 ﻿namespace Pure.DI.UsageScenarios.Tests
 {
-    using System;
     using Shouldly;
     using System.Diagnostics.CodeAnalysis;
     using Xunit;

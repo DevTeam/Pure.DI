@@ -26,7 +26,7 @@ var baseTypes = new Dictionary<string, string> {
     { "System.IObserver<T>", "TTObserver#<in T>" }
 };
 #>
-<#for(int i = 0; i <= 32; i++) {#>
+<#for(var i = 0; i <= 32; i++) {#>
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>

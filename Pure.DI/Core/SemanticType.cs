@@ -1,4 +1,7 @@
 ﻿// ReSharper disable ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
+// ReSharper disable MergeIntoPattern
+// ReSharper disable MergeIntoNegatedPattern
+// ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 namespace Pure.DI.Core
 {
     using System;

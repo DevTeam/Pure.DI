@@ -1,4 +1,6 @@
-﻿namespace Pure.DI.Core
+﻿// ReSharper disable UnusedTypeParameter
+// ReSharper disable UnusedMember.Global
+namespace Pure.DI.Core
 {
     using System;
 

@@ -18,7 +18,7 @@
             // Create a container and configure it using full autowiring
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
-                .Bind<INamedService>().To<InitializingNamedService>(
+                .Bind<INamedService>().To(
                     ctx =>
                     {
                         var service = new InitializingNamedService(ctx.Resolve<IDependency>());

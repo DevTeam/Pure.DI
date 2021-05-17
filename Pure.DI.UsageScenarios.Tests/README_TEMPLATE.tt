@@ -7,12 +7,11 @@
 <#@ output extension=".md" #>
 
 <#
-    var currentPath = this.Host.ResolvePath("");
+    var currentPath = Host.ResolvePath("");
     var solutionPath = Path.Combine(currentPath, "..");
-    var scenariousPath = currentPath;
 
     var infos = new List<Dictionary<string, string>>();
-    foreach(var file in Directory.GetFiles(scenariousPath, "*.cs"))
+    foreach(var file in Directory.GetFiles(currentPath, "*.cs"))
     {
         var isBody = false;
         var vars = new Dictionary<string, string>();
@@ -34,17 +33,16 @@
             }
 
             var str = line.Trim();
-            if (str == "// {")
+            switch (str)
             {
-                isBody = true;
-                bodyOffset = line.Length - line.TrimStart().Length;
-                continue;
-            }
-
-            if (str == "// }")
-            {
-                isBody = false;
-                continue;
+                case "// {":
+                    isBody = true;
+                    bodyOffset = line.Length - line.TrimStart().Length;
+                    continue;
+                
+                case "// }":
+                    isBody = false;
+                    continue;
             }
 
             if (str.StartsWith("// $"))
@@ -53,10 +51,10 @@
                 if (parts.Length == 2)
                 {
                     var key = parts[0];
-                    if (key == "header" || key == "footer")
+                    if (key is "header" or "footer")
                     {
                         var curVar = vars[key];
-                        if (curVar != String.Empty)
+                        if (curVar != string.Empty)
                         {
                             curVar += "\n";
                         }
@@ -74,14 +72,7 @@
 
             if (isBody)
             {
-                if (bodyOffset < line.Length)
-                {
-                    body.AppendLine(line.Substring(bodyOffset, line.Length - bodyOffset));
-                }
-                else
-                {
-                    body.AppendLine(line.TrimStart());
-                }
+                body.AppendLine(bodyOffset < line.Length ? line.Substring(bodyOffset, line.Length - bodyOffset) : line.TrimStart());
             }
         }
 

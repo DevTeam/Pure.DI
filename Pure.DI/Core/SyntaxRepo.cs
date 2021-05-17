@@ -67,9 +67,6 @@ namespace Pure.DI.Core
         public static T WithCommentBefore<T>(this T node, params string[] comments) where T: SyntaxNode =>
             node.WithLeadingTrivia(node.GetLeadingTrivia().Concat(SplitLines(comments).Select(SyntaxFactory.Comment)));
 
-        public static T WithCommentAfter<T>(this T node, params string[] comments) where T : SyntaxNode =>
-            node.WithTrailingTrivia(node.GetTrailingTrivia().Concat(SplitLines(comments).Select(SyntaxFactory.Comment)));
-
         public static T WithPragmaWarningDisable<T>(this T node, params int[] warningNumbers) where T : SyntaxNode =>
             node.WithLeadingTrivia(
                 warningNumbers.Aggregate(
@@ -85,15 +82,9 @@ namespace Pure.DI.Core
                                             SyntaxFactory.Literal(warningNumber))),
                                     false)))));
 
-        private static IEnumerable<string> SplitLines(IEnumerable<string> strings)
-        {
-            foreach (var str in strings)
-            {
-                foreach (var subStr in str.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    yield return subStr.TrimStart().StartsWith("//") ? subStr : $"// {subStr}";
-                }
-            }
-        }
+        private static IEnumerable<string> SplitLines(IEnumerable<string> strings) => 
+            from str in strings
+            from subStr in str.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+            select subStr.TrimStart().StartsWith("//") ? subStr : $"// {subStr}";
     }
 }

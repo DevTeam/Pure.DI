@@ -20,7 +20,7 @@ namespace Pure.DI.Tests.Integration
 
     public static class TestExtensions
     {
-        public static CSharpCompilation CreateCompilation() =>
+        private static CSharpCompilation CreateCompilation() =>
             CSharpCompilation
                 .Create("Sample")
                 
@@ -96,7 +96,7 @@ namespace Pure.DI.Tests.Integration
                 .AddSyntaxTrees(generatedSources.Select(i => CSharpSyntaxTree.ParseText(i.Code.ToString(), parseOptions)).ToArray())
                 .Check();
 
-            var tempFileName = Path.Combine(Environment.CurrentDirectory, Guid.NewGuid().ToString().Substring(0, 4));
+            var tempFileName = Path.Combine(Environment.CurrentDirectory, Guid.NewGuid().ToString()[..4]);
             var assemblyPath = Path.ChangeExtension(tempFileName, "exe");
             var configPath = Path.ChangeExtension(tempFileName, "runtimeconfig.json");
 
@@ -172,11 +172,11 @@ namespace Pure.DI.Tests.Integration
             }
         }
 
-        public static CSharpCompilation Check(this CSharpCompilation compilation)
+        private static CSharpCompilation Check(this CSharpCompilation compilation)
         {
             var errors = (
                 from diagnostic in compilation.GetDiagnostics()
-                where diagnostic.Severity == DiagnosticSeverity.Error || diagnostic.Severity == DiagnosticSeverity.Warning
+                where diagnostic.Severity is DiagnosticSeverity.Error or DiagnosticSeverity.Warning
                 select GetErrorMessage(diagnostic))
                 .ToList();
 

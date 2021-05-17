@@ -1,6 +1,10 @@
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable CommentTypo
+// ReSharper disable CA1822
+// ReSharper disable CA1822
+// ReSharper disable CA1822
+// ReSharper disable CA1822
 namespace BlazorServerApp
 {
     using Microsoft.AspNetCore.Builder;
