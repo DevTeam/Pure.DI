@@ -8,6 +8,7 @@
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<IsPackable>false</IsPackable>
+		<IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
 	</PropertyGroup>
 
 	<ItemGroup>
