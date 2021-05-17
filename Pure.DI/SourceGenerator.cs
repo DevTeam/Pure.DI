@@ -1,7 +1,5 @@
 ﻿namespace Pure.DI
 {
-    using System;
-    using System.Diagnostics;
     using Core;
     using IoC;
     using Microsoft.CodeAnalysis;
@@ -9,14 +7,12 @@
     [Generator]
     public class SourceGenerator : ISourceGenerator
     {
-        private static readonly IMutableContainer Container = IoC.Container
-            .Create()
-            .Using<Configuration>()
-            .Create()
-            .Bind<CompilationDiagnostic>().Bind<IDiagnostic>().As(IoC.Lifetime.ContainerSingleton).To<CompilationDiagnostic>()
-            .Container;
-
-        private static readonly Func<IGenerator> CreateGenerator = Container.Resolve<Func<IGenerator>>();
+        private static readonly IContainer GeneratorContainer = Container
+                .Create()
+                .Using<Configuration>()
+                .Create()
+                .Bind<CompilationDiagnostic>().Bind<IDiagnostic>().As(IoC.Lifetime.ContainerSingleton).To<CompilationDiagnostic>()
+                .Container;
 
         public void Initialize(GeneratorInitializationContext context)
         {
@@ -28,6 +24,7 @@
 #endif
         }
 
-        public void Execute(GeneratorExecutionContext context) => CreateGenerator().Generate(context);
+        public void Execute(GeneratorExecutionContext context) =>
+            GeneratorContainer.Create().Resolve<IGenerator>().Generate(context);
     }
 }

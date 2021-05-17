@@ -1,5 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI
+namespace Pure.DI.Core
 {
     using System.Collections.Generic;
     using System.IO;
