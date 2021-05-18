@@ -2,7 +2,7 @@
 
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE) [<img src="http://tcavs2015.cloudapp.net/app/rest/builds/buildType:(id:DevTeam_PureDI_Build)/statusIcon"/>](http://tcavs2015.cloudapp.net/viewType.html?buildTypeId=DevTeam_PureDI_Build&guest=1)
 
-<img src="https://github.com/DevTeam/Pure.DI/blob/master/Docs/Images/demo.gif"/>
+<img src="Docs/Images/demo.gif"/>
 
 #### Base concepts:
 
@@ -18,7 +18,7 @@
 
 ### The reality is that
 
-![Cat](https://github.com/DevTeam/IoCContainer/blob/master/Docs/Images/cat.jpg?raw=true)
+![Cat](Docs/Images/cat.jpg?raw=true)
 
 ### Let's create an abstraction
 
@@ -193,11 +193,15 @@ The list of life times:
 
 ## ASP.NET Support
 
+![blazor](Docs/Images/blazor.png?raw=true)
+
 When a targeting project is an ASP.NET project, a special extension method is generated automatically. This extension method could be used to integrate DI into a web application infrastructure. Pay attention to [this single statement](https://github.com/DevTeam/Pure.DI/blob/d1c4cdf3d6d7015f809cf7f9153d091a1d42dc34/Samples/BlazorServerApp/Startup.cs#L24)  that makes all magic. For more details, please take a look at this [sample](https://github.com/DevTeam/Pure.DI/tree/master/Samples/BlazorServerApp).
 
 ## WPF Support
 
-[This sample](https://github.com/DevTeam/Pure.DI/tree/master/Samples/WpfAppNetCore) demonstrates how to apply DI for a WPF application. The crucial class is [DataProvider](Samples/WpfAppNetCore/DataProvider.cs), which connects view and view models. Besides that, it provides two sets of models for [design-time](Samples/WpfAppNetCore/ClockDomainDesignTime.cs) and [running](Samples/WpfAppNetCore/ClockDomain.cs) modes.
+![wpf](Docs/Images/wpf.png?raw=true)
+
+[This sample](Samples/WpfAppNetCore) demonstrates how to apply DI for a WPF application. The crucial class is [DataProvider](Samples/WpfAppNetCore/DataProvider.cs), which connects view and view models. Besides that, it provides two sets of models for [design-time](Samples/WpfAppNetCore/ClockDomainDesignTime.cs) and [running](Samples/WpfAppNetCore/ClockDomain.cs) modes.
 
 ## Usage Scenarios
 
@@ -230,7 +234,7 @@ When a targeting project is an ASP.NET project, a special extension method is ge
 
 ### Autowiring [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Autowiring.cs)
 
-Autowring is the most natural way to use containers. In the first step, we should create a container. At the second step, we bind interfaces to their implementations. After that, the container is ready to resolve dependencies.
+Auto-wring is the most natural way to use containers. In the first step, we should create a container. At the second step, we bind interfaces to their implementations. After that, the container is ready to resolve dependencies.
 
 ``` CSharp
 // Create the container and configure it, using full autowiring
@@ -346,21 +350,30 @@ public void Run()
 [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Method)]
 public class TypeAttribute : Attribute
 {
-    public TypeAttribute(Type type) { }
+    // A type, which will be used during an injection
+    public readonly Type Type;
+
+    public TypeAttribute(Type type) => Type = type;
 }
 
 // Represents the dependency aspect attribute to specify a tag for injection.
 [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Method | AttributeTargets.Property)]
 public class TagAttribute : Attribute
 {
-    public TagAttribute(object tag) { }
+    // A tag, which will be used during an injection
+    public readonly object Tag;
+
+    public TagAttribute(object tag) => Tag = tag;
 }
 
 // Represents the dependency aspect attribute to specify an order for injection.
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property)]
 public class OrderAttribute : Attribute
 {
-    public OrderAttribute(int order) { }
+    // An order to be used to invoke a method
+    public readonly int Order;
+
+    public OrderAttribute(int order) => Order = order;
 }
 
 public interface IConsole { void WriteLine(string text); }
