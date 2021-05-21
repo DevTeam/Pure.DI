@@ -10,9 +10,15 @@ namespace Pure.DI.Core
     internal class FactoryObjectBuilder: IObjectBuilder
     {
         private readonly IBuildContext _buildContext;
+        private readonly IMemberNameService _memberNameService;
 
-        public FactoryObjectBuilder(IBuildContext buildContext) =>
+        public FactoryObjectBuilder(
+            IBuildContext buildContext,
+            IMemberNameService memberNameService)
+        {
             _buildContext = buildContext;
+            _memberNameService = memberNameService;
+        }
 
         public ExpressionSyntax Build(IBuildStrategy buildStrategy, Dependency dependency)
         {
@@ -33,14 +39,14 @@ namespace Pure.DI.Core
                         var type = dependency.Implementation.TypeSyntax;
                         return SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
                             .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
-                            .AddParameterListParameters(factory.Parameter.WithType(SyntaxRepo.ContextTypeSyntax))
+                            .AddParameterListParameters(factory.Parameter.WithType(SyntaxFactory.ParseTypeName(_memberNameService.GetName(MemberNameKind.ContextClass))))
                             .AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword), SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
                             .AddBodyStatements(factory.Block.Statements.ToArray());
                     });
 
                     resultExpression = 
                         SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryMethod.Identifier))
-                            .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName(SyntaxRepo.SharedContextName)));
+                            .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName(_memberNameService.GetName(MemberNameKind.ContextField))));
                 }
             }
 

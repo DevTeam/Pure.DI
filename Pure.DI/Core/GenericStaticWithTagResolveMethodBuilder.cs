@@ -5,6 +5,11 @@
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class GenericStaticWithTagResolveMethodBuilder : IResolveMethodBuilder
     {
+        private readonly IMemberNameService _memberNameService;
+
+        public GenericStaticWithTagResolveMethodBuilder(IMemberNameService memberNameService) =>
+            _memberNameService = memberNameService;
+
         public ResolveMethod Build()
         {
             var key = SyntaxFactory.ObjectCreationExpression(SyntaxRepo.TagTypeTypeSyntax)
@@ -15,7 +20,7 @@
             var resolve = SyntaxFactory.InvocationExpression(
                 SyntaxFactory.MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
-                            SyntaxFactory.ParseName(SyntaxRepo.FactoriesByTagTableName),
+                            SyntaxFactory.ParseName(_memberNameService.GetName(MemberNameKind.FactoriesByTagField)),
                             SyntaxFactory.Token(SyntaxKind.DotToken),
                             SyntaxFactory.IdentifierName(nameof(ResolversByTagTable.Resolve))))
                     .AddArgumentListArguments(

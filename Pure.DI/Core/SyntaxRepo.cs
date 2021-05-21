@@ -13,10 +13,6 @@ namespace Pure.DI.Core
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     internal static class SyntaxRepo
     {
-        public const string SharedContextName = "SharedContext";
-        public const string ContextClassName = "Context";
-        public const string FactoriesTableName = "Resolvers";
-        public const string FactoriesByTagTableName = "ResolversByTag";
         public static readonly TypeSyntax TTypeSyntax = SyntaxFactory.ParseTypeName("T");
         public static readonly TypeSyntax TypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(Type).ToString());
         public static readonly TypeSyntax UIntTypeSyntax = SyntaxFactory.ParseTypeName(typeof(uint).ToString());
@@ -27,7 +23,6 @@ namespace Pure.DI.Core
         public static readonly TypeSyntax FuncTypeObjectObjectTypeSyntax = SyntaxFactory.GenericName("System.Func").AddTypeArgumentListArguments(TypeTypeSyntax, ObjectTypeSyntax, ObjectTypeSyntax);
         public static readonly TypeSyntax ResolversTableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(ResolversTable).ToString());
         public static readonly TypeSyntax ResolversWithTagTableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(ResolversByTagTable).ToString());
-        public static readonly TypeSyntax ContextTypeSyntax = SyntaxFactory.ParseTypeName(ContextClassName);
         public static readonly TypeSyntax IContextTypeSyntax = SyntaxFactory.ParseTypeName(typeof(IContext).ToString());
         private static readonly TypeParameterSyntax TTypeParameterSyntax = SyntaxFactory.TypeParameter("T");
 

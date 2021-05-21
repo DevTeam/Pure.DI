@@ -5,12 +5,17 @@
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class GenericStaticResolveMethodBuilder : IResolveMethodBuilder
     {
+        private readonly IMemberNameService _memberNameService;
+
+        public GenericStaticResolveMethodBuilder(IMemberNameService memberNameService) =>
+            _memberNameService = memberNameService;
+
         public ResolveMethod Build()
         {
             var resolve = SyntaxFactory.InvocationExpression(
                 SyntaxFactory.MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
-                            SyntaxFactory.ParseName(SyntaxRepo.FactoriesTableName),
+                            SyntaxFactory.ParseName(_memberNameService.GetName(MemberNameKind.FactoriesField)),
                             SyntaxFactory.Token(SyntaxKind.DotToken),
                             SyntaxFactory.IdentifierName(nameof(ResolversTable.Resolve))))
                     .AddArgumentListArguments(

@@ -26,6 +26,7 @@
                 .Bind<ISourceBuilder>().To<SourceBuilder>()
                 .Bind<IBuildContext>().As(ContainerSingleton).To<BuildContext>()
                 .Bind<INameService>().Tag(Default).To<NameService>()
+                .Bind<IMemberNameService>().To<MemberNameService>()
                 .Bind<ITypeResolver>().Tag(Default).To<TypeResolver>()
                 .Bind<ResolverMetadata>().To(ctx => ctx.Container.Inject<IBuildContext>().Metadata)
                 .Bind<INameService>().To(ctx => ctx.Container.Inject<IBuildContext>().NameService)

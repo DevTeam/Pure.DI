@@ -97,7 +97,7 @@ namespace Pure.DI.UsageScenarios.Tests
             public string Prefix { get; set; } = string.Empty;
 
             // Adds current time and prefix before a message and writes it to console
-            public void Log(string message) => _console?.WriteLine($"{_clock?.Now} - {Prefix}: {message}");
+            public void Log(string message) => _console.WriteLine($"{_clock?.Now} - {Prefix}: {message}");
         }
 
         public class Clock : IClock

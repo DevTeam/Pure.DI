@@ -1019,5 +1019,192 @@
             // Then
             output.ShouldBe(new[] { "abc" }, generatedCode);
         }
+        
+        [Fact]
+        public void ShouldUseFreeMemberNameWhenType()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly bool Value;
+                    internal CompositionRoot(Foo value1, Foo value2) => Value = value1 == value2;        
+                }
+
+                public class Foo { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<Foo>().As(Pure.DI.Lifetime.Singleton).To<Foo>()
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+
+                    private static class SingletonSampleFoo { }
+                }    
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "True" }, generatedCode);
+        }
+        
+        [Fact]
+        public void ShouldUseFreeMemberNameWhenContextType()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly bool Value;
+                    internal CompositionRoot(Foo value1, Foo value2) => Value = value1 == value2;        
+                }
+
+                public class Foo { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<Foo>().As(Pure.DI.Lifetime.Singleton).To<Foo>()
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+
+                    private static class Context { }
+                }    
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "True" }, generatedCode);
+        }
+        
+        [Fact]
+        public void ShouldUseFreeMemberNameWhenMethod()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly bool Value;
+                    internal CompositionRoot(Foo value1, Foo value2) => Value = value1 == value2;        
+                }
+
+                public class Foo { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<Foo>().As(Pure.DI.Lifetime.Singleton).To<Foo>()
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+
+                    private static void SingletonSampleFoo() { }
+                }    
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "True" }, generatedCode);
+        }
+
+        [Fact]
+        public void ShouldUseFreeMemberNameWhenField()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly bool Value;
+                    internal CompositionRoot(Foo value1, Foo value2) => Value = value1 == value2;        
+                }
+
+                public class Foo { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<Foo>().As(Pure.DI.Lifetime.Singleton).To<Foo>()
+                            .Bind<CompositionRoot>().To<CompositionRoot>();                        
+                    }
+
+                    #pragma warning disable 0414
+                    private static int SingletonSampleFoo = 0;
+                }    
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "True" }, generatedCode);
+        }
+        
+        [Fact]
+        public void ShouldUseFreeMemberNameWhenResolversField()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly bool Value;
+                    internal CompositionRoot(Foo value1, Foo value2) => Value = value1 == value2;        
+                }
+
+                public class Foo { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<Foo>().As(Pure.DI.Lifetime.Singleton).To<Foo>()
+                            .Bind<CompositionRoot>().To<CompositionRoot>();                        
+                    }
+
+                    #pragma warning disable 0414
+                    private static int Resolvers = 0;
+                }    
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "True" }, generatedCode);
+        }
     }
 }

@@ -15,46 +15,46 @@
 
         public ExpressionSyntax Build(Dependency dependency, ExpressionSyntax objectBuildExpression)
         {
-            var resolvedType = dependency.Implementation;
-            var fieldKey = new MemberKey($"PerResolve{dependency.Binding.Implementation}", dependency);
-            var fieldType = resolvedType.Type.IsReferenceType
-                ? resolvedType.TypeSyntax
-                : SyntaxRepo.ObjectTypeSyntax;
-
-            var perResolveField = (FieldDeclarationSyntax) _buildContext.GetOrAddMember(fieldKey, () =>
-            {
-                var resolveInstanceFieldName = _buildContext.NameService.FindName(fieldKey);
-                return SyntaxFactory.FieldDeclaration(
-                        SyntaxFactory.VariableDeclaration(fieldType)
-                            .AddVariables(
-                                SyntaxFactory.VariableDeclarator(resolveInstanceFieldName)
-                            )
-                    )
-                    .AddModifiers(
-                        SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                        SyntaxFactory.Token(SyntaxKind.StaticKeyword));
-            });
-
-            var lockObjectKey = new MemberKey($"PerResolveLockObject{dependency.Binding.Implementation}", dependency);
-            var lockObjectField = (FieldDeclarationSyntax)_buildContext.GetOrAddMember(lockObjectKey, () =>
-            {
-                var lockObjectFieldName = _buildContext.NameService.FindName(lockObjectKey);
-                return SyntaxFactory.FieldDeclaration(
-                        SyntaxFactory.VariableDeclaration(SyntaxRepo.ObjectTypeSyntax)
-                            .AddVariables(
-                                SyntaxFactory.VariableDeclarator(lockObjectFieldName)
-                                    .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(SyntaxRepo.ObjectTypeSyntax).AddArgumentListArguments()))
-                            )
-                    )
-                    .AddModifiers(
-                        SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                        SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword),
-                        SyntaxFactory.Token(SyntaxKind.StaticKeyword));
-            });
-
             var methodKey = new MemberKey($"GetPerResolve{dependency.Binding.Implementation}", dependency);
             var factoryMethod = (MethodDeclarationSyntax)_buildContext.GetOrAddMember(methodKey, () =>
             {
+                var resolvedType = dependency.Implementation;
+                var fieldKey = new MemberKey($"PerResolve{dependency.Binding.Implementation}", dependency);
+                var fieldType = resolvedType.Type.IsReferenceType
+                    ? resolvedType.TypeSyntax
+                    : SyntaxRepo.ObjectTypeSyntax;
+                
+                var perResolveField = (FieldDeclarationSyntax) _buildContext.GetOrAddMember(fieldKey, () =>
+                {
+                    var resolveInstanceFieldName = _buildContext.NameService.FindName(fieldKey);
+                    return SyntaxFactory.FieldDeclaration(
+                            SyntaxFactory.VariableDeclaration(fieldType)
+                                .AddVariables(
+                                    SyntaxFactory.VariableDeclarator(resolveInstanceFieldName)
+                                )
+                        )
+                        .AddModifiers(
+                            SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
+                            SyntaxFactory.Token(SyntaxKind.StaticKeyword));
+                });
+
+                var lockObjectKey = new MemberKey($"PerResolveLockObject{dependency.Binding.Implementation}", dependency);
+                var lockObjectField = (FieldDeclarationSyntax)_buildContext.GetOrAddMember(lockObjectKey, () =>
+                {
+                    var lockObjectFieldName = _buildContext.NameService.FindName(lockObjectKey);
+                    return SyntaxFactory.FieldDeclaration(
+                            SyntaxFactory.VariableDeclaration(SyntaxRepo.ObjectTypeSyntax)
+                                .AddVariables(
+                                    SyntaxFactory.VariableDeclarator(lockObjectFieldName)
+                                        .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(SyntaxRepo.ObjectTypeSyntax).AddArgumentListArguments()))
+                                )
+                        )
+                        .AddModifiers(
+                            SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
+                            SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword),
+                            SyntaxFactory.Token(SyntaxKind.StaticKeyword));
+                });
+                
                 var factoryName = _buildContext.NameService.FindName(methodKey);
                 var type = resolvedType.TypeSyntax;
                 var method = SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))

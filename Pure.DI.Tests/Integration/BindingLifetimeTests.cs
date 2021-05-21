@@ -123,5 +123,48 @@
             // Then
             output.ShouldBe(new[] { "xyz_abc" }, generatedCode);
         }
+        
+        [Fact]
+        public void ShouldSupportBindingLifetimeWhenTag()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot([Tag(1)] string value1, string value2) => Value = value1 + value2;
+                }
+
+                public class MyLifetime: ILifetime<string>
+                {
+                    public string Resolve(Func<string> factory)
+                    {
+                        return factory() + ""_abc"";
+                    }
+                }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<ILifetime<string>>().Tag(1).To<MyLifetime>()
+                            .Bind<string>().As(Pure.DI.Lifetime.Binding).Tag(1).To(_ => ""xyz"")
+                            .Bind<string>().To(_ => ""123"")
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                    
+                }    
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "xyz_abc123" }, generatedCode);
+        }
     }
 }

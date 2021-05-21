@@ -16,14 +16,20 @@ namespace Pure.DI.Core
         private readonly IMembersBuilder[] _membersBuilder;
         private readonly IDiagnostic _diagnostic;
         private readonly IBindingsProbe _bindingsProbe;
+        private readonly IBuildContext _buildContext;
+        private readonly IMemberNameService _memberNameService;
         private readonly ResolverMetadata _metadata;
         
         public ClassBuilder(
+            IBuildContext buildContext,
+            IMemberNameService memberNameService,
             ResolverMetadata metadata,
             IEnumerable<IMembersBuilder> membersBuilder,
             IDiagnostic diagnostic,
             IBindingsProbe bindingsProbe)
         {
+            _buildContext = buildContext;
+            _memberNameService = memberNameService;
             _metadata = metadata;
             _membersBuilder = membersBuilder.OrderBy(i => i.Order).ToArray();
             _diagnostic = diagnostic;
@@ -33,6 +39,7 @@ namespace Pure.DI.Core
         public CompilationUnitSyntax Build(SemanticModel semanticModel)
         {
             var classModifiers = new List<SyntaxToken>();
+            _buildContext.NameService.ReserveName(_metadata.TargetTypeName);
             if (_metadata.Owner == null)
             {
                 classModifiers.Add(SyntaxFactory.Token(SyntaxKind.InternalKeyword));
@@ -42,6 +49,27 @@ namespace Pure.DI.Core
             else
             {
                 classModifiers.AddRange(_metadata.Owner.Modifiers);
+                foreach (var member in _metadata.Owner.Members)
+                {
+                    switch (member)
+                    {
+                        case BaseTypeDeclarationSyntax baseTypeDeclarationSyntax:
+                            _buildContext.NameService.ReserveName(baseTypeDeclarationSyntax.Identifier.Text);
+                            break;
+                        
+                        case MethodDeclarationSyntax methodDeclarationSyntax:
+                            _buildContext.NameService.ReserveName(methodDeclarationSyntax.Identifier.Text);
+                            break;
+                        
+                        case BaseFieldDeclarationSyntax fieldDeclarationSyntax:
+                            foreach (var variable in fieldDeclarationSyntax.Declaration.Variables)
+                            {
+                                _buildContext.NameService.ReserveName(variable.Identifier.Text);
+                            }
+                            
+                            break;
+                    }
+                }
             }
 
             var compilationUnit = SyntaxFactory.CompilationUnit()
@@ -66,15 +94,16 @@ namespace Pure.DI.Core
 
             _bindingsProbe.Probe();
 
+            var contextTypeSyntax = SyntaxFactory.ParseTypeName(_memberNameService.GetName(MemberNameKind.ContextClass));
             var resolverClass = SyntaxFactory.ClassDeclaration(_metadata.TargetTypeName)
                 .WithKeyword(SyntaxFactory.Token(SyntaxKind.ClassKeyword))
                 .AddModifiers(classModifiers.ToArray())
                 .AddMembers(
                     SyntaxFactory.FieldDeclaration(
-                            SyntaxFactory.VariableDeclaration(SyntaxRepo.ContextTypeSyntax)
+                            SyntaxFactory.VariableDeclaration(contextTypeSyntax)
                                 .AddVariables(
-                                    SyntaxFactory.VariableDeclarator(SyntaxRepo.SharedContextName)
-                                        .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(SyntaxRepo.ContextTypeSyntax).AddArgumentListArguments()))))
+                                    SyntaxFactory.VariableDeclarator(_memberNameService.GetName(MemberNameKind.ContextField))
+                                        .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(contextTypeSyntax).AddArgumentListArguments()))))
                         .AddModifiers(
                             SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
                             SyntaxFactory.Token(SyntaxKind.StaticKeyword),
@@ -82,7 +111,7 @@ namespace Pure.DI.Core
                         .WithCommentBefore("// Shared context to use in factories"))
                 .AddMembers(_membersBuilder.SelectMany(i => i.BuildMembers(semanticModel)).ToArray())
                 .AddMembers(
-                    SyntaxFactory.ClassDeclaration(SyntaxRepo.ContextClassName)
+                    SyntaxFactory.ClassDeclaration(_memberNameService.GetName(MemberNameKind.ContextClass))
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.SealedKeyword))
                         .AddBaseListTypes(SyntaxFactory.SimpleBaseType(SyntaxRepo.IContextTypeSyntax))

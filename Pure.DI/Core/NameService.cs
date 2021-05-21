@@ -1,5 +1,6 @@
 ﻿namespace Pure.DI.Core
 {
+    using System;
     using System.Collections.Generic;
 
     // ReSharper disable once ClassNeverInstantiated.Global
@@ -7,6 +8,7 @@
     {
         private readonly Dictionary<MemberKey, string> _names = new();
         private readonly Dictionary<string, int> _ids = new();
+        private readonly HashSet<string> _reserved = new(StringComparer.CurrentCultureIgnoreCase);
 
         public string FindName(MemberKey memberKey)
         {
@@ -15,19 +17,26 @@
                 return name;
             }
 
-            var newName = memberKey.Prefix;
-            if (!_ids.TryGetValue(newName, out var id))
+            string newName;
+            do
             {
-                _ids.Add(newName, 0);
-            }
-            else
-            {
-                _ids[newName] = id + 1;
-                newName += id;
-            }
+                if (!_ids.TryGetValue(memberKey.Prefix, out var id))
+                {
+                    _ids.Add(memberKey.Prefix, 0);
+                }
+                else
+                {
+                    _ids[memberKey.Prefix] = id + 1;
+                }
+
+                newName = memberKey.Prefix + id;
+            } while (_reserved.Contains(newName));
 
             _names.Add(memberKey, newName);
+            _reserved.Add(newName);
             return newName;
         }
+
+        public void ReserveName(string name) => _reserved.Add(name);
     }
 }
