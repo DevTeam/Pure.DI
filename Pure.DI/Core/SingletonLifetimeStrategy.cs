@@ -9,9 +9,15 @@
     {
         private const string ValueName = "Shared";
         private readonly IBuildContext _buildContext;
+        private readonly IDisposeStatementsBuilder _disposeStatementsBuilder;
 
-        public SingletonLifetimeStrategy(IBuildContext buildContext) =>
+        public SingletonLifetimeStrategy(
+            IBuildContext buildContext,
+            IDisposeStatementsBuilder disposeStatementsBuilder)
+        {
             _buildContext = buildContext;
+            _disposeStatementsBuilder = disposeStatementsBuilder;
+        }
 
         public Lifetime Lifetime => Lifetime.Singleton;
 
@@ -22,6 +28,14 @@
             var singletonClass = _buildContext.GetOrAddMember(classKey, () =>
             {
                 var singletonClassName = _buildContext.NameService.FindName(classKey);
+
+                var instance = SyntaxFactory.MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    SyntaxFactory.IdentifierName(singletonClassName),
+                    SyntaxFactory.IdentifierName(ValueName));
+                
+                _buildContext.AddReleaseStatements(_disposeStatementsBuilder.Build(resolvedDependency.Implementation, instance));
+
                 return SyntaxFactory.ClassDeclaration(singletonClassName)
                     .AddModifiers(
                         SyntaxFactory.Token(SyntaxKind.PrivateKeyword),

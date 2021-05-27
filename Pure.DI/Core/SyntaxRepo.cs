@@ -13,6 +13,8 @@ namespace Pure.DI.Core
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     internal static class SyntaxRepo
     {
+        private static readonly string DisposeSingletonsMethodName = "Dispose";
+        private static readonly TypeSyntax VoidTypeSyntax = SyntaxFactory.ParseTypeName("void");
         public static readonly TypeSyntax TTypeSyntax = SyntaxFactory.ParseTypeName("T");
         public static readonly TypeSyntax TypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(Type).ToString());
         public static readonly TypeSyntax UIntTypeSyntax = SyntaxFactory.ParseTypeName(typeof(uint).ToString());
@@ -58,7 +60,12 @@ namespace Pure.DI.Core
 
         public static readonly MethodDeclarationSyntax StaticResolveWithTagMethodSyntax =
             StaticResolveMethodSyntax.AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax));
-
+        
+        public static readonly MethodDeclarationSyntax ReleaseMethodSyntax =
+            SyntaxFactory.MethodDeclaration(VoidTypeSyntax, DisposeSingletonsMethodName)
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                .AddParameterListParameters();
+        
         public static T WithCommentBefore<T>(this T node, params string[] comments) where T: SyntaxNode =>
             node.WithLeadingTrivia(node.GetLeadingTrivia().Concat(SplitLines(comments).Select(SyntaxFactory.Comment)));
 

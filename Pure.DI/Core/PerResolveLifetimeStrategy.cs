@@ -83,10 +83,12 @@
                         )
                     ));
 
-                _buildContext.AddFinalizationStatement(
-                    SyntaxFactory.LockStatement(
-                        lockObject, 
-                        SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, resolveInstanceFieldIdentifier, SyntaxFactory.DefaultExpression(fieldType)))));
+                _buildContext.AddFinalizationStatements(
+                    new [] {
+                        SyntaxFactory.LockStatement(
+                            lockObject, 
+                            SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, resolveInstanceFieldIdentifier, SyntaxFactory.DefaultExpression(fieldType)))) 
+                    });
 
                 return method
                     .AddBodyStatements(ifStatement)

@@ -29,7 +29,7 @@
                     _ids[memberKey.Prefix] = id + 1;
                 }
 
-                newName = memberKey.Prefix + id;
+                newName = memberKey.Prefix + (id == 0 ? "" : id.ToString());
             } while (_reserved.Contains(newName));
 
             _names.Add(memberKey, newName);

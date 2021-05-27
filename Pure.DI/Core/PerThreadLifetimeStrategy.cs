@@ -8,9 +8,15 @@
     internal class PerThreadLifetimeStrategy : ILifetimeStrategy
     {
         private readonly IBuildContext _buildContext;
+        private readonly IDisposeStatementsBuilder _disposeStatementsBuilder;
 
-        public PerThreadLifetimeStrategy(IBuildContext buildContext) =>
+        public PerThreadLifetimeStrategy(
+            IBuildContext buildContext,
+            IDisposeStatementsBuilder disposeStatementsBuilder)
+        {
             _buildContext = buildContext;
+            _disposeStatementsBuilder = disposeStatementsBuilder;
+        }
 
         public Lifetime Lifetime => Lifetime.PerThread;
 
@@ -20,11 +26,16 @@
             var memberKey = new MemberKey($"PerThread{dependency.Binding.Implementation}", dependency);
             var perThreadField = (FieldDeclarationSyntax)_buildContext.GetOrAddMember(memberKey, () =>
             {
-                var type = resolvedType.TypeSyntax;
-                var threadLocalType = SyntaxFactory.GenericName("System.Threading.ThreadLocal").AddTypeArgumentListArguments(type);
+                var semanticModel = dependency.Implementation.SemanticModel;
+                var threadLocalTypeSymbol = semanticModel.Compilation.GetTypeByMetadataName("System.Threading.ThreadLocal`1");
+                var genericThreadLocalType = new SemanticType(threadLocalTypeSymbol!, semanticModel);
+                var threadLocalType = genericThreadLocalType.Construct(resolvedType);
                 var lambda = SyntaxFactory.ParenthesizedLambdaExpression(objectBuildExpression);
                 var threadLocalObject = SyntaxFactory.ObjectCreationExpression(threadLocalType).AddArgumentListArguments(SyntaxFactory.Argument(lambda));
                 var threadSingletonFieldName = _buildContext.NameService.FindName(memberKey);
+                
+                _buildContext.AddReleaseStatements(_disposeStatementsBuilder.Build(threadLocalType, SyntaxFactory.IdentifierName(threadSingletonFieldName)));
+                
                 return SyntaxFactory.FieldDeclaration(
                         SyntaxFactory.VariableDeclaration(threadLocalType)
                             .AddVariables(

@@ -16,7 +16,8 @@
                                        "System.Console.WriteLine(task1.Result.EqValue);" +
                                        "System.Console.WriteLine(task2.Result.EqValue);" +
                                        "System.Console.WriteLine(task1.Result.Value == task2.Result.Value);" +
-                                       "System.Console.WriteLine(task3.Result.Item1.Value == task3.Result.Item2.Value);";
+                                       "System.Console.WriteLine(task3.Result.Item1.Value == task3.Result.Item2.Value);" +
+                                       "Composer.Dispose();";
 
             // When
 
@@ -43,6 +44,7 @@
                 {
                     static Composer()
                     {
+                        // out=C:\Projects\DevTeam\Pure.DI\out
                         DI.Setup()
                             .Bind<Foo>().As(Pure.DI.Lifetime.PerThread).To<Foo>()
                             .Bind<CompositionRoot>().To<CompositionRoot>();

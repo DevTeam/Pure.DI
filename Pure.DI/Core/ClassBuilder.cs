@@ -110,6 +110,7 @@ namespace Pure.DI.Core
                             SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword))
                         .WithCommentBefore("// Shared context to use in factories"))
                 .AddMembers(_membersBuilder.SelectMany(i => i.BuildMembers(semanticModel)).ToArray())
+                .AddMembers(SyntaxRepo.ReleaseMethodSyntax.AddBodyStatements(_buildContext.ReleaseStatements.ToArray()))
                 .AddMembers(
                     SyntaxFactory.ClassDeclaration(_memberNameService.GetName(MemberNameKind.ContextClass))
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
@@ -140,8 +141,8 @@ namespace Pure.DI.Core
                                                         SyntaxFactory.Token(SyntaxKind.DotToken),
                                                         SyntaxFactory.GenericName(nameof(IContext.Resolve))
                                                             .AddTypeArgumentListArguments(SyntaxRepo.TTypeSyntax)))
-                                                .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")))))))
-                .WithPragmaWarningDisable(8600, 8602, 8603, 8604, 8625);
+                                                .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag"))))))
+                ).WithPragmaWarningDisable(8600, 8602, 8603, 8604, 8618, 8625);
 
             if (prevNamespaceNode != null)
             {

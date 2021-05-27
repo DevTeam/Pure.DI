@@ -12,6 +12,7 @@
         private readonly Dictionary<MemberKey, MemberDeclarationSyntax> _additionalMembers = new();
         private readonly HashSet<BindingMetadata> _additionalBindings = new();
         private readonly HashSet<StatementSyntax> _finalizationStatements = new();
+        private readonly HashSet<StatementSyntax> _releaseStatements = new();
         private readonly Func<INameService> _nameServiceFactory;
         private readonly Func<ITypeResolver> _typeResolverFactory;
         private Compilation? _compilation;
@@ -44,6 +45,8 @@
 
         public IEnumerable<StatementSyntax> FinalizationStatements => _finalizationStatements;
 
+        public IEnumerable<StatementSyntax> ReleaseStatements => _releaseStatements;
+
         public void Prepare(Compilation compilation, CancellationToken cancellationToken, ResolverMetadata metadata)
         {
             _compilation = compilation;
@@ -53,6 +56,8 @@
             _nameService = _nameServiceFactory();
             _typeResolver = _typeResolverFactory();
             _additionalMembers.Clear();
+            _finalizationStatements.Clear();
+            _releaseStatements.Clear();
         }
 
         public void AddBinding(BindingMetadata binding) => _additionalBindings.Add(binding);
@@ -69,7 +74,20 @@
             return member;
         }
 
-        public void AddFinalizationStatement(StatementSyntax finalizationStatement) =>
-            _finalizationStatements.Add(finalizationStatement);
+        public void AddFinalizationStatements(IEnumerable<StatementSyntax> finalizationStatements)
+        {
+            foreach (var finalizationStatement in finalizationStatements)
+            {
+                _finalizationStatements.Add(finalizationStatement);
+            }
+        }
+
+        public void AddReleaseStatements(IEnumerable<StatementSyntax> releaseStatements)
+        {
+            foreach (var releaseStatement in releaseStatements)
+            {
+                _releaseStatements.Add(releaseStatement);
+            }
+        }
     }
 }

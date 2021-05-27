@@ -14,6 +14,7 @@
   - [Generic autowiring](#generic-autowiring-)
   - [Injection of default parameters](#injection-of-default-parameters-)
 - Lifetimes
+  - [Per resolve](#per-resolve-)
   - [Singleton lifetime](#singleton-lifetime-)
   - [Per thread singleton](#per-thread-singleton-)
 - BCL types
@@ -194,7 +195,7 @@ public class Logger : ILogger
     public string Prefix { get; set; } = string.Empty;
 
     // Adds current time and prefix before a message and writes it to console
-    public void Log(string message) => _console?.WriteLine($"{_clock?.Now} - {Prefix}: {message}");
+    public void Log(string message) => _console.WriteLine($"{_clock?.Now} - {Prefix}: {message}");
 }
 
 public class Clock : IClock
@@ -345,22 +346,104 @@ class TTMy { }
 
 
 
+### Per resolve [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/PerResolveLifetime.cs)
+
+
+
+``` CSharp
+public void Run()
+{
+    DI.Setup()
+        .Bind<IDependency>().As(PerResolve).To<Dependency>()
+        // Use the Singleton lifetime
+        .Bind<IService>().To<Service>();
+
+    var instance = PerResolveLifetimeDI.Resolve<IService>();
+
+    // Check that dependencies are equal
+    instance.Dependency1.ShouldBe(instance.Dependency2);
+}
+
+public interface IDependency { }
+
+public class Dependency : IDependency { }
+
+public interface IService
+{
+    IDependency Dependency1 { get; }
+    
+    IDependency Dependency2 { get; }
+}
+
+public class Service : IService
+{
+    public Service(IDependency dependency1, IDependency dependency2)
+    {
+        Dependency1 = dependency1;
+        Dependency2 = dependency2;
+    }
+
+    public IDependency Dependency1 { get; }
+    
+    public IDependency Dependency2 { get; }
+}
+```
+
+
+
 ### Singleton lifetime [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/SingletonLifetime.cs)
 
 [Singleton](https://en.wikipedia.org/wiki/Singleton_pattern) is a design pattern that supposes for having only one instance of some class during the whole application lifetime. The main complaint about Singleton is that it contradicts the Dependency Injection principle and thus hinders testability. It essentially acts as a global constant, and it is hard to substitute it with a test when needed. The _Singleton lifetime_ is indispensable in this case.
 
 ``` CSharp
-DI.Setup()
-    .Bind<IDependency>().To<Dependency>()
-    // Use the Singleton lifetime
-    .Bind<IService>().As(Singleton).To<Service>();
+public void Run()
+{
+    DI.Setup()
+        .Bind<IDependency>().As(Singleton).To<Dependency>()
+        // Use the Singleton lifetime
+        .Bind<IService>().To<Service>();
+    
+    // Resolve the singleton twice
+    var instance = SingletonLifetimeDI.Resolve<IService>();
 
-// Resolve the singleton twice
-var instance1 = SingletonLifetimeDI.Resolve<IService>();
-var instance2 = SingletonLifetimeDI.Resolve<IService>();
+    // Check that instances are equal
+    instance.Dependency1.ShouldBe(instance.Dependency2);
+    
+    SingletonLifetimeDI.Dispose();
+    instance.Dependency1.IsDisposed.ShouldBeTrue();
+}
 
-// Check that instances are equal
-instance1.ShouldBe(instance2);
+public interface IDependency : IDisposable
+{
+    bool IsDisposed { get; }
+}
+
+public class Dependency : IDependency
+{
+    public bool IsDisposed { get; private set; }
+    
+    public void Dispose() => IsDisposed = true;
+}
+
+public interface IService
+{
+    IDependency Dependency1 { get; }
+    
+    IDependency Dependency2 { get; }
+}
+
+public class Service : IService
+{
+    public Service(IDependency dependency1, IDependency dependency2)
+    {
+        Dependency1 = dependency1;
+        Dependency2 = dependency2;
+    }
+
+    public IDependency Dependency1 { get; }
+    
+    public IDependency Dependency2 { get; }
+}
 ```
 
 

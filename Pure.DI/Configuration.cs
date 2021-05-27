@@ -71,7 +71,8 @@
                 .Bind<ILog<IoC.TT>>().To<Log<IoC.TT>>()
                 .Bind<IFileSystem>().As(ContainerSingleton).To<FileSystem>()
                 .Bind<ITargetClassNameProvider>().To<TargetClassNameProvider>()
-                .Bind<IOwnerProvider>().As(ContainerSingleton).To<OwnerProvider>();
+                .Bind<IOwnerProvider>().As(ContainerSingleton).To<OwnerProvider>()
+                .Bind<IDisposeStatementsBuilder>().As(Singleton).To<DisposeStatementsBuilder>();
         }
     }
 }

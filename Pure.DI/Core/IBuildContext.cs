@@ -25,11 +25,15 @@
         IEnumerable<MemberDeclarationSyntax> AdditionalMembers { get; }
 
         IEnumerable<StatementSyntax> FinalizationStatements { get; }
+        
+        IEnumerable<StatementSyntax> ReleaseStatements { get; }
 
         void AddBinding(BindingMetadata binding);
 
         MemberDeclarationSyntax GetOrAddMember(MemberKey key, Func<MemberDeclarationSyntax> additionalMemberFactory);
 
-        void AddFinalizationStatement(StatementSyntax finalizationStatement);
+        void AddFinalizationStatements(IEnumerable<StatementSyntax> finalizationStatement);
+        
+        void AddReleaseStatements(IEnumerable<StatementSyntax> releaseStatements);
     }
 }
