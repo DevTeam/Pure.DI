@@ -195,18 +195,7 @@
 
                     if (dependency.IsResolved)
                     {
-                        if (dependency.Binding.Lifetime != Lifetime.Scoped && dependency.Binding.Lifetime != Lifetime.ContainerSingleton)
-                        {
-                            return buildStrategy.Build(dependency);
-                        }
-
-                        var serviceProviderInstance = new SemanticType(dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.ServiceProviderInstance`1")!, dependency.Implementation.SemanticModel);
-                        var instanceType = serviceProviderInstance.Construct(type);
-                        var serviceProviderDependency = typeResolver.Resolve(instanceType, dependency.Tag, resolveLocations);
-                        return SyntaxFactory.MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            buildStrategy.Build(serviceProviderDependency),
-                            SyntaxFactory.IdentifierName(nameof(ServiceProviderInstance<object>.Value)));
+                        return buildStrategy.Build(dependency);
                     }
 
                     if (probe)

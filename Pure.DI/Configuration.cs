@@ -49,30 +49,19 @@
                 .Bind<IResolveMethodBuilder>().Tag(GenericStaticResolve).To<GenericStaticResolveMethodBuilder>()
                 .Bind<IResolveMethodBuilder>().Tag(GenericStaticWithTag).To<GenericStaticWithTagResolveMethodBuilder>()
                 .Bind<IBuildStrategy>().Tag(SimpleBuildStrategy).To<BuildStrategy>(
-                    ctx => new BuildStrategy(
-                        ctx.Container.Inject<IDiagnostic>(),
-                        ctx.Container.Inject<ITracer>(),
-                        ctx.Container.Inject<ILog<BuildStrategy>>(),
-                        ctx.Container.Inject<IEnumerable<ILifetimeStrategy>>(),
-                        ctx.Container.Inject<IBindingResultStrategy>(AsIsResult),
-                        null))
+                    ctx => ctx.Container.Assign(ctx.It.ResultStrategy, ctx.Container.Inject<IBindingResultStrategy>(AsIsResult)))
                 .Bind<IBuildStrategy>().Tag(GenericBuildStrategy).To<BuildStrategy>(
-                    ctx => new BuildStrategy(
-                        ctx.Container.Inject<IDiagnostic>(),
-                        ctx.Container.Inject<ITracer>(),
-                        ctx.Container.Inject<ILog<BuildStrategy>>(),
-                        ctx.Container.Inject<IEnumerable<ILifetimeStrategy>>(),
-                        ctx.Container.Inject<IBindingResultStrategy>(GenericResult),
-                        ctx.Container.Inject<IBuildStrategy>(SimpleBuildStrategy)));
+                    ctx => ctx.Container.Assign(ctx.It.ResultStrategy, ctx.Container.Inject<IBindingResultStrategy>(GenericResult)),
+                    ctx => ctx.Container.Assign(ctx.It.DependencyBindingExpressionStrategy, ctx.Container.Inject<IBuildStrategy>(SimpleBuildStrategy)));
             
             yield return container
                 .Bind<IBindingStatementsStrategy>().Tag(TypeStatementsStrategy).To<TypeBindingStatementsStrategy>()
                 .Bind<IBindingStatementsStrategy>().Tag(TypeAndTagStatementsStrategy).To<TypeAndTagBindingStatementsStrategy>()
                 .Bind<ITypesMap>().To<TypesMap>()
                 .Bind<IAttributesService>().To<AttributesService>()
-                .Bind<ILifetimeStrategy>().As(ContainerSingleton).Tag(Lifetime.Transient).To(ctx => new TransientLifetimeStrategy(Lifetime.Transient))
-                .Bind<ILifetimeStrategy>().As(ContainerSingleton).Tag(Lifetime.ContainerSingleton).To(ctx => new TransientLifetimeStrategy(Lifetime.ContainerSingleton))
-                .Bind<ILifetimeStrategy>().As(ContainerSingleton).Tag(Lifetime.Scoped).To(ctx => new TransientLifetimeStrategy(Lifetime.Scoped))
+                .Bind<ILifetimeStrategy>().As(Singleton).Tag(Lifetime.Transient).To<TransientLifetimeStrategy>()
+                .Bind<ILifetimeStrategy>().Tag(Lifetime.ContainerSingleton).To<MicrosoftDependencyInjectionLifetimeStrategy>(ctx => ctx.Container.Assign(ctx.It.Lifetime, Lifetime.ContainerSingleton))
+                .Bind<ILifetimeStrategy>().Tag(Lifetime.Scoped).To<MicrosoftDependencyInjectionLifetimeStrategy>(ctx => ctx.Container.Assign(ctx.It.Lifetime, Lifetime.Scoped))
                 .Bind<ILifetimeStrategy>().Tag(Lifetime.Singleton).To<SingletonLifetimeStrategy>()
                 .Bind<ILifetimeStrategy>().Tag(Lifetime.PerThread).To<PerThreadLifetimeStrategy>()
                 .Bind<ILifetimeStrategy>().Tag(Lifetime.PerResolve).To<PerResolveLifetimeStrategy>()
