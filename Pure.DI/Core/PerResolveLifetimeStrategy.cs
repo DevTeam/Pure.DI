@@ -7,9 +7,13 @@
     internal class PerResolveLifetimeStrategy : ILifetimeStrategy
     {
         private readonly IBuildContext _buildContext;
+        private readonly IRaiseOnDisposableExpressionBuilder _raiseOnDisposableExpressionBuilder;
 
-        public PerResolveLifetimeStrategy(IBuildContext buildContext) =>
+        public PerResolveLifetimeStrategy(IBuildContext buildContext, IRaiseOnDisposableExpressionBuilder raiseOnDisposableExpressionBuilder)
+        {
             _buildContext = buildContext;
+            _raiseOnDisposableExpressionBuilder = raiseOnDisposableExpressionBuilder;
+        }
 
         public Lifetime Lifetime => Lifetime.PerResolve;
 
@@ -67,6 +71,8 @@
                     : SyntaxFactory.CastExpression(type, resolveInstanceFieldIdentifier);
                 var returnStatement = SyntaxFactory.ReturnStatement(fieldExpression);
 
+                objectBuildExpression = _raiseOnDisposableExpressionBuilder.Build(dependency.Implementation, Lifetime.PerResolve, objectBuildExpression);
+
                 var assignmentBlock = SyntaxFactory.Block()
                     .AddStatements(SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, resolveInstanceFieldIdentifier, objectBuildExpression)))
                     .AddStatements(returnStatement);
@@ -82,7 +88,7 @@
                             assignmentBlock
                         )
                     ));
-
+                
                 _buildContext.AddFinalizationStatements(
                     new [] {
                         SyntaxFactory.LockStatement(

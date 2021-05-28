@@ -94,6 +94,12 @@ namespace Pure.DI.Core
 
             _bindingsProbe.Probe();
 
+            var registerDisposableTypeSyntax = SyntaxRepo.RegisterDisposableTypeSyntax;
+            if (_buildContext.Compilation.Options.NullableContextOptions == NullableContextOptions.Enable)
+            {
+                registerDisposableTypeSyntax = SyntaxFactory.NullableType(registerDisposableTypeSyntax);
+            }
+
             var contextTypeSyntax = SyntaxFactory.ParseTypeName(_memberNameService.GetName(MemberNameKind.ContextClass));
             var resolverClass = SyntaxFactory.ClassDeclaration(_metadata.TargetTypeName)
                 .WithKeyword(SyntaxFactory.Token(SyntaxKind.ClassKeyword))
@@ -110,7 +116,28 @@ namespace Pure.DI.Core
                             SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword))
                         .WithCommentBefore("// Shared context to use in factories"))
                 .AddMembers(_membersBuilder.SelectMany(i => i.BuildMembers(semanticModel)).ToArray())
-                .AddMembers(SyntaxRepo.ReleaseMethodSyntax.AddBodyStatements(_buildContext.ReleaseStatements.ToArray()))
+                .AddMembers(SyntaxRepo.FinalDisposeMethodSyntax.AddBodyStatements(_buildContext.FinalDisposeStatements.ToArray()))
+                .AddMembers(
+                    SyntaxFactory.EventFieldDeclaration(
+                            SyntaxFactory.VariableDeclaration(registerDisposableTypeSyntax).AddVariables(
+                                SyntaxFactory.VariableDeclarator(SyntaxRepo.OnDisposableEventName)))
+                        .AddModifiers(
+                            SyntaxFactory.Token(SyntaxKind.InternalKeyword),
+                            SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
+                .AddMembers(
+                    SyntaxRepo.RaiseOnDisposableMethodSyntax.AddBodyStatements(
+                        SyntaxFactory.IfStatement(
+                            SyntaxFactory.BinaryExpression(SyntaxKind.NotEqualsExpression, SyntaxFactory.IdentifierName(SyntaxRepo.OnDisposableEventName), SyntaxFactory.DefaultExpression(SyntaxRepo.RegisterDisposableTypeSyntax)),
+                            SyntaxFactory.ExpressionStatement(
+                                SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(SyntaxRepo.OnDisposableEventName))
+                                    .AddArgumentListArguments(
+                                        SyntaxFactory.Argument(
+                                            SyntaxFactory.ObjectCreationExpression(SyntaxRepo.RegisterDisposableEventTypeSyntax)
+                                                .AddArgumentListArguments(
+                                                    SyntaxFactory.Argument(SyntaxFactory.IdentifierName("disposable")),
+                                                    SyntaxFactory.Argument(SyntaxFactory.IdentifierName("lifetime"))))))),
+                        SyntaxFactory.ReturnStatement(SyntaxFactory.IdentifierName("disposable"))
+                        ))
                 .AddMembers(
                     SyntaxFactory.ClassDeclaration(_memberNameService.GetName(MemberNameKind.ContextClass))
                         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
@@ -142,7 +169,7 @@ namespace Pure.DI.Core
                                                         SyntaxFactory.GenericName(nameof(IContext.Resolve))
                                                             .AddTypeArgumentListArguments(SyntaxRepo.TTypeSyntax)))
                                                 .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag"))))))
-                ).WithPragmaWarningDisable(8600, 8602, 8603, 8604, 8618, 8625);
+                ).WithPragmaWarningDisable(0067, 8600, 8602, 8603, 8604, 8618, 8625);
 
             if (prevNamespaceNode != null)
             {

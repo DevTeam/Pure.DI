@@ -13,9 +13,15 @@ namespace Pure.DI.Core
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     internal static class SyntaxRepo
     {
-        private static readonly string DisposeSingletonsMethodName = "Dispose";
+        private static readonly string DisposeSingletonsMethodName = "FinalDispose";
+        public static readonly string OnDisposableEventName = "OnDisposable";
+        public static readonly string RaiseOnDisposableMethodName = "RaiseOnDisposable";
         private static readonly TypeSyntax VoidTypeSyntax = SyntaxFactory.ParseTypeName("void");
+        private static readonly TypeSyntax DisposableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(IDisposable).ToString());
         public static readonly TypeSyntax TTypeSyntax = SyntaxFactory.ParseTypeName("T");
+        private static readonly TypeSyntax LifetimeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(Lifetime).ToString());
+        public static readonly TypeSyntax RegisterDisposableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(RegisterDisposable).ToString());
+        public static readonly TypeSyntax RegisterDisposableEventTypeSyntax = SyntaxFactory.ParseTypeName(typeof(RegisterDisposableEvent).ToString());
         public static readonly TypeSyntax TypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(Type).ToString());
         public static readonly TypeSyntax UIntTypeSyntax = SyntaxFactory.ParseTypeName(typeof(uint).ToString());
         public static readonly TypeSyntax ObjectTypeSyntax = SyntaxFactory.ParseTypeName("object");
@@ -61,10 +67,20 @@ namespace Pure.DI.Core
         public static readonly MethodDeclarationSyntax StaticResolveWithTagMethodSyntax =
             StaticResolveMethodSyntax.AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax));
         
-        public static readonly MethodDeclarationSyntax ReleaseMethodSyntax =
+        public static readonly MethodDeclarationSyntax FinalDisposeMethodSyntax =
             SyntaxFactory.MethodDeclaration(VoidTypeSyntax, DisposeSingletonsMethodName)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
                 .AddParameterListParameters();
+        
+        public static readonly MethodDeclarationSyntax RaiseOnDisposableMethodSyntax =
+            SyntaxFactory.MethodDeclaration(TTypeSyntax, RaiseOnDisposableMethodName)
+                .AddParameterListParameters(
+                    SyntaxFactory.Parameter(SyntaxFactory.Identifier("disposable")).WithType(TTypeSyntax),
+                    SyntaxFactory.Parameter(SyntaxFactory.Identifier("lifetime")).WithType(LifetimeTypeSyntax))
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(AggressiveInliningAttr))
+                .AddTypeParameterListParameters(TTypeParameterSyntax)
+                .AddConstraintClauses(SyntaxFactory.TypeParameterConstraintClause(SyntaxFactory.IdentifierName("T")).AddConstraints(SyntaxFactory.TypeConstraint(DisposableTypeSyntax)));
         
         public static T WithCommentBefore<T>(this T node, params string[] comments) where T: SyntaxNode =>
             node.WithLeadingTrivia(node.GetLeadingTrivia().Concat(SplitLines(comments).Select(SyntaxFactory.Comment)));

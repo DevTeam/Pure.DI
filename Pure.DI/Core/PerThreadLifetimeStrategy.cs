@@ -34,7 +34,7 @@
                 var threadLocalObject = SyntaxFactory.ObjectCreationExpression(threadLocalType).AddArgumentListArguments(SyntaxFactory.Argument(lambda));
                 var threadSingletonFieldName = _buildContext.NameService.FindName(memberKey);
                 
-                _buildContext.AddReleaseStatements(_disposeStatementsBuilder.Build(threadLocalType, SyntaxFactory.IdentifierName(threadSingletonFieldName)));
+                _buildContext.AddFinalDisposeStatements(_disposeStatementsBuilder.Build(threadLocalType, SyntaxFactory.IdentifierName(threadSingletonFieldName)));
                 
                 return SyntaxFactory.FieldDeclaration(
                         SyntaxFactory.VariableDeclaration(threadLocalType)

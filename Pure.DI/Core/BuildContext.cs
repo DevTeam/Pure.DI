@@ -12,7 +12,7 @@
         private readonly Dictionary<MemberKey, MemberDeclarationSyntax> _additionalMembers = new();
         private readonly HashSet<BindingMetadata> _additionalBindings = new();
         private readonly HashSet<StatementSyntax> _finalizationStatements = new();
-        private readonly HashSet<StatementSyntax> _releaseStatements = new();
+        private readonly HashSet<StatementSyntax> _finalDisposeStatements = new();
         private readonly Func<INameService> _nameServiceFactory;
         private readonly Func<ITypeResolver> _typeResolverFactory;
         private Compilation? _compilation;
@@ -45,7 +45,7 @@
 
         public IEnumerable<StatementSyntax> FinalizationStatements => _finalizationStatements;
 
-        public IEnumerable<StatementSyntax> ReleaseStatements => _releaseStatements;
+        public IEnumerable<StatementSyntax> FinalDisposeStatements => _finalDisposeStatements;
 
         public void Prepare(Compilation compilation, CancellationToken cancellationToken, ResolverMetadata metadata)
         {
@@ -57,7 +57,7 @@
             _typeResolver = _typeResolverFactory();
             _additionalMembers.Clear();
             _finalizationStatements.Clear();
-            _releaseStatements.Clear();
+            _finalDisposeStatements.Clear();
         }
 
         public void AddBinding(BindingMetadata binding) => _additionalBindings.Add(binding);
@@ -82,11 +82,11 @@
             }
         }
 
-        public void AddReleaseStatements(IEnumerable<StatementSyntax> releaseStatements)
+        public void AddFinalDisposeStatements(IEnumerable<StatementSyntax> releaseStatements)
         {
             foreach (var releaseStatement in releaseStatements)
             {
-                _releaseStatements.Add(releaseStatement);
+                _finalDisposeStatements.Add(releaseStatement);
             }
         }
     }

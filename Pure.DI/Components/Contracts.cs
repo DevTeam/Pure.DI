@@ -3,6 +3,8 @@
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable NotAccessedField.Global
+// ReSharper disable StructCanBeMadeReadOnly
+// ReSharper disable MemberCanBePrivate.Global
 #pragma warning disable 0436
 namespace Pure.DI
 {
@@ -212,4 +214,18 @@ namespace Pure.DI
     {
         T Resolve(Func<T> factory);
     }
+
+    internal struct RegisterDisposableEvent
+    {
+        public readonly IDisposable Disposable;
+        public readonly Lifetime Lifetime;
+
+        public RegisterDisposableEvent(IDisposable disposable, Lifetime lifetime)
+        {
+            Disposable = disposable;
+            Lifetime = lifetime;
+        }
+    }
+
+    internal delegate void RegisterDisposable(RegisterDisposableEvent registerDisposableEvent);
 }

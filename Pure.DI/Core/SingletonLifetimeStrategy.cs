@@ -34,7 +34,7 @@
                     SyntaxFactory.IdentifierName(singletonClassName),
                     SyntaxFactory.IdentifierName(ValueName));
                 
-                _buildContext.AddReleaseStatements(_disposeStatementsBuilder.Build(resolvedDependency.Implementation, instance));
+                _buildContext.AddFinalDisposeStatements(_disposeStatementsBuilder.Build(resolvedDependency.Implementation, instance));
 
                 return SyntaxFactory.ClassDeclaration(singletonClassName)
                     .AddModifiers(
@@ -49,7 +49,7 @@
                                     )
                             )
                             .AddModifiers(
-                                SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+                                SyntaxFactory.Token(SyntaxKind.InternalKeyword),
                                 SyntaxFactory.Token(SyntaxKind.StaticKeyword),
                                 SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword))
                     );

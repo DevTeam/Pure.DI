@@ -17,7 +17,7 @@
                                        "System.Console.WriteLine(task2.Result.EqValue);" +
                                        "System.Console.WriteLine(task1.Result.Value == task2.Result.Value);" +
                                        "System.Console.WriteLine(task3.Result.Item1.Value == task3.Result.Item2.Value);" +
-                                       "Composer.Dispose();";
+                                       "Composer.FinalDispose();";
 
             // When
 

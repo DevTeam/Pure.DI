@@ -26,7 +26,7 @@
 
         IEnumerable<StatementSyntax> FinalizationStatements { get; }
         
-        IEnumerable<StatementSyntax> ReleaseStatements { get; }
+        IEnumerable<StatementSyntax> FinalDisposeStatements { get; }
 
         void AddBinding(BindingMetadata binding);
 
@@ -34,6 +34,6 @@
 
         void AddFinalizationStatements(IEnumerable<StatementSyntax> finalizationStatement);
         
-        void AddReleaseStatements(IEnumerable<StatementSyntax> releaseStatements);
+        void AddFinalDisposeStatements(IEnumerable<StatementSyntax> releaseStatements);
     }
 }

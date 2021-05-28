@@ -12,8 +12,7 @@ namespace Pure.DI.Core
     {
         public IEnumerable<StatementSyntax> Build(SemanticType type, ExpressionSyntax instanceExpression)
         {
-            var disposableType = type.SemanticModel.Compilation.GetTypeByMetadataName("System.IDisposable");
-            if (disposableType == null || !type.Type.AllInterfaces.Any(i => i.Equals(disposableType, SymbolEqualityComparer.Default)))
+            if (!type.ImplementsInterface<IDisposable>())
             {
                 yield break;
             }

@@ -95,7 +95,7 @@
                     null);
 
                 var method = SyntaxFactory.MethodDeclaration(serviceCollection, $"Add{_metadata.TargetTypeName}")
-                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.InternalKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
                     .AddParameterListParameters(thisParameter);
 
                 var getBuilder = SyntaxFactory.InvocationExpression(
