@@ -5,6 +5,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedType.Global
 #pragma warning disable 0436
+#pragma warning disable 8714
 namespace Pure.DI
 {    
     /// <summary>
