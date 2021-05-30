@@ -10,17 +10,13 @@ namespace BlazorServerApp
 
     internal static partial class ClockDomain
     {
-        static ClockDomain()
-        {
-            DI.Setup()
+        static ClockDomain() => DI.Setup()
+            // View Models
+            .Bind<IClockViewModel>().To<ClockViewModel>()
 
-                // View Models
-                .Bind<IClockViewModel>().To<ClockViewModel>()
-
-                // Models
-                .Bind<ILog<TT>>().As(Singleton).To<AspNetLog<TT>>()
-                .Bind<ITimer>().As(Scoped).To(_ => new Timer(TimeSpan.FromSeconds(1)))
-                .Bind<IClock>().As(ContainerSingleton).To<SystemClock>();
-        }
+            // Models
+            .Bind<ILog<TT>>().As(Singleton).To<AspNetLog<TT>>()
+            .Bind<ITimer>().As(Scoped).To(_ => new Timer(TimeSpan.FromSeconds(1)))
+            .Bind<IClock>().As(ContainerSingleton).To<SystemClock>();
     }
 }

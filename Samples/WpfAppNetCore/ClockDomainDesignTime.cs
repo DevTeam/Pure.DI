@@ -12,12 +12,8 @@ namespace WpfAppNetCore
 
     internal static partial class ClockDomainDesignTime
     {
-        static ClockDomainDesignTime()
-        {
-            DI.Setup().DependsOn(nameof(ClockDomain))
-
-                // Design-time View Models
-                .Bind<IClockViewModel>().As(Singleton).To<ClockViewModelDesignTime>();
-        }
+        static ClockDomainDesignTime() => DI.Setup().DependsOn(nameof(ClockDomain))
+            // Design-time View Models
+            .Bind<IClockViewModel>().As(Singleton).To<ClockViewModelDesignTime>();
     }
 }

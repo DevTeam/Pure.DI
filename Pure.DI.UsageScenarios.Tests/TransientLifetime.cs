@@ -8,31 +8,31 @@ namespace Pure.DI.UsageScenarios.Tests
     using Xunit;
     using static Lifetime;
 
-    public class PerResolveLifetime
+    public class TransientLifetime
     {
         [Fact]
         // $visible=true
         // $tag=2 Lifetimes
         // $priority=01
-        // $description=Per resolve lifetime
+        // $description=Transient lifetime
         // {
         public void Run()
         {
             DI.Setup()
-                .Bind<IDependency>().As(PerResolve).To<Dependency>()
+                .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>();
 
             // Track disposables
             var disposables = new List<IDisposable>();
-            PerResolveLifetimeDI.OnDisposable += e => disposables.Add(e.Disposable);
+            TransientLifetimeDI.OnDisposable += e => disposables.Add(e.Disposable);
 
-            var instance = PerResolveLifetimeDI.Resolve<IService>();
+            var instance = TransientLifetimeDI.Resolve<IService>();
 
-            // Check that dependencies are equal
-            instance.Dependency1.ShouldBe(instance.Dependency2);
+            // Check that dependencies are not equal
+            instance.Dependency1.ShouldNotBe(instance.Dependency2);
             
             // Check disposable instances created
-            disposables.Count.ShouldBe(1);
+            disposables.Count.ShouldBe(2);
         }
 
         public interface IDependency { }

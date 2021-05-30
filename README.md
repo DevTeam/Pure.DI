@@ -80,9 +80,7 @@ static partial class Glue
   // Models a random subatomic event that may or may not occur
   private static readonly Random Indeterminacy = new();
 
-  static Glue()
-  {
-    DI.Setup()
+  static Glue() => DI.Setup()
       // Represents a quantum superposition of 2 states: Alive or Dead
       .Bind<State>().To(_ => (State)Indeterminacy.Next(2))
       // Represents schrodinger's cat
@@ -218,8 +216,9 @@ When a targeting project is an ASP.NET project, a special extension method is ge
   - [Generic autowiring](#generic-autowiring-)
   - [Injection of default parameters](#injection-of-default-parameters-)
 - Lifetimes
-  - [Per resolve](#per-resolve-)
+  - [Per resolve lifetime](#per-resolve-lifetime-)
   - [Singleton lifetime](#singleton-lifetime-)
+  - [Transient lifetime](#transient-lifetime-)
   - [Per thread singleton](#per-thread-singleton-)
 - BCL types
   - [Arrays](#arrays-)
@@ -550,7 +549,7 @@ class TTMy { }
 
 
 
-### Per resolve [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/PerResolveLifetime.cs)
+### Per resolve lifetime [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/PerResolveLifetime.cs)
 
 
 
@@ -559,18 +558,27 @@ public void Run()
 {
     DI.Setup()
         .Bind<IDependency>().As(PerResolve).To<Dependency>()
-        // Use the Singleton lifetime
         .Bind<IService>().To<Service>();
+
+    // Track disposables
+    var disposables = new List<IDisposable>();
+    PerResolveLifetimeDI.OnDisposable += e => disposables.Add(e.Disposable);
 
     var instance = PerResolveLifetimeDI.Resolve<IService>();
 
     // Check that dependencies are equal
     instance.Dependency1.ShouldBe(instance.Dependency2);
+    
+    // Check disposable instances created
+    disposables.Count.ShouldBe(1);
 }
 
 public interface IDependency { }
 
-public class Dependency : IDependency { }
+public class Dependency : IDependency, IDisposable
+{
+    public void Dispose() { }
+}
 
 public interface IService
 {
@@ -613,7 +621,7 @@ public void Run()
     // Check that instances are equal
     instance.Dependency1.ShouldBe(instance.Dependency2);
     
-    SingletonLifetimeDI.Dispose();
+    SingletonLifetimeDI.FinalDispose();
     instance.Dependency1.IsDisposed.ShouldBeTrue();
 }
 
@@ -627,6 +635,60 @@ public class Dependency : IDependency
     public bool IsDisposed { get; private set; }
     
     public void Dispose() => IsDisposed = true;
+}
+
+public interface IService
+{
+    IDependency Dependency1 { get; }
+    
+    IDependency Dependency2 { get; }
+}
+
+public class Service : IService
+{
+    public Service(IDependency dependency1, IDependency dependency2)
+    {
+        Dependency1 = dependency1;
+        Dependency2 = dependency2;
+    }
+
+    public IDependency Dependency1 { get; }
+    
+    public IDependency Dependency2 { get; }
+}
+```
+
+
+
+### Transient lifetime [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/TransientLifetime.cs)
+
+
+
+``` CSharp
+public void Run()
+{
+    DI.Setup()
+        .Bind<IDependency>().To<Dependency>()
+        .Bind<IService>().To<Service>();
+
+    // Track disposables
+    var disposables = new List<IDisposable>();
+    TransientLifetimeDI.OnDisposable += e => disposables.Add(e.Disposable);
+
+    var instance = TransientLifetimeDI.Resolve<IService>();
+
+    // Check that dependencies are not equal
+    instance.Dependency1.ShouldNotBe(instance.Dependency2);
+    
+    // Check disposable instances created
+    disposables.Count.ShouldBe(2);
+}
+
+public interface IDependency { }
+
+public class Dependency : IDependency, IDisposable
+{
+    public void Dispose() { }
 }
 
 public interface IService
