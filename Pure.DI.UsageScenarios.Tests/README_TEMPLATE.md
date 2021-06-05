@@ -28,6 +28,7 @@
   - [ThreadLocal](#threadlocal-)
   - [Tuples](#tuples-)
 - Advanced
+  - [ASPNET](#aspnet-)
   - [Constructor choice](#constructor-choice-)
 
 ### Autowiring [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Autowiring.cs)
@@ -721,6 +722,81 @@ DI.Setup()
 
 // Resolve an instance of type Tuple<IService, INamedService>
 var (service, namedService) = TuplesDI.Resolve<CompositionRoot<Tuple<IService, INamedService>>>().Root;
+```
+
+
+
+### ASPNET [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/AspNetMvc.cs)
+
+
+
+``` CSharp
+public class AspNetMvc
+{
+    public async Task Run()
+    {
+        var hostBuilder = new WebHostBuilder().UseStartup<Startup>();
+        using var server = new TestServer(hostBuilder);
+        using var client = server.CreateClient();
+        
+        var response = await client.GetStringAsync("/Greeting");
+        response.ShouldBe("Hello!");
+    }
+}
+
+public interface IGreeting
+{
+    string Hello { get; }
+}
+
+public class Greeting : IGreeting
+{
+    public string Hello => "Hello!";
+}
+
+[ApiController]
+[Route("[controller]")]
+public class GreetingController : ControllerBase
+{
+    private readonly IGreeting _greeting;
+
+    public GreetingController(IGreeting greeting) => _greeting = greeting;
+
+    [HttpGet] public string Get() => _greeting.Hello;
+}
+
+public static partial class GreetingDomain
+{
+    static GreetingDomain()
+    {
+        DI.Setup()
+            .Bind<IGreeting>().As(Lifetime.ContainerSingleton).To<Greeting>()
+            .Bind<GreetingController>().To<GreetingController>();
+    }
+}
+
+public class Startup
+{
+    public Startup(Microsoft.Extensions.Configuration.IConfiguration configuration) =>
+        Configuration = configuration;
+
+    public Microsoft.Extensions.Configuration.IConfiguration Configuration { get; }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddControllers();
+        services.AddGreetingDomain();
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+        });
+    }
+}
 ```
 
 

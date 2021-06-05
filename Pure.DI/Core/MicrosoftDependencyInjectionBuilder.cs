@@ -154,6 +154,12 @@
 
                 foreach (var (dependency, lifetime, _) in dependencies)
                 {
+                    if (dependency.Equals(serviceProvider))
+                    {
+                        // Skip IServiceProvider
+                        continue;
+                    }
+
                     if (_buildContext.IsCancellationRequested)
                     {
                         _log.Trace(() => new[] { "Build canceled" });

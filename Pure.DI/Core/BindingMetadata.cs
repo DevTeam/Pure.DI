@@ -47,8 +47,12 @@
             {
                 sb.Append($"{nameof(IBinding.Bind)}<{dependency}>().");
             }
-            
-            sb.Append($"{nameof(IBinding.As)}({Lifetime}).");
+
+            if (Lifetime != Lifetime.Transient)
+            {
+                sb.Append($"{nameof(IBinding.As)}({Lifetime}).");
+            }
+
             foreach (var tag in Tags)
             {
                 sb.Append($"{nameof(IBinding.Tag)}<{tag.ToString()}>().");
