@@ -22,9 +22,10 @@
                     .AddExpressions(objectCreationExpressions.ToArray()));
             }
 
+            var elementTye = new SemanticType(arrayTypeSymbol.ElementType, dependency.Implementation);
             objectCreationExpressions.AddRange(
-                from element in _typeResolver.Resolve(new SemanticType(arrayTypeSymbol.ElementType, dependency.Implementation))
-                let objectCreationExpression = buildStrategy.Build(element)
+                from element in _typeResolver.Resolve(elementTye)
+                let objectCreationExpression = buildStrategy.Build(element, elementTye)
                 select objectCreationExpression);
 
             return SyntaxFactory.ArrayCreationExpression(

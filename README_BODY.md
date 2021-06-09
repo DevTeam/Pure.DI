@@ -171,7 +171,6 @@ The list of life times:
 - Singleton - creates a singleton object first time you and then returns the same object
 - PerThread - creates a singleton object per thread. It returns different objects on different threads
 - PerResolve - similar to the Transient, but it reuses the same object in the recursive object graph 
-- Binding - this lifetime allows to apply a custom lifetime to a binding, just realize the interface ILifetime<T> and bind, for example `.Bind<ILifetime<IMyInterface>>().To<MyLifetime>()`
 - ContainerSingleton - this lifetime is applicable for ASP.NET, specifies that a single instance of the service will be created
 - Scoped - this lifetime is applicable for ASP.NET, specifies that a new instance of the service will be created for each scope
 

@@ -9,7 +9,9 @@
         private readonly IBuildContext _buildContext;
         private readonly IRaiseOnDisposableExpressionBuilder _raiseOnDisposableExpressionBuilder;
 
-        public PerResolveLifetimeStrategy(IBuildContext buildContext, IRaiseOnDisposableExpressionBuilder raiseOnDisposableExpressionBuilder)
+        public PerResolveLifetimeStrategy(
+            IBuildContext buildContext,
+            IRaiseOnDisposableExpressionBuilder raiseOnDisposableExpressionBuilder)
         {
             _buildContext = buildContext;
             _raiseOnDisposableExpressionBuilder = raiseOnDisposableExpressionBuilder;

@@ -65,7 +65,8 @@
                 .Bind<ILifetimeStrategy>().Tag(Lifetime.Singleton).To<SingletonLifetimeStrategy>()
                 .Bind<ILifetimeStrategy>().Tag(Lifetime.PerThread).To<PerThreadLifetimeStrategy>()
                 .Bind<ILifetimeStrategy>().Tag(Lifetime.PerResolve).To<PerResolveLifetimeStrategy>()
-                .Bind<ILifetimeStrategy>().Tag(Lifetime.Binding).To<BindingLifetimeStrategy>()
+                .Bind<IWrapperStrategy>().Tag(Factory).To<FactoryWrapperStrategy>()
+                .Bind<IWrapperStrategy>().Tag(FactoryMethod).To<FactoryMethodWrapperStrategy>()
                 .Bind<ISyntaxRegistry>().To<SyntaxRegistry>()
                 .Bind<ISettings>().To<Settings>()
                 .Bind<ILog<IoC.TT>>().To<Log<IoC.TT>>()
@@ -73,7 +74,8 @@
                 .Bind<ITargetClassNameProvider>().To<TargetClassNameProvider>()
                 .Bind<IOwnerProvider>().As(ContainerSingleton).To<OwnerProvider>()
                 .Bind<IDisposeStatementsBuilder>().As(Singleton).To<DisposeStatementsBuilder>()
-                .Bind<IRaiseOnDisposableExpressionBuilder>().As(Singleton).To<RaiseOnDisposableExpressionBuilder>();
+                .Bind<IRaiseOnDisposableExpressionBuilder>().As(Singleton).To<RaiseOnDisposableExpressionBuilder>()
+                .Bind<IIncludeTypeFilter>().As(Singleton).To<IncludeTypeFilter>();
         }
     }
 }

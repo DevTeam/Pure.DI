@@ -33,10 +33,12 @@ namespace Pure.DI.Core
             var elementType = namedTypeSymbol.TypeArguments[0];
             var memberKey = new MemberKey($"EnumerableOf{elementType.Name}", dependency);
 
-            var factoryMethod = (MethodDeclarationSyntax)_buildContext.GetOrAddMember(memberKey, () => {
+            var factoryMethod = (MethodDeclarationSyntax)_buildContext.GetOrAddMember(memberKey, () =>
+            {
+                var resolvingType = new SemanticType(elementType, dependency.Implementation);
                 var yields =
-                    from element in _typeResolver.Resolve(new SemanticType(elementType, dependency.Implementation))
-                    let objectCreationExpression = buildStrategy.Build(element)
+                    from element in _typeResolver.Resolve(resolvingType)
+                    let objectCreationExpression = buildStrategy.Build(element, resolvingType)
                     select (StatementSyntax)SyntaxFactory.YieldStatement(SyntaxKind.YieldReturnStatement).WithExpression(objectCreationExpression);
 
                 var factoryName = _buildContext.NameService.FindName(memberKey);

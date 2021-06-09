@@ -4,6 +4,6 @@
 
     internal interface IBuildStrategy
     {
-        ExpressionSyntax Build(Dependency dependency);
+        ExpressionSyntax Build(Dependency dependency, SemanticType resolvingType);
     }
 }

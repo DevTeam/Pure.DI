@@ -18,7 +18,7 @@ namespace Pure.DI.Core
             BindingMetadata binding,
             SemanticType dependency)
         {
-            var instance = buildStrategy.Build(_typeResolver.Resolve(dependency, binding.Tags.First(), dependency.Type.Locations));
+            var instance = buildStrategy.Build(_typeResolver.Resolve(dependency, binding.Tags.First(), dependency.Type.Locations), dependency);
             yield return SyntaxFactory.ReturnStatement(instance);
         }
     }

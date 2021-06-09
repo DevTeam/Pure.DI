@@ -18,6 +18,8 @@
         TypeStatementsStrategy,
         TypeAndTagStatementsStrategy,
         Resolvers,
-        MicrosoftDependencyInjection
+        MicrosoftDependencyInjection,
+        Factory,
+        FactoryMethod
     }
 }

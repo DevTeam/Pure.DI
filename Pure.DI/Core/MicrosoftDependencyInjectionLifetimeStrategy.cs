@@ -32,7 +32,7 @@ namespace Pure.DI.Core
             var serviceProviderDependency = _buildContext.TypeResolver.Resolve(instanceType, dependency.Tag, dependency.Implementation.Type.Locations);
             return SyntaxFactory.MemberAccessExpression(
                 SyntaxKind.SimpleMemberAccessExpression,
-                _buildStrategy().Build(serviceProviderDependency),
+                _buildStrategy().Build(serviceProviderDependency, instanceType),
                 SyntaxFactory.IdentifierName(nameof(ServiceProviderInstance<object>.Value)));
         }
     }

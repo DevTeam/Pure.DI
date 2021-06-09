@@ -83,6 +83,11 @@ namespace Pure.DI.Core
 
         public SemanticType ConstructType(SemanticType type)
         {
+            if (!type.IsComposedGenericTypeMarker)
+            {
+                return type;
+            }
+
             if (_map.TryGetValue(type, out var newType))
             {
                 return newType;

@@ -33,11 +33,6 @@ namespace Pure.DI
         PerResolve,
 
         /// <summary>
-        /// This lifetime allows to apply a custom lifetime to a binding. Just realize the interface <c>ILifetime&lt;T&gt;</c> and bind, for example: .Bind&lt;ILifetime&lt;IMyInterface&gt;&gt;().To&lt;MyLifetime&gt;()
-        /// </summary>
-        Binding,
-
-        /// <summary>
         /// This lifetime is applicable for integration with Microsoft Dependency Injection.
         /// Specifies that a single instance of the service will be created.
         /// </summary>
@@ -91,7 +86,29 @@ namespace Pure.DI
             Type = type;
         }
     }
+    
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    internal class IncludeAttribute : Attribute
+    {
+        public readonly string TypeNameRegularExpression;
 
+        public IncludeAttribute(string typeNameRegularExpression)
+        {
+            TypeNameRegularExpression = typeNameRegularExpression;
+        }
+    }
+    
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    internal class ExcludeAttribute : Attribute
+    {
+        public readonly string TypeNameRegularExpression;
+
+        public ExcludeAttribute(string typeNameRegularExpression)
+        {
+            TypeNameRegularExpression = typeNameRegularExpression;
+        }
+    }
+    
     internal static class DI
     {
         internal static IConfiguration Setup(string targetTypeName = "")
@@ -210,9 +227,14 @@ namespace Pure.DI
         object Resolve(Type type, object tag);
     }
 
-    internal interface ILifetime<T>
+    internal interface IFactory<T>
     {
-        T Resolve(Func<T> factory);
+        T Create(Func<T> factory);
+    }
+
+    internal interface IFactory
+    {
+        T Create<T>(Func<T> factory, object tag);
     }
 
     internal struct RegisterDisposableEvent

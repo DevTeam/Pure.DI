@@ -171,7 +171,6 @@ The list of life times:
 - Singleton - creates a singleton object first time you and then returns the same object
 - PerThread - creates a singleton object per thread. It returns different objects on different threads
 - PerResolve - similar to the Transient, but it reuses the same object in the recursive object graph 
-- Binding - this lifetime allows to apply a custom lifetime to a binding, just realize the interface ILifetime<T> and bind, for example `.Bind<ILifetime<IMyInterface>>().To<MyLifetime>()`
 - ContainerSingleton - this lifetime is applicable for ASP.NET, specifies that a single instance of the service will be created
 - Scoped - this lifetime is applicable for ASP.NET, specifies that a new instance of the service will be created for each scope
 
@@ -230,6 +229,8 @@ When a targeting project is an ASP.NET project, a special extension method is ge
   - [ThreadLocal](#threadlocal-)
   - [Tuples](#tuples-)
 - Advanced
+  - [Intercept Many](#intercept-many-)
+  - [Interception](#interception-)
   - [ASPNET](#aspnet-)
   - [Constructor choice](#constructor-choice-)
 
@@ -924,6 +925,138 @@ DI.Setup()
 
 // Resolve an instance of type Tuple<IService, INamedService>
 var (service, namedService) = TuplesDI.Resolve<CompositionRoot<Tuple<IService, INamedService>>>().Root;
+```
+
+
+
+### Interception [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Intercept.cs)
+
+
+
+``` CSharp
+public void Run()
+{
+    DI.Setup()
+        // Generates proxies
+        .Bind<IProxyGenerator>().As(Singleton).To<ProxyGenerator>()
+        // Controls creating instances of type Dependency
+        .Bind<IFactory<Dependency>>().As(Singleton).To<MyInterceptor<Dependency>>()
+        // Controls creating instances of type Service
+        .Bind<IFactory<Service>>().As(Singleton).To<MyInterceptor<Service>>()
+
+        .Bind<IDependency>().As(Singleton).To<Dependency>()
+        .Bind<IService>().To<Service>();
+    
+    var instance = InterceptDI.Resolve<IService>();
+    instance.Run();
+    instance.Run();
+    instance.Run();
+
+    // Check number of invocations
+    InterceptDI.Resolve<MyInterceptor<Service>>().InvocationCounter.ShouldBe(3);
+    InterceptDI.Resolve<MyInterceptor<Dependency>>().InvocationCounter.ShouldBe(3);
+}
+
+public class MyInterceptor<T>: IFactory<T>, IInterceptor
+    where T: class
+{
+    private readonly IProxyGenerator _proxyGenerator;
+
+    public MyInterceptor(IProxyGenerator proxyGenerator) =>
+        _proxyGenerator = proxyGenerator;
+
+    public int InvocationCounter { get; private set; }
+
+    public T Create(Func<T> factory) => 
+        (T)_proxyGenerator.CreateClassProxyWithTarget(typeof(T), typeof(T).GetInterfaces(), factory(), this);
+
+    void IInterceptor.Intercept(IInvocation invocation)
+    {
+        InvocationCounter++;
+        invocation.Proceed();
+    }
+}
+
+public interface IDependency { void Run();}
+
+public class Dependency : IDependency { public void Run() {} }
+
+public interface IService { void Run(); }
+
+public class Service : IService
+{
+    private readonly IDependency? _dependency;
+
+    public Service() { }
+
+    public Service(IDependency dependency) { _dependency = dependency; }
+
+    public void Run() { _dependency?.Run(); }
+}
+```
+
+
+
+### Intercept Many [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/InterceptMany.cs)
+
+
+
+``` CSharp
+public void Run()
+{
+    DI.Setup()
+        // Generates proxies
+        .Bind<IProxyGenerator>().As(Singleton).To<ProxyGenerator>()
+        // Controls creating instances
+        .Bind<IFactory>().As(Singleton).To<MyInterceptor>()
+
+        .Bind<IDependency>().As(Singleton).To<Dependency>()
+        .Bind<IService>().To<Service>();
+    
+    var instance = InterceptManyDI.Resolve<IService>();
+    instance.Run();
+    instance.Run();
+
+    // Check number of invocations
+    InterceptManyDI.Resolve<MyInterceptor>().InvocationCounter.ShouldBe(4);
+}
+
+[Exclude(nameof(ProxyGenerator))]
+public class MyInterceptor: IFactory, IInterceptor
+{
+    private readonly IProxyGenerator _proxyGenerator;
+
+    public MyInterceptor(IProxyGenerator proxyGenerator) =>
+        _proxyGenerator = proxyGenerator;
+    
+    public int InvocationCounter { get; private set; }
+
+    public T Create<T>(Func<T> factory, object tag) => 
+        (T)_proxyGenerator.CreateClassProxyWithTarget(typeof(T), typeof(T).GetInterfaces(), factory(), this);
+
+    void IInterceptor.Intercept(IInvocation invocation)
+    {
+        InvocationCounter++;
+        invocation.Proceed();
+    }
+}
+
+public interface IDependency { void Run();}
+
+public class Dependency : IDependency { public void Run() {} }
+
+public interface IService { void Run(); }
+
+public class Service : IService
+{
+    private readonly IDependency? _dependency;
+
+    public Service() { }
+
+    public Service(IDependency dependency) { _dependency = dependency; }
+
+    public void Run() { _dependency?.Run(); }
+}
 ```
 
 

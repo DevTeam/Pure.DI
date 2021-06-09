@@ -3,10 +3,10 @@
     using Shouldly;
     using Xunit;
 
-    public class BindingLifetimeTests
+    public class FactoryTests
     {
         [Fact]
-        public void ShouldImplementDisposingViaCustomLifetime()
+        public void ShouldImplementDisposingViaFactory()
         {
             // Given
             const string? statements = "var root = Composer.Resolve<CompositionRoot>();" +
@@ -28,11 +28,11 @@
                     internal CompositionRoot(MyClass value) => Value = value;        
                 }
 
-                public class DisposingLifetime<T>: ILifetime<T>, IDisposable
+                public class DisposingLifetime<T>: IFactory<T>, IDisposable
                 {
                     private readonly HashSet<IDisposable> _disposables = new ();
 
-                    public T Resolve(Func<T> factory)
+                    public T Create(Func<T> factory)
                     {
                         var instance = factory();
                         if (instance is IDisposable disposable)
@@ -71,8 +71,8 @@
                     static Composer()
                     {
                         DI.Setup()
-                            .Bind<ILifetime<MyClass>>().As(Lifetime.Singleton).To(_ => MyLifetime)
-                            .Bind<MyClass>().As(Pure.DI.Lifetime.Binding).To<MyClass>()
+                            .Bind<IFactory<MyClass>>().As(Lifetime.Singleton).To(_ => MyLifetime)
+                            .Bind<MyClass>().To<MyClass>()
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }                    
                 }    
@@ -83,7 +83,7 @@
         }
 
         [Fact]
-        public void ShouldSupportBindingLifetime()
+        public void ShouldSupportFactory()
         {
             // Given
 
@@ -100,9 +100,9 @@
                     internal CompositionRoot(string value) => Value = value;        
                 }
 
-                public class MyLifetime: ILifetime<string>
+                public class MyLifetime: IFactory<string>
                 {
-                    public string Resolve(Func<string> factory)
+                    public string Create(Func<string> factory)
                     {
                         return factory() + ""_abc"";
                     }
@@ -113,8 +113,8 @@
                     static Composer()
                     {
                         DI.Setup()
-                            .Bind<ILifetime<string>>().To<MyLifetime>()
-                            .Bind<string>().As(Pure.DI.Lifetime.Binding).To(_ => ""xyz"")
+                            .Bind<IFactory<string>>().To<MyLifetime>()
+                            .Bind<string>().To(_ => ""xyz"")
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }                    
                 }    
@@ -125,7 +125,7 @@
         }
         
         [Fact]
-        public void ShouldSupportBindingLifetimeWhenTag()
+        public void ShouldSupportFactoryWhenTag()
         {
             // Given
 
@@ -142,9 +142,9 @@
                     internal CompositionRoot([Tag(1)] string value1, string value2) => Value = value1 + value2;
                 }
 
-                public class MyLifetime: ILifetime<string>
+                public class MyLifetime: IFactory<string>
                 {
-                    public string Resolve(Func<string> factory)
+                    public string Create(Func<string> factory)
                     {
                         return factory() + ""_abc"";
                     }
@@ -155,8 +155,8 @@
                     static Composer()
                     {
                         DI.Setup()
-                            .Bind<ILifetime<string>>().Tag(1).To<MyLifetime>()
-                            .Bind<string>().As(Pure.DI.Lifetime.Binding).Tag(1).To(_ => ""xyz"")
+                            .Bind<IFactory<string>>().Tag(1).To<MyLifetime>()
+                            .Bind<string>().Tag(1).To(_ => ""xyz"")
                             .Bind<string>().To(_ => ""123"")
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }                    
@@ -165,6 +165,49 @@
 
             // Then
             output.ShouldBe(new[] { "xyz_abc123" }, generatedCode);
+        }
+        
+        [Fact]
+        public void ShouldSupportMethodFactory()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string value) => Value = value;        
+                }
+
+                [Include(""string"")]
+                public class MyFactory: IFactory
+                {
+                    public T Create<T>(Func<T> factory, object tag)
+                    {
+                        return (T)(object)(factory() as string + ""_abc"");
+                    }
+                }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<IFactory>().To<MyFactory>()
+                            .Bind<string>().To(_ => ""xyz"")
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                    
+                }    
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "xyz_abc" }, generatedCode);
         }
     }
 }

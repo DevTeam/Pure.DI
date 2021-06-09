@@ -15,6 +15,7 @@ namespace Pure.DI.Core
         private readonly IDiagnostic _diagnostic;
         private readonly ITracer _tracer;
         private readonly ILog<BuildStrategy> _log;
+        private readonly IWrapperStrategy[] _wrapperStrategy;
         private readonly Dictionary<Lifetime, ILifetimeStrategy> _lifetimes;
         private readonly Dictionary<Dependency, ExpressionSyntax> _cache = new();
 
@@ -22,11 +23,13 @@ namespace Pure.DI.Core
             IDiagnostic diagnostic,
             ITracer tracer,
             ILog<BuildStrategy> log,
+            IWrapperStrategy[] wrapperStrategy,
             IEnumerable<ILifetimeStrategy> lifetimeStrategies)
         {
             _diagnostic = diagnostic;
             _tracer = tracer;
             _log = log;
+            _wrapperStrategy = wrapperStrategy;
             _lifetimes = lifetimeStrategies.ToDictionary(i => i.Lifetime, i => i);
             DependencyBindingExpressionStrategy = this;
         }
@@ -35,7 +38,7 @@ namespace Pure.DI.Core
 
         internal IBuildStrategy DependencyBindingExpressionStrategy { get; set; }
 
-        public ExpressionSyntax Build(Dependency dependency)
+        public ExpressionSyntax Build(Dependency dependency, SemanticType resolvingType)
         {
             if (_cache.TryGetValue(dependency, out var result))
             {
@@ -44,6 +47,11 @@ namespace Pure.DI.Core
 
             using var traceToken = _tracer.RegisterResolving(dependency);
             var objectBuildExpression = dependency.ObjectBuilder.Build(DependencyBindingExpressionStrategy, dependency);
+            
+            // Apply wrappers
+            objectBuildExpression = _wrapperStrategy.Aggregate(objectBuildExpression, (current, wrapperStrategy) => wrapperStrategy.Build(dependency, current));
+
+            // Apply lifetime
             if (!_lifetimes.TryGetValue(dependency.Binding.Lifetime, out var lifetimeStrategy))
             {
                 var error = $"{dependency.Binding.Lifetime} lifetime is not supported.";

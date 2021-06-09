@@ -175,9 +175,9 @@
                 defaultValue = parameter.ExplicitDefaultValue.ToLiteralExpression();
             }
 
-            var type = GetDependencyType(target, targetDependency.Implementation) ?? new SemanticType(defaultType, targetDependency.Implementation);
+            var resolvingType = GetDependencyType(target, targetDependency.Implementation) ?? new SemanticType(defaultType, targetDependency.Implementation);
             var tag = (ExpressionSyntax?) _attributesService.GetAttributeArgumentExpressions(AttributeKind.Tag, target).FirstOrDefault();
-            var dependency = typeResolver.Resolve(type, tag, resolveLocations, false, probe || defaultValue != null);
+            var dependency = typeResolver.Resolve(resolvingType, tag, resolveLocations, false, probe || defaultValue != null);
             if (!dependency.IsResolved && defaultValue != null)
             {
                 return defaultValue;
@@ -187,7 +187,8 @@
             {
                 case INamedTypeSymbol namedType:
                 {
-                    var constructedType = dependency.TypesMap.ConstructType(new SemanticType(namedType, targetDependency.Implementation));
+                    var type = new SemanticType(namedType, targetDependency.Implementation);
+                    var constructedType = dependency.TypesMap.ConstructType(type);
                     if (!dependency.Implementation.Equals(constructedType))
                     {
                         _buildContext.AddBinding(new BindingMetadata(dependency.Binding, constructedType, null));
@@ -195,7 +196,7 @@
 
                     if (dependency.IsResolved)
                     {
-                        return buildStrategy.Build(dependency);
+                        return buildStrategy.Build(dependency, resolvingType);
                     }
 
                     if (probe)
@@ -211,10 +212,11 @@
 
                 case IArrayTypeSymbol arrayType:
                 {
-                    var arrayTypeDescription = typeResolver.Resolve(new SemanticType(arrayType, targetDependency.Implementation), null, arrayType.Locations);
+                    var type = new SemanticType(arrayType, targetDependency.Implementation);
+                    var arrayTypeDescription = typeResolver.Resolve(type, null, arrayType.Locations);
                     if (arrayTypeDescription.IsResolved)
                     {
-                        return buildStrategy.Build(arrayTypeDescription);
+                        return buildStrategy.Build(arrayTypeDescription, type);
                     }
 
                     break;

@@ -6,7 +6,6 @@ namespace Pure.DI.UsageScenarios.Tests
     using System.Collections.Generic;
     using Shouldly;
     using Xunit;
-    using static Lifetime;
 
     public class TransientLifetime
     {

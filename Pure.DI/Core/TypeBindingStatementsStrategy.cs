@@ -17,7 +17,7 @@
             BindingMetadata binding,
             SemanticType dependency)
         {
-            var instance = buildStrategy.Build(_typeResolver.Resolve(dependency, null, dependency.Type.Locations));
+            var instance = buildStrategy.Build(_typeResolver.Resolve(dependency, null, dependency.Type.Locations), dependency);
             yield return SyntaxFactory.ReturnStatement(instance);
         }
     }

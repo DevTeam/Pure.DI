@@ -1,4 +1,6 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable ContextualLoggerProblem
+// ReSharper disable TemplateIsNotCompileTimeConstantProblem
 namespace BlazorServerApp
 {
     using Clock.Models;
