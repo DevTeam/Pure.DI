@@ -1206,5 +1206,45 @@
             // Then
             output.ShouldBe(new[] { "True" }, generatedCode);
         }
+        
+        [Fact]
+        public void ShouldSupportDefaultLifetime()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly bool Value;
+                    internal CompositionRoot(Foo value1, Foo value2, Foo2 value3, Foo2 value4) => Value = value1 == value2 && value3 != value4;        
+                }
+
+                public class Foo { }
+
+                public class Foo2 { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Default(Pure.DI.Lifetime.Singleton)
+                            .Bind<Foo>().To<Foo>()
+                            .Default(Pure.DI.Lifetime.Transient)
+                            .Bind<Foo2>().To<Foo2>()
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                    
+                }    
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "True" }, generatedCode);
+        }
     }
 }

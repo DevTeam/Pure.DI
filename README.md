@@ -164,6 +164,9 @@ DI.Setup("MyComposer")
   // This advanced binding format 
   // which allows to create instance manually and inject all required dependenciesinvoke methods, initialize properties and etc
   .Bind<IMyInterface>().To(ctx => new MyImplementation(ctx.Resolve<ISomeDependency1>(), "Some value", ctx.Resolve<ISomeDependency2>()))
+
+  // Change a default lifetime
+  .Default(Lifetime.Singleton)
 ```
 
 The list of life times:
@@ -216,6 +219,7 @@ When a targeting project is an ASP.NET project, a special extension method is ge
   - [Injection of default parameters](#injection-of-default-parameters-)
 - Lifetimes
   - [Per resolve lifetime](#per-resolve-lifetime-)
+  - [Singleton lifetime](#singleton-lifetime-)
   - [Singleton lifetime](#singleton-lifetime-)
   - [Transient lifetime](#transient-lifetime-)
   - [Per thread singleton](#per-thread-singleton-)
@@ -551,6 +555,53 @@ class TTMy { }
 
 
 
+### Singleton lifetime [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/DefaultLifetime.cs)
+
+[Singleton](https://en.wikipedia.org/wiki/Singleton_pattern) is a design pattern that supposes for having only one instance of some class during the whole application lifetime. The main complaint about Singleton is that it contradicts the Dependency Injection principle and thus hinders testability. It essentially acts as a global constant, and it is hard to substitute it with a test when needed. The _Singleton lifetime_ is indispensable in this case.
+
+``` CSharp
+public void Run()
+{
+    DI.Setup()
+        .Default(Singleton)
+            .Bind<IDependency>().To<Dependency>()
+        .Default(Transient)
+            .Bind<IService>().To<Service>();
+    
+    // Resolve the singleton twice
+    var instance = DefaultLifetimeDI.Resolve<IService>();
+
+    // Check that instances are equal
+    instance.Dependency1.ShouldBe(instance.Dependency2);
+}
+
+public interface IDependency { }
+
+public class Dependency : IDependency { }
+
+public interface IService
+{
+    IDependency Dependency1 { get; }
+    
+    IDependency Dependency2 { get; }
+}
+
+public class Service : IService
+{
+    public Service(IDependency dependency1, IDependency dependency2)
+    {
+        Dependency1 = dependency1;
+        Dependency2 = dependency2;
+    }
+
+    public IDependency Dependency1 { get; }
+    
+    public IDependency Dependency2 { get; }
+}
+```
+
+
+
 ### Per resolve lifetime [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/PerResolveLifetime.cs)
 
 
@@ -613,8 +664,8 @@ public class Service : IService
 public void Run()
 {
     DI.Setup()
-        .Bind<IDependency>().As(Singleton).To<Dependency>()
         // Use the Singleton lifetime
+        .Bind<IDependency>().As(Singleton).To<Dependency>()
         .Bind<IService>().To<Service>();
     
     // Resolve the singleton twice

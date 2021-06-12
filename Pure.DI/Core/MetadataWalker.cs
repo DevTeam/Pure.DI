@@ -21,6 +21,7 @@ namespace Pure.DI.Core
         private readonly List<ResolverMetadata> _metadata = new();
         private ResolverMetadata? _resolver;
         private BindingMetadata _binding = new();
+        private Lifetime _defaultLifetime = Lifetime.Transient;
 
         public MetadataWalker(
             SemanticModel semanticModel,
@@ -116,6 +117,20 @@ namespace Pure.DI.Core
             {
                 _resolver?.DependsOn.Add(dependencyName);
             }
+            
+            // Default(Lifetime)
+            if (
+                !invocationOperation.TargetMethod.IsGenericMethod
+                && invocationOperation.TargetMethod.Parameters.Length == 1
+                && !invocationOperation.TargetMethod.IsGenericMethod
+                && invocationOperation.TargetMethod.Name == nameof(IConfiguration.Default)
+                && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IConfiguration))
+                && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
+                && TryGetValue(invocationOperation.Arguments[0], _semanticModel, out var defaultLifetime, Lifetime.Transient))
+            {
+                _defaultLifetime = defaultLifetime;
+                _binding.Lifetime = defaultLifetime;
+            }
 
             if (
                 invocationOperation.TargetMethod.IsGenericMethod
@@ -132,7 +147,10 @@ namespace Pure.DI.Core
                         _binding.Implementation = new SemanticType(implementationType, _semanticModel);
                         _binding.Location = node.GetLocation();
                         _resolver?.Bindings.Add(_binding);
-                        _binding = new BindingMetadata();
+                        _binding = new BindingMetadata
+                        {
+                            Lifetime = _defaultLifetime
+                        };
                     }
 
                     // Bind<>()
@@ -164,7 +182,10 @@ namespace Pure.DI.Core
                         }
 
                         _resolver?.Bindings.Add(_binding);
-                        _binding = new BindingMetadata();
+                        _binding = new BindingMetadata
+                        {
+                            Lifetime = _defaultLifetime
+                        };
                     }
 
                     // TagAttribute<>(...)

@@ -14,6 +14,7 @@
   - [Generic autowiring](#generic-autowiring-)
   - [Injection of default parameters](#injection-of-default-parameters-)
 - Lifetimes
+  - [Default lifetime](#default-lifetime-)
   - [Per resolve lifetime](#per-resolve-lifetime-)
   - [Singleton lifetime](#singleton-lifetime-)
   - [Transient lifetime](#transient-lifetime-)
@@ -350,6 +351,53 @@ class TTMy { }
 
 
 
+### Default lifetime [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/DefaultLifetime.cs)
+
+
+
+``` CSharp
+public void Run()
+{
+    DI.Setup()
+        .Default(Singleton)
+            .Bind<IDependency>().To<Dependency>()
+        .Default(Transient)
+            .Bind<IService>().To<Service>();
+    
+    // Resolve the singleton twice
+    var instance = DefaultLifetimeDI.Resolve<IService>();
+
+    // Check that instances are equal
+    instance.Dependency1.ShouldBe(instance.Dependency2);
+}
+
+public interface IDependency { }
+
+public class Dependency : IDependency { }
+
+public interface IService
+{
+    IDependency Dependency1 { get; }
+    
+    IDependency Dependency2 { get; }
+}
+
+public class Service : IService
+{
+    public Service(IDependency dependency1, IDependency dependency2)
+    {
+        Dependency1 = dependency1;
+        Dependency2 = dependency2;
+    }
+
+    public IDependency Dependency1 { get; }
+    
+    public IDependency Dependency2 { get; }
+}
+```
+
+
+
 ### Per resolve lifetime [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/PerResolveLifetime.cs)
 
 
@@ -412,8 +460,8 @@ public class Service : IService
 public void Run()
 {
     DI.Setup()
-        .Bind<IDependency>().As(Singleton).To<Dependency>()
         // Use the Singleton lifetime
+        .Bind<IDependency>().As(Singleton).To<Dependency>()
         .Bind<IService>().To<Service>();
     
     // Resolve the singleton twice

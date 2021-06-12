@@ -144,6 +144,11 @@ namespace Pure.DI
             {
                 return this;
             }
+
+            public IConfiguration Default(Lifetime lifetime)
+            {
+                return this;
+            }
         }
 
         private class Binding : IBinding
@@ -198,6 +203,8 @@ namespace Pure.DI
         IConfiguration TagAttribute<T>(int tagArgumentPosition = 0) where T : Attribute;
 
         IConfiguration OrderAttribute<T>(int orderArgumentPosition = 0) where T : Attribute;
+
+        IConfiguration Default(Lifetime lifetime);
     }
 
     internal interface IBinding

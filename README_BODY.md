@@ -164,6 +164,9 @@ DI.Setup("MyComposer")
   // This advanced binding format 
   // which allows to create instance manually and inject all required dependenciesinvoke methods, initialize properties and etc
   .Bind<IMyInterface>().To(ctx => new MyImplementation(ctx.Resolve<ISomeDependency1>(), "Some value", ctx.Resolve<ISomeDependency2>()))
+
+  // Change a default lifetime
+  .Default(Lifetime.Singleton)
 ```
 
 The list of life times:

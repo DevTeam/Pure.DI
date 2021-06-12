@@ -20,8 +20,8 @@ namespace Pure.DI.UsageScenarios.Tests
         public void Run()
         {
             DI.Setup()
-                .Bind<IDependency>().As(Singleton).To<Dependency>()
                 // Use the Singleton lifetime
+                .Bind<IDependency>().As(Singleton).To<Dependency>()
                 .Bind<IService>().To<Service>();
             
             // Resolve the singleton twice
