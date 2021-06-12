@@ -23,15 +23,19 @@ namespace Pure.DI.UsageScenarios.Tests
 
             // Track disposables
             var disposables = new List<IDisposable>();
-            TransientLifetimeDI.OnDisposable += e => disposables.Add(e.Disposable);
+            TransientLifetimeDI.OnDisposable += e => { if (e.Lifetime == Lifetime.Transient) disposables.Add(e.Disposable); };
 
             var instance = TransientLifetimeDI.Resolve<IService>();
 
             // Check that dependencies are not equal
             instance.Dependency1.ShouldNotBe(instance.Dependency2);
             
-            // Check disposable instances created
+            // Check the number of transient disposable instances
             disposables.Count.ShouldBe(2);
+            
+            // Dispose instances
+            disposables.ForEach(disposable => disposable.Dispose());
+            disposables.Clear();
         }
 
         public interface IDependency { }

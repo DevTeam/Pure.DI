@@ -21,10 +21,10 @@
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>()
                 .Bind<INamedService>().To(ctx => new NamedService(ctx.Resolve<IDependency>(), "some name"))
-                .Bind<CompositionRoot<Tuple<IService, INamedService>>>().To<CompositionRoot<Tuple<IService, INamedService>>>();
+                .Bind<CompositionRoot<(IService, INamedService)>>().To<CompositionRoot<(IService, INamedService)>>();
 
             // Resolve an instance of type Tuple<IService, INamedService>
-            var (service, namedService) = TuplesDI.Resolve<CompositionRoot<Tuple<IService, INamedService>>>().Root;
+            var (service, namedService) = TuplesDI.Resolve<CompositionRoot<(IService, INamedService)>>().Root;
             // }
             // Check items
             service.ShouldBeOfType<Service>();

@@ -623,6 +623,7 @@ public void Run()
     // Check that instances are equal
     instance.Dependency1.ShouldBe(instance.Dependency2);
     
+    // Dispose singletons
     SingletonLifetimeDI.FinalDispose();
     instance.Dependency1.IsDisposed.ShouldBeTrue();
 }
@@ -675,15 +676,19 @@ public void Run()
 
     // Track disposables
     var disposables = new List<IDisposable>();
-    TransientLifetimeDI.OnDisposable += e => disposables.Add(e.Disposable);
+    TransientLifetimeDI.OnDisposable += e => { if (e.Lifetime == Lifetime.Transient) disposables.Add(e.Disposable); };
 
     var instance = TransientLifetimeDI.Resolve<IService>();
 
     // Check that dependencies are not equal
     instance.Dependency1.ShouldNotBe(instance.Dependency2);
     
-    // Check disposable instances created
+    // Check the number of transient disposable instances
     disposables.Count.ShouldBe(2);
+    
+    // Dispose instances
+    disposables.ForEach(disposable => disposable.Dispose());
+    disposables.Clear();
 }
 
 public interface IDependency { }
@@ -921,10 +926,10 @@ DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>()
     .Bind<INamedService>().To(ctx => new NamedService(ctx.Resolve<IDependency>(), "some name"))
-    .Bind<CompositionRoot<Tuple<IService, INamedService>>>().To<CompositionRoot<Tuple<IService, INamedService>>>();
+    .Bind<CompositionRoot<(IService, INamedService)>>().To<CompositionRoot<(IService, INamedService)>>();
 
 // Resolve an instance of type Tuple<IService, INamedService>
-var (service, namedService) = TuplesDI.Resolve<CompositionRoot<Tuple<IService, INamedService>>>().Root;
+var (service, namedService) = TuplesDI.Resolve<CompositionRoot<(IService, INamedService)>>().Root;
 ```
 
 

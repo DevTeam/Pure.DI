@@ -30,6 +30,7 @@ namespace Pure.DI.UsageScenarios.Tests
             // Check that instances are equal
             instance.Dependency1.ShouldBe(instance.Dependency2);
             
+            // Dispose singletons
             SingletonLifetimeDI.FinalDispose();
             instance.Dependency1.IsDisposed.ShouldBeTrue();
         }
