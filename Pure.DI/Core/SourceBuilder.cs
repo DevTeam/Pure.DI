@@ -11,6 +11,7 @@ namespace Pure.DI.Core
     using System.Threading;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Text;
 
     // ReSharper disable once ClassNeverInstantiated.Global
@@ -18,8 +19,9 @@ namespace Pure.DI.Core
     {
         private static readonly Regex FeaturesRegex = new(@"Pure.DI.Features.[\w]+.cs", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase);
         private static readonly Regex ComponentsRegex = new(@"Pure.DI.Components.[\w]+.cs", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase);
-        private static readonly Source Features;
-        private static readonly IEnumerable<Source> Components;
+        private static readonly List<Source> Features;
+        private static readonly List<Source> Components;
+        private static readonly List<Source> ComponentsInUniqNamespace;
         private readonly IBuildContext _context;
         private readonly ISettings _settings;
         private readonly IFileSystem _fileSystem;
@@ -30,8 +32,11 @@ namespace Pure.DI.Core
 
         static SourceBuilder()
         {
-            Features = new Source("Features.cs",SourceText.From(string.Join(Environment.NewLine, GetResources(FeaturesRegex).Select(i => i.code)), Encoding.UTF8));
-            Components = GetResources(ComponentsRegex).Select(i => new Source(i.file, SourceText.From(i.code, Encoding.UTF8))).ToArray();
+            Features = new List<Source>() { new Source("Features.cs",SourceText.From(string.Join(Environment.NewLine, GetResources(FeaturesRegex).Select(i => i.code)), Encoding.UTF8)) };
+            Components = GetResources(ComponentsRegex).Select(i => new Source(i.file, SourceText.From(i.code, Encoding.UTF8))).ToList();
+            // ReSharper disable once ReplaceSubstringWithRangeIndexer
+            var id = Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 4);
+            ComponentsInUniqNamespace = GetResources(ComponentsRegex).Select(i => new Source(i.file, SourceText.From(i.code.Replace("Pure.DI", "Pure.DI." + id), Encoding.UTF8))).ToList();
         }
 
         public SourceBuilder(
@@ -63,24 +68,35 @@ namespace Pure.DI.Core
                 throw new HandledException(error);
             }
 
+            var syntaxTreesCount = compilation.SyntaxTrees.Count();
+            var componentsInUniqNamespaceIsNeeded = ComponentsInUniqNamespaceIsNeeded(compilation);
+            var components = new List<Source>();
+            components.AddRange(componentsInUniqNamespaceIsNeeded ? ComponentsInUniqNamespace : Components);
+
             var parseOptions = new CSharpParseOptions(csharpCompilation.LanguageVersion);
-            foreach (var component in Components)
+            foreach (var component in components)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
                     break;
                 }
-
+                
                 compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(component.Code, parseOptions));
-                yield return component;
+                if (!componentsInUniqNamespaceIsNeeded)
+                {
+                    yield return component;
+                }
             }
 
             if (!cancellationToken.IsCancellationRequested)
             {
-                compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(Features.Code, parseOptions));
+                foreach (var feature in Features)
+                {
+                    compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(feature.Code, parseOptions));                    
+                }
 
                 var featuresMetadata = new List<ResolverMetadata>();
-                foreach (var tree in compilation.SyntaxTrees.Reverse().Take(1))
+                foreach (var tree in compilation.SyntaxTrees.Skip(syntaxTreesCount))
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
@@ -96,7 +112,7 @@ namespace Pure.DI.Core
                 {
                     var allMetadata = new List<ResolverMetadata>(featuresMetadata);
                     List<(SyntaxTree tree, ResolverMetadata rawMetadata)> items = new();
-                    foreach (var tree in compilation.SyntaxTrees.Reverse().Skip(1 + Components.Count()))
+                    foreach (var tree in compilation.SyntaxTrees.Take(syntaxTreesCount))
                     {
                         if (cancellationToken.IsCancellationRequested)
                         {
@@ -161,8 +177,12 @@ namespace Pure.DI.Core
                             {
                                 _log.Info(() => new[] {$"The output path: {outputPath}"});
                                 _fileSystem.WriteFile(Path.Combine(outputPath, source.HintName), source.Code.ToString());
-                                _fileSystem.WriteFile(Path.Combine(outputPath, Features.HintName), Features.Code.ToString());
-                                foreach (var component in Components)
+                                foreach (var feature in Features)
+                                {
+                                    _fileSystem.WriteFile(Path.Combine(outputPath, feature.HintName), feature.Code.ToString());                                    
+                                }
+
+                                foreach (var component in components)
                                 {
                                     _fileSystem.WriteFile(Path.Combine(outputPath, component.HintName), component.Code.ToString());
                                 }
@@ -234,6 +254,24 @@ namespace Pure.DI.Core
                 var code = reader.ReadToEnd();
                 yield return (resourceName, code);
             }
+        }
+
+        private static bool ComponentsInUniqNamespaceIsNeeded(Compilation compilation)
+        {
+            var diType = compilation.GetTypeByMetadataName("Pure.DI.IConfiguration");
+            if (diType == null)
+            {
+                return false;
+            }
+
+            var someType = (
+                from tree in compilation.SyntaxTrees
+                let semanticModel = compilation.GetSemanticModel(tree)
+                from typeDeclaration in tree.GetRoot().DescendantNodes().OfType<TypeDeclarationSyntax>()
+                let symbol = semanticModel.GetDeclaredSymbol(typeDeclaration)
+                select symbol).OfType<ITypeSymbol>().FirstOrDefault();
+
+            return someType != null && compilation.IsSymbolAccessibleWithin(diType, someType);
         }
     }
 }
