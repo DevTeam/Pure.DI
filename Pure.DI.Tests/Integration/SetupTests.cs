@@ -123,7 +123,7 @@
         }
 
         [Fact]
-        public void ShouldSetupForNestedClassWhenTargetTypeNameIsSpecified()
+        public void ShouldSetupForNestedClassWhenComposerTypeNameIsSpecified()
         {
             // Given
 

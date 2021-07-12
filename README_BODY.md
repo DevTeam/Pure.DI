@@ -132,50 +132,50 @@ Take full advantage of Dependency Injection everywhere and every time without an
 ## Simple and powerful API
 
 ```csharp
-// Starts a configuration chain
-// This method contains a single optional argument to specify generating type name
-// By default it is a name of a class owner
+// Starts DI configuration chain.
+// This method contains a single optional argument to specify a custom DI type name to generate.
+// By default it is a name of an owner class.
 DI.Setup("MyComposer")
   
-  // You could select a base configuration
+  // Use a DI configuration as a base.
   .DependsOn(nameof(BasicComposer))
   
-  // You could specify your own attribute to override an injection type
+  // Determines a custom attribute overriding an injection type.
   .TypeAttribure<MyTypeAttribute>()
   
-  // Or your own attribute to override an injection tag
+  // Determines a tag attribute overriding an injection tag.
   .TagAttribure<MyTagAttribute>()
   
-  // Or your own attribute to override an injection order
+  // Determines a custom attribute overriding an injection order.
   .OrderAttribure<MyOrderAttribute>()
   
   // This is basic binding format
   .Bind<IMyInterface>().To<MyImplementation>()
    
-  // You could specify a lifetime for a binding
+  // Determines a binding lifetime.
   .Bind<IMyInterface>().As(Lifetime.Singleton).To<MyImplementation>()
   
-  // You could specify few tags for each binding
+  // Determines a binding tag
   .Bind<IMyInterface>().Tag("MyImpl").Tag(123).To<MyImplementation>()
 
-  // Or a binding relating to any tag
+  // Or a binding suitable for any tag
   .Bind<IMyInterface>().AnyTag().To<MyImplementation>()
 
-  // This advanced binding format 
-  // which allows to create instance manually and inject all required dependenciesinvoke methods, initialize properties and etc
+  // Determines a binding implementation using a factory method.
+  // It allows to create instance manually and invoke required methods, initialize properties and etc. 
   .Bind<IMyInterface>().To(ctx => new MyImplementation(ctx.Resolve<ISomeDependency1>(), "Some value", ctx.Resolve<ISomeDependency2>()))
 
-  // Change a default lifetime
+  // Overrides a default lifetime. Transient by default.
   .Default(Lifetime.Singleton)
 ```
 
 The list of life times:
-- Transient - creates a new object of the requested type every time, it is default
-- Singleton - creates a singleton object first time you and then returns the same object
-- PerThread - creates a singleton object per thread. It returns different objects on different threads
-- PerResolve - similar to the Transient, but it reuses the same object in the recursive object graph 
-- ContainerSingleton - this lifetime is applicable for ASP.NET, specifies that a single instance of the service will be created
-- Scoped - this lifetime is applicable for ASP.NET, specifies that a new instance of the service will be created for each scope
+- Transient - Creates a new object of the requested type every time.
+- Singleton - Creates a singleton object first time you and then returns the same object.
+- PerThread - Creates a singleton object per thread. It returns different objects on different threads.
+- PerResolve - Similar to the Transient, but it reuses the same object in the recursive object graph. 
+- ContainerSingleton - This lifetime is applicable for ASP.NET, specifies that a single instance of the service will be created
+- Scoped - This lifetime is applicable for ASP.NET, specifies that a new instance of the service will be created for each scope
 
 ## Development environment requirements
 

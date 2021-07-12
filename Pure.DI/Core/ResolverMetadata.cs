@@ -6,7 +6,7 @@
 
     internal record ResolverMetadata
     {
-        public readonly string TargetTypeName;
+        public readonly string ComposerTypeName;
         public readonly ClassDeclarationSyntax? Owner;
         public readonly SyntaxNode SetupNode;
         public readonly ICollection<BindingMetadata> Bindings = new List<BindingMetadata>();
@@ -14,10 +14,10 @@
         public readonly ICollection<AttributeMetadata> Attributes = new List<AttributeMetadata>();
         public readonly IDictionary<Setting, string> Settings = new Dictionary<Setting, string>();
 
-        public ResolverMetadata(SyntaxNode setupNode, string targetTypeName, ClassDeclarationSyntax? owner)
+        public ResolverMetadata(SyntaxNode setupNode, string composerTypeName, ClassDeclarationSyntax? owner)
         {
             SetupNode = setupNode;
-            TargetTypeName = targetTypeName;
+            ComposerTypeName = composerTypeName;
             Owner = owner;
         }
 

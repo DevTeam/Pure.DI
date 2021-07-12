@@ -5,6 +5,6 @@
 
     internal interface ITargetClassNameProvider
     {
-        string? TryGetName(string targetTypeName, SyntaxNode node, ClassDeclarationSyntax? ownerClass);
+        string? TryGetName(string composerTypeName, SyntaxNode node, ClassDeclarationSyntax? ownerClass);
     }
 }

@@ -94,7 +94,7 @@
                     SyntaxFactory.Identifier("services"),
                     null);
 
-                var method = SyntaxFactory.MethodDeclaration(serviceCollection, $"Add{_metadata.TargetTypeName}")
+                var method = SyntaxFactory.MethodDeclaration(serviceCollection, $"Add{_metadata.ComposerTypeName}")
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.InternalKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
                     .AddParameterListParameters(thisParameter);
 

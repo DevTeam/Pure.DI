@@ -30,7 +30,7 @@ namespace Pure.DI.Core
                 return false;
             }
 
-            outputPath = EnsureExists(Path.Combine(outputPath, _buildContext.Metadata.TargetTypeName));
+            outputPath = EnsureExists(Path.Combine(outputPath, _buildContext.Metadata.ComposerTypeName));
             return true;
         }
 
@@ -44,7 +44,7 @@ namespace Pure.DI.Core
         {
             if (Verbosity > Verbosity.Quiet)
             {
-                logFilePath = GetFullPath($"{_buildContext.Metadata.TargetTypeName}.log");
+                logFilePath = GetFullPath($"{_buildContext.Metadata.ComposerTypeName}.log");
                 return true;
             }
 

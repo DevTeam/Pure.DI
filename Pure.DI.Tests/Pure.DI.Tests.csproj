@@ -13,9 +13,9 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Pure.DI\Pure.DI.csproj" />
-		<PackageReference Include="IoC.Container" Version="1.3.5-beta452" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="5.0.5" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
+		<PackageReference Include="IoC.Container" Version="1.3.6" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="5.0.7" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
 		<PackageReference Include="Moq" Version="4.16.1" />
 		<PackageReference Include="Shouldly" Version="4.0.3" />
 		<PackageReference Include="xunit" Version="2.4.1" />
@@ -23,6 +23,6 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.10.0" PrivateAssets="all" />
 	</ItemGroup>
 </Project>

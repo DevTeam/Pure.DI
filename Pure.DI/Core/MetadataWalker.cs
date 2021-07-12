@@ -60,14 +60,14 @@ namespace Pure.DI.Core
                     && invocationOperation.TargetMethod.Name == nameof(DI.Setup)
                     && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(DI))
                     && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
-                    && TryGetValue(invocationOperation.Arguments[0], _semanticModel, out var targetTypeName, string.Empty))
+                    && TryGetValue(invocationOperation.Arguments[0], _semanticModel, out var composerTypeName, string.Empty))
                 {
                     var owner = _ownerProvider.TryGetOwner(node);
-                    targetTypeName = _targetClassNameProvider.TryGetName(targetTypeName, node, owner) ?? targetTypeName;
-                    _resolver = _metadata.FirstOrDefault(i => i.TargetTypeName.Equals(targetTypeName, StringComparison.InvariantCultureIgnoreCase));
+                    composerTypeName = _targetClassNameProvider.TryGetName(composerTypeName, node, owner) ?? composerTypeName;
+                    _resolver = _metadata.FirstOrDefault(i => i.ComposerTypeName.Equals(composerTypeName, StringComparison.InvariantCultureIgnoreCase));
                     if (_resolver == null)
                     {
-                        _resolver = new ResolverMetadata(node, targetTypeName, owner);
+                        _resolver = new ResolverMetadata(node, composerTypeName, owner);
                         _metadata.Add(_resolver);
                     }
 
@@ -104,7 +104,7 @@ namespace Pure.DI.Core
                 return;
             }
 
-            // DependsOn("...")
+            // DependsOn(string baseConfigurationName)
             if (
                 !invocationOperation.TargetMethod.IsGenericMethod
                 && invocationOperation.TargetMethod.Parameters.Length == 1
@@ -112,10 +112,10 @@ namespace Pure.DI.Core
                 && invocationOperation.TargetMethod.Name == nameof(IConfiguration.DependsOn)
                 && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IConfiguration))
                 && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
-                && TryGetValue(invocationOperation.Arguments[0], _semanticModel, out var dependencyName, string.Empty)
-                && !string.IsNullOrWhiteSpace(dependencyName))
+                && TryGetValue(invocationOperation.Arguments[0], _semanticModel, out var baseConfigurationName, string.Empty)
+                && !string.IsNullOrWhiteSpace(baseConfigurationName))
             {
-                _resolver?.DependsOn.Add(dependencyName);
+                _resolver?.DependsOn.Add(baseConfigurationName);
             }
             
             // Default(Lifetime)

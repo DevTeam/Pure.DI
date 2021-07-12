@@ -8,24 +8,24 @@ namespace Pure.DI.Core
 
     internal class TargetClassNameProvider : ITargetClassNameProvider
     {
-        public string? TryGetName(string targetTypeName, SyntaxNode node, ClassDeclarationSyntax? ownerClass)
+        public string? TryGetName(string composerTypeName, SyntaxNode node, ClassDeclarationSyntax? ownerClass)
         {
             if (ownerClass == null)
             {
-                if (string.IsNullOrWhiteSpace(targetTypeName))
+                if (string.IsNullOrWhiteSpace(composerTypeName))
                 {
                     var parentNodeName =
                         node.Ancestors()
                             .Select(TryGetNodeName)
                             .FirstOrDefault(i => !string.IsNullOrWhiteSpace(i));
 
-                    targetTypeName = $"{parentNodeName}DI";
-                    return targetTypeName;
+                    composerTypeName = $"{parentNodeName}DI";
+                    return composerTypeName;
                 }
             }
             else
             {
-                if (string.IsNullOrWhiteSpace(targetTypeName))
+                if (string.IsNullOrWhiteSpace(composerTypeName))
                 {
                     return ownerClass.Identifier.Text;
                 }

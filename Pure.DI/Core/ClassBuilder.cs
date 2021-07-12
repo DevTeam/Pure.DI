@@ -39,7 +39,7 @@ namespace Pure.DI.Core
         public CompilationUnitSyntax Build(SemanticModel semanticModel)
         {
             var classModifiers = new List<SyntaxToken>();
-            _buildContext.NameService.ReserveName(_metadata.TargetTypeName);
+            _buildContext.NameService.ReserveName(_metadata.ComposerTypeName);
             if (_metadata.Owner == null)
             {
                 classModifiers.Add(SyntaxFactory.Token(SyntaxKind.InternalKeyword));
@@ -101,7 +101,7 @@ namespace Pure.DI.Core
             }
 
             var contextTypeSyntax = SyntaxFactory.ParseTypeName(_memberNameService.GetName(MemberNameKind.ContextClass));
-            var resolverClass = SyntaxFactory.ClassDeclaration(_metadata.TargetTypeName)
+            var resolverClass = SyntaxFactory.ClassDeclaration(_metadata.ComposerTypeName)
                 .WithKeyword(SyntaxFactory.Token(SyntaxKind.ClassKeyword))
                 .AddModifiers(classModifiers.ToArray())
                 .AddMembers(
@@ -151,7 +151,7 @@ namespace Pure.DI.Core
                                             SyntaxFactory.InvocationExpression(
                                                 SyntaxFactory.MemberAccessExpression(
                                                     SyntaxKind.SimpleMemberAccessExpression,
-                                                    SyntaxFactory.ParseName(_metadata.TargetTypeName),
+                                                    SyntaxFactory.ParseName(_metadata.ComposerTypeName),
                                                     SyntaxFactory.Token(SyntaxKind.DotToken),
                                                     SyntaxFactory.GenericName(nameof(IContext.Resolve))
                                                         .AddTypeArgumentListArguments(SyntaxRepo.TTypeSyntax))))))
@@ -164,7 +164,7 @@ namespace Pure.DI.Core
                                             SyntaxFactory.InvocationExpression(
                                                     SyntaxFactory.MemberAccessExpression(
                                                         SyntaxKind.SimpleMemberAccessExpression,
-                                                        SyntaxFactory.ParseName(_metadata.TargetTypeName),
+                                                        SyntaxFactory.ParseName(_metadata.ComposerTypeName),
                                                         SyntaxFactory.Token(SyntaxKind.DotToken),
                                                         SyntaxFactory.GenericName(nameof(IContext.Resolve))
                                                             .AddTypeArgumentListArguments(SyntaxRepo.TTypeSyntax)))
@@ -182,7 +182,7 @@ namespace Pure.DI.Core
             }
 
             var sampleDependency = _metadata.Bindings.LastOrDefault()?.Dependencies.FirstOrDefault()?.ToString() ?? "T";
-            _diagnostic.Information(Diagnostics.Information.Generated, $"{_metadata.TargetTypeName} was generated. Please use a method like {_metadata.TargetTypeName}.Resolve<{sampleDependency}>() to create a composition root.", _metadata.Bindings.FirstOrDefault()?.Location);
+            _diagnostic.Information(Diagnostics.Information.Generated, $"{_metadata.ComposerTypeName} was generated. Please use a method like {_metadata.ComposerTypeName}.Resolve<{sampleDependency}>() to create a composition root.", _metadata.Bindings.FirstOrDefault()?.Location);
             return compilationUnit;
         }
     }

@@ -160,7 +160,7 @@ namespace Pure.DI.Core
                             {
                                 var messages = new List<string>
                                 {
-                                    $"Processing {rawMetadata.TargetTypeName}",
+                                    $"Processing {rawMetadata.ComposerTypeName}",
                                     $"{nameof(DI)}.{nameof(DI.Setup)}()"
                                 };
                                 messages.AddRange(metadata.Bindings.Select(binding => $"  .{binding}"));
@@ -170,7 +170,7 @@ namespace Pure.DI.Core
                             var compilationUnitSyntax = _resolverBuilderFactory().Build(semanticModel).NormalizeWhitespace();
 
                             var source = new Source(
-                                $"{metadata.TargetTypeName}.cs",
+                                $"{metadata.ComposerTypeName}.cs",
                                 SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8));
 
                             if (_settings.TryGetOutputPath(out var outputPath))
@@ -204,7 +204,7 @@ namespace Pure.DI.Core
 
         private static ResolverMetadata CreateMetadata(ResolverMetadata metadata, IReadOnlyCollection<ResolverMetadata> allMetadata)
         {
-            var newMetadata = new ResolverMetadata(metadata.SetupNode, metadata.TargetTypeName, metadata.Owner);
+            var newMetadata = new ResolverMetadata(metadata.SetupNode, metadata.ComposerTypeName, metadata.Owner);
             var dependencies = GetDependencies(metadata, new HashSet<ResolverMetadata>(), allMetadata);
             foreach (var dependency in dependencies)
             {
@@ -220,7 +220,7 @@ namespace Pure.DI.Core
             var dependencies =
                 from dependencyName in metadata.DependsOn
                 from dependency in allMetadata
-                where dependencyName.Equals(dependency.TargetTypeName, StringComparison.InvariantCultureIgnoreCase)
+                where dependencyName.Equals(dependency.ComposerTypeName, StringComparison.InvariantCultureIgnoreCase)
                 select dependency;
 
             foreach (var dependency in dependencies)
