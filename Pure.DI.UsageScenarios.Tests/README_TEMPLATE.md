@@ -28,8 +28,9 @@
   - [ThreadLocal](#threadlocal-)
   - [Tuples](#tuples-)
 - Interception
-  - [Intercept a set of types](#intercept-a-set-of-types-)
+  - [Decorator](#decorator-)
   - [Intercept specific types](#intercept-specific-types-)
+  - [Intercept a set of types](#intercept-a-set-of-types-)
 - Advanced
   - [ASPNET](#aspnet-)
   - [Constructor choice](#constructor-choice-)
@@ -732,6 +733,40 @@ DI.Setup()
 
 // Resolve an instance of type Tuple<IService, INamedService>
 var (service, namedService) = TuplesDI.Resolve<CompositionRoot<(IService, INamedService)>>().Root;
+```
+
+
+
+### Decorator [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Decorator.cs)
+
+
+
+``` CSharp
+public void Run()
+{
+    DI.Setup()
+        .Bind<IService>().Tag("base").To<Service>()
+        .Bind<IService>().To<DecoratorService>();
+    
+    var service = DecoratorDI.Resolve<IService>();
+
+    service.GetMessage().ShouldBe("Hello World !!!");
+}
+
+public interface IService { string GetMessage(); }
+
+public class Service : IService {
+    public string GetMessage() => "Hello World";
+}
+
+public class DecoratorService : IService
+{
+    private readonly IService _baseService;
+
+    public DecoratorService([Tag("base")] IService baseService) => _baseService = baseService;
+
+    public string GetMessage() => $"{_baseService.GetMessage()} !!!";
+}
 ```
 
 
