@@ -18,7 +18,6 @@
   - [Per resolve lifetime](#per-resolve-lifetime-)
   - [Singleton lifetime](#singleton-lifetime-)
   - [Transient lifetime](#transient-lifetime-)
-  - [Per thread singleton](#per-thread-singleton-)
 - BCL types
   - [Arrays](#arrays-)
   - [Collections](#collections-)
@@ -563,51 +562,6 @@ public class Service : IService
     public IDependency Dependency1 { get; }
     
     public IDependency Dependency2 { get; }
-}
-```
-
-
-
-### Per thread singleton [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/ThreadSingletonLifetime.cs)
-
-
-
-``` CSharp
-public void Run()
-{
-    DI.Setup()
-        .Bind<IDependency>().To<Dependency>()
-        // Bind an interface to an implementation using the per thread singleton lifetime
-        .Bind<IService>().As(Lifetime.PerThread).To<Service>();
-
-    // Resolve the singleton twice
-    var instance1 = ThreadSingletonLifetimeDI.Resolve<IService>();
-    var instance2 = ThreadSingletonLifetimeDI.Resolve<IService>();
-    IService? instance3 = null;
-    IService? instance4 = null;
-
-    var finish = new ManualResetEvent(false);
-    var newThread = new Thread(() =>
-    {
-        instance3 = ThreadSingletonLifetimeDI.Resolve<IService>();
-        instance4 = ThreadSingletonLifetimeDI.Resolve<IService>();
-        finish.Set();
-    });
-
-    newThread.Start();
-    finish.WaitOne();
-
-    // Check that instances resolved in a main thread are equal
-    instance1.ShouldBe(instance2);
-
-    // Check that instance resolved in a new thread is not null
-    instance3!.ShouldNotBeNull();
-
-    // Check that instances resolved in different threads are not equal
-    instance1.ShouldNotBe(instance3!);
-
-    // Check that instances resolved in a new thread are equal
-    instance4!.ShouldBe(instance3!);
 }
 ```
 

@@ -172,7 +172,6 @@ DI.Setup("MyComposer")
 The list of life times:
 - Transient - Creates a new object of the requested type every time.
 - Singleton - Creates a singleton object first time you and then returns the same object.
-- PerThread - Creates a singleton object per thread. It returns different objects on different threads.
 - PerResolve - Similar to the Transient, but it reuses the same object in the recursive object graph. 
 - ContainerSingleton - This lifetime is applicable for ASP.NET, specifies that a single instance of the service will be created
 - Scoped - This lifetime is applicable for ASP.NET, specifies that a new instance of the service will be created for each scope

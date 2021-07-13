@@ -26,12 +26,6 @@ namespace Pure.DI
         Singleton,
 
         /// <summary>
-        /// Creates a <seealso href="https://github.com/DevTeam/Pure.DI#per-thread-singleton-">singleton object per thread</seealso>. It returns different objects on different threads. To dispose <see cref="IDisposable"/> instances use this approach: <c>Composer.FinalDispose();</c>
-        /// </summary>
-        PerThread,
-
-        /// <summary>
-        
         /// <seealso href="https://github.com/DevTeam/Pure.DI#per-resolve-lifetime-">The per resolve lifetime</seealso> is similar to the Transient, but it reuses the same object in the recursive object graph. To manage disposable instances subscribe on "OnDisposable" event: <example>Composer.OnDisposable += e => disposables.Add(e.Disposable);</example> and dispose instances and dispose instances at appropriate time.
         /// </summary>
         PerResolve,

@@ -63,7 +63,6 @@
                 .Bind<ILifetimeStrategy>().Tag(Lifetime.ContainerSingleton).To<MicrosoftDependencyInjectionLifetimeStrategy>(ctx => ctx.Container.Assign(ctx.It.Lifetime, Lifetime.ContainerSingleton))
                 .Bind<ILifetimeStrategy>().Tag(Lifetime.Scoped).To<MicrosoftDependencyInjectionLifetimeStrategy>(ctx => ctx.Container.Assign(ctx.It.Lifetime, Lifetime.Scoped))
                 .Bind<ILifetimeStrategy>().Tag(Lifetime.Singleton).To<SingletonLifetimeStrategy>()
-                .Bind<ILifetimeStrategy>().Tag(Lifetime.PerThread).To<PerThreadLifetimeStrategy>()
                 .Bind<ILifetimeStrategy>().Tag(Lifetime.PerResolve).To<PerResolveLifetimeStrategy>()
                 .Bind<IWrapperStrategy>().Tag(Factory).To<FactoryWrapperStrategy>()
                 .Bind<IWrapperStrategy>().Tag(FactoryMethod).To<FactoryMethodWrapperStrategy>()
