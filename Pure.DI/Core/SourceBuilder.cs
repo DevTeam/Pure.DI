@@ -32,7 +32,7 @@ namespace Pure.DI.Core
 
         static SourceBuilder()
         {
-            Features = new List<Source>() { new Source("Features.cs",SourceText.From(string.Join(Environment.NewLine, GetResources(FeaturesRegex).Select(i => i.code)), Encoding.UTF8)) };
+            Features = new List<Source> { new("Features.cs",SourceText.From(string.Join(Environment.NewLine, GetResources(FeaturesRegex).Select(i => i.code)), Encoding.UTF8)) };
             Components = GetResources(ComponentsRegex).Select(i => new Source(i.file, SourceText.From(i.code, Encoding.UTF8))).ToList();
             // ReSharper disable once ReplaceSubstringWithRangeIndexer
             var id = Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 4);
@@ -74,6 +74,7 @@ namespace Pure.DI.Core
             components.AddRange(componentsInUniqNamespaceIsNeeded ? ComponentsInUniqNamespace : Components);
 
             var parseOptions = new CSharpParseOptions(csharpCompilation.LanguageVersion);
+            // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
             foreach (var component in components)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -90,6 +91,7 @@ namespace Pure.DI.Core
 
             if (!cancellationToken.IsCancellationRequested)
             {
+                // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
                 foreach (var feature in Features)
                 {
                     compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(feature.Code, parseOptions));                    

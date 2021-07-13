@@ -22,6 +22,7 @@ namespace Pure.DI.Core
             Lifetime = lifetime;
         }
 
+        // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
         public Lifetime Lifetime { get; set; }
         
         public ExpressionSyntax Build(Dependency dependency, ExpressionSyntax objectBuildExpression)

@@ -1,5 +1,6 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMemberInSuper.Global
 namespace Pure.DI.UsageScenarios.Tests
 {
     using Shouldly;

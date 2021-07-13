@@ -1,5 +1,6 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable CA1816
 namespace Pure.DI.UsageScenarios.Tests
 {
     using System;

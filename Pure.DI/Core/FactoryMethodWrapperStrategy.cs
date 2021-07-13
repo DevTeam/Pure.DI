@@ -35,7 +35,7 @@ namespace Pure.DI.Core
             var factoryType = _buildContext.Compilation.GetTypeByMetadataName("Pure.DI.IFactory");
             if (factoryType == null)
             {
-                var error = "Factory is not supported.";
+                const string error = "Factory is not supported.";
                 _diagnostic.Error(Diagnostics.Error.Unsupported, error);
                 throw new HandledException(error);
             }

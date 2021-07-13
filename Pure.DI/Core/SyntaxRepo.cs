@@ -13,9 +13,9 @@ namespace Pure.DI.Core
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     internal static class SyntaxRepo
     {
-        private static readonly string DisposeSingletonsMethodName = "FinalDispose";
-        public static readonly string OnDisposableEventName = "OnDisposable";
-        public static readonly string RaiseOnDisposableMethodName = "RaiseOnDisposable";
+        private const string DisposeSingletonsMethodName = "FinalDispose";
+        public const string OnDisposableEventName = "OnDisposable";
+        public const string RaiseOnDisposableMethodName = "RaiseOnDisposable";
         private static readonly TypeSyntax VoidTypeSyntax = SyntaxFactory.ParseTypeName("void");
         private static readonly TypeSyntax DisposableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(IDisposable).ToString());
         public static readonly TypeSyntax TTypeSyntax = SyntaxFactory.ParseTypeName("T");

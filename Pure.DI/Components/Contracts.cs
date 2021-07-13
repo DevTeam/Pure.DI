@@ -86,7 +86,7 @@ namespace Pure.DI
         /// <summary>
         /// Creates an attribute instance.
         /// </summary>
-        /// <param name="tag">The injection tag. See also <see cref="IBinding.Tag"/>.
+        /// <param name="tag">The injection tag. See also <see cref="IBinding.Tag"/></param>.
         public TagAttribute(object tag)
         {
             Tag = tag;
@@ -217,7 +217,6 @@ namespace Pure.DI
         {
             private readonly IConfiguration _configuration;
 
-            /// <inheritdoc />
             public Binding(IConfiguration configuration)
             {
                 _configuration = configuration;
@@ -373,7 +372,7 @@ namespace Pure.DI
         T Resolve<T>();
 
         /// <summary>
-        /// Resolves a composition root marked with a tag. See also <see cref="IBinding.Tag"./>
+        /// Resolves a composition root marked with a tag. See also <see cref="IBinding.Tag"/>./>
         /// </summary>
         /// <param name="tag">The tag of of a composition root instance.</param>
         /// <typeparam name="T">The type of a composition root instance.</typeparam>

@@ -1,4 +1,5 @@
 ﻿// ReSharper disable All
+// ReSharper disable CA1816
 namespace Pure.DI.UsageScenarios.Tests
 {
     using System;
