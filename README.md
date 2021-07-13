@@ -230,9 +230,10 @@ When a targeting project is an ASP.NET project, a special extension method is ge
   - [Sets](#sets-)
   - [ThreadLocal](#threadlocal-)
   - [Tuples](#tuples-)
+- Interception
+  - [Intercept a set of types](#intercept-a-set-of-types-)
+  - [Intercept specific types](#intercept-specific-types-)
 - Advanced
-  - [Intercept Many](#intercept-many-)
-  - [Interception](#interception-)
   - [ASPNET](#aspnet-)
   - [Constructor choice](#constructor-choice-)
 
@@ -300,7 +301,7 @@ DI.Setup()
 var instance = GenericsDI.Resolve<CompositionRoot<IService<int>>>().Root;
 ```
 
-
+Open generic type instance, for instance, like IService<TT> here, cannot be a composition root instance.
 
 ### Tags [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Tags.cs)
 
@@ -672,17 +673,17 @@ public void Run()
     // Check that instances are equal
     instance.Dependency1.ShouldBe(instance.Dependency2);
     
-    // Dispose singletons
+    // Dispose of singletons, this method should be invoked once
     SingletonLifetimeDI.FinalDispose();
     instance.Dependency1.IsDisposed.ShouldBeTrue();
 }
 
-public interface IDependency : IDisposable
+public interface IDependency
 {
     bool IsDisposed { get; }
 }
 
-public class Dependency : IDependency
+public class Dependency : IDependency, IDisposable
 {
     public bool IsDisposed { get; private set; }
     
@@ -938,7 +939,7 @@ var (service, namedService) = TuplesDI.Resolve<CompositionRoot<(IService, INamed
 
 
 
-### Interception [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Intercept.cs)
+### Intercept specific types [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Intercept.cs)
 
 
 
@@ -1006,7 +1007,7 @@ public class Service : IService
 
 
 
-### Intercept Many [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/InterceptMany.cs)
+### Intercept a set of types [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/InterceptMany.cs)
 
 
 

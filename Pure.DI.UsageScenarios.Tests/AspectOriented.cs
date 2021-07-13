@@ -3,6 +3,7 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable CA2211
 // ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.UsageScenarios.Tests
 {
     using System;

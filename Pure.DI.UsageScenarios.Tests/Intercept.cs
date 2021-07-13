@@ -12,9 +12,9 @@ namespace Pure.DI.UsageScenarios.Tests
     {
         [Fact]
         // $visible=true
-        // $tag=5 Advanced
+        // $tag=5 Interception
         // $priority=01
-        // $description=Interception
+        // $description=Intercept specific types
         // {
         public void Run()
         {

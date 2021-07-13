@@ -30,17 +30,17 @@ namespace Pure.DI.UsageScenarios.Tests
             // Check that instances are equal
             instance.Dependency1.ShouldBe(instance.Dependency2);
             
-            // Dispose singletons
+            // Dispose of singletons, this method should be invoked once
             SingletonLifetimeDI.FinalDispose();
             instance.Dependency1.IsDisposed.ShouldBeTrue();
         }
         
-        public interface IDependency : IDisposable
+        public interface IDependency
         {
             bool IsDisposed { get; }
         }
 
-        public class Dependency : IDependency
+        public class Dependency : IDependency, IDisposable
         {
             public bool IsDisposed { get; private set; }
             

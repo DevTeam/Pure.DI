@@ -1,6 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable CA1822
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace Pure.DI.UsageScenarios.Tests
 {
     using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace Pure.DI.UsageScenarios.Tests
     using Xunit;
     
     // $visible=true
-    // $tag=5 Advanced
+    // $tag=6 Advanced
     // $priority=04
     // $description=ASPNET
     // {

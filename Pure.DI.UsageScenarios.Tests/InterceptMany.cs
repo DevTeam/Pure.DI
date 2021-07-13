@@ -1,5 +1,6 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMember.Global
 namespace Pure.DI.UsageScenarios.Tests
 {
     using System;
@@ -12,9 +13,9 @@ namespace Pure.DI.UsageScenarios.Tests
     {
         [Fact]
         // $visible=true
-        // $tag=5 Advanced
+        // $tag=5 Interception
         // $priority=01
-        // $description=Intercept Many
+        // $description=Intercept a set of types
         // {
         public void Run()
         {

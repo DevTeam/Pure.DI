@@ -215,7 +215,6 @@
                 {
                     static Composer()
                     {
-                        //out=C:\Projects\DevTeam\Pure.DI\out
                         DI.Setup()
                             .Bind<Foo<TT>>().As(Pure.DI.Lifetime.Singleton).To<Foo<TT>>()
                             .Bind<CompositionRoot>().To<CompositionRoot>();

@@ -396,7 +396,7 @@ namespace Pure.DI
     }
     
     /// <summary>
-    /// The abstraction to intercept a resolving of a dependency of the type T. See also <seealso href="https://github.com/DevTeam/Pure.DI#interception-">this sample</seealso>. Besides that, it could be used to create a custom <see cref="Lifetime"/>.
+    /// The abstraction to intercept a resolving of a dependency of the type T. See also <seealso href="https://github.com/DevTeam/Pure.DI#intercept-specific-types-">this sample</seealso>. Besides that, it could be used to create a custom <see cref="Lifetime"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     internal interface IFactory<T>
@@ -411,7 +411,7 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// The abstraction to intercept a resolving of a dependency of the type T. See also <seealso href="https://github.com/DevTeam/Pure.DI#intercept-many-">this sample</seealso>. Besides that, it could be used to create a custom <see cref="Lifetime"/>.
+    /// The abstraction to intercept a resolving of a dependency of the type T. See also <seealso href="https://github.com/DevTeam/Pure.DI#intercept-a-set-of-types-">this sample</seealso>. Besides that, it could be used to create a custom <see cref="Lifetime"/>.
     /// </summary>
     internal interface IFactory
     {
