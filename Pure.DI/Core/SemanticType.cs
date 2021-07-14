@@ -73,7 +73,6 @@ namespace Pure.DI.Core
                 switch (part.Kind)
                 {
                     case SymbolDisplayPartKind.ClassName:
-                    case SymbolDisplayPartKind.RecordClassName:
                         isNested = true;
                         yield return part.ToString();
                         break;
