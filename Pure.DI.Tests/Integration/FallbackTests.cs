@@ -22,13 +22,13 @@
 
                 public class Fallback: IFallback
                 {
-                    public object Resolve(Type type, object tag) => 1;                  
+                    public object Resolve(Type type, object tag) => 1;
                 }
 
                 public class CompositionRoot
                 {
                     public readonly int Value;
-                    internal CompositionRoot(int value) => Value = value;        
+                    internal CompositionRoot(int value) => Value = value;
                 }
 
                 internal static partial class Composer
@@ -44,7 +44,7 @@
 
             // Then
             output.ShouldContain("1", generatedCode);
-            output.Any(i => i.Contains(Diagnostics.Warning.CannotResolveDependency)).ShouldBeTrue(generatedCode);
+            output.Any(i => i.Contains(Diagnostics.Warning.CannotResolve)).ShouldBeTrue(generatedCode);
         }
     }
 }

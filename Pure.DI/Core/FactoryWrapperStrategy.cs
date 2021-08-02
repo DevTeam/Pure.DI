@@ -15,7 +15,7 @@
         public FactoryWrapperStrategy(
             IBuildContext buildContext,
             IDiagnostic diagnostic,
-            [Tag(Tags.SimpleBuildStrategy)] Func<IBuildStrategy> buildStrategy)
+            Func<IBuildStrategy> buildStrategy)
         {
             _buildContext = buildContext;
             _diagnostic = diagnostic;
@@ -40,7 +40,15 @@
         private ExpressionSyntax Wrap(ExpressionSyntax objectBuildExpression, Dependency factoryTypeDescription)
         {
             var lambda = SyntaxFactory.ParenthesizedLambdaExpression(objectBuildExpression);
-            return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, _buildStrategy().Build(factoryTypeDescription, factoryTypeDescription.Implementation), SyntaxFactory.IdentifierName(nameof(IFactory<object>.Create))))
+            var fallbackInstance = _buildStrategy().TryBuild(factoryTypeDescription, factoryTypeDescription.Implementation);
+            if (fallbackInstance == null)
+            {
+                var error = $"Cannot resolve {factoryTypeDescription}.";
+                _diagnostic.Error(Diagnostics.Error.CannotResolve, error);
+                throw new HandledException(error);
+            }
+            
+            return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, fallbackInstance, SyntaxFactory.IdentifierName(nameof(IFactory<object>.Create))))
                 .AddArgumentListArguments(SyntaxFactory.Argument(lambda));
         }
     }

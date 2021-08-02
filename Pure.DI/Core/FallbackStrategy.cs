@@ -7,15 +7,18 @@
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class FallbackStrategy : IFallbackStrategy
     {
+        private readonly IDiagnostic _diagnostic;
         private readonly ITypeResolver _typeResolver;
         private readonly IBuildStrategy _buildStrategy;
         private readonly IObjectBuilder _objectBuilder;
         
         public FallbackStrategy(
+            IDiagnostic diagnostic,
             ITypeResolver typeResolver,
-            [Tag(Tags.SimpleBuildStrategy)] IBuildStrategy buildStrategy,
+            IBuildStrategy buildStrategy,
             [Tag(Tags.AutowiringBuilder)] IObjectBuilder objectBuilder)
         {
+            _diagnostic = diagnostic;
             _typeResolver = typeResolver;
             _buildStrategy = buildStrategy;
             _objectBuilder = objectBuilder;
@@ -30,7 +33,14 @@
                 var fallbackDependency = _typeResolver.Resolve(new SemanticType(fallbackType, semanticModel), null, fallbackType.Locations, true, true);
                 if (fallbackDependency.IsResolved)
                 {
-                    var fallbackInstance = _objectBuilder.Build(_buildStrategy, fallbackDependency);
+                    var fallbackInstance = _objectBuilder.TryBuild(_buildStrategy, fallbackDependency);
+                    if (fallbackInstance == null)
+                    {
+                        var error = $"Cannot resolve {fallbackDependency}.";
+                        _diagnostic.Error(Diagnostics.Error.CannotResolve, error);
+                        throw new HandledException(error);
+                    }
+
                     fallback = SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, fallbackInstance, SyntaxFactory.IdentifierName(nameof(IFallback.Resolve))))
                         .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("type")), SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")));
                 }

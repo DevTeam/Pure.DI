@@ -13,8 +13,6 @@
         StaticWithTag,
         GenericStaticResolve,
         GenericStaticWithTag,
-        SimpleBuildStrategy,
-        GenericBuildStrategy,
         TypeStatementsStrategy,
         TypeAndTagStatementsStrategy,
         Resolvers,

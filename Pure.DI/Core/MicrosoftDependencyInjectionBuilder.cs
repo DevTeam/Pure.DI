@@ -20,7 +20,7 @@
             ResolverMetadata metadata,
             IBuildContext buildContext,
             ITypeResolver typeResolver,
-            [Tag(Tags.SimpleBuildStrategy)] IBuildStrategy buildStrategy,
+            IBuildStrategy buildStrategy,
             IDiagnostic diagnostic,
             Log<MicrosoftDependencyInjectionBuilder> log)
         {
@@ -175,7 +175,13 @@
 
                     var curDependency = _typeResolver.Resolve(dependency, null, dependency.Type.Locations);
 
-                    var resolve = SyntaxFactory.CastExpression(dependency, curDependency.ObjectBuilder.Build(_buildStrategy, curDependency));
+                    var objectExpression = curDependency.ObjectBuilder.TryBuild(_buildStrategy, curDependency);
+                    if (objectExpression == null)
+                    {
+                        continue;
+                    }
+
+                    var resolve = SyntaxFactory.CastExpression(dependency, objectExpression);
 
                     var serviceProviderInstance = new SemanticType(semanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance).ToString())!, semanticModel);
 

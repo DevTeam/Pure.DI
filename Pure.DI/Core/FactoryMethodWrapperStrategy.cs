@@ -16,7 +16,7 @@ namespace Pure.DI.Core
         public FactoryMethodWrapperStrategy(
             IDiagnostic diagnostic,
             IBuildContext buildContext,
-            [Tag(Tags.SimpleBuildStrategy)] Func<IBuildStrategy> buildStrategy,
+            Func<IBuildStrategy> buildStrategy,
             IIncludeTypeFilter includeTypeFilter)
         {
             _diagnostic = diagnostic;
@@ -53,7 +53,15 @@ namespace Pure.DI.Core
 
             var lambda = SyntaxFactory.ParenthesizedLambdaExpression(objectBuildExpression);
             ExpressionSyntax? tagExpression = dependency.Tag?.ToLiteralExpression();
-            return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, _buildStrategy().Build(factoryTypeDescription, factoryTypeDescription.Implementation), SyntaxFactory.GenericName(nameof(IFactory.Create)).AddTypeArgumentListArguments(dependency.Implementation)))
+            var factoryExpression = _buildStrategy().TryBuild(factoryTypeDescription, factoryTypeDescription.Implementation);
+            if (factoryExpression == null)
+            {
+                var error = $"Cannot resolve factory {factoryTypeDescription}.";
+                _diagnostic.Error(Diagnostics.Error.CannotResolve, error);
+                throw new HandledException(error);
+            }
+
+            return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, factoryExpression, SyntaxFactory.GenericName(nameof(IFactory.Create)).AddTypeArgumentListArguments(dependency.Implementation)))
                 .AddArgumentListArguments(
                     SyntaxFactory.Argument(lambda),
                     SyntaxFactory.Argument(tagExpression ?? SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax)));

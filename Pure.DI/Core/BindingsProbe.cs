@@ -12,7 +12,7 @@
 
         public BindingsProbe(
             IBuildContext buildContext,
-            [Tag(Tags.SimpleBuildStrategy)] IBuildStrategy buildStrategy,
+            IBuildStrategy buildStrategy,
             Log<BindingsProbe> log)
         {
             _buildContext = buildContext;
@@ -40,7 +40,7 @@
                     break;
                 }
 
-                _buildStrategy.Build(_buildContext.TypeResolver.Resolve(dependency, tag, dependency.Type.Locations), dependency);
+                _buildStrategy.TryBuild(_buildContext.TypeResolver.Resolve(dependency, tag, dependency.Type.Locations), dependency);
             }
         }
     }

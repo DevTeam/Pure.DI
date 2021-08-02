@@ -29,7 +29,7 @@ namespace Pure.DI.Core
             IBuildContext buildContext,
             IMemberNameService memberNameService,
             IFallbackStrategy fallbackStrategy,
-            [Tag(Tags.SimpleBuildStrategy)] IBuildStrategy buildStrategy,
+            IBuildStrategy buildStrategy,
             [Tag(Tags.TypeStatementsStrategy)] IBindingStatementsStrategy bindingStatementsStrategy,
             [Tag(Tags.TypeAndTagStatementsStrategy)] IBindingStatementsStrategy tagBindingStatementsStrategy,
             ILog<ResolversBuilder> log)
@@ -179,7 +179,12 @@ namespace Pure.DI.Core
                     continue;
                 }
 
-                var statements = _bindingStatementsStrategy.CreateStatements(_buildStrategy, binding, dependency);
+                var statements = _bindingStatementsStrategy.CreateStatements(_buildStrategy, binding, dependency).ToArray();
+                if (!statements.Any())
+                {
+                    continue;
+                }
+
                 var keyValuePair = SyntaxFactory.ObjectCreationExpression(keyValuePairType)
                     .AddArgumentListArguments(
                         SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependency.TypeSyntax))
@@ -254,7 +259,12 @@ namespace Pure.DI.Core
                         SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependency.TypeSyntax)),
                         SyntaxFactory.Argument(tag));
 
-                var statements = _tagBindingStatementsStrategy.CreateStatements(_buildStrategy, binding, dependency);
+                var statements = _tagBindingStatementsStrategy.CreateStatements(_buildStrategy, binding, dependency).ToArray();
+                if (!statements.Any())
+                {
+                    continue;
+                }
+
                 var keyValuePair = SyntaxFactory.ObjectCreationExpression(keyValuePairType)
                     .AddArgumentListArguments(
                         SyntaxFactory.Argument(key)

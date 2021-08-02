@@ -20,7 +20,7 @@ namespace Pure.DI.Core
             _memberNameService = memberNameService;
         }
 
-        public ExpressionSyntax Build(IBuildStrategy buildStrategy, Dependency dependency)
+        public ExpressionSyntax? TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
         {
             var factory = dependency.Binding.Factory;
             ExpressionSyntax? resultExpression = factory;

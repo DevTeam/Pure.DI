@@ -10,14 +10,17 @@ namespace Pure.DI.Core
     internal class MicrosoftDependencyInjectionLifetimeStrategy: ILifetimeStrategy
     {
         private readonly IBuildContext _buildContext;
+        private readonly IDiagnostic _diagnostic;
         private readonly Func<IBuildStrategy> _buildStrategy;
 
         public MicrosoftDependencyInjectionLifetimeStrategy(
             IBuildContext buildContext,
-            [Tag(Tags.SimpleBuildStrategy)] Func<IBuildStrategy> buildStrategy,
+            IDiagnostic diagnostic,
+            Func<IBuildStrategy> buildStrategy,
             Lifetime lifetime)
         {
             _buildContext = buildContext;
+            _diagnostic = diagnostic;
             _buildStrategy = buildStrategy;
             Lifetime = lifetime;
         }
@@ -31,9 +34,16 @@ namespace Pure.DI.Core
             var serviceProviderInstance = new SemanticType(dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.ServiceProviderInstance`1")!, dependency.Implementation.SemanticModel);
             var instanceType = serviceProviderInstance.Construct(type);
             var serviceProviderDependency = _buildContext.TypeResolver.Resolve(instanceType, dependency.Tag, dependency.Implementation.Type.Locations);
+            var serviceProvider = _buildStrategy().TryBuild(serviceProviderDependency, instanceType);
+            if (serviceProvider == null)
+            {
+                var error = $"Cannot resolve {serviceProviderDependency}.";
+                _diagnostic.Error(Diagnostics.Error.CannotResolve, error);
+                throw new HandledException(error);
+            }
             return SyntaxFactory.MemberAccessExpression(
                 SyntaxKind.SimpleMemberAccessExpression,
-                _buildStrategy().Build(serviceProviderDependency, instanceType),
+                serviceProvider,
                 SyntaxFactory.IdentifierName(nameof(ServiceProviderInstance<object>.Value)));
         }
     }

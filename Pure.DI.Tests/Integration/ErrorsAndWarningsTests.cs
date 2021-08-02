@@ -39,7 +39,7 @@
             }".Replace("string", type).Run(out var generatedCode);
 
             // Then
-            output.Any(i => i.Contains(Diagnostics.Error.CannotResolveDependency)).ShouldBeTrue(generatedCode);
+            output.Any(i => i.Contains(Diagnostics.Error.CannotResolve)).ShouldBeTrue(generatedCode);
         }
 
         [Theory]
@@ -65,7 +65,7 @@
 
                 public class Fallback: IFallback
                 {
-                    public object Resolve(Type type, object tag) => throw new Exception(""Cannot resolve!!!"");                  
+                    public object Resolve(Type type, object tag) => throw new Exception(""Cannot resolve!!!"");
                 }
 
                 internal static partial class Composer
@@ -82,7 +82,7 @@
             }".Replace("string", type).Run(out var generatedCode);
 
             // Then
-            output.Any(i => i.Contains(Diagnostics.Warning.CannotResolveDependency)).ShouldBeTrue(generatedCode);
+            output.Any(i => i.Contains(Diagnostics.Warning.CannotResolve)).ShouldBeTrue(generatedCode);
             output.Any(i => i.Contains("Cannot resolve!!!")).ShouldBeTrue(generatedCode);
         }
 
@@ -161,7 +161,7 @@
             }".Run(out var generatedCode);
 
             // Then
-            output.Any(i => i.Contains(Diagnostics.Error.CannotFindCtor)).ShouldBeTrue(generatedCode);
+            output.Any(i => i.Contains(Diagnostics.Error.CannotResolve)).ShouldBeTrue(generatedCode);
         }
 
         [Fact]

@@ -13,7 +13,7 @@
 
         public ArrayObjectBuilder(ITypeResolver typeResolver) => _typeResolver = typeResolver;
 
-        public ExpressionSyntax Build(IBuildStrategy buildStrategy, Dependency dependency)
+        public ExpressionSyntax? TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
         {
             var objectCreationExpressions = new List<ExpressionSyntax>();
             if (dependency.Implementation.Type is not IArrayTypeSymbol arrayTypeSymbol)
@@ -23,10 +23,13 @@
             }
 
             var elementTye = new SemanticType(arrayTypeSymbol.ElementType, dependency.Implementation);
-            objectCreationExpressions.AddRange(
+            var elements =
                 from element in _typeResolver.Resolve(elementTye)
-                let objectCreationExpression = buildStrategy.Build(element, elementTye)
-                select objectCreationExpression);
+                let objectCreationExpression = buildStrategy.TryBuild(element, elementTye)
+                where objectCreationExpression != null
+                select (ExpressionSyntax)objectCreationExpression;
+
+            objectCreationExpressions.AddRange(elements);
 
             return SyntaxFactory.ArrayCreationExpression(
                     SyntaxFactory.ArrayType(new SemanticType(arrayTypeSymbol.ElementType, dependency.Implementation).TypeSyntax))

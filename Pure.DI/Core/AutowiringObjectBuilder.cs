@@ -31,25 +31,21 @@
         }
 
         [SuppressMessage("ReSharper", "InvertIf")]
-        public ExpressionSyntax Build(IBuildStrategy buildStrategy, Dependency dependency)
+        public ExpressionSyntax? TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
         {
             var objectCreationExpression = (
                 from ctor in _constructorsResolver.Resolve(dependency)
-                let probeParameters = ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, dependency, ctor, true).ToList()
-                let unresolvedParams = probeParameters.Count(i => i == null)
-                orderby unresolvedParams
-                let parameters = ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, dependency, ctor, false)
+                let parameters = ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, dependency, ctor, true).ToList()
+                where parameters.All(i => i != null)
                 let arguments = SyntaxFactory.SeparatedList(
                     from parameter in parameters
                     select SyntaxFactory.Argument(parameter))
                 select CreateObject(ctor, dependency, arguments)
             ).FirstOrDefault();
-
+            
             if (Equals(objectCreationExpression, default))
             {
-                var error = $"Cannot find an accessible constructor for {dependency}.";
-                _diagnostic.Error(Diagnostics.Error.CannotFindCtor, error, dependency.Implementation.Type.Locations.FirstOrDefault() ?? dependency.Binding.Location);
-                throw new HandledException(error);
+                return null;
             }
 
             var members = (
@@ -182,6 +178,11 @@
             {
                 return defaultValue;
             }
+            
+            if (buildStrategy.TryBuild(dependency, resolvingType) == null)
+            {
+                return null;
+            }
 
             switch (dependency.Implementation.Type)
             {
@@ -196,7 +197,7 @@
 
                     if (dependency.IsResolved)
                     {
-                        return buildStrategy.Build(dependency, resolvingType);
+                        return buildStrategy.TryBuild(dependency, resolvingType);
                     }
 
                     if (probe)
@@ -216,14 +217,13 @@
                     var arrayTypeDescription = typeResolver.Resolve(type, null, arrayType.Locations);
                     if (arrayTypeDescription.IsResolved)
                     {
-                        return buildStrategy.Build(arrayTypeDescription, type);
+                        return buildStrategy.TryBuild(arrayTypeDescription, type);
                     }
 
                     break;
                 }
             }
-
-
+            
             var error = $"Unsupported type {dependency.Implementation}.";
             _diagnostic.Error(Diagnostics.Error.Unsupported, error, resolveLocations.FirstOrDefault());
             throw new HandledException(error);

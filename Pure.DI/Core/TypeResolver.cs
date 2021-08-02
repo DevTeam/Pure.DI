@@ -13,10 +13,8 @@ namespace Pure.DI.Core
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class TypeResolver : ITypeResolver
     {
-        private readonly IDiagnostic _diagnostic;
         private readonly IBuildContext _buildContext;
         private readonly Func<ITypesMap> _typesMapFactory;
-        private readonly ITracer _tracer;
         private readonly Func<IObjectBuilder> _constructorBuilder;
         private readonly Func<IObjectBuilder> _factoryBuilder;
         private readonly Func<IObjectBuilder> _arrayBuilder;
@@ -30,16 +28,13 @@ namespace Pure.DI.Core
             IDiagnostic diagnostic,
             IBuildContext buildContext,
             Func<ITypesMap> typesMapFactory,
-            ITracer tracer,
             [Tag(Tags.AutowiringBuilder)] Func<IObjectBuilder> constructorBuilder,
             [Tag(Tags.FactoryBuilder)] Func<IObjectBuilder> factoryBuilder,
             [Tag(Tags.ArrayBuilder)] Func<IObjectBuilder> arrayBuilder,
             [Tag(Tags.EnumerableBuilder)] Func<IObjectBuilder> enumerableBuilder)
         {
-            _diagnostic = diagnostic;
             _buildContext = buildContext;
             _typesMapFactory = typesMapFactory;
-            _tracer = tracer;
             _constructorBuilder = constructorBuilder;
             _factoryBuilder = factoryBuilder;
             _arrayBuilder = arrayBuilder;
@@ -72,7 +67,7 @@ namespace Pure.DI.Core
                         var key = new Key(semanticType, tag, binding.AnyTag);
                         if (_map.TryGetValue(key, out var prev))
                         {
-                            _diagnostic.Information(Diagnostics.Information.BindingAlreadyExists, $"{prev.Metadata} exists and will be overridden by a new one {binding}.");
+                            diagnostic.Information(Diagnostics.Information.BindingAlreadyExists, $"{prev.Metadata} exists and will be overridden by a new one {binding}.");
                         }
 
                         _map[key] = new Binding<SemanticType>(binding, binding.Implementation);
@@ -172,7 +167,8 @@ namespace Pure.DI.Core
                         {
                             Implementation = dependency,
                             Lifetime = Lifetime.Transient,
-                            Dependencies = { dependency }
+                            Dependencies = { dependency },
+                            Probe = true
                         };
 
                         _buildContext.AddBinding(newBinding);
@@ -186,37 +182,9 @@ namespace Pure.DI.Core
                     return new Dependency(new BindingMetadata(dependency), dependency, null, _arrayBuilder(), _typesMapFactory());
             }
 
-            if (!probe)
-            {
-                var hasFallback = false;
-                var fallbackType = dependency.SemanticModel.Compilation.GetTypeByMetadataName(typeof(IFallback).ToString());
-                if (fallbackType != null)
-                {
-                    var fallbackKey = new SemanticType(fallbackType, dependency.SemanticModel);
-                    if (_map.ContainsKey(new Key(fallbackKey, null, true)))
-                    {
-                        hasFallback = true;
-                    }
-                }
-
-                if (hasFallback)
-                {
-                    _diagnostic.Warning(Diagnostics.Warning.CannotResolveDependency, $"Cannot resolve a dependency of the type {GetDependencyName(dependency, tag)} for {_tracer}. Will use a fallback strategy.", resolveLocations.FirstOrDefault());
-                }
-                else
-                {
-                    var error = $"Cannot resolve a dependency of the type {GetDependencyName(dependency, tag)} for {_tracer}. Please add an appropriate binding, remove this dependency or rely on a fallback strategy.";
-                    _diagnostic.Error(Diagnostics.Error.CannotResolveDependency, error, resolveLocations.FirstOrDefault());
-                    throw new HandledException(error);
-                }
-            }
-
-            return new Dependency(new BindingMetadata(dependency), dependency, null, _constructorBuilder(), _typesMapFactory(), false);
+            return new Dependency(new BindingMetadata(dependency) { Probe = true }, dependency, null, _constructorBuilder(), _typesMapFactory(), false);
         }
-
-        private static string GetDependencyName(SemanticType dependency, ExpressionSyntax? tag) => 
-            tag == null ? dependency.ToString() : $"{dependency} and tag {tag}";
-
+        
         public IEnumerable<Dependency> Resolve(SemanticType dependency)
         {
             List<SemanticType> dependencies = new();

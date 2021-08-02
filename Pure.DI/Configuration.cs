@@ -48,12 +48,8 @@
                 .Bind<IResolveMethodBuilder>().Tag(StaticWithTag).To<StaticWithTagResolveMethodBuilder>()
                 .Bind<IResolveMethodBuilder>().Tag(GenericStaticResolve).To<GenericStaticResolveMethodBuilder>()
                 .Bind<IResolveMethodBuilder>().Tag(GenericStaticWithTag).To<GenericStaticWithTagResolveMethodBuilder>()
-                .Bind<IBuildStrategy>().Tag(SimpleBuildStrategy).To<BuildStrategy>(
-                    ctx => ctx.Container.Assign(ctx.It.ResultStrategy, ctx.Container.Inject<IBindingResultStrategy>(AsIsResult)))
-                .Bind<IBuildStrategy>().Tag(GenericBuildStrategy).To<BuildStrategy>(
-                    ctx => ctx.Container.Assign(ctx.It.ResultStrategy, ctx.Container.Inject<IBindingResultStrategy>(GenericResult)),
-                    ctx => ctx.Container.Assign(ctx.It.DependencyBindingExpressionStrategy, ctx.Container.Inject<IBuildStrategy>(SimpleBuildStrategy)));
-            
+                .Bind<IBuildStrategy>().To<BuildStrategy>();
+
             yield return container
                 .Bind<IBindingStatementsStrategy>().Tag(TypeStatementsStrategy).To<TypeBindingStatementsStrategy>()
                 .Bind<IBindingStatementsStrategy>().Tag(TypeAndTagStatementsStrategy).To<TypeAndTagBindingStatementsStrategy>()
