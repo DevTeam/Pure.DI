@@ -168,7 +168,7 @@ namespace Pure.DI.Core
                             Implementation = dependency,
                             Lifetime = Lifetime.Transient,
                             Dependencies = { dependency },
-                            Probe = true
+                            FromProbe = true
                         };
 
                         _buildContext.AddBinding(newBinding);
@@ -182,7 +182,7 @@ namespace Pure.DI.Core
                     return new Dependency(new BindingMetadata(dependency), dependency, null, _arrayBuilder(), _typesMapFactory());
             }
 
-            return new Dependency(new BindingMetadata(dependency) { Probe = true }, dependency, null, _constructorBuilder(), _typesMapFactory(), false);
+            return new Dependency(new BindingMetadata(dependency) { FromProbe = true }, dependency, null, _constructorBuilder(), _typesMapFactory(), false);
         }
         
         public IEnumerable<Dependency> Resolve(SemanticType dependency)

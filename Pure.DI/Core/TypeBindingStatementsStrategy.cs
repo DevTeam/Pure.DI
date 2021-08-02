@@ -28,30 +28,14 @@
             var instance = buildStrategy.TryBuild(_typeResolver.Resolve(dependency, null, dependency.Type.Locations), dependency);
             if (instance == null)
             {
-                if (binding.Probe)
+                if (binding.FromProbe)
                 {
                     yield break;
-                }
-                
-                var fallbackType = dependency.SemanticModel.Compilation.GetTypeByMetadataName(typeof(IFallback).ToString());
-                var hasFallback = false;
-                if (fallbackType != null)
-                {
-                    hasFallback = _typeResolver.Resolve(new SemanticType(fallbackType, dependency.SemanticModel), null, ImmutableArray<Location>.Empty).IsResolved;
                 }
 
-                if (hasFallback)
-                {
-                    var error = $"Cannot resolve {binding}.";
-                    _diagnostic.Warning(Diagnostics.Warning.CannotResolve, error);
-                    yield break;
-                }
-                else
-                {
-                    var error = $"Cannot resolve {binding}.";
-                    _diagnostic.Error(Diagnostics.Error.CannotResolve, error);
-                    throw new HandledException(error);
-                }
+                var error = $"Cannot resolve {binding}.";
+                _diagnostic.Error(Diagnostics.Error.CannotResolve, error);
+                throw new HandledException(error);
             }
             
             yield return SyntaxFactory.ReturnStatement(instance);

@@ -41,51 +41,7 @@
             // Then
             output.Any(i => i.Contains(Diagnostics.Error.CannotResolve)).ShouldBeTrue(generatedCode);
         }
-
-        [Theory]
-        [InlineData("int")]
-        [InlineData("string")]
-        public void ShouldShowCompilationWarningWhenCannotResolve(string type)
-        {
-            // Given
-
-            // When
-            var output = @"
-            namespace Sample
-            {
-                using System;
-                using Pure.DI;
-                using static Pure.DI.Lifetime;
-
-                public class CompositionRoot
-                {
-                    public readonly string Value;
-                    internal CompositionRoot(string value) => Value = value;
-                }
-
-                public class Fallback: IFallback
-                {
-                    public object Resolve(Type type, object tag) => throw new Exception(""Cannot resolve!!!"");
-                }
-
-                internal static partial class Composer
-                {
-                    static Composer()
-                    {
-                        DI.Setup()
-                            .Bind<IFallback>().To<Fallback>()
-                            .Bind<CompositionRoot>().To<CompositionRoot>();
-                    }           
-
-                    private static object Fallback(Type type, object tag) => throw new InvalidOperationException(""Cannot resolve!!!"");
-                }    
-            }".Replace("string", type).Run(out var generatedCode);
-
-            // Then
-            output.Any(i => i.Contains(Diagnostics.Warning.CannotResolve)).ShouldBeTrue(generatedCode);
-            output.Any(i => i.Contains("Cannot resolve!!!")).ShouldBeTrue(generatedCode);
-        }
-
+        
         [Fact]
         public void ShouldDetectCircularDependency()
         {

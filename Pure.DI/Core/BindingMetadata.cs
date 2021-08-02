@@ -15,7 +15,7 @@
         public readonly ISet<ExpressionSyntax> Tags = new HashSet<ExpressionSyntax>();
         public readonly object Id;
         public bool AnyTag = false;
-        public bool Probe;
+        public bool FromProbe;
         private static int _currentId;
 
         public BindingMetadata(object? id = null)

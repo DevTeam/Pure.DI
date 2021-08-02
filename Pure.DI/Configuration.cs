@@ -36,7 +36,6 @@
                 .Bind<IObjectBuilder>().Tag(FactoryBuilder).To<FactoryObjectBuilder>()
                 .Bind<IObjectBuilder>().Tag(ArrayBuilder).To<ArrayObjectBuilder>()
                 .Bind<IObjectBuilder>().Tag(EnumerableBuilder).To<EnumerableObjectBuilder>()
-                .Bind<IFallbackStrategy>().As(ContainerSingleton).To<FallbackStrategy>()
                 .Bind<IClassBuilder>().To<ClassBuilder>()
                 .Bind<IMetadataWalker>().To(ctx => new MetadataWalker((SemanticModel) ctx.Args[0], ctx.Container.Inject<IOwnerProvider>(), ctx.Container.Inject<ITargetClassNameProvider>()))
                 .Bind<IMembersBuilder>().Tag(Resolvers).To<ResolversBuilder>()

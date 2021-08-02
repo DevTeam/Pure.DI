@@ -381,20 +381,6 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// The abstraction to provide a fallback method to resolve unbound DI dependencies.
-    /// </summary>
-    internal interface IFallback
-    {
-        /// <summary>
-        /// Resolves a composition root.
-        /// </summary>
-        /// <param name="type">The type of a composition root instance.</param>
-        /// <param name="tag">The tag of of a composition root instance. <c>null</c> by default.</param>
-        /// <returns>A resolved dependency.</returns>
-        object Resolve(Type type, object tag);
-    }
-    
-    /// <summary>
     /// The abstraction to intercept a resolving of a dependency of the type T. See also <seealso href="https://github.com/DevTeam/Pure.DI#intercept-specific-types-">this sample</seealso>. Besides that, it could be used to create a custom <see cref="Lifetime"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>

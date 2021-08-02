@@ -40,15 +40,15 @@
         private ExpressionSyntax Wrap(ExpressionSyntax objectBuildExpression, Dependency factoryTypeDescription)
         {
             var lambda = SyntaxFactory.ParenthesizedLambdaExpression(objectBuildExpression);
-            var fallbackInstance = _buildStrategy().TryBuild(factoryTypeDescription, factoryTypeDescription.Implementation);
-            if (fallbackInstance == null)
+            var instance = _buildStrategy().TryBuild(factoryTypeDescription, factoryTypeDescription.Implementation);
+            if (instance == null)
             {
                 var error = $"Cannot resolve {factoryTypeDescription}.";
                 _diagnostic.Error(Diagnostics.Error.CannotResolve, error);
                 throw new HandledException(error);
             }
             
-            return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, fallbackInstance, SyntaxFactory.IdentifierName(nameof(IFactory<object>.Create))))
+            return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, instance, SyntaxFactory.IdentifierName(nameof(IFactory<object>.Create))))
                 .AddArgumentListArguments(SyntaxFactory.Argument(lambda));
         }
     }

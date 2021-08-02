@@ -94,14 +94,12 @@ namespace Pure.DI
 
     internal sealed class ResolversTable : Table<System.Type, System.Func<object>>
     {
-        public readonly System.Func<System.Type, object, object> ResolversDefaultFactory;
         public readonly Pair<System.Type, System.Func<object>>[] ResolversBuckets;
         public readonly uint ResolversDivisor;
 
-        public ResolversTable(Pair<System.Type, System.Func<object>>[] pairs, System.Func<System.Type, object, object> defaultFactory)
+        public ResolversTable(Pair<System.Type, System.Func<object>>[] pairs)
             : base(pairs, typeof(ResolversTable), null)
         {
-            ResolversDefaultFactory = defaultFactory;
             ResolversBuckets = Buckets;
             ResolversDivisor = Divisor;
         }
@@ -121,31 +119,20 @@ namespace Pure.DI
             } 
             while (pair != null);
 
-            if (ResolversDefaultFactory != null)
-            {
-                var factory = ResolversDefaultFactory(type, null);
-                if (factory != null)
-                {
-                    return factory;
-                }
-            }
-
             throw new System.ArgumentException("Cannot resolve an instance of the type " + type.Name + ".");
         }
     }
 
     internal sealed class ResolversByTagTable : Table<TagKey, System.Func<object>>
     {
-        public readonly System.Func<System.Type, object, object> ResolversByTagDefaultFactory;
         public readonly Pair<TagKey, System.Func<object>>[] ResolversByTagBuckets;
         public readonly uint ResolversByTagDivisor;
         public readonly Pair<System.Type, System.Func<object>>[] ResolversBuckets;
         public readonly uint ResolversDivisor;
 
-        public ResolversByTagTable(ResolversTable resolversTable, Pair<TagKey, System.Func<object>>[] pairs, System.Func<System.Type, object, object> defaultFactory)
+        public ResolversByTagTable(ResolversTable resolversTable, Pair<TagKey, System.Func<object>>[] pairs)
             : base(pairs, new TagKey(typeof(ResolversByTagTable), null), null)
         {
-            ResolversByTagDefaultFactory = defaultFactory;
             ResolversByTagBuckets = Buckets;
             ResolversByTagDivisor = Divisor;
             ResolversBuckets = resolversTable.ResolversBuckets;
@@ -181,15 +168,6 @@ namespace Pure.DI
                     typePair = typePair.Next;
                 }
                 while (typePair != null);
-            }
-
-            if (ResolversByTagDefaultFactory != null)
-            {
-                var factory = ResolversByTagDefaultFactory(key.Type, key.Tag);
-                if (factory != null)
-                {
-                    return factory;
-                }
             }
 
             throw new System.ArgumentException("Cannot resolve an instance of the type " + key.Type.Name  + " with tag " + key.Tag + ".");
