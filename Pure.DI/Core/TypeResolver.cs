@@ -87,7 +87,7 @@ namespace Pure.DI.Core
             }
         }
 
-        public Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, ImmutableArray<Location> resolveLocations, bool anyTag = false, bool probe = false)
+        public Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, ImmutableArray<Location> resolveLocations, bool anyTag = false)
         {
             switch (dependency.Type)
             {

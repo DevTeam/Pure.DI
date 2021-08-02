@@ -7,7 +7,7 @@
 
     internal interface ITypeResolver
     {
-        Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, ImmutableArray<Location> resolveLocations, bool anyTag = false, bool probe = false);
+        Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, ImmutableArray<Location> resolveLocations, bool anyTag = false);
 
         IEnumerable<Dependency> Resolve(SemanticType dependency);
     }

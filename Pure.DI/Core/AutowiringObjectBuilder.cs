@@ -173,7 +173,7 @@
 
             var resolvingType = GetDependencyType(target, targetDependency.Implementation) ?? new SemanticType(defaultType, targetDependency.Implementation);
             var tag = (ExpressionSyntax?) _attributesService.GetAttributeArgumentExpressions(AttributeKind.Tag, target).FirstOrDefault();
-            var dependency = typeResolver.Resolve(resolvingType, tag, resolveLocations, false, probe || defaultValue != null);
+            var dependency = typeResolver.Resolve(resolvingType, tag, resolveLocations);
             if (!dependency.IsResolved && defaultValue != null)
             {
                 return defaultValue;

@@ -732,7 +732,7 @@
                     {
                     }
 
-                    internal CompositionRoot(string value) => Value = value;                    
+                    public CompositionRoot(string value) => Value = value;
 
                     [Order(0)] public CompositionRoot(string value, int val)
                     {
