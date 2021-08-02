@@ -161,9 +161,7 @@ namespace Pure.DI.Core
         public bool IsValidTypeToResolve =>
             Type switch
             {
-                INamedTypeSymbol namedTypeSymbol => 
-                    !namedTypeSymbol.IsUnboundGenericType
-                    && !IsComposedGenericTypeMarker,
+                INamedTypeSymbol namedTypeSymbol => !namedTypeSymbol.IsUnboundGenericType && !IsComposedGenericTypeMarker && !namedTypeSymbol.IsRefLikeType,
                 IArrayTypeSymbol arrayTypeSymbol => new SemanticType(arrayTypeSymbol, SemanticModel).IsValidTypeToResolve,
                 _ => false
             };

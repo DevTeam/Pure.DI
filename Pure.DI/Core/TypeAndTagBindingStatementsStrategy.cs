@@ -35,7 +35,7 @@ namespace Pure.DI.Core
                     yield break;
                 }
 
-                var error = $"Cannot resolve {binding}.";
+                var error = $"Cannot resolve {binding.Implementation}.";
                 _diagnostic.Error(Diagnostics.Error.CannotResolve, error);
                 throw new HandledException(error);
             }
