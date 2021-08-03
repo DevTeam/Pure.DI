@@ -61,14 +61,10 @@ namespace Pure.DI.Core
 
                 objectBuildExpression = lifetimeStrategy.Build(dependency, objectBuildExpression);
                 objectBuildExpression = _resultStrategy.Build(objectBuildExpression);
+                _log.Info(() => new []{ $"{dependency} => {objectBuildExpression.NormalizeWhitespace()}"});
             }
 
             _cache.Add(dependency, objectBuildExpression);
-            if(objectBuildExpression != null)
-            {
-                _log.Info(() => new []{ $"{dependency} => {objectBuildExpression.NormalizeWhitespace()}"});
-            }
-            
             return objectBuildExpression;
         }
     }

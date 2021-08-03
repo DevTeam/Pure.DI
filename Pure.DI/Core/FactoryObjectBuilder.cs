@@ -11,13 +11,16 @@ namespace Pure.DI.Core
     {
         private readonly IBuildContext _buildContext;
         private readonly IMemberNameService _memberNameService;
+        private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
 
         public FactoryObjectBuilder(
             IBuildContext buildContext,
-            IMemberNameService memberNameService)
+            IMemberNameService memberNameService,
+            ICannotResolveExceptionFactory cannotResolveExceptionFactory)
         {
             _buildContext = buildContext;
             _memberNameService = memberNameService;
+            _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
         }
 
         public ExpressionSyntax? TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
@@ -52,13 +55,14 @@ namespace Pure.DI.Core
 
             if (factory != null && resultExpression != null)
             {
-                return ((ExpressionSyntax) new FactoryRewriter(
+                return ((ExpressionSyntax?) new FactoryRewriter(
                         dependency,
                         buildStrategy,
                         factory.Parameter.Identifier,
-                        _buildContext)
+                        _buildContext,
+                        _cannotResolveExceptionFactory)
                     .Visit(resultExpression))
-                    .WithCommentBefore($"// {dependency.Binding}");
+                    ?.WithCommentBefore($"// {dependency.Binding}");
             }
 
             return SyntaxFactory.DefaultExpression(SyntaxFactory.ParseTypeName(dependency.Implementation.Type.Name));

@@ -28,7 +28,6 @@ namespace Pure.DI.Core
         public static readonly SyntaxToken KeyValuePairTypeToken = SyntaxFactory.Identifier("Pure.DI.Pair");
         public static readonly TypeSyntax TagTypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(TagKey).ToString());
         public static readonly SyntaxToken FuncTypeToken = SyntaxFactory.Identifier("System.Func");
-        public static readonly TypeSyntax FuncTypeObjectObjectTypeSyntax = SyntaxFactory.GenericName("System.Func").AddTypeArgumentListArguments(TypeTypeSyntax, ObjectTypeSyntax, ObjectTypeSyntax);
         public static readonly TypeSyntax ResolversTableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(ResolversTable).ToString());
         public static readonly TypeSyntax ResolversWithTagTableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(ResolversByTagTable).ToString());
         public static readonly TypeSyntax IContextTypeSyntax = SyntaxFactory.ParseTypeName(typeof(IContext).ToString());

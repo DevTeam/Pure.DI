@@ -17,9 +17,10 @@ namespace Pure.DI.Core
         private readonly IBuildContext _buildContext;
         private readonly IMemberNameService _memberNameService;
         private readonly IBuildStrategy _buildStrategy;
-        private readonly IBindingStatementsStrategy _bindingStatementsStrategy;
-        private readonly IBindingStatementsStrategy _tagBindingStatementsStrategy;
         private readonly ILog<ResolversBuilder> _log;
+        private readonly ITypeResolver _typeResolver;
+        private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
+        private readonly ITracer _tracer;
         private const string Comments = "\n\t//- - - - - - - - - - - - - - - - - - - - - - - - -";
 
         public ResolversBuilder(
@@ -28,18 +29,20 @@ namespace Pure.DI.Core
             IBuildContext buildContext,
             IMemberNameService memberNameService,
             IBuildStrategy buildStrategy,
-            [Tag(Tags.TypeStatementsStrategy)] IBindingStatementsStrategy bindingStatementsStrategy,
-            [Tag(Tags.TypeAndTagStatementsStrategy)] IBindingStatementsStrategy tagBindingStatementsStrategy,
-            ILog<ResolversBuilder> log)
+            ILog<ResolversBuilder> log,
+            ITypeResolver typeResolver,
+            ICannotResolveExceptionFactory cannotResolveExceptionFactory,
+            ITracer tracer)
         {
             _metadata = metadata;
             _resolveMethodBuilders = resolveMethodBuilders;
             _buildContext = buildContext;
             _memberNameService = memberNameService;
             _buildStrategy = buildStrategy;
-            _bindingStatementsStrategy = bindingStatementsStrategy;
-            _tagBindingStatementsStrategy = tagBindingStatementsStrategy;
             _log = log;
+            _typeResolver = typeResolver;
+            _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
+            _tracer = tracer;
         }
 
         public int Order => 0;
@@ -56,12 +59,12 @@ namespace Pure.DI.Core
                 select grouped.Last())
                 .ToArray();
 
-            foreach (var member in CreateDependencyTable(semanticModel, items))
+            foreach (var member in CreateDependencyTable(items))
             {
                 yield return member;
             }
 
-            foreach (var member in CreateDependencyWithTagTable(semanticModel, items))
+            foreach (var member in CreateDependencyWithTagTable(items))
             {
                 yield return member;
             }
@@ -152,7 +155,7 @@ namespace Pure.DI.Core
             }
         }
 
-        private IEnumerable<MemberDeclarationSyntax> CreateDependencyTable(SemanticModel semanticModel, IEnumerable<(BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
+        private IEnumerable<MemberDeclarationSyntax> CreateDependencyTable(IEnumerable<(BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
         {
             var funcType = SyntaxFactory.GenericName(
                     SyntaxRepo.FuncTypeToken)
@@ -176,7 +179,7 @@ namespace Pure.DI.Core
                     continue;
                 }
 
-                var statements = _bindingStatementsStrategy.CreateStatements(_buildStrategy, binding, dependency).ToArray();
+                var statements = CreateStatements(_buildStrategy, binding, dependency).ToArray();
                 if (!statements.Any())
                 {
                     continue;
@@ -221,7 +224,7 @@ namespace Pure.DI.Core
             yield return CreateField(bucketsType, nameof(ResolversTable.ResolversBuckets), GetFiled(_memberNameService.GetName(MemberNameKind.FactoriesField), nameof(ResolversTable.ResolversBuckets)), SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword);
         }
 
-        private IEnumerable<MemberDeclarationSyntax> CreateDependencyWithTagTable(SemanticModel semanticModel, IEnumerable<(BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
+        private IEnumerable<MemberDeclarationSyntax> CreateDependencyWithTagTable(IEnumerable<(BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
         {
             var funcType = SyntaxFactory.GenericName(
                     SyntaxRepo.FuncTypeToken)
@@ -250,7 +253,7 @@ namespace Pure.DI.Core
                         SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependency.TypeSyntax)),
                         SyntaxFactory.Argument(tag));
 
-                var statements = _tagBindingStatementsStrategy.CreateStatements(_buildStrategy, binding, dependency).ToArray();
+                var statements = CreateStatements(_buildStrategy, binding, dependency).ToArray();
                 if (!statements.Any())
                 {
                     continue;
@@ -308,5 +311,32 @@ namespace Pure.DI.Core
                                 .WithInitializer(SyntaxFactory.EqualsValueClause(initExpression))))
                 .WithModifiers(SyntaxFactory.TokenList()
                     .AddRange(Enumerable.Repeat(SyntaxKind.PrivateKeyword, 1).Concat(modifiers).Select(SyntaxFactory.Token)));
+        
+        private IEnumerable<StatementSyntax> CreateStatements(
+            IBuildStrategy buildStrategy,
+            BindingMetadata binding,
+            SemanticType dependency)
+        {
+            _tracer.Reset();
+            try
+            {
+                var instance = buildStrategy.TryBuild(_typeResolver.Resolve(dependency, binding.Tags.FirstOrDefault()), dependency);
+                if (instance == null)
+                {
+                    if (binding.FromProbe)
+                    {
+                        yield break;
+                    }
+
+                    throw _cannotResolveExceptionFactory.Create(binding);
+                }
+
+                yield return SyntaxFactory.ReturnStatement(instance);
+            }
+            finally
+            {
+                _tracer.Reset();
+            }
+        }
     }
 }

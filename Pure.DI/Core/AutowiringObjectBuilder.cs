@@ -17,17 +17,20 @@
         private readonly IBuildContext _buildContext;
         private readonly IConstructorsResolver _constructorsResolver;
         private readonly IAttributesService _attributesService;
+        private readonly ITracer _tracer;
 
         public AutowiringObjectBuilder(
             IDiagnostic diagnostic,
             IBuildContext buildContext, 
             IConstructorsResolver constructorsResolver,
-            IAttributesService attributesService)
+            IAttributesService attributesService,
+            ITracer tracer)
         {
             _diagnostic = diagnostic;
             _buildContext = buildContext;
             _constructorsResolver = constructorsResolver;
             _attributesService = attributesService;
+            _tracer = tracer;
         }
 
         [SuppressMessage("ReSharper", "InvertIf")]
@@ -45,6 +48,7 @@
             
             if (Equals(objectCreationExpression, default))
             {
+                _tracer.Save();
                 return null;
             }
 
@@ -173,7 +177,7 @@
 
             var resolvingType = GetDependencyType(target, targetDependency.Implementation) ?? new SemanticType(defaultType, targetDependency.Implementation);
             var tag = (ExpressionSyntax?) _attributesService.GetAttributeArgumentExpressions(AttributeKind.Tag, target).FirstOrDefault();
-            var dependency = typeResolver.Resolve(resolvingType, tag, resolveLocations);
+            var dependency = typeResolver.Resolve(resolvingType, tag);
             if (!dependency.IsResolved && defaultValue != null)
             {
                 return defaultValue;
@@ -214,7 +218,7 @@
                 case IArrayTypeSymbol arrayType:
                 {
                     var type = new SemanticType(arrayType, targetDependency.Implementation);
-                    var arrayTypeDescription = typeResolver.Resolve(type, null, arrayType.Locations);
+                    var arrayTypeDescription = typeResolver.Resolve(type, null);
                     if (arrayTypeDescription.IsResolved)
                     {
                         return buildStrategy.TryBuild(arrayTypeDescription, type);

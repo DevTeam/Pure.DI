@@ -9,16 +9,16 @@
     internal class FactoryWrapperStrategy : IWrapperStrategy
     {
         private readonly IBuildContext _buildContext;
-        private readonly IDiagnostic _diagnostic;
+        private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
         private readonly Func<IBuildStrategy> _buildStrategy;
         
         public FactoryWrapperStrategy(
             IBuildContext buildContext,
-            IDiagnostic diagnostic,
+            ICannotResolveExceptionFactory cannotResolveExceptionFactory,
             Func<IBuildStrategy> buildStrategy)
         {
             _buildContext = buildContext;
-            _diagnostic = diagnostic;
+            _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
             _buildStrategy = buildStrategy;
         }
 
@@ -27,9 +27,7 @@
             var factoryDependencyType = dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.IFactory`1")?.Construct(dependency.Implementation.Type);
             if (factoryDependencyType == null)
             {
-                var error = $"Cannot resolve a factory for {dependency.Implementation}.";
-                _diagnostic.Error(Diagnostics.Error.CannotResolveLifetime, error);
-                throw new HandledException(error);
+                throw _cannotResolveExceptionFactory.Create(dependency.Binding);
             }
 
             var factoryTypeDescriptions = _buildContext.TypeResolver.Resolve(new SemanticType(factoryDependencyType, dependency.Implementation))
@@ -41,15 +39,13 @@
         {
             var lambda = SyntaxFactory.ParenthesizedLambdaExpression(objectBuildExpression);
             var instance = _buildStrategy().TryBuild(factoryTypeDescription, factoryTypeDescription.Implementation);
-            if (instance == null)
+            if (instance != null)
             {
-                var error = $"Cannot resolve {factoryTypeDescription}.";
-                _diagnostic.Error(Diagnostics.Error.CannotResolve, error);
-                throw new HandledException(error);
+                return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, instance, SyntaxFactory.IdentifierName(nameof(IFactory<object>.Create))))
+                    .AddArgumentListArguments(SyntaxFactory.Argument(lambda));
             }
-            
-            return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, instance, SyntaxFactory.IdentifierName(nameof(IFactory<object>.Create))))
-                .AddArgumentListArguments(SyntaxFactory.Argument(lambda));
+
+            throw _cannotResolveExceptionFactory.Create(factoryTypeDescription.Binding);
         }
     }
 }

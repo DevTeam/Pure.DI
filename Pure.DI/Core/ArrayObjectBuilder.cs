@@ -13,7 +13,7 @@
 
         public ArrayObjectBuilder(ITypeResolver typeResolver) => _typeResolver = typeResolver;
 
-        public ExpressionSyntax? TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
+        public ExpressionSyntax TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
         {
             var objectCreationExpressions = new List<ExpressionSyntax>();
             if (dependency.Implementation.Type is not IArrayTypeSymbol arrayTypeSymbol)

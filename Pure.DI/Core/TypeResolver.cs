@@ -3,7 +3,6 @@ namespace Pure.DI.Core
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Microsoft.CodeAnalysis;
@@ -87,7 +86,7 @@ namespace Pure.DI.Core
             }
         }
 
-        public Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, ImmutableArray<Location> resolveLocations, bool anyTag = false)
+        public Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, bool anyTag = false)
         {
             switch (dependency.Type)
             {
@@ -216,7 +215,7 @@ namespace Pure.DI.Core
 
             foreach (var registeredKey in registeredKeys)
             {
-                yield return Resolve(dependency, registeredKey.Tag, ImmutableArray.Create<Location>());
+                yield return Resolve(dependency, registeredKey.Tag);
             }
         }
 

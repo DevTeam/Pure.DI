@@ -1,6 +1,5 @@
 ﻿namespace Pure.DI.Core
 {
-    using System.Collections.Immutable;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -23,7 +22,7 @@
 
         public ExpressionSyntax Build(Dependency dependency, ExpressionSyntax objectBuildExpression)
         {
-            var resolvedDependency = _buildContext.TypeResolver.Resolve(dependency.Implementation, dependency.Tag, ImmutableArray.Create(objectBuildExpression.GetLocation()));
+            var resolvedDependency = _buildContext.TypeResolver.Resolve(dependency.Implementation, dependency.Tag);
             var classKey = new MemberKey($"Singleton{resolvedDependency.Implementation}", dependency);
             var singletonClass = _buildContext.GetOrAddMember(classKey, () =>
             {

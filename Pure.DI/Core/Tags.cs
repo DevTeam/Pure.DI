@@ -13,8 +13,6 @@
         StaticWithTag,
         GenericStaticResolve,
         GenericStaticWithTag,
-        TypeStatementsStrategy,
-        TypeAndTagStatementsStrategy,
         Resolvers,
         MicrosoftDependencyInjection,
         Factory,

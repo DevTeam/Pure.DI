@@ -8,17 +8,20 @@ namespace Pure.DI.Core
 
     internal class FactoryMethodWrapperStrategy : IWrapperStrategy
     {
+        private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
         private readonly IDiagnostic _diagnostic;
         private readonly IBuildContext _buildContext;
         private readonly Func<IBuildStrategy> _buildStrategy;
         private readonly IIncludeTypeFilter _includeTypeFilter;
 
         public FactoryMethodWrapperStrategy(
+            ICannotResolveExceptionFactory cannotResolveExceptionFactory,
             IDiagnostic diagnostic,
             IBuildContext buildContext,
             Func<IBuildStrategy> buildStrategy,
             IIncludeTypeFilter includeTypeFilter)
         {
+            _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
             _diagnostic = diagnostic;
             _buildContext = buildContext;
             _buildStrategy = buildStrategy;
@@ -54,17 +57,15 @@ namespace Pure.DI.Core
             var lambda = SyntaxFactory.ParenthesizedLambdaExpression(objectBuildExpression);
             ExpressionSyntax? tagExpression = dependency.Tag?.ToLiteralExpression();
             var factoryExpression = _buildStrategy().TryBuild(factoryTypeDescription, factoryTypeDescription.Implementation);
-            if (factoryExpression == null)
+            if (factoryExpression != null)
             {
-                var error = $"Cannot resolve factory {factoryTypeDescription}.";
-                _diagnostic.Error(Diagnostics.Error.CannotResolve, error);
-                throw new HandledException(error);
+                return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, factoryExpression, SyntaxFactory.GenericName(nameof(IFactory.Create)).AddTypeArgumentListArguments(dependency.Implementation)))
+                    .AddArgumentListArguments(
+                        SyntaxFactory.Argument(lambda),
+                        SyntaxFactory.Argument(tagExpression ?? SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax)));
             }
 
-            return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, factoryExpression, SyntaxFactory.GenericName(nameof(IFactory.Create)).AddTypeArgumentListArguments(dependency.Implementation)))
-                .AddArgumentListArguments(
-                    SyntaxFactory.Argument(lambda),
-                    SyntaxFactory.Argument(tagExpression ?? SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax)));
+            throw _cannotResolveExceptionFactory.Create(dependency.Binding);
         }
     }
 }

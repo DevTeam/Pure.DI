@@ -21,7 +21,7 @@ namespace Pure.DI.Core
             _typeResolver = typeResolver;
         }
 
-        public ExpressionSyntax? TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
+        public ExpressionSyntax TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
         {
             if (
                 dependency.Implementation.Type is not INamedTypeSymbol namedTypeSymbol
@@ -39,6 +39,7 @@ namespace Pure.DI.Core
                 var yields =
                     from element in _typeResolver.Resolve(resolvingType)
                     let objectCreationExpression = buildStrategy.TryBuild(element, resolvingType)
+                    where objectCreationExpression != null
                     select (StatementSyntax)SyntaxFactory.YieldStatement(SyntaxKind.YieldReturnStatement).WithExpression(objectCreationExpression);
 
                 var factoryName = _buildContext.NameService.FindName(memberKey);

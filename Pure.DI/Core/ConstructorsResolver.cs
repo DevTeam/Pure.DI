@@ -23,7 +23,7 @@
             if (dependency.Implementation.Type is INamedTypeSymbol type)
             {
                 return from ctor in type.Constructors
-                    where ctor.DeclaredAccessibility is Accessibility.Internal or Accessibility.Public || ctor.DeclaredAccessibility == Accessibility.Friend
+                    where ctor.DeclaredAccessibility is Accessibility.Internal or Accessibility.Public or Accessibility.Friend
                     let specifiedOrder = (
                         from attrExpression in _attributesService.GetAttributeArgumentExpressions(AttributeKind.Order, ctor)
                         let order = ((attrExpression as LiteralExpressionSyntax)?.Token)?.Value as IComparable
@@ -34,7 +34,7 @@
                     let parameters = ctor.Parameters
                     let canBeResolved = (
                             from parameter in parameters
-                            let paramTypeDescription = _typeResolver.Resolve(new SemanticType(parameter.Type, dependency.Implementation), dependency.Tag, dependency.Implementation.Type.Locations)
+                            let paramTypeDescription = _typeResolver.Resolve(new SemanticType(parameter.Type, dependency.Implementation), dependency.Tag)
                             select parameter.IsOptional || parameter.HasExplicitDefaultValue || paramTypeDescription.IsResolved)
                         .All(isResolved => isResolved)
                     let weight = (parameters.Length + 1) * (canBeResolved ? 0xfff : 1) * (isObsoleted ? 1 : 0xff) * (ctor.DeclaredAccessibility == Accessibility.Public ? 0xf : 1)

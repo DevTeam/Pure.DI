@@ -40,7 +40,7 @@
                     break;
                 }
 
-                _buildStrategy.TryBuild(_buildContext.TypeResolver.Resolve(dependency, tag, dependency.Type.Locations), dependency);
+                _buildStrategy.TryBuild(_buildContext.TypeResolver.Resolve(dependency, tag), dependency);
             }
         }
     }

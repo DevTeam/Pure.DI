@@ -15,6 +15,7 @@
         private readonly IBuildStrategy _buildStrategy;
         private readonly IDiagnostic _diagnostic;
         private readonly Log<MicrosoftDependencyInjectionBuilder> _log;
+        private readonly ITracer _tracer;
 
         public MicrosoftDependencyInjectionBuilder(
             ResolverMetadata metadata,
@@ -22,7 +23,8 @@
             ITypeResolver typeResolver,
             IBuildStrategy buildStrategy,
             IDiagnostic diagnostic,
-            Log<MicrosoftDependencyInjectionBuilder> log)
+            Log<MicrosoftDependencyInjectionBuilder> log,
+            ITracer tracer)
         {
             _metadata = metadata;
             _buildContext = buildContext;
@@ -30,6 +32,7 @@
             _buildStrategy = buildStrategy;
             _diagnostic = diagnostic;
             _log = log;
+            _tracer = tracer;
         }
 
         public int Order => 1;
@@ -173,11 +176,12 @@
                         _ => "AddTransient"
                     };
 
-                    var curDependency = _typeResolver.Resolve(dependency, null, dependency.Type.Locations);
+                    var curDependency = _typeResolver.Resolve(dependency, null);
 
                     var objectExpression = curDependency.ObjectBuilder.TryBuild(_buildStrategy, curDependency);
                     if (objectExpression == null)
                     {
+                        _tracer.Save();
                         continue;
                     }
 

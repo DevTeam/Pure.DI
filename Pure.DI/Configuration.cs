@@ -19,6 +19,7 @@
             yield return container
                 .Bind<IAutowiringStrategy>().To(ctx => autowiringStrategy)
                 .Bind<IGenerator>().To<Generator>()
+                .Bind<ICannotResolveExceptionFactory>().As(ContainerSingleton).To<CannotResolveExceptionFactory>()
                 .Bind<IStdOut>().As(ContainerSingleton).To<StdOut>()
                 .Bind<IStdErr>().As(ContainerSingleton).To<StdErr>()
                 .Bind<ITracer>().As(ContainerSingleton).To<Tracer>()
@@ -50,8 +51,6 @@
                 .Bind<IBuildStrategy>().To<BuildStrategy>();
 
             yield return container
-                .Bind<IBindingStatementsStrategy>().Tag(TypeStatementsStrategy).To<TypeBindingStatementsStrategy>()
-                .Bind<IBindingStatementsStrategy>().Tag(TypeAndTagStatementsStrategy).To<TypeAndTagBindingStatementsStrategy>()
                 .Bind<ITypesMap>().To<TypesMap>()
                 .Bind<IAttributesService>().To<AttributesService>()
                 .Bind<ILifetimeStrategy>().As(Singleton).Tag(Lifetime.Transient).To<TransientLifetimeStrategy>()

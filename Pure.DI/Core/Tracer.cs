@@ -10,6 +10,7 @@
         private readonly IDiagnostic _diagnostic;
         private readonly ILog<Tracer> _log;
         private readonly Stack<Dependency> _path = new();
+        private readonly List<Dependency[]> _paths = new();
 
         public Tracer(
             IDiagnostic diagnostic,
@@ -18,6 +19,8 @@
             _diagnostic = diagnostic;
             _log = log;
         }
+
+        public IEnumerable<Dependency[]> Paths => _paths;
 
         public IDisposable RegisterResolving(Dependency dependency)
         {
@@ -33,6 +36,34 @@
             throw new HandledException(error);
         }
 
+        public void Save()
+        {
+            _paths
+                .Where(path => Eq(_path, path))
+                .Where(path => path.Length < _path.Count)
+                .ToList()
+                .ForEach(i => _paths.Remove(i));
+
+            _paths.Add(_path.ToArray());
+        }
+        
+        private static bool Eq(IEnumerable<Dependency> seq1, IEnumerable<Dependency> seq2)
+        {
+            using var enumerator1 = seq1.GetEnumerator();
+            using var enumerator2 = seq2.GetEnumerator();
+            while (enumerator1.MoveNext() && enumerator2.MoveNext())
+            {
+                if (!Equals(enumerator1.Current.Binding.Id, enumerator2.Current.Binding.Id))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        
+        public void Reset() => _paths.Clear();
+
         void IDisposable.Dispose()
         {
             if (_path.Count == 0)
@@ -45,7 +76,7 @@
         }
 
         public override string ToString() => 
-            string.Join(" <- ", _path.Select(i => i.ToString()));
+            string.Join(" -> ", _path.Reverse().Select(i => i.ToString()));
 
         private string[] GetMessages()
         {

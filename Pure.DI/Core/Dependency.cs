@@ -34,15 +34,9 @@ namespace Pure.DI.Core
             return $"{Implementation}{tag}";
         }
 
-        public bool Equals(Dependency other)
-        {
-            return Implementation.Equals(other.Implementation) && Equals(Tag?.ToString(), other.Tag?.ToString());
-        }
+        public bool Equals(Dependency other) => Implementation.Equals(other.Implementation) && Equals(Tag?.ToString(), other.Tag?.ToString());
 
-        public override bool Equals(object? obj)
-        {
-            return obj is Dependency other && Equals(other);
-        }
+        public override bool Equals(object? obj) => obj is Dependency other && Equals(other);
 
         public override int GetHashCode()
         {

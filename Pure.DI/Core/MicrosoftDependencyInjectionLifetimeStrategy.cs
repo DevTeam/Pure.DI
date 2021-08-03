@@ -10,17 +10,17 @@ namespace Pure.DI.Core
     internal class MicrosoftDependencyInjectionLifetimeStrategy: ILifetimeStrategy
     {
         private readonly IBuildContext _buildContext;
-        private readonly IDiagnostic _diagnostic;
+        private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
         private readonly Func<IBuildStrategy> _buildStrategy;
 
         public MicrosoftDependencyInjectionLifetimeStrategy(
             IBuildContext buildContext,
-            IDiagnostic diagnostic,
+            ICannotResolveExceptionFactory cannotResolveExceptionFactory,
             Func<IBuildStrategy> buildStrategy,
             Lifetime lifetime)
         {
             _buildContext = buildContext;
-            _diagnostic = diagnostic;
+            _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
             _buildStrategy = buildStrategy;
             Lifetime = lifetime;
         }
@@ -33,18 +33,17 @@ namespace Pure.DI.Core
             var type = dependency.Binding.Dependencies.FirstOrDefault() ?? dependency.Implementation;
             var serviceProviderInstance = new SemanticType(dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.ServiceProviderInstance`1")!, dependency.Implementation.SemanticModel);
             var instanceType = serviceProviderInstance.Construct(type);
-            var serviceProviderDependency = _buildContext.TypeResolver.Resolve(instanceType, dependency.Tag, dependency.Implementation.Type.Locations);
+            var serviceProviderDependency = _buildContext.TypeResolver.Resolve(instanceType, dependency.Tag);
             var serviceProvider = _buildStrategy().TryBuild(serviceProviderDependency, instanceType);
-            if (serviceProvider == null)
+            if (serviceProvider != null)
             {
-                var error = $"Cannot resolve {serviceProviderDependency}.";
-                _diagnostic.Error(Diagnostics.Error.CannotResolve, error);
-                throw new HandledException(error);
+                return SyntaxFactory.MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    serviceProvider,
+                    SyntaxFactory.IdentifierName(nameof(ServiceProviderInstance<object>.Value)));
             }
-            return SyntaxFactory.MemberAccessExpression(
-                SyntaxKind.SimpleMemberAccessExpression,
-                serviceProvider,
-                SyntaxFactory.IdentifierName(nameof(ServiceProviderInstance<object>.Value)));
+
+            throw _cannotResolveExceptionFactory.Create(serviceProviderDependency.Binding);
         }
     }
 }

@@ -96,7 +96,12 @@
 
                 public class MyClass
                 {
-                    private MyClass() { }
+                    public MyClass(MyClass2 val) { }
+                }
+
+                public class MyClass2
+                {
+                    private MyClass2() { }
                 }
 
                 public class CompositionRoot
@@ -111,6 +116,7 @@
                     {
                         DI.Setup()
                             .Bind<MyClass>().To<MyClass>()
+                            .Bind<MyClass2>().To<MyClass2>()
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }                   
                 }    
@@ -118,6 +124,8 @@
 
             // Then
             output.Any(i => i.Contains(Diagnostics.Error.CannotResolve)).ShouldBeTrue(generatedCode);
+            output.Any(i => i.Contains("MyClass")).ShouldBeTrue(generatedCode);
+            output.Any(i => i.Contains("MyClass2")).ShouldBeTrue(generatedCode);
         }
 
         [Fact]

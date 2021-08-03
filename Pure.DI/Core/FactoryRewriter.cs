@@ -3,7 +3,6 @@
 namespace Pure.DI.Core
 {
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.Linq;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -16,18 +15,21 @@ namespace Pure.DI.Core
         private readonly IBuildStrategy _buildStrategy;
         private readonly SyntaxToken _contextIdentifier;
         private readonly IBuildContext _buildContext;
-
+        private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
+        
         public FactoryRewriter(
             Dependency dependency,
             IBuildStrategy buildStrategy,
             SyntaxToken contextIdentifier,
-            IBuildContext buildContext)
+            IBuildContext buildContext,
+            ICannotResolveExceptionFactory cannotResolveExceptionFactory)
             : base(true)
         {
             _dependency = dependency;
             _buildStrategy = buildStrategy;
             _contextIdentifier = contextIdentifier;
             _buildContext = buildContext;
+            _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
         }
 
         public override SyntaxNode VisitTypeArgumentList(TypeArgumentListSyntax node)
@@ -75,7 +77,7 @@ namespace Pure.DI.Core
             return base.VisitMemberAccessExpression(node);
         }
 
-        public override SyntaxNode Visit(SyntaxNode? node)
+        public override SyntaxNode? Visit(SyntaxNode? node)
         {
             if (node is GenericNameSyntax genericName)
             {
@@ -84,7 +86,7 @@ namespace Pure.DI.Core
                 return SyntaxFactory.GenericName(genericName.Identifier).AddTypeArgumentListArguments(args);
             }
 
-            return base.Visit(node)!;
+            return base.Visit(node);
         }
 
         public override SyntaxNode VisitTypeOfExpression(TypeOfExpressionSyntax node) => 
@@ -106,8 +108,14 @@ namespace Pure.DI.Core
                     {
                         var tag = invocationOperation.Arguments.Length == 1 ? invocationOperation.Arguments[0].Value.Syntax as ExpressionSyntax : null;
                         var dependencyType = _dependency.TypesMap.ConstructType(new SemanticType(invocationOperation.TargetMethod.ReturnType, semanticModel));
-                        var dependency = _buildContext.TypeResolver.Resolve(dependencyType, tag, ImmutableArray.Create(node.GetLocation()));
-                        return _buildStrategy.TryBuild(dependency, dependencyType);
+                        var dependency = _buildContext.TypeResolver.Resolve(dependencyType, tag);
+                        var expression = _buildStrategy.TryBuild(dependency, dependencyType);
+                        if (expression == null)
+                        {
+                            throw _cannotResolveExceptionFactory.Create(dependency.Binding);
+                        }
+
+                        return expression;
                     }
                 }
             }
