@@ -56,11 +56,11 @@ class ShroedingersCat : ICat
 }
 ```
 
-_It is important to note that our abstraction and our implementation do not know anything about any IoC/DI containers at all._
+_It is important to note that our abstraction and our implementation do not know anything about any IoC/DI containers or any frameworks at all._
 
 ### Let's glue all together
 
-Just add a package reference to [Pure.DI](https://www.nuget.org/packages/Pure.DI). Using NuGet packages allows you to optimize your application to include only the necessary dependencies.
+Add a package reference to [Pure.DI](https://www.nuget.org/packages/Pure.DI):
 
 - Package Manager
 
@@ -95,9 +95,9 @@ static partial class Glue
 }
 ```
 
-_Defining generic type arguments using special marker types like *__TT__* in the sample above is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints._
+This code creates a composer *__Glue__* to create a composition root *__Program__* below. _Defining generic type arguments using special marker types like *__TT__* in the sample above is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints._
 
-### Time to open boxes!
+### Time to open boxes! :heart::skull::robot:
 
 ```csharp
 class Program
@@ -113,7 +113,7 @@ class Program
 }
 ```
 
-_Program_ is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) here, a single place in an application where the composition of the object graphs for an application take place. To have an ability create multiple instances or to do it on demand you could use *__Func<>__* with required type specified. Each instance is resolved by a strongly-typed block of statements like the operator new which are compiled with all optimizations with minimal impact on performance or memory consumption. For instance, the creating of a composition root *__Program__* looks like this:
+*__Program__* is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) here, a single place in an application where the composition of the object graphs for an application take place. To have an ability create multiple instances or to do it on demand you could use *__Func<>__* with required type specified. Each instance is resolved by a strongly-typed block of statements like the operator [*__new__*](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/new-operator) which are compiled with all optimizations with minimal impact on performance or memory consumption. For instance, the creating of a composition root *__Program__* looks like this:
 ```csharp
 Random Indeterminacy = new();
 
@@ -125,7 +125,7 @@ new Program(
           () => (State)Indeterminacy.Next(2)))));
 ```
 
-Take full advantage of Dependency Injection everywhere and every time without any compromise.
+Take full advantage of Dependency Injection everywhere and every time without any compromise!
 
 ## NuGet package
 
@@ -136,20 +136,8 @@ Take full advantage of Dependency Injection everywhere and every time without an
 ```csharp
 // Starts DI configuration chain.
 // This method contains a single optional argument to specify a custom DI type name to generate.
-// By default it is a name of an owner class.
+// By default, it is a name of an owner class.
 DI.Setup("MyComposer")
-  
-  // Use a DI configuration as a base.
-  .DependsOn(nameof(BasicComposer))
-  
-  // Determines a custom attribute overriding an injection type.
-  .TypeAttribure<MyTypeAttribute>()
-  
-  // Determines a tag attribute overriding an injection tag.
-  .TagAttribure<MyTagAttribute>()
-  
-  // Determines a custom attribute overriding an injection order.
-  .OrderAttribure<MyOrderAttribute>()
   
   // This is basic binding format
   .Bind<IMyInterface>().To<MyImplementation>()
@@ -162,21 +150,36 @@ DI.Setup("MyComposer")
 
   // Or a binding suitable for any tag
   .Bind<IMyInterface>().AnyTag().To<MyImplementation>()
-
+  
   // Determines a binding implementation using a factory method.
   // It allows to create instance manually and invoke required methods, initialize properties and etc. 
   .Bind<IMyInterface>().To(ctx => new MyImplementation(ctx.Resolve<ISomeDependency1>(), "Some value", ctx.Resolve<ISomeDependency2>()))
 
   // Overrides a default lifetime. Transient by default.
   .Default(Lifetime.Singleton)
+
+  // Determines a custom attribute overriding an injection type.
+  .TypeAttribure<MyTypeAttribute>()
+  
+  // Determines a tag attribute overriding an injection tag.
+  .TagAttribure<MyTagAttribute>()
+  
+  // Determines a custom attribute overriding an injection order.
+  .OrderAttribure<MyOrderAttribute>()
+  
+  // Use a DI configuration as a base.
+  .DependsOn(nameof(BasicComposer)) 
 ```
 
-The list of life times:
-- Transient - Creates a new object of the requested type every time.
-- Singleton - Creates a singleton object first time you and then returns the same object.
-- PerResolve - Similar to the Transient, but it reuses the same object in the recursive object graph. 
-- ContainerSingleton - This lifetime is applicable for ASP.NET, specifies that a single instance of the service will be created
-- Scoped - This lifetime is applicable for ASP.NET, specifies that a new instance of the service will be created for each scope
+## The list of life times
+
+- *__Transient__* - Creates a new object of the requested type every time.
+- *__Singleton__* - Creates a singleton object first time you and then returns the same object.
+- *__PerResolve__* - Similar to the Transient, but it reuses the same object in the recursive object graph. 
+- *__ContainerSingleton__* - This lifetime is applicable for ASP.NET, specifies that a single instance of the service will be created
+- *__Scoped__* - This lifetime is applicable for ASP.NET, specifies that a new instance of the service will be created for each scope
+
+_You can add a lifetime yourself [by implementing IFactory](#custom-singleton-lifetime-)._
 
 ## Development environment requirements
 
@@ -203,3 +206,9 @@ When a targeting project is an ASP.NET project, a special extension method is ge
 ![wpf](Docs/Images/wpf.png?raw=true)
 
 [This sample](Samples/WpfAppNetCore) demonstrates how to apply DI for a WPF application. The crucial class is [DataProvider](Samples/WpfAppNetCore/DataProvider.cs), which connects view and view models. Besides that, it provides two sets of models for [design-time](Samples/WpfAppNetCore/ClockDomainDesignTime.cs) and [running](Samples/WpfAppNetCore/ClockDomain.cs) modes.
+
+## Examples of using
+
+* [C# script tool](https://github.com/JetBrains/teamcity-csharp-interactive/blob/master/Teamcity.CSharpInteractive/Composer.cs)
+* [MSBuild logger](https://github.com/JetBrains/teamcity-msbuild-logger/blob/master/TeamCity.MSBuild.Logger/Composer.cs)
+

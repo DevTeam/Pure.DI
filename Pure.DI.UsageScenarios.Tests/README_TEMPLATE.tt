@@ -89,7 +89,7 @@
         foreach(var info in group.OrderBy(i => i["priority"] + "_" + i["description"]))
         {
             var description = info["description"];
-            var reference = "#" + description.Replace(" ", "-").Replace("'", string.Empty).ToLowerInvariant() + "-";
+            var reference = "#" + description.Replace(" ", "-").Replace("'", string.Empty).ToLowerInvariant();
 #>  - [<#=description#>](<#=reference#>)
 <#
         }
@@ -99,7 +99,7 @@
 <#
     foreach(var info in infos.OrderBy(i => i["tag"] + i["priority"]).Where(info => info["visible"] == "true"))
     {
-#>### <#=info["description"]#> [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](<#=info["url"]#>)
+#>### <#=info["description"]#>
 
 <#=info["header"]#>
 

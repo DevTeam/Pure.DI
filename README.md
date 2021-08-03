@@ -56,11 +56,11 @@ class ShroedingersCat : ICat
 }
 ```
 
-_It is important to note that our abstraction and our implementation do not know anything about any IoC/DI containers at all._
+_It is important to note that our abstraction and our implementation do not know anything about any IoC/DI containers or any frameworks at all._
 
 ### Let's glue all together
 
-Just add a package reference to [Pure.DI](https://www.nuget.org/packages/Pure.DI). Using NuGet packages allows you to optimize your application to include only the necessary dependencies.
+Add a package reference to [Pure.DI](https://www.nuget.org/packages/Pure.DI):
 
 - Package Manager
 
@@ -95,9 +95,9 @@ static partial class Glue
 }
 ```
 
-_Defining generic type arguments using special marker types like *__TT__* in the sample above is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints._
+This code creates a composer *__Glue__* to create a composition root *__Program__* below. _Defining generic type arguments using special marker types like *__TT__* in the sample above is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints._
 
-### Time to open boxes!
+### Time to open boxes! :heart::skull::robot:
 
 ```csharp
 class Program
@@ -113,7 +113,7 @@ class Program
 }
 ```
 
-_Program_ is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) here, a single place in an application where the composition of the object graphs for an application take place. To have an ability create multiple instances or to do it on demand you could use *__Func<>__* with required type specified. Each instance is resolved by a strongly-typed block of statements like the operator new which are compiled with all optimizations with minimal impact on performance or memory consumption. For instance, the creating of a composition root *__Program__* looks like this:
+*__Program__* is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) here, a single place in an application where the composition of the object graphs for an application take place. To have an ability create multiple instances or to do it on demand you could use *__Func<>__* with required type specified. Each instance is resolved by a strongly-typed block of statements like the operator [*__new__*](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/new-operator) which are compiled with all optimizations with minimal impact on performance or memory consumption. For instance, the creating of a composition root *__Program__* looks like this:
 ```csharp
 Random Indeterminacy = new();
 
@@ -125,7 +125,7 @@ new Program(
           () => (State)Indeterminacy.Next(2)))));
 ```
 
-Take full advantage of Dependency Injection everywhere and every time without any compromise.
+Take full advantage of Dependency Injection everywhere and every time without any compromise!
 
 ## NuGet package
 
@@ -136,20 +136,8 @@ Take full advantage of Dependency Injection everywhere and every time without an
 ```csharp
 // Starts DI configuration chain.
 // This method contains a single optional argument to specify a custom DI type name to generate.
-// By default it is a name of an owner class.
+// By default, it is a name of an owner class.
 DI.Setup("MyComposer")
-  
-  // Use a DI configuration as a base.
-  .DependsOn(nameof(BasicComposer))
-  
-  // Determines a custom attribute overriding an injection type.
-  .TypeAttribure<MyTypeAttribute>()
-  
-  // Determines a tag attribute overriding an injection tag.
-  .TagAttribure<MyTagAttribute>()
-  
-  // Determines a custom attribute overriding an injection order.
-  .OrderAttribure<MyOrderAttribute>()
   
   // This is basic binding format
   .Bind<IMyInterface>().To<MyImplementation>()
@@ -162,21 +150,36 @@ DI.Setup("MyComposer")
 
   // Or a binding suitable for any tag
   .Bind<IMyInterface>().AnyTag().To<MyImplementation>()
-
+  
   // Determines a binding implementation using a factory method.
   // It allows to create instance manually and invoke required methods, initialize properties and etc. 
   .Bind<IMyInterface>().To(ctx => new MyImplementation(ctx.Resolve<ISomeDependency1>(), "Some value", ctx.Resolve<ISomeDependency2>()))
 
   // Overrides a default lifetime. Transient by default.
   .Default(Lifetime.Singleton)
+
+  // Determines a custom attribute overriding an injection type.
+  .TypeAttribure<MyTypeAttribute>()
+  
+  // Determines a tag attribute overriding an injection tag.
+  .TagAttribure<MyTagAttribute>()
+  
+  // Determines a custom attribute overriding an injection order.
+  .OrderAttribure<MyOrderAttribute>()
+  
+  // Use a DI configuration as a base.
+  .DependsOn(nameof(BasicComposer)) 
 ```
 
-The list of life times:
-- Transient - Creates a new object of the requested type every time.
-- Singleton - Creates a singleton object first time you and then returns the same object.
-- PerResolve - Similar to the Transient, but it reuses the same object in the recursive object graph. 
-- ContainerSingleton - This lifetime is applicable for ASP.NET, specifies that a single instance of the service will be created
-- Scoped - This lifetime is applicable for ASP.NET, specifies that a new instance of the service will be created for each scope
+## The list of life times
+
+- *__Transient__* - Creates a new object of the requested type every time.
+- *__Singleton__* - Creates a singleton object first time you and then returns the same object.
+- *__PerResolve__* - Similar to the Transient, but it reuses the same object in the recursive object graph. 
+- *__ContainerSingleton__* - This lifetime is applicable for ASP.NET, specifies that a single instance of the service will be created
+- *__Scoped__* - This lifetime is applicable for ASP.NET, specifies that a new instance of the service will be created for each scope
+
+_You can add a lifetime yourself [by implementing IFactory](#custom-singleton-lifetime-)._
 
 ## Development environment requirements
 
@@ -204,43 +207,50 @@ When a targeting project is an ASP.NET project, a special extension method is ge
 
 [This sample](Samples/WpfAppNetCore) demonstrates how to apply DI for a WPF application. The crucial class is [DataProvider](Samples/WpfAppNetCore/DataProvider.cs), which connects view and view models. Besides that, it provides two sets of models for [design-time](Samples/WpfAppNetCore/ClockDomainDesignTime.cs) and [running](Samples/WpfAppNetCore/ClockDomain.cs) modes.
 
+## Examples of using
+
+* [C# script tool](https://github.com/JetBrains/teamcity-csharp-interactive/blob/master/Teamcity.CSharpInteractive/Composer.cs)
+* [MSBuild logger](https://github.com/JetBrains/teamcity-msbuild-logger/blob/master/TeamCity.MSBuild.Logger/Composer.cs)
+
+
 ## Usage Scenarios
 
 - Basics
-  - [Autowiring](#autowiring-)
-  - [Bindings](#bindings-)
-  - [Constants](#constants-)
-  - [Generics](#generics-)
-  - [Tags](#tags-)
-  - [Aspect-oriented DI](#aspect-oriented-di-)
-  - [Several contracts](#several-contracts-)
-  - [Autowiring with initialization](#autowiring-with-initialization-)
-  - [Dependency tag](#dependency-tag-)
-  - [Generic autowiring](#generic-autowiring-)
-  - [Injection of default parameters](#injection-of-default-parameters-)
+  - [Autowiring](#autowiring)
+  - [Bindings](#bindings)
+  - [Constants](#constants)
+  - [Generics](#generics)
+  - [Tags](#tags)
+  - [Aspect-oriented DI](#aspect-oriented-di)
+  - [Several contracts](#several-contracts)
+  - [Autowiring with initialization](#autowiring-with-initialization)
+  - [Dependency tag](#dependency-tag)
+  - [Generic autowiring](#generic-autowiring)
+  - [Injection of default parameters](#injection-of-default-parameters)
 - Lifetimes
-  - [Default lifetime](#default-lifetime-)
-  - [Per resolve lifetime](#per-resolve-lifetime-)
-  - [Singleton lifetime](#singleton-lifetime-)
-  - [Transient lifetime](#transient-lifetime-)
+  - [Default lifetime](#default-lifetime)
+  - [Per resolve lifetime](#per-resolve-lifetime)
+  - [Singleton lifetime](#singleton-lifetime)
+  - [Transient lifetime](#transient-lifetime)
+  - [Custom singleton lifetime](#custom-singleton-lifetime)
 - BCL types
-  - [Arrays](#arrays-)
-  - [Collections](#collections-)
-  - [Enumerables](#enumerables-)
-  - [Func](#func-)
-  - [Lazy](#lazy-)
-  - [Sets](#sets-)
-  - [ThreadLocal](#threadlocal-)
-  - [Tuples](#tuples-)
+  - [Arrays](#arrays)
+  - [Collections](#collections)
+  - [Enumerables](#enumerables)
+  - [Func](#func)
+  - [Lazy](#lazy)
+  - [Sets](#sets)
+  - [ThreadLocal](#threadlocal)
+  - [Tuples](#tuples)
 - Interception
-  - [Decorator](#decorator-)
-  - [Intercept specific types](#intercept-specific-types-)
-  - [Intercept a set of types](#intercept-a-set-of-types-)
+  - [Decorator](#decorator)
+  - [Intercept specific types](#intercept-specific-types)
+  - [Intercept a set of types](#intercept-a-set-of-types)
 - Advanced
-  - [ASPNET](#aspnet-)
-  - [Constructor choice](#constructor-choice-)
+  - [ASPNET](#aspnet)
+  - [Constructor choice](#constructor-choice)
 
-### Autowiring [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Autowiring.cs)
+### Autowiring
 
 Auto-wring is the most natural way to use containers. In the first step, we should create a container. At the second step, we bind interfaces to their implementations. After that, the container is ready to resolve dependencies.
 
@@ -256,7 +266,7 @@ var instance = AutowiringDI.Resolve<IService>();
 
 
 
-### Bindings [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Bindings.cs)
+### Bindings
 
 It is possible to bind any number of types.
 
@@ -273,7 +283,7 @@ var instance2 = BindingsDI.Resolve<IAnotherService>("abc");
 
 
 
-### Constants [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Constants.cs)
+### Constants
 
 It's obvious here.
 
@@ -289,7 +299,7 @@ val.ShouldBe(10);
 
 
 
-### Generics [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Generics.cs)
+### Generics
 
 Auto-wring of generic types via binding of open generic types or generic type markers are working the same way.
 
@@ -306,7 +316,7 @@ var instance = GenericsDI.Resolve<CompositionRoot<IService<int>>>().Root;
 
 Open generic type instance, for instance, like IService<TT> here, cannot be a composition root instance.
 
-### Tags [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Tags.cs)
+### Tags
 
 Tags are useful while binding to several implementations of the same abstract types.
 
@@ -327,7 +337,7 @@ var instance3 = TagsDI.Resolve<IService>();
 
 
 
-### Aspect-oriented DI [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/AspectOriented.cs)
+### Aspect-oriented DI
 
 This framework has no special predefined attributes to support aspect-oriented auto wiring because a non-infrastructure code should not have references to this framework. But this code may contain these attributes by itself. And it is quite easy to use these attributes for aspect-oriented auto wiring, see the sample below.
 
@@ -420,7 +430,7 @@ public class Clock : IClock
 
 You can also specify your own aspect-oriented autowiring by implementing the interface [_IAutowiringStrategy_](IoCContainer/blob/master/IoC/IAutowiringStrategy.cs).
 
-### Several contracts [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/SeveralContracts.cs)
+### Several contracts
 
 It is possible to bind several types to a single implementation.
 
@@ -436,7 +446,7 @@ var instance2 = SeveralContractsDI.Resolve<IAnotherService>();
 
 
 
-### Autowiring with initialization [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/AutowiringWithInitialization.cs)
+### Autowiring with initialization
 
 Sometimes instances required some actions before you give them to use - some methods of initialization or fields which should be defined. You can solve these things easily.
 
@@ -465,7 +475,7 @@ instance.Name.ShouldBe("Initialized!");
 
 :warning: It is not recommended because it is a cause of hidden dependencies.
 
-### Dependency tag [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/DependencyTag.cs)
+### Dependency tag
 
 Use a _tag_ to bind few dependencies for the same types.
 
@@ -481,7 +491,7 @@ var instance = DependencyTagDI.Resolve<IService>();
 
 
 
-### Injection of default parameters [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/DefaultParamsInjection.cs)
+### Injection of default parameters
 
 
 
@@ -516,7 +526,7 @@ public class SomeService: IService
 
 
 
-### Generic autowiring [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/GenericAutowiring.cs)
+### Generic autowiring
 
 Autowiring of generic types as simple as autowiring of other simple types. Just use a generic parameters markers like _TT_, _TT1_, _TT2_ and etc. or TTI, TTI1, TTI2 ... for interfaces or TTS, TTS1, TTS2 ... for value types or other special markers like TTDisposable, TTDisposable1 and etc. TTList<>, TTDictionary<> ... or create your own generic parameters markers or bind open generic types.
 
@@ -557,7 +567,7 @@ class TTMy { }
 
 
 
-### Default lifetime [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/DefaultLifetime.cs)
+### Default lifetime
 
 
 
@@ -604,7 +614,7 @@ public class Service : IService
 
 
 
-### Per resolve lifetime [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/PerResolveLifetime.cs)
+### Per resolve lifetime
 
 
 
@@ -658,7 +668,7 @@ public class Service : IService
 
 
 
-### Singleton lifetime [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/SingletonLifetime.cs)
+### Singleton lifetime
 
 [Singleton](https://en.wikipedia.org/wiki/Singleton_pattern) is a design pattern that supposes for having only one instance of some class during the whole application lifetime. The main complaint about Singleton is that it contradicts the Dependency Injection principle and thus hinders testability. It essentially acts as a global constant, and it is hard to substitute it with a test when needed. The _Singleton lifetime_ is indispensable in this case.
 
@@ -716,7 +726,7 @@ public class Service : IService
 
 
 
-### Transient lifetime [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/TransientLifetime.cs)
+### Transient lifetime
 
 
 
@@ -774,7 +784,60 @@ public class Service : IService
 
 
 
-### Arrays [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Arrays.cs)
+### Custom singleton lifetime
+
+
+
+``` CSharp
+public void Run()
+{
+    DI.Setup()
+        // Registers custom lifetime for all implementations with a class name ending by word "Singleton"
+        .Bind<IFactory>().As(Singleton).To<CustomSingletonLifetime>()
+
+        .Bind<IDependency>().To<DependencySingleton>()
+        .Bind<IService>().To<Service>();
+    
+    var instance1 = CustomSingletonDI.Resolve<IService>();
+    var instance2 = CustomSingletonDI.Resolve<IService>();
+
+    // Check that dependencies are singletons
+    instance1.Dependency.ShouldBe(instance2.Dependency);
+
+    instance1.ShouldNotBe(instance2);
+}
+
+// A pattern of the class name ending by word "Singleton"
+[Include(".*Singleton$")]
+public class CustomSingletonLifetime: IFactory
+{
+    // Stores singleton instances by key
+    private readonly ConcurrentDictionary<Key, object> _instances = new();
+    
+    // Gets an existing instance or creates a new
+    public T Create<T>(Func<T> factory, object tag) => (T)_instances.GetOrAdd(new Key(typeof(T), tag), i => factory()!);
+
+    // Represents an instance key
+    private record Key(Type type, object? tag);
+}
+
+public interface IDependency { }
+
+public class DependencySingleton : IDependency { }
+
+public interface IService { IDependency Dependency { get; } }
+
+public class Service : IService
+{
+    public Service(IDependency dependency) { Dependency = dependency; }
+
+    public IDependency Dependency { get; }
+}
+```
+
+
+
+### Arrays
 
 To resolve all possible instances of any tags of the specific type as an _array_ just use the injection _T[]_
 
@@ -795,7 +858,7 @@ var composition = ArraysDI.Resolve<CompositionRoot<IService[]>>();
 
 
 
-### Collections [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Collections.cs)
+### Collections
 
 To resolve all possible instances of any tags of the specific type as a _collection_ just use the injection _ICollection<T>_
 
@@ -819,7 +882,7 @@ composition.Root.Count.ShouldBe(3);
 
 
 
-### Enumerables [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Enumerables.cs)
+### Enumerables
 
 To resolve all possible instances of any tags of the specific type as an _enumerable_ just use the injection _IEnumerable<T>_.
 
@@ -843,7 +906,7 @@ instances.Count.ShouldBe(3);
 
 
 
-### Func [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Func.cs)
+### Func
 
 _Func<>_ helps when a logic needs to inject some type of instances on-demand or solve circular dependency issues.
 
@@ -863,7 +926,7 @@ var instance2 = factory();
 
 
 
-### Lazy [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Lazy.cs)
+### Lazy
 
 _Lazy_ dependency helps when a logic needs to inject _Lazy<T>_ to get instance once on demand.
 
@@ -882,7 +945,7 @@ var instance = lazy.Value;
 
 
 
-### Sets [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Sets.cs)
+### Sets
 
 To resolve all possible instances of any tags of the specific type as a _ISet<>_ just use the injection _ISet<T>_.
 
@@ -906,7 +969,7 @@ instances.Count.ShouldBe(3);
 
 
 
-### ThreadLocal [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/ThreadLocal.cs)
+### ThreadLocal
 
 
 
@@ -925,7 +988,7 @@ var instance = threadLocal.Value;
 
 
 
-### Tuples [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Tuples.cs)
+### Tuples
 
 [Tuple](https://docs.microsoft.com/en-us/dotnet/api/system.tuple) has a set of elements that should be resolved at the same time.
 
@@ -942,7 +1005,7 @@ var (service, namedService) = TuplesDI.Resolve<CompositionRoot<(IService, INamed
 
 
 
-### Decorator [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Decorator.cs)
+### Decorator
 
 
 
@@ -976,7 +1039,7 @@ public class DecoratorService : IService
 
 
 
-### Intercept specific types [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/Intercept.cs)
+### Intercept specific types
 
 
 
@@ -1044,7 +1107,7 @@ public class Service : IService
 
 
 
-### Intercept a set of types [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/InterceptMany.cs)
+### Intercept a set of types
 
 
 
@@ -1108,7 +1171,7 @@ public class Service : IService
 
 
 
-### ASPNET [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/AspNetMvc.cs)
+### ASPNET
 
 
 
@@ -1183,7 +1246,7 @@ public class Startup
 
 
 
-### Constructor choice [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/ConstructorChoice.cs)
+### Constructor choice
 
 We can specify a constructor manually and all its arguments.
 

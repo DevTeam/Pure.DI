@@ -1,4 +1,5 @@
-﻿// ReSharper disable ClassNeverInstantiated.Global
+﻿/*
+// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
 namespace Pure.DI.UsageScenarios.Tests
@@ -74,4 +75,4 @@ namespace Pure.DI.UsageScenarios.Tests
         }
         // }
     }
-}
+}*/
