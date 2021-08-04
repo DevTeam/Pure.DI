@@ -9,12 +9,12 @@
 ## Key features:
 
 - [X] DI without any IoC/DI containers, frameworks, dependencies, and thus without any performance impacts and side-effects
-- [X]  A predictable and validated dependencies graph which is building and validating on the fly while you are writing your code
-- [X]  Does not add dependencies to any other assemblies
-- [X]  High performance with all .NET compiler/JIT optimizations
-- [X]  Easy to use
-- [X]  Ultra-fine tuning of generic types
-- [X]  Supports major .NET BCL types from the box
+- [X] A predictable and validated dependencies graph which is building and validating on the fly while you are writing your code
+- [X] Does not add dependencies to any other assemblies
+- [X] High performance with all .NET compiler/JIT optimizations
+- [X] Easy to use
+- [X] Ultra-fine tuning of generic types
+- [X] Supports major .NET BCL types from the box
 
 ## [Schrödinger's cat](Samples/ShroedingersCat) shows how it works
 
@@ -140,7 +140,7 @@ Take full advantage of Dependency Injection everywhere and every time without an
 // By default, it is a name of an owner class.
 DI.Setup("MyComposer")
   
-  // This is basic binding format
+  // This is a basic binding format
   .Bind<IMyInterface>().To<MyImplementation>()
    
   // Determines a binding lifetime.
@@ -185,7 +185,7 @@ Predefined lifetimes:
 - *__ContainerSingleton__* - This lifetime is applicable for ASP.NET, specifies that a single instance of the service will be created
 - *__Scoped__* - This lifetime is applicable for ASP.NET, specifies that a new instance of the service will be created for each scope
 
-You can [add a lifetime]((#custom-singleton-lifetime)) yourself.
+You can [add a lifetime](#custom-singleton-lifetime) yourself.
 
 ## Development environment requirements
 
