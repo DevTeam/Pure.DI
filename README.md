@@ -6,21 +6,21 @@
 
 <img src="Docs/Images/demo.gif"/>
 
-#### Base concepts:
+## Key features:
 
-- DI without any IoC/DI containers, frameworks, dependencies, and thus without any performance impacts and side-effects
-- A predictable and validated dependencies graph which is building and validating on the fly while you are writing your code
-- Does not add dependencies to any other assemblies
-- High performance with all .NET compiler/JIT optimizations
-- Easy to use
-- Ultra-fine tuning of generic types
-- Supports major .NET BCL types from the box
+- [X] DI without any IoC/DI containers, frameworks, dependencies, and thus without any performance impacts and side-effects
+- [X]  A predictable and validated dependencies graph which is building and validating on the fly while you are writing your code
+- [X]  Does not add dependencies to any other assemblies
+- [X]  High performance with all .NET compiler/JIT optimizations
+- [X]  Easy to use
+- [X]  Ultra-fine tuning of generic types
+- [X]  Supports major .NET BCL types from the box
 
 ## [Schrödinger's cat](Samples/ShroedingersCat) shows how it works
 
 ### The reality is that
 
-![Cat](Docs/Images/cat.jpg?raw=true)
+![Cat](Docs/Images/cat.png)
 
 ### Let's create an abstraction
 
@@ -56,11 +56,13 @@ class ShroedingersCat : ICat
 }
 ```
 
-_It is important to note that our abstraction and our implementation do not know anything about any IoC/DI containers or any frameworks at all._
+It is important to note that our abstraction and our implementation do not know anything about any IoC/DI containers or any frameworks at all.
 
 ### Let's glue all together
 
-Add a package reference to [Pure.DI](https://www.nuget.org/packages/Pure.DI):
+#### Add a package reference to:
+
+[![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
 
 - Package Manager
 
@@ -74,15 +76,15 @@ Add a package reference to [Pure.DI](https://www.nuget.org/packages/Pure.DI):
   dotnet add package Pure.DI
   ```
 
-Declare required dependencies in a class like:
+#### Declare required dependencies in a class like:
 
 ```csharp
-static partial class Glue
+static partial class Composer
 {
   // Models a random subatomic event that may or may not occur
   private static readonly Random Indeterminacy = new();
 
-  static Glue() => DI.Setup()
+  static Composer() => DI.Setup()
       // Represents a quantum superposition of 2 states: Alive or Dead
       .Bind<State>().To(_ => (State)Indeterminacy.Next(2))
       // Represents schrodinger's cat
@@ -95,15 +97,18 @@ static partial class Glue
 }
 ```
 
-This code creates a composer *__Glue__* to create a composition root *__Program__* below. _Defining generic type arguments using special marker types like *__TT__* in the sample above is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints._
+This code creates *__Composer__* to create a composition root *__Program__* below.
 
-### Time to open boxes! :heart::skull::robot:
+> Defining generic type arguments using special marker types like *__TT__* in the sample above is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints.
+
+### Time to open boxes!
 
 ```csharp
 class Program
 {
-  // Composition Root, a single place in an application where the composition of the object graphs for an application take place
-  public static void Main() => Glue.Resolve<Program>().Run();
+  // Composition Root, a single place in an application
+  // where the composition of the object graphs for an application take place
+  public static void Main() => Composer.Resolve<Program>().Run();
 
   private readonly IBox<ICat> _box;
 
@@ -127,10 +132,6 @@ new Program(
 
 Take full advantage of Dependency Injection everywhere and every time without any compromise!
 
-## NuGet package
-
-[![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
-
 ## Simple and powerful API
 
 ```csharp
@@ -152,8 +153,13 @@ DI.Setup("MyComposer")
   .Bind<IMyInterface>().AnyTag().To<MyImplementation>()
   
   // Determines a binding implementation using a factory method.
-  // It allows to create instance manually and invoke required methods, initialize properties and etc. 
-  .Bind<IMyInterface>().To(ctx => new MyImplementation(ctx.Resolve<ISomeDependency1>(), "Some value", ctx.Resolve<ISomeDependency2>()))
+  // It allows to create instance manually and invoke required methods,
+  // initialize properties and etc. 
+  .Bind<IMyInterface>().To(
+    ctx => new MyImplementation(
+      ctx.Resolve<ISomeDependency1>(),
+      "Some value",
+      ctx.Resolve<ISomeDependency2>()))
 
   // Overrides a default lifetime. Transient by default.
   .Default(Lifetime.Singleton)
@@ -171,7 +177,7 @@ DI.Setup("MyComposer")
   .DependsOn(nameof(BasicComposer)) 
 ```
 
-## The list of life times
+Predefined lifetimes:
 
 - *__Transient__* - Creates a new object of the requested type every time.
 - *__Singleton__* - Creates a singleton object first time you and then returns the same object.
@@ -179,7 +185,7 @@ DI.Setup("MyComposer")
 - *__ContainerSingleton__* - This lifetime is applicable for ASP.NET, specifies that a single instance of the service will be created
 - *__Scoped__* - This lifetime is applicable for ASP.NET, specifies that a new instance of the service will be created for each scope
 
-_You can add a lifetime yourself [by implementing IFactory](#custom-singleton-lifetime-)._
+You can [add a lifetime]((#custom-singleton-lifetime)) yourself.
 
 ## Development environment requirements
 
@@ -195,22 +201,25 @@ _You can add a lifetime yourself [by implementing IFactory](#custom-singleton-li
 - .NET Framework 3.5+
 - [UWP](https://docs.microsoft.com/en-us/windows/uwp/index) 10+
 
-## ASP.NET Support
+## Samples
+
+### [ASP.NET Core Blazor](Samples/BlazorServerApp)
 
 ![blazor](Docs/Images/blazor.png?raw=true)
 
-When a targeting project is an ASP.NET project, a special extension method is generated automatically. This extension method could be used to integrate DI into a web application infrastructure. Pay attention to [this single statement](https://github.com/DevTeam/Pure.DI/blob/d1c4cdf3d6d7015f809cf7f9153d091a1d42dc34/Samples/BlazorServerApp/Startup.cs#L24)  that makes all magic. For more details, please take a look at this [sample](https://github.com/DevTeam/Pure.DI/tree/master/Samples/BlazorServerApp).
+When a targeting project is an ASP.NET project, a special extension method is generated automatically. This extension method could be used to integrate DI into a web application infrastructure. Pay attention to [this single statement](https://github.com/DevTeam/Pure.DI/blob/d1c4cdf3d6d7015f809cf7f9153d091a1d42dc34/Samples/BlazorServerApp/Startup.cs#L24)  that makes all magic.
 
-## WPF Support
+### [WPF](Samples/WpfAppNetCore)
 
 ![wpf](Docs/Images/wpf.png?raw=true)
 
-[This sample](Samples/WpfAppNetCore) demonstrates how to apply DI for a WPF application. The crucial class is [DataProvider](Samples/WpfAppNetCore/DataProvider.cs), which connects view and view models. Besides that, it provides two sets of models for [design-time](Samples/WpfAppNetCore/ClockDomainDesignTime.cs) and [running](Samples/WpfAppNetCore/ClockDomain.cs) modes.
+This sample demonstrates how to apply DI for a WPF application. The crucial class is [DataProvider](Samples/WpfAppNetCore/DataProvider.cs), which connects view and view models. Besides that, it provides two sets of models for [design-time](Samples/WpfAppNetCore/ClockDomainDesignTime.cs) and [running](Samples/WpfAppNetCore/ClockDomain.cs) modes.
 
-## Examples of using
+### Others
 
-* [C# script tool](https://github.com/JetBrains/teamcity-csharp-interactive/blob/master/Teamcity.CSharpInteractive/Composer.cs)
-* [MSBuild logger](https://github.com/JetBrains/teamcity-msbuild-logger/blob/master/TeamCity.MSBuild.Logger/Composer.cs)
+* [Schrödinger's cat](Samples/ShroedingersCat) - a simple example
+* [C# script tool](https://github.com/JetBrains/teamcity-csharp-interactive/blob/master/Teamcity.CSharpInteractive/Composer.cs) - JetBrain TeamCity interactive tool for running C# scripts
+* [MSBuild logger](https://github.com/JetBrains/teamcity-msbuild-logger/blob/master/TeamCity.MSBuild.Logger/Composer.cs) - Provides the JetBrain TeamCity integration with Microsoft MSBuild.
 
 
 ## Usage Scenarios

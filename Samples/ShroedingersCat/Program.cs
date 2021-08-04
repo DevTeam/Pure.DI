@@ -46,12 +46,12 @@ namespace Sample
 
     // Let's glue all together
 
-    static partial class Glue
+    static partial class Composer
     {
         // Models a random subatomic event that may or may not occur
         private static readonly Random Indeterminacy = new();
 
-        static Glue() => DI.Setup()
+        static Composer() => DI.Setup()
             // Represents a quantum superposition of 2 states: Alive or Dead
             .Bind<State>().To(_ => (State)Indeterminacy.Next(2))
             // Represents schrodinger's cat
@@ -63,11 +63,11 @@ namespace Sample
     }
 
     // Time to open boxes!
-
     public class Program
     {
-        // Composition Root, a single place in an application where the composition of the object graphs for an application take place
-        public static void Main() => Glue.Resolve<Program>().Run();
+        // Composition Root, a single place in an application
+        // where the composition of the object graphs for an application take place
+        public static void Main() => Composer.Resolve<Program>().Run();
 
         private readonly IBox<ICat> _box;
 
