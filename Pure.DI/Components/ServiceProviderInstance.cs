@@ -13,9 +13,23 @@
 #pragma warning disable 0436
 namespace Pure.DI
 {
+#if NETSTANDARD1_6 || NETSTANDARD1_5 || NETSTANDARD1_4 || NETSTANDARD1_3 || NETSTANDARD1_2 || NETSTANDARD1_1 || NETSTANDARD1_0
+// ReSharper disable UnusedType.Global
+    internal interface IServiceProvider
+    {
+        object GetService(System.Type serviceType);
+    }
+#endif
+    
     internal struct ServiceProviderInstance
     {
-        [System.ThreadStatic] public static System.IServiceProvider ServiceProvider;
+        [System.ThreadStatic] public static
+#if NETSTANDARD1_6 || NETSTANDARD1_5 || NETSTANDARD1_4 || NETSTANDARD1_3 || NETSTANDARD1_2 || NETSTANDARD1_1 || NETSTANDARD1_0
+            Pure.DI.IServiceProvider
+#else
+            System.IServiceProvider
+#endif
+            ServiceProvider;
     }
 
     internal struct ServiceProviderInstance<T>
