@@ -8,10 +8,10 @@
 
 ## Key features:
 
-- [X] DI without any IoC/DI containers, frameworks, dependencies, and thus without any performance impacts and side-effects
-- [X] A predictable and validated dependencies graph which is building and validating on the fly while you are writing your code
-- [X] Does not add dependencies to any other assemblies
-- [X] High performance with all .NET compiler/JIT optimizations
+- [X] DI without any IoC/DI containers, frameworks, dependencies, and thus without any performance impact and side-effects
+- [X] A predictable and validated dependencies graph is built and validated on the fly while you are writing your code
+- [X] Does not add dependencies to other assemblies
+- [X] High performance, including all .NET compiler/JIT optimizations
 - [X] Easy to use
 - [X] Ultra-fine tuning of generic types
 - [X] Supports major .NET BCL types from the box
@@ -97,7 +97,7 @@ static partial class Composer
 }
 ```
 
-This code creates *__Composer__* to create a composition root *__Program__* below.
+The code above is actually a chain of hints to generate a static class *__Composer__* with method *__Resolve__*, which creates a composition root *__Program__* below.
 
 > Defining generic type arguments using special marker types like *__TT__* in the sample above is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints.
 
@@ -142,7 +142,10 @@ DI.Setup("MyComposer")
   
   // This is a basic binding format
   .Bind<IMyInterface>().To<MyImplementation>()
-   
+
+  // This option is also possible
+  .Bind<IMyInterface>().Bind<IMyInterface2>().To<MyImplementation>()
+
   // Determines a binding lifetime.
   .Bind<IMyInterface>().As(Lifetime.Singleton).To<MyImplementation>()
   
@@ -215,12 +218,12 @@ When a targeting project is an ASP.NET project, a special extension method is ge
 
 This sample demonstrates how to apply DI for a WPF application. The crucial class is [DataProvider](Samples/WpfAppNetCore/DataProvider.cs), which connects view and view models. Besides that, it provides two sets of models for [design-time](Samples/WpfAppNetCore/ClockDomainDesignTime.cs) and [running](Samples/WpfAppNetCore/ClockDomain.cs) modes.
 
-### Others
+### Other resources
 
-* [Schrödinger's cat](Samples/ShroedingersCat) - a simple example
+* [Schrödinger's cat](Samples/ShroedingersCat) - simple console application
 * [C# script tool](https://github.com/JetBrains/teamcity-csharp-interactive/blob/master/Teamcity.CSharpInteractive/Composer.cs) - JetBrain TeamCity interactive tool for running C# scripts
 * [MSBuild logger](https://github.com/JetBrains/teamcity-msbuild-logger/blob/master/TeamCity.MSBuild.Logger/Composer.cs) - Provides the JetBrain TeamCity integration with Microsoft MSBuild.
-
+* [Performance comparison](https://danielpalme.github.io/IocPerformance/) - performance comparison of the most popular .NET IoC containers
 
 ## Usage Scenarios
 
@@ -229,6 +232,7 @@ This sample demonstrates how to apply DI for a WPF application. The crucial clas
   - [Bindings](#bindings)
   - [Constants](#constants)
   - [Generics](#generics)
+  - [Manual binding](#manual-binding)
   - [Tags](#tags)
   - [Aspect-oriented DI](#aspect-oriented-di)
   - [Several contracts](#several-contracts)
@@ -257,7 +261,6 @@ This sample demonstrates how to apply DI for a WPF application. The crucial clas
   - [Intercept a set of types](#intercept-a-set-of-types)
 - Advanced
   - [ASPNET](#aspnet)
-  - [Constructor choice](#constructor-choice)
 
 ### Autowiring
 
@@ -323,7 +326,26 @@ DI.Setup()
 var instance = GenericsDI.Resolve<CompositionRoot<IService<int>>>().Root;
 ```
 
-Open generic type instance, for instance, like IService<TT> here, cannot be a composition root instance.
+Open generic type instance, for instance, like IService&lt;TT&gt; here, cannot be a composition root instance.
+
+### Manual binding
+
+We can specify a constructor manually with all its arguments and even call some initializing methods.
+
+``` CSharp
+DI.Setup()
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To(
+        // Select the constructor and inject required dependencies
+        ctx => new Service(ctx.Resolve<IDependency>(), "some state"));
+
+var instance = ManualBindingDI.Resolve<IService>();
+
+// Check the injected constant
+instance.State.ShouldBe("some state");
+```
+
+
 
 ### Tags
 
@@ -348,7 +370,7 @@ var instance3 = TagsDI.Resolve<IService>();
 
 ### Aspect-oriented DI
 
-This framework has no special predefined attributes to support aspect-oriented auto wiring because a non-infrastructure code should not have references to this framework. But this code may contain these attributes by itself. And it is quite easy to use these attributes for aspect-oriented auto wiring, see the sample below.
+There is already a set of predefined attributes to support aspect-oriented autowiring such as _TypeAttribute_. But in addition, you can use your own attributes, see the sample below.
 
 ``` CSharp
 public void Run()
@@ -437,7 +459,7 @@ public class Clock : IClock
 }
 ```
 
-You can also specify your own aspect-oriented autowiring by implementing the interface [_IAutowiringStrategy_](IoCContainer/blob/master/IoC/IAutowiringStrategy.cs).
+
 
 ### Several contracts
 
@@ -1251,25 +1273,6 @@ public class Startup
         });
     }
 }
-```
-
-
-
-### Constructor choice
-
-We can specify a constructor manually and all its arguments.
-
-``` CSharp
-DI.Setup()
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To(
-        // Select the constructor and inject required dependencies
-        ctx => new Service(ctx.Resolve<IDependency>(), "some state"));
-
-var instance = ConstructorChoiceDI.Resolve<IService>();
-
-// Check the injected constant
-instance.State.ShouldBe("some state");
 ```
 
 

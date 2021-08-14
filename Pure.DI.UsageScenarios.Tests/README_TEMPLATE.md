@@ -6,6 +6,7 @@
   - [Bindings](#bindings)
   - [Constants](#constants)
   - [Generics](#generics)
+  - [Manual binding](#manual-binding)
   - [Tags](#tags)
   - [Aspect-oriented DI](#aspect-oriented-di)
   - [Several contracts](#several-contracts)
@@ -34,7 +35,6 @@
   - [Intercept a set of types](#intercept-a-set-of-types)
 - Advanced
   - [ASPNET](#aspnet)
-  - [Constructor choice](#constructor-choice)
 
 ### Autowiring
 
@@ -100,7 +100,26 @@ DI.Setup()
 var instance = GenericsDI.Resolve<CompositionRoot<IService<int>>>().Root;
 ```
 
-Open generic type instance, for instance, like IService<TT> here, cannot be a composition root instance.
+Open generic type instance, for instance, like IService&lt;TT&gt; here, cannot be a composition root instance.
+
+### Manual binding
+
+We can specify a constructor manually with all its arguments and even call some initializing methods.
+
+``` CSharp
+DI.Setup()
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To(
+        // Select the constructor and inject required dependencies
+        ctx => new Service(ctx.Resolve<IDependency>(), "some state"));
+
+var instance = ManualBindingDI.Resolve<IService>();
+
+// Check the injected constant
+instance.State.ShouldBe("some state");
+```
+
+
 
 ### Tags
 
@@ -125,7 +144,7 @@ var instance3 = TagsDI.Resolve<IService>();
 
 ### Aspect-oriented DI
 
-This framework has no special predefined attributes to support aspect-oriented auto wiring because a non-infrastructure code should not have references to this framework. But this code may contain these attributes by itself. And it is quite easy to use these attributes for aspect-oriented auto wiring, see the sample below.
+There is already a set of predefined attributes to support aspect-oriented autowiring such as _TypeAttribute_. But in addition, you can use your own attributes, see the sample below.
 
 ``` CSharp
 public void Run()
@@ -214,7 +233,7 @@ public class Clock : IClock
 }
 ```
 
-You can also specify your own aspect-oriented autowiring by implementing the interface [_IAutowiringStrategy_](IoCContainer/blob/master/IoC/IAutowiringStrategy.cs).
+
 
 ### Several contracts
 
@@ -1028,25 +1047,6 @@ public class Startup
         });
     }
 }
-```
-
-
-
-### Constructor choice
-
-We can specify a constructor manually and all its arguments.
-
-``` CSharp
-DI.Setup()
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To(
-        // Select the constructor and inject required dependencies
-        ctx => new Service(ctx.Resolve<IDependency>(), "some state"));
-
-var instance = ConstructorChoiceDI.Resolve<IService>();
-
-// Check the injected constant
-instance.State.ShouldBe("some state");
 ```
 
 

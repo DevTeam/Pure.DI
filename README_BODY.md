@@ -8,10 +8,10 @@
 
 ## Key features:
 
-- [X] DI without any IoC/DI containers, frameworks, dependencies, and thus without any performance impacts and side-effects
-- [X] A predictable and validated dependencies graph which is building and validating on the fly while you are writing your code
-- [X] Does not add dependencies to any other assemblies
-- [X] High performance with all .NET compiler/JIT optimizations
+- [X] DI without any IoC/DI containers, frameworks, dependencies, and thus without any performance impact and side-effects
+- [X] A predictable and validated dependencies graph is built and validated on the fly while you are writing your code
+- [X] Does not add dependencies to other assemblies
+- [X] High performance, including all .NET compiler/JIT optimizations
 - [X] Easy to use
 - [X] Ultra-fine tuning of generic types
 - [X] Supports major .NET BCL types from the box
@@ -97,7 +97,7 @@ static partial class Composer
 }
 ```
 
-This code creates *__Composer__* to create a composition root *__Program__* below.
+The code above is actually a chain of hints to generate a static class *__Composer__* with method *__Resolve__*, which creates a composition root *__Program__* below.
 
 > Defining generic type arguments using special marker types like *__TT__* in the sample above is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints.
 
@@ -142,7 +142,10 @@ DI.Setup("MyComposer")
   
   // This is a basic binding format
   .Bind<IMyInterface>().To<MyImplementation>()
-   
+
+  // This option is also possible
+  .Bind<IMyInterface>().Bind<IMyInterface2>().To<MyImplementation>()
+
   // Determines a binding lifetime.
   .Bind<IMyInterface>().As(Lifetime.Singleton).To<MyImplementation>()
   
@@ -215,9 +218,9 @@ When a targeting project is an ASP.NET project, a special extension method is ge
 
 This sample demonstrates how to apply DI for a WPF application. The crucial class is [DataProvider](Samples/WpfAppNetCore/DataProvider.cs), which connects view and view models. Besides that, it provides two sets of models for [design-time](Samples/WpfAppNetCore/ClockDomainDesignTime.cs) and [running](Samples/WpfAppNetCore/ClockDomain.cs) modes.
 
-### Others
+### Other resources
 
-* [Schrödinger's cat](Samples/ShroedingersCat) - a simple example
+* [Schrödinger's cat](Samples/ShroedingersCat) - simple console application
 * [C# script tool](https://github.com/JetBrains/teamcity-csharp-interactive/blob/master/Teamcity.CSharpInteractive/Composer.cs) - JetBrain TeamCity interactive tool for running C# scripts
 * [MSBuild logger](https://github.com/JetBrains/teamcity-msbuild-logger/blob/master/TeamCity.MSBuild.Logger/Composer.cs) - Provides the JetBrain TeamCity integration with Microsoft MSBuild.
-
+* [Performance comparison](https://danielpalme.github.io/IocPerformance/) - performance comparison of the most popular .NET IoC containers

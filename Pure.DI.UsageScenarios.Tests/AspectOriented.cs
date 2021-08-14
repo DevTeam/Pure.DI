@@ -26,8 +26,7 @@ namespace Pure.DI.UsageScenarios.Tests
         // $tag=1 Basics
         // $priority=02
         // $description=Aspect-oriented DI
-        // $header=This framework has no special predefined attributes to support aspect-oriented auto wiring because a non-infrastructure code should not have references to this framework. But this code may contain these attributes by itself. And it is quite easy to use these attributes for aspect-oriented auto wiring, see the sample below.
-        // $footer=You can also specify your own aspect-oriented autowiring by implementing the interface [_IAutowiringStrategy_](IoCContainer/blob/master/IoC/IAutowiringStrategy.cs).
+        // $header=There is already a set of predefined attributes to support aspect-oriented autowiring such as _TypeAttribute_. But in addition, you can use your own attributes, see the sample below.
         // {
         public void Run()
         {
