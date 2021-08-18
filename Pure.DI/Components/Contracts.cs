@@ -52,7 +52,7 @@ namespace Pure.DI
     /// <summary>
     /// Represents a <seealso href="https://github.com/DevTeam/Pure.DI#aspect-oriented-di-">custom attribute</seealso> overriding an injection order.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Field | AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field)]
     internal class OrderAttribute : Attribute
     {
         // ReSharper disable once MemberCanBePrivate.Global
@@ -74,7 +74,7 @@ namespace Pure.DI
     /// <summary>
     /// Represents a <seealso href="https://github.com/DevTeam/Pure.DI#aspect-oriented-di-">tag attribute</seealso> overriding an injection tag.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter)]
+    [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Field)]
     internal class TagAttribute : Attribute
     {
         // ReSharper disable once MemberCanBePrivate.Global
@@ -96,7 +96,7 @@ namespace Pure.DI
     /// <summary>
     /// Represents a <seealso href="https://github.com/DevTeam/Pure.DI#aspect-oriented-di-">custom attribute</seealso> overriding an injection type. 
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter)]
+    [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Field)]
     internal class TypeAttribute : Attribute
     {
         // ReSharper disable once MemberCanBePrivate.Global

@@ -15,8 +15,8 @@
     {
         var isBody = false;
         var vars = new Dictionary<string, string>();
-        var body = new StringBuilder();
-        var bodyOffset = -1;
+        var body = new List<string>();
+        int? offset = null;
         foreach(var line in File.ReadAllLines(file))
         {
             if (vars.Count == 0)
@@ -37,7 +37,6 @@
             {
                 case "// {":
                     isBody = true;
-                    bodyOffset = line.Length - line.TrimStart().Length;
                     continue;
                 
                 case "// }":
@@ -72,11 +71,25 @@
 
             if (isBody)
             {
-                body.AppendLine(bodyOffset < line.Length ? line.Substring(bodyOffset, line.Length - bodyOffset) : line.TrimStart());
+                if (!string.IsNullOrWhiteSpace(line))
+                {
+                    var curOffset = line.Length - line.TrimStart().Length;
+                    if (curOffset < (offset ?? int.MaxValue))
+                    {
+                        offset = curOffset;
+                    }
+                }
+
+                body.Add(line);
             }
         }
 
-        vars["body"] = body.ToString();
+        offset ??= 0;
+        var content =
+            from line in body
+            select line.Length > offset ? line.Substring(offset.Value, line.Length - offset.Value) : line.Trim();
+            
+        vars["body"] = string.Join(System.Environment.NewLine, content) + System.Environment.NewLine;
     }#>
 ## Usage Scenarios
 

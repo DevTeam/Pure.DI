@@ -26,15 +26,10 @@ namespace Pure.DI.UsageScenarios.Tests
         // $tag=1 Basics
         // $priority=02
         // $description=Aspect-oriented DI
-        // $header=There is already a set of predefined attributes to support aspect-oriented autowiring such as _TypeAttribute_. But in addition, you can use your own attributes, see the sample below.
         // {
         public void Run()
         {
             DI.Setup()
-                // Define attributes for aspect-oriented autowiring
-                .TypeAttribute<TypeAttribute>()
-                .OrderAttribute<OrderAttribute>()
-                .TagAttribute<TagAttribute>()
                 // Configure the container to use DI aspects
                 .Bind<IConsole>().Tag("MyConsole").To(_ => AspectOriented.Console.Object)
                 .Bind<string>().Tag("Prefix").To(_ => "info")
@@ -48,36 +43,6 @@ namespace Pure.DI.UsageScenarios.Tests
 
             // Check the output has the appropriate format
             Console.Verify(i => i.WriteLine(It.IsRegex(".+ - info: Hello")));
-        }
-
-        // Represents the dependency aspect attribute to specify a type for injection.
-        [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Method)]
-        public class TypeAttribute : Attribute
-        {
-            // A type, which will be used during an injection
-            public readonly Type Type;
-
-            public TypeAttribute(Type type) => Type = type;
-        }
-
-        // Represents the dependency aspect attribute to specify a tag for injection.
-        [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Method | AttributeTargets.Property)]
-        public class TagAttribute : Attribute
-        {
-            // A tag, which will be used during an injection
-            public readonly object Tag;
-
-            public TagAttribute(object tag) => Tag = tag;
-        }
-
-        // Represents the dependency aspect attribute to specify an order for injection.
-        [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property)]
-        public class OrderAttribute : Attribute
-        {
-            // An order to be used to invoke a method
-            public readonly int Order;
-
-            public OrderAttribute(int order) => Order = order;
         }
 
         public interface IConsole { void WriteLine(string text); }
