@@ -1,89 +1,75 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="..\common.props"/>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <SignAssembly>True</SignAssembly>
+        <AssemblyOriginatorKeyFile>..\DevTeam.snk</AssemblyOriginatorKeyFile>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+        <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    </PropertyGroup>
 
-	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<SignAssembly>True</SignAssembly>
-		<AssemblyOriginatorKeyFile>..\DevTeam.snk</AssemblyOriginatorKeyFile>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<LangVersion>latest</LangVersion>
-		<Nullable>enable</Nullable>
-		<RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-	</PropertyGroup>
+    <PropertyGroup>
+        <DevelopmentDependency>true</DevelopmentDependency>
+        <NoPackageAnalysis>true</NoPackageAnalysis>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+        <IsPackable>true</IsPackable>
+        <PackageId>Pure.DI</PackageId>
+        <Description>Pure DI for .NET.</Description>
+        <PackageTags>di;pure;ioc</PackageTags>
+        <Product>Pure DI</Product>
+    </PropertyGroup>
 
-	<PropertyGroup>
-		<DevelopmentDependency>true</DevelopmentDependency>
-		<NoPackageAnalysis>true</NoPackageAnalysis>
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-		<IncludeBuildOutput>false</IncludeBuildOutput>
-		<SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
-		<IsPackable>true</IsPackable>
-		<PackageId>Pure.DI</PackageId>
-		<Authors>NikolayP</Authors>
-		<Description>Pure DI for .NET.</Description>
-		<PackageProjectUrl>https://github.com/DevTeam/Pure.DI/</PackageProjectUrl>
-		<PackageIcon>common\icon.png</PackageIcon>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<RepositoryType>git</RepositoryType>
-		<RepositoryUrl>https://github.com/DevTeam/Pure.DI.git</RepositoryUrl>
-		<PackageTags>di pure ioc</PackageTags>
-		<Product>Pure DI</Product>
-		<Copyright>Copyright (C) 2021 Nikolay Pianikov</Copyright>
-	</PropertyGroup>
+    <ItemGroup>
+        <None Update="Components\GenericTypeArguments.tt">
+            <LastGenOutput>GenericTypeArguments.cs</LastGenOutput>
+            <Generator>TextTemplatingFileGenerator</Generator>
+        </None>
 
-	<ItemGroup>
-		<None Update="Components\GenericTypeArguments.tt">
-			<LastGenOutput>GenericTypeArguments.cs</LastGenOutput>
-			<Generator>TextTemplatingFileGenerator</Generator>
-		</None>
+        <Compile Update="Components\GenericTypeArguments.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>GenericTypeArguments.tt</DependentUpon>
+        </Compile>
+    </ItemGroup>
 
-		<Compile Update="Components\GenericTypeArguments.cs">
-			<DesignTime>True</DesignTime>
-			<AutoGen>True</AutoGen>
-			<DependentUpon>GenericTypeArguments.tt</DependentUpon>
-		</Compile>
-	</ItemGroup>
+    <ItemGroup>
+        <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
+        <None Include="$(PKGIoC_Container)\lib\netstandard2.0\IoC.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
 
-	<ItemGroup>
-		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-		<None Include="$(PKGIoC_Container)\lib\netstandard2.0\IoC.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+        <EmbeddedResource Include="Components\Contracts.cs"/>
+        <EmbeddedResource Include="Components\GenericTypeArguments.cs"/>
+        <EmbeddedResource Include="Components\Tables.cs"/>
+        <EmbeddedResource Include="Components\ServiceProviderInstance.cs"/>
+        <EmbeddedResource Include="Features\AspNet.cs"/>
+        <Compile Remove="Features\AspNet.cs"/>
+        <EmbeddedResource Include="Features\Default.cs"/>
+        <Compile Remove="Features\Default.cs"/>
+    </ItemGroup>
 
-		<EmbeddedResource Include="Components\Contracts.cs" />
-		<EmbeddedResource Include="Components\GenericTypeArguments.cs" />
-		<EmbeddedResource Include="Components\Tables.cs" />
-		<EmbeddedResource Include="Components\ServiceProviderInstance.cs" />
-		<EmbeddedResource Include="Features\AspNet.cs" />
-		<Compile Remove="Features\AspNet.cs" />
-		<EmbeddedResource Include="Features\Default.cs" />
-		<Compile Remove="Features\Default.cs" />
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="IoC.Container" Version="1.3.6" GeneratePathProperty="true" PrivateAssets="all"/>
+        <!-- Should be compatible with .NET 5.0.102+ and Visual Studio 16.8+ -->
+        <!-- https://github.com/dotnet/roslyn/blob/main/docs/wiki/NuGet-packages.md#versioning -->
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.8.0" PrivateAssets="all"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="all"/>
+    </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="IoC.Container" Version="1.3.6" GeneratePathProperty="true" PrivateAssets="all" />
-		<!-- Should be compatible with .NET 5.0.102+ and Visual Studio 16.8+ -->
-		<!-- https://github.com/dotnet/roslyn/blob/main/docs/wiki/NuGet-packages.md#versioning -->
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.8.0" PrivateAssets="all" />
-		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" PrivateAssets="all" />
-	</ItemGroup>
+    <PropertyGroup>
+        <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<None Include="../Docs/Images/icon.png">
-			<Pack>true</Pack>
-			<PackagePath>common</PackagePath>
-		</None>
-	</ItemGroup>
+    <Target Name="GetDependencyTargetPaths">
+        <ItemGroup>
+            <TargetPathWithTargetPlatformMoniker Include="$(PKGIoC_Container)\lib\netstandard2.0\IoC.dll" IncludeRuntimeDependency="false"/>
+        </ItemGroup>
+    </Target>
 
-	<PropertyGroup>
-		<GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
-	</PropertyGroup>
-
-	<Target Name="GetDependencyTargetPaths">
-		<ItemGroup>
-			<TargetPathWithTargetPlatformMoniker Include="$(PKGIoC_Container)\lib\netstandard2.0\IoC.dll" IncludeRuntimeDependency="false" />
-		</ItemGroup>
-	</Target>
-
-	<ItemGroup>
-		<Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
-	</ItemGroup>
+    <ItemGroup>
+        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}"/>
+    </ItemGroup>
 </Project>
 

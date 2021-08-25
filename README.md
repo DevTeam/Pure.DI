@@ -202,6 +202,22 @@ You can [add a lifetime](#custom-singleton-lifetime) yourself.
 - .NET Framework 3.5+
 - [UWP](https://docs.microsoft.com/en-us/windows/uwp/index) 10+
 
+## Project templates
+
+Run the following command to install [Pure.DI templates](https://www.nuget.org/packages/Pure.DI.Templates) for _dotnet new_:
+
+```dotnet new -i Pure.DI.Templates```
+
+To create a new C# DI-based console project from the template, run:
+
+```dotnet new di```
+
+After that, you can run the created application:
+
+```dotnet run```
+
+Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates) for more details.
+
 ## Samples
 
 ### [ASP.NET Core Blazor](Samples/BlazorServerApp)

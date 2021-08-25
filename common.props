@@ -1,0 +1,19 @@
+﻿<Project>
+    <PropertyGroup>
+        <Authors>NikolayP</Authors>
+        <PackageProjectUrl>https://github.com/DevTeam/Pure.DI/</PackageProjectUrl>
+        <PackageIcon>common\icon.png</PackageIcon>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/DevTeam/Pure.DI.git</RepositoryUrl>
+        <Copyright>Copyright (C) 2021 Nikolay Pianikov</Copyright>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="../Docs/Images/icon.png">
+            <Pack>true</Pack>
+            <PackagePath>common</PackagePath>
+        </None>
+    </ItemGroup>
+</Project>
+
