@@ -35,7 +35,7 @@ namespace Pure.DI.UsageScenarios.Tests
                 .TypeAttribute<MyTypeAttribute>()
                 .OrderAttribute<MyOrderAttribute>()
                 .TagAttribute<MyTagAttribute>()
-                // Configure the container to use DI aspects
+
                 .Bind<IConsole>().Tag("MyConsole").To(_ => AspectOrientedWithCustomAttributes.Console.Object)
                 .Bind<string>().Tag("Prefix").To(_ => "info")
                 .Bind<ILogger>().To<Logger>();

@@ -30,7 +30,6 @@ namespace Pure.DI.UsageScenarios.Tests
         public void Run()
         {
             DI.Setup()
-                // Configure the container to use DI aspects
                 .Bind<IConsole>().Tag("MyConsole").To(_ => AspectOriented.Console.Object)
                 .Bind<string>().Tag("Prefix").To(_ => "info")
                 .Bind<ILogger>().To<Logger>();

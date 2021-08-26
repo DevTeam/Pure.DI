@@ -15,14 +15,13 @@
             // $header=Sometimes instances required some actions before you give them to use - some methods of initialization or fields which should be defined. You can solve these things easily.
             // $footer=:warning: It is not recommended because it is a cause of hidden dependencies.
             // {
-            // Create a container and configure it using full autowiring
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<INamedService>().To(
                     ctx =>
                     {
                         var service = new InitializingNamedService(ctx.Resolve<IDependency>());
-                        // Configure the container to invoke method "Initialize" for every created instance of this type
+                        // Invokes method "Initialize" for every created instance of this type
                         service.Initialize("Initialized!", ctx.Resolve<IDependency>());
                         return service;
                     });

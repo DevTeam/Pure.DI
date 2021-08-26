@@ -56,7 +56,7 @@ class ShroedingersCat : ICat
 }
 ```
 
-It is important to note that our abstraction and our implementation do not know anything about any IoC/DI containers or any frameworks at all.
+It is important to note that our abstraction and implementation do not know anything about DI magic or any frameworks.
 
 ### Let's glue all together
 
@@ -130,7 +130,7 @@ new Program(
           () => (State)Indeterminacy.Next(2)))));
 ```
 
-Take full advantage of Dependency Injection everywhere and every time without any compromise!
+Take full advantage of Dependency Injection everywhere and every time without any compromises!
 
 ## Simple and powerful API
 
@@ -237,4 +237,4 @@ This sample demonstrates how to apply DI for a WPF application. The crucial clas
 * [Schrödinger's cat](Samples/ShroedingersCat) - simple console application
 * [C# script tool](https://github.com/JetBrains/teamcity-csharp-interactive/blob/master/Teamcity.CSharpInteractive/Composer.cs) - JetBrain TeamCity interactive tool for running C# scripts
 * [MSBuild logger](https://github.com/JetBrains/teamcity-msbuild-logger/blob/master/TeamCity.MSBuild.Logger/Composer.cs) - Provides the JetBrain TeamCity integration with Microsoft MSBuild.
-* [Performance comparison](https://danielpalme.github.io/IocPerformance/) - performance comparison of the most popular .NET IoC containers
+* [Performance comparison](https://danielpalme.github.io/IocPerformance/) - performance comparison of the most popular .NET DI/IoC containers

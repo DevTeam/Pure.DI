@@ -39,10 +39,9 @@
 
 ### Autowiring
 
-Auto-wring is the most natural way to use containers. In the first step, we should create a container. At the second step, we bind interfaces to their implementations. After that, the container is ready to resolve dependencies.
+
 
 ``` CSharp
-// Create the container and configure it, using full autowiring
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>();
@@ -151,7 +150,6 @@ var instance3 = TagsDI.Resolve<IService>();
 public void Run()
 {
     DI.Setup()
-        // Configure the container to use DI aspects
         .Bind<IConsole>().Tag("MyConsole").To(_ => AspectOriented.Console.Object)
         .Bind<string>().Tag("Prefix").To(_ => "info")
         .Bind<ILogger>().To<Logger>();
@@ -230,7 +228,7 @@ public void Run()
         .TypeAttribute<MyTypeAttribute>()
         .OrderAttribute<MyOrderAttribute>()
         .TagAttribute<MyTagAttribute>()
-        // Configure the container to use DI aspects
+
         .Bind<IConsole>().Tag("MyConsole").To(_ => AspectOrientedWithCustomAttributes.Console.Object)
         .Bind<string>().Tag("Prefix").To(_ => "info")
         .Bind<ILogger>().To<Logger>();
@@ -316,14 +314,13 @@ public class Clock : IClock
 Sometimes instances required some actions before you give them to use - some methods of initialization or fields which should be defined. You can solve these things easily.
 
 ``` CSharp
-// Create a container and configure it using full autowiring
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     .Bind<INamedService>().To(
         ctx =>
         {
             var service = new InitializingNamedService(ctx.Resolve<IDependency>());
-            // Configure the container to invoke method "Initialize" for every created instance of this type
+            // Invokes method "Initialize" for every created instance of this type
             service.Initialize("Initialized!", ctx.Resolve<IDependency>());
             return service;
         });

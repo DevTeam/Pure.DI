@@ -56,7 +56,7 @@ class ShroedingersCat : ICat
 }
 ```
 
-It is important to note that our abstraction and our implementation do not know anything about any IoC/DI containers or any frameworks at all.
+It is important to note that our abstraction and implementation do not know anything about DI magic or any frameworks.
 
 ### Let's glue all together
 
@@ -130,7 +130,7 @@ new Program(
           () => (State)Indeterminacy.Next(2)))));
 ```
 
-Take full advantage of Dependency Injection everywhere and every time without any compromise!
+Take full advantage of Dependency Injection everywhere and every time without any compromises!
 
 ## Simple and powerful API
 
@@ -237,7 +237,7 @@ This sample demonstrates how to apply DI for a WPF application. The crucial clas
 * [Schrödinger's cat](Samples/ShroedingersCat) - simple console application
 * [C# script tool](https://github.com/JetBrains/teamcity-csharp-interactive/blob/master/Teamcity.CSharpInteractive/Composer.cs) - JetBrain TeamCity interactive tool for running C# scripts
 * [MSBuild logger](https://github.com/JetBrains/teamcity-msbuild-logger/blob/master/TeamCity.MSBuild.Logger/Composer.cs) - Provides the JetBrain TeamCity integration with Microsoft MSBuild.
-* [Performance comparison](https://danielpalme.github.io/IocPerformance/) - performance comparison of the most popular .NET IoC containers
+* [Performance comparison](https://danielpalme.github.io/IocPerformance/) - performance comparison of the most popular .NET DI/IoC containers
 
 ## Usage Scenarios
 
@@ -279,10 +279,9 @@ This sample demonstrates how to apply DI for a WPF application. The crucial clas
 
 ### Autowiring
 
-Auto-wring is the most natural way to use containers. In the first step, we should create a container. At the second step, we bind interfaces to their implementations. After that, the container is ready to resolve dependencies.
+
 
 ``` CSharp
-// Create the container and configure it, using full autowiring
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>();
@@ -391,7 +390,6 @@ var instance3 = TagsDI.Resolve<IService>();
 public void Run()
 {
     DI.Setup()
-        // Configure the container to use DI aspects
         .Bind<IConsole>().Tag("MyConsole").To(_ => AspectOriented.Console.Object)
         .Bind<string>().Tag("Prefix").To(_ => "info")
         .Bind<ILogger>().To<Logger>();
@@ -470,7 +468,7 @@ public void Run()
         .TypeAttribute<MyTypeAttribute>()
         .OrderAttribute<MyOrderAttribute>()
         .TagAttribute<MyTagAttribute>()
-        // Configure the container to use DI aspects
+
         .Bind<IConsole>().Tag("MyConsole").To(_ => AspectOrientedWithCustomAttributes.Console.Object)
         .Bind<string>().Tag("Prefix").To(_ => "info")
         .Bind<ILogger>().To<Logger>();
@@ -556,14 +554,13 @@ public class Clock : IClock
 Sometimes instances required some actions before you give them to use - some methods of initialization or fields which should be defined. You can solve these things easily.
 
 ``` CSharp
-// Create a container and configure it using full autowiring
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     .Bind<INamedService>().To(
         ctx =>
         {
             var service = new InitializingNamedService(ctx.Resolve<IDependency>());
-            // Configure the container to invoke method "Initialize" for every created instance of this type
+            // Invokes method "Initialize" for every created instance of this type
             service.Initialize("Initialized!", ctx.Resolve<IDependency>());
             return service;
         });
