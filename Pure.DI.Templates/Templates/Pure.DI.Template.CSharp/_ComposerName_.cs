@@ -7,6 +7,6 @@ namespace _PureDIProjectName_
     {
         static $(ComposerName)() => DI.Setup()
             .Bind<Program>().As(Singleton).To<Program>()
-            .Bind<IStdIn>().Bind<IStdOut>().As(Singleton).To<InOut>();
+            .Bind<IInput>().Bind<IOutput>().As(Singleton).To<ConsoleAdapter>();
     }
 }

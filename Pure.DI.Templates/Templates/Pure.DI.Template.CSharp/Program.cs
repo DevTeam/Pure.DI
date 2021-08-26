@@ -4,21 +4,21 @@ namespace _PureDIProjectName_
     {
         public static int Main() => $(ComposerName).Resolve<Program>().Run();
 
-        private readonly IStdIn _stdIn;
-        private readonly IStdOut _stdOut;
+        private readonly IInput _input;
+        private readonly IOutput _output;
 
-        internal Program(IStdIn stdIn, IStdOut stdOut)
+        internal Program(IInput input, IOutput output)
         {
-            _stdIn = stdIn;
-            _stdOut = stdOut;
+            _input = input;
+            _output = output;
         }
 
         private int Run()
         {
-            _stdOut.WriteLine("Hello!");
+            _output.WriteLine("Hello!");
 
-            _stdOut.WriteLine("Press any key to exit.");
-            _stdIn.ReadLine();
+            _output.WriteLine("Press enter to exit.");
+            _input.ReadLine();
             return 0;
         }
     }

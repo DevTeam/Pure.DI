@@ -1,6 +1,6 @@
 namespace _PureDIProjectName_
 {
-    internal interface IStdOut
+    internal interface IOutput
     {
         void WriteLine(string? line);
     }

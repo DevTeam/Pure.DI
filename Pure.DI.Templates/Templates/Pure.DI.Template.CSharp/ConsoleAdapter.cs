@@ -1,6 +1,6 @@
 namespace _PureDIProjectName_
 {
-    internal class InOut: IStdIn, IStdOut
+    internal class ConsoleAdapter: IInput, IOutput
     {
         public string? ReadLine() => System.Console.In.ReadLine();
 

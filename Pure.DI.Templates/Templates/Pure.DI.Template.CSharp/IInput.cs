@@ -1,6 +1,6 @@
 ﻿namespace _PureDIProjectName_
 {
-    internal interface IStdIn
+    internal interface IInput
     {
         string? ReadLine();
     }
