@@ -6,6 +6,15 @@
 
 <img src="Docs/Images/demo.gif"/>
 
+- [How it works](#schrödingers-cat-shows-how-it-works)
+- [API](#simple-and-powerful-api)
+- [Requirements](#development-environment-requirements)
+- [Supported frameworks](#supported-frameworks)
+- [Project templates](#project-templates)
+- [Troubleshooting](#troubleshooting)
+- [Other resources](#other-resources)
+- [Usage scenarios](#usage-scenarios)
+
 ## Key features:
 
 - [X] DI without any IoC/DI containers, frameworks, dependencies, and thus without any performance impact and side-effects
