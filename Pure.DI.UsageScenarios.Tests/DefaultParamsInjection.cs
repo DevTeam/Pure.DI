@@ -33,7 +33,8 @@ namespace Pure.DI.UsageScenarios.Tests
 
         public class SomeService: IService
         {
-            // There is no registered dependency for parameter "state" of type "string", but constructor has the default parameter value "my default value"
+            // There is no registered dependency for parameter "state" of type "string",
+            // but constructor has the default parameter value "my default value"
             public SomeService(IDependency dependency, string state = "my default value")
             {
                 Dependency = dependency;

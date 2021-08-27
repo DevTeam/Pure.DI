@@ -3,7 +3,6 @@
 
 - Basics
   - [Autowiring](#autowiring)
-  - [Bindings](#bindings)
   - [Constants](#constants)
   - [Generics](#generics)
   - [Manual binding](#manual-binding)
@@ -49,25 +48,6 @@ DI.Setup()
 
 // Resolve an instance of interface `IService`
 var instance = AutowiringDI.Resolve<IService>();
-```
-
-
-
-### Bindings
-
-It is possible to bind any number of contracts to an implementation.
-
-``` CSharp
-// out=C:\Projects\DevTeam\a
-// verbosity=Diagnostic
-DI.Setup()
-    .Bind<IDependency>().To<Dependency>()
-    // Bind using few types
-    .Bind<IService>().Bind<IAnotherService>().Tag("abc").To<Service>();
-
-// Resolve instances using different types
-var instance1 = BindingsDI.Resolve<IService>("abc");
-var instance2 = BindingsDI.Resolve<IAnotherService>("abc");
 ```
 
 
@@ -390,7 +370,8 @@ public void Run()
 
 public class SomeService: IService
 {
-    // There is no registered dependency for parameter "state" of type "string", but constructor has the default parameter value "my default value"
+    // There is no registered dependency for parameter "state" of type "string",
+    // but constructor has the default parameter value "my default value"
     public SomeService(IDependency dependency, string state = "my default value")
     {
         Dependency = dependency;
