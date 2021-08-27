@@ -201,7 +201,7 @@ You can [add a lifetime](#custom-singleton-lifetime) yourself.
 
 ## Project templates
 
-Run the following command to install [Pure.DI templates](https://www.nuget.org/packages/Pure.DI.Templates) for _dotnet new_:
+Run the following command to install [Pure.DI templates](https://www.nuget.org/packages/Pure.DI.Templates) for _dotnet new_ command:
 
 ```dotnet new -i Pure.DI.Templates```
 
@@ -229,8 +229,41 @@ When a targeting project is an ASP.NET project, a special extension method is ge
 
 This sample demonstrates how to apply DI for a WPF application. The crucial class is [DataProvider](Samples/WpfAppNetCore/DataProvider.cs), which connects view and view models. Besides that, it provides two sets of models for [design-time](Samples/WpfAppNetCore/ClockDomainDesignTime.cs) and [running](Samples/WpfAppNetCore/ClockDomain.cs) modes.
 
+### Troubleshooting
+
+To get all generated source code and log, add a hint like ```// out=<path to the diagnostics directory >``` as a comment before calling the method ```DI.Setup()```, for instance:
+
+```c#
+// out=c:\Projects\MyDiagnostics
+DI.Setup()
+  .Bind<IDependency>().To<Dependency>();
+```
+
+To change a log verbosity level use a hint like ```verbosity=<Verbosity level>```:
+
+```c#
+// out=c:\Projects\MyDiagnostics
+// verbosity=Diagnostic
+DI.Setup()
+  .Bind<IDependency>().To<Dependency>();
+```
+
+The list of verbosity levels:
+- Quiet
+- Minimal
+- Normal
+- Diagnostic
+
+To debug a code generation add a hint like ```debug=true```:
+```c#
+// debug=true
+DI.Setup()
+  .Bind<IDependency>().To<Dependency>();
+```
+
 ### Other resources
 
+* [Project templates](https://github.com/DevTeam/Pure.DI/wiki/Project-templates) - project templates for _dotnet new_ command
 * [Schrödinger's cat](Samples/ShroedingersCat) - simple console application
 * [C# script tool](https://github.com/JetBrains/teamcity-csharp-interactive/blob/master/Teamcity.CSharpInteractive/Composer.cs) - JetBrain TeamCity interactive tool for running C# scripts
 * [MSBuild logger](https://github.com/JetBrains/teamcity-msbuild-logger/blob/master/TeamCity.MSBuild.Logger/Composer.cs) - Provides the JetBrain TeamCity integration with Microsoft MSBuild.

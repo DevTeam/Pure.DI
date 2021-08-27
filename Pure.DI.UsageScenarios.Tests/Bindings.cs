@@ -14,6 +14,8 @@
             // $description=Bindings
             // $header=It is possible to bind any number of contracts to an implementation.
             // {
+            // out=C:\Projects\DevTeam\a
+            // verbosity=Diagnostic
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
                 // Bind using few types
