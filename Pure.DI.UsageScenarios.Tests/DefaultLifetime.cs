@@ -19,8 +19,10 @@ namespace Pure.DI.UsageScenarios.Tests
         public void Run()
         {
             DI.Setup()
+                // Makes Singleton as default lifetime
                 .Default(Singleton)
                     .Bind<IDependency>().To<Dependency>()
+                // Makes Transient as default lifetime
                 .Default(Transient)
                     .Bind<IService>().To<Service>();
             

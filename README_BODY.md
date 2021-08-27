@@ -20,7 +20,7 @@
 
 ### The reality is that
 
-![Cat](Docs/Images/cat.png)
+![Cat](Docs/Images/cat.png?raw=true)
 
 ### Let's create an abstraction
 
@@ -140,43 +140,40 @@ Take full advantage of Dependency Injection everywhere and every time without an
 // By default, it is a name of an owner class.
 DI.Setup("MyComposer")
   
-  // This is a basic binding format
+  // This is a basic binding format:
   .Bind<IMyInterface>().To<MyImplementation>()
 
-  // This option is also possible
+  // This option is also possible:
   .Bind<IMyInterface>().Bind<IMyInterface2>().To<MyImplementation>()
 
-  // Determines a binding lifetime.
+  // Determines a binding lifetime:
   .Bind<IMyInterface>().As(Lifetime.Singleton).To<MyImplementation>()
   
-  // Determines a binding tag
+  // Determines a binding tag:
   .Bind<IMyInterface>().Tag("MyImpl").Tag(123).To<MyImplementation>()
 
-  // Or a binding suitable for any tag
-  .Bind<IMyInterface>().AnyTag().To<MyImplementation>()
-  
-  // Determines a binding implementation using a factory method.
-  // It allows to create instance manually and invoke required methods,
-  // initialize properties and etc. 
+  // Determines a binding implementation using a factory method,
+  // it allows to create instance manually and to invoke required methods,
+  // to initialize properties and etc.: 
   .Bind<IMyInterface>().To(
     ctx => new MyImplementation(
       ctx.Resolve<ISomeDependency1>(),
       "Some value",
       ctx.Resolve<ISomeDependency2>()))
 
-  // Overrides a default lifetime. Transient by default.
+  // Overrides a default lifetime (Transient by default):
   .Default(Lifetime.Singleton)
 
-  // Determines a custom attribute overriding an injection type.
+  // Determines a custom attribute overriding an injection type:
   .TypeAttribure<MyTypeAttribute>()
   
-  // Determines a tag attribute overriding an injection tag.
+  // Determines a tag attribute overriding an injection tag:
   .TagAttribure<MyTagAttribute>()
   
-  // Determines a custom attribute overriding an injection order.
+  // Determines a custom attribute overriding an injection order:
   .OrderAttribure<MyOrderAttribute>()
   
-  // Use a DI configuration as a base.
+  // Use some DI configuration as a base:
   .DependsOn(nameof(BasicComposer)) 
 ```
 

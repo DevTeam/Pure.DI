@@ -51,7 +51,10 @@ namespace Pure.DI.UsageScenarios.Tests
         }
 
         // Represents the dependency aspect attribute to specify a type for injection.
-        [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Field)]
+        [AttributeUsage(
+            AttributeTargets.Parameter
+            | AttributeTargets.Property
+            | AttributeTargets.Field)]
         public class MyTypeAttribute : Attribute
         {
             // A type, which will be used during an injection
@@ -61,7 +64,10 @@ namespace Pure.DI.UsageScenarios.Tests
         }
 
         // Represents the dependency aspect attribute to specify a tag for injection.
-        [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Field)]
+        [AttributeUsage(
+            AttributeTargets.Parameter
+            | AttributeTargets.Property
+            | AttributeTargets.Field)]
         public class MyTagAttribute : Attribute
         {
             // A tag, which will be used during an injection
@@ -71,7 +77,11 @@ namespace Pure.DI.UsageScenarios.Tests
         }
 
         // Represents the dependency aspect attribute to specify an order for injection.
-        [AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field)]
+        [AttributeUsage(
+            AttributeTargets.Constructor
+            | AttributeTargets.Method
+            | AttributeTargets.Property
+            | AttributeTargets.Field)]
         public class MyOrderAttribute : Attribute
         {
             // An order to be used to invoke a method

@@ -51,7 +51,11 @@ namespace Pure.DI.UsageScenarios.Tests
             public int InvocationCounter { get; private set; }
 
             public T Create(Func<T> factory) => 
-                (T)_proxyGenerator.CreateClassProxyWithTarget(typeof(T), typeof(T).GetInterfaces(), factory(), this);
+                (T)_proxyGenerator.CreateClassProxyWithTarget(
+                    typeof(T),
+                    typeof(T).GetInterfaces(),
+                    factory(),
+                    this);
 
             void IInterceptor.Intercept(IInvocation invocation)
             {

@@ -13,8 +13,9 @@
   - [Aspect-oriented DI with custom attributes](#aspect-oriented-di-with-custom-attributes)
   - [Autowiring with initialization](#autowiring-with-initialization)
   - [Dependency tag](#dependency-tag)
-  - [Generic autowiring](#generic-autowiring)
   - [Injection of default parameters](#injection-of-default-parameters)
+  - [Advanced generic autowiring](#advanced-generic-autowiring)
+  - [Depends On](#depends-on)
 - Lifetimes
   - [Default lifetime](#default-lifetime)
   - [Per resolve lifetime](#per-resolve-lifetime)
@@ -54,7 +55,7 @@ var instance = AutowiringDI.Resolve<IService>();
 
 ### Bindings
 
-It is possible to bind any number of types.
+It is possible to bind any number of contracts to an implementation.
 
 ``` CSharp
 DI.Setup()
@@ -90,27 +91,31 @@ val.ShouldBe(10);
 Auto-wring of generic types via binding of open generic types or generic type markers are working the same way.
 
 ``` CSharp
+public class Consumer
+{
+    public Consumer(IService<int> service) { }
+}
+
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     // Bind open generic interface to open generic implementation
     .Bind<IService<TT>>().To<Service<TT>>()
-    .Bind<CompositionRoot<IService<int>>>().To<CompositionRoot<IService<int>>>();
+    .Bind<Consumer>().To<Consumer>();
 
-// Resolve a generic instance
-var instance = GenericsDI.Resolve<CompositionRoot<IService<int>>>().Root;
+var instance = GenericsDI.Resolve<Consumer>();
 ```
 
 Open generic type instance, for instance, like IService&lt;TT&gt; here, cannot be a composition root instance.
 
 ### Manual binding
 
-We can specify a constructor manually with all its arguments and even call some initializing methods.
+We can specify a constructor manually with all its arguments and even call some methods before an instance will be returned to consumers.
 
 ``` CSharp
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To(
-        // Select the constructor and inject required dependencies
+        // Select the constructor and inject required dependencies manually
         ctx => new Service(ctx.Resolve<IDependency>(), "some state"));
 
 var instance = ManualBindingDI.Resolve<IService>();
@@ -244,7 +249,10 @@ public void Run()
 }
 
 // Represents the dependency aspect attribute to specify a type for injection.
-[AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Field)]
+[AttributeUsage(
+    AttributeTargets.Parameter
+    | AttributeTargets.Property
+    | AttributeTargets.Field)]
 public class MyTypeAttribute : Attribute
 {
     // A type, which will be used during an injection
@@ -254,7 +262,10 @@ public class MyTypeAttribute : Attribute
 }
 
 // Represents the dependency aspect attribute to specify a tag for injection.
-[AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Field)]
+[AttributeUsage(
+    AttributeTargets.Parameter
+    | AttributeTargets.Property
+    | AttributeTargets.Field)]
 public class MyTagAttribute : Attribute
 {
     // A tag, which will be used during an injection
@@ -264,7 +275,11 @@ public class MyTagAttribute : Attribute
 }
 
 // Represents the dependency aspect attribute to specify an order for injection.
-[AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field)]
+[AttributeUsage(
+    AttributeTargets.Constructor
+    | AttributeTargets.Method
+    | AttributeTargets.Property
+    | AttributeTargets.Field)]
 public class MyOrderAttribute : Attribute
 {
     // An order to be used to invoke a method
@@ -339,7 +354,7 @@ instance.Name.ShouldBe("Initialized!");
 
 ### Dependency tag
 
-Use a _tag_ to bind few dependencies for the same types.
+Use a _tag_ to bind several dependencies for the same types.
 
 ``` CSharp
 DI.Setup()
@@ -368,13 +383,13 @@ public void Run()
     var instance = DefaultParamsInjectionDI.Resolve<IService>();
 
     // Check the optional dependency
-    instance.State.ShouldBe("empty");
+    instance.State.ShouldBe("my default value");
 }
 
 public class SomeService: IService
 {
-    // "state" dependency is not resolved here but it has the default value "empty"
-    public SomeService(IDependency dependency, string state = "empty")
+    // There is no registered dependency for parameter "state" of type "string", but constructor has the default parameter value "my default value"
+    public SomeService(IDependency dependency, string state = "my default value")
     {
         Dependency = dependency;
         State = state;
@@ -388,7 +403,31 @@ public class SomeService: IService
 
 
 
-### Generic autowiring
+### Depends On
+
+
+
+``` CSharp
+static partial class MyBaseComposer
+{
+    static MyBaseComposer() => DI.Setup()
+        .Bind<IDependency>().To<Dependency>();
+}
+
+static partial class MyDependentComposer
+{
+    static MyDependentComposer() => DI.Setup()
+        .DependsOn(nameof(MyBaseComposer))
+        .Bind<IService>().To<Service>();
+}
+
+// Resolve an instance of interface `IService`
+var instance = MyDependentComposer.Resolve<IService>();
+```
+
+
+
+### Advanced generic autowiring
 
 Autowiring of generic types as simple as autowiring of other simple types. Just use a generic parameters markers like _TT_, _TT1_, _TT2_ and etc. or TTI, TTI1, TTI2 ... for interfaces or TTS, TTS1, TTS2 ... for value types or other special markers like TTDisposable, TTDisposable1 and etc. TTList<>, TTDictionary<> ... or create your own generic parameters markers or bind open generic types.
 
@@ -401,25 +440,37 @@ public void Run()
         // Bind using the predefined generic parameters marker TT (or TT1, TT2, TT3 ...)
         .Bind<IService<TT>>().To<Service<TT>>()
         // Bind using the predefined generic parameters marker TTList (or TTList1, TTList2 ...)
-        // For other cases there are TTComparable, TTComparable<in T>, TTEquatable<T>, TTEnumerable<out T>, TTDictionary<TKey, TValue> and etc.
+        // For other cases there are TTComparable, TTComparable<in T>,
+        // TTEquatable<T>, TTEnumerable<out T>, TTDictionary<TKey, TValue> and etc.
         .Bind<IListService<TTList<int>>>().To<ListService<TTList<int>>>()
         // Bind using the custom generic parameters marker TCustom
-        .Bind<IService<TTMy>>().Tag("custom marker").To<Service<TTMy>>()
-        .Bind<CompositionRoot<IListService<IList<int>>>>().To<CompositionRoot<IListService<IList<int>>>>()
-        .Bind<CompositionRoot<ICollection<IService<int>>>>().To<CompositionRoot<ICollection<IService<int>>>>();
+        .Bind<IService<TTMy>>().Tag("custom tag").To<Service<TTMy>>()
+        .Bind<Consumer>().To<Consumer>();
 
     // Resolve a generic instance
-    var listService = GenericAutowiringDI.Resolve<CompositionRoot<IListService<IList<int>>>>().Root;
-    var instances = GenericAutowiringDI.Resolve<CompositionRoot<ICollection<IService<int>>>>().Root;
-
-    instances.Count.ShouldBe(2);
+    var consumer = GenericAutowiringAdvancedDI.Resolve<Consumer>();
+    
+    consumer.Services2.Count.ShouldBe(2);
     // Check the instance's type
-    foreach (var instance in instances)
+    foreach (var instance in consumer.Services2)
     {
         instance.ShouldBeOfType<Service<int>>();
     }
 
-    listService.ShouldBeOfType<ListService<IList<int>>>();
+    consumer.Services1.ShouldBeOfType<ListService<IList<int>>>();
+}
+
+public class Consumer
+{
+    public Consumer(IListService<IList<int>> services1, ICollection<IService<int>> services2)
+    {
+        Services1 = services1;
+        Services2 = services2;
+    }
+    
+    public IListService<IList<int>> Services1 { get; }
+
+    public ICollection<IService<int>> Services2 { get; }
 }
 
 // Custom generic type marker using predefined attribute `GenericTypeArgument`
@@ -437,8 +488,10 @@ class TTMy { }
 public void Run()
 {
     DI.Setup()
+        // Makes Singleton as default lifetime
         .Default(Singleton)
             .Bind<IDependency>().To<Dependency>()
+        // Makes Transient as default lifetime
         .Default(Transient)
             .Bind<IService>().To<Service>();
     
@@ -599,9 +652,12 @@ public void Run()
         .Bind<IDependency>().To<Dependency>()
         .Bind<IService>().To<Service>();
 
-    // Track disposables
+    // Track disposables to dispose of instances manually
     var disposables = new List<IDisposable>();
-    TransientLifetimeDI.OnDisposable += e => { if (e.Lifetime == Lifetime.Transient) disposables.Add(e.Disposable); };
+    TransientLifetimeDI.OnDisposable += e =>
+    {
+        if (e.Lifetime == Lifetime.Transient) disposables.Add(e.Disposable);
+    };
 
     var instance = TransientLifetimeDI.Resolve<IService>();
 
@@ -677,7 +733,8 @@ public class CustomSingletonLifetime: IFactory
     private readonly ConcurrentDictionary<Key, object> _instances = new();
     
     // Gets an existing instance or creates a new
-    public T Create<T>(Func<T> factory, object tag) => (T)_instances.GetOrAdd(new Key(typeof(T), tag), i => factory()!);
+    public T Create<T>(Func<T> factory, object tag) =>
+        (T)_instances.GetOrAdd(new Key(typeof(T), tag), i => factory()!);
 
     // Represents an instance key
     private record Key(Type type, object? tag);
@@ -701,7 +758,7 @@ public class Service : IService
 
 ### Arrays
 
-To resolve all possible instances of any tags of the specific type as an _array_ just use the injection _T[]_
+To resolve all possible instances of any tags of the specific type as an _array_ just use the injection of _T[]_.
 
 ``` CSharp
 DI.Setup()
@@ -712,7 +769,8 @@ DI.Setup()
     .Bind<IService>().Tag(2).Tag("abc").To<Service>()
     // Bind to the implementation #3
     .Bind<IService>().Tag(3).To<Service>()
-    .Bind<CompositionRoot<CompositionRoot<IService[]>>>().To<CompositionRoot<CompositionRoot<IService[]>>>();
+    .Bind<CompositionRoot<IService[]>>()
+        .To<CompositionRoot<IService[]>>();
 
 // Resolve all appropriate instances
 var composition = ArraysDI.Resolve<CompositionRoot<IService[]>>();
@@ -770,7 +828,7 @@ instances.Count.ShouldBe(3);
 
 ### Func
 
-_Func<>_ helps when a logic needs to inject some type of instances on-demand or solve circular dependency issues.
+_Func<>_ helps when a logic needs to inject some type of instances on-demand. Also, it is possible to solve circular dependency issues, but it is not the best way - better to reconsider the dependencies between classes.
 
 ``` CSharp
 DI.Setup()
@@ -940,7 +998,11 @@ public class MyInterceptor<T>: IFactory<T>, IInterceptor
     public int InvocationCounter { get; private set; }
 
     public T Create(Func<T> factory) => 
-        (T)_proxyGenerator.CreateClassProxyWithTarget(typeof(T), typeof(T).GetInterfaces(), factory(), this);
+        (T)_proxyGenerator.CreateClassProxyWithTarget(
+            typeof(T),
+            typeof(T).GetInterfaces(),
+            factory(),
+            this);
 
     void IInterceptor.Intercept(IInvocation invocation)
     {
@@ -1004,7 +1066,11 @@ public class MyInterceptor: IFactory, IInterceptor
     public int InvocationCounter { get; private set; }
 
     public T Create<T>(Func<T> factory, object tag) => 
-        (T)_proxyGenerator.CreateClassProxyWithTarget(typeof(T), typeof(T).GetInterfaces(), factory(), this);
+        (T)_proxyGenerator.CreateClassProxyWithTarget(
+            typeof(T),
+            typeof(T).GetInterfaces(),
+            factory(),
+            this);
 
     void IInterceptor.Intercept(IInvocation invocation)
     {

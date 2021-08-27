@@ -15,7 +15,7 @@
             // $tag=3 BCL types
             // $priority=01
             // $description=Func
-            // $header=_Func<>_ helps when a logic needs to inject some type of instances on-demand or solve circular dependency issues.
+            // $header=_Func<>_ helps when a logic needs to inject some type of instances on-demand. Also, it is possible to solve circular dependency issues, but it is not the best way - better to reconsider the dependencies between classes.
             // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()

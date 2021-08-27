@@ -16,6 +16,7 @@ namespace Pure.DI.UsageScenarios.Tests
         // $tag=2 Lifetimes
         // $priority=99
         // $description=Custom singleton lifetime
+        // @Header=*__IFactory__* is a powerful tool that allows controlling most the aspects while resolving dependencies.
         // {
         public void Run()
         {
@@ -43,7 +44,8 @@ namespace Pure.DI.UsageScenarios.Tests
             private readonly ConcurrentDictionary<Key, object> _instances = new();
             
             // Gets an existing instance or creates a new
-            public T Create<T>(Func<T> factory, object tag) => (T)_instances.GetOrAdd(new Key(typeof(T), tag), i => factory()!);
+            public T Create<T>(Func<T> factory, object tag) =>
+                (T)_instances.GetOrAdd(new Key(typeof(T), tag), i => factory()!);
 
             // Represents an instance key
             private record Key(Type type, object? tag);

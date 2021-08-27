@@ -28,13 +28,13 @@ namespace Pure.DI.UsageScenarios.Tests
             var instance = DefaultParamsInjectionDI.Resolve<IService>();
 
             // Check the optional dependency
-            instance.State.ShouldBe("empty");
+            instance.State.ShouldBe("my default value");
         }
 
         public class SomeService: IService
         {
-            // "state" dependency is not resolved here but it has the default value "empty"
-            public SomeService(IDependency dependency, string state = "empty")
+            // There is no registered dependency for parameter "state" of type "string", but constructor has the default parameter value "my default value"
+            public SomeService(IDependency dependency, string state = "my default value")
             {
                 Dependency = dependency;
                 State = state;

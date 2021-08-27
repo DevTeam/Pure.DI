@@ -23,9 +23,12 @@ namespace Pure.DI.UsageScenarios.Tests
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>();
 
-            // Track disposables
+            // Track disposables to dispose of instances manually
             var disposables = new List<IDisposable>();
-            TransientLifetimeDI.OnDisposable += e => { if (e.Lifetime == Lifetime.Transient) disposables.Add(e.Disposable); };
+            TransientLifetimeDI.OnDisposable += e =>
+            {
+                if (e.Lifetime == Lifetime.Transient) disposables.Add(e.Disposable);
+            };
 
             var instance = TransientLifetimeDI.Resolve<IService>();
 

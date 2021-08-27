@@ -12,7 +12,7 @@
             // $tag=3 BCL types
             // $priority=01
             // $description=Arrays
-            // $header=To resolve all possible instances of any tags of the specific type as an _array_ just use the injection _T[]_
+            // $header=To resolve all possible instances of any tags of the specific type as an _array_ just use the injection of _T[]_.
             // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
@@ -22,7 +22,8 @@
                 .Bind<IService>().Tag(2).Tag("abc").To<Service>()
                 // Bind to the implementation #3
                 .Bind<IService>().Tag(3).To<Service>()
-                .Bind<CompositionRoot<CompositionRoot<IService[]>>>().To<CompositionRoot<CompositionRoot<IService[]>>>();
+                .Bind<CompositionRoot<IService[]>>()
+                    .To<CompositionRoot<IService[]>>();
 
             // Resolve all appropriate instances
             var composition = ArraysDI.Resolve<CompositionRoot<IService[]>>();

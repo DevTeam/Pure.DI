@@ -20,7 +20,6 @@
             // Resolve an instance of interface `IService`
             var instance = AutowiringDI.Resolve<IService>();
             // }
-            // Check the instance
             instance.ShouldBeOfType<Service>();
         }
     }

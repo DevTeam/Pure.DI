@@ -12,7 +12,7 @@
             // $tag=1 Basics
             // $priority=01
             // $description=Bindings
-            // $header=It is possible to bind any number of types.
+            // $header=It is possible to bind any number of contracts to an implementation.
             // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()

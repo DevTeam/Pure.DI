@@ -12,12 +12,12 @@
             // $tag=1 Basics
             // $priority=01
             // $description=Manual binding
-            // $header=We can specify a constructor manually with all its arguments and even call some initializing methods.
+            // $header=We can specify a constructor manually with all its arguments and even call some methods before an instance will be returned to consumers.
             // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To(
-                    // Select the constructor and inject required dependencies
+                    // Select the constructor and inject required dependencies manually
                     ctx => new Service(ctx.Resolve<IDependency>(), "some state"));
 
             var instance = ManualBindingDI.Resolve<IService>();

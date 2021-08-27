@@ -1,5 +1,4 @@
-﻿/*
-// ReSharper disable ClassNeverInstantiated.Global
+﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
 namespace Pure.DI.UsageScenarios.Tests
@@ -48,7 +47,11 @@ namespace Pure.DI.UsageScenarios.Tests
             public int InvocationCounter { get; private set; }
 
             public T Create<T>(Func<T> factory, object tag) => 
-                (T)_proxyGenerator.CreateClassProxyWithTarget(typeof(T), typeof(T).GetInterfaces(), factory(), this);
+                (T)_proxyGenerator.CreateClassProxyWithTarget(
+                    typeof(T),
+                    typeof(T).GetInterfaces(),
+                    factory(),
+                    this);
 
             void IInterceptor.Intercept(IInvocation invocation)
             {
@@ -75,4 +78,4 @@ namespace Pure.DI.UsageScenarios.Tests
         }
         // }
     }
-}*/
+}

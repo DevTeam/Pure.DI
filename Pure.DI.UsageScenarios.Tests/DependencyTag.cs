@@ -12,7 +12,7 @@
             // $tag=1 Basics
             // $priority=04
             // $description=Dependency tag
-            // $header=Use a _tag_ to bind few dependencies for the same types.
+            // $header=Use a _tag_ to bind several dependencies for the same types.
             // {
             DI.Setup()
                 .Bind<IDependency>().Tag("MyDep").To<Dependency>()
