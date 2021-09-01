@@ -57,15 +57,15 @@
                         )
                         .AddModifiers(
                             SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                            SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword),
-                            SyntaxFactory.Token(SyntaxKind.StaticKeyword));
+                            SyntaxFactory.Token(SyntaxKind.StaticKeyword),
+                            SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword));
                 });
                 
                 var factoryName = _buildContext.NameService.FindName(methodKey);
                 var type = resolvedType.TypeSyntax;
                 var method = SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
                     .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
-                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword), SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword));
 
                 var resolveInstanceFieldIdentifier = SyntaxFactory.IdentifierName(perResolveField.Declaration.Variables.First().Identifier);
                 ExpressionSyntax fieldExpression = resolvedType.Type.IsReferenceType

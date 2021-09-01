@@ -138,7 +138,7 @@
                     var type = dependency.Implementation.TypeSyntax;
                     var factoryMethod = SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
                         .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
-                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword), SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
+                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
                         .AddBodyStatements(
                             SyntaxFactory.LocalDeclarationStatement(
                                 SyntaxFactory.VariableDeclaration(type)

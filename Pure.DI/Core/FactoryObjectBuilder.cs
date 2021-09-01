@@ -43,7 +43,7 @@ namespace Pure.DI.Core
                         return SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
                             .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
                             .AddParameterListParameters(factory.Parameter.WithType(SyntaxFactory.ParseTypeName(_memberNameService.GetName(MemberNameKind.ContextClass))))
-                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword), SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
+                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
                             .AddBodyStatements(factory.Block.Statements.ToArray());
                     });
 
