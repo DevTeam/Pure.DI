@@ -1,5 +1,6 @@
 ﻿namespace Pure.DI.Core
 {
+    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -25,11 +26,16 @@
             var factoryMethod = (MethodDeclarationSyntax)_buildContext.GetOrAddMember(methodKey, () =>
             {
                 var resolvedType = dependency.Implementation;
-                var fieldKey = new MemberKey($"PerResolve{dependency.Binding.Implementation}", dependency);
+                var fieldKey = new MemberKey($"_perResolve{dependency.Binding.Implementation}", dependency);
                 var fieldType = resolvedType.Type.IsReferenceType
                     ? resolvedType.TypeSyntax
                     : SyntaxRepo.ObjectTypeSyntax;
                 
+                if (_buildContext.Compilation.Options.NullableContextOptions == NullableContextOptions.Enable)
+                {
+                    fieldType = SyntaxFactory.NullableType(fieldType);
+                }
+
                 var perResolveField = (FieldDeclarationSyntax) _buildContext.GetOrAddMember(fieldKey, () =>
                 {
                     var resolveInstanceFieldName = _buildContext.NameService.FindName(fieldKey);
