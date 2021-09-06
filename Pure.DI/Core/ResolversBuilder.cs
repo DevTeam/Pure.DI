@@ -90,6 +90,7 @@ namespace Pure.DI.Core
                                     SyntaxFactory.VariableDeclarator(deepnessFieldName)
                                 )
                         )
+                        .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.ThreadStaticAttr))
                         .AddModifiers(
                             SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
                             SyntaxFactory.Token(SyntaxKind.StaticKeyword));
@@ -118,10 +119,9 @@ namespace Pure.DI.Core
                         if (curStatements != null)
                         {
                             var releaseBlock = SyntaxFactory.Block()
-                                .AddStatements(SyntaxFactory.ExpressionStatement(decrementStatement))
                                 .AddStatements(
                                     SyntaxFactory.IfStatement(
-                                        SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, SyntaxFactory.IdentifierName(deepnessFieldName), SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0))),
+                                        SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, decrementStatement, SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0))),
                                         SyntaxFactory.Block().AddStatements(_buildContext.FinalizationStatements.ToArray())
                                     ));
 

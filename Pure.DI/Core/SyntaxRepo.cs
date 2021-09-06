@@ -33,13 +33,16 @@ namespace Pure.DI.Core
         public static readonly TypeSyntax IContextTypeSyntax = SyntaxFactory.ParseTypeName(typeof(IContext).ToString());
         private static readonly TypeParameterSyntax TTypeParameterSyntax = SyntaxFactory.TypeParameter("T");
 
+        public static readonly AttributeSyntax ThreadStaticAttr = SyntaxFactory.Attribute(
+            SyntaxFactory.IdentifierName($"System.{nameof(ThreadStaticAttribute)}"));
+        
         public static readonly AttributeSyntax AggressiveInliningAttr = SyntaxFactory.Attribute(
-            SyntaxFactory.IdentifierName(nameof(MethodImplAttribute)),
-    SyntaxFactory.AttributeArgumentList()
-            .AddArguments(
+            SyntaxFactory.IdentifierName($"System.Runtime.CompilerServices.{nameof(MethodImplAttribute)}"),
+            SyntaxFactory.AttributeArgumentList()
+                .AddArguments(
                     SyntaxFactory.AttributeArgument(
                         SyntaxFactory.CastExpression(
-                            SyntaxFactory.ParseTypeName(nameof(MethodImplOptions)),
+                            SyntaxFactory.ParseTypeName($"System.Runtime.CompilerServices.{nameof(MethodImplOptions)}"),
                             SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0x100))))));
 
         public static readonly MethodDeclarationSyntax TResolveMethodSyntax =

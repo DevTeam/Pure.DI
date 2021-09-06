@@ -45,28 +45,12 @@
                                     SyntaxFactory.VariableDeclarator(resolveInstanceFieldName)
                                 )
                         )
+                        .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.ThreadStaticAttr))
                         .AddModifiers(
                             SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
                             SyntaxFactory.Token(SyntaxKind.StaticKeyword));
                 });
 
-                var lockObjectKey = new MemberKey($"PerResolveLockObject{dependency.Binding.Implementation}", dependency);
-                var lockObjectField = (FieldDeclarationSyntax)_buildContext.GetOrAddMember(lockObjectKey, () =>
-                {
-                    var lockObjectFieldName = _buildContext.NameService.FindName(lockObjectKey);
-                    return SyntaxFactory.FieldDeclaration(
-                            SyntaxFactory.VariableDeclaration(SyntaxRepo.ObjectTypeSyntax)
-                                .AddVariables(
-                                    SyntaxFactory.VariableDeclarator(lockObjectFieldName)
-                                        .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(SyntaxRepo.ObjectTypeSyntax).AddArgumentListArguments()))
-                                )
-                        )
-                        .AddModifiers(
-                            SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                            SyntaxFactory.Token(SyntaxKind.StaticKeyword),
-                            SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword));
-                });
-                
                 var factoryName = _buildContext.NameService.FindName(methodKey);
                 var type = resolvedType.TypeSyntax;
                 var method = SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
@@ -86,22 +70,12 @@
                     .AddStatements(returnStatement);
 
                 var check = SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, resolveInstanceFieldIdentifier, SyntaxFactory.DefaultExpression(fieldType));
-                var lockObject = SyntaxFactory.IdentifierName(lockObjectField.Declaration.Variables.First().Identifier);
-                var ifStatement = SyntaxFactory.IfStatement(
-                    check,
-                    SyntaxFactory.LockStatement(
-                        lockObject,
-                        SyntaxFactory.IfStatement(
-                            check,
-                            assignmentBlock
-                        )
-                    ));
-                
+                var ifStatement = SyntaxFactory.IfStatement(check, assignmentBlock);
+
                 _buildContext.AddFinalizationStatements(
-                    new [] {
-                        SyntaxFactory.LockStatement(
-                            lockObject, 
-                            SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, resolveInstanceFieldIdentifier, SyntaxFactory.DefaultExpression(fieldType)))) 
+                    new [] { 
+                        SyntaxFactory.ExpressionStatement(
+                            SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, resolveInstanceFieldIdentifier, SyntaxFactory.DefaultExpression(fieldType))) 
                     });
 
                 return method

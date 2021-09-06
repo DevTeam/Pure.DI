@@ -72,10 +72,7 @@ namespace Pure.DI.Core
                 }
             }
 
-            var compilationUnit = SyntaxFactory.CompilationUnit()
-                .AddUsings(
-                    SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Runtime.CompilerServices")));
-
+            var compilationUnit = SyntaxFactory.CompilationUnit();
             var originalCompilationUnit = _metadata.SetupNode.Ancestors().OfType<CompilationUnitSyntax>().FirstOrDefault();
             if (originalCompilationUnit != null)
             {
