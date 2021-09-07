@@ -6,15 +6,6 @@
 
 <img src="Docs/Images/demo.gif"/>
 
-- [How it works](#schrödingers-cat-shows-how-it-works)
-- [API](#simple-and-powerful-api)
-- [Requirements](#development-environment-requirements)
-- [Supported frameworks](#supported-frameworks)
-- [Project templates](#project-templates)
-- [Troubleshooting](#troubleshooting)
-- [Other resources](#other-resources)
-- [Usage scenarios](#usage-scenarios)
-
 ## Key features:
 
 - [X] DI without any IoC/DI containers, frameworks, dependencies, and thus without any performance impact and side-effects
@@ -24,6 +15,17 @@
 - [X] Easy to use
 - [X] Ultra-fine tuning of generic types
 - [X] Supports major .NET BCL types from the box
+
+## Contents
+
+- [How it works](#schrödingers-cat-shows-how-it-works)
+- [API](#simple-and-powerful-api)
+- [Requirements](#development-environment-requirements)
+- [Supported frameworks](#supported-frameworks)
+- [Project templates](#project-templates)
+- [Troubleshooting](#troubleshooting)
+- [Other resources](#other-resources)
+- [Usage scenarios](#usage-scenarios)
 
 ## [Schrödinger's cat](Samples/ShroedingersCat) shows how it works
 

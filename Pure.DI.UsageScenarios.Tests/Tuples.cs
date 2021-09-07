@@ -16,6 +16,7 @@
             // $priority=01
             // $description=Tuples
             // $header=[Tuple](https://docs.microsoft.com/en-us/dotnet/api/system.tuple) has a set of elements that should be resolved at the same time.
+            // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
             // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()

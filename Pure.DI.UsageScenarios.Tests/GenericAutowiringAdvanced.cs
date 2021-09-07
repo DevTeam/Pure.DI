@@ -18,6 +18,7 @@ namespace Pure.DI.UsageScenarios.Tests
         // $priority=10
         // $description=Advanced generic autowiring
         // $header=Autowiring of generic types as simple as autowiring of other simple types. Just use a generic parameters markers like _TT_, _TT1_, _TT2_ and etc. or TTI, TTI1, TTI2 ... for interfaces or TTS, TTS1, TTS2 ... for value types or other special markers like TTDisposable, TTDisposable1 and etc. TTList<>, TTDictionary<> ... or create your own generic parameters markers or bind open generic types.
+        // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
         // {
         public void Run()
         {

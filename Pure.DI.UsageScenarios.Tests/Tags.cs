@@ -15,6 +15,7 @@
             // $priority=01
             // $description=Tags
             // $header=Tags are useful while binding to several implementations of the same abstract types.
+            // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
             // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()

@@ -13,7 +13,7 @@ namespace Pure.DI.UsageScenarios.Tests
         // $priority=01
         // $description=Generics
         // $header=Auto-wring of generic types via binding of open generic types or generic type markers are working the same way.
-        // $footer=Open generic type instance, for instance, like IService&lt;TT&gt; here, cannot be a composition root instance.
+        // $footer=Open generic type instance, for instance, like IService&lt;TT&gt; here, cannot be a composition root instance. This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
         // {
         public class Consumer
         {

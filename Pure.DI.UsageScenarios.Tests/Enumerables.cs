@@ -15,6 +15,7 @@
             // $priority=01
             // $description=Enumerables
             // $header=To resolve all possible instances of any tags of the specific type as an _enumerable_ just use the injection _IEnumerable<T>_.
+            // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
             // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()

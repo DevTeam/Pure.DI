@@ -13,6 +13,7 @@
             // $priority=01
             // $description=Manual binding
             // $header=We can specify a constructor manually with all its arguments and even call some methods before an instance will be returned to consumers.
+            // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
             // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()

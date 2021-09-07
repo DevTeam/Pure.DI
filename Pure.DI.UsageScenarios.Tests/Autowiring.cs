@@ -12,6 +12,7 @@
             // $tag=1 Basics
             // $priority=01
             // $description=Autowiring
+            // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
             // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()

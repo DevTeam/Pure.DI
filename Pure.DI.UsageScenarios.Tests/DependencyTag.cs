@@ -13,6 +13,7 @@
             // $priority=04
             // $description=Dependency tag
             // $header=Use a _tag_ to bind several dependencies for the same types.
+            // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
             // {
             DI.Setup()
                 .Bind<IDependency>().Tag("MyDep").To<Dependency>()

@@ -6,15 +6,6 @@
 
 <img src="Docs/Images/demo.gif"/>
 
-- [How it works](#schrödingers-cat-shows-how-it-works)
-- [API](#simple-and-powerful-api)
-- [Requirements](#development-environment-requirements)
-- [Supported frameworks](#supported-frameworks)
-- [Project templates](#project-templates)
-- [Troubleshooting](#troubleshooting)
-- [Other resources](#other-resources)
-- [Usage scenarios](#usage-scenarios)
-
 ## Key features:
 
 - [X] DI without any IoC/DI containers, frameworks, dependencies, and thus without any performance impact and side-effects
@@ -24,6 +15,17 @@
 - [X] Easy to use
 - [X] Ultra-fine tuning of generic types
 - [X] Supports major .NET BCL types from the box
+
+## Contents
+
+- [How it works](#schrödingers-cat-shows-how-it-works)
+- [API](#simple-and-powerful-api)
+- [Requirements](#development-environment-requirements)
+- [Supported frameworks](#supported-frameworks)
+- [Project templates](#project-templates)
+- [Troubleshooting](#troubleshooting)
+- [Other resources](#other-resources)
+- [Usage scenarios](#usage-scenarios)
 
 ## [Schrödinger's cat](Samples/ShroedingersCat) shows how it works
 
@@ -307,7 +309,7 @@ DI.Setup()
   - [Func](#func)
   - [Lazy](#lazy)
   - [Sets](#sets)
-  - [ThreadLocal](#threadlocal)
+  - [Thread Local](#thread-local)
   - [Tuples](#tuples)
 - Interception
   - [Decorator](#decorator)
@@ -329,7 +331,7 @@ DI.Setup()
 var instance = AutowiringDI.Resolve<IService>();
 ```
 
-
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Constants
 
@@ -366,7 +368,7 @@ DI.Setup()
 var instance = GenericsDI.Resolve<Consumer>();
 ```
 
-Open generic type instance, for instance, like IService&lt;TT&gt; here, cannot be a composition root instance.
+Open generic type instance, for instance, like IService&lt;TT&gt; here, cannot be a composition root instance. This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Manual binding
 
@@ -385,7 +387,7 @@ var instance = ManualBindingDI.Resolve<IService>();
 instance.State.ShouldBe("some state");
 ```
 
-
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Tags
 
@@ -406,7 +408,7 @@ var instance2 = TagsDI.Resolve<IService>(10);
 var instance3 = TagsDI.Resolve<IService>();
 ```
 
-
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Aspect-oriented DI
 
@@ -480,7 +482,7 @@ var instance1 = SeveralContractsDI.Resolve<IService>();
 var instance2 = SeveralContractsDI.Resolve<IAnotherService>();
 ```
 
-
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Aspect-oriented DI with custom attributes
 
@@ -587,7 +589,7 @@ public class Clock : IClock
 
 ### Autowiring with initialization
 
-Sometimes instances required some actions before you give them to use - some methods of initialization or fields which should be defined. You can solve these things easily.
+Sometimes instances required some actions before you give them to use - some methods of initialization or fields which should be defined. You can solve these things easily. :warning: But this approach is not recommended because it is a cause of hidden dependencies.
 
 ``` CSharp
 DI.Setup()
@@ -611,7 +613,7 @@ instance.ShouldBeOfType<InitializingNamedService>();
 instance.Name.ShouldBe("Initialized!");
 ```
 
-:warning: It is not recommended because it is a cause of hidden dependencies.
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Dependency tag
 
@@ -627,7 +629,7 @@ DI.Setup()
 var instance = DependencyTagDI.Resolve<IService>();
 ```
 
-
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Injection of default parameters
 
@@ -687,7 +689,7 @@ static partial class MyDependentComposer
 var instance = MyDependentComposer.Resolve<IService>();
 ```
 
-
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Advanced generic autowiring
 
@@ -740,7 +742,7 @@ public class Consumer
 class TTMy { }
 ```
 
-
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Default lifetime
 
@@ -1038,7 +1040,7 @@ DI.Setup()
 var composition = ArraysDI.Resolve<CompositionRoot<IService[]>>();
 ```
 
-
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Collections
 
@@ -1062,7 +1064,7 @@ var composition = CollectionsDI.Resolve<CompositionRoot<ICollection<IService>>>(
 composition.Root.Count.ShouldBe(3);
 ```
 
-
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Enumerables
 
@@ -1086,7 +1088,7 @@ var instances = EnumerablesDI.Resolve<CompositionRoot<IEnumerable<IService>>>().
 instances.Count.ShouldBe(3);
 ```
 
-
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Func
 
@@ -1106,7 +1108,7 @@ var instance1 = factory();
 var instance2 = factory();
 ```
 
-
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Lazy
 
@@ -1125,7 +1127,7 @@ var lazy = LazyDI.Resolve<CompositionRoot<Lazy<IService>>>().Root;
 var instance = lazy.Value;
 ```
 
-
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Sets
 
@@ -1149,9 +1151,9 @@ var instances = SetsDI.Resolve<CompositionRoot<ISet<IService>>>().Root;
 instances.Count.ShouldBe(3);
 ```
 
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
-
-### ThreadLocal
+### Thread Local
 
 
 
@@ -1168,7 +1170,7 @@ var threadLocal = ThreadLocalDI.Resolve<CompositionRoot<ThreadLocal<IService>>>(
 var instance = threadLocal.Value;
 ```
 
-
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Tuples
 
@@ -1185,7 +1187,7 @@ DI.Setup()
 var (service, namedService) = TuplesDI.Resolve<CompositionRoot<(IService, INamedService)>>().Root;
 ```
 
-
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Decorator
 

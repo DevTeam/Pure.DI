@@ -15,6 +15,7 @@
             // $priority=02
             // $description=Several contracts
             // $header=It is possible to bind several types to a single implementation.
+            // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
             // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()

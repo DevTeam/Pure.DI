@@ -14,7 +14,8 @@
             // $visible=true
             // $tag=3 BCL types
             // $priority=01
-            // $description=ThreadLocal
+            // $description=Thread Local
+            // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
             // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()

@@ -9,6 +9,7 @@ namespace Pure.DI.UsageScenarios.Tests
     // $tag=1 Basics
     // $priority=10
     // $description=Depends On
+    // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
     // {
     static partial class MyBaseComposer
     {

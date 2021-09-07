@@ -12,8 +12,8 @@
             // $tag=1 Basics
             // $priority=03
             // $description=Autowiring with initialization
-            // $header=Sometimes instances required some actions before you give them to use - some methods of initialization or fields which should be defined. You can solve these things easily.
-            // $footer=:warning: It is not recommended because it is a cause of hidden dependencies.
+            // $header=Sometimes instances required some actions before you give them to use - some methods of initialization or fields which should be defined. You can solve these things easily. :warning: But this approach is not recommended because it is a cause of hidden dependencies. 
+            // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
             // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()

@@ -14,6 +14,7 @@
             // $priority=01
             // $description=Sets
             // $header=To resolve all possible instances of any tags of the specific type as a _ISet<>_ just use the injection _ISet<T>_.
+            // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
             // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
