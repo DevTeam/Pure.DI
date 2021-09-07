@@ -8,13 +8,24 @@
 
 ## Key features
 
-- [X] DI without any IoC/DI containers, frameworks, dependencies, and thus without any performance impact and side-effects
-- [X] A predictable and validated dependencies graph is built and validated on the fly while you are writing your code
-- [X] Does not add dependencies to other assemblies
-- [X] High performance, including all .NET compiler/JIT optimizations
-- [X] Easy to use
-- [X] Ultra-fine tuning of generic types
-- [X] Supports major .NET BCL types from the box
+_Pure.DI_ is __NOT__ a framework or library, but a tool. It generates static method code for creating an object graph in the paradigm of pure DI using a set of hints. The generated code does not rely on library calls or .NET reflection, so it is efficient.
+
+- [X] DI without any IoC/DI containers, frameworks, dependencies and therefore without any performance impact and side effects. 
+  >_Pure.DI_ is actually a [.NET code generator](https://docs.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/source-generators-overview). It generates simple code as if you were doing it yourself: de facto just a bunch of constructors` calls. And you can see this code at any time.
+- [X] A predictable and verified dependency graph is built and verified on the fly while you write your code.
+  >All the logic for analyzing the graph of objects, constructors, methods happens at compile time. Thus, the _Pure.DI_ tool notifies the developer about missing dependencies, circular dependencies, for cases when some dependency is not suitable for injection, etc. at compile-time. Developers have no chance of getting a program that crashes at runtime due to these errors. All this magic happens at the same time as the code is written. This way, you have instant feedback between the fact that you made some changes to your code and _Pure.DI_ checked your code.
+- [X] Does not add dependencies to other assemblies.
+  >Using a pure DI approach, you don't add any runtime dependencies to your assemblies.
+- [X] High performance, including C# and JIT compilers optimizations.
+  >All generated code runs as fast as your own, in pure DI style, including compile-time and run-time optimizations. As mentioned above, graph analysis is done at compile time. At runtime, there is just a bunch of nested compiled constructors and that's it.
+- [X] Works everywhere.
+  >Since a pure DI approach does not use any dependencies or the [.NET reflection](https://docs.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/reflection) at runtime, it does not prevent your code from working as expected on any platform: .NET Framework, .NET Core, UWP / XBOX, .NET IoT, Xamarin, etc.
+- [X] Ease of Use.
+  >The _Pure.DI_ API is very similar to the API of most IoC/DI libraries. And it was a deliberate decision: the main reason is that programmers do not need to learn a new API.
+- [X] Ultra-fine tuning of generic types.
+  >_Pure.DI_ offers special type markers instead of using open generic types. This allows you to more accurately build the object graph and take full advantage of generic types.
+- [X] Supports basic .NET BCL types out of the box.
+  >_Pure.DI_ already supports many of [BCL types](https://docs.microsoft.com/en-us/dotnet/standard/framework-libraries#base-class-libraries) like Array, IEnumerable, IList, ISet, Func, ThreadLocal, etc. without any extra effort.
 
 ## Contents
 
@@ -23,6 +34,9 @@
 - [Requirements](#development-environment-requirements)
 - [Supported frameworks](#supported-frameworks)
 - [Project templates](#project-templates)
+- [Samples](#samples)
+  - [ASP.NET Core Blazor](#aspnet-core-blazor) 
+  - [WPF](#wpf)
 - [Troubleshooting](#troubleshooting)
 - [Other resources](#other-resources)
 - [Usage scenarios](#usage-scenarios)
@@ -71,7 +85,7 @@ It is important to note that our abstraction and implementation do not know anyt
 
 ### Let's glue all together
 
-#### Add a package reference to:
+Add a package reference to:
 
 [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
 
@@ -87,7 +101,7 @@ It is important to note that our abstraction and implementation do not know anyt
   dotnet add package Pure.DI
   ```
 
-#### Declare required dependencies in a class like:
+Declare required dependencies in a class like:
 
 ```csharp
 static partial class Composer
@@ -143,7 +157,7 @@ new Program(
 
 Take full advantage of Dependency Injection everywhere and every time without any compromises!
 
-## Simple and powerful API
+## Simple and powerful API.
 
 ```csharp
 // Starts DI configuration chain.
@@ -204,11 +218,13 @@ You can [add a lifetime](#custom-singleton-lifetime) yourself.
 
 ## Supported frameworks
 
-- .NET 5.0+
-- [.NET Core](https://docs.microsoft.com/en-us/dotnet/core/) 1.0+
+- [.NET and .NET Core](https://docs.microsoft.com/en-us/dotnet/core/) 1.0+
 - [.NET Standard](https://docs.microsoft.com/en-us/dotnet/standard/net-standard) 1.0+
-- .NET Framework 3.5+
-- [UWP](https://docs.microsoft.com/en-us/windows/uwp/index) 10+
+- [.NET Framework](https://docs.microsoft.com/en-us/dotnet/framework/) 3.5+
+- [UWP/XBOX](https://docs.microsoft.com/en-us/windows/uwp/index)
+- [.NET IoT](https://dotnet.microsoft.com/apps/iot)
+- [Xamarin](https://dotnet.microsoft.com/apps/xamarin)
+- [.NET Multi-platform App UI (MAUI)](https://docs.microsoft.com/en-us/dotnet/maui/)
 
 ## Project templates
 
