@@ -16,7 +16,7 @@ namespace Pure.DI.UsageScenarios.Tests
         // $tag=2 Lifetimes
         // $priority=99
         // $description=Custom singleton lifetime
-        // @Header=*__IFactory__* is a powerful tool that allows controlling most the aspects while resolving dependencies.
+        // $header=*__IFactory__* is a powerful tool that allows controlling most the aspects while resolving dependencies.
         // {
         public void Run()
         {

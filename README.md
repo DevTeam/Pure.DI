@@ -6,7 +6,7 @@
 
 <img src="Docs/Images/demo.gif"/>
 
-## Key features:
+## Key features
 
 - [X] DI without any IoC/DI containers, frameworks, dependencies, and thus without any performance impact and side-effects
 - [X] A predictable and validated dependencies graph is built and validated on the fly while you are writing your code
@@ -296,6 +296,7 @@ DI.Setup()
   - [Injection of default parameters](#injection-of-default-parameters)
   - [Advanced generic autowiring](#advanced-generic-autowiring)
   - [Depends On](#depends-on)
+  - [Dependency Injection with referencing implementations](#dependency-injection-with-referencing-implementations)
 - Lifetimes
   - [Default lifetime](#default-lifetime)
   - [Per resolve lifetime](#per-resolve-lifetime)
@@ -744,6 +745,31 @@ class TTMy { }
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
+### Dependency Injection with referencing implementations
+
+Autowiring automatically injects dependencies based on implementations even if it is not defined in the configuration chain. :warning: But this approach is not recommended. When you follow the dependency inversion principle you want to make sure that you do not depend on anything concrete.
+
+``` CSharp
+public void Run()
+{
+    DI.Setup()
+        .Bind<IService>().To<Service>();
+    
+    var instance = DependencyInjectionWithImplementationsDI.Resolve<IService>();
+}
+
+public class Dependency { }
+
+public interface IService { }
+
+public class Service : IService
+{
+    public Service(Dependency dependency) { }
+}
+```
+
+
+
 ### Default lifetime
 
 
@@ -968,7 +994,7 @@ public class Service : IService
 
 ### Custom singleton lifetime
 
-
+*__IFactory__* is a powerful tool that allows controlling most the aspects while resolving dependencies.
 
 ``` CSharp
 public void Run()

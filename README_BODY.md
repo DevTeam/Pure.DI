@@ -6,7 +6,7 @@
 
 <img src="Docs/Images/demo.gif"/>
 
-## Key features:
+## Key features
 
 - [X] DI without any IoC/DI containers, frameworks, dependencies, and thus without any performance impact and side-effects
 - [X] A predictable and validated dependencies graph is built and validated on the fly while you are writing your code
