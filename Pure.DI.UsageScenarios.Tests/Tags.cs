@@ -1,5 +1,6 @@
 ﻿namespace Pure.DI.UsageScenarios.Tests
 {
+    using System;
     using Shouldly;
     using System.Diagnostics.CodeAnalysis;
     using Xunit;
@@ -20,20 +21,17 @@
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
                 // Bind using several tags
-                .Bind<IService>().Tag(10).Tag("abc").To<Service>()
-                .Bind<IService>().To<Service>();
+                .Bind<IService>().Tag(10).Tag("abc").To<Service>();
 
             // Resolve instances using tags
             var instance1 = TagsDI.Resolve<IService>("abc");
             var instance2 = TagsDI.Resolve<IService>(10);
-
-            // Resolve the instance using the empty tag
-            var instance3 = TagsDI.Resolve<IService>();
             // }
             // Check instances
+            // Resolve the instance using the empty tag
+            var instance3 = Should.Throw<ArgumentException>(() => TagsDI.Resolve<Service>());
             instance1.ShouldBeOfType<Service>();
             instance2.ShouldBeOfType<Service>();
-            instance3.ShouldBeOfType<Service>();
         }
     }
 }

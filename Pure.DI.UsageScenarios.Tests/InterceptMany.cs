@@ -23,7 +23,7 @@ namespace Pure.DI.UsageScenarios.Tests
                 // Generates proxies
                 .Bind<IProxyGenerator>().As(Singleton).To<ProxyGenerator>()
                 // Controls creating instances
-                .Bind<IFactory>().As(Singleton).To<MyInterceptor>()
+                .Bind<IFactory>().Bind<MyInterceptor>().As(Singleton).To<MyInterceptor>()
 
                 .Bind<IDependency>().As(Singleton).To<Dependency>()
                 .Bind<IService>().To<Service>();

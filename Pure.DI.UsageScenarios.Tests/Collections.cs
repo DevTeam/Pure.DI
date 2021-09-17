@@ -23,7 +23,7 @@
                 // Bind to the implementation #2
                 .Bind<IService>().Tag(2).Tag("abc").To<Service>()
                 // Bind to the implementation #3
-                .Bind<IService>().Tag(3).To<Service>()
+                .Bind<IService>().As(Lifetime.Singleton).Tag(3).To<Service>()
                 .Bind<CompositionRoot<ICollection<IService>>>().To<CompositionRoot<ICollection<IService>>>();
 
             // Resolve all appropriate instances

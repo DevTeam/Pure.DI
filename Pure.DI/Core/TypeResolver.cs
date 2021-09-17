@@ -20,6 +20,7 @@ namespace Pure.DI.Core
         private readonly Func<IObjectBuilder> _enumerableBuilder;
         private readonly Dictionary<Key, Binding<SemanticType>> _map = new();
         private readonly Dictionary<Key, Binding<SimpleLambdaExpressionSyntax>> _factories = new();
+        private readonly HashSet<SemanticType> _implementations = new(SemanticTypeEqualityComparer.Default);
         private readonly HashSet<SemanticType> _specialTypes = new(SemanticTypeEqualityComparer.Default);
 
         public TypeResolver(
@@ -46,6 +47,7 @@ namespace Pure.DI.Core
                     continue;
                 }
 
+                _implementations.Add(binding.Implementation);
                 var dependencies = new HashSet<SemanticType>(binding.Dependencies);
                 foreach (var dependency in dependencies)
                 {
@@ -158,6 +160,7 @@ namespace Pure.DI.Core
 
                     if (
                         !dependency.Type.IsAbstract
+                        && !_implementations.Contains(dependency)
                         && !GetSpecialTypes(dependency.SemanticModel).Contains(dependency)
                         && dependency.IsValidTypeToResolve)
                     {
@@ -170,7 +173,6 @@ namespace Pure.DI.Core
                             FromProbe = true
                         };
 
-                        _buildContext.AddBinding(newBinding);
                         return new Dependency(newBinding, dependency, tag, _constructorBuilder(), typesMap);
                     }
 

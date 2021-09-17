@@ -117,15 +117,11 @@ Tags are useful while binding to several implementations of the same abstract ty
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     // Bind using several tags
-    .Bind<IService>().Tag(10).Tag("abc").To<Service>()
-    .Bind<IService>().To<Service>();
+    .Bind<IService>().Tag(10).Tag("abc").To<Service>();
 
 // Resolve instances using tags
 var instance1 = TagsDI.Resolve<IService>("abc");
 var instance2 = TagsDI.Resolve<IService>(10);
-
-// Resolve the instance using the empty tag
-var instance3 = TagsDI.Resolve<IService>();
 ```
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
@@ -799,7 +795,7 @@ DI.Setup()
     // Bind to the implementation #2
     .Bind<IService>().Tag(2).Tag("abc").To<Service>()
     // Bind to the implementation #3
-    .Bind<IService>().Tag(3).To<Service>()
+    .Bind<IService>().As(Lifetime.Singleton).Tag(3).To<Service>()
     .Bind<CompositionRoot<ICollection<IService>>>().To<CompositionRoot<ICollection<IService>>>();
 
 // Resolve all appropriate instances
@@ -1051,7 +1047,7 @@ public void Run()
         // Generates proxies
         .Bind<IProxyGenerator>().As(Singleton).To<ProxyGenerator>()
         // Controls creating instances
-        .Bind<IFactory>().As(Singleton).To<MyInterceptor>()
+        .Bind<IFactory>().Bind<MyInterceptor>().As(Singleton).To<MyInterceptor>()
 
         .Bind<IDependency>().As(Singleton).To<Dependency>()
         .Bind<IService>().To<Service>();
