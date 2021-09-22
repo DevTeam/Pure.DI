@@ -2,7 +2,7 @@
 
 [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[<img src="http://tcavs2015.cloudapp.net/app/rest/builds/buildType:(id:DevTeam_PureDI_Build)/statusIcon"/>](http://tcavs2015.cloudapp.net/viewType.html?buildTypeId=DevTeam_PureDI_Build&guest=1)
+[<img src="http://tcavs2015.cloudapp.net/app/rest/builds/buildType:(id:DevTeam_Pure_Di_BuildAndTestBuildType)/statusIcon"/>](http://tcavs2015.cloudapp.net/viewType.html?buildTypeId=DevTeam_Pure_Di_BuildAndTestBuildType&guest=1)
 
 <img src="Docs/Images/demo.gif"/>
 

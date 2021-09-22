@@ -10,3 +10,4 @@
 _ReSharper.Caches/
 .idea
 out/
+.teamcity/target/
