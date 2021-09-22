@@ -19,7 +19,7 @@ namespace Pure.DI.Core
 
         public HandledException Create(BindingMetadata binding)
         {
-            var error = new StringBuilder($"Cannot resolve {binding.Implementation?.ToString() ?? binding.Factory?.ToString() ?? binding.ToString()}");
+            var error = new StringBuilder($"Cannot resolve {binding.Implementation?.ToString() ?? binding.Factory?.ToString() ?? binding.ToString()}, consider adding it to the DI setup. The chain of dependencies: ");
             var paths = _tracer.Paths.Where(i => i.Length > 1).ToArray();
             if (paths.Any())
             {

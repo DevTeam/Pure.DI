@@ -119,7 +119,7 @@ namespace Pure.DI
             } 
             while (pair != null);
 
-            throw new System.ArgumentException("Cannot resolve an instance of the type " + type.Name + ".");
+            throw new System.ArgumentException("Cannot resolve an instance of the type " + type.Name + ", consider adding it to the DI setup.");
         }
     }
 
@@ -170,7 +170,7 @@ namespace Pure.DI
                 while (typePair != null);
             }
 
-            throw new System.ArgumentException("Cannot resolve an instance of the type " + key.Type.Name  + " with tag " + key.Tag + ".");
+            throw new System.ArgumentException("Cannot resolve an instance of the type " + key.Type.Name  + " with tag " + key.Tag + ", consider adding it to the DI setup.");
         }
     }
 
