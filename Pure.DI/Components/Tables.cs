@@ -16,6 +16,8 @@
 // ReSharper disable UsePatternMatching
 // ReSharper disable UseNullPropagation
 // ReSharper disable InvertIf
+// ReSharper disable SuggestBaseTypeForParameterInConstructor
+// ReSharper disable RedundantNameQualifier
 #pragma warning disable 8618
 #pragma warning disable 8604
 #pragma warning disable 8603
@@ -50,7 +52,7 @@ namespace Pure.DI
 
         public static uint GetDivisor(int count)
         {
-            return (uint) (count + 1) * 4;
+            return ((uint)count + 1) << 2;
         }
 
         public Table(Pair<TKey, TValue>[] pairs, TKey defaultKey, TValue defaultValue)
@@ -78,7 +80,7 @@ namespace Pure.DI
         public TValue Get(TKey key)
         {
             var pair = Buckets[(uint)key.GetHashCode() % Divisor];
-            while (pair != null)
+            do
             {
                 if (Equals(pair.Key, key))
                 {
@@ -86,7 +88,7 @@ namespace Pure.DI
                 }
 
                 pair = pair.Next;
-            }
+            } while (pair != null);
 
             return default(TValue);
         }
@@ -116,10 +118,9 @@ namespace Pure.DI
                 }
 
                 pair = pair.Next;
-            } 
-            while (pair != null);
+            } while (pair != null);
 
-            throw new System.ArgumentException("Cannot resolve an instance of the type " + type.Name + ", consider adding it to the DI setup.");
+            throw new System.ArgumentException("Cannot resolve an instance of the type " + type + ", consider adding it to the DI setup.");
         }
     }
 
@@ -145,7 +146,7 @@ namespace Pure.DI
             var pair = ResolversByTagBuckets[(uint)key.GetHashCode() % ResolversByTagDivisor];
             do {
                 // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
-                if (pair.Key.Equals(key))
+                if (pair.Key.Type == key.Type && pair.Key.Tag.Equals(key.Tag))
                 {
                     return pair.Value();
                 }
@@ -166,11 +167,10 @@ namespace Pure.DI
                     }
 
                     typePair = typePair.Next;
-                }
-                while (typePair != null);
+                } while (typePair != null);
             }
 
-            throw new System.ArgumentException("Cannot resolve an instance of the type " + key.Type.Name  + " with tag " + key.Tag + ", consider adding it to the DI setup.");
+            throw new System.ArgumentException("Cannot resolve an instance of the type " + key + ", consider adding it to the DI setup.");
         }
     }
 
@@ -203,6 +203,11 @@ namespace Pure.DI
         public override int GetHashCode()
         {
             return _hashCode;
+        }
+
+        public override string ToString()
+        {
+            return Type.Name + " with tag \"" + Tag + "\"";
         }
     }
 }

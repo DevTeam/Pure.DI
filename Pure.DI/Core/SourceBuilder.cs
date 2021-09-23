@@ -266,14 +266,14 @@ namespace Pure.DI.Core
                 return false;
             }
 
-            var someType = (
+            var type = (
                 from tree in compilation.SyntaxTrees
                 let semanticModel = compilation.GetSemanticModel(tree)
                 from typeDeclaration in tree.GetRoot().DescendantNodes().OfType<TypeDeclarationSyntax>()
                 let symbol = semanticModel.GetDeclaredSymbol(typeDeclaration)
-                select symbol).OfType<ITypeSymbol>().FirstOrDefault();
-
-            return someType != null && compilation.IsSymbolAccessibleWithin(diType, someType);
+                select symbol).FirstOrDefault();
+            
+            return type != null && compilation.IsSymbolAccessibleWithin(diType, type);
         }
     }
 }

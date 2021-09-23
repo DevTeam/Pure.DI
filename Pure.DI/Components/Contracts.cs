@@ -461,7 +461,7 @@ namespace Pure.DI
         IBinding Bind<T>();
 
         /// <summary>
-        /// Determines a binding <see cref="Liftime"/>.
+        /// Determines a binding <see cref="Pure.DI.Lifetime"/>.
         /// <example>
         /// <code>
         /// static partial class Composer
@@ -472,7 +472,7 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="lifetime">The binding <see cref="Liftime"/>.</param>
+        /// <param name="lifetime">The binding <see cref="Pure.DI.Lifetime"/>.</param>
         /// <returns>Binding configuration API.</returns>
         IBinding As(Lifetime lifetime);
 
