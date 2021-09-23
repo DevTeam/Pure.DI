@@ -94,7 +94,7 @@ object DeployPureDIBuildType: BuildType({
         }
         dotnetNugetPush {
             name = "Push the NuGet package"
-            packages = "%packagePath"
+            packages = "%packagePath%"
             serverUrl = "https://api.nuget.org/v3/index.json"
             apiKey = "%NuGetKey%"
         }
@@ -128,7 +128,7 @@ object DeployTemplateBuildType: BuildType({
         }
         dotnetNugetPush {
             name = "Push the NuGet package"
-            packages = "%packagePath"
+            packages = "%packagePath%"
             serverUrl = "https://api.nuget.org/v3/index.json"
             apiKey = "%NuGetKey%"
         }
