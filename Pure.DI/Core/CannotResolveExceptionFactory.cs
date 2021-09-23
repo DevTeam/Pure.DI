@@ -1,6 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core
 {
+    using System;
     using System.Linq;
     using System.Text;
 
@@ -19,22 +20,23 @@ namespace Pure.DI.Core
 
         public HandledException Create(BindingMetadata binding)
         {
-            var error = new StringBuilder($"Cannot resolve {binding.Implementation?.ToString() ?? binding.Factory?.ToString() ?? binding.ToString()}, consider adding it to the DI setup. The chain of dependencies: ");
-            var paths = _tracer.Paths.Where(i => i.Length > 1).ToArray();
-            if (paths.Any())
+            var error = new StringBuilder($"Cannot resolve {binding.Implementation?.ToString() ?? binding.Factory?.ToString() ?? binding.ToString()}.");
+            var path = _tracer.Paths
+                .Where(i => i.Length > 1)
+                .OrderBy(i => i.Length)
+                .LastOrDefault()
+                ?.Reverse()
+                .Select(i => i.ToString())
+                .ToArray()
+                ?? Array.Empty<string>();
+
+            if (path.Any())
             {
-                var maxPath = paths.OrderBy(i => i.Length).Last();
-                error.Append(": ");
-                error.Append(string.Join(" -> ", maxPath.Reverse().Select(i => i.ToString())));
-                error.Append(".");
-            }
-            else
-            {
-                error.Append(".");
+                error.Append($" The chain of dependencies that cannot be resolved: {string.Join(" -> ", path)}. Consider adding a binding {path.Last()} to some implementation or a factory at the DI setup.");
             }
             
             var errorMessage = error.ToString();
-            _diagnostic.Error(Diagnostics.Error.CannotResolve, errorMessage, binding.Implementation?.TypeSyntax.GetLocation() ?? binding.Location);
+            _diagnostic.Error(Diagnostics.Error.CannotResolve, errorMessage, binding.Location);
             return new HandledException(errorMessage);
         }
     }

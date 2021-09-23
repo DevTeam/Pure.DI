@@ -215,6 +215,7 @@ You can [add a lifetime](#custom-singleton-lifetime) yourself.
 ## Development environment requirements
 
 - [.NET SDK 5.0.102+](https://dotnet.microsoft.com/download/dotnet/5.0)
+- [C# v.4 or newer](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-version-history#c-version-40)
 
 ## Supported frameworks
 

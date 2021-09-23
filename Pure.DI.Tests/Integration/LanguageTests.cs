@@ -32,7 +32,7 @@
                 internal class CompositionRoot
                 {
                     public readonly string Value;
-                    internal CompositionRoot(Func<string> value) { Value = value(); }        
+                    internal CompositionRoot(Func<string> value) { Value = value(); }
                 }
             }".Run(out var generatedCode, new RunOptions { LanguageVersion = LanguageVersion.CSharp4 });
 

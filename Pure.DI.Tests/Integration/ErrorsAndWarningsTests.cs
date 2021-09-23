@@ -43,6 +43,50 @@
         }
         
         [Fact]
+        public void ShouldShowCompilationErrorWhenCannotResolveDependency()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+                using static Pure.DI.Lifetime;
+
+                public interface IDeepDependency {}
+
+                public interface IDependency {}
+
+                public class Dependency: IDependency { public Service(IDeepDependency deepDependency) {} }
+
+                public interface IService {}
+
+                public class Service: IService { public Service(IDependency dependency) {} }
+
+                public class CompositionRoot
+                {
+                    internal CompositionRoot(IService value) {}
+                }
+                
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<IDependency>().To<Dependency>()
+                            .Bind<IService>().To<Service>()
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                   
+                }    
+            }".Run(out var generatedCode);
+
+            // Then
+            output.Any(i => i.Contains(Diagnostics.Error.CannotResolve)).ShouldBeTrue(generatedCode);
+        }
+        
+        [Fact]
         public void ShouldDetectCircularDependency()
         {
             // Given
