@@ -3,6 +3,7 @@
 namespace BlazorServerApp
 {
     using System;
+    using System.Diagnostics;
     using Clock.Models;
     using Clock.ViewModels;
     using Pure.DI;
@@ -10,7 +11,8 @@ namespace BlazorServerApp
 
     internal static partial class ClockDomain
     {
-        static ClockDomain() => DI.Setup()
+        [Conditional("DEBUG")] // To exclude this method from a compilation
+        private static void Setup() => DI.Setup()
             // View Models
             .Bind<IClockViewModel>().To<ClockViewModel>()
 

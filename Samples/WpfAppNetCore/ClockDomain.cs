@@ -3,6 +3,7 @@
 namespace WpfAppNetCore
 {
     using System;
+    using System.Diagnostics;
     using Clock.Models;
     using Clock.ViewModels;
     using Pure.DI;
@@ -11,7 +12,8 @@ namespace WpfAppNetCore
 
     internal static partial class ClockDomain
     {
-        static ClockDomain() => DI.Setup()
+        [Conditional("DEBUG")] // To exclude this method from a compilation
+        private static void Setup() => DI.Setup()
             // Infrastructure
             .Bind<IDispatcher>().As(Singleton).To<Dispatcher>()
             .Bind<IMainWindowView>().As(Singleton).To<MainWindow>()

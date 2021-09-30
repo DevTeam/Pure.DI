@@ -109,7 +109,7 @@ static partial class Composer
   // Models a random subatomic event that may or may not occur
   private static readonly Random Indeterminacy = new();
 
-  static Composer() => DI.Setup()
+  private static void Setup() => DI.Setup()
       // Represents a quantum superposition of 2 states: Alive or Dead
       .Bind<State>().To(_ => (State)Indeterminacy.Next(2))
       // Represents schrodinger's cat
