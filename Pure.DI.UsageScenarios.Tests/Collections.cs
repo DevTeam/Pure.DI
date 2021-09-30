@@ -19,9 +19,9 @@
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
                 // Bind to the implementation #1
-                .Bind<IService>().Tags(1).To<Service>()
+                .Bind<IService>(1).To<Service>()
                 // Bind to the implementation #2
-                .Bind<IService>().Tags(2, "abc").To<Service>()
+                .Bind<IService>(2).Tags("abc").To<Service>()
                 // Bind to the implementation #3
                 .Bind<IService>().As(Lifetime.Singleton).Tags(3).To<Service>()
                 .Bind<CompositionRoot<ICollection<IService>>>().To<CompositionRoot<ICollection<IService>>>();

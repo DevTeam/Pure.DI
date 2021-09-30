@@ -117,11 +117,13 @@ Tags are useful while binding to several implementations of the same abstract ty
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     // Bind using several tags
-    .Bind<IService>().Tags(10, "abc").To<Service>();
+    .Bind<IService>(10, 'a').Tags("abc", 99).To<Service>();
 
 // Resolve instances using tags
-var instance1 = TagsDI.Resolve<IService>("abc");
-var instance2 = TagsDI.Resolve<IService>(10);
+var instance1 = TagsDI.Resolve<IService>(10);
+var instance2 = TagsDI.Resolve<IService>('a');
+var instance3 = TagsDI.Resolve<IService>("abc");
+var instance4 = TagsDI.Resolve<IService>(99);
 ```
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
@@ -769,9 +771,9 @@ To resolve all possible instances of any tags of the specific type as an _array_
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     // Bind to the implementation #1
-    .Bind<IService>().Tags(1).To<Service>()
+    .Bind<IService>(1).To<Service>()
     // Bind to the implementation #2
-    .Bind<IService>().Tags(2, "abc").To<Service>()
+    .Bind<IService>(99).Tags(2, "abc").To<Service>()
     // Bind to the implementation #3
     .Bind<IService>().Tags(3).To<Service>()
     .Bind<CompositionRoot<IService[]>>()
@@ -791,9 +793,9 @@ To resolve all possible instances of any tags of the specific type as a _collect
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     // Bind to the implementation #1
-    .Bind<IService>().Tags(1).To<Service>()
+    .Bind<IService>(1).To<Service>()
     // Bind to the implementation #2
-    .Bind<IService>().Tags(2, "abc").To<Service>()
+    .Bind<IService>(2).Tags("abc").To<Service>()
     // Bind to the implementation #3
     .Bind<IService>().As(Lifetime.Singleton).Tags(3).To<Service>()
     .Bind<CompositionRoot<ICollection<IService>>>().To<CompositionRoot<ICollection<IService>>>();
