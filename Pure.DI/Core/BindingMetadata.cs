@@ -64,7 +64,13 @@ namespace Pure.DI.Core
             StringBuilder sb = new();
             foreach (var dependency in Dependencies)
             {
-                sb.Append($"{nameof(IBinding.Bind)}<{dependency}>().");
+                var tags = string.Empty;
+                if (DependencyTags.TryGetValue(dependency, out var dependencyTags))
+                {
+                    tags = string.Join(", ", dependencyTags);
+                }
+
+                sb.Append($"{nameof(IBinding.Bind)}<{dependency}>({tags}).");
             }
 
             if (Lifetime != Lifetime.Transient)
