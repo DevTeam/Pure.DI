@@ -324,7 +324,7 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         /// <typeparam name="T">The type of dependency to bind. Also supports generic type markers like <see cref="TT"/>, <see cref="TTList{T}"/> and others.</typeparam>
-        /// <param name="tags">The optional argument specifying the tags for the specific dependency type of a binding.</param>
+        /// <param name="tags">The optional argument specifying the tags for the specific dependency type of binding.</param>
         /// <returns>Binding configuration API.</returns>
         IBinding Bind<T>(params object[] tags);
 
@@ -459,7 +459,7 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         /// <typeparam name="T">The type of dependency to bind. Also supports generic type markers like <see cref="TT"/>, <see cref="TTList{T}"/> and others.</typeparam>
-        /// <param name="tags">The optional argument specifying the tags for the specific dependency type of a binding.</param>
+        /// <param name="tags">The optional argument specifying the tags for the specific dependency type of binding.</param>
         /// <returns>Binding configuration API.</returns>
         IBinding Bind<T>(params object[] tags);
 
@@ -491,7 +491,7 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="tags">The tags for all dependency types of a binding.</param>
+        /// <param name="tags">Tags for all dependency types of binding.</param>
         /// <returns>Binding configuration API.</returns>
         IBinding Tags(params object[] tags);
 

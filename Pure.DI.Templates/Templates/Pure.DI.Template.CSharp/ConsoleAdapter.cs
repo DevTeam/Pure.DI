@@ -1,9 +1,14 @@
 namespace _PureDIProjectName_
 {
+    /// <summary>
+    /// Represents an adapter for console read/write operations.
+    /// </summary>
     internal class ConsoleAdapter: IInput, IOutput
     {
-        public string? ReadLine() => System.Console.In.ReadLine();
+        /// <inheritdoc />
+        public string? ReadLine() => System.Console.ReadLine();
 
-        public void WriteLine(string? line) => System.Console.Out.WriteLine(line);
+        /// <inheritdoc />
+        public void WriteLine(string? line) => System.Console.WriteLine(line);
     }
 }
