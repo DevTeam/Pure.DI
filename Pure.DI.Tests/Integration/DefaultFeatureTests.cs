@@ -56,7 +56,7 @@
                     static Composer()
                     {
                         DI.Setup()
-                            .Bind<string>().Tag(1).To(_ => ""abc"")
+                            .Bind<string>().Tags(1).To(_ => ""abc"")
                             // Composition Root
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }
@@ -270,9 +270,9 @@
                     static Composer()
                     {
                         DI.Setup()
-                            .Bind<string>().Tag(1).To(_ => ""1"")
+                            .Bind<string>().Tags(1).To(_ => ""1"")
                             .Bind<string>().To(_ => ""2"")                            
-                            .Bind<string>().Tag(3).To(_ => ""3"")
+                            .Bind<string>().Tags(3).To(_ => ""3"")
                             // Composition Root
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }
@@ -345,9 +345,9 @@
                     static Composer()
                     {
                         DI.Setup()
-                            .Bind<string>().Tag(1).To(_ => ""1"")
-                            .Bind<string>().To(_ => ""2"")                            
-                            .Bind<string>().Tag(3).To(_ => ""3"")
+                            .Bind<string>().Tags(1).To(_ => ""1"")
+                            .Bind<string>().To(_ => ""2"")
+                            .Bind<string>().Tags(3).To(_ => ""3"")
                             // Composition Root
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }
@@ -416,9 +416,9 @@
                     static Composer()
                     {
                         DI.Setup()
-                            .Bind<string>().Tag(1).To(_ => ""1"")
+                            .Bind<string>().Tags(1).To(_ => ""1"")
                             .Bind<string>().To(_ => ""2"")                            
-                            .Bind<string>().Tag(3).To(_ => ""3"")
+                            .Bind<string>().Tags(3).To(_ => ""3"")
                             // Composition Root
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }

@@ -36,8 +36,8 @@ namespace Pure.DI.UsageScenarios.Tests
                 .OrderAttribute<MyOrderAttribute>()
                 .TagAttribute<MyTagAttribute>()
 
-                .Bind<IConsole>().Tag("MyConsole").To(_ => AspectOrientedWithCustomAttributes.Console.Object)
-                .Bind<string>().Tag("Prefix").To(_ => "info")
+                .Bind<IConsole>().Tags("MyConsole").To(_ => AspectOrientedWithCustomAttributes.Console.Object)
+                .Bind<string>().Tags("Prefix").To(_ => "info")
                 .Bind<ILogger>().To<Logger>();
 
             // Create a logger

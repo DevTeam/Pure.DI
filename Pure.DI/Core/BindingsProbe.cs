@@ -27,7 +27,7 @@
                     from dependency in binding.Dependencies
                     where dependency.IsValidTypeToResolve
                     // ReSharper disable once RedundantTypeArgumentsOfMethod
-                    from tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null)
+                    from tag in binding.GetTags(dependency).DefaultIfEmpty<ExpressionSyntax?>(null)
                     select (dependency, tag))
                 .Distinct()
                 .ToArray();

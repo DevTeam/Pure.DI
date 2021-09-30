@@ -32,7 +32,7 @@ namespace Pure.DI.UsageScenarios.Tests
                 // TTEquatable<T>, TTEnumerable<out T>, TTDictionary<TKey, TValue> and etc.
                 .Bind<IListService<TTList<int>>>().To<ListService<TTList<int>>>()
                 // Bind using the custom generic parameters marker TCustom
-                .Bind<IService<TTMy>>().Tag("custom tag").To<Service<TTMy>>()
+                .Bind<IService<TTMy>>().Tags("custom tag").To<Service<TTMy>>()
                 .Bind<Consumer>().To<Consumer>();
 
             // Resolve a generic instance

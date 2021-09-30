@@ -53,7 +53,7 @@ namespace Pure.DI.Core
                 from binding in _metadata.Bindings.Concat(_buildContext.AdditionalBindings)
                 from dependency in binding.Dependencies
                 where dependency.IsValidTypeToResolve
-                from tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null)
+                from tag in binding.GetTags(dependency).DefaultIfEmpty<ExpressionSyntax?>(null)
                 group (binding, dependency, tag) by (dependency, tag) into grouped 
                 // Avoid duplication of statements
                 select grouped.Last())
@@ -320,7 +320,7 @@ namespace Pure.DI.Core
             _tracer.Reset();
             try
             {
-                var instance = buildStrategy.TryBuild(_typeResolver.Resolve(dependency, binding.Tags.FirstOrDefault()), dependency);
+                var instance = buildStrategy.TryBuild(_typeResolver.Resolve(dependency, binding.GetTags(dependency).FirstOrDefault()), dependency);
                 if (instance == null)
                 {
                     if (binding.FromProbe)

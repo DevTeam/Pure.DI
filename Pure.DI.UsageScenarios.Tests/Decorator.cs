@@ -19,7 +19,7 @@ namespace Pure.DI.UsageScenarios.Tests
         public void Run()
         {
             DI.Setup()
-                .Bind<IService>().Tag("base").To<Service>()
+                .Bind<IService>().Tags("base").To<Service>()
                 .Bind<IService>().To<DecoratorService>();
             
             var service = DecoratorDI.Resolve<IService>();

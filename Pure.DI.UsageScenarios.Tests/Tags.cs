@@ -21,7 +21,7 @@
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
                 // Bind using several tags
-                .Bind<IService>().Tag(10).Tag("abc").To<Service>();
+                .Bind<IService>().Tags(10, "abc").To<Service>();
 
             // Resolve instances using tags
             var instance1 = TagsDI.Resolve<IService>("abc");

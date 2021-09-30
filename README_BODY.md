@@ -174,8 +174,11 @@ DI.Setup("MyComposer")
   // Determines a binding lifetime:
   .Bind<IMyInterface>().As(Lifetime.Singleton).To<MyImplementation>()
   
-  // Determines a binding tag:
-  .Bind<IMyInterface>().Tag("MyImpl").Tag(123).To<MyImplementation>()
+  // Determines a binding tags:
+  .Bind<IMyInterface>().Tags("MyImpl", 99).Tags(123).To<MyImplementation>()
+  
+  // Determines a dependency tags:
+  .Bind<IMyInterface>("MyImpl", 99).To<MyImplementation>()
 
   // Determines a binding implementation using a factory method,
   // it allows to create instance manually and to invoke required methods,

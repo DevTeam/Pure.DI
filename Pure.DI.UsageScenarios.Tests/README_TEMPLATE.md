@@ -117,7 +117,7 @@ Tags are useful while binding to several implementations of the same abstract ty
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     // Bind using several tags
-    .Bind<IService>().Tag(10).Tag("abc").To<Service>();
+    .Bind<IService>().Tags(10, "abc").To<Service>();
 
 // Resolve instances using tags
 var instance1 = TagsDI.Resolve<IService>("abc");
@@ -134,8 +134,8 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 public void Run()
 {
     DI.Setup()
-        .Bind<IConsole>().Tag("MyConsole").To(_ => AspectOriented.Console.Object)
-        .Bind<string>().Tag("Prefix").To(_ => "info")
+        .Bind<IConsole>().Tags("MyConsole").To(_ => AspectOriented.Console.Object)
+        .Bind<string>().Tags("Prefix").To(_ => "info")
         .Bind<ILogger>().To<Logger>();
 
     // Create a logger
@@ -213,8 +213,8 @@ public void Run()
         .OrderAttribute<MyOrderAttribute>()
         .TagAttribute<MyTagAttribute>()
 
-        .Bind<IConsole>().Tag("MyConsole").To(_ => AspectOrientedWithCustomAttributes.Console.Object)
-        .Bind<string>().Tag("Prefix").To(_ => "info")
+        .Bind<IConsole>().Tags("MyConsole").To(_ => AspectOrientedWithCustomAttributes.Console.Object)
+        .Bind<string>().Tags("Prefix").To(_ => "info")
         .Bind<ILogger>().To<Logger>();
 
     // Create a logger
@@ -337,7 +337,7 @@ Use a _tag_ to bind several dependencies for the same types.
 
 ``` CSharp
 DI.Setup()
-    .Bind<IDependency>().Tag("MyDep").To<Dependency>()
+    .Bind<IDependency>().Tags("MyDep").To<Dependency>()
     // Configure autowiring and inject dependency tagged by "MyDep"
     .Bind<IService>().To(ctx => new Service(ctx.Resolve<IDependency>("MyDep")));
 
@@ -424,7 +424,7 @@ public void Run()
         // TTEquatable<T>, TTEnumerable<out T>, TTDictionary<TKey, TValue> and etc.
         .Bind<IListService<TTList<int>>>().To<ListService<TTList<int>>>()
         // Bind using the custom generic parameters marker TCustom
-        .Bind<IService<TTMy>>().Tag("custom tag").To<Service<TTMy>>()
+        .Bind<IService<TTMy>>().Tags("custom tag").To<Service<TTMy>>()
         .Bind<Consumer>().To<Consumer>();
 
     // Resolve a generic instance
@@ -769,11 +769,11 @@ To resolve all possible instances of any tags of the specific type as an _array_
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     // Bind to the implementation #1
-    .Bind<IService>().Tag(1).To<Service>()
+    .Bind<IService>().Tags(1).To<Service>()
     // Bind to the implementation #2
-    .Bind<IService>().Tag(2).Tag("abc").To<Service>()
+    .Bind<IService>().Tags(2, "abc").To<Service>()
     // Bind to the implementation #3
-    .Bind<IService>().Tag(3).To<Service>()
+    .Bind<IService>().Tags(3).To<Service>()
     .Bind<CompositionRoot<IService[]>>()
         .To<CompositionRoot<IService[]>>();
 
@@ -791,11 +791,11 @@ To resolve all possible instances of any tags of the specific type as a _collect
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     // Bind to the implementation #1
-    .Bind<IService>().Tag(1).To<Service>()
+    .Bind<IService>().Tags(1).To<Service>()
     // Bind to the implementation #2
-    .Bind<IService>().Tag(2).Tag("abc").To<Service>()
+    .Bind<IService>().Tags(2, "abc").To<Service>()
     // Bind to the implementation #3
-    .Bind<IService>().As(Lifetime.Singleton).Tag(3).To<Service>()
+    .Bind<IService>().As(Lifetime.Singleton).Tags(3).To<Service>()
     .Bind<CompositionRoot<ICollection<IService>>>().To<CompositionRoot<ICollection<IService>>>();
 
 // Resolve all appropriate instances
@@ -815,11 +815,11 @@ To resolve all possible instances of any tags of the specific type as an _enumer
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     // Bind to the implementation #1
-    .Bind<IService>().Tag(1).To<Service>()
+    .Bind<IService>().Tags(1).To<Service>()
     // Bind to the implementation #2
-    .Bind<IService>().Tag(2).Tag("abc").To<Service>()
+    .Bind<IService>().Tags(2, "abc").To<Service>()
     // Bind to the implementation #3
-    .Bind<IService>().Tag(3).To<Service>()
+    .Bind<IService>().Tags(3).To<Service>()
     .Bind<CompositionRoot<IEnumerable<IService>>>().To<CompositionRoot<IEnumerable<IService>>>();
 
 // Resolve all appropriate instances
@@ -878,11 +878,11 @@ To resolve all possible instances of any tags of the specific type as a _ISet<>_
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     // Bind to the implementation #1
-    .Bind<IService>().Tag(1).To<Service>()
+    .Bind<IService>().Tags(1).To<Service>()
     // Bind to the implementation #2
-    .Bind<IService>().Tag(2).Tag("abc").To<Service>()
+    .Bind<IService>().Tags(2, "abc").To<Service>()
     // Bind to the implementation #3
-    .Bind<IService>().Tag(3).To<Service>()
+    .Bind<IService>().Tags(3).To<Service>()
     .Bind<CompositionRoot<ISet<IService>>>().To<CompositionRoot<ISet<IService>>>();
 
 // Resolve all appropriate instances
@@ -938,7 +938,7 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 public void Run()
 {
     DI.Setup()
-        .Bind<IService>().Tag("base").To<Service>()
+        .Bind<IService>().Tags("base").To<Service>()
         .Bind<IService>().To<DecoratorService>();
     
     var service = DecoratorDI.Resolve<IService>();

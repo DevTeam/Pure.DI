@@ -155,8 +155,8 @@
                     static Composer()
                     {
                         DI.Setup()
-                            .Bind<IFactory<string>>().Tag(1).To<MyLifetime>()
-                            .Bind<string>().Tag(1).To(_ => ""xyz"")
+                            .Bind<IFactory<string>>().Tags(1).To<MyLifetime>()
+                            .Bind<string>().Tags(1).To(_ => ""xyz"")
                             .Bind<string>().To(_ => ""123"")
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }                    

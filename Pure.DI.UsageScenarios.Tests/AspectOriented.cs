@@ -30,8 +30,8 @@ namespace Pure.DI.UsageScenarios.Tests
         public void Run()
         {
             DI.Setup()
-                .Bind<IConsole>().Tag("MyConsole").To(_ => AspectOriented.Console.Object)
-                .Bind<string>().Tag("Prefix").To(_ => "info")
+                .Bind<IConsole>().Tags("MyConsole").To(_ => AspectOriented.Console.Object)
+                .Bind<string>().Tags("Prefix").To(_ => "info")
                 .Bind<ILogger>().To<Logger>();
 
             // Create a logger

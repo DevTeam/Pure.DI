@@ -163,7 +163,7 @@
             namespace Sample
             {
                 using System;
-                using Pure.DI;               
+                using Pure.DI;
 
                 public class CompositionRoot
                 {

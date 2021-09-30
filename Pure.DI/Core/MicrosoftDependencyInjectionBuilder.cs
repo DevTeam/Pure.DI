@@ -41,8 +41,8 @@
         {
             var dependencies = (
                 from binding in _metadata.Bindings.Concat(_buildContext.AdditionalBindings)
-                where !binding.Tags.Any()
                 from dependency in binding.Dependencies
+                where !binding.GetTags(dependency).Any()
                 where dependency.Type.IsReferenceType && !dependency.IsComposedGenericTypeMarker
                 group binding by dependency into groups    
                 let binding = groups.First()

@@ -60,7 +60,7 @@ namespace Pure.DI.Core
                     && invocationOperation.TargetMethod.Name == nameof(DI.Setup)
                     && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(DI))
                     && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
-                    && TryGetValue(invocationOperation.Arguments[0], _semanticModel, out var composerTypeName, string.Empty))
+                    && TryGetValue(invocationOperation.Arguments[0].Value, _semanticModel, out var composerTypeName, string.Empty))
                 {
                     var owner = _ownerProvider.TryGetOwner(node);
                     composerTypeName = _targetClassNameProvider.TryGetName(composerTypeName, node, owner) ?? composerTypeName;
@@ -112,7 +112,7 @@ namespace Pure.DI.Core
                 && invocationOperation.TargetMethod.Name == nameof(IConfiguration.DependsOn)
                 && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IConfiguration))
                 && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
-                && TryGetValue(invocationOperation.Arguments[0], _semanticModel, out var baseConfigurationName, string.Empty)
+                && TryGetValue(invocationOperation.Arguments[0].Value, _semanticModel, out var baseConfigurationName, string.Empty)
                 && !string.IsNullOrWhiteSpace(baseConfigurationName))
             {
                 _resolver?.DependsOn.Add(baseConfigurationName);
@@ -126,7 +126,7 @@ namespace Pure.DI.Core
                 && invocationOperation.TargetMethod.Name == nameof(IConfiguration.Default)
                 && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IConfiguration))
                 && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
-                && TryGetValue(invocationOperation.Arguments[0], _semanticModel, out var defaultLifetime, Lifetime.Transient))
+                && TryGetValue(invocationOperation.Arguments[0].Value, _semanticModel, out var defaultLifetime, Lifetime.Transient))
             {
                 _defaultLifetime = defaultLifetime;
                 _binding.Lifetime = defaultLifetime;
@@ -152,21 +152,37 @@ namespace Pure.DI.Core
                             Lifetime = _defaultLifetime
                         };
                     }
+                    
+                    return;
+                }
 
-                    // Bind<>()
+                if (invocationOperation.TargetMethod.Parameters.Length == 1)
+                {
+                    // Bind<>(params object[] tags)
                     if (invocationOperation.TargetMethod.Name == nameof(IBinding.Bind)
                         && (new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IBinding)) || new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IConfiguration)))
                         && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IBinding))
-                        && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol dependencyType)
+                        && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol dependencyType
+                        && invocationOperation.Arguments[0].ArgumentKind == ArgumentKind.ParamArray
+                        && invocationOperation.Arguments[0].Value is IArrayCreationOperation arrayCreationOperation
+                        && arrayCreationOperation.Type is IArrayTypeSymbol arrayTypeSymbol
+                        && new SemanticType(arrayTypeSymbol.ElementType, _semanticModel).Equals(typeof(object)))
                     {
+                        var type = new SemanticType(dependencyType, _semanticModel);
+                        if (!_binding.DependencyTags.TryGetValue(type, out var tags))
+                        {
+                            tags = new HashSet<ExpressionSyntax>();
+                            _binding.DependencyTags.Add(type, tags);
+                        }
+                        
+                        foreach (var tag in arrayCreationOperation.Initializer.ElementValues.OfType<IConversionOperation>().Select(i => i.Syntax).OfType<ExpressionSyntax>())
+                        {
+                            tags.Add(tag);
+                        }
+                        
                         _binding.Dependencies.Add(new SemanticType(dependencyType, _semanticModel));
                     }
-
-                    return;
-                }
-                
-                if (invocationOperation.TargetMethod.Parameters.Length == 1)
-                {
+                    
                     // To<>(ctx => new ...())
                     if (invocationOperation.TargetMethod.Name == nameof(IBinding.To)
                         && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IBinding))
@@ -193,7 +209,7 @@ namespace Pure.DI.Core
                         && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IConfiguration))
                         && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
                         && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol attributeType
-                        && TryGetValue(invocationOperation.Arguments[0], _semanticModel, out var argumentPosition, 0))
+                        && TryGetValue(invocationOperation.Arguments[0].Value, _semanticModel, out var argumentPosition, 0))
                     {
                         AttributeKind? attributeKind = invocationOperation.TargetMethod.Name switch
                         {
@@ -222,18 +238,24 @@ namespace Pure.DI.Core
                 if (invocationOperation.TargetMethod.Name == nameof(IBinding.As)
                     && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IBinding))
                     && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IBinding))
-                    && TryGetValue(invocationOperation.Arguments[0], _semanticModel, out var lifetime, Lifetime.Transient))
+                    && TryGetValue(invocationOperation.Arguments[0].Value, _semanticModel, out var lifetime, Lifetime.Transient))
                 {
                     _binding.Lifetime = lifetime;
                 }
 
-                // Tag(object tag)
-                if (invocationOperation.TargetMethod.Name == nameof(IBinding.Tag)
+                // Tags(params object[] tags)
+                if (invocationOperation.TargetMethod.Name == nameof(IBinding.Tags)
                     && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IBinding))
                     && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IBinding))
-                    && invocationOperation.Arguments[0].Syntax is ArgumentSyntax tag)
+                    && invocationOperation.Arguments[0].ArgumentKind == ArgumentKind.ParamArray
+                    && invocationOperation.Arguments[0].Value is IArrayCreationOperation arrayCreationOperation
+                    && arrayCreationOperation.Type is IArrayTypeSymbol arrayTypeSymbol
+                    && new SemanticType(arrayTypeSymbol.ElementType, _semanticModel).Equals(typeof(object)))
                 {
-                    _binding.Tags.Add(tag.Expression);
+                    foreach (var tag in arrayCreationOperation.Initializer.ElementValues.OfType<IConversionOperation>().Select(i => i.Syntax).OfType<ExpressionSyntax>())
+                    {
+                        _binding.Tags.Add(tag);
+                    }
                 }
             }
 
@@ -250,18 +272,18 @@ namespace Pure.DI.Core
             }
         }
 
-        private static bool TryGetValue<T>(IArgumentOperation arg, SemanticModel semanticModel, out T value, T defaultValue)
+        private static bool TryGetValue<T>(IOperation operation, SemanticModel semanticModel, out T value, T defaultValue)
         {
-            var optionalValue = semanticModel.GetConstantValue(arg.Value.Syntax);
+            var optionalValue = semanticModel.GetConstantValue(operation.Syntax);
             if (optionalValue.HasValue && optionalValue.Value != null)
             {
                 value = (T)optionalValue.Value;
                 return true;
             }
 
-            if (arg.Value.ConstantValue.HasValue && arg.Value.ConstantValue.Value != null)
+            if (operation.ConstantValue.HasValue && operation.ConstantValue.Value != null)
             {
-                value = (T)arg.Value.ConstantValue.Value;
+                value = (T)operation.ConstantValue.Value;
                 return true;
             }
 

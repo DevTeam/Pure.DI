@@ -6,6 +6,7 @@
 // ReSharper disable StructCanBeMadeReadOnly
 // ReSharper disable MemberCanBePrivate.Global
 #pragma warning disable 0436
+#pragma warning disable 8625
 namespace Pure.DI
 {
     using System;
@@ -94,7 +95,7 @@ namespace Pure.DI
         /// <summary>
         /// Creates an attribute instance.
         /// </summary>
-        /// <param name="tag">The injection tag. See also <see cref="IBinding.Tag"/></param>.
+        /// <param name="tag">The injection tag. See also <see cref="IBinding.Tags"/></param>.
         public TagAttribute(object tag)
         {
             Tag = tag;
@@ -222,7 +223,7 @@ namespace Pure.DI
             public static readonly IConfiguration Shared = new Configuration();
 
             /// <inheritdoc />
-            public IBinding Bind<T>()
+            public IBinding Bind<T>(params object[] tags)
             {
                 return new Binding(this);
             }
@@ -268,7 +269,7 @@ namespace Pure.DI
             }
 
             /// <inheritdoc />
-            public IBinding Bind<T>()
+            public IBinding Bind<T>(params object[] tags)
             {
                 return this;
             }
@@ -280,7 +281,7 @@ namespace Pure.DI
             }
 
             /// <inheritdoc />
-            public IBinding Tag(object tag)
+            public IBinding Tags(params object[] tags)
             {
                 return this;
             }
@@ -322,9 +323,10 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <typeparam name="T">The dependency type to bind. Also supports generic type markers like <see cref="TT"/>, <see cref="TTList{T}"/> and others.</typeparam>
+        /// <typeparam name="T">The type of dependency to bind. Also supports generic type markers like <see cref="TT"/>, <see cref="TTList{T}"/> and others.</typeparam>
+        /// <param name="tags">The optional argument specifying the tags for the specific dependency type of a binding.</param>
         /// <returns>Binding configuration API.</returns>
-        IBinding Bind<T>();
+        IBinding Bind<T>(params object[] tags);
 
         /// <summary>
         /// Use some DI configuration as a base by its name.
@@ -457,8 +459,9 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         /// <typeparam name="T">The type of dependency to bind. Also supports generic type markers like <see cref="TT"/>, <see cref="TTList{T}"/> and others.</typeparam>
+        /// <param name="tags">The optional argument specifying the tags for the specific dependency type of a binding.</param>
         /// <returns>Binding configuration API.</returns>
-        IBinding Bind<T>();
+        IBinding Bind<T>(params object[] tags);
 
         /// <summary>
         /// Determines a binding <see cref="Pure.DI.Lifetime"/>.
@@ -488,9 +491,9 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="tag">The binding tag.</param>
+        /// <param name="tags">The tags for all dependency types of a binding.</param>
         /// <returns>Binding configuration API.</returns>
-        IBinding Tag(object tag);
+        IBinding Tags(params object[] tags);
 
         /// <summary>
         /// Determines a binding suitable for any tag.
@@ -571,7 +574,7 @@ namespace Pure.DI
         T Resolve<T>();
 
         /// <summary>
-        /// Resolves a composition root marked with a tag. See also <see cref="IBinding.Tag"/>./>
+        /// Resolves a composition root marked with a tag. See also <see cref="IBinding.Tags"/>./>
         /// <example>
         /// <code>
         /// DI.Setup()
@@ -659,3 +662,5 @@ namespace Pure.DI
     /// </summary>
     internal delegate void RegisterDisposable(RegisterDisposableEvent registerDisposableEvent);
 }
+#pragma warning restore 0436
+#pragma warning restore 8625

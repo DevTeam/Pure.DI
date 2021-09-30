@@ -255,7 +255,7 @@
                     static Composer()
                     {
                         DI.Setup()
-                            .Bind<string>().Tag(1).To(_ => ""abc"")
+                            .Bind<string>().Tags(1).To(_ => ""abc"")
                             .Bind<string>().To(ctx => { return ctx.Resolve<string>(1) + ""_xyz""; })
                             // Composition Root
                             .Bind<CompositionRoot>().To<CompositionRoot>();
@@ -290,7 +290,7 @@
                     static Composer()
                     {
                         DI.Setup()
-                            .Bind<string>().Tag(1).To(_ => ""abc"")
+                            .Bind<string>().Tags(1).To(_ => ""abc"")
                             .Bind<string>().To(_ => ""xyz"")
                             // Composition Root
                             .Bind<CompositionRoot>().To<CompositionRoot>();
@@ -300,7 +300,7 @@
                 internal class CompositionRoot
                 {
                     public readonly string Value;
-                    internal CompositionRoot([Tag(1)] string value) => Value = value;        
+                    internal CompositionRoot([Tag(1)] string value) => Value = value;
                 }
             }".Run(out var generatedCode);
 
@@ -334,8 +334,8 @@
                     static Composer()
                     {
                         DI.Setup()
-                            .Bind<IMyClass1>().Bind<IMyClass2>().Tag(1).Tag(3).To<MyClass>(_ => new MyClass())
-                            .Bind<IMyClass1>().Bind<IMyClass2>().Tag(2).Tag(4).As(Lifetime.Singleton).To<MyClass>(_ => new MyClass())
+                            .Bind<IMyClass1>().Bind<IMyClass2>().Tags(1).Tags(3).To<MyClass>(_ => new MyClass())
+                            .Bind<IMyClass1>().Bind<IMyClass2>().Tags(2, 4).As(Lifetime.Singleton).To<MyClass>(_ => new MyClass())
                             .Bind<IMyClass1>().Bind<IMyClass2>().As(Lifetime.Singleton).To(ctx => new MyClass(ctx.Resolve<IMyClass1>(1), ctx.Resolve<IMyClass2>(2)))
                             // Composition Root
                             .Bind<CompositionRoot>().To<CompositionRoot>();
@@ -377,7 +377,7 @@
                     {
                         DI.Setup()
                             .TagAttribute<MyTagAttribute>(1)
-                            .Bind<string>().Tag(1).To(_ => ""abc"")
+                            .Bind<string>().Tags(1).To(_ => ""abc"")
                             .Bind<string>().To(_ => ""xyz"")
                             // Composition Root
                             .Bind<CompositionRoot>().To<CompositionRoot>();
@@ -1019,7 +1019,7 @@
             // Then
             output.ShouldBe(new[] { "abc" }, generatedCode);
         }
-        
+
         [Fact]
         public void ShouldUseFreeMemberNameWhenType()
         {
@@ -1245,6 +1245,40 @@
 
             // Then
             output.ShouldBe(new[] { "True" }, generatedCode);
+        }
+        
+        [Fact]
+        public void ShouldSupportDependencyTags()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<string>(1, ""A"").Tags(3).To(_ => ""abc"")
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot([Tag(1)] string value1, [Tag(""A"")] string value2, [Tag(3)] string value3) => Value = value1 + value2 + value3;
+                }
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "abcabcabc" }, generatedCode);
         }
     }
 }

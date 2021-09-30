@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core
+﻿// ReSharper disable InvertIf
+namespace Pure.DI.Core
 {
     using System.Collections.Generic;
     using System.Text;
@@ -12,6 +13,7 @@
         public SimpleLambdaExpressionSyntax? Factory;
         public Lifetime Lifetime = Lifetime.Transient;
         public readonly ISet<SemanticType> Dependencies = new HashSet<SemanticType>(SemanticTypeEqualityComparer.Default);
+        public readonly IDictionary<SemanticType, ISet<ExpressionSyntax>> DependencyTags = new Dictionary<SemanticType, ISet<ExpressionSyntax>>(SemanticTypeEqualityComparer.Default);
         public readonly ISet<ExpressionSyntax> Tags = new HashSet<ExpressionSyntax>();
         public readonly object Id;
         public bool AnyTag = false;
@@ -39,6 +41,22 @@
             {
                 Tags.Add(tag);
             }
+
+            DependencyTags = new Dictionary<SemanticType, ISet<ExpressionSyntax>>(binding.DependencyTags);
+        }
+
+        public IEnumerable<ExpressionSyntax> GetTags(SemanticType dependencyType)
+        {
+            var tags = new HashSet<ExpressionSyntax>(Tags);
+            if (DependencyTags.TryGetValue(dependencyType, out var dependencyTags))
+            {
+                foreach (var dependencyTag in dependencyTags)
+                {
+                    tags.Add(dependencyTag);
+                }
+            }
+
+            return tags;
         }
 
         public override string ToString()
@@ -56,7 +74,7 @@
 
             foreach (var tag in Tags)
             {
-                sb.Append($"{nameof(IBinding.Tag)}<{tag.ToString()}>().");
+                sb.Append($"{nameof(IBinding.Tags)}<{tag.ToString()}>().");
             }
 
             sb.Append(Factory != null ? $"{nameof(IBinding.To)}({Factory.ToString()})" : $"{nameof(IBinding.To)}<{Implementation}>()");

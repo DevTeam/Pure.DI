@@ -51,7 +51,7 @@ namespace Pure.DI.Core
                 var dependencies = new HashSet<SemanticType>(binding.Dependencies);
                 foreach (var dependency in dependencies)
                 {
-                    foreach (var tag in binding.Tags.DefaultIfEmpty<ExpressionSyntax?>(null))
+                    foreach (var tag in binding.GetTags(dependency).DefaultIfEmpty<ExpressionSyntax?>(null))
                     {
                         var semanticType = dependency.IsComposedGenericTypeMarker
                                   && dependency.Type is INamedTypeSymbol namedType

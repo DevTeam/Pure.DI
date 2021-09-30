@@ -20,11 +20,11 @@
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
                 // Bind to the implementation #1
-                .Bind<IService>().Tag(1).To<Service>()
+                .Bind<IService>().Tags(1).To<Service>()
                 // Bind to the implementation #2
-                .Bind<IService>().Tag(2).Tag("abc").To<Service>()
+                .Bind<IService>().Tags(2, "abc").To<Service>()
                 // Bind to the implementation #3
-                .Bind<IService>().Tag(3).To<Service>()
+                .Bind<IService>().Tags(3).To<Service>()
                 .Bind<CompositionRoot<IEnumerable<IService>>>().To<CompositionRoot<IEnumerable<IService>>>();
 
             // Resolve all appropriate instances

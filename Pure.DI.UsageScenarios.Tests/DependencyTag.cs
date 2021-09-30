@@ -16,7 +16,7 @@
             // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
             // {
             DI.Setup()
-                .Bind<IDependency>().Tag("MyDep").To<Dependency>()
+                .Bind<IDependency>().Tags("MyDep").To<Dependency>()
                 // Configure autowiring and inject dependency tagged by "MyDep"
                 .Bind<IService>().To(ctx => new Service(ctx.Resolve<IDependency>("MyDep")));
 
