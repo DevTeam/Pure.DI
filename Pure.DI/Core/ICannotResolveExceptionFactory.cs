@@ -4,6 +4,6 @@ namespace Pure.DI.Core
 
     internal interface ICannotResolveExceptionFactory
     {
-        HandledException Create(BindingMetadata binding, ExpressionSyntax? tag, string description);
+        HandledException Create(IBindingMetadata binding, ExpressionSyntax? tag, string description);
     }
 }

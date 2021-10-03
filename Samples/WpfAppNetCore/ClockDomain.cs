@@ -1,5 +1,6 @@
 // ReSharper disable UnusedType.Global
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable UnusedMember.Local
 namespace WpfAppNetCore
 {
     using System;

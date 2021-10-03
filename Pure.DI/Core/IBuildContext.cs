@@ -20,7 +20,7 @@
 
         ITypeResolver TypeResolver { get; }
 
-        IEnumerable<BindingMetadata> AdditionalBindings { get; }
+        IEnumerable<IBindingMetadata> AdditionalBindings { get; }
         
         IEnumerable<MemberDeclarationSyntax> AdditionalMembers { get; }
 
@@ -28,7 +28,7 @@
         
         IEnumerable<StatementSyntax> FinalDisposeStatements { get; }
 
-        void AddBinding(BindingMetadata binding);
+        void AddBinding(IBindingMetadata binding);
 
         MemberDeclarationSyntax GetOrAddMember(MemberKey key, Func<MemberDeclarationSyntax> additionalMemberFactory);
 

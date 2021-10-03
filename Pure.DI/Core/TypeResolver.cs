@@ -223,10 +223,10 @@ namespace Pure.DI.Core
 
         private readonly struct Binding<T>
         {
-            public readonly BindingMetadata Metadata;
+            public readonly IBindingMetadata Metadata;
             public readonly T Details;
 
-            public Binding(BindingMetadata metadata, T details)
+            public Binding(IBindingMetadata metadata, T details)
             {
                 Metadata = metadata;
                 Details = details;

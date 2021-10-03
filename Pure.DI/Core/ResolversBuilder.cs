@@ -155,7 +155,7 @@ namespace Pure.DI.Core
             }
         }
 
-        private IEnumerable<MemberDeclarationSyntax> CreateDependencyTable(IEnumerable<(BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
+        private IEnumerable<MemberDeclarationSyntax> CreateDependencyTable(IEnumerable<(IBindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
         {
             var funcType = SyntaxFactory.GenericName(
                     SyntaxRepo.FuncTypeToken)
@@ -224,7 +224,7 @@ namespace Pure.DI.Core
             yield return CreateField(bucketsType, nameof(ResolversTable.ResolversBuckets), GetFiled(_memberNameService.GetName(MemberNameKind.FactoriesField), nameof(ResolversTable.ResolversBuckets)), SyntaxKind.StaticKeyword, SyntaxKind.ReadOnlyKeyword);
         }
 
-        private IEnumerable<MemberDeclarationSyntax> CreateDependencyWithTagTable(IEnumerable<(BindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
+        private IEnumerable<MemberDeclarationSyntax> CreateDependencyWithTagTable(IEnumerable<(IBindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
         {
             var funcType = SyntaxFactory.GenericName(
                     SyntaxRepo.FuncTypeToken)
@@ -314,7 +314,7 @@ namespace Pure.DI.Core
         
         private IEnumerable<StatementSyntax> CreateStatements(
             IBuildStrategy buildStrategy,
-            BindingMetadata binding,
+            IBindingMetadata binding,
             SemanticType dependency,
             ExpressionSyntax? tag)
         {

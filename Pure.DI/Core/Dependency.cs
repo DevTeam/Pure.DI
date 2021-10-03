@@ -5,7 +5,7 @@ namespace Pure.DI.Core
 
     internal readonly struct Dependency
     {
-        public readonly BindingMetadata Binding;
+        public readonly IBindingMetadata Binding;
         public readonly SemanticType Implementation;
         public readonly ExpressionSyntax? Tag;
         public readonly IObjectBuilder ObjectBuilder;
@@ -13,7 +13,7 @@ namespace Pure.DI.Core
         public readonly bool IsResolved;
         
         public Dependency(
-            BindingMetadata binding,
+            IBindingMetadata binding,
             SemanticType implementation,
             ExpressionSyntax? tag,
             IObjectBuilder objectBuilder,

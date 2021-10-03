@@ -10,7 +10,7 @@
     internal class BuildContext: IBuildContext
     {
         private readonly Dictionary<MemberKey, MemberDeclarationSyntax> _additionalMembers = new();
-        private readonly HashSet<BindingMetadata> _additionalBindings = new();
+        private readonly HashSet<IBindingMetadata> _additionalBindings = new();
         private readonly HashSet<StatementSyntax> _finalizationStatements = new();
         private readonly HashSet<StatementSyntax> _finalDisposeStatements = new();
         private readonly Func<INameService> _nameServiceFactory;
@@ -39,7 +39,7 @@
 
         public ITypeResolver TypeResolver => _typeResolver ?? throw new InvalidOperationException("Not ready.");
 
-        public IEnumerable<BindingMetadata> AdditionalBindings => _additionalBindings;
+        public IEnumerable<IBindingMetadata> AdditionalBindings => _additionalBindings;
 
         public IEnumerable<MemberDeclarationSyntax> AdditionalMembers => _additionalMembers.Values;
 
@@ -60,7 +60,7 @@
             _finalDisposeStatements.Clear();
         }
 
-        public void AddBinding(BindingMetadata binding) => _additionalBindings.Add(binding);
+        public void AddBinding(IBindingMetadata binding) => _additionalBindings.Add(binding);
 
         public MemberDeclarationSyntax GetOrAddMember(MemberKey key, Func<MemberDeclarationSyntax> additionalMemberFactory)
         {

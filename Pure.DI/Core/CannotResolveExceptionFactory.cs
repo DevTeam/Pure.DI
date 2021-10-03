@@ -19,7 +19,7 @@ namespace Pure.DI.Core
             _tracer = tracer;
         }
 
-        public HandledException Create(BindingMetadata binding, ExpressionSyntax? tag, string description)
+        public HandledException Create(IBindingMetadata binding, ExpressionSyntax? tag, string description)
         {
             var tagName = tag != default ? $"({tag})" : string.Empty;
             var error = new StringBuilder($"Cannot resolve {description} {binding.Implementation?.ToString() ?? binding.Factory?.ToString() ?? binding.ToString()}{tagName}.");

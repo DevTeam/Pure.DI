@@ -2,19 +2,13 @@
 namespace Pure.DI.Core
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-    internal class BindingMetadata
+    internal class BindingMetadata : IBindingMetadata
     {
-        public Location? Location;
-        public SemanticType? Implementation;
-        public SimpleLambdaExpressionSyntax? Factory;
-        public Lifetime Lifetime = Lifetime.Transient;
-        public readonly object Id;
-        public bool AnyTag = false;
-        public bool FromProbe;
         private static int _currentId;
         private readonly ISet<SemanticType> _dependencies = new HashSet<SemanticType>(SemanticTypeEqualityComparer.Default);
         private readonly IDictionary<SemanticType, ISet<ExpressionSyntax>> _dependencyTags = new Dictionary<SemanticType, ISet<ExpressionSyntax>>(SemanticTypeEqualityComparer.Default);
@@ -25,7 +19,7 @@ namespace Pure.DI.Core
             Id = id ?? System.Threading.Interlocked.Increment(ref _currentId);
         }
 
-        public BindingMetadata(BindingMetadata binding, SemanticType dependency, object? id)
+        public BindingMetadata(IBindingMetadata binding, SemanticType dependency, object? id)
             :this(id)
         {
             if (id == null)
@@ -37,17 +31,32 @@ namespace Pure.DI.Core
             Implementation = binding.Implementation;
             Factory = binding.Factory;
             Location = binding.Location;
-            foreach (var tag in binding._tags)
+            AddTags(binding.Tags.ToArray());
+            foreach (var bindingDependency in binding.Dependencies)
             {
-                _tags.Add(tag);
+                AddDependencyTags(bindingDependency, binding.GetTags(bindingDependency).ToArray());
             }
-
-            _dependencyTags = new Dictionary<SemanticType, ISet<ExpressionSyntax>>(binding._dependencyTags);
         }
+        
+        public object Id { get; }
+
+        public Location? Location { get; set; }
+
+        public SemanticType? Implementation { get; set; }
+
+        public SimpleLambdaExpressionSyntax? Factory { get; set; }
+
+        public Lifetime Lifetime { get; set; } = Lifetime.Transient;
+
+        public bool AnyTag { get; set; }
+
+        public bool FromProbe { get; set; }
 
         public IEnumerable<SemanticType> Dependencies => _dependencies;
 
         public void AddDependency(SemanticType dependency) => _dependencies.Add(dependency);
+        
+        public IEnumerable<ExpressionSyntax> Tags => _tags;
 
         public IEnumerable<ExpressionSyntax> GetTags(SemanticType dependencyType)
         {

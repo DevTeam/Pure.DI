@@ -1278,6 +1278,7 @@
             }".Run(out var generatedCode);
 
             // Then
+            // ReSharper disable once StringLiteralTypo
             output.ShouldBe(new[] { "abcabcabc" }, generatedCode);
         }
     }
