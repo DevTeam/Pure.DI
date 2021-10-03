@@ -112,7 +112,7 @@ namespace Pure.DI.Core
                         var expression = _buildStrategy.TryBuild(dependency, dependencyType);
                         if (expression == null)
                         {
-                            throw _cannotResolveExceptionFactory.Create(dependency.Binding, "a factory");
+                            throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag,"a factory");
                         }
 
                         return expression;

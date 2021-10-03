@@ -4,6 +4,7 @@ namespace Pure.DI.Core
     using System;
     using System.Linq;
     using System.Text;
+    using Microsoft.CodeAnalysis.CSharp.Syntax;
 
     internal class CannotResolveExceptionFactory : ICannotResolveExceptionFactory
     {
@@ -18,9 +19,10 @@ namespace Pure.DI.Core
             _tracer = tracer;
         }
 
-        public HandledException Create(BindingMetadata binding, string description)
+        public HandledException Create(BindingMetadata binding, ExpressionSyntax? tag, string description)
         {
-            var error = new StringBuilder($"Cannot resolve {description} {binding.Implementation?.ToString() ?? binding.Factory?.ToString() ?? binding.ToString()}.");
+            var tagName = tag != default ? $"({tag})" : string.Empty;
+            var error = new StringBuilder($"Cannot resolve {description} {binding.Implementation?.ToString() ?? binding.Factory?.ToString() ?? binding.ToString()}{tagName}.");
             var path = _tracer.Paths
                 .Where(i => i.Length > 1)
                 .OrderBy(i => i.Length)

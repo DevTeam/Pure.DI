@@ -65,7 +65,7 @@ namespace Pure.DI.Core
                         SyntaxFactory.Argument(tagExpression ?? SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax)));
             }
 
-            throw _cannotResolveExceptionFactory.Create(dependency.Binding, "a factory");
+            throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, "a factory");
         }
     }
 }

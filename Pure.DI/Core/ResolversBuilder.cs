@@ -253,7 +253,7 @@ namespace Pure.DI.Core
                         SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependency.TypeSyntax)),
                         SyntaxFactory.Argument(tag));
 
-                var statements = CreateStatements(_buildStrategy, binding, dependency, null).ToArray();
+                var statements = CreateStatements(_buildStrategy, binding, dependency, tag).ToArray();
                 if (!statements.Any())
                 {
                     continue;
@@ -321,7 +321,7 @@ namespace Pure.DI.Core
             _tracer.Reset();
             try
             {
-                var instance = buildStrategy.TryBuild(_typeResolver.Resolve(dependency, binding.GetTags(dependency).FirstOrDefault()), dependency);
+                var instance = buildStrategy.TryBuild(_typeResolver.Resolve(dependency, tag), dependency);
                 if (instance == null)
                 {
                     if (binding.FromProbe)
@@ -335,7 +335,7 @@ namespace Pure.DI.Core
                         yield break;
                     }
 
-                    throw _cannotResolveExceptionFactory.Create(binding, "a dependency");
+                    throw _cannotResolveExceptionFactory.Create(binding, tag, "a dependency");
                 }
 
                 yield return SyntaxFactory.ReturnStatement(instance);

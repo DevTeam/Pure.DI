@@ -43,7 +43,7 @@ namespace Pure.DI.Core
                     SyntaxFactory.IdentifierName(nameof(ServiceProviderInstance<object>.Value)));
             }
 
-            throw _cannotResolveExceptionFactory.Create(serviceProviderDependency.Binding, "a lifetime");
+            throw _cannotResolveExceptionFactory.Create(serviceProviderDependency.Binding, serviceProviderDependency.Tag, "a lifetime");
         }
     }
 }
