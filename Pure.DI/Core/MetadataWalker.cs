@@ -168,19 +168,9 @@ namespace Pure.DI.Core
                         && arrayCreationOperation.Type is IArrayTypeSymbol arrayTypeSymbol
                         && new SemanticType(arrayTypeSymbol.ElementType, _semanticModel).Equals(typeof(object)))
                     {
-                        var type = new SemanticType(dependencyType, _semanticModel);
-                        if (!_binding.DependencyTags.TryGetValue(type, out var tags))
-                        {
-                            tags = new HashSet<ExpressionSyntax>();
-                            _binding.DependencyTags.Add(type, tags);
-                        }
-                        
-                        foreach (var tag in arrayCreationOperation.Initializer.ElementValues.OfType<IConversionOperation>().Select(i => i.Syntax).OfType<ExpressionSyntax>())
-                        {
-                            tags.Add(tag);
-                        }
-                        
-                        _binding.Dependencies.Add(new SemanticType(dependencyType, _semanticModel));
+                        var dependency = new SemanticType(dependencyType, _semanticModel);
+                        _binding.AddDependencyTags(dependency, arrayCreationOperation.Initializer.ElementValues.OfType<IConversionOperation>().Select(i => i.Syntax).OfType<ExpressionSyntax>().ToArray());
+                        _binding.AddDependency(new SemanticType(dependencyType, _semanticModel));
                     }
                     
                     // To<>(ctx => new ...())
@@ -252,10 +242,7 @@ namespace Pure.DI.Core
                     && arrayCreationOperation.Type is IArrayTypeSymbol arrayTypeSymbol
                     && new SemanticType(arrayTypeSymbol.ElementType, _semanticModel).Equals(typeof(object)))
                 {
-                    foreach (var tag in arrayCreationOperation.Initializer.ElementValues.OfType<IConversionOperation>().Select(i => i.Syntax).OfType<ExpressionSyntax>())
-                    {
-                        _binding.Tags.Add(tag);
-                    }
+                    _binding.AddTags(arrayCreationOperation.Initializer.ElementValues.OfType<IConversionOperation>().Select(i => i.Syntax).OfType<ExpressionSyntax>().ToArray());
                 }
             }
 

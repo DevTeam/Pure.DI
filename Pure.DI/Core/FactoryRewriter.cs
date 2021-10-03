@@ -171,7 +171,7 @@ namespace Pure.DI.Core
             var binding = new BindingMetadata(_dependency.Binding, constructedType, null);
             if (_dependency.Tag != null)
             {
-                binding.Tags.Add(_dependency.Tag);
+                binding.AddTags(_dependency.Tag);
             }
 
             _buildContext.AddBinding(binding);

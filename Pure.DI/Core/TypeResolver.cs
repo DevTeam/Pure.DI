@@ -128,11 +128,11 @@ namespace Pure.DI.Core
 
                                     if (tag != null)
                                     {
-                                        binding.Tags.Add(tag);
+                                        binding.AddTags(tag);
                                     }
 
-                                    binding.Dependencies.Add(constructedDependency);
-                                    binding.Dependencies.Add(constructedImplementation);
+                                    binding.AddDependency(constructedDependency);
+                                    binding.AddDependency(constructedImplementation);
 
                                     _buildContext.AddBinding(binding);
                                     return new Dependency(implementationEntry.Metadata, constructedImplementation, tag, _constructorBuilder(), typesMap);
@@ -169,10 +169,10 @@ namespace Pure.DI.Core
                         {
                             Implementation = dependency,
                             Lifetime = Lifetime.Transient,
-                            Dependencies = { dependency },
                             FromProbe = true
                         };
 
+                        newBinding.AddDependency(dependency);
                         return new Dependency(newBinding, dependency, tag, _constructorBuilder(), typesMap);
                     }
 

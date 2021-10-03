@@ -12,13 +12,13 @@ namespace Pure.DI.Core
         public SemanticType? Implementation;
         public SimpleLambdaExpressionSyntax? Factory;
         public Lifetime Lifetime = Lifetime.Transient;
-        public readonly ISet<SemanticType> Dependencies = new HashSet<SemanticType>(SemanticTypeEqualityComparer.Default);
-        public readonly IDictionary<SemanticType, ISet<ExpressionSyntax>> DependencyTags = new Dictionary<SemanticType, ISet<ExpressionSyntax>>(SemanticTypeEqualityComparer.Default);
-        public readonly ISet<ExpressionSyntax> Tags = new HashSet<ExpressionSyntax>();
         public readonly object Id;
         public bool AnyTag = false;
         public bool FromProbe;
         private static int _currentId;
+        private readonly ISet<SemanticType> _dependencies = new HashSet<SemanticType>(SemanticTypeEqualityComparer.Default);
+        private readonly IDictionary<SemanticType, ISet<ExpressionSyntax>> _dependencyTags = new Dictionary<SemanticType, ISet<ExpressionSyntax>>(SemanticTypeEqualityComparer.Default);
+        private readonly ISet<ExpressionSyntax> _tags = new HashSet<ExpressionSyntax>();
 
         public BindingMetadata(object? id = null)
         {
@@ -33,22 +33,26 @@ namespace Pure.DI.Core
                 Id = binding.Id;
             }
 
-            Dependencies.Add(dependency);
+            _dependencies.Add(dependency);
             Implementation = binding.Implementation;
             Factory = binding.Factory;
             Location = binding.Location;
-            foreach (var tag in binding.Tags)
+            foreach (var tag in binding._tags)
             {
-                Tags.Add(tag);
+                _tags.Add(tag);
             }
 
-            DependencyTags = new Dictionary<SemanticType, ISet<ExpressionSyntax>>(binding.DependencyTags);
+            _dependencyTags = new Dictionary<SemanticType, ISet<ExpressionSyntax>>(binding._dependencyTags);
         }
+
+        public IEnumerable<SemanticType> Dependencies => _dependencies;
+
+        public void AddDependency(SemanticType dependency) => _dependencies.Add(dependency);
 
         public IEnumerable<ExpressionSyntax> GetTags(SemanticType dependencyType)
         {
-            var tags = new HashSet<ExpressionSyntax>(Tags);
-            if (DependencyTags.TryGetValue(dependencyType, out var dependencyTags))
+            var tags = new HashSet<ExpressionSyntax>(_tags);
+            if (_dependencyTags.TryGetValue(dependencyType, out var dependencyTags))
             {
                 foreach (var dependencyTag in dependencyTags)
                 {
@@ -59,13 +63,35 @@ namespace Pure.DI.Core
             return tags;
         }
 
+        public void AddTags(params ExpressionSyntax[] tags)
+        {
+            foreach (var tag in tags)
+            {
+                _tags.Add(tag);
+            }
+        }
+
+        public void AddDependencyTags(SemanticType dependency, params ExpressionSyntax[] tags)
+        {
+            if (!_dependencyTags.TryGetValue(dependency, out var curTags))
+            {
+                curTags = new HashSet<ExpressionSyntax>();
+                _dependencyTags.Add(dependency, curTags);
+            }
+
+            foreach (var tag in tags)
+            {
+                curTags.Add(tag);
+            }
+        }
+
         public override string ToString()
         {
             StringBuilder sb = new();
-            foreach (var dependency in Dependencies)
+            foreach (var dependency in _dependencies)
             {
                 var tags = string.Empty;
-                if (DependencyTags.TryGetValue(dependency, out var dependencyTags))
+                if (_dependencyTags.TryGetValue(dependency, out var dependencyTags))
                 {
                     tags = string.Join(", ", dependencyTags);
                 }
@@ -78,7 +104,7 @@ namespace Pure.DI.Core
                 sb.Append($"{nameof(IBinding.As)}({Lifetime}).");
             }
 
-            foreach (var tag in Tags)
+            foreach (var tag in _tags)
             {
                 sb.Append($"{nameof(IBinding.Tags)}<{tag.ToString()}>().");
             }
