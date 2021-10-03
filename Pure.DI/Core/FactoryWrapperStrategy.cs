@@ -27,7 +27,7 @@
             var factoryDependencyType = dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.IFactory`1")?.Construct(dependency.Implementation.Type);
             if (factoryDependencyType == null)
             {
-                throw _cannotResolveExceptionFactory.Create(dependency.Binding);
+                throw _cannotResolveExceptionFactory.Create(dependency.Binding, "a factory");
             }
 
             var factoryTypeDescriptions = _buildContext.TypeResolver.Resolve(new SemanticType(factoryDependencyType, dependency.Implementation))
@@ -45,7 +45,7 @@
                     .AddArgumentListArguments(SyntaxFactory.Argument(lambda));
             }
 
-            throw _cannotResolveExceptionFactory.Create(factoryTypeDescription.Binding);
+            throw _cannotResolveExceptionFactory.Create(factoryTypeDescription.Binding, "a factory");
         }
     }
 }

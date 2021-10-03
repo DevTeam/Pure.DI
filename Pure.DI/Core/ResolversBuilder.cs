@@ -179,7 +179,7 @@ namespace Pure.DI.Core
                     continue;
                 }
 
-                var statements = CreateStatements(_buildStrategy, binding, dependency).ToArray();
+                var statements = CreateStatements(_buildStrategy, binding, dependency, tag).ToArray();
                 if (!statements.Any())
                 {
                     continue;
@@ -253,7 +253,7 @@ namespace Pure.DI.Core
                         SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependency.TypeSyntax)),
                         SyntaxFactory.Argument(tag));
 
-                var statements = CreateStatements(_buildStrategy, binding, dependency).ToArray();
+                var statements = CreateStatements(_buildStrategy, binding, dependency, null).ToArray();
                 if (!statements.Any())
                 {
                     continue;
@@ -315,7 +315,8 @@ namespace Pure.DI.Core
         private IEnumerable<StatementSyntax> CreateStatements(
             IBuildStrategy buildStrategy,
             BindingMetadata binding,
-            SemanticType dependency)
+            SemanticType dependency,
+            ExpressionSyntax? tag)
         {
             _tracer.Reset();
             try
@@ -327,8 +328,14 @@ namespace Pure.DI.Core
                     {
                         yield break;
                     }
+                    
+                    // Exclude IServiceProvider
+                    if (tag == default && binding.Implementation?.ToString() == "System.IServiceProvider")
+                    {
+                        yield break;
+                    }
 
-                    throw _cannotResolveExceptionFactory.Create(binding);
+                    throw _cannotResolveExceptionFactory.Create(binding, "a dependency");
                 }
 
                 yield return SyntaxFactory.ReturnStatement(instance);

@@ -59,7 +59,7 @@
 
                 public interface IDependency {}
 
-                public class Dependency: IDependency { public Service(IDeepDependency deepDependency) {} }
+                public class Dependency: IDependency { public Dependency(IDeepDependency deepDependency) {} }
 
                 public interface IService {}
 
@@ -67,6 +67,7 @@
 
                 public class CompositionRoot
                 {
+                    public readonly IService Value;
                     internal CompositionRoot(IService value) {}
                 }
                 

@@ -18,9 +18,9 @@ namespace Pure.DI.Core
             _tracer = tracer;
         }
 
-        public HandledException Create(BindingMetadata binding)
+        public HandledException Create(BindingMetadata binding, string description)
         {
-            var error = new StringBuilder($"Cannot resolve {binding.Implementation?.ToString() ?? binding.Factory?.ToString() ?? binding.ToString()}.");
+            var error = new StringBuilder($"Cannot resolve {description} {binding.Implementation?.ToString() ?? binding.Factory?.ToString() ?? binding.ToString()}.");
             var path = _tracer.Paths
                 .Where(i => i.Length > 1)
                 .OrderBy(i => i.Length)

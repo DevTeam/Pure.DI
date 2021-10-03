@@ -4,7 +4,7 @@ namespace Pure.DI.Features
     // ReSharper disable once UnusedType.Global
     internal static partial class Default
     {
-        static Default()
+        private static void Setup()
         {
             DI.Setup("DefaultFeature")
                 .TypeAttribute<TypeAttribute>()
