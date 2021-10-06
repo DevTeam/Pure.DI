@@ -9,18 +9,21 @@
     {
         private readonly IBuildContext _buildContext;
         private readonly IRaiseOnDisposableExpressionBuilder _raiseOnDisposableExpressionBuilder;
+        private readonly IWrapperStrategy _wrapperStrategy;
 
         public PerResolveLifetimeStrategy(
             IBuildContext buildContext,
-            IRaiseOnDisposableExpressionBuilder raiseOnDisposableExpressionBuilder)
+            IRaiseOnDisposableExpressionBuilder raiseOnDisposableExpressionBuilder,
+            IWrapperStrategy wrapperStrategy)
         {
             _buildContext = buildContext;
             _raiseOnDisposableExpressionBuilder = raiseOnDisposableExpressionBuilder;
+            _wrapperStrategy = wrapperStrategy;
         }
 
         public Lifetime Lifetime => Lifetime.PerResolve;
 
-        public ExpressionSyntax Build(Dependency dependency, ExpressionSyntax objectBuildExpression)
+        public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression)
         {
             var methodKey = new MemberKey($"GetPerResolve{dependency.Binding.Implementation}", dependency);
             var factoryMethod = (MethodDeclarationSyntax)_buildContext.GetOrAddMember(methodKey, () =>
@@ -83,7 +86,8 @@
                     .AddBodyStatements(returnStatement);
             });
             
-            return SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryMethod.Identifier));
+            var instanceExpression = SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryMethod.Identifier));
+            return _wrapperStrategy.Build(resolvingType, dependency, instanceExpression);
         }
     }
 }

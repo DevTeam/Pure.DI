@@ -9,18 +9,21 @@
         private const string ValueName = "Shared";
         private readonly IBuildContext _buildContext;
         private readonly IDisposeStatementsBuilder _disposeStatementsBuilder;
+        private readonly IWrapperStrategy _wrapperStrategy;
 
         public SingletonLifetimeStrategy(
             IBuildContext buildContext,
-            IDisposeStatementsBuilder disposeStatementsBuilder)
+            IDisposeStatementsBuilder disposeStatementsBuilder,
+            IWrapperStrategy wrapperStrategy)
         {
             _buildContext = buildContext;
             _disposeStatementsBuilder = disposeStatementsBuilder;
+            _wrapperStrategy = wrapperStrategy;
         }
 
         public Lifetime Lifetime => Lifetime.Singleton;
 
-        public ExpressionSyntax Build(Dependency dependency, ExpressionSyntax objectBuildExpression)
+        public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression)
         {
             var resolvedDependency = _buildContext.TypeResolver.Resolve(dependency.Implementation, dependency.Tag);
             var classKey = new MemberKey($"Singleton{resolvedDependency.Implementation}", dependency);
@@ -54,7 +57,8 @@
                     );
             });
 
-            return SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ParseName(((ClassDeclarationSyntax)singletonClass).Identifier.Text), SyntaxFactory.Token(SyntaxKind.DotToken), SyntaxFactory.IdentifierName(ValueName));
+            var instanceExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ParseName(((ClassDeclarationSyntax)singletonClass).Identifier.Text), SyntaxFactory.Token(SyntaxKind.DotToken), SyntaxFactory.IdentifierName(ValueName));
+            return _wrapperStrategy.Build(resolvingType, dependency, instanceExpression);
         }
     }
 }

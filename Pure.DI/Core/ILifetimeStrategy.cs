@@ -6,6 +6,6 @@
     {
         Lifetime Lifetime { get; }
         
-        ExpressionSyntax Build(Dependency dependency, ExpressionSyntax objectBuildExpression);
+        ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression);
     }
 }

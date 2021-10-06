@@ -25,14 +25,14 @@
                 public class CompositionRoot
                 {
                     public readonly MyClass Value;
-                    internal CompositionRoot(MyClass value) => Value = value;        
+                    internal CompositionRoot(MyClass value) => Value = value;
                 }
 
                 public class DisposingLifetime<T>: IFactory<T>, IDisposable
                 {
                     private readonly HashSet<IDisposable> _disposables = new ();
 
-                    public T Create(Func<T> factory)
+                    public T Create(Func<T> factory, Type implementationType, object tag)
                     {
                         var instance = factory();
                         if (instance is IDisposable disposable)
@@ -97,12 +97,12 @@
                 public class CompositionRoot
                 {
                     public readonly string Value;
-                    internal CompositionRoot(string value) => Value = value;        
+                    internal CompositionRoot(string value) => Value = value;
                 }
 
                 public class MyLifetime: IFactory<string>
                 {
-                    public string Create(Func<string> factory)
+                    public string Create(Func<string> factory, Type implementationType, object tag)
                     {
                         return factory() + ""_abc"";
                     }
@@ -144,7 +144,7 @@
 
                 public class MyLifetime: IFactory<string>
                 {
-                    public string Create(Func<string> factory)
+                    public string Create(Func<string> factory, Type implementationType, object tag)
                     {
                         return factory() + ""_abc"";
                     }
@@ -182,13 +182,13 @@
                 public class CompositionRoot
                 {
                     public readonly string Value;
-                    internal CompositionRoot(string value) => Value = value;        
+                    internal CompositionRoot(string value) => Value = value;
                 }
 
                 [Include(""string"")]
                 public class MyFactory: IFactory
                 {
-                    public T Create<T>(Func<T> factory, object tag)
+                    public T Create<T>(Func<T> factory, Type implementationType, object tag)
                     {
                         return (T)(object)(factory() as string + ""_abc"");
                     }
@@ -208,6 +208,100 @@
 
             // Then
             output.ShouldBe(new[] { "xyz_abc" }, generatedCode);
+        }
+        
+        [Fact]
+        public void ShouldIntercept()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using System.Collections.Generic;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly IMyInterface Value;
+                    internal CompositionRoot(IMyInterface value) => Value = value;
+                }
+
+                public class MyFactory<T>: IFactory<T>
+                {
+                    public T Create(Func<T> factory, Type implementationType, object tag)
+                    {
+                        System.Console.WriteLine(typeof(T).Name);
+                        return factory();
+                    }
+                }
+
+                public class IMyInterface {}
+                public class MyClass: IMyInterface { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<IFactory<TT>>().As(Lifetime.Singleton).To<MyFactory<TT>>()
+                            .Bind<IMyInterface>().To<MyClass>()
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                    
+                }    
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "CompositionRoot", "IMyInterface", "Sample.MyClass" }, generatedCode);
+        }
+        
+        [Fact]
+        public void ShouldInterceptMany()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using System.Collections.Generic;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly IMyInterface Value;
+                    internal CompositionRoot(IMyInterface value) => Value = value;
+                }
+
+                public class MyFactory: IFactory
+                {
+                    public T Create<T>(Func<T> factory, Type implementationType, object tag)
+                    {
+                        System.Console.WriteLine(typeof(T).Name);
+                        return factory();
+                    }
+                }
+
+                public class IMyInterface {}
+                public class MyClass: IMyInterface { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<IFactory>().As(Lifetime.Singleton).To<MyFactory>()
+                            .Bind<IMyInterface>().To<MyClass>()
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                    
+                }    
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "CompositionRoot", "IMyInterface", "Sample.MyClass" }, generatedCode);
         }
     }
 }

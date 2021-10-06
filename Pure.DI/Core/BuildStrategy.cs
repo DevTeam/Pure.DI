@@ -17,7 +17,6 @@ namespace Pure.DI.Core
         private readonly ITracer _tracer;
         private readonly ILog<BuildStrategy> _log;
         private readonly IBindingResultStrategy _resultStrategy;
-        private readonly IWrapperStrategy[] _wrapperStrategy;
         private readonly Dictionary<Lifetime, ILifetimeStrategy> _lifetimes;
         private readonly Dictionary<Dependency, ExpressionSyntax?> _cache = new();
 
@@ -26,14 +25,12 @@ namespace Pure.DI.Core
             ITracer tracer,
             ILog<BuildStrategy> log,
             [Tag(AsIsResult)] IBindingResultStrategy resultStrategy,
-            IWrapperStrategy[] wrapperStrategy,
             IEnumerable<ILifetimeStrategy> lifetimeStrategies)
         {
             _diagnostic = diagnostic;
             _tracer = tracer;
             _log = log;
             _resultStrategy = resultStrategy;
-            _wrapperStrategy = wrapperStrategy;
             _lifetimes = lifetimeStrategies.ToDictionary(i => i.Lifetime, i => i);
         }
         
@@ -48,9 +45,6 @@ namespace Pure.DI.Core
             var objectBuildExpression = dependency.ObjectBuilder.TryBuild(this, dependency);
             if (objectBuildExpression != null)
             {
-                // Apply wrappers
-                objectBuildExpression = _wrapperStrategy.Aggregate(objectBuildExpression, (current, wrapperStrategy) => wrapperStrategy.Build(dependency, current));
-
                 // Apply lifetime
                 if (!_lifetimes.TryGetValue(dependency.Binding.Lifetime, out var lifetimeStrategy))
                 {
@@ -59,7 +53,7 @@ namespace Pure.DI.Core
                     throw new HandledException(error);
                 }
 
-                objectBuildExpression = lifetimeStrategy.Build(dependency, objectBuildExpression);
+                objectBuildExpression = lifetimeStrategy.Build(resolvingType, dependency, objectBuildExpression);
                 objectBuildExpression = _resultStrategy.Build(objectBuildExpression);
                 _log.Info(() => new []{ $"{dependency} => {objectBuildExpression.NormalizeWhitespace()}"});
             }

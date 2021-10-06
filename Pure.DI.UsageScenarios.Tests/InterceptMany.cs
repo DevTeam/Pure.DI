@@ -46,12 +46,8 @@ namespace Pure.DI.UsageScenarios.Tests
             
             public int InvocationCounter { get; private set; }
 
-            public T Create<T>(Func<T> factory, object tag) => 
-                (T)_proxyGenerator.CreateClassProxyWithTarget(
-                    typeof(T),
-                    typeof(T).GetInterfaces(),
-                    factory(),
-                    this);
+            public T Create<T>(Func<T> factory, Type implementationType, object tag) => 
+                (T)_proxyGenerator.CreateInterfaceProxyWithTarget(typeof(T),factory(),this);
 
             void IInterceptor.Intercept(IInvocation invocation)
             {
@@ -69,8 +65,6 @@ namespace Pure.DI.UsageScenarios.Tests
         public class Service : IService
         {
             private readonly IDependency? _dependency;
-
-            public Service() { }
 
             public Service(IDependency dependency) { _dependency = dependency; }
 

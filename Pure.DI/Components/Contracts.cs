@@ -125,7 +125,7 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// Represents an attribute of including regular expression filter for types processing by <c>IFactory</c>. Is used together with <see cref="IFactory"/>.
+    /// Represents an attribute of including regular expression filter for implementation types processing by <c>IFactory</c>. Is used together with <see cref="IFactory"/>.
     /// <example>
     /// <code>
     /// [Include("MyClass.+")]
@@ -154,7 +154,7 @@ namespace Pure.DI
     }
     
     /// <summary>
-    /// Represents an attribute of excluding regular expression filter for types processing by <c>IFactory</c>. Is used together with <see cref="IFactory"/>.
+    /// Represents an attribute of excluding regular expression filter for implementation types processing by <c>IFactory</c>. Is used together with <see cref="IFactory"/>.
     /// <example>
     /// <code>
     /// [Exclude("Logger.+")]
@@ -605,9 +605,11 @@ namespace Pure.DI
         /// Provides an instance.
         /// </summary>
         /// <param name="factory">The method resolving an instance of dependency.</param>
-        /// <typeparam name="T">The type of an instance.</typeparam>
+        /// <param name="implementationType">The implementation type.</param>
+        /// <param name="tag">The dependency tag.</param>
+        /// <typeparam name="T">The dependency type.</typeparam>
         /// <returns>A resolved instance.</returns>
-        T Create(Func<T> factory);
+        T Create(Func<T> factory, Type implementationType, object tag);
     }
 
     /// <summary>
@@ -619,10 +621,11 @@ namespace Pure.DI
         /// Intercepts a resolving of a dependency of the type T using a method <paramref name="factory"/> for a <paramref name="tag"/>.
         /// </summary>
         /// <param name="factory">The method resolving an instance of dependency.</param>
-        /// <param name="tag"></param>
-        /// <typeparam name="T">The type of an instance.</typeparam>
+        /// <param name="implementationType">The implementation type.</param>
+        /// <param name="tag">The dependency tag.</param>
+        /// <typeparam name="T">The dependency type.</typeparam>
         /// <returns>A resolved instance.</returns>
-        T Create<T>(Func<T> factory, object tag);
+        T Create<T>(Func<T> factory, Type implementationType, object tag);
     }
 
     /// <summary>

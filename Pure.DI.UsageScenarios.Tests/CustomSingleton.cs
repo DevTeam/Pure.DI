@@ -20,10 +20,10 @@ namespace Pure.DI.UsageScenarios.Tests
         // {
         public void Run()
         {
+            // out=C:\Projects\_temp\zz
             DI.Setup()
-                // Registers custom lifetime for all implementations with a class name ending by word "Singleton"
+                // Registers the custom lifetime for all implementations with a class name ending by word "Singleton"
                 .Bind<IFactory>().As(Singleton).To<CustomSingletonLifetime>()
-
                 .Bind<IDependency>().To<DependencySingleton>()
                 .Bind<IService>().To<Service>();
             
@@ -32,7 +32,6 @@ namespace Pure.DI.UsageScenarios.Tests
 
             // Check that dependencies are singletons
             instance1.Dependency.ShouldBe(instance2.Dependency);
-
             instance1.ShouldNotBe(instance2);
         }
 
@@ -42,13 +41,13 @@ namespace Pure.DI.UsageScenarios.Tests
         {
             // Stores singleton instances by key
             private readonly ConcurrentDictionary<Key, object> _instances = new();
-            
+
             // Gets an existing instance or creates a new
-            public T Create<T>(Func<T> factory, object tag) =>
-                (T)_instances.GetOrAdd(new Key(typeof(T), tag), i => factory()!);
+            public T Create<T>(Func<T> factory, Type implementationType, object tag) =>
+                (T)_instances.GetOrAdd(new Key(implementationType, tag), i => factory()!);
 
             // Represents an instance key
-            private record Key(Type type, object? tag);
+            private record Key(Type Type, object? Tag);
         }
         
         public interface IDependency { }

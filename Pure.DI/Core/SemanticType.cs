@@ -172,9 +172,12 @@ namespace Pure.DI.Core
 
         public bool ImplementsInterface<T>()
         {
-            var disposableType = SemanticModel.Compilation.GetTypeByMetadataName(typeof(T).ToString());
-            return disposableType != null && Type.AllInterfaces.Any(i => i.Equals(disposableType, SymbolEqualityComparer.Default));
+            var interfaceType = SemanticModel.Compilation.GetTypeByMetadataName(typeof(T).ToString());
+            return interfaceType != null && ImplementsInterface(interfaceType);
         }
+        
+        public bool ImplementsInterface(INamedTypeSymbol interfaceType) =>
+            Type.AllInterfaces.Any(i => i.Equals(interfaceType, SymbolEqualityComparer.Default));
 
         private INamedTypeSymbol ToTypeSymbol(Type type)
         {

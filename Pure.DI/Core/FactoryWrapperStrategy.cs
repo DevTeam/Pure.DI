@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -22,30 +23,44 @@
             _buildStrategy = buildStrategy;
         }
 
-        public ExpressionSyntax Build(Dependency dependency, ExpressionSyntax objectBuildExpression)
+        public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression)
         {
-            var factoryDependencyType = dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.IFactory`1")?.Construct(dependency.Implementation.Type);
-            if (factoryDependencyType == null)
+            var baseFactoryType = dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.IFactory`1");
+            var factoryType = baseFactoryType?.Construct(resolvingType.Type);
+            if (factoryType == null)
             {
                 throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag,"a factory");
             }
-
-            var factoryTypeDescriptions = _buildContext.TypeResolver.Resolve(new SemanticType(factoryDependencyType, dependency.Implementation))
+            
+            if (
+                dependency.Implementation.Type is INamedTypeSymbol { IsGenericType: true } namedTypeSymbol 
+                && namedTypeSymbol.Interfaces.Any(i => i.IsGenericType && i.ConstructUnboundGenericType().Equals(baseFactoryType?.ConstructUnboundGenericType(), SymbolEqualityComparer.Default)))
+            {
+                return objectBuildExpression;
+            }
+            
+            var factoryTypes = _buildContext.TypeResolver.Resolve(new SemanticType(factoryType, dependency.Implementation))
                 .Where(i => Equals(i.Tag?.ToString(), dependency.Tag?.ToString()));
-            return factoryTypeDescriptions.Aggregate(objectBuildExpression, Wrap);
+            
+           return factoryTypes.Aggregate(objectBuildExpression, (syntax, factoryDependency) => Wrap(syntax, factoryDependency, dependency));
         }
 
-        private ExpressionSyntax Wrap(ExpressionSyntax objectBuildExpression, Dependency factoryTypeDescription)
+        private ExpressionSyntax Wrap(CSharpSyntaxNode objectBuildExpression, Dependency factoryDependency, Dependency dependency)
         {
             var lambda = SyntaxFactory.ParenthesizedLambdaExpression(objectBuildExpression);
-            var instance = _buildStrategy().TryBuild(factoryTypeDescription, factoryTypeDescription.Implementation);
-            if (instance != null)
+            var instance = _buildStrategy().TryBuild(factoryDependency, factoryDependency.Implementation);
+            if (instance == null)
             {
-                return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, instance, SyntaxFactory.IdentifierName(nameof(IFactory<object>.Create))))
-                    .AddArgumentListArguments(SyntaxFactory.Argument(lambda));
+                throw _cannotResolveExceptionFactory.Create(factoryDependency.Binding, factoryDependency.Tag, "a factory");
             }
 
-            throw _cannotResolveExceptionFactory.Create(factoryTypeDescription.Binding, factoryTypeDescription.Tag, "a factory");
+            ExpressionSyntax? tagExpression = dependency.Tag?.ToLiteralExpression();
+            return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, instance, SyntaxFactory.IdentifierName(nameof(IFactory<object>.Create))))
+                .AddArgumentListArguments(
+                    SyntaxFactory.Argument(lambda),
+                    SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependency.Implementation)),
+                    SyntaxFactory.Argument(tagExpression ?? SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax)));
+
         }
     }
 }

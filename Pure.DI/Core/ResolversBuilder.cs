@@ -166,7 +166,7 @@ namespace Pure.DI.Core
                 .AddTypeArgumentListArguments(SyntaxRepo.TypeTypeSyntax, funcType);
 
             var keyValuePairs = new List<ExpressionSyntax>();
-            foreach (var (binding, dependency, tag) in items)
+            foreach (var (binding, resolvingType, resolvingTag) in items)
             {
                 if (_buildContext.IsCancellationRequested)
                 {
@@ -174,12 +174,12 @@ namespace Pure.DI.Core
                     break;
                 }
 
-                if (tag != null)
+                if (resolvingTag != null)
                 {
                     continue;
                 }
 
-                var statements = CreateStatements(_buildStrategy, binding, dependency, tag).ToArray();
+                var statements = CreateStatements(_buildStrategy, binding, resolvingType, resolvingTag).ToArray();
                 if (!statements.Any())
                 {
                     continue;
@@ -187,7 +187,7 @@ namespace Pure.DI.Core
 
                 var keyValuePair = SyntaxFactory.ObjectCreationExpression(keyValuePairType)
                     .AddArgumentListArguments(
-                        SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependency.TypeSyntax))
+                        SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(resolvingType.TypeSyntax))
                             .WithCommentBefore(Comments),
                         SyntaxFactory.Argument(SyntaxFactory.ParenthesizedLambdaExpression()
                             .WithBody(SyntaxFactory.Block(statements)))
@@ -235,7 +235,7 @@ namespace Pure.DI.Core
                 .AddTypeArgumentListArguments(SyntaxRepo.TagTypeTypeSyntax, funcType);
 
             var keyValuePairs = new List<ExpressionSyntax>();
-            foreach (var (binding, dependency, tag) in items)
+            foreach (var (binding, resolvingType, resolvingTag) in items)
             {
                 if (_buildContext.IsCancellationRequested)
                 {
@@ -243,17 +243,17 @@ namespace Pure.DI.Core
                     break;
                 }
 
-                if (tag == null)
+                if (resolvingTag == null)
                 {
                     continue;
                 }
 
                 var key = SyntaxFactory.ObjectCreationExpression(SyntaxRepo.TagTypeTypeSyntax)
                     .AddArgumentListArguments(
-                        SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependency.TypeSyntax)),
-                        SyntaxFactory.Argument(tag));
+                        SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(resolvingType.TypeSyntax)),
+                        SyntaxFactory.Argument(resolvingTag));
 
-                var statements = CreateStatements(_buildStrategy, binding, dependency, tag).ToArray();
+                var statements = CreateStatements(_buildStrategy, binding, resolvingType, resolvingTag).ToArray();
                 if (!statements.Any())
                 {
                     continue;
@@ -315,13 +315,14 @@ namespace Pure.DI.Core
         private IEnumerable<StatementSyntax> CreateStatements(
             IBuildStrategy buildStrategy,
             IBindingMetadata binding,
-            SemanticType dependency,
-            ExpressionSyntax? tag)
+            SemanticType resolvingType,
+            ExpressionSyntax? resolvingTag)
         {
             _tracer.Reset();
             try
             {
-                var instance = buildStrategy.TryBuild(_typeResolver.Resolve(dependency, tag), dependency);
+                var dependency = _typeResolver.Resolve(resolvingType, resolvingTag);
+                var instance = buildStrategy.TryBuild(dependency, resolvingType);
                 if (instance == null)
                 {
                     if (binding.FromProbe)
@@ -330,12 +331,12 @@ namespace Pure.DI.Core
                     }
                     
                     // Exclude IServiceProvider
-                    if (tag == default && binding.Implementation?.ToString() == "System.IServiceProvider")
+                    if (resolvingTag == default && binding.Implementation?.ToString() == "System.IServiceProvider")
                     {
                         yield break;
                     }
 
-                    throw _cannotResolveExceptionFactory.Create(binding, tag, "a dependency");
+                    throw _cannotResolveExceptionFactory.Create(binding, resolvingTag, "a dependency");
                 }
 
                 yield return SyntaxFactory.ReturnStatement(instance);

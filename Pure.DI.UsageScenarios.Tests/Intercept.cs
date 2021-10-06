@@ -20,15 +20,16 @@ namespace Pure.DI.UsageScenarios.Tests
         public void Run()
         {
             DI.Setup()
+                .Default(Singleton)
                 // Generates proxies
-                .Bind<IProxyGenerator>().As(Singleton).To<ProxyGenerator>()
+                .Bind<IProxyGenerator>().To<ProxyGenerator>()
                 // Controls creating instances of type Dependency
-                .Bind<IFactory<Dependency>>().As(Singleton).To<MyInterceptor<Dependency>>()
+                .Bind<IFactory<IDependency>>().To<MyInterceptor<IDependency>>()
                 // Controls creating instances of type Service
-                .Bind<IFactory<Service>>().As(Singleton).To<MyInterceptor<Service>>()
+                .Bind<IFactory<IService>>().To<MyInterceptor<IService>>()
 
-                .Bind<IDependency>().As(Singleton).To<Dependency>()
-                .Bind<IService>().To<Service>();
+                .Bind<IDependency>().To<Dependency>()
+                .Bind<IService>().As(Transient).To<Service>();
             
             var instance = InterceptDI.Resolve<IService>();
             instance.Run();
@@ -36,10 +37,10 @@ namespace Pure.DI.UsageScenarios.Tests
             instance.Run();
 
             // Check number of invocations
-            InterceptDI.Resolve<MyInterceptor<Service>>().InvocationCounter.ShouldBe(3);
-            InterceptDI.Resolve<MyInterceptor<Dependency>>().InvocationCounter.ShouldBe(3);
+            ((MyInterceptor<IService>)InterceptDI.Resolve<IFactory<IService>>()).InvocationCounter.ShouldBe(3);
+            ((MyInterceptor<IDependency>)InterceptDI.Resolve<IFactory<IDependency>>()).InvocationCounter.ShouldBe(3);
         }
-
+        
         public class MyInterceptor<T>: IFactory<T>, IInterceptor
             where T: class
         {
@@ -50,12 +51,8 @@ namespace Pure.DI.UsageScenarios.Tests
 
             public int InvocationCounter { get; private set; }
 
-            public T Create(Func<T> factory) => 
-                (T)_proxyGenerator.CreateClassProxyWithTarget(
-                    typeof(T),
-                    typeof(T).GetInterfaces(),
-                    factory(),
-                    this);
+            public T Create(Func<T> factory, Type implementationType, object tag) =>
+                _proxyGenerator.CreateInterfaceProxyWithTarget(factory(), this);
 
             void IInterceptor.Intercept(IInvocation invocation)
             {
@@ -73,8 +70,6 @@ namespace Pure.DI.UsageScenarios.Tests
         public class Service : IService
         {
             private readonly IDependency? _dependency;
-
-            public Service() { }
 
             public Service(IDependency dependency) { _dependency = dependency; }
 

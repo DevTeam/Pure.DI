@@ -3,6 +3,7 @@ namespace Pure.DI.Core
 {
     using System;
     using System.Linq;
+    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -28,13 +29,8 @@ namespace Pure.DI.Core
             _includeTypeFilter = includeTypeFilter;
         }
 
-        public ExpressionSyntax Build(Dependency dependency, ExpressionSyntax objectBuildExpression)
+        public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression)
         {
-            if (dependency.Implementation.ImplementsInterface<IFactory>())
-            {
-                return objectBuildExpression;
-            }
-
             var factoryType = _buildContext.Compilation.GetTypeByMetadataName("Pure.DI.IFactory");
             if (factoryType == null)
             {
@@ -44,11 +40,21 @@ namespace Pure.DI.Core
             }
 
             var factoryTypeDescriptions = _buildContext.TypeResolver.Resolve(new SemanticType(factoryType, dependency.Implementation));
-            return factoryTypeDescriptions.Aggregate(objectBuildExpression, (syntax, factoryTypeDescription) => Wrap(dependency, syntax, factoryTypeDescription));
+            return factoryTypeDescriptions.Aggregate(objectBuildExpression, (syntax, factoryTypeDescription) => Wrap(factoryType, resolvingType, dependency, syntax, factoryTypeDescription));
         }
         
-        private ExpressionSyntax Wrap(Dependency dependency, ExpressionSyntax objectBuildExpression, Dependency factoryTypeDescription)
+        private ExpressionSyntax Wrap(ISymbol factoryType, SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression, Dependency factoryTypeDescription)
         {
+            if (factoryType.Equals(resolvingType.Type, SymbolEqualityComparer.Default))
+            {
+                return objectBuildExpression;
+            }
+
+            if (dependency.Implementation.ImplementsInterface<IFactory>())
+            {
+                return objectBuildExpression;
+            }
+
             if (!_includeTypeFilter.IsAccepted(factoryTypeDescription.Implementation, dependency.Implementation))
             {
                 return objectBuildExpression;
@@ -57,15 +63,16 @@ namespace Pure.DI.Core
             var lambda = SyntaxFactory.ParenthesizedLambdaExpression(objectBuildExpression);
             ExpressionSyntax? tagExpression = dependency.Tag?.ToLiteralExpression();
             var factoryExpression = _buildStrategy().TryBuild(factoryTypeDescription, factoryTypeDescription.Implementation);
-            if (factoryExpression != null)
+            if (factoryExpression == null)
             {
-                return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, factoryExpression, SyntaxFactory.GenericName(nameof(IFactory.Create)).AddTypeArgumentListArguments(dependency.Implementation)))
-                    .AddArgumentListArguments(
-                        SyntaxFactory.Argument(lambda),
-                        SyntaxFactory.Argument(tagExpression ?? SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax)));
+                throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, "a factory");
             }
-
-            throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, "a factory");
+            
+            return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, factoryExpression, SyntaxFactory.GenericName(nameof(IFactory.Create)).AddTypeArgumentListArguments(resolvingType)))
+                .AddArgumentListArguments(
+                    SyntaxFactory.Argument(lambda),
+                    SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependency.Implementation)),
+                    SyntaxFactory.Argument(tagExpression ?? SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax)));
         }
     }
 }
