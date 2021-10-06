@@ -20,7 +20,6 @@ namespace Pure.DI.UsageScenarios.Tests
         // {
         public void Run()
         {
-            // out=C:\Projects\_temp\zz
             DI.Setup()
                 // Registers the custom lifetime for all implementations with a class name ending by word "Singleton"
                 .Bind<IFactory>().As(Singleton).To<CustomSingletonLifetime>()

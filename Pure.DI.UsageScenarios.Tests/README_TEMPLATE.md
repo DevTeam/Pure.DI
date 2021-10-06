@@ -717,9 +717,8 @@ public class Service : IService
 public void Run()
 {
     DI.Setup()
-        // Registers custom lifetime for all implementations with a class name ending by word "Singleton"
+        // Registers the custom lifetime for all implementations with a class name ending by word "Singleton"
         .Bind<IFactory>().As(Singleton).To<CustomSingletonLifetime>()
-
         .Bind<IDependency>().To<DependencySingleton>()
         .Bind<IService>().To<Service>();
     
@@ -728,7 +727,6 @@ public void Run()
 
     // Check that dependencies are singletons
     instance1.Dependency.ShouldBe(instance2.Dependency);
-
     instance1.ShouldNotBe(instance2);
 }
 
@@ -738,13 +736,13 @@ public class CustomSingletonLifetime: IFactory
 {
     // Stores singleton instances by key
     private readonly ConcurrentDictionary<Key, object> _instances = new();
-    
+
     // Gets an existing instance or creates a new
-    public T Create<T>(Func<T> factory, object tag) =>
-        (T)_instances.GetOrAdd(new Key(typeof(T), tag), i => factory()!);
+    public T Create<T>(Func<T> factory, Type implementationType, object tag) =>
+        (T)_instances.GetOrAdd(new Key(implementationType, tag), i => factory()!);
 
     // Represents an instance key
-    private record Key(Type type, object? tag);
+    private record Key(Type Type, object? Tag);
 }
 
 public interface IDependency { }
@@ -974,15 +972,16 @@ public class DecoratorService : IService
 public void Run()
 {
     DI.Setup()
+        .Default(Singleton)
         // Generates proxies
-        .Bind<IProxyGenerator>().As(Singleton).To<ProxyGenerator>()
+        .Bind<IProxyGenerator>().To<ProxyGenerator>()
         // Controls creating instances of type Dependency
-        .Bind<IFactory<Dependency>>().As(Singleton).To<MyInterceptor<Dependency>>()
+        .Bind<IFactory<IDependency>>().To<MyInterceptor<IDependency>>()
         // Controls creating instances of type Service
-        .Bind<IFactory<Service>>().As(Singleton).To<MyInterceptor<Service>>()
+        .Bind<IFactory<IService>>().To<MyInterceptor<IService>>()
 
-        .Bind<IDependency>().As(Singleton).To<Dependency>()
-        .Bind<IService>().To<Service>();
+        .Bind<IDependency>().To<Dependency>()
+        .Bind<IService>().As(Transient).To<Service>();
     
     var instance = InterceptDI.Resolve<IService>();
     instance.Run();
@@ -990,8 +989,8 @@ public void Run()
     instance.Run();
 
     // Check number of invocations
-    InterceptDI.Resolve<MyInterceptor<Service>>().InvocationCounter.ShouldBe(3);
-    InterceptDI.Resolve<MyInterceptor<Dependency>>().InvocationCounter.ShouldBe(3);
+    ((MyInterceptor<IService>)InterceptDI.Resolve<IFactory<IService>>()).InvocationCounter.ShouldBe(3);
+    ((MyInterceptor<IDependency>)InterceptDI.Resolve<IFactory<IDependency>>()).InvocationCounter.ShouldBe(3);
 }
 
 public class MyInterceptor<T>: IFactory<T>, IInterceptor
@@ -1004,12 +1003,8 @@ public class MyInterceptor<T>: IFactory<T>, IInterceptor
 
     public int InvocationCounter { get; private set; }
 
-    public T Create(Func<T> factory) => 
-        (T)_proxyGenerator.CreateClassProxyWithTarget(
-            typeof(T),
-            typeof(T).GetInterfaces(),
-            factory(),
-            this);
+    public T Create(Func<T> factory, Type implementationType, object tag) =>
+        _proxyGenerator.CreateInterfaceProxyWithTarget(factory(), this);
 
     void IInterceptor.Intercept(IInvocation invocation)
     {
@@ -1027,8 +1022,6 @@ public interface IService { void Run(); }
 public class Service : IService
 {
     private readonly IDependency? _dependency;
-
-    public Service() { }
 
     public Service(IDependency dependency) { _dependency = dependency; }
 
@@ -1072,12 +1065,8 @@ public class MyInterceptor: IFactory, IInterceptor
     
     public int InvocationCounter { get; private set; }
 
-    public T Create<T>(Func<T> factory, object tag) => 
-        (T)_proxyGenerator.CreateClassProxyWithTarget(
-            typeof(T),
-            typeof(T).GetInterfaces(),
-            factory(),
-            this);
+    public T Create<T>(Func<T> factory, Type implementationType, object tag) => 
+        (T)_proxyGenerator.CreateInterfaceProxyWithTarget(typeof(T),factory(),this);
 
     void IInterceptor.Intercept(IInvocation invocation)
     {
@@ -1095,8 +1084,6 @@ public interface IService { void Run(); }
 public class Service : IService
 {
     private readonly IDependency? _dependency;
-
-    public Service() { }
 
     public Service(IDependency dependency) { _dependency = dependency; }
 
