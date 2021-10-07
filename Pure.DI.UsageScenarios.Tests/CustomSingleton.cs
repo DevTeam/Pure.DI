@@ -43,7 +43,7 @@ namespace Pure.DI.UsageScenarios.Tests
 
             // Gets an existing instance or creates a new
             public T Create<T>(Func<T> factory, Type implementationType, object tag) =>
-                (T)_instances.GetOrAdd(new Key(implementationType, tag), i => factory()!);
+                (T)_instances.GetOrAdd(new Key(implementationType, tag), _ => factory()!);
 
             // Represents an instance key
             private record Key(Type Type, object? Tag);

@@ -2,14 +2,11 @@
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedVariable
+// ReSharper disable UnusedParameter.Local
 namespace Pure.DI.UsageScenarios.Tests
 {
-    using Shouldly;
-    using System;
-    using System.Collections.Concurrent;
     using Xunit;
-    using static Lifetime;
-
+    
     public class DependencyInjectionWithImplementations
     {
         [Fact]

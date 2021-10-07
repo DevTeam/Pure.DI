@@ -1,9 +1,10 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedVariable
+// ReSharper disable UnusedParameter.Local
 namespace Pure.DI.UsageScenarios.Tests
 {
-    using Shouldly;
     using Xunit;
 
     public class Generics

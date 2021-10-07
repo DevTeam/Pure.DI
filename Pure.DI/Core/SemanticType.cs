@@ -175,8 +175,8 @@ namespace Pure.DI.Core
             var interfaceType = SemanticModel.Compilation.GetTypeByMetadataName(typeof(T).ToString());
             return interfaceType != null && ImplementsInterface(interfaceType);
         }
-        
-        public bool ImplementsInterface(INamedTypeSymbol interfaceType) =>
+
+        private bool ImplementsInterface(ISymbol interfaceType) =>
             Type.AllInterfaces.Any(i => i.Equals(interfaceType, SymbolEqualityComparer.Default));
 
         private INamedTypeSymbol ToTypeSymbol(Type type)

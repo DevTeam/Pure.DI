@@ -54,7 +54,11 @@ namespace Pure.DI.UsageScenarios.Tests
 
         public string State { get; } = string.Empty;
 
-        public void Dispose() => DisposeCount++;
+        public void Dispose()
+        {
+            DisposeCount++;
+            GC.SuppressFinalize(this);
+        }
     }
 
     // Generic

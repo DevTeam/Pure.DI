@@ -865,7 +865,7 @@ public interface IDependency { }
 
 public class Dependency : IDependency, IDisposable
 {
-    public void Dispose() { }
+    public void Dispose() => GC.SuppressFinalize(this);
 }
 
 public interface IService
@@ -923,7 +923,11 @@ public class Dependency : IDependency, IDisposable
 {
     public bool IsDisposed { get; private set; }
     
-    public void Dispose() => IsDisposed = true;
+    public void Dispose()
+    {
+        IsDisposed = true;
+        GC.SuppressFinalize(this);
+    }
 }
 
 public interface IService
@@ -984,7 +988,7 @@ public interface IDependency { }
 
 public class Dependency : IDependency, IDisposable
 {
-    public void Dispose() { }
+    public void Dispose() => GC.SuppressFinalize(this);
 }
 
 public interface IService
@@ -1040,7 +1044,7 @@ public class CustomSingletonLifetime: IFactory
 
     // Gets an existing instance or creates a new
     public T Create<T>(Func<T> factory, Type implementationType, object tag) =>
-        (T)_instances.GetOrAdd(new Key(implementationType, tag), i => factory()!);
+        (T)_instances.GetOrAdd(new Key(implementationType, tag), _ => factory()!);
 
     // Represents an instance key
     private record Key(Type Type, object? Tag);

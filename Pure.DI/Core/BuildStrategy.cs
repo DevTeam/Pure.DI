@@ -64,7 +64,7 @@ namespace Pure.DI.Core
             return objectBuildExpression;
         }
 
-        private struct CacheKey
+        private readonly struct CacheKey
         {
             public readonly Dependency Dependency;
             public readonly SemanticType ResolvingType;

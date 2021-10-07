@@ -6,7 +6,6 @@ namespace Pure.DI.UsageScenarios.Tests
     using Shouldly;
     using Xunit;
     using Pure.DI;
-    using static Lifetime;
 
     public class Decorator
     {

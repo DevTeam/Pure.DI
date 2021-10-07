@@ -31,7 +31,7 @@
             // }
             // Check instances
             // Resolve the instance using the empty tag
-            var instance5 = Should.Throw<ArgumentException>(() => TagsDI.Resolve<Service>());
+            var instance5 = Should.Throw<ArgumentException>(TagsDI.Resolve<Service>);
             instance1.ShouldBeOfType<Service>();
             instance2.ShouldBeOfType<Service>();
             instance3.ShouldBeOfType<Service>();

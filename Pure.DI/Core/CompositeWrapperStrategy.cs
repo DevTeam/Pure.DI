@@ -12,7 +12,7 @@ namespace Pure.DI.Core
         public CompositeWrapperStrategy(
             [Tag(Tags.FactoryMethod)] IWrapperStrategy factoryMethodWrapperStrategy,
             [Tag(Tags.Factory)] IWrapperStrategy factoryWrapperStrategy) =>
-            _strategies = ImmutableArray.Create<IWrapperStrategy>(factoryMethodWrapperStrategy, factoryWrapperStrategy);
+            _strategies = ImmutableArray.Create(factoryMethodWrapperStrategy, factoryWrapperStrategy);
 
         public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression) =>
             _strategies.Aggregate(objectBuildExpression, (current, wrapperStrategy) => wrapperStrategy.Build(resolvingType, dependency, current));

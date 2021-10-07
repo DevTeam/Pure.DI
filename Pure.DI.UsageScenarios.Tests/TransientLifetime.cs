@@ -47,7 +47,7 @@ namespace Pure.DI.UsageScenarios.Tests
 
         public class Dependency : IDependency, IDisposable
         {
-            public void Dispose() { }
+            public void Dispose() => GC.SuppressFinalize(this);
         }
 
         public interface IService

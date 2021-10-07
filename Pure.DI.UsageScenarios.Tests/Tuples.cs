@@ -1,7 +1,7 @@
-﻿namespace Pure.DI.UsageScenarios.Tests
+﻿// ReSharper disable RedundantUsingDirective
+namespace Pure.DI.UsageScenarios.Tests
 {
     using Shouldly;
-    using System;
     using System.Diagnostics.CodeAnalysis;
     using Xunit;
 
