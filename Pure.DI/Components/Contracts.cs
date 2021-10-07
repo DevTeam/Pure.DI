@@ -139,17 +139,17 @@ namespace Pure.DI
     internal class IncludeAttribute : Attribute
     {
         /// <summary>
-        /// The regular expression to include full type names.
+        /// The regular expression to include full implementation type names.
         /// </summary>
-        public readonly string TypeNameRegularExpression;
+        public readonly string ImplementationTypeNameRegularExpression;
 
         /// <summary>
         /// Creates an attribute instance.
         /// </summary>
-        /// <param name="typeNameRegularExpression">The regular expression to include full type names.</param>
-        public IncludeAttribute(string typeNameRegularExpression)
+        /// <param name="implementationTypeNameRegularExpression">The regular expression to include full implementation type names.</param>
+        public IncludeAttribute(string implementationTypeNameRegularExpression)
         {
-            TypeNameRegularExpression = typeNameRegularExpression;
+            ImplementationTypeNameRegularExpression = implementationTypeNameRegularExpression;
         }
     }
     
@@ -168,17 +168,17 @@ namespace Pure.DI
     internal class ExcludeAttribute : Attribute
     {
         /// <summary>
-        /// The regular expression to exclude full type names.
+        /// The regular expression to exclude full implementation type names.
         /// </summary>
-        public readonly string TypeNameRegularExpression;
+        public readonly string ImplementationTypeNameRegularExpression;
 
         /// <summary>
         /// Creates an attribute instance.
         /// </summary>
-        /// <param name="typeNameRegularExpression">The regular expression to exclude full type names.</param>
-        public ExcludeAttribute(string typeNameRegularExpression)
+        /// <param name="implementationTypeNameRegularExpression">The regular expression to exclude full implementation type names.</param>
+        public ExcludeAttribute(string implementationTypeNameRegularExpression)
         {
-            TypeNameRegularExpression = typeNameRegularExpression;
+            ImplementationTypeNameRegularExpression = implementationTypeNameRegularExpression;
         }
     }
     
