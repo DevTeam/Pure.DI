@@ -20,7 +20,7 @@
     <ProjectReference Include="..\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="Shouldly" Version="4.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="5.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="5.0.10" />
     <PackageReference Include="Castle.Core" Version="4.4.1" />
     <None Update="README_TEMPLATE.md">
       <DesignTime>True</DesignTime>
