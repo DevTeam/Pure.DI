@@ -2,6 +2,7 @@
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+// ReSharper disable MemberCanBePrivate.Local
 namespace Pure.DI.Core
 {
     using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace Pure.DI.Core
         private readonly ILog<BuildStrategy> _log;
         private readonly IBindingResultStrategy _resultStrategy;
         private readonly Dictionary<Lifetime, ILifetimeStrategy> _lifetimes;
-        private readonly Dictionary<Dependency, ExpressionSyntax?> _cache = new();
+        private readonly Dictionary<CacheKey, ExpressionSyntax?> _cache = new();
 
         public BuildStrategy(
             IDiagnostic diagnostic,
@@ -36,7 +37,8 @@ namespace Pure.DI.Core
         
         public ExpressionSyntax? TryBuild(Dependency dependency, SemanticType resolvingType)
         {
-            if (_cache.TryGetValue(dependency, out var result))
+            var cacheKey = new CacheKey(dependency, resolvingType);
+            if (_cache.TryGetValue(cacheKey, out var result))
             {
                 return result;
             }
@@ -58,8 +60,32 @@ namespace Pure.DI.Core
                 _log.Info(() => new []{ $"{dependency} => {objectBuildExpression.NormalizeWhitespace()}"});
             }
 
-            _cache.Add(dependency, objectBuildExpression);
+            _cache.Add(cacheKey, objectBuildExpression);
             return objectBuildExpression;
+        }
+
+        private struct CacheKey
+        {
+            public readonly Dependency Dependency;
+            public readonly SemanticType ResolvingType;
+
+            public CacheKey(Dependency dependency, SemanticType resolvingType)
+            {
+                Dependency = dependency;
+                ResolvingType = resolvingType;
+            }
+
+            public bool Equals(CacheKey other) => Dependency.Equals(other.Dependency) && ResolvingType.Equals(other.ResolvingType);
+
+            public override bool Equals(object? obj) => obj is CacheKey other && Equals(other);
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return (Dependency.GetHashCode() * 397) ^ ResolvingType.GetHashCode();
+                }
+            }
         }
     }
 }

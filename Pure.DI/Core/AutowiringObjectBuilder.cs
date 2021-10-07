@@ -182,11 +182,6 @@
             {
                 return defaultValue;
             }
-            
-            if (buildStrategy.TryBuild(dependency, resolvingType) == null)
-            {
-                return null;
-            }
 
             switch (dependency.Implementation.Type)
             {
@@ -228,6 +223,11 @@
                 }
             }
             
+            if (buildStrategy.TryBuild(dependency, resolvingType) == null)
+            {
+                return null;
+            }
+
             var error = $"Unsupported type {dependency.Implementation}.";
             _diagnostic.Error(Diagnostics.Error.Unsupported, error, resolveLocations.FirstOrDefault());
             throw new HandledException(error);

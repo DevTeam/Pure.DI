@@ -61,7 +61,6 @@ namespace Pure.DI.Core
             }
 
             var lambda = SyntaxFactory.ParenthesizedLambdaExpression(objectBuildExpression);
-            ExpressionSyntax? tagExpression = dependency.Tag?.ToLiteralExpression();
             var factoryExpression = _buildStrategy().TryBuild(factoryTypeDescription, factoryTypeDescription.Implementation);
             if (factoryExpression == null)
             {
@@ -72,7 +71,7 @@ namespace Pure.DI.Core
                 .AddArgumentListArguments(
                     SyntaxFactory.Argument(lambda),
                     SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependency.Implementation)),
-                    SyntaxFactory.Argument(tagExpression ?? SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax)));
+                    SyntaxFactory.Argument(dependency.Tag ?? SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax)));
         }
     }
 }

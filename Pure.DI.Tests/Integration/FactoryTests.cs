@@ -226,19 +226,19 @@
                 public class CompositionRoot
                 {
                     public readonly IMyInterface Value;
-                    internal CompositionRoot(IMyInterface value) => Value = value;
+                    internal CompositionRoot([Tag(1)] IMyInterface value) => Value = value;
                 }
 
                 public class MyFactory<T>: IFactory<T>
                 {
                     public T Create(Func<T> factory, Type implementationType, object tag)
                     {
-                        System.Console.WriteLine(typeof(T).Name);
+                        System.Console.WriteLine($""{implementationType.Name}: {typeof(T).Name}({tag})"");
                         return factory();
                     }
                 }
 
-                public class IMyInterface {}
+                public interface IMyInterface {}
                 public class MyClass: IMyInterface { }
 
                 internal static partial class Composer
@@ -246,15 +246,16 @@
                     static Composer()
                     {
                         DI.Setup()
+                            .Bind<IFactory<TT>>(1).As(Lifetime.Singleton).To<MyFactory<TT>>()
                             .Bind<IFactory<TT>>().As(Lifetime.Singleton).To<MyFactory<TT>>()
-                            .Bind<IMyInterface>().To<MyClass>()
+                            .Bind<IMyInterface>(1).To<MyClass>()
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }                    
                 }    
             }".Run(out var generatedCode);
 
             // Then
-            output.ShouldBe(new[] { "CompositionRoot", "IMyInterface", "Sample.MyClass" }, generatedCode);
+            output.ShouldBe(new[] { "CompositionRoot: CompositionRoot()", "MyClass: IMyInterface(1)", "Sample.MyClass" }, generatedCode);
         }
         
         [Fact]
@@ -272,21 +273,22 @@
 
                 public class CompositionRoot
                 {
-                    public readonly IMyInterface Value;
-                    internal CompositionRoot(IMyInterface value) => Value = value;
+                    public readonly IMyInterface1 Value;
+                    internal CompositionRoot(IMyInterface1 value1, [Tag(2)] IMyInterface2 value2) => Value = value1;
                 }
 
                 public class MyFactory: IFactory
                 {
                     public T Create<T>(Func<T> factory, Type implementationType, object tag)
                     {
-                        System.Console.WriteLine(typeof(T).Name);
+                        System.Console.WriteLine($""{implementationType.Name}: {typeof(T).Name}({tag})"");
                         return factory();
                     }
                 }
 
-                public class IMyInterface {}
-                public class MyClass: IMyInterface { }
+                public interface IMyInterface1 {}
+                public interface IMyInterface2 {}
+                public class MyClass: IMyInterface1, IMyInterface2 { }
 
                 internal static partial class Composer
                 {
@@ -294,14 +296,63 @@
                     {
                         DI.Setup()
                             .Bind<IFactory>().As(Lifetime.Singleton).To<MyFactory>()
-                            .Bind<IMyInterface>().To<MyClass>()
+                            .Bind<IMyInterface1>().Bind<IMyInterface2>(2).To<MyClass>()
                             .Bind<CompositionRoot>().To<CompositionRoot>();
-                    }                    
+                    }
                 }    
             }".Run(out var generatedCode);
 
             // Then
-            output.ShouldBe(new[] { "CompositionRoot", "IMyInterface", "Sample.MyClass" }, generatedCode);
+            output.ShouldBe(new[] { "CompositionRoot: CompositionRoot()", "MyClass: IMyInterface1()", "MyClass: IMyInterface2(2)", "Sample.MyClass" }, generatedCode);
+        }
+        
+        [Fact]
+        public void ShouldInterceptManyWhenFunc()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using System.Collections.Generic;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly IMyInterface1 Value;
+                    internal CompositionRoot(IMyInterface1 value1, [Tag(2)] IMyInterface2 value2) => Value = value1;
+                }
+
+                public class MyFactory: IFactory
+                {
+                    public T Create<T>(Func<T> factory, Type implementationType, object tag)
+                    {
+                        System.Console.WriteLine($""{implementationType.Name}: {typeof(T).Name}({tag})"");
+                        return factory();
+                    }
+                }
+
+                public interface IMyInterface1 {}
+                public interface IMyInterface2 {}
+                public class MyClass: IMyInterface1, IMyInterface2 { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<IFactory>().As(Lifetime.Singleton).To<MyFactory>()
+                            .Bind<MyClass>().To<MyClass>()
+                            .Bind<IMyInterface1>().Bind<IMyInterface2>(2).To(ctx => new MyClass())
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }    
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "CompositionRoot: CompositionRoot()", "IMyInterface1: IMyInterface1()", "IMyInterface2: IMyInterface2(2)", "Sample.MyClass" }, generatedCode);
         }
     }
 }

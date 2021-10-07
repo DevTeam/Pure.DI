@@ -32,13 +32,15 @@
                 throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag,"a factory");
             }
             
-            if (
-                dependency.Implementation.Type is INamedTypeSymbol { IsGenericType: true } namedTypeSymbol 
-                && namedTypeSymbol.Interfaces.Any(i => i.IsGenericType && i.ConstructUnboundGenericType().Equals(baseFactoryType?.ConstructUnboundGenericType(), SymbolEqualityComparer.Default)))
+            if (dependency.Implementation.Type is INamedTypeSymbol { IsGenericType: true } namedTypeSymbol)
             {
-                return objectBuildExpression;
+                var baseGenericType = baseFactoryType?.ConstructUnboundGenericType();
+                if (namedTypeSymbol.Interfaces.Any(i => i.IsGenericType && i.ConstructUnboundGenericType().Equals(baseGenericType, SymbolEqualityComparer.Default)))
+                {
+                    return objectBuildExpression;
+                }
             }
-            
+
             var factoryTypes = _buildContext.TypeResolver.Resolve(new SemanticType(factoryType, dependency.Implementation))
                 .Where(i => Equals(i.Tag?.ToString(), dependency.Tag?.ToString()));
             
@@ -54,12 +56,11 @@
                 throw _cannotResolveExceptionFactory.Create(factoryDependency.Binding, factoryDependency.Tag, "a factory");
             }
 
-            ExpressionSyntax? tagExpression = dependency.Tag?.ToLiteralExpression();
             return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, instance, SyntaxFactory.IdentifierName(nameof(IFactory<object>.Create))))
                 .AddArgumentListArguments(
                     SyntaxFactory.Argument(lambda),
                     SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependency.Implementation)),
-                    SyntaxFactory.Argument(tagExpression ?? SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax)));
+                    SyntaxFactory.Argument(dependency.Tag ?? SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax)));
 
         }
     }
