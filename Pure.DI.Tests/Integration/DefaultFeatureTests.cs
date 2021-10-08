@@ -1,5 +1,6 @@
 ﻿namespace Pure.DI.Tests.Integration
 {
+    using System.Collections.Generic;
     using Shouldly;
     using Xunit;
 
@@ -173,7 +174,7 @@
                     internal CompositionRoot(Task<string> task) 
                     {
                         task.RunSynchronously();
-                        Value = task.Result;        
+                        Value = task.Result;
                     }
                 }
             }".Run(out var generatedCode);
@@ -323,11 +324,27 @@
         }
 
         [Theory]
+        [InlineData("IEnumerable")]
         [InlineData("ICollection")]
         [InlineData("IReadOnlyCollection")]
         [InlineData("IList")]
+        [InlineData("List")]
         [InlineData("IReadOnlyList")]
-        [InlineData("IEnumerable")]
+        [InlineData("ISet")]
+        [InlineData("HashSet")]
+        [InlineData("SortedSet")]
+        [InlineData("Queue")]
+        [InlineData("Stack")]
+        [InlineData("ImmutableArray")]
+        [InlineData("IImmutableList")]
+        [InlineData("ImmutableList")]
+        [InlineData("IImmutableSet")]
+        [InlineData("ImmutableHashSet")]
+        [InlineData("ImmutableSortedSet")]
+        [InlineData("IImmutableQueue")]
+        [InlineData("ImmutableQueue")]
+        [InlineData("IImmutableStack")]
+        [InlineData("ImmutableStack")]
         public void ShouldSupportCollections(string collectionType)
         {
             // Given
@@ -339,6 +356,7 @@
                 using System;
                 using Pure.DI;
                 using System.Collections.Generic;
+                using System.Collections.Immutable;
 
                 static partial class Composer
                 {
@@ -361,7 +379,8 @@
             }".Replace("ICollection", collectionType).Run(out var generatedCode);
 
             // Then
-            output.ShouldBe(new[] { "1.2.3" }, generatedCode);
+            output.Count.ShouldBe(1, generatedCode);
+            new HashSet<string>(output[0].Split(".")).SetEquals(new HashSet<string> { "1", "2", "3"} ).ShouldBeTrue(output[0]);
         }
 
         [Fact]

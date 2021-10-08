@@ -3,6 +3,7 @@ namespace Pure.DI.Tests.Integration
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -30,6 +31,8 @@ namespace Pure.DI.Tests.Integration
                     MetadataReference.CreateFromFile(GetSystemAssemblyPathByName("System.Runtime.dll")),
                     MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location),
                     MetadataReference.CreateFromFile(typeof(IList<object>).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(IImmutableList<object>).Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(SortedSet<object>).Assembly.Location),
                     MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
                     MetadataReference.CreateFromFile(typeof(IServiceCollection).Assembly.Location),
                     MetadataReference.CreateFromFile(typeof(IServiceProvider).Assembly.Location),
