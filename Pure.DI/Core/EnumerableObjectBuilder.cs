@@ -33,7 +33,7 @@ namespace Pure.DI.Core
             var elementType = namedTypeSymbol.TypeArguments[0];
             var memberKey = new MemberKey($"EnumerableOf{elementType.Name}", dependency);
 
-            var factoryMethod = (MethodDeclarationSyntax)_buildContext.GetOrAddMember(memberKey, () =>
+            var factoryMethod = _buildContext.GetOrAddMember(memberKey, () =>
             {
                 var resolvingType = new SemanticType(elementType, dependency.Implementation);
                 var yields =

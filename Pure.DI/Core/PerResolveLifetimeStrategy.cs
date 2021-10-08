@@ -26,7 +26,7 @@
         public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression)
         {
             var methodKey = new MemberKey($"GetPerResolve{dependency.Binding.Implementation}", dependency);
-            var factoryMethod = (MethodDeclarationSyntax)_buildContext.GetOrAddMember(methodKey, () =>
+            var factoryMethod = _buildContext.GetOrAddMember(methodKey, () =>
             {
                 var resolvedType = dependency.Implementation;
                 var fieldKey = new MemberKey($"_perResolve{dependency.Binding.Implementation}", dependency);
@@ -39,15 +39,13 @@
                     fieldType = SyntaxFactory.NullableType(fieldType);
                 }
 
-                var perResolveField = (FieldDeclarationSyntax) _buildContext.GetOrAddMember(fieldKey, () =>
+                var perResolveField = _buildContext.GetOrAddMember(fieldKey, () =>
                 {
                     var resolveInstanceFieldName = _buildContext.NameService.FindName(fieldKey);
                     return SyntaxFactory.FieldDeclaration(
                             SyntaxFactory.VariableDeclaration(fieldType)
                                 .AddVariables(
-                                    SyntaxFactory.VariableDeclarator(resolveInstanceFieldName)
-                                )
-                        )
+                                    SyntaxFactory.VariableDeclarator(resolveInstanceFieldName)))
                         .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.ThreadStaticAttr))
                         .AddModifiers(
                             SyntaxFactory.Token(SyntaxKind.PrivateKeyword),

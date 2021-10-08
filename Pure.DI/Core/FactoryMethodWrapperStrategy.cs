@@ -59,8 +59,14 @@ namespace Pure.DI.Core
             {
                 return objectBuildExpression;
             }
+            
+            var methodKey = new MemberKey($"Resolve{dependency.Implementation}", dependency);
+            var createMethodSyntax = _buildContext.GetOrAddMember(methodKey, () => 
+                SyntaxFactory.MethodDeclaration(dependency.Implementation, _buildContext.NameService.FindName(methodKey))
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                    .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
+                    .AddBodyStatements(SyntaxFactory.ReturnStatement(objectBuildExpression)));
 
-            var lambda = SyntaxFactory.ParenthesizedLambdaExpression(objectBuildExpression);
             var factoryExpression = _buildStrategy().TryBuild(factoryTypeDescription, factoryTypeDescription.Implementation);
             if (factoryExpression == null)
             {
@@ -69,7 +75,7 @@ namespace Pure.DI.Core
             
             return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, factoryExpression, SyntaxFactory.GenericName(nameof(IFactory.Create)).AddTypeArgumentListArguments(resolvingType)))
                 .AddArgumentListArguments(
-                    SyntaxFactory.Argument(lambda),
+                    SyntaxFactory.Argument(SyntaxFactory.IdentifierName(createMethodSyntax.Identifier)),
                     SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependency.Implementation)),
                     SyntaxFactory.Argument(dependency.Tag ?? SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax)));
         }

@@ -1,5 +1,6 @@
 ﻿namespace Pure.DI.Tests.Integration
 {
+    using Microsoft.CodeAnalysis.CSharp;
     using Shouldly;
     using Xunit;
 
@@ -226,14 +227,14 @@
                 public class CompositionRoot
                 {
                     public readonly IMyInterface Value;
-                    internal CompositionRoot([Tag(1)] IMyInterface value) => Value = value;
+                    internal CompositionRoot([Tag(1)] IMyInterface value) { Value = value; }
                 }
 
                 public class MyFactory<T>: IFactory<T>
                 {
                     public T Create(Func<T> factory, Type implementationType, object tag)
                     {
-                        System.Console.WriteLine($""{implementationType.Name}: {typeof(T).Name}({tag})"");
+                        System.Console.WriteLine(implementationType.Name + "": "" + typeof(T).Name + ""("" +tag+ "")"");
                         return factory();
                     }
                 }
@@ -252,7 +253,7 @@
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }                    
                 }    
-            }".Run(out var generatedCode);
+            }".Run(out var generatedCode, new RunOptions { LanguageVersion = LanguageVersion.CSharp4 });
 
             // Then
             output.ShouldBe(new[] { "CompositionRoot: CompositionRoot()", "MyClass: IMyInterface(1)", "Sample.MyClass" }, generatedCode);
@@ -274,14 +275,14 @@
                 public class CompositionRoot
                 {
                     public readonly IMyInterface1 Value;
-                    internal CompositionRoot(IMyInterface1 value1, [Tag(2)] IMyInterface2 value2) => Value = value1;
+                    internal CompositionRoot(IMyInterface1 value1, [Tag(2)] IMyInterface2 value2) { Value = value1; }
                 }
 
                 public class MyFactory: IFactory
                 {
                     public T Create<T>(Func<T> factory, Type implementationType, object tag)
                     {
-                        System.Console.WriteLine($""{implementationType.Name}: {typeof(T).Name}({tag})"");
+                        System.Console.WriteLine(implementationType.Name + "": "" + typeof(T).Name + ""("" +tag+ "")"");
                         return factory();
                     }
                 }
@@ -300,7 +301,7 @@
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }
                 }    
-            }".Run(out var generatedCode);
+            }".Run(out var generatedCode, new RunOptions { LanguageVersion = LanguageVersion.CSharp4 });
 
             // Then
             output.ShouldBe(new[] { "CompositionRoot: CompositionRoot()", "MyClass: IMyInterface1()", "MyClass: IMyInterface2(2)", "Sample.MyClass" }, generatedCode);

@@ -62,16 +62,17 @@
 
         public void AddBinding(IBindingMetadata binding) => _additionalBindings.Add(binding);
 
-        public MemberDeclarationSyntax GetOrAddMember(MemberKey key, Func<MemberDeclarationSyntax> additionalMemberFactory)
+        public T GetOrAddMember<T>(MemberKey key, Func<T> additionalMemberFactory)
+            where T: MemberDeclarationSyntax
         {
             if (_additionalMembers.TryGetValue(key, out var member))
             {
-                return member;
+                return (T)member;
             }
 
             member = additionalMemberFactory();
             _additionalMembers.Add(key, member);
-            return member;
+            return (T)member;
         }
 
         public void AddFinalizationStatements(IEnumerable<StatementSyntax> finalizationStatements)

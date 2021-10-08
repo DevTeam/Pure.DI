@@ -30,7 +30,7 @@
 
         void AddBinding(IBindingMetadata binding);
 
-        MemberDeclarationSyntax GetOrAddMember(MemberKey key, Func<MemberDeclarationSyntax> additionalMemberFactory);
+        T GetOrAddMember<T>(MemberKey key, Func<T> additionalMemberFactory) where T: MemberDeclarationSyntax;
 
         void AddFinalizationStatements(IEnumerable<StatementSyntax> finalizationStatement);
         
