@@ -13,6 +13,7 @@
   - [Autowiring with initialization](#autowiring-with-initialization)
   - [Dependency tag](#dependency-tag)
   - [Injection of default parameters](#injection-of-default-parameters)
+  - [Injection of nullable parameters](#injection-of-nullable-parameters)
   - [Advanced generic autowiring](#advanced-generic-autowiring)
   - [Depends On](#depends-on)
   - [Dependency Injection with referencing implementations](#dependency-injection-with-referencing-implementations)
@@ -375,6 +376,42 @@ public class SomeService: IService
     {
         Dependency = dependency;
         State = state;
+    }
+
+    public IDependency Dependency { get; }
+
+    public string State { get; }
+}
+```
+
+
+
+### Injection of nullable parameters
+
+
+
+``` CSharp
+public void Run()
+{
+    DI.Setup()
+        .Bind<IDependency>().To<Dependency>()
+        .Bind<IService>().To<SomeService>();
+
+    // Resolve an instance
+    var instance = NullableParamsInjectionDI.Resolve<IService>();
+
+    // Check the optional dependency
+    instance.State.ShouldBe("my default value");
+}
+
+public class SomeService: IService
+{
+    // There is no registered dependency for parameter "state" of type "string",
+    // but parameter "state" has a nullable annotation
+    public SomeService(IDependency dependency, string? state)
+    {
+        Dependency = dependency;
+        State = state ?? "my default value";
     }
 
     public IDependency Dependency { get; }

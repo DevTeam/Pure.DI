@@ -24,7 +24,6 @@ namespace Pure.DI.Tests.Integration
         private static CSharpCompilation CreateCompilation() =>
             CSharpCompilation
                 .Create("Sample")
-                
                 .AddReferences(
                     MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
                     MetadataReference.CreateFromFile(GetSystemAssemblyPathByName("netstandard.dll")),
@@ -94,7 +93,9 @@ namespace Pure.DI.Tests.Integration
             generatedCode = string.Join(Environment.NewLine, generatedSources.Select((src, index) => $"Generated {index + 1}" + Environment.NewLine + Environment.NewLine + src.Code));
             
             compilation = compilation
-                .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication))
+                .WithOptions(
+                    new CSharpCompilationOptions(OutputKind.ConsoleApplication)
+                        .WithNullableContextOptions(options?.NullableContextOptions ?? NullableContextOptions.Disable))
                 .AddSyntaxTrees(CSharpSyntaxTree.ParseText(hostCode, parseOptions))
                 .AddSyntaxTrees(generatedSources.Select(i => CSharpSyntaxTree.ParseText(i.Code.ToString(), parseOptions)).ToArray())
                 .Check();

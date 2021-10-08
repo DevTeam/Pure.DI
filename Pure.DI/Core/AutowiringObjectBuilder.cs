@@ -169,12 +169,22 @@
             ImmutableArray<Location> resolveLocations,
             bool probe)
         {
-            LiteralExpressionSyntax? defaultValue = null;
-            if (target is IParameterSymbol {HasExplicitDefaultValue: true} parameter)
+            ExpressionSyntax? defaultValue = null;
+            if (target is IParameterSymbol parameter)
             {
-                defaultValue = parameter.ExplicitDefaultValue.ToLiteralExpression();
+                if (parameter.HasExplicitDefaultValue)
+                {
+                    defaultValue = parameter.ExplicitDefaultValue.ToLiteralExpression();
+                }
+                else
+                {
+                    if (parameter.Type.NullableAnnotation == NullableAnnotation.Annotated)
+                    {
+                        defaultValue = SyntaxFactory.DefaultExpression(new SemanticType(parameter.Type, targetDependency.Implementation).TypeSyntax);
+                    }
+                }
             }
-
+            
             var resolvingType = GetDependencyType(target, targetDependency.Implementation) ?? new SemanticType(defaultType, targetDependency.Implementation);
             var tag = (ExpressionSyntax?) _attributesService.GetAttributeArgumentExpressions(AttributeKind.Tag, target).FirstOrDefault();
             var dependency = typeResolver.Resolve(resolvingType, tag);

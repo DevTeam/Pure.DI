@@ -296,7 +296,7 @@ DI.Setup()
 
 * [Project templates](https://github.com/DevTeam/Pure.DI/wiki/Project-templates) - project templates for _dotnet new_ command
 * [Schrödinger's cat](Samples/ShroedingersCat) - simple console application
-* [C# script tool](https://github.com/JetBrains/teamcity-csharp-interactive/blob/master/Teamcity.CSharpInteractive/Composer.cs) - JetBrain TeamCity interactive tool for running C# scripts
+* [C# script tool](https://github.com/JetBrains/teamcity-csharp-interactive/blob/master/TeamCity.CSharpInteractive/Composer.cs) - JetBrain TeamCity interactive tool for running C# scripts
 * [MSBuild logger](https://github.com/JetBrains/teamcity-msbuild-logger/blob/master/TeamCity.MSBuild.Logger/Composer.cs) - Provides the JetBrain TeamCity integration with Microsoft MSBuild.
 * [Performance comparison](https://danielpalme.github.io/IocPerformance/) - performance comparison of the most popular .NET DI/IoC containers
 
@@ -314,6 +314,7 @@ DI.Setup()
   - [Autowiring with initialization](#autowiring-with-initialization)
   - [Dependency tag](#dependency-tag)
   - [Injection of default parameters](#injection-of-default-parameters)
+  - [Injection of nullable parameters](#injection-of-nullable-parameters)
   - [Advanced generic autowiring](#advanced-generic-autowiring)
   - [Depends On](#depends-on)
   - [Dependency Injection with referencing implementations](#dependency-injection-with-referencing-implementations)
@@ -676,6 +677,42 @@ public class SomeService: IService
     {
         Dependency = dependency;
         State = state;
+    }
+
+    public IDependency Dependency { get; }
+
+    public string State { get; }
+}
+```
+
+
+
+### Injection of nullable parameters
+
+
+
+``` CSharp
+public void Run()
+{
+    DI.Setup()
+        .Bind<IDependency>().To<Dependency>()
+        .Bind<IService>().To<SomeService>();
+
+    // Resolve an instance
+    var instance = NullableParamsInjectionDI.Resolve<IService>();
+
+    // Check the optional dependency
+    instance.State.ShouldBe("my default value");
+}
+
+public class SomeService: IService
+{
+    // There is no registered dependency for parameter "state" of type "string",
+    // but parameter "state" has a nullable annotation
+    public SomeService(IDependency dependency, string? state)
+    {
+        Dependency = dependency;
+        State = state ?? "my default value";
     }
 
     public IDependency Dependency { get; }

@@ -1,6 +1,7 @@
 ﻿namespace Pure.DI.Tests.Integration
 {
     using System.Linq;
+    using Microsoft.CodeAnalysis;
     using Shouldly;
     using Xunit;
 
@@ -80,6 +81,44 @@
 
             // Then
             output.ShouldBe(new[] { "abc" }, generatedCode);
+        }
+        
+        [Fact]
+        public void ShouldSupportNullableDependencies()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+                
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class Dependency 
+                {
+                    public Dependency(string? value) { }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string? value, Dependency dependency) => Value = (value ?? ""null"") + "", "" + dependency.ToString();
+                }
+            }".Run(out var generatedCode, new RunOptions { NullableContextOptions = NullableContextOptions.Annotations });
+
+            // Then
+            output.ShouldBe(new[] { "null, Sample.Dependency" }, generatedCode);
         }
 
         [Fact]
