@@ -37,12 +37,12 @@ namespace Pure.DI.Core
             SyntaxFactory.IdentifierName($"System.{nameof(ThreadStaticAttribute)}"));
         
         public static readonly AttributeSyntax AggressiveInliningAttr = SyntaxFactory.Attribute(
-            SyntaxFactory.IdentifierName($"System.Runtime.CompilerServices.{nameof(MethodImplAttribute)}"),
+            SyntaxFactory.IdentifierName(typeof(MethodImplAttribute).FullName),
             SyntaxFactory.AttributeArgumentList()
                 .AddArguments(
                     SyntaxFactory.AttributeArgument(
                         SyntaxFactory.CastExpression(
-                            SyntaxFactory.ParseTypeName($"System.Runtime.CompilerServices.{nameof(MethodImplOptions)}"),
+                            SyntaxFactory.ParseTypeName(typeof(MethodImplOptions).FullName),
                             SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0x100))))));
 
         public static readonly MethodDeclarationSyntax TResolveMethodSyntax =

@@ -80,7 +80,7 @@ namespace Pure.DI.Core
 
                         if (binding.Lifetime is Lifetime.Scoped or Lifetime.ContainerSingleton)
                         {
-                            var serviceProviderInstance = new SemanticType(dependency.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.ServiceProviderInstance`1")!, dependency.SemanticModel).Construct(dependency);
+                            var serviceProviderInstance = new SemanticType(dependency.SemanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance<>).FullName)!, dependency.SemanticModel).Construct(dependency);
                             _buildContext.AddBinding(new BindingMetadata(binding, serviceProviderInstance, binding.Id));
                         }
                     }

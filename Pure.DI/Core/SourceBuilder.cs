@@ -260,7 +260,7 @@ namespace Pure.DI.Core
 
         private static bool ComponentsInUniqNamespaceIsNeeded(Compilation compilation)
         {
-            var diType = compilation.GetTypeByMetadataName("Pure.DI.IConfiguration");
+            var diType = compilation.GetTypeByMetadataName(typeof(IConfiguration).FullName);
             if (diType == null)
             {
                 return false;

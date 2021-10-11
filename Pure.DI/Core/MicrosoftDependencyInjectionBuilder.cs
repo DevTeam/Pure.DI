@@ -48,7 +48,7 @@
                 let binding = groups.First()
                 select (dependency: groups.Key, lifetime: binding.Lifetime, binding)).ToArray();
 
-            var serviceProviderType = semanticModel.Compilation.GetTypeByMetadataName("System.IServiceProvider");
+            var serviceProviderType = semanticModel.Compilation.GetTypeByMetadataName(typeof(System.IServiceProvider).FullName);
             var serviceCollectionType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.IServiceCollection");
             var serviceDescriptorType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.ServiceDescriptor");
             var mvcBuilderType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.IMvcBuilder");

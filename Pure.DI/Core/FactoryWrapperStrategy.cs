@@ -25,7 +25,7 @@
 
         public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression)
         {
-            var baseFactoryType = dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName("Pure.DI.IFactory`1");
+            var baseFactoryType = dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName(typeof(IFactory<>).FullName);
             var factoryType = baseFactoryType?.Construct(resolvingType.Type);
             if (factoryType == null)
             {

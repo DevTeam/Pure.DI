@@ -31,7 +31,7 @@ namespace Pure.DI.Core
 
         public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression)
         {
-            var factoryType = _buildContext.Compilation.GetTypeByMetadataName("Pure.DI.IFactory");
+            var factoryType = _buildContext.Compilation.GetTypeByMetadataName(typeof(IFactory).FullName);
             if (factoryType == null)
             {
                 const string error = "Factory is not supported.";
