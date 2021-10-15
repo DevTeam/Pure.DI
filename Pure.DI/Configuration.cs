@@ -32,7 +32,6 @@
                 .Bind<ResolverMetadata>().To(ctx => ctx.Container.Inject<IBuildContext>().Metadata)
                 .Bind<INameService>().To(ctx => ctx.Container.Inject<IBuildContext>().NameService)
                 .Bind<ITypeResolver>().To(ctx => ctx.Container.Inject<IBuildContext>().TypeResolver)
-                .Bind<IConstructorsResolver>().To<ConstructorsResolver>()
                 .Bind<IObjectBuilder>().Tag(AutowiringBuilder).To<AutowiringObjectBuilder>()
                 .Bind<IObjectBuilder>().Tag(FactoryBuilder).To<FactoryObjectBuilder>()
                 .Bind<IObjectBuilder>().Tag(ArrayBuilder).To<ArrayObjectBuilder>()

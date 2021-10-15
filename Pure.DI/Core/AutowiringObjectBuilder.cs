@@ -15,20 +15,17 @@
         private const string InstanceVarName = "instance";
         private readonly IDiagnostic _diagnostic;
         private readonly IBuildContext _buildContext;
-        private readonly IConstructorsResolver _constructorsResolver;
         private readonly IAttributesService _attributesService;
         private readonly ITracer _tracer;
 
         public AutowiringObjectBuilder(
             IDiagnostic diagnostic,
             IBuildContext buildContext, 
-            IConstructorsResolver constructorsResolver,
             IAttributesService attributesService,
             ITracer tracer)
         {
             _diagnostic = diagnostic;
             _buildContext = buildContext;
-            _constructorsResolver = constructorsResolver;
             _attributesService = attributesService;
             _tracer = tracer;
         }
@@ -37,28 +34,47 @@
         public ExpressionSyntax? TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
         {
             var objectCreationExpression = (
-                from ctor in _constructorsResolver.Resolve(dependency)
+                from ctor in 
+                    dependency.Implementation.Type is INamedTypeSymbol implementationType
+                        ? implementationType.Constructors
+                        : Enumerable.Empty<IMethodSymbol>()
+                where ctor.DeclaredAccessibility is Accessibility.Internal or Accessibility.Public or Accessibility.Friend
+                let order = GetOrder(ctor) ?? int.MaxValue
                 let parameters = ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, dependency, ctor, true).ToList()
-                where parameters.All(i => i != null)
+                where parameters.All(i => i.Result != default)
+                let paramsResolvedCount = parameters.Count(i => i.DefaultType == DefaultType.ResolvedValue)
+                let paramsResolveWeight = parameters.Sum(i => (int)i.ResolveType)
+                let paramsTypeWeight = parameters.Sum(i => (int)i.DefaultType)
                 let arguments = SyntaxFactory.SeparatedList(
                     from parameter in parameters
-                    select SyntaxFactory.Argument(parameter))
-                select CreateObject(ctor, dependency, arguments)
-            ).FirstOrDefault();
+                    select SyntaxFactory.Argument(parameter.Result!))
+                let expression = CreateObject(ctor, dependency, arguments)
+                select (ctor, expression, order, paramsResolvedCount, paramsResolveWeight, paramsTypeWeight))
+                // By an Order attribute
+                .OrderBy(i => i.order)
+                // By a number of resolved parameters
+                .ThenByDescending(i => i.paramsResolvedCount)
+                // By an access modifier
+                .ThenByDescending(i => i.ctor.DeclaredAccessibility)
+                // By resolving type
+                .ThenByDescending(i => i.paramsResolveWeight)
+                // By param type
+                .ThenByDescending(i => i.paramsTypeWeight)
+                .FirstOrDefault()
+                .expression;
             
-            if (Equals(objectCreationExpression, default))
+            if (objectCreationExpression == default)
             {
                 _tracer.Save();
-                return null;
+                return default;
             }
 
             var members = (
                 from member in dependency.Implementation.Type.GetMembers()
                 where member.MetadataName != ".ctor"
-                from expression in _attributesService.GetAttributeArgumentExpressions(AttributeKind.Order, member)
-                let order = ((expression as LiteralExpressionSyntax)?.Token)?.Value as IComparable
-                where order != null
-                orderby order 
+                let order = GetOrder(member)
+                where order != default
+                orderby order
                 select member)
                 .Distinct(SymbolEqualityComparer.Default)
                 .ToList();
@@ -80,7 +96,8 @@
                         case IMethodSymbol method:
                             var arguments =
                                 from parameter in ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, dependency, method, false)
-                                select SyntaxFactory.Argument(parameter);
+                                where parameter.Result != default
+                                select SyntaxFactory.Argument(parameter.Result!);
 
                             var call = SyntaxFactory.InvocationExpression(
                                 SyntaxFactory.MemberAccessExpression(
@@ -104,7 +121,7 @@
                                         SyntaxFactory.IdentifierName(InstanceVarName),
                                         SyntaxFactory.Token(SyntaxKind.DotToken),
                                         SyntaxFactory.IdentifierName(filed.Name)),
-                                    fieldValue!);
+                                    fieldValue.Result!);
 
                                 factoryStatements.Add(SyntaxFactory.ExpressionStatement(assignmentExpression));
                             }
@@ -122,7 +139,7 @@
                                         SyntaxFactory.IdentifierName(InstanceVarName),
                                         SyntaxFactory.Token(SyntaxKind.DotToken),
                                         SyntaxFactory.IdentifierName(property.Name)),
-                                    propertyValue!);
+                                    propertyValue.Result!);
 
                                 factoryStatements.Add(SyntaxFactory.ExpressionStatement(assignmentExpression));
                             }
@@ -160,7 +177,7 @@
                 .WithCommentBefore($"// {dependency.Binding}");
         }
 
-        private ExpressionSyntax? ResolveInstance(
+        private ResolveResult ResolveInstance(
             ISymbol target,
             Dependency targetDependency,
             ITypeSymbol defaultType,
@@ -170,17 +187,20 @@
             bool probe)
         {
             ExpressionSyntax? defaultValue = null;
+            var defaultResolveType = DefaultType.ResolvedValue;
             if (target is IParameterSymbol parameter)
             {
                 if (parameter.HasExplicitDefaultValue)
                 {
                     defaultValue = parameter.ExplicitDefaultValue.ToLiteralExpression();
+                    defaultResolveType = DefaultType.DefaultValue;
                 }
                 else
                 {
                     if (parameter.Type.NullableAnnotation == NullableAnnotation.Annotated)
                     {
                         defaultValue = SyntaxFactory.DefaultExpression(new SemanticType(parameter.Type, targetDependency.Implementation).TypeSyntax);
+                        defaultResolveType = DefaultType.NullableValue;
                     }
                 }
             }
@@ -190,7 +210,7 @@
             var dependency = typeResolver.Resolve(resolvingType, tag);
             if (!dependency.IsResolved && defaultValue != null)
             {
-                return defaultValue;
+                return new ResolveResult(defaultValue, ResolveType.ResolvedUnbound, defaultResolveType);
             }
 
             switch (dependency.Implementation.Type)
@@ -206,18 +226,18 @@
 
                     if (dependency.IsResolved)
                     {
-                        return buildStrategy.TryBuild(dependency, resolvingType);
+                        return new ResolveResult(buildStrategy.TryBuild(dependency, resolvingType), ResolveType.Resolved, DefaultType.ResolvedValue);
                     }
 
                     if (probe)
                     {
-                        return null;
+                        return ResolveResult.NotResolved;
                     }
 
                     var dependencyType = dependency.Implementation.TypeSyntax;
-                    return SyntaxFactory.CastExpression(dependencyType,
+                    return new ResolveResult(SyntaxFactory.CastExpression(dependencyType,
                         SyntaxFactory.InvocationExpression(SyntaxFactory.ParseName(nameof(IContext.Resolve)))
-                            .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependencyType))));
+                            .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependencyType)))), ResolveType.ResolvedUnbound, DefaultType.ResolvedValue);
                 }
 
                 case IArrayTypeSymbol arrayType:
@@ -226,7 +246,7 @@
                     var arrayTypeDescription = typeResolver.Resolve(type, null);
                     if (arrayTypeDescription.IsResolved)
                     {
-                        return buildStrategy.TryBuild(arrayTypeDescription, type);
+                        return new ResolveResult(buildStrategy.TryBuild(arrayTypeDescription, type), ResolveType.Resolved, DefaultType.ResolvedValue);
                     }
 
                     break;
@@ -235,7 +255,7 @@
             
             if (buildStrategy.TryBuild(dependency, resolvingType) == null)
             {
-                return null;
+                return ResolveResult.NotResolved;
             }
 
             var error = $"Unsupported type {dependency.Implementation}.";
@@ -243,7 +263,7 @@
             throw new HandledException(error);
         }
 
-        private IEnumerable<ExpressionSyntax?> ResolveMethodParameters(ITypeResolver typeResolver, IBuildStrategy buildStrategy, Dependency dependency, IMethodSymbol method, bool probe) =>
+        private IEnumerable<ResolveResult> ResolveMethodParameters(ITypeResolver typeResolver, IBuildStrategy buildStrategy, Dependency dependency, IMethodSymbol method, bool probe) =>
             from parameter in method.Parameters
             select ResolveInstance(parameter, dependency, parameter.Type, typeResolver, buildStrategy, parameter.Locations, probe);
 
@@ -274,6 +294,45 @@
 
             return SyntaxFactory.ObjectCreationExpression(typeSyntax)
                 .WithArgumentList(SyntaxFactory.ArgumentList(arguments));
+        }
+        
+        private IComparable? GetOrder(ISymbol method)
+        {
+            var orders =
+                (from expression in _attributesService.GetAttributeArgumentExpressions(AttributeKind.Order, method)
+                    let order = ((expression as LiteralExpressionSyntax)?.Token)?.Value as IComparable
+                    select order).ToList();
+
+            return orders.Any() ? orders.Max() : default;
+        }
+        
+        private readonly struct ResolveResult
+        {
+            public readonly ExpressionSyntax? Result;
+            public readonly ResolveType ResolveType;
+            public readonly DefaultType DefaultType;
+            public static readonly ResolveResult NotResolved = new(null, ResolveType.NotResolved, DefaultType.DefaultValue);
+
+            public ResolveResult(ExpressionSyntax? result, ResolveType resolveType, DefaultType defaultType)
+            {
+                Result = result;
+                ResolveType = resolveType;
+                DefaultType = defaultType;
+            }
+        }
+
+        private enum ResolveType
+        {
+            NotResolved = 0,
+            ResolvedUnbound = 1,
+            Resolved = 2
+        }
+
+        private enum DefaultType
+        {
+            NullableValue = 0,
+            DefaultValue = 1,
+            ResolvedValue = 2
         }
     }
 }

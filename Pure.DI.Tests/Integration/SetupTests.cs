@@ -84,6 +84,144 @@
         }
         
         [Fact]
+        public void ShouldPreferDefaultValueOverNullableOne()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+                
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string? value, long i = 0) => Value = value ?? ""zyx"";
+                    internal CompositionRoot(string value = ""abc"", int i = 0) => Value = value;
+                }
+            }".Run(out var generatedCode, new RunOptions { NullableContextOptions = NullableContextOptions.Annotations });
+
+            // Then
+            output.ShouldBe(new[] { "abc" }, generatedCode);
+        }
+        
+        [Fact]
+        public void ShouldPreferResolvedValueOverDefaultOneWhenParamsCountIsEq()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+                
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<string>().To(_ => ""xyz"")
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string value = ""abc"", int i = 0) => Value = value;
+                    internal CompositionRoot(string value, long i = 0) => Value = value;
+                }
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "xyz" }, generatedCode);
+        }
+        
+        [Fact]
+        public void ShouldPreferPublicOverInternal()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+                
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string value = ""abc"", int i =10) => Value = value;
+                    public CompositionRoot(string value = ""xyz"", long i = 10) => Value = value;                    
+                }
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "xyz" }, generatedCode);
+        }
+        
+        [Fact]
+        public void ShouldPreferResolvedValueOverDefaultOneWhenParamsCountIsNotEq()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+                
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<string>().To(_ => ""xyz"")
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(int value = 99, int i = 0) => Value = value.ToString();
+                    internal CompositionRoot(string value) => Value = value;
+                }
+            }".Run(out var generatedCode, new RunOptions { NullableContextOptions = NullableContextOptions.Annotations });
+
+            // Then
+            output.ShouldBe(new[] { "xyz" }, generatedCode);
+        }
+        
+        [Fact]
         public void ShouldSupportNullableDependencies()
         {
             // Given
@@ -646,7 +784,7 @@
                 internal class CompositionRoot
                 {
                     [MyOrder(0, 1)] internal string Value { get; set; }
-                    internal CompositionRoot() {}                     
+                    internal CompositionRoot() {}
                 }
             }".Run(out var generatedCode);
 
@@ -728,7 +866,7 @@
                     {
                     }
 
-                    [Order(0)] internal CompositionRoot(string value) => Value = value;                    
+                    [Order(0)] internal CompositionRoot(string value) => Value = value;
 
                     [Order(1)] public CompositionRoot(string value, string val)
                     {
