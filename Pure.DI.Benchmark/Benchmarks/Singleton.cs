@@ -34,16 +34,16 @@ namespace Pure.DI.Benchmark.Benchmarks
         [Benchmark(Description = "Pure.DI", OperationsPerInvoke = 10)]
         public void PureDI()
         {
-            SingletonDI.Resolve(typeof(ICompositionRoot));
-            SingletonDI.Resolve(typeof(ICompositionRoot));
-            SingletonDI.Resolve(typeof(ICompositionRoot));
-            SingletonDI.Resolve(typeof(ICompositionRoot));
-            SingletonDI.Resolve(typeof(ICompositionRoot));
-            SingletonDI.Resolve(typeof(ICompositionRoot));
-            SingletonDI.Resolve(typeof(ICompositionRoot));
-            SingletonDI.Resolve(typeof(ICompositionRoot));
-            SingletonDI.Resolve(typeof(ICompositionRoot));
-            SingletonDI.Resolve(typeof(ICompositionRoot));
+            SingletonDI.Resolve<ICompositionRoot>();
+            SingletonDI.Resolve<ICompositionRoot>();
+            SingletonDI.Resolve<ICompositionRoot>();
+            SingletonDI.Resolve<ICompositionRoot>();
+            SingletonDI.Resolve<ICompositionRoot>();
+            SingletonDI.Resolve<ICompositionRoot>();
+            SingletonDI.Resolve<ICompositionRoot>();
+            SingletonDI.Resolve<ICompositionRoot>();
+            SingletonDI.Resolve<ICompositionRoot>();
+            SingletonDI.Resolve<ICompositionRoot>();
         }
 
         [Benchmark(Description = "new", OperationsPerInvoke = 10)]

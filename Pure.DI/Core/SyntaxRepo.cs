@@ -14,6 +14,7 @@ namespace Pure.DI.Core
     internal static class SyntaxRepo
     {
         private const string DisposeSingletonsMethodName = "FinalDispose";
+        private const string GetResolverMethodName = "GetResolver";
         public const string OnDisposableEventName = "OnDisposable";
         public const string RaiseOnDisposableMethodName = "RaiseOnDisposable";
         private static readonly TypeSyntax VoidTypeSyntax = SyntaxFactory.ParseTypeName("void");
@@ -28,10 +29,11 @@ namespace Pure.DI.Core
         public static readonly SyntaxToken KeyValuePairTypeToken = SyntaxFactory.Identifier("Pure.DI.Pair");
         public static readonly TypeSyntax TagTypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(TagKey).ToString());
         public static readonly SyntaxToken FuncTypeToken = SyntaxFactory.Identifier("System.Func");
+        public static readonly TypeSyntax FuncOfObjectTypeSyntax = SyntaxFactory.GenericName(SyntaxRepo.FuncTypeToken).AddTypeArgumentListArguments(SyntaxRepo.ObjectTypeSyntax);
         public static readonly TypeSyntax ResolversTableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(ResolversTable).ToString());
         public static readonly TypeSyntax ResolversWithTagTableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(ResolversByTagTable).ToString());
         public static readonly TypeSyntax IContextTypeSyntax = SyntaxFactory.ParseTypeName(typeof(IContext).ToString());
-        private static readonly TypeParameterSyntax TTypeParameterSyntax = SyntaxFactory.TypeParameter("T");
+        public static readonly TypeParameterSyntax TTypeParameterSyntax = SyntaxFactory.TypeParameter("T");
 
         public static readonly AttributeSyntax ThreadStaticAttr = SyntaxFactory.Attribute(
             SyntaxFactory.IdentifierName($"System.{nameof(ThreadStaticAttribute)}"));
@@ -73,6 +75,12 @@ namespace Pure.DI.Core
             SyntaxFactory.MethodDeclaration(VoidTypeSyntax, DisposeSingletonsMethodName)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
                 .AddParameterListParameters();
+        
+        public static readonly MethodDeclarationSyntax GetResolverMethodSyntax =
+            SyntaxFactory.MethodDeclaration(FuncOfObjectTypeSyntax, GetResolverMethodName)
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                .AddParameterListParameters()
+                .AddTypeParameterListParameters(TTypeParameterSyntax);
         
         public static readonly MethodDeclarationSyntax RaiseOnDisposableMethodSyntax =
             SyntaxFactory.MethodDeclaration(TTypeSyntax, RaiseOnDisposableMethodName)

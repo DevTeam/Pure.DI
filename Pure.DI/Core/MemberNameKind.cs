@@ -8,6 +8,8 @@ namespace Pure.DI.Core
 
         FactoriesField,
 
-        FactoriesByTagField
+        FactoriesByTagField,
+        
+        ResolverClass
     }
 }

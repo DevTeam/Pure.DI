@@ -40,16 +40,16 @@ namespace Pure.DI.Benchmark.Benchmarks
         [Benchmark(Description = "Pure.DI", OperationsPerInvoke = 10)]
         public void PureDI()
         {
-            EnumDI.Resolve(typeof(ICompositionRoot));
-            EnumDI.Resolve(typeof(ICompositionRoot));
-            EnumDI.Resolve(typeof(ICompositionRoot));
-            EnumDI.Resolve(typeof(ICompositionRoot));
-            EnumDI.Resolve(typeof(ICompositionRoot));
-            EnumDI.Resolve(typeof(ICompositionRoot));
-            EnumDI.Resolve(typeof(ICompositionRoot));
-            EnumDI.Resolve(typeof(ICompositionRoot));
-            EnumDI.Resolve(typeof(ICompositionRoot));
-            EnumDI.Resolve(typeof(ICompositionRoot));
+            EnumDI.Resolve<ICompositionRoot>();
+            EnumDI.Resolve<ICompositionRoot>();
+            EnumDI.Resolve<ICompositionRoot>();
+            EnumDI.Resolve<ICompositionRoot>();
+            EnumDI.Resolve<ICompositionRoot>();
+            EnumDI.Resolve<ICompositionRoot>();
+            EnumDI.Resolve<ICompositionRoot>();
+            EnumDI.Resolve<ICompositionRoot>();
+            EnumDI.Resolve<ICompositionRoot>();
+            EnumDI.Resolve<ICompositionRoot>();
         }
 
         [Benchmark(Description = "new", OperationsPerInvoke = 10)]

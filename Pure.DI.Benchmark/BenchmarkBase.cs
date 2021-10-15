@@ -43,7 +43,7 @@
             _microsoftContainer = CreateContainer<ServiceProvider, MicrosoftDependencyInjection>();
             _simpleInjectorContainer = CreateContainer<global::SimpleInjector.Container, SimpleInjector>();
         }
-        
+
         [Benchmark(Description = "IoC.Container", OperationsPerInvoke = 10)]
         public void IoCContainer()
         {

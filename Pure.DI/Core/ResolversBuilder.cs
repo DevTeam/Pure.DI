@@ -157,13 +157,9 @@ namespace Pure.DI.Core
 
         private IEnumerable<MemberDeclarationSyntax> CreateDependencyTable(IEnumerable<(IBindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
         {
-            var funcType = SyntaxFactory.GenericName(
-                    SyntaxRepo.FuncTypeToken)
-                .AddTypeArgumentListArguments(SyntaxRepo.ObjectTypeSyntax);
-
             var keyValuePairType = SyntaxFactory.GenericName(
                     SyntaxRepo.KeyValuePairTypeToken)
-                .AddTypeArgumentListArguments(SyntaxRepo.TypeTypeSyntax, funcType);
+                .AddTypeArgumentListArguments(SyntaxRepo.TypeTypeSyntax, SyntaxRepo.FuncOfObjectTypeSyntax);
 
             var keyValuePairs = new List<ExpressionSyntax>();
             foreach (var (binding, resolvingType, resolvingTag) in items)
@@ -226,13 +222,9 @@ namespace Pure.DI.Core
 
         private IEnumerable<MemberDeclarationSyntax> CreateDependencyWithTagTable(IEnumerable<(IBindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
         {
-            var funcType = SyntaxFactory.GenericName(
-                    SyntaxRepo.FuncTypeToken)
-                .AddTypeArgumentListArguments(SyntaxRepo.ObjectTypeSyntax);
-
             var keyValuePairType = SyntaxFactory.GenericName(
                     SyntaxRepo.KeyValuePairTypeToken)
-                .AddTypeArgumentListArguments(SyntaxRepo.TagTypeTypeSyntax, funcType);
+                .AddTypeArgumentListArguments(SyntaxRepo.TagTypeTypeSyntax, SyntaxRepo.FuncOfObjectTypeSyntax);
 
             var keyValuePairs = new List<ExpressionSyntax>();
             foreach (var (binding, resolvingType, resolvingTag) in items)

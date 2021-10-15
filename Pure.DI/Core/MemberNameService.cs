@@ -18,6 +18,7 @@ namespace Pure.DI.Core
                 MemberNameKind.ContextField => "SharedContext",
                 MemberNameKind.FactoriesField => "Resolvers",
                 MemberNameKind.FactoriesByTagField => "ResolversByTag",
+                MemberNameKind.ResolverClass => "Resolver",
                 _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null)
             };
 

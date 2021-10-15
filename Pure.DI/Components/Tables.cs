@@ -27,6 +27,8 @@
 #pragma warning disable 0436
 namespace Pure.DI
 {
+    using System;
+
     internal class Pair<TKey, TValue>
     {
         public readonly TKey Key;
@@ -64,7 +66,11 @@ namespace Pure.DI
                 Buckets[i] = new Pair<TKey, TValue>(defaultKey, defaultValue);
             }
 
-            var buckets = System.Linq.Enumerable.Select(System.Linq.Enumerable.GroupBy(pairs, pair => (uint) pair.Key.GetHashCode() % Divisor), groups => new {number = groups.Key, pairs = System.Linq.Enumerable.ToArray(groups)});
+            var buckets = System.Linq.Enumerable.Select(System.Linq.Enumerable.GroupBy(pairs, pair => (uint)pair.Key.GetHashCode() % Divisor), groups => new
+            {
+                number = groups.Key,
+                pairs = System.Linq.Enumerable.ToArray(groups)
+            });
 
             foreach (var bucket in buckets)
             {
@@ -122,6 +128,26 @@ namespace Pure.DI
 
             throw new System.ArgumentException("Cannot resolve an instance of the type " + type + ", consider adding it to the DI setup.");
         }
+
+        [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+        internal System.Func<object> GetResolver<T>()
+        {
+            var pair = ResolversBuckets[(uint)typeof(T).GetHashCode() % ResolversDivisor];
+            do
+            {
+                if (pair.Key == typeof(T))
+                {
+                    return pair.Value;
+                }
+
+                pair = pair.Next;
+            } while (pair != null);
+
+            return new System.Func<object>(() =>
+            {
+                throw new System.ArgumentException("Cannot resolve an instance of the type " + typeof(T) + ", consider adding it to the DI setup.");
+            });
+        }
     }
 
     internal sealed class ResolversByTagTable : Table<TagKey, System.Func<object>>
@@ -144,7 +170,8 @@ namespace Pure.DI
         public object Resolve(TagKey key)
         {
             var pair = ResolversByTagBuckets[(uint)key.GetHashCode() % ResolversByTagDivisor];
-            do {
+            do
+            {
                 // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
                 if (pair.Key.Type == key.Type && pair.Key.Tag.Equals(key.Tag))
                 {
@@ -152,8 +179,7 @@ namespace Pure.DI
                 }
 
                 pair = pair.Next;
-            }
-            while (pair != null);
+            } while (pair != null);
 
             if (key.Tag == null)
             {
@@ -184,7 +210,10 @@ namespace Pure.DI
         {
             Type = type;
             Tag = tag;
-            unchecked { _hashCode = (type.GetHashCode() * 397) ^ (tag != null ? tag.GetHashCode() : 0); }
+            unchecked
+            {
+                _hashCode = (type.GetHashCode() * 397) ^ (tag != null ? tag.GetHashCode() : 0);
+            }
         }
 
         [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x100)]

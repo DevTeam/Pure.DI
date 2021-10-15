@@ -32,16 +32,16 @@ namespace Pure.DI.Benchmark.Benchmarks
         [Benchmark(Description = "Pure.DI", OperationsPerInvoke = 10)]
         public void PureDI()
         {
-            TransientDI.Resolve(typeof(ICompositionRoot));
-            TransientDI.Resolve(typeof(ICompositionRoot));
-            TransientDI.Resolve(typeof(ICompositionRoot));
-            TransientDI.Resolve(typeof(ICompositionRoot));
-            TransientDI.Resolve(typeof(ICompositionRoot));
-            TransientDI.Resolve(typeof(ICompositionRoot));
-            TransientDI.Resolve(typeof(ICompositionRoot));
-            TransientDI.Resolve(typeof(ICompositionRoot));
-            TransientDI.Resolve(typeof(ICompositionRoot));
-            TransientDI.Resolve(typeof(ICompositionRoot));
+            TransientDI.Resolve<ICompositionRoot>();
+            TransientDI.Resolve<ICompositionRoot>();
+            TransientDI.Resolve<ICompositionRoot>();
+            TransientDI.Resolve<ICompositionRoot>();
+            TransientDI.Resolve<ICompositionRoot>();
+            TransientDI.Resolve<ICompositionRoot>();
+            TransientDI.Resolve<ICompositionRoot>();
+            TransientDI.Resolve<ICompositionRoot>();
+            TransientDI.Resolve<ICompositionRoot>();
+            TransientDI.Resolve<ICompositionRoot>();
         }
 
         [Benchmark(Description = "new", OperationsPerInvoke = 10)]
