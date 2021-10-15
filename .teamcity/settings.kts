@@ -4,6 +4,7 @@ import jetbrains.buildServer.configs.kotlin.v2019_2.project
 import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.*
 import jetbrains.buildServer.configs.kotlin.v2019_2.vcs.GitVcsRoot
 import jetbrains.buildServer.configs.kotlin.v2019_2.version
+import jetbrains.buildServer.configs.kotlin.v2019_2.buildFeatures.swabra
 
 version = "2021.1"
 
@@ -35,6 +36,7 @@ project {
     buildType(BuildAndTestBuildType)
     buildType(DeployPureDIBuildType)
     buildType(DeployTemplateBuildType)
+    buildType(BenchmarkBuildType)
 }
 
 object Repo : GitVcsRoot({
@@ -137,5 +139,41 @@ object DeployTemplateBuildType: BuildType({
     failureConditions {
         nonZeroExitCode = true
         errorMessage = true
+    }
+})
+
+object BenchmarkBuildType : BuildType({
+    name = "Benchmark"
+    artifactRules = "BenchmarkDotNet.Artifacts/results/*.* => ."
+    params {
+        param("env.SERIES", "100000000")
+    }
+    vcs { root(Repo) }
+    steps {
+        dotnetRun {
+            name = "Benchmark"
+            projects = "Pure.DI.Benchmark/Pure.DI.Benchmark.csproj"
+            framework = "net5.0"
+            configuration = "release"
+            args = "-- --filter *Singleton* *Transient* *Func* *Array* *Enum*"
+        }
+        script {
+            name = "Render reports"
+            scriptContent = """
+            Tools\wkhtmltoimage\wkhtmltoimage.exe BenchmarkDotNet.Artifacts/results/Pure.DI.Benchmark.Benchmarks.Singleton-report.html BenchmarkDotNet.Artifacts/results/Pure.DI.Benchmark.Benchmarks.Singleton-report.jpg
+            Tools\wkhtmltoimage\wkhtmltoimage.exe BenchmarkDotNet.Artifacts/results/Pure.DI.Benchmark.Benchmarks.Transient-report.html BenchmarkDotNet.Artifacts/results/Pure.DI.Benchmark.Benchmarks.Transient-report.jpg
+            Tools\wkhtmltoimage\wkhtmltoimage.exe BenchmarkDotNet.Artifacts/results/Pure.DI.Benchmark.Benchmarks.Enum-report.html BenchmarkDotNet.Artifacts/results/Pure.DI.Benchmark.Benchmarks.Enum-report.jpg
+            Tools\wkhtmltoimage\wkhtmltoimage.exe BenchmarkDotNet.Artifacts/results/Pure.DI.Benchmark.Benchmarks.Array-report.html BenchmarkDotNet.Artifacts/results/Pure.DI.Benchmark.Benchmarks.Array-report.jpg
+            Tools\wkhtmltoimage\wkhtmltoimage.exe BenchmarkDotNet.Artifacts/results/Pure.DI.Benchmark.Benchmarks.Func-report.html BenchmarkDotNet.Artifacts/results/Pure.DI.Benchmark.Benchmarks.Func-report.jpg
+        """.trimIndent()
+        }
+    }
+    features {
+        swabra {
+            forceCleanCheckout = true
+        }
+    }
+    requirements {
+        equals("teamcity.agent.jvm.os.name", "Windows 10")
     }
 })
