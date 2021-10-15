@@ -2,6 +2,7 @@
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable CA1822
 // ReSharper disable UnusedAutoPropertyAccessor.Global
+#pragma warning disable CA1822
 namespace Pure.DI.UsageScenarios.Tests
 {
     using System.Threading.Tasks;
@@ -71,7 +72,7 @@ namespace Pure.DI.UsageScenarios.Tests
             Configuration = configuration;
 
         public Microsoft.Extensions.Configuration.IConfiguration Configuration { get; }
-
+        
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
@@ -89,3 +90,4 @@ namespace Pure.DI.UsageScenarios.Tests
     }
     // }
 }
+#pragma warning disable CA1822

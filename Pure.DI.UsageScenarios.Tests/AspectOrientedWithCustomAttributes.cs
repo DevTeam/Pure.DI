@@ -17,7 +17,9 @@ namespace Pure.DI.UsageScenarios.Tests
 
     public class AspectOrientedWithCustomAttributes
     {
+#pragma warning disable CA2211
         public static Mock<IConsole> Console = new();
+#pragma warning restore CA2211
 
         public AspectOrientedWithCustomAttributes() => Console = new Mock<IConsole>();
 
