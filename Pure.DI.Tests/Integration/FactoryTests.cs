@@ -126,6 +126,49 @@
         }
         
         [Fact]
+        public void ShouldSupportFactoryWhenFilter()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string value) => Value = value;
+                }
+
+                [Include(""string"")]
+                public class MyLifetime<T>: IFactory<T>
+                {
+                    public T Create(Func<T> factory, Type implementationType, object tag)
+                    {
+                        return (T)(object)(factory().ToString() + ""_abc"");
+                    }
+                }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<IFactory<TT>>().To<MyLifetime<TT>>()
+                            .Bind<string>().To(_ => ""xyz"")
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                    
+                }    
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "xyz_abc" }, generatedCode);
+        }
+        
+        [Fact]
         public void ShouldSupportFactoryWhenTag()
         {
             // Given
@@ -230,17 +273,10 @@
                     internal CompositionRoot([Tag(1)] IMyInterface value) { Value = value; }
                 }
 
-                public class MyFactory<T>: IFactory<T>
-                {
-                    public T Create(Func<T> factory, Type implementationType, object tag)
-                    {
-                        System.Console.WriteLine(implementationType.Name + "": "" + typeof(T).Name + ""("" +tag+ "")"");
-                        return factory();
-                    }
-                }
-
                 public interface IMyInterface {}
                 public class MyClass: IMyInterface { }
+                public interface IMyInterface2 {}
+                public class MyClass2: IMyInterface2 { }
 
                 internal static partial class Composer
                 {
@@ -250,8 +286,20 @@
                             .Bind<IFactory<TT>>(1).As(Lifetime.Singleton).To<MyFactory<TT>>()
                             .Bind<IFactory<TT>>().As(Lifetime.Singleton).To<MyFactory<TT>>()
                             .Bind<IMyInterface>(1).To<MyClass>()
+                            .Bind<IMyInterface2>().To<MyClass2>()
                             .Bind<CompositionRoot>().To<CompositionRoot>();
-                    }                    
+                    }
+
+                    [Exclude(""MyClass2"")]
+                    public class MyFactory<T>: IFactory<T>
+                    {
+                        public MyFactory(IMyInterface2 val2) { }
+                        public T Create(Func<T> factory, Type implementationType, object tag)
+                        {
+                            System.Console.WriteLine(implementationType.Name + "": "" + typeof(T).Name + ""("" +tag+ "")"");
+                            return factory();
+                        }
+                    }
                 }    
             }".Run(out var generatedCode, new RunOptions { LanguageVersion = LanguageVersion.CSharp4 });
 

@@ -106,7 +106,8 @@ namespace Pure.DI.Core
             }
 
             var unboundGeneric = namedTypeSymbol.ConstructUnboundGenericType();
-            var typeName = string.Join("", unboundGeneric.ToDisplayParts().TakeWhile(i => i.ToString() != "<")) + "`" + namedTypeSymbol.TypeArguments.Length;
+            var unboundGenericType = new SemanticType(unboundGeneric, SemanticModel);
+            var typeName = unboundGenericType.Name;
             unboundGeneric = (
                 from ns in new[] { string.Empty }.Concat(SemanticModel.LookupNamespacesAndTypes(0).Select(i => $"{i}."))
                 let generic = SemanticModel.Compilation.GetTypeByMetadataName($"{ns}{typeName}")

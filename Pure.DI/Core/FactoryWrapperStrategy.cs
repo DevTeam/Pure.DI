@@ -12,15 +12,18 @@
         private readonly IBuildContext _buildContext;
         private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
         private readonly Func<IBuildStrategy> _buildStrategy;
-        
+        private readonly IIncludeTypeFilter _includeTypeFilter;
+
         public FactoryWrapperStrategy(
             IBuildContext buildContext,
             ICannotResolveExceptionFactory cannotResolveExceptionFactory,
-            Func<IBuildStrategy> buildStrategy)
+            Func<IBuildStrategy> buildStrategy,
+            IIncludeTypeFilter includeTypeFilter)
         {
             _buildContext = buildContext;
             _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
             _buildStrategy = buildStrategy;
+            _includeTypeFilter = includeTypeFilter;
         }
 
         public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression)
@@ -31,7 +34,7 @@
             {
                 throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag,"a factory");
             }
-            
+
             if (dependency.Implementation.Type is INamedTypeSymbol { IsGenericType: true } namedTypeSymbol)
             {
                 var baseGenericType = baseFactoryType?.ConstructUnboundGenericType();
@@ -49,6 +52,11 @@
 
         private ExpressionSyntax Wrap(ExpressionSyntax objectBuildExpression, Dependency factoryDependency, Dependency dependency)
         {
+            if (!_includeTypeFilter.IsAccepted(factoryDependency.Implementation, dependency.Implementation))
+            {
+                return objectBuildExpression;
+            }
+            
             var instance = _buildStrategy().TryBuild(factoryDependency, factoryDependency.Implementation);
             if (instance == null)
             {
