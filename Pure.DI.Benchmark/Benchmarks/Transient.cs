@@ -5,7 +5,6 @@
 #pragma warning disable CA1822
 namespace Pure.DI.Benchmark.Benchmarks
 {
-    using System.Runtime.CompilerServices;
     using BenchmarkDotNet.Attributes;
     using BenchmarkDotNet.Order;
     using Model;
@@ -60,7 +59,6 @@ namespace Pure.DI.Benchmark.Benchmarks
             NewInstance();
         }
 
-        [MethodImpl((MethodImplOptions)0x100)]
         private static ICompositionRoot NewInstance() => 
             new CompositionRoot(new Service1(new Service2(new Service3(), new Service3(), new Service3(), new Service3(), new Service3())), new Service2(new Service3(), new Service3(), new Service3(), new Service3(), new Service3()), new Service2(new Service3(), new Service3(), new Service3(), new Service3(), new Service3()), new Service2(new Service3(), new Service3(), new Service3(), new Service3(), new Service3()), new Service3());
     }
