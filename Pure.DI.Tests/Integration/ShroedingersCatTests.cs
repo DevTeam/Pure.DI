@@ -21,7 +21,7 @@
             {         
                 // Let's create an abstraction
 
-                interface IBox<out T> { T Content { get; } }            
+                interface IBox<out T> { T Content { get; } }
 
                 enum State { Alive, Dead }
 

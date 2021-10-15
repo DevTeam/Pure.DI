@@ -32,7 +32,7 @@
                 internal class CompositionRoot
                 {
                     public readonly string Value;
-                    internal CompositionRoot(Func<string> value) => Value = value();        
+                    internal CompositionRoot(Func<string> value) => Value = value();
                 }
             }".Run(out var generatedCode);
 
@@ -66,7 +66,7 @@
                 internal class CompositionRoot
                 {
                     public readonly string Value;
-                    internal CompositionRoot([Tag(1)] Func<string> value) => Value = value();        
+                    internal CompositionRoot([Tag(1)] Func<string> value) => Value = value();
                 }
             }".Run(out var generatedCode);
 

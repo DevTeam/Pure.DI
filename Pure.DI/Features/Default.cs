@@ -15,13 +15,14 @@ namespace Pure.DI.Features
 
                 .Bind<System.Func<TT>>()
                     .AnyTag()
-                    .To(ctx => new System.Func<TT>(ctx.Resolve<TT>))
+                    .As(Lifetime.Singleton)
+                    .To(ctx => new System.Func<TT>(() => ctx.Resolve<TT>()))
                 .Bind<System.Lazy<TT>>()
                     .AnyTag()
                     .To(ctx => new System.Lazy<TT>(ctx.Resolve<System.Func<TT>>(), true))
                 .Bind<System.Threading.Tasks.Task<TT>>()
                     .AnyTag()
-                    .To(ctx => new System.Threading.Tasks.Task<TT>(ctx.Resolve<TT>))
+                    .To(ctx => new System.Threading.Tasks.Task<TT>(ctx.Resolve<Func<TT>>()))
                 
                 // Collections
                 .Bind<System.Collections.Generic.ICollection<TT>>()

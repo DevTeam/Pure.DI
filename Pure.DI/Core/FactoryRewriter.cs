@@ -92,6 +92,9 @@ namespace Pure.DI.Core
         public override SyntaxNode VisitTypeOfExpression(TypeOfExpressionSyntax node) => 
             SyntaxFactory.TypeOfExpression(ReplaceType(node.Type));
 
+        public override SyntaxNode? VisitVariableDeclaration(VariableDeclarationSyntax node) =>
+            base.VisitVariableDeclaration(node.WithType(ReplaceType(node.Type)));
+
         public override SyntaxNode? VisitInvocationExpression(InvocationExpressionSyntax node)
         {
             var semanticModel = node.GetSemanticModel(_dependency.Implementation);
@@ -106,7 +109,7 @@ namespace Pure.DI.Core
                         && new SemanticType(invocationOperation.TargetMethod.ContainingType, _dependency.Implementation.SemanticModel).Equals(typeof(IContext))
                         && SymbolEqualityComparer.Default.Equals(invocationOperation.TargetMethod.TypeArguments[0], invocationOperation.TargetMethod.ReturnType))
                     {
-                        var tag = invocationOperation.Arguments.Length == 1 ? invocationOperation.Arguments[0].Value.Syntax as ExpressionSyntax : null;
+                        var tag = invocationOperation.Arguments.Length == 1 ? invocationOperation.Arguments[0].Value.Syntax as ExpressionSyntax : _dependency.Tag;
                         var dependencyType = _dependency.TypesMap.ConstructType(new SemanticType(invocationOperation.TargetMethod.ReturnType, semanticModel));
                         var dependency = _buildContext.TypeResolver.Resolve(dependencyType, tag);
                         var expression = _buildStrategy.TryBuild(dependency, dependencyType);
