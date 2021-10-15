@@ -37,6 +37,7 @@ _Pure.DI_ is __NOT__ a framework or library, but a tool. It generates static met
 - [Samples](#samples)
   - [ASP.NET Core Blazor](#aspnet-core-blazor) 
   - [WPF](#wpf)
+- [Performance test](#performance-test)
 - [Troubleshooting](#troubleshooting)
 - [Other resources](#other-resources)
 - [Usage scenarios](#usage-scenarios)
@@ -259,6 +260,39 @@ When a targeting project is an ASP.NET project, a special extension method is ge
 ![wpf](Docs/Images/wpf.png?raw=true)
 
 This sample demonstrates how to apply DI for a WPF application. The crucial class is [DataProvider](Samples/WpfAppNetCore/DataProvider.cs), which connects view and view models. Besides that, it provides two sets of models for [design-time](Samples/WpfAppNetCore/ClockDomainDesignTime.cs) and [running](Samples/WpfAppNetCore/ClockDomain.cs) modes.
+
+For details please see [this sample](IoC.Tests/UsageScenarios/Interception.cs).
+
+## Performance test
+
+### Graph of 27 transient instances
+
+![Transient](http://tcavs2015.cloudapp.net/guestAuth/app/rest/builds/buildType:DevTeam_Pure_Di_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.Transient-report.jpg)
+
+### Graph of 20 transient instances and 1 singleton instance
+
+![Singleton](http://tcavs2015.cloudapp.net/guestAuth/app/rest/builds/buildType:DevTeam_Pure_Di_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.Singleton-report.jpg)
+
+### Graph of 22 transient instances, including 3 Func to create 4 instances each time
+
+![Func](http://tcavs2015.cloudapp.net/guestAuth/app/rest/builds/buildType:DevTeam_Pure_Di_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.Func-report.jpg)
+
+### Graph of 22 transient instances, including 3 arrays of 4 instances in each
+
+![Array](http://tcavs2015.cloudapp.net/guestAuth/app/rest/builds/buildType:DevTeam_Pure_Di_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.Array-report.jpg)
+
+### Graph of 22 transient instances, including 3 enumerable of 4 instances in each
+
+![Enum](http://tcavs2015.cloudapp.net/guestAuth/app/rest/builds/buildType:DevTeam_Pure_Di_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.Enum-report.jpg)
+
+- __new__ - the baseline method when an object's graph was constructed by operators _new_ only, without any tricks
+- __Mean__ - arithmetic mean of the root instances resolved per nanosecond
+- __Error__ - half of 99.9% confidence interval
+- __StdDev__ - standard deviation of all measurements
+- __Median__ - value separating the higher half of all measurements (50th percentile)
+- __1 ns__ - 1 Nanosecond (0.000000001 sec)
+
+_[BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) was used to measure and analyze these results._
 
 ### Troubleshooting
 
