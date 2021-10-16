@@ -110,6 +110,7 @@ static partial class Composer
   // Models a random subatomic event that may or may not occur
   private static readonly Random Indeterminacy = new();
 
+  // Actually this code never runs, this is just a hint to set up an object graph
   private static void Setup() => DI.Setup()
       // Represents a quantum superposition of 2 states: Alive or Dead
       .Bind<State>().To(_ => (State)Indeterminacy.Next(2))
@@ -134,7 +135,7 @@ class Program
 {
   // Composition Root, a single place in an application
   // where the composition of the object graphs for an application take place
-  public static void Main() => Composer.Resolve<Program>().Run();
+  public static void Main() => Composer.ResolveProgram().Run();
 
   private readonly IBox<ICat> _box;
 
