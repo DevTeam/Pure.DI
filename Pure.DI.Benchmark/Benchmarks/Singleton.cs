@@ -45,6 +45,21 @@ namespace Pure.DI.Benchmark.Benchmarks
             SingletonDI.Resolve<ICompositionRoot>();
             SingletonDI.Resolve<ICompositionRoot>();
         }
+        
+        [Benchmark(Description = "Pure.DI composition root", OperationsPerInvoke = 10)]
+        public void PureDIByCR()
+        {
+            SingletonDI.ResolveICompositionRoot();
+            SingletonDI.ResolveICompositionRoot();
+            SingletonDI.ResolveICompositionRoot();
+            SingletonDI.ResolveICompositionRoot();
+            SingletonDI.ResolveICompositionRoot();
+            SingletonDI.ResolveICompositionRoot();
+            SingletonDI.ResolveICompositionRoot();
+            SingletonDI.ResolveICompositionRoot();
+            SingletonDI.ResolveICompositionRoot();
+            SingletonDI.ResolveICompositionRoot();
+        }
 
         [Benchmark(Description = "new", OperationsPerInvoke = 10)]
         public void New()
@@ -64,7 +79,7 @@ namespace Pure.DI.Benchmark.Benchmarks
         private readonly object LockObject = new();
         private volatile Service1 _service1;
 
-        [MethodImpl((MethodImplOptions)0x100)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private ICompositionRoot NewInstance()
         {
             if (_service1 == null)

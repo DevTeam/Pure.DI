@@ -18,6 +18,7 @@
 // ReSharper disable InvertIf
 // ReSharper disable SuggestBaseTypeForParameterInConstructor
 // ReSharper disable RedundantNameQualifier
+// ReSharper disable RedundantDelegateCreation
 #pragma warning disable 8618
 #pragma warning disable 8604
 #pragma warning disable 8603
@@ -27,8 +28,6 @@
 #pragma warning disable 0436
 namespace Pure.DI
 {
-    using System;
-
     internal class Pair<TKey, TValue>
     {
         public readonly TKey Key;

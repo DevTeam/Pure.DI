@@ -22,10 +22,10 @@
         public ResolveMethod Build()
         {
             const string resolverFieldName = "Resolve";
-            var resolverKey = new MemberKey("Resolver", new object());
+            var resolverKey = new MemberKey("Resolver", typeof(GenericStaticResolveMethodBuilder));
             var resolverClass = _buildContext.GetOrAddMember(resolverKey, () =>
             {
-                var getResolverKey = new MemberKey("GetResolver", new object());
+                var getResolverKey = new MemberKey("GetResolver", typeof(GenericStaticResolveMethodBuilder));
                 var getResolverMethod = _buildContext.GetOrAddMember(getResolverKey, () => SyntaxRepo.GetResolverMethodSyntax.WithBody(_syntaxRegistry.FindMethod(nameof(ResolversTable), nameof(ResolversTable.GetResolver)).Body));
                 return SyntaxFactory.ClassDeclaration(_memberNameService.GetName(MemberNameKind.ResolverClass))
                     .AddModifiers(

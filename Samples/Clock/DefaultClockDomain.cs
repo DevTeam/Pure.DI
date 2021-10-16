@@ -10,7 +10,9 @@ namespace Clock
 
     public static partial class DefaultClockDomain
     {
-        static DefaultClockDomain() => DI.Setup()
+        static DefaultClockDomain() => 
+            // out=C:\Projects\_temp\aa
+            DI.Setup()
             // View Models
             .Bind<IClockViewModel>().To<ClockViewModel>()
 

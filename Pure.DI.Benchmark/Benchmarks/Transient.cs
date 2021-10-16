@@ -5,6 +5,7 @@
 #pragma warning disable CA1822
 namespace Pure.DI.Benchmark.Benchmarks
 {
+    using System.Runtime.CompilerServices;
     using BenchmarkDotNet.Attributes;
     using BenchmarkDotNet.Order;
     using Model;
@@ -43,6 +44,21 @@ namespace Pure.DI.Benchmark.Benchmarks
             TransientDI.Resolve<ICompositionRoot>();
             TransientDI.Resolve<ICompositionRoot>();
         }
+        
+        [Benchmark(Description = "Pure.DI composition root", OperationsPerInvoke = 10)]
+        public void PureDIByCR()
+        {
+            TransientDI.ResolveICompositionRoot();
+            TransientDI.ResolveICompositionRoot();
+            TransientDI.ResolveICompositionRoot();
+            TransientDI.ResolveICompositionRoot();
+            TransientDI.ResolveICompositionRoot();
+            TransientDI.ResolveICompositionRoot();
+            TransientDI.ResolveICompositionRoot();
+            TransientDI.ResolveICompositionRoot();
+            TransientDI.ResolveICompositionRoot();
+            TransientDI.ResolveICompositionRoot();
+        }
 
         [Benchmark(Description = "new", OperationsPerInvoke = 10)]
         public void New()
@@ -59,6 +75,7 @@ namespace Pure.DI.Benchmark.Benchmarks
             NewInstance();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static ICompositionRoot NewInstance() => 
             new CompositionRoot(new Service1(new Service2(new Service3(), new Service3(), new Service3(), new Service3(), new Service3())), new Service2(new Service3(), new Service3(), new Service3(), new Service3(), new Service3()), new Service2(new Service3(), new Service3(), new Service3(), new Service3(), new Service3()), new Service2(new Service3(), new Service3(), new Service3(), new Service3(), new Service3()), new Service3());
     }

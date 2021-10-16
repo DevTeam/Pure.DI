@@ -50,6 +50,21 @@ namespace Pure.DI.Benchmark.Benchmarks
             ArrayDI.Resolve<ICompositionRoot>();
             ArrayDI.Resolve<ICompositionRoot>();
         }
+        
+        [Benchmark(Description = "Pure.DI composition root", OperationsPerInvoke = 10)]
+        public void PureDIByCR()
+        {
+            ArrayDI.ResolveICompositionRoot();
+            ArrayDI.ResolveICompositionRoot();
+            ArrayDI.ResolveICompositionRoot();
+            ArrayDI.ResolveICompositionRoot();
+            ArrayDI.ResolveICompositionRoot();
+            ArrayDI.ResolveICompositionRoot();
+            ArrayDI.ResolveICompositionRoot();
+            ArrayDI.ResolveICompositionRoot();
+            ArrayDI.ResolveICompositionRoot();
+            ArrayDI.ResolveICompositionRoot();
+        }
 
         [Benchmark(Description = "new", OperationsPerInvoke = 10)]
         public void New()
@@ -68,7 +83,7 @@ namespace Pure.DI.Benchmark.Benchmarks
 
         private static readonly Func<IService3> Service3Factory = () => new Service3();
 
-        [MethodImpl((MethodImplOptions)0x100)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static ICompositionRoot NewInstance() =>
             new CompositionRoot(new Service1(new Service2Array(new IService3[] { new Service3(), new Service3v2(), new Service3v3(), new Service3v4() })), new Service2Func(Service3Factory), new Service2Array(new IService3[] { new Service3(), new Service3v2(), new Service3v3(), new Service3v4() }), new Service2Array(new IService3[] { new Service3(), new Service3v2(), new Service3v3(), new Service3v4() }), new Service3());
     }

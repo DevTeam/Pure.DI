@@ -337,6 +337,7 @@ DI.Setup()
 ## Usage Scenarios
 
 - Basics
+  - [Composition Root](#composition-root)
   - [Autowiring](#autowiring)
   - [Constants](#constants)
   - [Generics](#generics)
@@ -374,6 +375,21 @@ DI.Setup()
   - [Intercept advanced](#intercept-advanced)
 - Advanced
   - [ASPNET](#aspnet)
+
+### Composition Root
+
+This sample demonstrates the most efficient way of getting a composition root object, free from any impact on memory consumption and performance. Each ordinary binding type has its method to resolve a related instance as a composition root object.
+
+``` CSharp
+DI.Setup("Composer")
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>();
+
+// Resolve an instance of interface `IService`
+var instance = Composer.ResolveIService();
+```
+
+
 
 ### Autowiring
 

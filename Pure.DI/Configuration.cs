@@ -68,7 +68,8 @@
                 .Bind<IOwnerProvider>().As(ContainerSingleton).To<OwnerProvider>()
                 .Bind<IDisposeStatementsBuilder>().As(Singleton).To<DisposeStatementsBuilder>()
                 .Bind<IRaiseOnDisposableExpressionBuilder>().As(Singleton).To<RaiseOnDisposableExpressionBuilder>()
-                .Bind<IIncludeTypeFilter>().As(Singleton).To<IncludeTypeFilter>();
+                .Bind<IIncludeTypeFilter>().As(Singleton).To<IncludeTypeFilter>()
+                .Bind<IMembersBuilder>().Tag(GenericResolvers).To<GenericResolversBuilder>();
         }
     }
 }

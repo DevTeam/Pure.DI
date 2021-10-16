@@ -63,12 +63,12 @@ namespace Pure.DI.Core
             }
         }
 
-        private static IEnumerable<string> GetParts(ISymbol namedTypeSymbol)
+        private static IEnumerable<string> GetParts(ISymbol symbol)
         {
 #pragma warning disable 219
             var isNested = false;
 #pragma warning restore 219
-            foreach (var part in namedTypeSymbol.ToDisplayParts())
+            foreach (var part in symbol.ToDisplayParts())
             {
                 switch (part.Kind)
                 {
