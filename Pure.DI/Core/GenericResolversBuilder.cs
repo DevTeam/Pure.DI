@@ -16,14 +16,16 @@ namespace Pure.DI.Core
         private readonly IBuildStrategy _buildStrategy;
         private readonly Log<GenericResolversBuilder> _log;
         private readonly ITracer _tracer;
-        
+        private readonly IStringTools _stringTools;
+
         public GenericResolversBuilder(
             ResolverMetadata metadata,
             IBuildContext buildContext,
             ITypeResolver typeResolver,
             IBuildStrategy buildStrategy,
             Log<GenericResolversBuilder> log,
-            ITracer tracer)
+            ITracer tracer,
+            IStringTools stringTools)
         {
             _metadata = metadata;
             _buildContext = buildContext;
@@ -31,6 +33,7 @@ namespace Pure.DI.Core
             _buildStrategy = buildStrategy;
             _log = log;
             _tracer = tracer;
+            _stringTools = stringTools;
         }
 
         public int Order => 2;
@@ -111,9 +114,9 @@ namespace Pure.DI.Core
             }
         }
 
-        private static string GetMethodName(ISymbol symbol) => $"Resolve{string.Join(string.Empty, GetParts(symbol))}";
+        private string GetMethodName(ISymbol symbol) => $"Resolve{string.Join(string.Empty, GetParts(symbol))}";
 
-        private static IEnumerable<string> GetParts(ISymbol symbol)
+        private IEnumerable<string> GetParts(ISymbol symbol)
         {
             foreach (var part in symbol.ToDisplayParts())
             {
@@ -126,7 +129,7 @@ namespace Pure.DI.Core
                         break;
 
                     default:
-                        yield return part.ToString();
+                        yield return _stringTools.ConvertToTitle(part.ToString());
                         break;
                 }
             }

@@ -14,19 +14,22 @@ namespace Pure.DI.Core
         private readonly IBuildContext _buildContext;
         private readonly Func<IBuildStrategy> _buildStrategy;
         private readonly IIncludeTypeFilter _includeTypeFilter;
+        private readonly IStringTools _stringTools;
 
         public FactoryMethodWrapperStrategy(
             ICannotResolveExceptionFactory cannotResolveExceptionFactory,
             IDiagnostic diagnostic,
             IBuildContext buildContext,
             Func<IBuildStrategy> buildStrategy,
-            IIncludeTypeFilter includeTypeFilter)
+            IIncludeTypeFilter includeTypeFilter,
+            IStringTools stringTools)
         {
             _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
             _diagnostic = diagnostic;
             _buildContext = buildContext;
             _buildStrategy = buildStrategy;
             _includeTypeFilter = includeTypeFilter;
+            _stringTools = stringTools;
         }
 
         public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression)
@@ -60,7 +63,7 @@ namespace Pure.DI.Core
                 return objectBuildExpression;
             }
             
-            var methodKey = new MemberKey($"Resolve{dependency.Implementation}", dependency);
+            var methodKey = new MemberKey($"Resolve{_stringTools.ConvertToTitle(dependency.Implementation.ToString())}", dependency);
             var createMethodSyntax = _buildContext.GetOrAddMember(methodKey, () => 
                 SyntaxFactory.MethodDeclaration(dependency.Implementation, _buildContext.NameService.FindName(methodKey))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))

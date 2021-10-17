@@ -1,5 +1,6 @@
 ﻿namespace Pure.DI.Core
 {
+    using System;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -10,26 +11,29 @@
         private readonly IBuildContext _buildContext;
         private readonly IRaiseOnDisposableExpressionBuilder _raiseOnDisposableExpressionBuilder;
         private readonly IWrapperStrategy _wrapperStrategy;
+        private readonly IStringTools _stringTools;
 
         public PerResolveLifetimeStrategy(
             IBuildContext buildContext,
             IRaiseOnDisposableExpressionBuilder raiseOnDisposableExpressionBuilder,
-            IWrapperStrategy wrapperStrategy)
+            IWrapperStrategy wrapperStrategy,
+            IStringTools stringTools)
         {
             _buildContext = buildContext;
             _raiseOnDisposableExpressionBuilder = raiseOnDisposableExpressionBuilder;
             _wrapperStrategy = wrapperStrategy;
+            _stringTools = stringTools;
         }
 
         public Lifetime Lifetime => Lifetime.PerResolve;
 
         public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression)
         {
-            var methodKey = new MemberKey($"GetPerResolve{dependency.Binding.Implementation}", dependency);
+            var methodKey = new MemberKey($"GetPerResolve{_stringTools.ConvertToTitle(dependency.Binding.Implementation?.ToString() ?? string.Empty)}", dependency);
             var factoryMethod = _buildContext.GetOrAddMember(methodKey, () =>
             {
                 var resolvedType = dependency.Implementation;
-                var fieldKey = new MemberKey($"_perResolve{dependency.Binding.Implementation}", dependency);
+                var fieldKey = new MemberKey($"_perResolve{_stringTools.ConvertToTitle(dependency.Binding.Implementation?.ToString() ?? string.Empty)}", dependency);
                 var fieldType = resolvedType.Type.IsReferenceType
                     ? resolvedType.TypeSyntax
                     : SyntaxRepo.ObjectTypeSyntax;

@@ -12,13 +12,16 @@ namespace Pure.DI.Core
     {
         private readonly IBuildContext _buildContext;
         private readonly ITypeResolver _typeResolver;
+        private readonly IStringTools _stringTools;
 
         public EnumerableObjectBuilder(
             IBuildContext buildContext,
-            ITypeResolver typeResolver)
+            ITypeResolver typeResolver,
+            IStringTools stringTools)
         {
             _buildContext = buildContext;
             _typeResolver = typeResolver;
+            _stringTools = stringTools;
         }
 
         public ExpressionSyntax TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
@@ -31,7 +34,7 @@ namespace Pure.DI.Core
             }
 
             var elementType = namedTypeSymbol.TypeArguments[0];
-            var memberKey = new MemberKey($"EnumerableOf{elementType.Name}", dependency);
+            var memberKey = new MemberKey($"EnumerableOf{_stringTools.ConvertToTitle(elementType.Name)}", dependency);
 
             var factoryMethod = _buildContext.GetOrAddMember(memberKey, () =>
             {

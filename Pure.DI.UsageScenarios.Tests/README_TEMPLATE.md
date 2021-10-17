@@ -65,7 +65,7 @@ DI.Setup()
     .Bind<int>().To(_ => 10);
 
 // Resolve an integer
-var val = ConstantsDI.Resolve<int>();
+var val = ConstantsDI.ResolveInt();
 // Check the value
 val.ShouldBe(10);
 ```
@@ -857,7 +857,7 @@ DI.Setup()
     .Bind<CompositionRoot<ICollection<IService>>>().To<CompositionRoot<ICollection<IService>>>();
 
 // Resolve all appropriate instances
-var composition = CollectionsDI.Resolve<CompositionRoot<ICollection<IService>>>();
+var composition = CollectionsDI.ResolveCompositionRootICollectionIService();
 
 // Check the number of resolved instances
 composition.Root.Count.ShouldBe(3);

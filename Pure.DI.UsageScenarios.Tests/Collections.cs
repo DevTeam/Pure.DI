@@ -27,7 +27,7 @@
                 .Bind<CompositionRoot<ICollection<IService>>>().To<CompositionRoot<ICollection<IService>>>();
 
             // Resolve all appropriate instances
-            var composition = CollectionsDI.Resolve<CompositionRoot<ICollection<IService>>>();
+            var composition = CollectionsDI.ResolveCompositionRootICollectionIService();
 
             // Check the number of resolved instances
             composition.Root.Count.ShouldBe(3);

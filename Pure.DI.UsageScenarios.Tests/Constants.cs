@@ -18,7 +18,7 @@
                 .Bind<int>().To(_ => 10);
 
             // Resolve an integer
-            var val = ConstantsDI.Resolve<int>();
+            var val = ConstantsDI.ResolveInt();
             // Check the value
             val.ShouldBe(10);
             // }

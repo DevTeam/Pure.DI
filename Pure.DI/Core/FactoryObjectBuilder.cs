@@ -12,15 +12,18 @@ namespace Pure.DI.Core
         private readonly IBuildContext _buildContext;
         private readonly IMemberNameService _memberNameService;
         private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
+        private readonly IStringTools _stringTools;
 
         public FactoryObjectBuilder(
             IBuildContext buildContext,
             IMemberNameService memberNameService,
-            ICannotResolveExceptionFactory cannotResolveExceptionFactory)
+            ICannotResolveExceptionFactory cannotResolveExceptionFactory,
+            IStringTools stringTools)
         {
             _buildContext = buildContext;
             _memberNameService = memberNameService;
             _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
+            _stringTools = stringTools;
         }
 
         public ExpressionSyntax? TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
@@ -35,7 +38,7 @@ namespace Pure.DI.Core
             {
                 if (factory?.Block != null)
                 {
-                    var memberKey = new MemberKey($"Create{dependency.Binding.Implementation}", dependency);
+                    var memberKey = new MemberKey($"Create{_stringTools.ConvertToTitle(dependency.Binding.Implementation?.ToString() ?? String.Empty)}", dependency);
                     var factoryMethod = (MethodDeclarationSyntax)_buildContext.GetOrAddMember(memberKey, () =>
                     {
                         var factoryName = _buildContext.NameService.FindName(memberKey);

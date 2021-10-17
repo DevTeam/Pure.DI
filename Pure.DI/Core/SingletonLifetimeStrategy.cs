@@ -10,15 +10,18 @@
         private readonly IBuildContext _buildContext;
         private readonly IDisposeStatementsBuilder _disposeStatementsBuilder;
         private readonly IWrapperStrategy _wrapperStrategy;
+        private readonly IStringTools _stringTools;
 
         public SingletonLifetimeStrategy(
             IBuildContext buildContext,
             IDisposeStatementsBuilder disposeStatementsBuilder,
-            IWrapperStrategy wrapperStrategy)
+            IWrapperStrategy wrapperStrategy,
+            IStringTools stringTools)
         {
             _buildContext = buildContext;
             _disposeStatementsBuilder = disposeStatementsBuilder;
             _wrapperStrategy = wrapperStrategy;
+            _stringTools = stringTools;
         }
 
         public Lifetime Lifetime => Lifetime.Singleton;
@@ -26,7 +29,7 @@
         public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression)
         {
             var resolvedDependency = _buildContext.TypeResolver.Resolve(dependency.Implementation, dependency.Tag);
-            var classKey = new MemberKey($"Singleton{resolvedDependency.Implementation}", dependency);
+            var classKey = new MemberKey($"Singleton{_stringTools.ConvertToTitle(resolvedDependency.Implementation.ToString())}", dependency);
             var singletonClass = _buildContext.GetOrAddMember(classKey, () =>
             {
                 var singletonClassName = _buildContext.NameService.FindName(classKey);

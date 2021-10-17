@@ -17,17 +17,20 @@
         private readonly IBuildContext _buildContext;
         private readonly IAttributesService _attributesService;
         private readonly ITracer _tracer;
+        private readonly IStringTools _stringTools;
 
         public AutowiringObjectBuilder(
             IDiagnostic diagnostic,
             IBuildContext buildContext, 
             IAttributesService attributesService,
-            ITracer tracer)
+            ITracer tracer,
+            IStringTools stringTools)
         {
             _diagnostic = diagnostic;
             _buildContext = buildContext;
             _attributesService = attributesService;
             _tracer = tracer;
+            _stringTools = stringTools;
         }
 
         [SuppressMessage("ReSharper", "InvertIf")]
@@ -150,7 +153,7 @@
 
                 if (factoryStatements.Any())
                 {
-                    var memberKey = new MemberKey($"Create{dependency.Binding.Implementation}", dependency);
+                    var memberKey = new MemberKey($"Create{_stringTools.ConvertToTitle(dependency.Binding.Implementation?.ToString() ?? string.Empty)}", dependency);
                     var factoryName = _buildContext.NameService.FindName(memberKey);
                     var type = dependency.Implementation.TypeSyntax;
                     var factoryMethod = SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
