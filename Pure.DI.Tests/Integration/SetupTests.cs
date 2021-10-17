@@ -1458,5 +1458,50 @@
             // ReSharper disable once StringLiteralTypo
             output.ShouldBe(new[] { "abcabcabc" }, generatedCode);
         }
+        
+        [Fact]
+        public void ShouldNotChangeEmptyTagOfResolveWithinFactoryWhenTagIsNotEmpty()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<IService>(1).To(ctx => new Service(ctx.Resolve<IDep>()))
+                            .Bind<IDep>().To<Dep>()
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                interface IDep {}
+                class Dep: IDep { }
+
+                interface IService {}
+                class Service: IService
+                {
+                    public Service(IDep val) { }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot([Tag(1)] IService value) => Value = value.ToString();
+                }
+            }".Run(out var generatedCode);
+
+            // Then
+            // ReSharper disable once StringLiteralTypo
+            output.ShouldBe(new[] { "Sample.Service" }, generatedCode);
+        }
     }
 }

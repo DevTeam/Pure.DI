@@ -1,5 +1,6 @@
 ﻿// ReSharper disable IdentifierTypo
 // ReSharper disable InvertIf
+// ReSharper disable MergeIntoPattern
 namespace Pure.DI.Core
 {
     using System.Collections.Generic;
@@ -16,7 +17,8 @@ namespace Pure.DI.Core
         private readonly SyntaxToken _contextIdentifier;
         private readonly IBuildContext _buildContext;
         private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
-        
+        private readonly ExpressionSyntax? _currentTag;
+
         public FactoryRewriter(
             Dependency dependency,
             IBuildStrategy buildStrategy,
@@ -30,6 +32,7 @@ namespace Pure.DI.Core
             _contextIdentifier = contextIdentifier;
             _buildContext = buildContext;
             _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
+            _currentTag = dependency.Tag;
         }
 
         public override SyntaxNode VisitTypeArgumentList(TypeArgumentListSyntax node)
@@ -109,7 +112,15 @@ namespace Pure.DI.Core
                         && new SemanticType(invocationOperation.TargetMethod.ContainingType, _dependency.Implementation.SemanticModel).Equals(typeof(IContext))
                         && SymbolEqualityComparer.Default.Equals(invocationOperation.TargetMethod.TypeArguments[0], invocationOperation.TargetMethod.ReturnType))
                     {
-                        var tag = invocationOperation.Arguments.Length == 1 ? invocationOperation.Arguments[0].Value.Syntax as ExpressionSyntax : _dependency.Tag;
+                        var tag = invocationOperation.Arguments.Length == 1 ? invocationOperation.Arguments[0].Value.Syntax as ExpressionSyntax : default;
+                        if (tag == null && _dependency.Implementation.Type is INamedTypeSymbol namedTypeSymbol)
+                        {
+                            if(namedTypeSymbol.IsGenericType && namedTypeSymbol.ConstructUnboundGenericType().Equals(_dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName("System.Func`1")?.ConstructUnboundGenericType(), SymbolEqualityComparer.Default))
+                            {
+                                tag = _dependency.Tag;
+                            }
+                        }
+
                         var dependencyType = _dependency.TypesMap.ConstructType(new SemanticType(invocationOperation.TargetMethod.ReturnType, semanticModel));
                         var dependency = _buildContext.TypeResolver.Resolve(dependencyType, tag);
                         try
@@ -124,20 +135,21 @@ namespace Pure.DI.Core
                         }
                         catch (BuildException ex)
                         {
-                            if (
-                                ex.Id == Diagnostics.Error.CircularDependency)
+                            if (ex.Id == Diagnostics.Error.CircularDependency)
                             {
                                 var result = SyntaxFactory.InvocationExpression(
                                     SyntaxFactory.GenericName(nameof(IContext.Resolve))
                                         .AddTypeArgumentListArguments(dependencyType));
 
-                                if (tag != null)
+                                if (tag != default)
                                 {
                                     result = result.AddArgumentListArguments(SyntaxFactory.Argument(tag));
                                 }
 
                                 return result;
                             }
+
+                            throw;
                         }
                     }
                 }
