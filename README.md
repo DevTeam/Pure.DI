@@ -379,14 +379,14 @@ DI.Setup()
 
 ### Composition Root
 
-This sample demonstrates the most efficient way of getting a composition root object, free from any impact on memory consumption and performance. Each ordinary binding has its method to resolve a related instance as a composition root object.
+This sample demonstrates the most efficient way of getting a composition root object, free from any impact on memory consumption and performance. Each tag-free binding has its method to resolve a related instance as a composition root object.
 
 ``` CSharp
 DI.Setup("Composer")
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>();
 
-// Resolves an instance of interface `IService` using a particular method generated for each ordinary binding
+// Resolves an instance of interface `IService` using a particular method generated for each tag-free binding
 var instance = Composer.ResolveIService();
 ```
 
