@@ -17,7 +17,7 @@ namespace Pure.DI.Core
         private readonly SyntaxToken _contextIdentifier;
         private readonly IBuildContext _buildContext;
         private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
-        private readonly ExpressionSyntax? _currentTag;
+        private readonly ExpressionSyntax? _defaultTag;
 
         public FactoryRewriter(
             Dependency dependency,
@@ -32,7 +32,13 @@ namespace Pure.DI.Core
             _contextIdentifier = contextIdentifier;
             _buildContext = buildContext;
             _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
-            _currentTag = dependency.Tag;
+            if (_dependency.Implementation.Type is INamedTypeSymbol namedTypeSymbol)
+            {
+                if(namedTypeSymbol.IsGenericType && namedTypeSymbol.ConstructUnboundGenericType().ToString() == "System.Func<>")
+                {
+                    _defaultTag = _dependency.Tag;
+                }
+            }
         }
 
         public override SyntaxNode VisitTypeArgumentList(TypeArgumentListSyntax node)
@@ -112,41 +118,24 @@ namespace Pure.DI.Core
                         && new SemanticType(invocationOperation.TargetMethod.ContainingType, _dependency.Implementation.SemanticModel).Equals(typeof(IContext))
                         && SymbolEqualityComparer.Default.Equals(invocationOperation.TargetMethod.TypeArguments[0], invocationOperation.TargetMethod.ReturnType))
                     {
-                        var tag = invocationOperation.Arguments.Length == 1 ? invocationOperation.Arguments[0].Value.Syntax as ExpressionSyntax : default;
-                        if (tag == null && _dependency.Implementation.Type is INamedTypeSymbol namedTypeSymbol)
-                        {
-                            if(namedTypeSymbol.IsGenericType && namedTypeSymbol.ConstructUnboundGenericType().Equals(_dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName("System.Func`1")?.ConstructUnboundGenericType(), SymbolEqualityComparer.Default))
-                            {
-                                tag = _dependency.Tag;
-                            }
-                        }
-
+                        var tag = invocationOperation.Arguments.Length == 1 ? invocationOperation.Arguments[0].Value.Syntax as ExpressionSyntax : _defaultTag;
                         var dependencyType = _dependency.TypesMap.ConstructType(new SemanticType(invocationOperation.TargetMethod.ReturnType, semanticModel));
                         var dependency = _buildContext.TypeResolver.Resolve(dependencyType, tag);
+                        if (_buildContext.PossibleCircularDependencies)
+                        {
+                            return ReplaceLambdaByResolveCall(dependencyType, tag);
+                        }
+
                         try
                         {
-                            var expression = _buildStrategy.TryBuild(dependency, dependencyType);
-                            if (expression == null)
-                            {
-                                throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag,"a factory");
-                            }
-                            
-                            return expression;
+                            return ReplaceLambdaByCreateExpression(dependency, dependencyType);
                         }
                         catch (BuildException ex)
                         {
                             if (ex.Id == Diagnostics.Error.CircularDependency)
                             {
-                                var result = SyntaxFactory.InvocationExpression(
-                                    SyntaxFactory.GenericName(nameof(IContext.Resolve))
-                                        .AddTypeArgumentListArguments(dependencyType));
-
-                                if (tag != default)
-                                {
-                                    result = result.AddArgumentListArguments(SyntaxFactory.Argument(tag));
-                                }
-
-                                return result;
+                                _buildContext.PossibleCircularDependencies = true;
+                                return ReplaceLambdaByResolveCall(dependencyType, tag);
                             }
 
                             throw;
@@ -156,6 +145,31 @@ namespace Pure.DI.Core
             }
 
             return base.VisitInvocationExpression(node);
+        }
+
+        private static SyntaxNode? ReplaceLambdaByResolveCall(SemanticType dependencyType, ExpressionSyntax? tag)
+        {
+            var result = SyntaxFactory.InvocationExpression(
+                SyntaxFactory.GenericName(nameof(IContext.Resolve))
+                    .AddTypeArgumentListArguments(dependencyType));
+
+            if (tag != default)
+            {
+                result = result.AddArgumentListArguments(SyntaxFactory.Argument(tag));
+            }
+
+            return result;
+        }
+
+        private SyntaxNode ReplaceLambdaByCreateExpression(Dependency dependency, SemanticType dependencyType)
+        {
+            var expression = _buildStrategy.TryBuild(dependency, dependencyType);
+            if (expression == null)
+            {
+                throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, "a factory");
+            }
+
+            return expression;
         }
 
         private void ReplaceTypes(IList<TypeSyntax> args, bool addBinding = false)

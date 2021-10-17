@@ -28,6 +28,8 @@
         
         IEnumerable<StatementSyntax> FinalDisposeStatements { get; }
 
+        bool PossibleCircularDependencies { get; set; }
+
         void AddBinding(IBindingMetadata binding);
 
         T GetOrAddMember<T>(MemberKey key, Func<T> additionalMemberFactory) where T: MemberDeclarationSyntax;

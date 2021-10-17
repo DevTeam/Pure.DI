@@ -47,6 +47,8 @@
 
         public IEnumerable<StatementSyntax> FinalDisposeStatements => _finalDisposeStatements;
 
+        public bool PossibleCircularDependencies { get; set; }
+
         public void Prepare(Compilation compilation, CancellationToken cancellationToken, ResolverMetadata metadata)
         {
             _compilation = compilation;
