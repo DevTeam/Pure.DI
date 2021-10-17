@@ -3,7 +3,7 @@
     using Shouldly;
     using Xunit;
 
-    public class AutowiringWithInitialization
+    public class InstanceInitialization
     {
         [Fact]
         public void Run()
@@ -11,7 +11,7 @@
             // $visible=true
             // $tag=1 Basics
             // $priority=03
-            // $description=Autowiring with initialization
+            // $description=Instance initialization
             // $header=Sometimes instances required some actions before you give them to use - some methods of initialization or fields which should be defined. You can solve these things easily. :warning: But this approach is not recommended because it is a cause of hidden dependencies. 
             // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
             // {
@@ -27,7 +27,7 @@
                     });
 
             // Resolve an instance of interface `IService`
-            var instance = AutowiringWithInitializationDI.Resolve<INamedService>();
+            var instance = InstanceInitializationDI.Resolve<INamedService>();
             
             // Check the instance
             instance.ShouldBeOfType<InitializingNamedService>();

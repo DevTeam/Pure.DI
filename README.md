@@ -339,21 +339,21 @@ DI.Setup()
 
 - Basics
   - [Composition Root](#composition-root)
-  - [Autowiring](#autowiring)
   - [Constants](#constants)
   - [Generics](#generics)
   - [Manual binding](#manual-binding)
+  - [Resolving by a type parameter](#resolving-by-a-type-parameter)
   - [Tags](#tags)
   - [Aspect-oriented DI](#aspect-oriented-di)
   - [Several contracts](#several-contracts)
   - [Aspect-oriented DI with custom attributes](#aspect-oriented-di-with-custom-attributes)
-  - [Autowiring with initialization](#autowiring-with-initialization)
+  - [Instance initialization](#instance-initialization)
   - [Dependency tag](#dependency-tag)
   - [Injection of default parameters](#injection-of-default-parameters)
   - [Injection of nullable parameters](#injection-of-nullable-parameters)
   - [Advanced generic autowiring](#advanced-generic-autowiring)
   - [Depends On](#depends-on)
-  - [Dependency Injection with referencing implementations](#dependency-injection-with-referencing-implementations)
+  - [Unbound instance resolving](#unbound-instance-resolving)
 - Lifetimes
   - [Default lifetime](#default-lifetime)
   - [Per resolve lifetime](#per-resolve-lifetime)
@@ -379,33 +379,18 @@ DI.Setup()
 
 ### Composition Root
 
-This sample demonstrates the most efficient way of getting a composition root object, free from any impact on memory consumption and performance. Each ordinary binding type has its method to resolve a related instance as a composition root object.
+This sample demonstrates the most efficient way of getting a composition root object, free from any impact on memory consumption and performance. Each ordinary binding has its method to resolve a related instance as a composition root object.
 
 ``` CSharp
 DI.Setup("Composer")
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>();
 
-// Resolve an instance of interface `IService`
+// Resolves an instance of interface `IService` using a particular method generated for each ordinary binding
 var instance = Composer.ResolveIService();
 ```
 
 
-
-### Autowiring
-
-
-
-``` CSharp
-DI.Setup()
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>();
-
-// Resolve an instance of interface `IService`
-var instance = AutowiringDI.Resolve<IService>();
-```
-
-This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Constants
 
@@ -462,6 +447,21 @@ instance.State.ShouldBe("some state");
 ```
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+
+### Resolving by a type parameter
+
+
+
+``` CSharp
+DI.Setup()
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>();
+
+// Resolves an instance of interface `IService`
+var instance = ResolvingByTypeParameterDI.Resolve<IService>();
+```
+
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs) as many others.
 
 ### Tags
 
@@ -659,7 +659,7 @@ public class Clock : IClock
 
 
 
-### Autowiring with initialization
+### Instance initialization
 
 Sometimes instances required some actions before you give them to use - some methods of initialization or fields which should be defined. You can solve these things easily. :warning: But this approach is not recommended because it is a cause of hidden dependencies.
 
@@ -676,7 +676,7 @@ DI.Setup()
         });
 
 // Resolve an instance of interface `IService`
-var instance = AutowiringWithInitializationDI.Resolve<INamedService>();
+var instance = InstanceInitializationDI.Resolve<INamedService>();
 
 // Check the instance
 instance.ShouldBeOfType<InitializingNamedService>();
@@ -852,9 +852,9 @@ class TTMy { }
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
-### Dependency Injection with referencing implementations
+### Unbound instance resolving
 
-Autowiring automatically injects dependencies based on implementations even if it is not defined in the configuration chain. :warning: But this approach is not recommended. When you follow the dependency inversion principle you want to make sure that you do not depend on anything concrete.
+Autowiring automatically injects dependencies based on implementations even if it does not have an appropriate binding. :warning: This approach is not recommended. When you follow the dependency inversion principle you want to make sure that you do not depend on anything concrete.
 
 ``` CSharp
 public void Run()
@@ -862,7 +862,7 @@ public void Run()
     DI.Setup()
         .Bind<IService>().To<Service>();
     
-    var instance = DependencyInjectionWithImplementationsDI.Resolve<IService>();
+    var instance = UnboundInstanceResolvingDI.Resolve<IService>();
 }
 
 public class Dependency { }

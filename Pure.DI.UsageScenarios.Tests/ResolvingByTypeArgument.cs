@@ -3,7 +3,7 @@
     using Shouldly;
     using Xunit;
 
-    public class AutowiringViaType
+    public class ResolvingByTypeArgument
     {
         [Fact]
         public void Run()
@@ -11,14 +11,14 @@
             // $visible=false
             // $tag=1 Basics
             // $priority=01
-            // $description=Autowiring
+            // $description=Resolving by a type argument
             // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>();
 
-            // Resolve an instance of interface `IService`
-            var instance = AutowiringViaTypeDI.Resolve(typeof(IService));
+            // Resolves an instance of interface `IService`
+            var instance = ResolvingByTypeArgumentDI.Resolve(typeof(IService));
             // }
             // Check the instance
             instance.ShouldBeOfType<Service>();
