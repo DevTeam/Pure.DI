@@ -15,7 +15,6 @@ namespace Pure.DI.Features
 
                 .Bind<System.Func<TT>>()
                     .AnyTag()
-                    .As(Lifetime.Singleton)
                     .To(ctx => new System.Func<TT>(() => ctx.Resolve<TT>()))
                 .Bind<System.Lazy<TT>>()
                     .AnyTag()
