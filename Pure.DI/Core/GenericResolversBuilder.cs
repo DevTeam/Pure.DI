@@ -90,7 +90,7 @@ namespace Pure.DI.Core
 
         private static IEnumerable<Accessibility> GetAccessibility(ISymbol symbol)
         {
-            yield return symbol.DeclaredAccessibility;
+            yield return symbol.DeclaredAccessibility == Accessibility.NotApplicable ? Accessibility.Internal : symbol.DeclaredAccessibility;
             switch (symbol)
             {
                 case INamedTypeSymbol { IsGenericType: true } namedTypeSymbol:

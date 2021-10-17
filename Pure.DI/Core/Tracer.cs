@@ -7,18 +7,11 @@
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class Tracer : ITracer, IDisposable
     {
-        private readonly IDiagnostic _diagnostic;
         private readonly ILog<Tracer> _log;
         private readonly Stack<Dependency> _path = new();
         private readonly List<Dependency[]> _paths = new();
 
-        public Tracer(
-            IDiagnostic diagnostic,
-            ILog<Tracer> log)
-        {
-            _diagnostic = diagnostic;
-            _log = log;
-        }
+        public Tracer(ILog<Tracer> log) => _log = log;
 
         public IEnumerable<Dependency[]> Paths => _paths;
 
@@ -31,9 +24,8 @@
                 return this;
             }
 
-            var error = $"Circular dependency detected for {this}.";
-            _diagnostic.Error(Diagnostics.Error.CircularDependency, error, dependency.Binding.Location);
-            throw new HandledException(error);
+            var path = string.Join(" -> ", _path.Reverse().Select(i => i.Equals(dependency) ? $"[{i}]": i.ToString()));
+            throw new BuildException(Diagnostics.Error.CircularDependency, $"Circular dependency detected for {path} ---> [{dependency}].", dependency.Binding.Location);
         }
 
         public void Save()

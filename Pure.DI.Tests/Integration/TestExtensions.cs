@@ -79,10 +79,15 @@ namespace Pure.DI.Tests.Integration
                 .Bind<IStdOut>().Bind<IStdErr>().As(Lifetime.Singleton).To(ctx => stdErr)
                 .Container;
 
-            List<Source>? generatedSources;
+            List<Source>? generatedSources ;
             try
             {
                 generatedSources = container.Resolve<ISourceBuilder>().Build(compilation, CancellationToken.None).ToList();
+            }
+            catch (BuildException buildException)
+            {
+                generatedCode = string.Empty;
+                return new List<string> { $"{buildException.Id}: {buildException.Message}" };
             }
             catch (HandledException)
             {
@@ -116,11 +121,11 @@ namespace Pure.DI.Tests.Integration
 }";
             try
             {
+                var output = new List<string>();
                 File.WriteAllText(configPath, config);
                 var result = compilation.Emit(assemblyPath);
                 Assert.True(result.Success);
 
-                var output = new List<string>();
                 void OnOutputDataReceived(object sender, DataReceivedEventArgs args)
                 {
                     if (args.Data != null)

@@ -39,6 +39,55 @@
             // Then
             output.ShouldBe(new [] { "abc" }, generatedCode);
         }
+        
+        [Fact]
+        public void ShouldSupportFuncWhenCircularDependency()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<ISettings>().To<Settings>()
+                            .Bind<IService>().To<Service>()
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                public interface IService { }
+                
+                public class Service: IService
+                {
+                    public Service(ISettings settings) { }
+                }
+
+                public interface ISettings { }
+                
+                public class Settings: ISettings
+                {
+                    public Settings(Func<IService> service) { }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(IService value) => Value = value.ToString();
+                }
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new [] { "Sample.Service" }, generatedCode);
+        }
 
         [Fact]
         public void ShouldSupportFuncWithTag()

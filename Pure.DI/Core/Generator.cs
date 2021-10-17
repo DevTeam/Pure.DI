@@ -30,6 +30,10 @@ namespace Pure.DI.Core
                     context.AddSource(source.HintName, source.Code);
                 }
             }
+            catch (BuildException buildException)
+            {
+                _diagnostic.Error(buildException.Id, buildException.Message, buildException.Location);
+            }
             catch (HandledException)
             {
             }

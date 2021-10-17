@@ -112,13 +112,33 @@ namespace Pure.DI.Core
                         var tag = invocationOperation.Arguments.Length == 1 ? invocationOperation.Arguments[0].Value.Syntax as ExpressionSyntax : _dependency.Tag;
                         var dependencyType = _dependency.TypesMap.ConstructType(new SemanticType(invocationOperation.TargetMethod.ReturnType, semanticModel));
                         var dependency = _buildContext.TypeResolver.Resolve(dependencyType, tag);
-                        var expression = _buildStrategy.TryBuild(dependency, dependencyType);
-                        if (expression == null)
+                        try
                         {
-                            throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag,"a factory");
+                            var expression = _buildStrategy.TryBuild(dependency, dependencyType);
+                            if (expression == null)
+                            {
+                                throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag,"a factory");
+                            }
+                            
+                            return expression;
                         }
+                        catch (BuildException ex)
+                        {
+                            if (
+                                ex.Id == Diagnostics.Error.CircularDependency)
+                            {
+                                var result = SyntaxFactory.InvocationExpression(
+                                    SyntaxFactory.GenericName(nameof(IContext.Resolve))
+                                        .AddTypeArgumentListArguments(dependencyType));
 
-                        return expression;
+                                if (tag != null)
+                                {
+                                    result = result.AddArgumentListArguments(SyntaxFactory.Argument(tag));
+                                }
+
+                                return result;
+                            }
+                        }
                     }
                 }
             }
