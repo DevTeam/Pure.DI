@@ -16,12 +16,6 @@
 
         public void Initialize(GeneratorInitializationContext context)
         {
-#if DEBUG && AA
-            if (!Debugger.IsAttached)
-            {
-                Debugger.Launch();
-            }
-#endif
         }
 
         public void Execute(GeneratorExecutionContext context) =>

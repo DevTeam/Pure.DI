@@ -29,6 +29,8 @@
             _typeResolverFactory = typeResolverFactory;
         }
 
+        public int Id { get; private set; }
+
         public Compilation Compilation => _compilation ?? throw new InvalidOperationException("Not initialized.");
 
         public bool IsCancellationRequested => _cancellationToken is {IsCancellationRequested: true};
@@ -47,10 +49,9 @@
 
         public IEnumerable<StatementSyntax> FinalDisposeStatements => _finalDisposeStatements;
 
-        public bool PossibleCircularDependencies { get; set; }
-
-        public void Prepare(Compilation compilation, CancellationToken cancellationToken, ResolverMetadata metadata)
+        public void Prepare(int id, Compilation compilation, CancellationToken cancellationToken, ResolverMetadata metadata)
         {
+            Id = id;
             _compilation = compilation;
             _cancellationToken = cancellationToken;
             _metadata = metadata;

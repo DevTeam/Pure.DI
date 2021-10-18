@@ -170,7 +170,6 @@
             // Then
             output.Any(i => i.Contains(Diagnostics.Error.CannotResolve)).ShouldBeTrue(generatedCode);
             output.Any(i => i.Contains("MyClass")).ShouldBeTrue(generatedCode);
-            output.Any(i => i.Contains("MyClass2")).ShouldBeTrue(generatedCode);
         }
 
         [Fact]

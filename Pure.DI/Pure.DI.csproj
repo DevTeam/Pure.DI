@@ -50,7 +50,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="IoC.Container" Version="1.3.*" GeneratePathProperty="true" PrivateAssets="all" />
+        <PackageReference Include="IoC.Container" Version="1.3.6" GeneratePathProperty="true" PrivateAssets="all" />
         <!-- Should be compatible with .NET 5.0.102+ and Visual Studio 16.8+ -->
         <!-- https://github.com/dotnet/roslyn/blob/main/docs/wiki/NuGet-packages.md#versioning -->
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.8.0" PrivateAssets="all" />

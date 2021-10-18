@@ -17,6 +17,7 @@
         MicrosoftDependencyInjection,
         Factory,
         FactoryMethod,
-        GenericResolvers
+        GenericResolvers,
+        Global
     }
 }

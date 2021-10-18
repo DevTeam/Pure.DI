@@ -22,6 +22,11 @@ namespace Pure.DI.Core
             && bool.TryParse(debugValue, out var debug)
             && debug;
 
+        public bool Trace =>
+            TryGet(Setting.Trace, out var traceValue)
+            && bool.TryParse(traceValue, out var trace)
+            && trace;
+
         public bool TryGetOutputPath(out string outputPath)
         {
             if (!TryGet(Setting.Out, out outputPath))

@@ -8,13 +8,15 @@
 
     internal interface IBuildContext
     {
+        int Id { get; }
+
         Compilation Compilation { get; }
 
         bool IsCancellationRequested { get; }
 
         ResolverMetadata Metadata { get; }
 
-        void Prepare(Compilation compilation, CancellationToken cancellationToken, ResolverMetadata metadata);
+        void Prepare(int id, Compilation compilation, CancellationToken cancellationToken, ResolverMetadata metadata);
 
         INameService NameService { get; }
 
@@ -27,8 +29,6 @@
         IEnumerable<StatementSyntax> FinalizationStatements { get; }
         
         IEnumerable<StatementSyntax> FinalDisposeStatements { get; }
-
-        bool PossibleCircularDependencies { get; set; }
 
         void AddBinding(IBindingMetadata binding);
 

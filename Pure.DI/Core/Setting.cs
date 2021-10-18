@@ -6,6 +6,8 @@
 
         Debug,
 
-        Verbosity
+        Verbosity,
+        
+        Trace
     }
 }

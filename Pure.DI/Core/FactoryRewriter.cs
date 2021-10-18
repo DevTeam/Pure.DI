@@ -17,6 +17,7 @@ namespace Pure.DI.Core
         private readonly SyntaxToken _contextIdentifier;
         private readonly IBuildContext _buildContext;
         private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
+        private readonly ICache<InvocationExpressionSyntax, bool> _requiresCall;
         private readonly ExpressionSyntax? _defaultTag;
 
         public FactoryRewriter(
@@ -24,7 +25,8 @@ namespace Pure.DI.Core
             IBuildStrategy buildStrategy,
             SyntaxToken contextIdentifier,
             IBuildContext buildContext,
-            ICannotResolveExceptionFactory cannotResolveExceptionFactory)
+            ICannotResolveExceptionFactory cannotResolveExceptionFactory,
+            ICache<InvocationExpressionSyntax, bool> requiresCall)
             : base(true)
         {
             _dependency = dependency;
@@ -32,6 +34,7 @@ namespace Pure.DI.Core
             _contextIdentifier = contextIdentifier;
             _buildContext = buildContext;
             _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
+            _requiresCall = requiresCall;
             if (_dependency.Implementation.Type is INamedTypeSymbol namedTypeSymbol)
             {
                 if(namedTypeSymbol.IsGenericType && namedTypeSymbol.ConstructUnboundGenericType().ToString() == "System.Func<>")
@@ -106,6 +109,11 @@ namespace Pure.DI.Core
 
         public override SyntaxNode? VisitInvocationExpression(InvocationExpressionSyntax node)
         {
+            if (node.DescendantNodes().OfType<GenericNameSyntax>().FirstOrDefault() is not { Identifier: { Text: nameof(IContext.Resolve) } })
+            {
+                return base.VisitInvocationExpression(node);
+            }
+            
             var semanticModel = node.GetSemanticModel(_dependency.Implementation);
             var operation = semanticModel.GetOperation(node);
             if (operation is IInvocationOperation invocationOperation)
@@ -121,7 +129,7 @@ namespace Pure.DI.Core
                         var tag = invocationOperation.Arguments.Length == 1 ? invocationOperation.Arguments[0].Value.Syntax as ExpressionSyntax : _defaultTag;
                         var dependencyType = _dependency.TypesMap.ConstructType(new SemanticType(invocationOperation.TargetMethod.ReturnType, semanticModel));
                         var dependency = _buildContext.TypeResolver.Resolve(dependencyType, tag);
-                        if (_buildContext.PossibleCircularDependencies)
+                        if (_requiresCall.TryGetValue(node, out var requiresCall) && requiresCall)
                         {
                             return ReplaceLambdaByResolveCall(dependencyType, tag);
                         }
@@ -134,7 +142,7 @@ namespace Pure.DI.Core
                         {
                             if (ex.Id == Diagnostics.Error.CircularDependency)
                             {
-                                _buildContext.PossibleCircularDependencies = true;
+                                _requiresCall.Add(node, true);
                                 return ReplaceLambdaByResolveCall(dependencyType, tag);
                             }
 
@@ -147,7 +155,7 @@ namespace Pure.DI.Core
             return base.VisitInvocationExpression(node);
         }
 
-        private static SyntaxNode? ReplaceLambdaByResolveCall(SemanticType dependencyType, ExpressionSyntax? tag)
+        private static SyntaxNode ReplaceLambdaByResolveCall(SemanticType dependencyType, ExpressionSyntax? tag)
         {
             var result = SyntaxFactory.InvocationExpression(
                 SyntaxFactory.GenericName(nameof(IContext.Resolve))

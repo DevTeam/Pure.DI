@@ -13,17 +13,20 @@ namespace Pure.DI.Core
         private readonly IMemberNameService _memberNameService;
         private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
         private readonly IStringTools _stringTools;
+        private readonly ICache<InvocationExpressionSyntax, bool> _requiresCall;
 
         public FactoryObjectBuilder(
             IBuildContext buildContext,
             IMemberNameService memberNameService,
             ICannotResolveExceptionFactory cannotResolveExceptionFactory,
-            IStringTools stringTools)
+            IStringTools stringTools,
+            [Tag(Tags.Global)] ICache<InvocationExpressionSyntax, bool> requiresCall)
         {
             _buildContext = buildContext;
             _memberNameService = memberNameService;
             _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
             _stringTools = stringTools;
+            _requiresCall = requiresCall;
         }
 
         public ExpressionSyntax? TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
@@ -63,7 +66,8 @@ namespace Pure.DI.Core
                         buildStrategy,
                         factory.Parameter.Identifier,
                         _buildContext,
-                        _cannotResolveExceptionFactory)
+                        _cannotResolveExceptionFactory,
+                        _requiresCall)
                     .Visit(resultExpression))
                     ?.WithCommentBefore($"// {dependency.Binding}");
             }

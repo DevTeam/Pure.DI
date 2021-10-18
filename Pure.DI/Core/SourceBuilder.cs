@@ -1,4 +1,5 @@
 ﻿// ReSharper disable InvertIf
+// ReSharper disable InvertIf
 namespace Pure.DI.Core
 {
     using System;
@@ -131,13 +132,13 @@ namespace Pure.DI.Core
                     {
                         stopwatch.Stop();
                         var initDuration = stopwatch.ElapsedMilliseconds;
-
+                        var curId = 0;
                         foreach (var (tree, rawMetadata) in items)
                         {
                             stopwatch.Start();
                             var semanticModel = compilation.GetSemanticModel(tree);
                             var metadata = CreateMetadata(rawMetadata, allMetadata);
-                            _context.Prepare(compilation, cancellationToken, metadata);
+                            _context.Prepare(curId++, compilation, cancellationToken, metadata);
 
                             if (cancellationToken.IsCancellationRequested)
                             {
@@ -157,6 +158,22 @@ namespace Pure.DI.Core
                                     _log.Info(() => new[] {"A debugger is already attached"});
                                 }
                             }
+                            
+                            if (_settings.Trace && _settings.TryGetOutputPath(out var outputPath))
+                            {
+                                var traceFile = Path.Combine(outputPath, $"dotTrace{Guid.NewGuid().ToString().Substring(0, 4)}.dtt");
+                                var profiler = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".dotnet", "tools", "dottrace.exe");
+                                new Process {
+                                    StartInfo = new ProcessStartInfo(
+                                        profiler, 
+                                        $@"attach {Process.GetCurrentProcess().Id} --save-to=""{traceFile}"" --profiling-type=Sampling")
+                                    {
+                                        WindowStyle = ProcessWindowStyle.Hidden,
+                                        CreateNoWindow = true
+                                    }
+                                }.Start();
+                                Thread.Sleep(1000);
+                            }
 
                             _log.Info(() =>
                             {
@@ -175,7 +192,7 @@ namespace Pure.DI.Core
                                 $"{metadata.ComposerTypeName}.cs",
                                 SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8));
 
-                            if (_settings.TryGetOutputPath(out var outputPath))
+                            if (_settings.TryGetOutputPath(out outputPath))
                             {
                                 _log.Info(() => new[] {$"The output path: {outputPath}"});
                                 _fileSystem.WriteFile(Path.Combine(outputPath, source.HintName), source.Code.ToString());
@@ -191,7 +208,7 @@ namespace Pure.DI.Core
                             }
 
                             stopwatch.Stop();
-                            _log.Trace(() => new[]
+                            _log.Info(() => new[]
                             {
                                 $"Initialize {initDuration} ms.",
                                 $"Generate {stopwatch.ElapsedMilliseconds} ms."

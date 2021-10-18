@@ -3,6 +3,8 @@
     internal interface ISettings
     {
         bool Debug { get; }
+        
+        bool Trace { get; }
 
         bool TryGetOutputPath(out string outputPath);
 

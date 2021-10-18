@@ -47,7 +47,9 @@
                 .Bind<IResolveMethodBuilder>().Tag(StaticWithTag).To<StaticWithTagResolveMethodBuilder>()
                 .Bind<IResolveMethodBuilder>().Tag(GenericStaticResolve).To<GenericStaticResolveMethodBuilder>()
                 .Bind<IResolveMethodBuilder>().Tag(GenericStaticWithTag).To<GenericStaticWithTagResolveMethodBuilder>()
-                .Bind<IBuildStrategy>().To<BuildStrategy>();
+                .Bind<IBuildStrategy>().To<BuildStrategy>()
+                .Bind<ICache<IoC.TT, IoC.TT1>>().To<Cache<IoC.TT, IoC.TT1>>()
+                .Bind<ICache<IoC.TT, IoC.TT1>>().As(ContainerSingleton).Tag(Global).To<Cache<IoC.TT, IoC.TT1>>();
 
             yield return container
                 .Bind<ITypesMap>().To<TypesMap>()

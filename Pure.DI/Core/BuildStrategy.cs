@@ -17,29 +17,35 @@ namespace Pure.DI.Core
         private readonly IDiagnostic _diagnostic;
         private readonly ITracer _tracer;
         private readonly ILog<BuildStrategy> _log;
+        private readonly IBuildContext _buildContext;
         private readonly IBindingResultStrategy _resultStrategy;
+        private readonly ICache<BuildStrategyKey, ExpressionSyntax?> _cache;
         private readonly Dictionary<Lifetime, ILifetimeStrategy> _lifetimes;
-        private readonly Dictionary<CacheKey, ExpressionSyntax?> _cache = new();
 
         public BuildStrategy(
             IDiagnostic diagnostic,
             ITracer tracer,
             ILog<BuildStrategy> log,
+            IBuildContext buildContext,
             [Tag(AsIsResult)] IBindingResultStrategy resultStrategy,
-            IEnumerable<ILifetimeStrategy> lifetimeStrategies)
+            IEnumerable<ILifetimeStrategy> lifetimeStrategies,
+            [Tag(Global)] ICache<BuildStrategyKey, ExpressionSyntax?> cache)
         {
             _diagnostic = diagnostic;
             _tracer = tracer;
             _log = log;
+            _buildContext = buildContext;
             _resultStrategy = resultStrategy;
+            _cache = cache;
             _lifetimes = lifetimeStrategies.ToDictionary(i => i.Lifetime, i => i);
         }
         
         public ExpressionSyntax? TryBuild(Dependency dependency, SemanticType resolvingType)
         {
-            var cacheKey = new CacheKey(dependency, resolvingType);
-            if (_cache.TryGetValue(cacheKey, out var result))
+            var key = new BuildStrategyKey(_buildContext.Id, dependency);
+            if (_cache.TryGetValue(key, out var result))
             {
+                _log.Info(() => new []{ $"Cache: {dependency} => {result}"});
                 return result;
             }
 
@@ -60,32 +66,8 @@ namespace Pure.DI.Core
                 _log.Info(() => new []{ $"{dependency} => {objectBuildExpression.NormalizeWhitespace()}"});
             }
 
-            _cache.Add(cacheKey, objectBuildExpression);
+            _cache.Add(key, objectBuildExpression);
             return objectBuildExpression;
-        }
-
-        private readonly struct CacheKey
-        {
-            public readonly Dependency Dependency;
-            public readonly SemanticType ResolvingType;
-
-            public CacheKey(Dependency dependency, SemanticType resolvingType)
-            {
-                Dependency = dependency;
-                ResolvingType = resolvingType;
-            }
-
-            public bool Equals(CacheKey other) => Dependency.Equals(other.Dependency) && ResolvingType.Equals(other.ResolvingType);
-
-            public override bool Equals(object? obj) => obj is CacheKey other && Equals(other);
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    return (Dependency.GetHashCode() * 397) ^ ResolvingType.GetHashCode();
-                }
-            }
         }
     }
 }
