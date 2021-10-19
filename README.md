@@ -195,13 +195,13 @@ DI.Setup("MyComposer")
   .Default(Lifetime.Singleton)
 
   // Determines a custom attribute overriding an injection type:
-  .TypeAttribure<MyTypeAttribute>()
+  .TypeAttribute<MyTypeAttribute>()
   
   // Determines a tag attribute overriding an injection tag:
-  .TagAttribure<MyTagAttribute>()
+  .TagAttribute<MyTagAttribute>()
   
   // Determines a custom attribute overriding an injection order:
-  .OrderAttribure<MyOrderAttribute>()
+  .OrderAttribute<MyOrderAttribute>()
   
   // Use some DI configuration as a base:
   .DependsOn(nameof(BasicComposer)) 
@@ -320,9 +320,23 @@ The list of verbosity levels:
 - Normal
 - Diagnostic
 
-To debug a code generation add a hint like ```debug=true```:
+To debug a code generation, add a hint like ```debug=true```:
 ```c#
 // debug=true
+DI.Setup()
+  .Bind<IDependency>().To<Dependency>();
+```
+
+To get a code-generation performance snapshot:
+- install [JetBrains dotTrace command-line tool](https://www.jetbrains.com/help/profiler/Performance_Profiling__Profiling_Using_the_Command_Line.html#install-and-use-the-command-line-tool-as-a-net-core-tool):
+```
+dotnet tool install --global JetBrains.dotTrace.GlobalTools
+```
+- specify an output path like ```// out=<path to the diagnostics directory >```
+- add a hint like ```debug=true```:
+```c#
+// out=c:\Projects\MyDiagnostics
+// trace=true
 DI.Setup()
   .Bind<IDependency>().To<Dependency>();
 ```
