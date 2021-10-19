@@ -59,12 +59,11 @@ namespace Pure.DI.Core
             }
             
             var requiredUniqueNamespace = ComponentsInUniqNamespaceIsNeeded(compilation);
-            var ns = requiredUniqueNamespace ? "ns" + Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 4) : string.Empty;
-            var sourceSetKey = new SourceSetKey(csharpCompilation.LanguageVersion, ns);
+            var sourceSetKey = new SourceSetKey(csharpCompilation.LanguageVersion);
             var parseOptions = new CSharpParseOptions(csharpCompilation.LanguageVersion);
             if (!_infoCache.TryGetValue(sourceSetKey, out var info))
             {
-                info = new SourceSet(parseOptions,string.Empty);
+                info = new SourceSet(parseOptions);
                 _infoCache.Add(sourceSetKey, info);
             }
             

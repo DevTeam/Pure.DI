@@ -5,13 +5,9 @@ namespace Pure.DI.Core
     internal class SourceSetKey
     {
         private readonly LanguageVersion _languageVersion;
-        private readonly string _ns;
 
-        public SourceSetKey(LanguageVersion languageVersion, string ns)
-        {
+        public SourceSetKey(LanguageVersion languageVersion) =>
             _languageVersion = languageVersion;
-            _ns = ns;
-        }
 
         public override bool Equals(object? obj)
         {
@@ -19,15 +15,9 @@ namespace Pure.DI.Core
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
             SourceSetKey other = (SourceSetKey)obj;
-            return _languageVersion == other._languageVersion && _ns == other._ns;
+            return _languageVersion == other._languageVersion;
         }
 
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return ((int)_languageVersion * 397) ^ _ns.GetHashCode();
-            }
-        }
+        public override int GetHashCode() => (int)_languageVersion;
     }
 }

@@ -24,22 +24,19 @@ namespace Pure.DI.Core
             Components = GetResources(componentsRegex).Select(i => (i.file, i.code)).ToList();
         }
 
-        public SourceSet(CSharpParseOptions parseOptions, string ns)
+        public SourceSet(CSharpParseOptions parseOptions)
         {
-            ComponentSources = CreateSources(Components, parseOptions, ns).ToList();
+            ComponentSources = CreateSources(Components, parseOptions).ToList();
             FeatureSources = CreateSources(Features, parseOptions).ToList();
         }
 
-        private static IEnumerable<Source> CreateSources(IEnumerable<(string name, string text)> sources, CSharpParseOptions parseOptions, string ns = "") =>
+        private static IEnumerable<Source> CreateSources(IEnumerable<(string name, string text)> sources, CSharpParseOptions parseOptions) =>
             from source in sources 
-            let text = string.IsNullOrWhiteSpace(ns) ? source.text : source.text.Replace("Pure.DI", $"Pure.DI.{ns}") 
-            //let text = source.text
-            select new Source(source.name, SourceText.From(text, Encoding.UTF8), CSharpSyntaxTree.ParseText(text, parseOptions));
+            select new Source(source.name, SourceText.From(source.text, Encoding.UTF8), CSharpSyntaxTree.ParseText(source.text, parseOptions));
         
         private static IEnumerable<(string file, string code)> GetResources(Regex filter)
         {
             var assembly = typeof(SourceGenerator).Assembly;
-
             foreach (var resourceName in assembly.GetManifestResourceNames())
             {
                 if (!filter.IsMatch(resourceName))
