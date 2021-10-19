@@ -18,6 +18,7 @@
         Factory,
         FactoryMethod,
         GenericResolvers,
-        Global
+        ContainerScope,
+        GlobalScope
     }
 }

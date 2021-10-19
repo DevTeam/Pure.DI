@@ -20,7 +20,7 @@ namespace Pure.DI.Core
             IMemberNameService memberNameService,
             ICannotResolveExceptionFactory cannotResolveExceptionFactory,
             IStringTools stringTools,
-            [Tag(Tags.Global)] ICache<InvocationExpressionSyntax, bool> requiresCall)
+            [Tag(Tags.ContainerScope)] ICache<InvocationExpressionSyntax, bool> requiresCall)
         {
             _buildContext = buildContext;
             _memberNameService = memberNameService;

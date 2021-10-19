@@ -169,7 +169,7 @@ namespace Pure.DI.Core
                         && new SemanticType(arrayTypeSymbol.ElementType, _semanticModel).Equals(typeof(object)))
                     {
                         var dependency = new SemanticType(dependencyType, _semanticModel);
-                        _binding.AddDependencyTags(dependency, arrayCreationOperation.Initializer.ElementValues.OfType<IConversionOperation>().Select(i => i.Syntax).OfType<ExpressionSyntax>().ToArray());
+                        _binding.AddDependencyTags(dependency, (arrayCreationOperation.Initializer?.ElementValues.OfType<IConversionOperation>().Select(i => i.Syntax).OfType<ExpressionSyntax>()  ?? Enumerable.Empty<ExpressionSyntax>()).ToArray());
                         _binding.AddDependency(new SemanticType(dependencyType, _semanticModel));
                     }
                     
@@ -242,7 +242,7 @@ namespace Pure.DI.Core
                     && arrayCreationOperation.Type is IArrayTypeSymbol arrayTypeSymbol
                     && new SemanticType(arrayTypeSymbol.ElementType, _semanticModel).Equals(typeof(object)))
                 {
-                    _binding.AddTags(arrayCreationOperation.Initializer.ElementValues.OfType<IConversionOperation>().Select(i => i.Syntax).OfType<ExpressionSyntax>().ToArray());
+                    _binding.AddTags((arrayCreationOperation.Initializer?.ElementValues.OfType<IConversionOperation>().Select(i => i.Syntax).OfType<ExpressionSyntax>() ?? Enumerable.Empty<ExpressionSyntax>()).ToArray());
                 }
             }
 

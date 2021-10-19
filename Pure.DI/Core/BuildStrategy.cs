@@ -29,7 +29,7 @@ namespace Pure.DI.Core
             IBuildContext buildContext,
             [Tag(AsIsResult)] IBindingResultStrategy resultStrategy,
             IEnumerable<ILifetimeStrategy> lifetimeStrategies,
-            [Tag(Global)] ICache<BuildStrategyKey, ExpressionSyntax?> cache)
+            [Tag(ContainerScope)] ICache<BuildStrategyKey, ExpressionSyntax?> cache)
         {
             _diagnostic = diagnostic;
             _tracer = tracer;
@@ -45,7 +45,7 @@ namespace Pure.DI.Core
             var key = new BuildStrategyKey(_buildContext.Id, dependency);
             if (_cache.TryGetValue(key, out var result))
             {
-                _log.Info(() => new []{ $"Cache: {dependency} => {result}"});
+                _log.Trace(() => new []{ $"Cache: {dependency} => {result}"});
                 return result;
             }
 

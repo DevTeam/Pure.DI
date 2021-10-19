@@ -16,7 +16,7 @@ namespace Pure.DI.Core
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             BuildStrategyKey other = (BuildStrategyKey)obj;
-            return obj.GetType() == GetType() && (_id == other._id && _dependency.Equals(other._dependency));
+            return obj.GetType() == GetType() && _id == other._id && _dependency.Equals(other._dependency);
         }
 
         public override int GetHashCode()

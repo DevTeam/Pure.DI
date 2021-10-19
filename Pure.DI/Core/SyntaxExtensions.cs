@@ -47,5 +47,13 @@
                 _ => null
             };
         }
+        
+        public static IEnumerable<INamedTypeSymbol> GetTypesByMetadataName(this Compilation compilation, string typeMetadataName) =>
+            compilation.References
+                .Select(compilation.GetAssemblyOrModuleSymbol)
+                .OfType<IAssemblySymbol>()
+                .Select(assemblySymbol => assemblySymbol.GetTypeByMetadataName(typeMetadataName))
+                .Where(i => i != null)
+                .Select(i => i!);
     }
 }

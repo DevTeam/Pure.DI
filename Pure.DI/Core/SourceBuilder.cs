@@ -8,7 +8,6 @@ namespace Pure.DI.Core
     using System.IO;
     using System.Linq;
     using System.Text;
-    using System.Text.RegularExpressions;
     using System.Threading;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
@@ -18,11 +17,6 @@ namespace Pure.DI.Core
     // ReSharper disable once ClassNeverInstantiated.Global
     internal class SourceBuilder : ISourceBuilder
     {
-        private static readonly Regex FeaturesRegex = new(@"Pure.DI.Features.[\w]+.cs", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase);
-        private static readonly Regex ComponentsRegex = new(@"Pure.DI.Components.[\w]+.cs", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase);
-        private static readonly List<Source> Features;
-        private static readonly List<Source> Components;
-        private static readonly List<Source> ComponentsInUniqNamespace;
         private readonly IBuildContext _context;
         private readonly ISettings _settings;
         private readonly IFileSystem _fileSystem;
@@ -30,15 +24,7 @@ namespace Pure.DI.Core
         private readonly ILog<SourceBuilder> _log;
         private readonly Func<IClassBuilder> _resolverBuilderFactory;
         private readonly Func<SemanticModel, IMetadataWalker> _metadataWalkerFactory;
-
-        static SourceBuilder()
-        {
-            Features = new List<Source> { new("Features.cs",SourceText.From(string.Join(Environment.NewLine, GetResources(FeaturesRegex).Select(i => i.code)), Encoding.UTF8)) };
-            Components = GetResources(ComponentsRegex).Select(i => new Source(i.file, SourceText.From(i.code, Encoding.UTF8))).ToList();
-            // ReSharper disable once ReplaceSubstringWithRangeIndexer
-            var id = Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 4);
-            ComponentsInUniqNamespace = GetResources(ComponentsRegex).Select(i => new Source(i.file, SourceText.From(i.code.Replace("Pure.DI", "Pure.DI." + id), Encoding.UTF8))).ToList();
-        }
+        private readonly ICache<SourceSetKey, SourceSet> _infoCache;
 
         public SourceBuilder(
             IBuildContext context,
@@ -47,7 +33,8 @@ namespace Pure.DI.Core
             IDiagnostic diagnostic,
             ILog<SourceBuilder> log,
             Func<IClassBuilder> resolverBuilderFactory,
-            Func<SemanticModel, IMetadataWalker> metadataWalkerFactory)
+            Func<SemanticModel, IMetadataWalker> metadataWalkerFactory,
+            [Tag(Tags.GlobalScope)] ICache<SourceSetKey, SourceSet> infoCache)
         {
             _context = context;
             _settings = settings;
@@ -56,47 +43,45 @@ namespace Pure.DI.Core
             _log = log;
             _resolverBuilderFactory = resolverBuilderFactory;
             _metadataWalkerFactory = metadataWalkerFactory;
+            _infoCache = infoCache;
         }
 
         public IEnumerable<Source> Build(Compilation compilation, CancellationToken cancellationToken)
         {
             Stopwatch stopwatch = new();
             stopwatch.Start();
+
             if (compilation is not CSharpCompilation csharpCompilation)
             {
                 var error = $"{compilation.Language} is not supported.";
                 _diagnostic.Error(Diagnostics.Error.Unsupported, error);
                 throw new HandledException(error);
             }
-
-            var syntaxTreesCount = compilation.SyntaxTrees.Count();
-            var componentsInUniqNamespaceIsNeeded = ComponentsInUniqNamespaceIsNeeded(compilation);
-            var components = new List<Source>();
-            components.AddRange(componentsInUniqNamespaceIsNeeded ? ComponentsInUniqNamespace : Components);
-
+            
+            var requiredUniqueNamespace = ComponentsInUniqNamespaceIsNeeded(compilation);
+            var ns = requiredUniqueNamespace ? "ns" + Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 4) : string.Empty;
+            var sourceSetKey = new SourceSetKey(csharpCompilation.LanguageVersion, ns);
             var parseOptions = new CSharpParseOptions(csharpCompilation.LanguageVersion);
-            // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-            foreach (var component in components)
+            if (!_infoCache.TryGetValue(sourceSetKey, out var info))
             {
-                if (cancellationToken.IsCancellationRequested)
+                info = new SourceSet(parseOptions,string.Empty);
+                _infoCache.Add(sourceSetKey, info);
+            }
+            
+            var syntaxTreesCount = compilation.SyntaxTrees.Count();
+            // ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+            foreach (var source in info.ComponentSources)
+            {
+                compilation = compilation.AddSyntaxTrees(source.SyntaxTree);
+                if (!requiredUniqueNamespace)
                 {
-                    break;
-                }
-                
-                compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(component.Code, parseOptions));
-                if (!componentsInUniqNamespaceIsNeeded)
-                {
-                    yield return component;
+                    yield return source;
                 }
             }
 
             if (!cancellationToken.IsCancellationRequested)
             {
-                // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
-                foreach (var feature in Features)
-                {
-                    compilation = compilation.AddSyntaxTrees(CSharpSyntaxTree.ParseText(feature.Code, parseOptions));                    
-                }
+                compilation = info.FeatureSources.Aggregate(compilation, (current, source) => current.AddSyntaxTrees(source.SyntaxTree));
 
                 var featuresMetadata = new List<ResolverMetadata>();
                 foreach (var tree in compilation.SyntaxTrees.Skip(syntaxTreesCount))
@@ -111,112 +96,110 @@ namespace Pure.DI.Core
                     featuresMetadata.AddRange(walker.Metadata);
                 }
 
-                if (!cancellationToken.IsCancellationRequested)
+                var allMetadata = new List<ResolverMetadata>(featuresMetadata);
+                List<(SyntaxTree tree, ResolverMetadata rawMetadata)> items = new();
+                foreach (var tree in compilation.SyntaxTrees.Take(syntaxTreesCount))
                 {
-                    var allMetadata = new List<ResolverMetadata>(featuresMetadata);
-                    List<(SyntaxTree tree, ResolverMetadata rawMetadata)> items = new();
-                    foreach (var tree in compilation.SyntaxTrees.Take(syntaxTreesCount))
+                    if (cancellationToken.IsCancellationRequested)
                     {
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            break;
-                        }
-
-                        var walker = _metadataWalkerFactory(compilation.GetSemanticModel(tree));
-                        walker.Visit(tree.GetRoot());
-                        allMetadata.AddRange(walker.Metadata);
-                        items.AddRange(walker.Metadata.Select(rawMetadata => (tree, rawMetadata)));
+                        break;
                     }
 
-                    if (!cancellationToken.IsCancellationRequested)
+                    var walker = _metadataWalkerFactory(compilation.GetSemanticModel(tree));
+                    walker.Visit(tree.GetRoot());
+                    allMetadata.AddRange(walker.Metadata);
+                    items.AddRange(walker.Metadata.Select(rawMetadata => (tree, rawMetadata)));
+                }
+
+                stopwatch.Stop();
+                var initDuration = stopwatch.ElapsedMilliseconds;
+                var curId = 0;
+                foreach (var (tree, rawMetadata) in items)
+                {
+                    stopwatch.Start();
+                    var semanticModel = compilation.GetSemanticModel(tree);
+                    var metadata = CreateMetadata(rawMetadata, allMetadata);
+                    _context.Prepare(curId++, compilation, cancellationToken, metadata);
+
+                    if (cancellationToken.IsCancellationRequested)
                     {
-                        stopwatch.Stop();
-                        var initDuration = stopwatch.ElapsedMilliseconds;
-                        var curId = 0;
-                        foreach (var (tree, rawMetadata) in items)
+                        _log.Trace(() => new[] { "Build canceled" });
+                        break;
+                    }
+                    
+                    if (_settings.Debug)
+                    {
+                        if (!Debugger.IsAttached)
                         {
-                            stopwatch.Start();
-                            var semanticModel = compilation.GetSemanticModel(tree);
-                            var metadata = CreateMetadata(rawMetadata, allMetadata);
-                            _context.Prepare(curId++, compilation, cancellationToken, metadata);
-
-                            if (cancellationToken.IsCancellationRequested)
-                            {
-                                _log.Trace(() => new[] { "Build canceled" });
-                                break;
-                            }
-
-                            if (_settings.Debug)
-                            {
-                                if (!Debugger.IsAttached)
-                                {
-                                    _log.Info(() => new[] {"Launch a debugger."});
-                                    Debugger.Launch();
-                                }
-                                else
-                                {
-                                    _log.Info(() => new[] {"A debugger is already attached"});
-                                }
-                            }
-                            
-                            if (_settings.Trace && _settings.TryGetOutputPath(out var outputPath))
-                            {
-                                var traceFile = Path.Combine(outputPath, $"dotTrace{Guid.NewGuid().ToString().Substring(0, 4)}.dtt");
-                                var profiler = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".dotnet", "tools", "dottrace.exe");
-                                new Process {
-                                    StartInfo = new ProcessStartInfo(
-                                        profiler, 
-                                        $@"attach {Process.GetCurrentProcess().Id} --save-to=""{traceFile}"" --profiling-type=Sampling")
-                                    {
-                                        WindowStyle = ProcessWindowStyle.Hidden,
-                                        CreateNoWindow = true
-                                    }
-                                }.Start();
-                                Thread.Sleep(1000);
-                            }
-
-                            _log.Info(() =>
-                            {
-                                var messages = new List<string>
-                                {
-                                    $"Processing {rawMetadata.ComposerTypeName}",
-                                    $"{nameof(DI)}.{nameof(DI.Setup)}()"
-                                };
-                                messages.AddRange(metadata.Bindings.Select(binding => $"  .{binding}"));
-                                return messages.ToArray();
-                            });
-
-                            var compilationUnitSyntax = _resolverBuilderFactory().Build(semanticModel).NormalizeWhitespace();
-
-                            var source = new Source(
-                                $"{metadata.ComposerTypeName}.cs",
-                                SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8));
-
-                            if (_settings.TryGetOutputPath(out outputPath))
-                            {
-                                _log.Info(() => new[] {$"The output path: {outputPath}"});
-                                _fileSystem.WriteFile(Path.Combine(outputPath, source.HintName), source.Code.ToString());
-                                foreach (var feature in Features)
-                                {
-                                    _fileSystem.WriteFile(Path.Combine(outputPath, feature.HintName), feature.Code.ToString());                                    
-                                }
-
-                                foreach (var component in components)
-                                {
-                                    _fileSystem.WriteFile(Path.Combine(outputPath, component.HintName), component.Code.ToString());
-                                }
-                            }
-
-                            stopwatch.Stop();
-                            _log.Info(() => new[]
-                            {
-                                $"Initialize {initDuration} ms.",
-                                $"Generate {stopwatch.ElapsedMilliseconds} ms."
-                            });
-
-                            yield return source;
+                            _log.Info(() => new[] { "Launch a debugger." });
+                            Debugger.Launch();
+                        }
+                        else
+                        {
+                            _log.Info(() => new[] { "A debugger is already attached" });
                         }
                     }
+
+                    if (_settings.Trace && _settings.TryGetOutputPath(out var outputPath))
+                    {
+                        var traceFile = Path.Combine(outputPath, $"dotTrace{Guid.NewGuid().ToString().Substring(0, 4)}.dtt");
+                        var profiler = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".dotnet", "tools", "dottrace.exe");
+                        new Process
+                        {
+                            StartInfo = new ProcessStartInfo(
+                                profiler,
+                                $@"attach {Process.GetCurrentProcess().Id} --save-to=""{traceFile}"" --profiling-type=Sampling")
+                            {
+                                WindowStyle = ProcessWindowStyle.Hidden,
+                                CreateNoWindow = true
+                            }
+                        }.Start();
+
+                        Thread.Sleep(1000);
+                    }
+
+                    _log.Info(() =>
+                    {
+                        var messages = new List<string>
+                        {
+                            $"Processing {rawMetadata.ComposerTypeName}",
+                            $"{nameof(DI)}.{nameof(DI.Setup)}()"
+                        };
+
+                        messages.AddRange(metadata.Bindings.Select(binding => $"  .{binding}"));
+                        return messages.ToArray();
+                    });
+
+                    var compilationUnitSyntax = _resolverBuilderFactory().Build(semanticModel).NormalizeWhitespace();
+
+                    var source = new Source(
+                        $"{metadata.ComposerTypeName}.cs",
+                        SourceText.From(compilationUnitSyntax.ToString(), Encoding.UTF8),
+                        compilationUnitSyntax.SyntaxTree);
+
+                    if (_settings.TryGetOutputPath(out outputPath))
+                    {
+                        _log.Info(() => new[] { $"The output path: {outputPath}" });
+                        _fileSystem.WriteFile(Path.Combine(outputPath, source.HintName), source.Code.ToString());
+                        foreach (var feature in info.FeatureSources)
+                        {
+                            _fileSystem.WriteFile(Path.Combine(outputPath, feature.HintName), feature.Code.ToString());
+                        }
+
+                        foreach (var component in info.ComponentSources)
+                        {
+                            _fileSystem.WriteFile(Path.Combine(outputPath, component.HintName), component.Code.ToString());
+                        }
+                    }
+
+                    stopwatch.Stop();
+                    _log.Info(() => new[]
+                    {
+                        $"Initialize {initDuration} ms.",
+                        $"Generate {stopwatch.ElapsedMilliseconds} ms."
+                    });
+
+                    yield return source;
                 }
             }
         }
@@ -258,32 +241,15 @@ namespace Pure.DI.Core
             }
         }
 
-        private static IEnumerable<(string file, string code)> GetResources(Regex filter)
-        {
-            var assembly = typeof(SourceGenerator).Assembly;
-
-            foreach (var resourceName in assembly.GetManifestResourceNames())
-            {
-                if (!filter.IsMatch(resourceName))
-                {
-                    continue;
-                }
-
-                using var reader = new StreamReader(assembly.GetManifestResourceStream(resourceName) ?? throw new InvalidOperationException($"Cannot read {resourceName}."));
-                var code = reader.ReadToEnd();
-                yield return (resourceName, code);
-            }
-        }
-
         private static bool ComponentsInUniqNamespaceIsNeeded(Compilation compilation)
         {
-            var diType = compilation.GetTypeByMetadataName(typeof(IConfiguration).FullName);
+            var diType = compilation.GetTypesByMetadataName(typeof(DI).FullName).FirstOrDefault();
             if (diType == null)
             {
                 return false;
             }
 
-            var type = (
+            var type = ( 
                 from tree in compilation.SyntaxTrees
                 let semanticModel = compilation.GetSemanticModel(tree)
                 from typeDeclaration in tree.GetRoot().DescendantNodes().OfType<TypeDeclarationSyntax>()
