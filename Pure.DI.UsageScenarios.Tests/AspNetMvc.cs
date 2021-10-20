@@ -76,6 +76,7 @@ namespace Pure.DI.UsageScenarios.Tests
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            // AddGreetingDomain(this IServiceCollection services) method was generated automatically
             services.AddGreetingDomain();
         }
 

@@ -84,8 +84,34 @@ namespace Pure.DI.Benchmark.Benchmarks
         private static readonly Func<IService3> Service3Factory = () => new Service3();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        private static ICompositionRoot NewInstance() =>
-            new CompositionRoot(new Service1(new Service2Array(new IService3[] { new Service3(), new Service3v2(), new Service3v3(), new Service3v4() })), new Service2Func(Service3Factory), new Service2Array(new IService3[] { new Service3(), new Service3v2(), new Service3v3(), new Service3v4() }), new Service2Array(new IService3[] { new Service3(), new Service3v2(), new Service3v3(), new Service3v4() }), new Service3());
+        private static ICompositionRoot NewInstance() => 
+            new CompositionRoot(
+                new Service1(
+                    new Service2Array(new IService3[]{
+                        new Service3(),
+                        new Service3v2(),
+                        new Service3v3(),
+                        new Service3v4()
+                    })),
+                new Service2Array(new IService3[]{
+                    new Service3(),
+                    new Service3v2(),
+                    new Service3v3(),
+                    new Service3v4()
+                }),
+                new Service2Array(new IService3[]{
+                    new Service3(),
+                    new Service3v2(),
+                    new Service3v3(),
+                    new Service3v4()
+                }),
+                new Service2Array(new IService3[]{
+                    new Service3(),
+                    new Service3v2(),
+                    new Service3v3(),
+                    new Service3v4()
+                }),
+                new Service3());
     }
 }
 #pragma warning restore CA1822

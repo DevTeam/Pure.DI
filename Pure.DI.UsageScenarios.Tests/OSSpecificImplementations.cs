@@ -2,6 +2,7 @@
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
 // ReSharper disable InconsistentNaming
+// ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 namespace Pure.DI.UsageScenarios.Tests
 {
     using System;

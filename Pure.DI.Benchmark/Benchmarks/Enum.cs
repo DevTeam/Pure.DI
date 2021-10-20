@@ -86,9 +86,16 @@ namespace Pure.DI.Benchmark.Benchmarks
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static ICompositionRoot NewInstance() =>
-            new CompositionRoot(new Service1(new Service2Enum(Service3Enum())), new Service2Func(Service3Factory), new Service2Enum(Service3Enum()), new Service2Enum(Service3Enum()), new Service3());
-
-        private static IEnumerable<IService3> Service3Enum()
+            new CompositionRoot(
+                new Service1(
+                    new Service2Enum(EnumerableOfIService3())), 
+                new Service2Enum(EnumerableOfIService3()),
+                new Service2Enum(EnumerableOfIService3()),
+                new Service2Enum(EnumerableOfIService3()),
+                new Service3());
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static IEnumerable<IService3> EnumerableOfIService3()
         {
             yield return new Service3();
             yield return new Service3v2();
