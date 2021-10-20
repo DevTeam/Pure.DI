@@ -342,7 +342,7 @@ To get a code-generation performance snapshot:
 dotnet tool install --global JetBrains.dotTrace.GlobalTools
 ```
 - specify an output path like ```// out=<path to the diagnostics directory >```
-- add a hint like ```debug=true```:
+- add a hint like ```trace=true```:
 ```c#
 // out=c:\Projects\MyDiagnostics
 // trace=true

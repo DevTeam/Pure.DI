@@ -342,7 +342,7 @@ To get a code-generation performance snapshot:
 dotnet tool install --global JetBrains.dotTrace.GlobalTools
 ```
 - specify an output path like ```// out=<path to the diagnostics directory >```
-- add a hint like ```debug=true```:
+- add a hint like ```trace=true```:
 ```c#
 // out=c:\Projects\MyDiagnostics
 // trace=true
@@ -398,8 +398,9 @@ DI.Setup()
   - [Intercept a set of types](#intercept-a-set-of-types)
   - [Intercept advanced](#intercept-advanced)
 - Advanced
-  - [OS specific implementations](#os-specific-implementations)
   - [ASPNET](#aspnet)
+- Samples
+  - [OS specific implementations](#os-specific-implementations)
 
 ### Composition Root
 
@@ -1600,6 +1601,82 @@ public class Service : IService
 
 
 
+### ASPNET
+
+
+
+``` CSharp
+public class AspNetMvc
+{
+    public async Task Run()
+    {
+        var hostBuilder = new WebHostBuilder().UseStartup<Startup>();
+        using var server = new TestServer(hostBuilder);
+        using var client = server.CreateClient();
+        
+        var response = await client.GetStringAsync("/Greeting");
+        response.ShouldBe("Hello!");
+    }
+}
+
+public interface IGreeting
+{
+    string Hello { get; }
+}
+
+public class Greeting : IGreeting
+{
+    public string Hello => "Hello!";
+}
+
+[ApiController]
+[Route("[controller]")]
+public class GreetingController : ControllerBase
+{
+    private readonly IGreeting _greeting;
+
+    public GreetingController(IGreeting greeting) => _greeting = greeting;
+
+    [HttpGet] public string Get() => _greeting.Hello;
+}
+
+public static partial class GreetingDomain
+{
+    static GreetingDomain()
+    {
+        DI.Setup()
+            .Bind<IGreeting>().As(Lifetime.ContainerSingleton).To<Greeting>()
+            .Bind<GreetingController>().To<GreetingController>();
+    }
+}
+
+public class Startup
+{
+    public Startup(Microsoft.Extensions.Configuration.IConfiguration configuration) =>
+        Configuration = configuration;
+
+    public Microsoft.Extensions.Configuration.IConfiguration Configuration { get; }
+    
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddControllers();
+        // AddGreetingDomain(this IServiceCollection services) method was generated automatically
+        services.AddGreetingDomain();
+    }
+
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+        });
+    }
+}
+```
+
+
+
 ### OS specific implementations
 
 
@@ -1679,81 +1756,6 @@ public class Service : IService
     public Service(IDependency dependency) => _dependency = dependency;
 
     public string Run() => _dependency.GetMessage();
-}
-```
-
-
-
-### ASPNET
-
-
-
-``` CSharp
-public class AspNetMvc
-{
-    public async Task Run()
-    {
-        var hostBuilder = new WebHostBuilder().UseStartup<Startup>();
-        using var server = new TestServer(hostBuilder);
-        using var client = server.CreateClient();
-        
-        var response = await client.GetStringAsync("/Greeting");
-        response.ShouldBe("Hello!");
-    }
-}
-
-public interface IGreeting
-{
-    string Hello { get; }
-}
-
-public class Greeting : IGreeting
-{
-    public string Hello => "Hello!";
-}
-
-[ApiController]
-[Route("[controller]")]
-public class GreetingController : ControllerBase
-{
-    private readonly IGreeting _greeting;
-
-    public GreetingController(IGreeting greeting) => _greeting = greeting;
-
-    [HttpGet] public string Get() => _greeting.Hello;
-}
-
-public static partial class GreetingDomain
-{
-    static GreetingDomain()
-    {
-        DI.Setup()
-            .Bind<IGreeting>().As(Lifetime.ContainerSingleton).To<Greeting>()
-            .Bind<GreetingController>().To<GreetingController>();
-    }
-}
-
-public class Startup
-{
-    public Startup(Microsoft.Extensions.Configuration.IConfiguration configuration) =>
-        Configuration = configuration;
-
-    public Microsoft.Extensions.Configuration.IConfiguration Configuration { get; }
-    
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddControllers();
-        services.AddGreetingDomain();
-    }
-
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-    {
-        app.UseRouting();
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-        });
-    }
 }
 ```
 

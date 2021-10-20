@@ -21,7 +21,7 @@ namespace Pure.DI.UsageScenarios.Tests
     {
         [Fact]
         // $visible=true
-        // $tag=6 Advanced
+        // $tag=7 Samples
         // $priority=01
         // $description=OS specific implementations
         // {
