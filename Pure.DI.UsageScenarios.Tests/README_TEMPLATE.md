@@ -50,11 +50,20 @@ DI.Setup("Composer")
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>();
 
-// Resolves an instance of interface `IService` using a particular method generated for each tag-free binding
+// Resolves an instance of interface `IService`
+// using a particular method generated for each tag-free binding
 var instance = Composer.ResolveIService();
 ```
 
-
+Actually, the method _ResolveIService_ looks like this:
+```csharp
+[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+public static IService ResolveIService() => new Service(new Dependency());
+```
+and the compiler just inserts this set of constructor calls instead of ```Composer.ResolveIService()```:
+```csharp
+new Service(new Dependency())
+```
 
 ### Constants
 
@@ -891,7 +900,7 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Func
 
-_Func<>_ helps when a logic needs to inject some type of instances on-demand. Also, it is possible to solve circular dependency issues, but it is not the best way - better to reconsider the dependencies between classes.
+_Func<>_ with the required type specified helps when a logic needs to inject some type of instances on-demand. Also, it is possible to solve circular dependency issues, but it is not the best way - better to reconsider the dependencies between classes.
 
 ``` CSharp
 DI.Setup()

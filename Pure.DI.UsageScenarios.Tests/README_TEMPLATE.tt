@@ -45,7 +45,7 @@
 
             if (str.StartsWith("// $"))
             {
-                var parts = str.Substring(4, str.Length - 4).Split('=');
+                var parts = str.Substring(4, str.Length - 4).Split(new []{'='}, 2, StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length == 2)
                 {
                     var key = parts[0];

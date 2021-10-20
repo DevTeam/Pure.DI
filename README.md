@@ -145,19 +145,20 @@ class Program
 }
 ```
 
-*__Program__* is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) here, a single place in an application where the composition of the object graphs for an application take place. To have an ability create multiple instances or to do it on demand you could use *__Func<>__* with required type specified. Each instance is resolved by a strongly-typed block of statements like the operator [*__new__*](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/new-operator) which are compiled with all optimizations with minimal impact on performance or memory consumption. For instance, the creating of a composition root *__Program__* looks like this:
-```csharp
-Random Indeterminacy = new();
+*__Program__* is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) here, a single place in an application where the composition of the object graphs for an application take place. Each instance is resolved by a strongly-typed block of statements like the operator [*__new__*](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/new-operator) which are compiled with all optimizations with minimal impact on performance or memory consumption. The creating of a composition root *__Program__*  is looking as ``````Composer.ResolveProgram()`````` here and the compiler replace this statement with the set of constructor calls:
 
-new Program(
-  new CardboardBox<ICat>(
-    new ShroedingersCat(
-      new Lazy<State>(
-        new Func<State>(
-          () => (State)Indeterminacy.Next(2)))));
+```csharp
+new Sample.Program(
+  new Sample.CardboardBox<Sample.ICat>(
+    new Sample.ShroedingersCat(
+      new System.Lazy<Sample.State>(
+        new System.Func<Sample.State>(
+            (State)Indeterminacy.Next(2)
+        ),
+        true))))
 ```
 
-Take full advantage of Dependency Injection everywhere and every time without any compromises!
+So _Pure.DI_ works the same as calling a set of constructors but allows dependency injection. And that's a reason to take full advantage of Dependency Injection everywhere, every time, without any compromise!
 
 ## Simple and powerful API.
 
@@ -400,11 +401,20 @@ DI.Setup("Composer")
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>();
 
-// Resolves an instance of interface `IService` using a particular method generated for each tag-free binding
+// Resolves an instance of interface `IService`
+// using a particular method generated for each tag-free binding
 var instance = Composer.ResolveIService();
 ```
 
-
+Actually, the method _ResolveIService_ looks like this:
+```csharp
+[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+public static IService ResolveIService() => new Service(new Dependency());
+```
+and the compiler just inserts this set of constructor calls instead of ```Composer.ResolveIService()```:
+```csharp
+new Service(new Dependency())
+```
 
 ### Constants
 
@@ -1241,7 +1251,7 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Func
 
-_Func<>_ helps when a logic needs to inject some type of instances on-demand. Also, it is possible to solve circular dependency issues, but it is not the best way - better to reconsider the dependencies between classes.
+_Func<>_ with the required type specified helps when a logic needs to inject some type of instances on-demand. Also, it is possible to solve circular dependency issues, but it is not the best way - better to reconsider the dependencies between classes.
 
 ``` CSharp
 DI.Setup()
