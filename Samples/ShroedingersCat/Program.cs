@@ -48,19 +48,18 @@ namespace Sample
 
     static partial class Composer
     {
-        // Models a random subatomic event that may or may not occur
-        private static readonly Random Indeterminacy = new();
-
         // Actually this code never runs, this is just a hint to set up an object graph
         private static void Setup() => DI.Setup()
+            // Models a random subatomic event that may or may not occur
+            .Bind<Random>().As(Singleton).To<Random>()
             // Represents a quantum superposition of 2 states: Alive or Dead
-            .Bind<State>().To(_ => (State)Indeterminacy.Next(2))
+            .Bind<State>().To(ctx => (State)ctx.Resolve<Random>().Next(2))
             // Represents schrodinger's cat
             .Bind<ICat>().To<ShroedingersCat>()
             // Represents a cardboard box with any content
             .Bind<IBox<TT>>().To<CardboardBox<TT>>()
             // Composition Root
-            .Bind<Program>().As(Singleton).To<Program>();
+            .Bind<Program>().To<Program>();
     }
 
     // Time to open boxes!

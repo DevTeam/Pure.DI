@@ -40,7 +40,7 @@ namespace Pure.DI.Core
 
         public IEnumerable<MemberDeclarationSyntax> BuildMembers(SemanticModel semanticModel)
         {
-            var dependencies = (
+            var resolvingTypes = (
                 from binding in _metadata.Bindings.Concat(_buildContext.AdditionalBindings)
                 from dependency in binding.Dependencies
                 where !binding.GetTags(dependency).Any()
@@ -50,7 +50,7 @@ namespace Pure.DI.Core
                 select groups.Key)
                 .ToArray();
 
-            foreach (var dependency in dependencies)
+            foreach (var resolvingType in resolvingTypes)
             {
                 if (_buildContext.IsCancellationRequested)
                 {
@@ -58,9 +58,7 @@ namespace Pure.DI.Core
                     break;
                 }
                 
-                var methodName = GetMethodName(dependency.Type);
-                methodName = _buildContext.NameService.FindName(new MemberKey(methodName, dependency.Type));
-                var minAccessibility = GetAccessibility(dependency.Type).Min();
+                var minAccessibility = GetAccessibility(resolvingType.Type).Min();
                 switch (minAccessibility)
                 {
                     case < Accessibility.Internal:
@@ -71,8 +69,14 @@ namespace Pure.DI.Core
                         break;
                 }
 
-                var curDependency = _typeResolver.Resolve(dependency, null);
-                var objectExpression = curDependency.ObjectBuilder.TryBuild(_buildStrategy, curDependency);
+                var resolvedDependency = _typeResolver.Resolve(resolvingType, null);
+                if (!resolvedDependency.IsResolved)
+                {
+                    _tracer.Save();
+                    continue;
+                }
+
+                var objectExpression = _buildStrategy.TryBuild(resolvedDependency, resolvingType);
                 if (objectExpression == null)
                 {
                     _tracer.Save();
@@ -80,8 +84,10 @@ namespace Pure.DI.Core
                 }
 
                 var accessibility = minAccessibility == Accessibility.Public ? SyntaxKind.PublicKeyword : SyntaxKind.InternalKeyword;
+                var methodName = GetMethodName(resolvingType.Type);
+                methodName = _buildContext.NameService.FindName(new MemberKey(methodName, resolvingType.Type));
                 yield return 
-                    SyntaxFactory.MethodDeclaration(dependency.TypeSyntax, methodName)
+                    SyntaxFactory.MethodDeclaration(resolvingType.TypeSyntax, methodName)
                         .AddModifiers(SyntaxFactory.Token(accessibility), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
                         .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
                         .AddBodyStatements(SyntaxFactory.ReturnStatement(objectExpression));

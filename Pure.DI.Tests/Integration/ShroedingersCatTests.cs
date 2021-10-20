@@ -53,19 +53,18 @@
 
                 static partial class Composer
                 {
-                    // Models a random subatomic event that may or may not occur
-                    private static readonly Random Indeterminacy = new();
-
                     static Composer()
                     {
                         DI.Setup()
+                            // Models a random subatomic event that may or may not occur
+                            .Bind<Random>().As(Singleton).To<Random>()
                             // Represents a quantum superposition of 2 states: Alive or Dead
-                            .Bind<State>().To(_ => (State)Indeterminacy.Next(2))
+                            .Bind<State>().To(ctx => (State)ctx.Resolve<Random>().Next(2))
                             // Represents schrodinger's cat
                             .Bind<ICat>().To<ShroedingersCat>();
 
                         // verbosity=diagnostic
-                        DI.Setup()                            
+                        DI.Setup()
                             // Represents a cardboard box with any content
                             .Bind<IBox<TT>>().To<CardboardBox<TT>>()
                             // Composition Root

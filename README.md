@@ -107,11 +107,10 @@ Declare required dependencies in a class like:
 ```csharp
 static partial class Composer
 {
-  // Models a random subatomic event that may or may not occur
-  private static readonly Random Indeterminacy = new();
-
   // Actually this code never runs, this is just a hint to set up an object graph
   private static void Setup() => DI.Setup()
+      // Models a random subatomic event that may or may not occur
+      .Bind<Random>().As(Singleton).To<Random>()
       // Represents a quantum superposition of 2 states: Alive or Dead
       .Bind<State>().To(_ => (State)Indeterminacy.Next(2))
       // Represents schrodinger's cat
@@ -119,7 +118,7 @@ static partial class Composer
       // Represents a cardboard box with any content
       .Bind<IBox<TT>>().To<CardboardBox<TT>>()
       // Composition Root
-      .Bind<Program>().As(Singleton).To<Program>();
+      .Bind<Program>().To<Program>();
   }
 }
 ```
@@ -153,9 +152,18 @@ new Sample.Program(
     new Sample.ShroedingersCat(
       new System.Lazy<Sample.State>(
         new System.Func<Sample.State>(
-            (State)Indeterminacy.Next(2)
+            SingletonSystemRandom.Shared.Next(2)
         ),
         true))))
+```
+
+where _SingletonSystemRandom_ is a private static class to support the _Random_ singleton most effectively:
+
+```csharp
+private static class SingletonSystemRandom
+{
+  static readonly Random Shared = new Random();
+}
 ```
 
 So _Pure.DI_ works the same as calling a set of constructors but allows dependency injection. And that's a reason to take full advantage of Dependency Injection everywhere, every time, without any compromise!
@@ -1018,9 +1026,11 @@ public void Run()
     
     // Resolve the singleton twice
     var instance = SingletonLifetimeDI.Resolve<IService>();
+    var dependency = SingletonLifetimeDI.ResolveSingletonLifetimeIDependency();
 
     // Check that instances are equal
     instance.Dependency1.ShouldBe(instance.Dependency2);
+    instance.Dependency1.ShouldBe(dependency);
     
     // Dispose of singletons, this method should be invoked once
     SingletonLifetimeDI.FinalDispose();

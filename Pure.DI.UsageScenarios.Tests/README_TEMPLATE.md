@@ -667,9 +667,11 @@ public void Run()
     
     // Resolve the singleton twice
     var instance = SingletonLifetimeDI.Resolve<IService>();
+    var dependency = SingletonLifetimeDI.ResolveSingletonLifetimeIDependency();
 
     // Check that instances are equal
     instance.Dependency1.ShouldBe(instance.Dependency2);
+    instance.Dependency1.ShouldBe(dependency);
     
     // Dispose of singletons, this method should be invoked once
     SingletonLifetimeDI.FinalDispose();
