@@ -11,6 +11,7 @@ version = "2021.1"
 // Build settings
 open class Settings {
     companion object {
+        const val sdkVersion = "6.0"
         const val getNextVersionScript =
             "using System.Linq;\n" +
             "Props[\"version\"] = \n" +
@@ -83,7 +84,7 @@ object DeployPureDIBuildType: BuildType({
         }
         dotnetBuild {
             name = "Build"
-            sdk = "5.0"
+            sdk = Settings.sdkVersion
         }
         dotnetTest {
             name = "Run tests"
@@ -126,6 +127,7 @@ object DeployTemplateBuildType: BuildType({
         dotnetPack {
             name = "Create a NuGet package"
             workingDir = "%packageId%"
+            sdk = Settings.sdkVersion
             skipBuild = true
         }
         dotnetNugetPush {
@@ -145,15 +147,13 @@ object DeployTemplateBuildType: BuildType({
 object BenchmarkBuildType : BuildType({
     name = "Benchmark"
     artifactRules = "BenchmarkDotNet.Artifacts/results/*.* => ."
-    params {
-        param("env.SERIES", "100000000")
-    }
     vcs { root(Repo) }
     steps {
         dotnetRun {
             name = "Benchmark"
             projects = "Pure.DI.Benchmark/Pure.DI.Benchmark.csproj"
-            framework = "net5.0"
+            framework = "net${Settings.sdkVersion}"
+            sdk = Settings.sdkVersion
             configuration = "release"
             args = "-- --filter *Singleton* *Transient* *Func* *Array* *Enum*"
         }
@@ -172,8 +172,5 @@ object BenchmarkBuildType : BuildType({
         swabra {
             forceCleanCheckout = true
         }
-    }
-    requirements {
-        equals("teamcity.agent.jvm.os.name", "Windows 10")
     }
 })
