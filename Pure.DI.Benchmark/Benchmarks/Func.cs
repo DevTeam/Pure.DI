@@ -60,7 +60,7 @@ namespace Pure.DI.Benchmark.Benchmarks
             FuncDI.ResolveICompositionRoot();
         }
 
-        [Benchmark(Description = "Hand Coded", OperationsPerInvoke = 10)]
+        [Benchmark(Description = "Hand Coded", OperationsPerInvoke = 10, Baseline = true)]
         public void HandCoded()
         {
             NewInstance();

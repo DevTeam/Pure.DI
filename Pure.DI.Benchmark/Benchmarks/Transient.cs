@@ -10,7 +10,7 @@ namespace Pure.DI.Benchmark.Benchmarks
     using BenchmarkDotNet.Order;
     using Model;
     using Pure.DI;
-    
+
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     public class Transient: BenchmarkBase
     {
@@ -60,7 +60,7 @@ namespace Pure.DI.Benchmark.Benchmarks
             TransientDI.ResolveICompositionRoot();
         }
 
-        [Benchmark(Description = "Hand Coded", OperationsPerInvoke = 10)]
+        [Benchmark(Description = "Hand Coded", OperationsPerInvoke = 10, Baseline = true)]
         public void HandCoded()
         {
             NewInstance();
