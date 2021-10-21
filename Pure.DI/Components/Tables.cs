@@ -19,6 +19,7 @@
 // ReSharper disable SuggestBaseTypeForParameterInConstructor
 // ReSharper disable RedundantNameQualifier
 // ReSharper disable RedundantDelegateCreation
+// ReSharper disable ArrangeObjectCreationWhenTypeEvident
 #pragma warning disable 8618
 #pragma warning disable 8604
 #pragma warning disable 8603
@@ -56,13 +57,14 @@ namespace Pure.DI
             return ((uint)count + 1) << 2;
         }
 
-        public Table(Pair<TKey, TValue>[] pairs, TKey defaultKey, TValue defaultValue)
+        public Table(Pair<TKey, TValue>[] pairs)
         {
             Divisor = GetDivisor(pairs.Length);
             Buckets = new Pair<TKey, TValue>[Divisor];
+            var emptyPair = new Pair<TKey, TValue>(default(TKey), default(TValue));
             for (var i = 0; i < Buckets.Length; i++)
             {
-                Buckets[i] = new Pair<TKey, TValue>(defaultKey, defaultValue);
+                Buckets[i] = emptyPair;
             }
 
             var buckets = System.Linq.Enumerable.Select(System.Linq.Enumerable.GroupBy(pairs, pair => (uint)pair.Key.GetHashCode() % Divisor), groups => new
@@ -105,7 +107,7 @@ namespace Pure.DI
         public readonly uint ResolversDivisor;
 
         public ResolversTable(Pair<System.Type, System.Func<object>>[] pairs)
-            : base(pairs, typeof(ResolversTable), null)
+            : base(pairs)
         {
             ResolversBuckets = Buckets;
             ResolversDivisor = Divisor;
@@ -125,7 +127,7 @@ namespace Pure.DI
                 pair = pair.Next;
             } while (pair != null);
 
-            throw new System.ArgumentException("Cannot resolve an instance of the type " + type + ", consider adding it to the DI setup.");
+            throw new System.ArgumentException("Cannot resolve an instance " + type + ", consider adding it to the DI setup.");
         }
 
         [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x100)]
@@ -144,7 +146,7 @@ namespace Pure.DI
 
             return new System.Func<object>(() =>
             {
-                throw new System.ArgumentException("Cannot resolve an instance of the type " + typeof(T) + ", consider adding it to the DI setup.");
+                throw new System.ArgumentException("Cannot resolve an instance " + typeof(T) + ", consider adding it to the DI setup.");
             });
         }
     }
@@ -157,7 +159,7 @@ namespace Pure.DI
         public readonly uint ResolversDivisor;
 
         public ResolversByTagTable(ResolversTable resolversTable, Pair<TagKey, System.Func<object>>[] pairs)
-            : base(pairs, new TagKey(typeof(ResolversByTagTable), null), null)
+            : base(pairs)
         {
             ResolversByTagBuckets = Buckets;
             ResolversByTagDivisor = Divisor;
@@ -168,7 +170,7 @@ namespace Pure.DI
         [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x100)]
         public object Resolve(TagKey key)
         {
-            var pair = ResolversByTagBuckets[(uint)key.GetHashCode() % ResolversByTagDivisor];
+            var pair = ResolversByTagBuckets[key.HashCode % ResolversByTagDivisor];
             do
             {
                 // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
@@ -195,7 +197,7 @@ namespace Pure.DI
                 } while (typePair != null);
             }
 
-            throw new System.ArgumentException("Cannot resolve an instance of the type " + key + ", consider adding it to the DI setup.");
+            throw new System.ArgumentException("Cannot resolve an instance " + key + ", consider adding it to the DI setup.");
         }
     }
 
@@ -203,7 +205,7 @@ namespace Pure.DI
     {
         public readonly System.Type Type;
         public readonly object Tag;
-        private readonly int _hashCode;
+        public readonly uint HashCode;
 
         public TagKey(System.Type type, object tag)
         {
@@ -211,7 +213,7 @@ namespace Pure.DI
             Tag = tag;
             unchecked
             {
-                _hashCode = (type.GetHashCode() * 397) ^ (tag != null ? tag.GetHashCode() : 0);
+                HashCode = (uint)((type.GetHashCode() * 397) ^ (tag != null ? tag.GetHashCode() : 0));
             }
         }
 
@@ -230,12 +232,12 @@ namespace Pure.DI
 
         public override int GetHashCode()
         {
-            return _hashCode;
+            return (int)HashCode;
         }
 
         public override string ToString()
         {
-            return Type.Name + " with tag \"" + Tag + "\"";
+            return Type.Name + "(\"" + Tag + ")\"";
         }
     }
 }

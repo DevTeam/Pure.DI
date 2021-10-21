@@ -1329,9 +1329,9 @@ public void Run()
         .Bind<IOsSpecific<TT>>().As(Lifetime.Singleton).To<OsSpecific<TT>>()
 
         // OS specific bindings
-        .Bind<IDependency>(OSPlatform.Windows).To<WindowsImpl>()
-        .Bind<IDependency>(OSPlatform.Linux).To<LinuxImpl>()
-        .Bind<IDependency>(OSPlatform.OSX).To<OSXImpl>()
+        .Bind<IDependency>(OSSpecificImplementations.OSPlatform.Windows).To<WindowsImpl>()
+        .Bind<IDependency>(OSSpecificImplementations.OSPlatform.Linux).To<LinuxImpl>()
+        .Bind<IDependency>(OSSpecificImplementations.OSPlatform.OSX).To<OSXImpl>()
         .Bind<IDependency>().To(ctx => ctx.Resolve<IOsSpecific<IDependency>>().Instance)
 
         // Other bindings
@@ -1344,6 +1344,13 @@ public void Run()
 
 public interface IOsSpecific<out T> {  T Instance { get; } }
 
+public enum OSPlatform
+{
+    Windows,
+    Linux,
+    OSX
+}
+
 public class OsSpecific<T>: IOsSpecific<T>
 {
     private readonly Func<T> _windowsFactory;
@@ -1351,9 +1358,9 @@ public class OsSpecific<T>: IOsSpecific<T>
     private readonly Func<T> _osxFactory;
 
     public OsSpecific(
-        [Tag(OSPlatform.Windows)] Func<T> windowsFactory,
-        [Tag(OSPlatform.Linux)] Func<T> linuxFactory,
-        [Tag(OSPlatform.OSX)] Func<T> osxFactory)
+        [Tag(OSSpecificImplementations.OSPlatform.Windows)] Func<T> windowsFactory,
+        [Tag(OSSpecificImplementations.OSPlatform.Linux)] Func<T> linuxFactory,
+        [Tag(OSSpecificImplementations.OSPlatform.OSX)] Func<T> osxFactory)
     {
         _windowsFactory = windowsFactory;
         _linuxFactory = linuxFactory;

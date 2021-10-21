@@ -17,7 +17,7 @@
                 select new Pair<long, long>(index, index)).ToArray();
 
             // When
-            var table = new Table<long, long>(pairs, 0, 0);
+            var table = new Table<long, long>(pairs);
 
             // Then
             for (var index = -count; index < count; index++)
@@ -34,7 +34,7 @@
             // Given
 
             // When
-            var table = new Table<string, string>(Array.Empty<Pair<string, string>>(), "", "");
+            var table = new Table<string, string>(Array.Empty<Pair<string, string>>());
 
             // Then
             table.Get("aa").ShouldBeNull();

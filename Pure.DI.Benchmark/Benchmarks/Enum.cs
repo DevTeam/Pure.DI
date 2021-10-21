@@ -67,8 +67,8 @@ namespace Pure.DI.Benchmark.Benchmarks
             EnumDI.ResolveICompositionRoot();
         }
 
-        [Benchmark(Description = "new", OperationsPerInvoke = 10)]
-        public void New()
+        [Benchmark(Description = "Hand Coded", OperationsPerInvoke = 10)]
+        public void HandCoded()
         {
             NewInstance();
             NewInstance();
