@@ -295,13 +295,6 @@ For details please see [this sample](IoC.Tests/UsageScenarios/Interception.cs).
 
 ![Enum](http://tcavs2015.cloudapp.net/guestAuth/app/rest/builds/buildType:DevTeam_Pure_Di_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.Enum-report.jpg)
 
-- __new__ - the baseline method when an object's graph was constructed by operators _new_ only, without any tricks
-- __Mean__ - arithmetic mean of the root instances resolved per nanosecond
-- __Error__ - half of 99.9% confidence interval
-- __StdDev__ - standard deviation of all measurements
-- __Median__ - value separating the higher half of all measurements (50th percentile)
-- __1 ns__ - 1 Nanosecond (0.000000001 sec)
-
 _[BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) was used to measure and analyze these results._
 
 ### Troubleshooting

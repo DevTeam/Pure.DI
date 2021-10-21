@@ -14,7 +14,6 @@
     using Container = DryIoc.Container;
     using ICompositionRoot = Model.ICompositionRoot;
 
-    [MemoryDiagnoser]
     public abstract class BenchmarkBase
     {
         private IoC.Container _iocContainer;

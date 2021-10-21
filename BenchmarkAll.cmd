@@ -1,1 +1,1 @@
-dotnet run --project Pure.DI.Benchmark\Pure.DI.Benchmark.csproj --framework net6.0 -c release -- -r net60  -f *Singleton* *Transient* *Func* *Array* *Enum*
+dotnet run --project Pure.DI.Benchmark\Pure.DI.Benchmark.csproj --framework net6.0 -c release -- -f *Singleton* *Transient* *Func* *Array* *Enum*

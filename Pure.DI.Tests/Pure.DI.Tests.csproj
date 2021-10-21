@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net5.0</TargetFramework>
+		<TargetFramework>net6.0</TargetFramework>
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>..\DevTeam.snk</AssemblyOriginatorKeyFile>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -13,11 +13,11 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Pure.DI\Pure.DI.csproj" />
-		<PackageReference Include="IoC.Container" Version="1.3.*" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="5.0.*" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.*" />
+		<PackageReference Include="IoC.Container" Version="1.3.6" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.0-rc.2.21480.10" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
 		<PackageReference Include="Moq" Version="4.16.*" />
-		<PackageReference Include="Shouldly" Version="4.0.*" />
+		<PackageReference Include="Shouldly" Version="4.0.3" />
 		<PackageReference Include="xunit" Version="2.4.1" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

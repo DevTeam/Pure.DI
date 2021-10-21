@@ -8,6 +8,7 @@ namespace Pure.DI.Tests.Integration
     using System.IO;
     using System.Linq;
     using System.Net.Http;
+    using System.Reflection;
     using System.Threading;
     using Core;
     using IoC;
@@ -108,17 +109,18 @@ namespace Pure.DI.Tests.Integration
             var tempFileName = Path.Combine(Environment.CurrentDirectory, Guid.NewGuid().ToString()[..4]);
             var assemblyPath = Path.ChangeExtension(tempFileName, "exe");
             var configPath = Path.ChangeExtension(tempFileName, "runtimeconfig.json");
-
-            const string? config = @"
+            var runtime = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription.Split(" ")[1];
+            var dotnetVersion = $"{Environment.Version.Major}.{Environment.Version.Minor}";
+            var config = @"
 {
   ""runtimeOptions"": {
-            ""tfm"": ""net5.0"",
+            ""tfm"": ""netV.V"",
             ""framework"": {
                 ""name"": ""Microsoft.NETCore.App"",
-                ""version"": ""5.0.0""
+                ""version"": ""RUNTIME""
             }
         }
-}";
+}".Replace("V.V", dotnetVersion).Replace("RUNTIME", runtime);
             try
             {
                 var output = new List<string>();
