@@ -8,7 +8,6 @@ namespace Pure.DI.Tests.Integration
     using System.IO;
     using System.Linq;
     using System.Net.Http;
-    using System.Reflection;
     using System.Threading;
     using Core;
     using IoC;

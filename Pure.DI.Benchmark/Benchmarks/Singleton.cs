@@ -76,24 +76,33 @@ namespace Pure.DI.Benchmark.Benchmarks
             NewInstance();
         }
 
-        private readonly object LockObject = new();
-        private volatile Service1 _service1;
-
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        private ICompositionRoot NewInstance()
-        {
-            if (_service1 == null)
-            {
-                lock (LockObject)
-                {
-                    if (_service1 == null)
-                    {
-                        _service1 = new Service1(new Service2(new Service3(), new Service3(), new Service3(), new Service3(), new Service3()));
-                    }
-                }
-            }
+        private static ICompositionRoot NewInstance() => 
+            new CompositionRoot(
+                SingletonService1.Shared,
+                new Service2(
+                    new Service3(),
+                    new Service3(),
+                    new Service3(),
+                    new Service3(),
+                    new Service3()),
+                new Service2(
+                    new Service3(),
+                    new Service3(),
+                    new Service3(),
+                    new Service3(),
+                    new Service3()),
+                new Service2(
+                    new Service3(),
+                    new Service3(),
+                    new Service3(),
+                    new Service3(),
+                    new Service3()),
+                new Service3());
 
-            return new CompositionRoot(_service1, new Service2(new Service3(), new Service3(), new Service3(), new Service3(), new Service3()), new Service2(new Service3(), new Service3(), new Service3(), new Service3(), new Service3()), new Service2(new Service3(), new Service3(), new Service3(), new Service3(), new Service3()), new Service3());
+        private static class SingletonService1
+        {
+            public static readonly Service1 Shared = new(new Service2(new Service3(), new Service3(), new Service3(), new Service3(), new Service3()));
         }
     }
 }
