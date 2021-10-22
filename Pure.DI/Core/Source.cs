@@ -7,13 +7,11 @@
     {
         public readonly string HintName;
         public readonly SourceText Code;
-        public readonly SyntaxTree SyntaxTree;
 
-        public Source(string hintName, SourceText code, SyntaxTree syntaxTree)
+        public Source(string hintName, SourceText code)
         {
             HintName = hintName;
             Code = code;
-            SyntaxTree = syntaxTree;
         }
     }
 }

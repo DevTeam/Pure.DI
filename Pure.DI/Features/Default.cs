@@ -2,6 +2,7 @@
 namespace Pure.DI.Features
 {
     using System;
+    using Pure.DI;
 
     // ReSharper disable once UnusedType.Global
     internal static partial class Default
