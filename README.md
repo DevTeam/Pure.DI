@@ -102,17 +102,18 @@ Add a package reference to:
   dotnet add package Pure.DI
   ```
 
-Declare required dependencies in a class like:
+Bind interfaces to their implementations or factories, define lifetimes and other options in a class like the following:
 
 ```csharp
 static partial class Composer
 {
-  // Actually this code never runs, this is just a hint to set up an object graph
+  // Actually, this code never runs and the method might have any name or be a constructor for instance
+  // because this is just a hint to set up an object graph.
   private static void Setup() => DI.Setup()
       // Models a random subatomic event that may or may not occur
       .Bind<Random>().As(Singleton).To<Random>()
       // Represents a quantum superposition of 2 states: Alive or Dead
-      .Bind<State>().To(_ => (State)Indeterminacy.Next(2))
+      .Bind<State>().To(ctx => (State)ctx.Resolve<Random>().Next(2))
       // Represents schrodinger's cat
       .Bind<ICat>().To<ShroedingersCat>()
       // Represents a cardboard box with any content
@@ -123,9 +124,9 @@ static partial class Composer
 }
 ```
 
-The code above is actually a chain of hints to generate a static class *__Composer__* with method *__Resolve__*, which creates a composition root *__Program__* below.
+The code above is a chain of hints to define a dependency graph used to generate a static class *__Composer__* with method *__Resolve__*, which creates a composition root *__Program__* below.
 
-> Defining generic type arguments using special marker types like *__TT__* in the sample above is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints.
+> Defining generic type arguments using special marker types like *__TT__* in this sample is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints.
 
 ### Time to open boxes!
 
