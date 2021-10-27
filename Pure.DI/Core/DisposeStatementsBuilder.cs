@@ -8,22 +8,23 @@ namespace Pure.DI.Core
 
     internal class DisposeStatementsBuilder : IDisposeStatementsBuilder
     {
-        public IEnumerable<StatementSyntax> Build(SemanticType type, ExpressionSyntax instanceExpression)
+        public IEnumerable<StatementSyntax> Build(SemanticType type, MemberAccessExpressionSyntax instanceExpression, ExpressionSyntax hasInstanceExpression)
         {
-            if (!type.ImplementsInterface<IDisposable>())
-            {
-                yield break;
-            }
-
             yield return SyntaxFactory.IfStatement(
-                SyntaxFactory.BinaryExpression(SyntaxKind.NotEqualsExpression, instanceExpression, SyntaxFactory.DefaultExpression(type)),
-                SyntaxFactory.ExpressionStatement(
-                            SyntaxFactory.InvocationExpression(
-                                SyntaxFactory.MemberAccessExpression(
-                                    SyntaxKind.SimpleMemberAccessExpression,
-                                    instanceExpression,
-                                    SyntaxFactory.IdentifierName(nameof(IDisposable.Dispose)))).AddArgumentListArguments()
-                        )
+                hasInstanceExpression,
+                SyntaxFactory.Block().AddStatements(
+                    SyntaxFactory.ExpressionStatement(
+                        SyntaxFactory.AssignmentExpression(
+                            SyntaxKind.SimpleAssignmentExpression,
+                            hasInstanceExpression,
+                            SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression))),
+                    SyntaxFactory.ExpressionStatement(
+                        SyntaxFactory.InvocationExpression(
+                            SyntaxFactory.MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                instanceExpression,
+                                SyntaxFactory.IdentifierName(nameof(IDisposable.Dispose)))).AddArgumentListArguments())
+                )
             );
         }
     }

@@ -1,5 +1,7 @@
 ﻿namespace Pure.DI.Core
 {
+    using System;
+    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -33,15 +35,12 @@
             var singletonClass = _buildContext.GetOrAddMember(classKey, () =>
             {
                 var singletonClassName = _buildContext.NameService.FindName(classKey);
+                var fieldKey = new MemberKey($"Has{singletonClassName}", dependency);
+                var hasSingletonFieldName = _buildContext.NameService.FindName(fieldKey);
 
-                var instance = SyntaxFactory.MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    SyntaxFactory.IdentifierName(singletonClassName),
-                    SyntaxFactory.IdentifierName(ValueName));
-                
-                _buildContext.AddFinalDisposeStatements(_disposeStatementsBuilder.Build(resolvedDependency.Implementation, instance));
+                var isDisposable = dependency.Implementation.ImplementsInterface<IDisposable>();
 
-                return SyntaxFactory.ClassDeclaration(singletonClassName)
+                var singletonClass = SyntaxFactory.ClassDeclaration(singletonClassName)
                     .AddModifiers(
                         SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
                         SyntaxFactory.Token(SyntaxKind.StaticKeyword))
@@ -58,6 +57,41 @@
                                 SyntaxFactory.Token(SyntaxKind.StaticKeyword),
                                 SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword))
                     );
+
+                if (!isDisposable)
+                {
+                    return singletonClass;
+                }
+
+                _buildContext.GetOrAddMember(fieldKey, () =>
+                    SyntaxFactory.FieldDeclaration(
+                            SyntaxFactory.VariableDeclaration(SyntaxRepo.BoolTypeSyntax).AddVariables(
+                                SyntaxFactory.VariableDeclarator(hasSingletonFieldName)))
+                        .AddModifiers(
+                            SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
+                            SyntaxFactory.Token(SyntaxKind.StaticKeyword),
+                            SyntaxFactory.Token(SyntaxKind.VolatileKeyword)));
+                    
+                singletonClass = singletonClass.AddMembers(
+                    SyntaxFactory.ConstructorDeclaration(singletonClassName)
+                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword)).WithBody(SyntaxFactory.Block().AddStatements(
+                            SyntaxFactory.ExpressionStatement(
+                                SyntaxFactory.AssignmentExpression(
+                                    SyntaxKind.SimpleAssignmentExpression,
+                                    SyntaxFactory.IdentifierName(hasSingletonFieldName),
+                                    SyntaxFactory.LiteralExpression(SyntaxKind.TrueLiteralExpression)))
+                        )));
+                
+                
+                var instance = SyntaxFactory.MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    SyntaxFactory.IdentifierName(singletonClassName),
+                    SyntaxFactory.IdentifierName(ValueName));
+                
+                var hasInstance = SyntaxFactory.IdentifierName(hasSingletonFieldName);
+                _buildContext.AddFinalDisposeStatements(_disposeStatementsBuilder.Build(resolvedDependency.Implementation, instance, hasInstance));
+                
+                return singletonClass;
             });
 
             var instanceExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ParseName(singletonClass.Identifier.Text), SyntaxFactory.Token(SyntaxKind.DotToken), SyntaxFactory.IdentifierName(ValueName));
