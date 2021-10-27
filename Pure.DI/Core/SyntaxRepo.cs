@@ -73,7 +73,7 @@ namespace Pure.DI.Core
         
         public static readonly MethodDeclarationSyntax FinalDisposeMethodSyntax =
             SyntaxFactory.MethodDeclaration(VoidTypeSyntax, DisposeSingletonsMethodName)
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.InternalKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
                 .AddParameterListParameters();
         
         public static readonly MethodDeclarationSyntax GetResolverMethodSyntax =

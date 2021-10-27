@@ -39,7 +39,7 @@
                                         SyntaxFactory.VariableDeclarator(resolverFieldName)
                                             .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.InvocationExpression(SyntaxFactory.GenericName(getResolverMethod.Identifier.Text).AddTypeArgumentListArguments(SyntaxRepo.TTypeSyntax))))))
                             .AddModifiers(
-                                SyntaxFactory.Token(SyntaxKind.PublicKeyword),
+                                SyntaxFactory.Token(SyntaxKind.InternalKeyword),
                                 SyntaxFactory.Token(SyntaxKind.StaticKeyword),
                                 SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword)));
             });
