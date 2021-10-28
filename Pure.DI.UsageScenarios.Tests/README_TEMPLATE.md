@@ -39,6 +39,7 @@
   - [Intercept a set of types](#intercept-a-set-of-types)
   - [Intercept advanced](#intercept-advanced)
 - Advanced
+  - [Microsoft Dependency Injection](#microsoft-dependency-injection)
   - [ASPNET](#aspnet)
 - Samples
   - [OS specific implementations](#os-specific-implementations)
@@ -1238,6 +1239,24 @@ public class Service : IService
 
     public void Run() { _dependency?.Run(); }
 }
+```
+
+
+
+### Microsoft Dependency Injection
+
+In the cases when a project references to Microsoft Dependency Injection and there are no tagged bindings, an IServiceCollection extension method is generated automatically with a name like _Add..._ plus the name of a generated class.
+
+``` CSharp
+DI.Setup()
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>();
+
+var serviceProvider = new ServiceCollection()
+    .AddMicrosoftDependencyInjectionDI()
+    .BuildServiceProvider();
+
+var instance = serviceProvider.GetRequiredService<IService>();
 ```
 
 

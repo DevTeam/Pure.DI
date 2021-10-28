@@ -21,6 +21,7 @@ namespace Pure.DI.Core
         {
             public const string Generated = "DII0001";
             public const string BindingAlreadyExists = "DII0002";
+            public const string Unsupported = "DII0003";
         }
     }
 }
