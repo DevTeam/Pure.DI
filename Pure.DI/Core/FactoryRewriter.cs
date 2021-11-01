@@ -274,8 +274,6 @@ namespace Pure.DI.Core
                 return _dependency.Equals(other._dependency) && _code.Equals(other._code);
             }
             
-            // return _type.Equals(other._type, SymbolEqualityComparer.Default) && _code.Equals(other._code);
-
             public override int GetHashCode()
             {
                 unchecked
