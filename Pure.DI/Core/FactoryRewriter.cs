@@ -121,7 +121,7 @@ namespace Pure.DI.Core
                 return base.VisitInvocationExpression(node);
             }
             
-            var nodeKey = new FactoryKey(_dependency.Implementation.Type, node.ToString());
+            var nodeKey = new FactoryKey(_dependency, node.ToString());
             if (_cache.TryGetValue(nodeKey, out SyntaxNode result))
             {
                 return result;
@@ -202,7 +202,7 @@ namespace Pure.DI.Core
         // ReSharper disable once SuggestBaseTypeForParameter
         private TypeSyntax ReplaceType(TypeSyntax typeSyntax, bool addBinding = false)
         {
-            var typeKey = new FactoryKey(_dependency.Implementation.Type, typeSyntax.ToString());
+            var typeKey = new FactoryKey(_dependency, typeSyntax.ToString());
             if (_cache.TryGetValue(typeKey, out var result))
             {
                 return (TypeSyntax)result;
@@ -256,12 +256,12 @@ namespace Pure.DI.Core
         
         internal class FactoryKey
         {
-            private readonly ITypeSymbol _type;
+            private readonly Dependency _dependency;
             private readonly string _code;
 
-            public FactoryKey(ITypeSymbol type, string code)
+            public FactoryKey(Dependency dependency, string code)
             {
-                _type = type;
+                _dependency = dependency;
                 _code = code;
             }
 
@@ -271,14 +271,16 @@ namespace Pure.DI.Core
                 if (ReferenceEquals(this, obj)) return true;
                 if (obj.GetType() != GetType()) return false;
                 FactoryKey other = (FactoryKey)obj;
-                return _type.Equals(other._type, SymbolEqualityComparer.Default) && _code.Equals(other._code);
+                return _dependency.Equals(other._dependency) && _code.Equals(other._code);
             }
+            
+            // return _type.Equals(other._type, SymbolEqualityComparer.Default) && _code.Equals(other._code);
 
             public override int GetHashCode()
             {
                 unchecked
                 {
-                    return (SymbolEqualityComparer.Default.GetHashCode(_type) * 397) ^ _code.GetHashCode();
+                    return (_dependency.GetHashCode() * 397) ^ _code.GetHashCode();
                 }
             }
         }
