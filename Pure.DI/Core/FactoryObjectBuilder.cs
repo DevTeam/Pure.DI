@@ -11,22 +11,19 @@ namespace Pure.DI.Core
     {
         private readonly IBuildContext _buildContext;
         private readonly IMemberNameService _memberNameService;
-        private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
         private readonly IStringTools _stringTools;
-        private readonly ICache<InvocationExpressionSyntax, bool> _requiresCall;
+        private readonly Func<FactoryRewriter> _factoryRewriter;
 
         public FactoryObjectBuilder(
             IBuildContext buildContext,
             IMemberNameService memberNameService,
-            ICannotResolveExceptionFactory cannotResolveExceptionFactory,
             IStringTools stringTools,
-            [Tag(Tags.ContainerScope)] ICache<InvocationExpressionSyntax, bool> requiresCall)
+            Func<FactoryRewriter> factoryRewriter)
         {
             _buildContext = buildContext;
             _memberNameService = memberNameService;
-            _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
             _stringTools = stringTools;
-            _requiresCall = requiresCall;
+            _factoryRewriter = factoryRewriter;
         }
 
         public ExpressionSyntax? TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
@@ -61,13 +58,11 @@ namespace Pure.DI.Core
 
             if (factory != null && resultExpression != null)
             {
-                return ((ExpressionSyntax?) new FactoryRewriter(
-                        dependency,
-                        buildStrategy,
-                        factory.Parameter.Identifier,
-                        _buildContext,
-                        _cannotResolveExceptionFactory,
-                        _requiresCall)
+                return ((ExpressionSyntax?) _factoryRewriter()
+                        .Initialize(
+                            dependency,
+                            buildStrategy,
+                            factory.Parameter.Identifier)
                     .Visit(resultExpression))
                     ?.WithCommentBefore($"// {dependency.Binding}");
             }

@@ -8,7 +8,7 @@ namespace Pure.DI.Core
 
     internal class DisposeStatementsBuilder : IDisposeStatementsBuilder
     {
-        public IEnumerable<StatementSyntax> Build(SemanticType type, MemberAccessExpressionSyntax instanceExpression, ExpressionSyntax hasInstanceExpression)
+        public IEnumerable<StatementSyntax> Build(MemberAccessExpressionSyntax instanceExpression, ExpressionSyntax hasInstanceExpression)
         {
             yield return SyntaxFactory.IfStatement(
                 hasInstanceExpression,

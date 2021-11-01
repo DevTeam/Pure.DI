@@ -1,6 +1,7 @@
 ﻿// ReSharper disable IdentifierTypo
 // ReSharper disable InvertIf
 // ReSharper disable MergeIntoPattern
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core
 {
     using System.Collections.Generic;
@@ -12,36 +13,42 @@ namespace Pure.DI.Core
 
     internal class FactoryRewriter: CSharpSyntaxRewriter
     {
-        private readonly Dependency _dependency;
-        private readonly IBuildStrategy _buildStrategy;
-        private readonly SyntaxToken _contextIdentifier;
         private readonly IBuildContext _buildContext;
         private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
-        private readonly ICache<InvocationExpressionSyntax, bool> _requiresCall;
-        private readonly ExpressionSyntax? _defaultTag;
+        private readonly ICache<FactoryKey, SyntaxNode> _cache;
+        private Dependency _dependency;
+        private IBuildStrategy? _buildStrategy;
+        private SyntaxToken _contextIdentifier;
+        private ExpressionSyntax? _defaultTag;
 
         public FactoryRewriter(
-            Dependency dependency,
-            IBuildStrategy buildStrategy,
-            SyntaxToken contextIdentifier,
             IBuildContext buildContext,
             ICannotResolveExceptionFactory cannotResolveExceptionFactory,
-            ICache<InvocationExpressionSyntax, bool> requiresCall)
+            [Tag(Tags.ContainerScope)] ICache<FactoryKey, SyntaxNode> cache)
             : base(true)
+        {
+            _buildContext = buildContext;
+            _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
+            _cache = cache;
+        }
+
+        public FactoryRewriter Initialize(
+            Dependency dependency,
+            IBuildStrategy buildStrategy,
+            SyntaxToken contextIdentifier
+        )
         {
             _dependency = dependency;
             _buildStrategy = buildStrategy;
             _contextIdentifier = contextIdentifier;
-            _buildContext = buildContext;
-            _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
-            _requiresCall = requiresCall;
-            if (_dependency.Implementation.Type is INamedTypeSymbol namedTypeSymbol)
+            if (dependency.Implementation.Type is INamedTypeSymbol namedTypeSymbol)
             {
                 if(namedTypeSymbol.IsGenericType && namedTypeSymbol.ConstructUnboundGenericType().ToString() == "System.Func<>")
                 {
-                    _defaultTag = _dependency.Tag;
+                    _defaultTag = dependency.Tag;
                 }
             }
+            return this;
         }
 
         public override SyntaxNode VisitTypeArgumentList(TypeArgumentListSyntax node)
@@ -114,6 +121,12 @@ namespace Pure.DI.Core
                 return base.VisitInvocationExpression(node);
             }
             
+            var nodeKey = new FactoryKey(_dependency.Implementation.Type, node.ToString());
+            if (_cache.TryGetValue(nodeKey, out SyntaxNode result))
+            {
+                return result;
+            }
+            
             var semanticModel = node.GetSemanticModel(_dependency.Implementation);
             var operation = semanticModel.GetOperation(node);
             if (operation is IInvocationOperation invocationOperation)
@@ -129,21 +142,19 @@ namespace Pure.DI.Core
                         var tag = invocationOperation.Arguments.Length == 1 ? invocationOperation.Arguments[0].Value.Syntax as ExpressionSyntax : _defaultTag;
                         var dependencyType = _dependency.TypesMap.ConstructType(new SemanticType(invocationOperation.TargetMethod.ReturnType, semanticModel));
                         var dependency = _buildContext.TypeResolver.Resolve(dependencyType, tag);
-                        if (_requiresCall.TryGetValue(node, out var requiresCall) && requiresCall)
-                        {
-                            return ReplaceLambdaByResolveCall(dependencyType, tag);
-                        }
-
                         try
                         {
-                            return ReplaceLambdaByCreateExpression(dependency, dependencyType);
+                            result = ReplaceLambdaByCreateExpression(dependency, dependencyType);
+                            _cache.Add(nodeKey, result);
+                            return result;
                         }
                         catch (BuildException ex)
                         {
                             if (ex.Id == Diagnostics.Error.CircularDependency)
                             {
-                                _requiresCall.Add(node, true);
-                                return ReplaceLambdaByResolveCall(dependencyType, tag);
+                                result = ReplaceLambdaByResolveCall(dependencyType, tag);
+                                _cache.Add(nodeKey, result);
+                                return result;
                             }
 
                             throw;
@@ -151,7 +162,7 @@ namespace Pure.DI.Core
                     }
                 }
             }
-
+            
             return base.VisitInvocationExpression(node);
         }
 
@@ -171,7 +182,7 @@ namespace Pure.DI.Core
 
         private SyntaxNode ReplaceLambdaByCreateExpression(Dependency dependency, SemanticType dependencyType)
         {
-            var expression = _buildStrategy.TryBuild(dependency, dependencyType);
+            var expression = _buildStrategy!.TryBuild(dependency, dependencyType);
             if (expression == null)
             {
                 throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, "a factory");
@@ -188,39 +199,48 @@ namespace Pure.DI.Core
             }
         }
 
+        // ReSharper disable once SuggestBaseTypeForParameter
         private TypeSyntax ReplaceType(TypeSyntax typeSyntax, bool addBinding = false)
         {
+            var typeKey = new FactoryKey(_dependency.Implementation.Type, typeSyntax.ToString());
+            if (_cache.TryGetValue(typeKey, out var result))
+            {
+                return (TypeSyntax)result;
+            }
+            
             var semanticModel = typeSyntax.SyntaxTree.GetRoot().GetSemanticModel(_dependency.Implementation);
             var typeSymbol = semanticModel.GetTypeInfo(typeSyntax).Type;
+            SemanticType? sematicType = default;
             switch (typeSymbol)
             {
                 case INamedTypeSymbol namedTypeSymbol:
                 {
                     var curType = new SemanticType(namedTypeSymbol, _dependency.Implementation);
-                    var constructedType = _dependency.TypesMap.ConstructType(curType);
-                    if (addBinding)
-                    {
-                        AddBinding(constructedType);
-                    }
-
-                    return constructedType.TypeSyntax;
+                    sematicType= _dependency.TypesMap.ConstructType(curType);
+                    result = sematicType.TypeSyntax;
+                    break;
                 }
                 
                 case IArrayTypeSymbol arrayTypeSymbol:
                 {
                     var curType = new SemanticType(arrayTypeSymbol.ElementType, _dependency.Implementation);
-                    var constructedType = _dependency.TypesMap.ConstructType(curType);
-                    if (addBinding)
-                    {
-                        AddBinding(constructedType);
-                    }
-
-                    return SyntaxFactory.ArrayType(constructedType).AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
+                    sematicType = _dependency.TypesMap.ConstructType(curType);
+                    result = SyntaxFactory.ArrayType(sematicType).AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
+                    break;
                 }
                 
                 default:
-                    return typeSyntax;
+                    result = typeSyntax;
+                    break;
             }
+            
+            _cache.Add(typeKey, result);
+            if (addBinding && sematicType != default)
+            {
+                AddBinding(sematicType);
+            }
+
+            return (TypeSyntax)result;
         }
 
         private void AddBinding(SemanticType constructedType)
@@ -232,6 +252,35 @@ namespace Pure.DI.Core
             }
 
             _buildContext.AddBinding(binding);
+        }
+        
+        internal class FactoryKey
+        {
+            private readonly ITypeSymbol _type;
+            private readonly string _code;
+
+            public FactoryKey(ITypeSymbol type, string code)
+            {
+                _type = type;
+                _code = code;
+            }
+
+            public override bool Equals(object? obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                if (obj.GetType() != GetType()) return false;
+                FactoryKey other = (FactoryKey)obj;
+                return _type.Equals(other._type, SymbolEqualityComparer.Default) && _code.Equals(other._code);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return (SymbolEqualityComparer.Default.GetHashCode(_type) * 397) ^ _code.GetHashCode();
+                }
+            }
         }
     }
 }

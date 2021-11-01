@@ -5,6 +5,6 @@ namespace Pure.DI.Core
 
     internal interface IDisposeStatementsBuilder
     {
-        IEnumerable<StatementSyntax> Build(SemanticType type, MemberAccessExpressionSyntax instanceExpression, ExpressionSyntax hasInstanceExpression);
+        IEnumerable<StatementSyntax> Build(MemberAccessExpressionSyntax instanceExpression, ExpressionSyntax hasInstanceExpression);
     }
 }

@@ -1,7 +1,6 @@
 ﻿namespace Pure.DI.Core
 {
     using System;
-    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -89,7 +88,7 @@
                     SyntaxFactory.IdentifierName(ValueName));
                 
                 var hasInstance = SyntaxFactory.IdentifierName(hasSingletonFieldName);
-                _buildContext.AddFinalDisposeStatements(_disposeStatementsBuilder.Build(resolvedDependency.Implementation, instance, hasInstance));
+                _buildContext.AddFinalDisposeStatements(_disposeStatementsBuilder.Build(instance, hasInstance));
                 
                 return singletonClass;
             });

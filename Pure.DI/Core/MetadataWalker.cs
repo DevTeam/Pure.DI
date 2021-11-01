@@ -5,7 +5,6 @@ namespace Pure.DI.Core
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.Linq;
     using System.Text.RegularExpressions;
     using Microsoft.CodeAnalysis;
@@ -16,7 +15,7 @@ namespace Pure.DI.Core
     internal class MetadataWalker: CSharpSyntaxWalker, IMetadataWalker
     {
         private static readonly Regex CommentRegex = new(@"//\s*(\w+)\s*=\s*(.+)\s*", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-        private static readonly ISet<string> _names = new HashSet<string>()
+        private static readonly ISet<string> Names = new HashSet<string>
         {
             nameof(DI.Setup),
             nameof(IConfiguration.DependsOn),
@@ -70,7 +69,7 @@ namespace Pure.DI.Core
                 }
             }
             
-            if (!names.Overlaps(_names))
+            if (!names.Overlaps(Names))
             {
                 return;
             }
@@ -113,7 +112,7 @@ namespace Pure.DI.Core
                     {
                         foreach (
                             var match in from trivia in node.GetLeadingTrivia()
-                            where trivia.Kind() == SyntaxKind.SingleLineCommentTrivia
+                            where trivia.IsKind(SyntaxKind.SingleLineCommentTrivia)
                             select trivia.ToFullString().Trim() into comment
                             select CommentRegex.Match(comment) into match 
                             where match.Success

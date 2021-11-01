@@ -1,6 +1,5 @@
 ﻿namespace Pure.DI.Core
 {
-    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.Text;
 
     internal readonly struct Source

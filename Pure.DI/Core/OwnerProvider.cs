@@ -14,11 +14,11 @@ namespace Pure.DI.Core
             var classes = node.Ancestors().OfType<ClassDeclarationSyntax>().ToArray();
             if (classes.All(
                     cls => 
-                        cls.Modifiers.Any(i => i.Kind() == SyntaxKind.PartialKeyword)
-                        && cls.Modifiers.Any(i => i.Kind() != SyntaxKind.PrivateKeyword && i.Kind() != SyntaxKind.ProtectedKeyword)))
+                        cls.Modifiers.Any(i => i.IsKind(SyntaxKind.PartialKeyword))
+                        && cls.Modifiers.Any(i => !i.IsKind(SyntaxKind.PrivateKeyword) && !i.IsKind(SyntaxKind.ProtectedKeyword))))
             {
                 var cls = classes.FirstOrDefault();
-                if (cls != null && cls.Modifiers.Any(i => i.Kind() == SyntaxKind.StaticKeyword))
+                if (cls != null && cls.Modifiers.Any(i => i.IsKind(SyntaxKind.StaticKeyword)))
                 {
                     return cls;
                 }
