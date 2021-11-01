@@ -26,7 +26,7 @@ namespace Pure.DI.Core
 
         public static implicit operator TypeSyntax(SemanticType semanticType) => SyntaxFactory.ParseTypeName(semanticType.Type.ToMinimalDisplayString(semanticType.SemanticModel, 0));
 
-        public bool Equals(SemanticType other) => SemanticTypeEqualityComparer.Default.Equals(this, other);
+        public bool Equals(SemanticType other) => SymbolEqualityComparer.Default.Equals(Type, other.Type);
 
         public override string ToString() => Type.ToString();
 
@@ -45,7 +45,7 @@ namespace Pure.DI.Core
             return obj.GetType() == GetType() && Equals((SemanticType) obj);
         }
 
-        public override int GetHashCode() => SemanticTypeEqualityComparer.Default.GetHashCode();
+        public override int GetHashCode() => SymbolEqualityComparer.Default.GetHashCode(Type);
 
         public string Name
         {

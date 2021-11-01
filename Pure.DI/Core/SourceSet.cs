@@ -39,7 +39,7 @@ namespace Pure.DI.Core
         
         private static IEnumerable<(string file, string code)> GetResources(Regex filter)
         {
-            var assembly = typeof(SourceGenerator).Assembly;
+            var assembly = typeof(SourceSet).Assembly;
             foreach (var resourceName in assembly.GetManifestResourceNames())
             {
                 if (!filter.IsMatch(resourceName))

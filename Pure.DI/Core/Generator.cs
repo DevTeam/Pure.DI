@@ -2,21 +2,44 @@
 namespace Pure.DI.Core
 {
     using System;
-    using Microsoft.CodeAnalysis;
+    using System.Threading;
 
     internal class Generator : IGenerator
     {
+        private readonly IMetadataBuilder _metadataBuilder;
         private readonly ISourceBuilder _sourceBuilder;
         private readonly IDiagnostic _diagnostic;
+
         public Generator(
+            IMetadataBuilder metadataBuilder,
             ISourceBuilder sourceBuilder,
             IDiagnostic diagnostic)
         {
+            _metadataBuilder = metadataBuilder;
             _sourceBuilder = sourceBuilder;
             _diagnostic = diagnostic;
         }
 
-        public void Generate(GeneratorExecutionContext context)
+        public void Generate(IExecutionContext context)
+        {
+            var workingThread = new Thread(() => GenerateInternal(context), 0xff_ffff)
+            {
+                Name = "Pure.DI",
+                IsBackground = true,
+                Priority = ThreadPriority.BelowNormal
+            };
+            workingThread.Start();
+            while (!workingThread.Join(10) && !context.CancellationToken.IsCancellationRequested)
+            {
+            }
+
+            if (context.CancellationToken.IsCancellationRequested && !workingThread.Join(1))
+            {
+                workingThread.Abort();
+            }
+        }
+
+        private void GenerateInternal(IExecutionContext context)
         {
             if (_diagnostic is CompilationDiagnostic compilationDiagnostic)
             {
@@ -25,8 +48,19 @@ namespace Pure.DI.Core
 
             try
             {
-                foreach (var source in _sourceBuilder.Build(context.Compilation, context.CancellationToken))
+                var metadata = _metadataBuilder.Build(context.Compilation, context.CancellationToken);
+                foreach (var source in metadata.Components)
                 {
+                    context.AddSource(source.HintName, source.Code);
+                }
+
+                foreach (var source in _sourceBuilder.Build(metadata))
+                {
+                    if (context.CancellationToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
+
                     context.AddSource(source.HintName, source.Code);
                 }
             }
@@ -39,7 +73,7 @@ namespace Pure.DI.Core
             }
             catch (Exception ex)
             {
-                _diagnostic.Error(Diagnostics.Error.Unhandled, ex.ToString());
+                _diagnostic.Error(Diagnostics.Error.Unhandled, $"{ex}: {ex.StackTrace}");
             }
         }
     }

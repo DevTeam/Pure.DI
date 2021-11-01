@@ -9,13 +9,13 @@
 
         public CompilationDiagnostic(ILog<CompilationDiagnostic> log) => _log = log;
 
-        public GeneratorExecutionContext Context { get; set; }
+        public IExecutionContext? Context { get; set; }
 
         public void Error(string id, string message, Location? location = null)
         {
             try
             {
-                Context.ReportDiagnostic(Diagnostic.Create(
+                Context?.ReportDiagnostic(Diagnostic.Create(
                     new DiagnosticDescriptor(
                         id,
                         "Error",
@@ -40,7 +40,7 @@
         {
             try
             {
-                Context.ReportDiagnostic(Diagnostic.Create(
+                Context?.ReportDiagnostic(Diagnostic.Create(
                     new DiagnosticDescriptor(
                         id,
                         "Warning",
@@ -62,7 +62,7 @@
         {
             try
             {
-                Context.ReportDiagnostic(Diagnostic.Create(
+                Context?.ReportDiagnostic(Diagnostic.Create(
                     new DiagnosticDescriptor(
                         id,
                         "Info",

@@ -7,6 +7,13 @@
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/DevTeam/Pure.DI.git</RepositoryUrl>
         <Copyright>Copyright (C) 2021 Nikolay Pianikov</Copyright>
+
+<!--    <AnalyzerRoslynVersion Condition="'$(AnalyzerRoslynVersion)'==''">4.0</AnalyzerRoslynVersion>
+        <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">4.0.0-6.final</AnalyzerRoslynPackageVersion>-->
+        <AnalyzerRoslynVersion Condition="'$(AnalyzerRoslynVersion)'==''">3.8</AnalyzerRoslynVersion>
+        <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">3.8.0</AnalyzerRoslynPackageVersion>
+        <DefineConstants Condition="'$(AnalyzerRoslynVersion)'=='3.8'">$(DefineConstants);ROSLYN38</DefineConstants>
+        <DefineConstants Condition="'$(AnalyzerRoslynVersion)'=='4.0'">$(DefineConstants);ROSLYN40</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
@@ -15,5 +22,10 @@
             <PackagePath>common</PackagePath>
         </None>
     </ItemGroup>
+
+    <Target Name="Info" BeforeTargets="Build">
+        <Message Text="AnalyzerRoslynVersion = $(AnalyzerRoslynVersion)" Importance="high"/>
+        <Message Text="AnalyzerRoslynPackageVersion = $(AnalyzerRoslynPackageVersion)" Importance="high"/>
+    </Target>
 </Project>
 

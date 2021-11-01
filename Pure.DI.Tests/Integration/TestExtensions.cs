@@ -79,10 +79,12 @@ namespace Pure.DI.Tests.Integration
                 .Bind<IStdOut>().Bind<IStdErr>().As(Lifetime.Singleton).To(ctx => stdErr)
                 .Container;
 
-            List<Source>? generatedSources ;
+            var generatedSources = new List<Source>();
             try
             {
-                generatedSources = container.Resolve<ISourceBuilder>().Build(compilation, CancellationToken.None).ToList();
+                var metadataContext = container.Resolve<IMetadataBuilder>().Build(compilation, CancellationToken.None);
+                generatedSources.AddRange(metadataContext.Components);
+                generatedSources.AddRange(container.Resolve<ISourceBuilder>().Build(metadataContext));
             }
             catch (BuildException buildException)
             {

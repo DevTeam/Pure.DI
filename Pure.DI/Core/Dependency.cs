@@ -34,7 +34,7 @@ namespace Pure.DI.Core
             return $"{Implementation}{tag}";
         }
 
-        public bool Equals(Dependency other) => Implementation.Equals(other.Implementation) && Equals(Tag?.ToString(), other.Tag?.ToString());
+        public bool Equals(Dependency other) => Implementation.Equals(other.Implementation) && Equals(Tag, other.Tag);
 
         public override bool Equals(object? obj) => obj is Dependency other && Equals(other);
 
@@ -42,7 +42,7 @@ namespace Pure.DI.Core
         {
             unchecked
             {
-                return (Implementation.GetHashCode() * 397) ^ (Tag != null ? Tag.ToString().GetHashCode() : 0);
+                return (Implementation.GetHashCode() * 397) ^ (Tag != null ? Tag.GetHashCode() : 0);
             }
         }
     }

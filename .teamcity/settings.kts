@@ -13,7 +13,7 @@ open class Settings {
     companion object {
         const val sdkVersion = "6.0"
         const val getNextVersionScript =
-            "#nr NoCache" +
+            "#nr NoCache\n" +
             "using System.Linq;\n" +
             "Props[\"version\"] = \n" +
             "  GetService<INuGet>()\n" +
@@ -25,7 +25,17 @@ open class Settings {
             "  .Max()\n" +
             "  .ToString();\n" +
             "WriteLine($\"Version: {Props[\"version\"]}\", Success);"
+        val versions = setOf(
+            PackageVersion("3.8", "3.8.0"),
+            PackageVersion("4.0", "4.0.0-6.final")
+        )
     }
+}
+
+class PackageVersion(private val version: String, private val apiVersion: String) {
+    val args get() = "/p:AnalyzerRoslynVersion=\"${version}\" /p:AnalyzerRoslynPackageVersion=\"${apiVersion}\""
+
+    override fun toString(): String = version
 }
 
 project {
@@ -52,8 +62,12 @@ object BuildAndTestBuildType: BuildType({
     vcs { root(Repo) }
 
     steps {
-        dotnetTest {
-            name = "Run tests"
+        for (version in Settings.versions) {
+            val versionArgs = version.args
+            dotnetTest {
+                name = "Run tests for $version"
+                args = versionArgs
+            }
         }
     }
 
@@ -83,21 +97,41 @@ object DeployPureDIBuildType: BuildType({
             content = Settings.getNextVersionScript
             arguments = "%packageId%"
         }
+
+        for (version in Settings.versions) {
+            val versionArgs = version.args
+            dotnetBuild {
+                name = "Build $version"
+                sdk = Settings.sdkVersion
+                args = versionArgs
+            }
+            dotnetTest {
+                name = "Run tests for $version"
+                skipBuild = true
+                args = versionArgs
+            }
+            dotnetPack {
+                name = "Create a NuGet package of $version"
+                workingDir = "%packageId%"
+                skipBuild = true
+                args = versionArgs
+            }
+        }
+
         dotnetBuild {
-            name = "Build"
-            sdk = Settings.sdkVersion
+            name = "Build tasks"
+            workingDir = "Build"
+            projects = "Pure.DI.MSBuild.sln"
         }
-        dotnetTest {
-            name = "Run tests"
-            skipBuild = true
+
+        dotnetBuild {
+            name = "Merge packages"
+            workingDir = "Build"
+            projects = "Merge.csproj"
         }
-        dotnetPack {
-            name = "Create a NuGet package"
-            workingDir = "%packageId%"
-            skipBuild = true
-        }
+
         dotnetNugetPush {
-            name = "Push the NuGet package"
+            name = "Push to NuGet"
             packages = "%packagePath%"
             serverUrl = "https://api.nuget.org/v3/index.json"
             apiKey = "%NuGetKey%"
