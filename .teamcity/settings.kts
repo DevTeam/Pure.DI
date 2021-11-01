@@ -13,6 +13,7 @@ open class Settings {
     companion object {
         const val sdkVersion = "6.0"
         const val getNextVersionScript =
+            "#nr NoCache" +
             "using System.Linq;\n" +
             "Props[\"version\"] = \n" +
             "  GetService<INuGet>()\n" +
