@@ -15,25 +15,10 @@ namespace Pure.DI.Core
     internal class MetadataWalker: CSharpSyntaxWalker, IMetadataWalker
     {
         private static readonly Regex CommentRegex = new(@"//\s*(\w+)\s*=\s*(.+)\s*", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-        private static readonly ISet<string> Names = new HashSet<string>
-        {
-            nameof(DI.Setup),
-            nameof(IConfiguration.DependsOn),
-            nameof(IConfiguration.Bind),
-            nameof(IConfiguration.Default),
-            nameof(IConfiguration.OrderAttribute),
-            nameof(IConfiguration.TagAttribute),
-            nameof(IConfiguration.TypeAttribute),
-            nameof(IBinding.As),
-            nameof(IBinding.Bind),
-            nameof(IBinding.Tags),
-            nameof(IBinding.To),
-            nameof(IBinding.AnyTag),
-            nameof(IBinding)
-        }; 
         private readonly SemanticModel _semanticModel;
         private readonly IOwnerProvider _ownerProvider;
         private readonly ITargetClassNameProvider _targetClassNameProvider;
+        private readonly ISyntaxFilter _syntaxFilter;
         private readonly List<ResolverMetadata> _metadata = new();
         private ResolverMetadata? _resolver;
         private BindingMetadata _binding = new();
@@ -42,11 +27,13 @@ namespace Pure.DI.Core
         public MetadataWalker(
             SemanticModel semanticModel,
             IOwnerProvider ownerProvider,
-            ITargetClassNameProvider targetClassNameProvider)
+            ITargetClassNameProvider targetClassNameProvider,
+            ISyntaxFilter syntaxFilter)
         {
             _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
             _ownerProvider = ownerProvider;
             _targetClassNameProvider = targetClassNameProvider;
+            _syntaxFilter = syntaxFilter;
         }
 
         public IEnumerable<ResolverMetadata> Metadata => _metadata;
@@ -54,22 +41,7 @@ namespace Pure.DI.Core
         public override void VisitInvocationExpression(InvocationExpressionSyntax node)
         {
             base.VisitInvocationExpression(node);
-            var names = new HashSet<string>();
-            foreach (var descendantNode in node.Expression.DescendantNodes())
-            {
-                switch (descendantNode)
-                {
-                    case IdentifierNameSyntax identifierNameSyntax:
-                        names.Add(identifierNameSyntax.Identifier.Text);
-                        break;
-                    
-                    case GenericNameSyntax genericNameSyntax:
-                        names.Add(genericNameSyntax.Identifier.Text);
-                        break;
-                }
-            }
-            
-            if (!names.Overlaps(Names))
+            if (!_syntaxFilter.Accept(node))
             {
                 return;
             }

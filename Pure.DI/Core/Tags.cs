@@ -19,6 +19,8 @@
         FactoryMethod,
         GenericResolvers,
         ContainerScope,
-        GlobalScope
+        GlobalScope,
+        Syntax,
+        MetadataSyntax
     }
 }

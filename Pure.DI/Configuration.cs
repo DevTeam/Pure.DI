@@ -19,6 +19,8 @@
             yield return container
                 .Bind<IAutowiringStrategy>().To(ctx => autowiringStrategy)
                 .Bind<IGenerator>().To<Generator>()
+                .Bind<ISyntaxFilter>().As(Singleton).Tag(Syntax).To<SyntaxFilter>()
+                .Bind<ISyntaxFilter>().As(Singleton).Tag(MetadataSyntax).To<SyntaxFilter>()
                 .Bind<ICannotResolveExceptionFactory>().As(ContainerSingleton).To<CannotResolveExceptionFactory>()
                 .Bind<IStdOut>().As(ContainerSingleton).To<StdOut>()
                 .Bind<IStdErr>().As(ContainerSingleton).To<StdErr>()
@@ -37,7 +39,7 @@
                 .Bind<IObjectBuilder>().Tag(ArrayBuilder).To<ArrayObjectBuilder>()
                 .Bind<IObjectBuilder>().Tag(EnumerableBuilder).To<EnumerableObjectBuilder>()
                 .Bind<IClassBuilder>().To<ClassBuilder>()
-                .Bind<IMetadataWalker>().To(ctx => new MetadataWalker((SemanticModel) ctx.Args[0], ctx.Container.Inject<IOwnerProvider>(), ctx.Container.Inject<ITargetClassNameProvider>()))
+                .Bind<IMetadataWalker>().To(ctx => new MetadataWalker((SemanticModel) ctx.Args[0], ctx.Container.Inject<IOwnerProvider>(), ctx.Container.Inject<ITargetClassNameProvider>(), ctx.Container.Inject<ISyntaxFilter>(Tags.MetadataSyntax)))
                 .Bind<IMembersBuilder>().Tag(Resolvers).To<ResolversBuilder>()
                 .Bind<IMembersBuilder>().Tag(MicrosoftDependencyInjection).To<MicrosoftDependencyInjectionBuilder>()
                 .Bind<IBindingsProbe>().As(ContainerSingleton).To<BindingsProbe>()

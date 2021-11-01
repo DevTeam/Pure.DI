@@ -14,9 +14,7 @@
                 .Bind<CompilationDiagnostic>().Bind<IDiagnostic>().As(IoC.Lifetime.ContainerSingleton).To<CompilationDiagnostic>()
                 .Container;
 
-        public void Initialize(GeneratorInitializationContext context)
-        {
-        }
+        public void Initialize(GeneratorInitializationContext context) { }
 
         public void Execute(GeneratorExecutionContext context) =>
             GeneratorContainer.Create().Resolve<IGenerator>().Generate(context);
