@@ -6,6 +6,7 @@
 namespace Pure.DI.Core
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -40,33 +41,33 @@ namespace Pure.DI.Core
             _lifetimes = lifetimeStrategies.ToDictionary(i => i.Lifetime, i => i);
         }
         
-        public ExpressionSyntax? TryBuild(Dependency dependency, SemanticType resolvingType)
+        public ExpressionSyntax? TryBuild(Dependency dependency, SemanticType resolvingType) => 
+            _cache.GetOrAdd(new BuildStrategyKey(_buildContext.Id, dependency), _ => TryBuildInternal(dependency, resolvingType));
+
+        public ExpressionSyntax? TryBuildInternal(Dependency dependency, SemanticType resolvingType)
         {
-            var key = new BuildStrategyKey(_buildContext.Id, dependency);
-            if (_cache.TryGetValue(key, out var result))
-            {
-                _log.Trace(() => new []{ $"Cache: {dependency} => {result}"});
-                return result;
-            }
-
             using var traceToken = _tracer.RegisterResolving(dependency);
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var objectBuildExpression = dependency.ObjectBuilder.TryBuild(this, dependency);
-            if (objectBuildExpression != null)
+            if (objectBuildExpression == default)
             {
-                // Apply lifetime
-                if (!_lifetimes.TryGetValue(dependency.Binding.Lifetime, out var lifetimeStrategy))
-                {
-                    var error = $"{dependency.Binding.Lifetime} lifetime is not supported.";
-                    _diagnostic.Error(Diagnostics.Error.Unsupported, error, dependency.Implementation.Type.Locations.FirstOrDefault());
-                    throw new HandledException(error);
-                }
-
-                objectBuildExpression = lifetimeStrategy.Build(resolvingType, dependency, objectBuildExpression);
-                objectBuildExpression = _resultStrategy.Build(objectBuildExpression);
-                _log.Info(() => new []{ $"{dependency} => {objectBuildExpression.NormalizeWhitespace()}"});
+                return objectBuildExpression;
             }
 
-            _cache.Add(key, objectBuildExpression);
+            // Apply lifetime
+            if (!_lifetimes.TryGetValue(dependency.Binding.Lifetime, out var lifetimeStrategy))
+            {
+                var error = $"{dependency.Binding.Lifetime} lifetime is not supported.";
+                _diagnostic.Error(Diagnostics.Error.Unsupported, error, dependency.Implementation.Type.Locations.FirstOrDefault());
+                throw new HandledException(error);
+            }
+
+            objectBuildExpression = lifetimeStrategy.Build(resolvingType, dependency, objectBuildExpression);
+            objectBuildExpression = _resultStrategy.Build(objectBuildExpression);
+            stopwatch.Stop();
+            _log.Info(() => new []{ $"[{stopwatch.ElapsedMilliseconds}] {dependency} => {objectBuildExpression.NormalizeWhitespace()}"});
+
             return objectBuildExpression;
         }
     }

@@ -27,7 +27,6 @@
                 vars["header"] = string.Empty;
                 vars["footer"] = string.Empty;
                 vars["file"] = file;
-                vars["url"] = "https://raw.githubusercontent.com/DevTeam/IoCContainer/master/IoC.Tests/UsageScenarios/" + Path.GetFileName(file);
                 infos.Add(vars);
             }
 

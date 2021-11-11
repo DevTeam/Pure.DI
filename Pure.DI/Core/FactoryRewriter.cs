@@ -15,7 +15,8 @@ namespace Pure.DI.Core
     {
         private readonly IBuildContext _buildContext;
         private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
-        private readonly ICache<FactoryKey, SyntaxNode> _cache;
+        private readonly ICache<FactoryKey, SyntaxNode?> _nodeCache;
+        private readonly ICache<SyntaxNode, ITypeSymbol?> _typeCache;
         private Dependency _dependency;
         private IBuildStrategy? _buildStrategy;
         private SyntaxToken _contextIdentifier;
@@ -24,12 +25,14 @@ namespace Pure.DI.Core
         public FactoryRewriter(
             IBuildContext buildContext,
             ICannotResolveExceptionFactory cannotResolveExceptionFactory,
-            [Tag(Tags.ContainerScope)] ICache<FactoryKey, SyntaxNode> cache)
+            [Tag(Tags.ContainerScope)] ICache<FactoryKey, SyntaxNode?> nodeCache,
+            [Tag(Tags.ContainerScope)] ICache<SyntaxNode, ITypeSymbol?> typeCache)
             : base(true)
         {
             _buildContext = buildContext;
             _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
-            _cache = cache;
+            _nodeCache = nodeCache;
+            _typeCache = typeCache;
         }
 
         public FactoryRewriter Initialize(
@@ -121,12 +124,11 @@ namespace Pure.DI.Core
                 return base.VisitInvocationExpression(node);
             }
             
-            var nodeKey = new FactoryKey(_dependency, node.ToString());
-            if (_cache.TryGetValue(nodeKey, out SyntaxNode result))
-            {
-                return result;
-            }
-            
+            return _nodeCache.GetOrAdd(new FactoryKey(_dependency, node), _ => VisitInvocationExpressionInternal(node));
+        }
+
+        private SyntaxNode? VisitInvocationExpressionInternal(InvocationExpressionSyntax node)
+        {
             var semanticModel = node.GetSemanticModel(_dependency.Implementation);
             var operation = semanticModel.GetOperation(node);
             if (operation is IInvocationOperation invocationOperation)
@@ -144,17 +146,13 @@ namespace Pure.DI.Core
                         var dependency = _buildContext.TypeResolver.Resolve(dependencyType, tag);
                         try
                         {
-                            result = ReplaceLambdaByCreateExpression(dependency, dependencyType);
-                            _cache.Add(nodeKey, result);
-                            return result;
+                            return ReplaceLambdaByCreateExpression(dependency, dependencyType);
                         }
                         catch (BuildException ex)
                         {
                             if (ex.Id == Diagnostics.Error.CircularDependency)
                             {
-                                result = ReplaceLambdaByResolveCall(dependencyType, tag);
-                                _cache.Add(nodeKey, result);
-                                return result;
+                                return ReplaceLambdaByResolveCall(dependencyType, tag);
                             }
 
                             throw;
@@ -200,17 +198,15 @@ namespace Pure.DI.Core
         }
 
         // ReSharper disable once SuggestBaseTypeForParameter
-        private TypeSyntax ReplaceType(TypeSyntax typeSyntax, bool addBinding = false)
+        private TypeSyntax ReplaceType(TypeSyntax typeSyntax, bool addBinding = false) => 
+            (TypeSyntax)_nodeCache.GetOrAdd(new FactoryKey(_dependency, typeSyntax), _ => ReplaceTypeInternal(typeSyntax, addBinding))!;
+
+        private TypeSyntax ReplaceTypeInternal(TypeSyntax typeSyntax, bool addBinding = false)
         {
-            var typeKey = new FactoryKey(_dependency, typeSyntax.ToString());
-            if (_cache.TryGetValue(typeKey, out var result))
-            {
-                return (TypeSyntax)result;
-            }
-            
             var semanticModel = typeSyntax.SyntaxTree.GetRoot().GetSemanticModel(_dependency.Implementation);
-            var typeSymbol = semanticModel.GetTypeInfo(typeSyntax).Type;
+            var typeSymbol = _typeCache.GetOrAdd(typeSyntax, _ => semanticModel.GetTypeInfo(typeSyntax).Type);
             SemanticType? sematicType = default;
+            TypeSyntax result;
             switch (typeSymbol)
             {
                 case INamedTypeSymbol namedTypeSymbol:
@@ -234,13 +230,12 @@ namespace Pure.DI.Core
                     break;
             }
             
-            _cache.Add(typeKey, result);
             if (addBinding && sematicType != default)
             {
                 AddBinding(sematicType);
             }
 
-            return (TypeSyntax)result;
+            return result;
         }
 
         private void AddBinding(SemanticType constructedType)
@@ -257,12 +252,12 @@ namespace Pure.DI.Core
         internal class FactoryKey
         {
             private readonly Dependency _dependency;
-            private readonly string _code;
+            private readonly SyntaxNode _node;
 
-            public FactoryKey(Dependency dependency, string code)
+            public FactoryKey(Dependency dependency, SyntaxNode node)
             {
                 _dependency = dependency;
-                _code = code;
+                _node = node;
             }
 
             public override bool Equals(object? obj)
@@ -271,14 +266,14 @@ namespace Pure.DI.Core
                 if (ReferenceEquals(this, obj)) return true;
                 if (obj.GetType() != GetType()) return false;
                 FactoryKey other = (FactoryKey)obj;
-                return _dependency.Equals(other._dependency) && _code.Equals(other._code);
+                return _dependency.Equals(other._dependency) && _node.Equals(other._node);
             }
             
             public override int GetHashCode()
             {
                 unchecked
                 {
-                    return (_dependency.GetHashCode() * 397) ^ _code.GetHashCode();
+                    return (_dependency.GetHashCode() * 397) ^ _node.GetHashCode();
                 }
             }
         }

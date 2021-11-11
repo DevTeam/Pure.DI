@@ -74,25 +74,17 @@ namespace Pure.DI.Core
         
         private SourceSet GetSourceSet(Compilation compilation)
         {
-            if (compilation is not CSharpCompilation csharpCompilation)
+            if (compilation is CSharpCompilation csharpCompilation)
             {
-                var error = $"{compilation.Language} is not supported.";
-                _diagnostic.Error(Diagnostics.Error.Unsupported, error);
-                throw new HandledException(error);
-            }
-            
-            SourceSet sourceSet;
-            if (_stateCache.TryGetValue(csharpCompilation.LanguageVersion, out var state))
-            {
-                sourceSet = state.SourceSet;
-            }
-            else
-            {
-                sourceSet = new SourceSet(new CSharpParseOptions(csharpCompilation.LanguageVersion));
-                _stateCache.Add(csharpCompilation.LanguageVersion, new SourceBuilderState(sourceSet));
+                return _stateCache.GetOrAdd(
+                        csharpCompilation.LanguageVersion,
+                        i => new SourceBuilderState(new SourceSet(new CSharpParseOptions(csharpCompilation.LanguageVersion))))
+                    .SourceSet;
             }
 
-            return sourceSet;
+            var error = $"{compilation.Language} is not supported.";
+            _diagnostic.Error(Diagnostics.Error.Unsupported, error);
+            throw new HandledException(error);
         }
 
         private IEnumerable<ResolverMetadata> GetMetadata(Compilation compilation, IEnumerable<SyntaxTree> trees, CancellationToken cancellationToken)

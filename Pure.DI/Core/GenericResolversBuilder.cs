@@ -59,14 +59,10 @@ namespace Pure.DI.Core
                 }
                 
                 var minAccessibility = GetAccessibility(resolvingType.Type).Min();
-                switch (minAccessibility)
+                if (minAccessibility < Accessibility.Internal)
                 {
-                    case < Accessibility.Internal:
-                        _tracer.Save();
-                        continue;
-
-                    case Accessibility.Public:
-                        break;
+                    _tracer.Save();
+                    continue;
                 }
 
                 var resolvedDependency = _typeResolver.Resolve(resolvingType, null);

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Microsoft.CodeAnalysis;
@@ -13,6 +14,7 @@
     internal class AutowiringObjectBuilder : IObjectBuilder
     {
         private const string InstanceVarName = "instance";
+        private readonly ILog<AutowiringObjectBuilder> _log;
         private readonly IDiagnostic _diagnostic;
         private readonly IBuildContext _buildContext;
         private readonly IAttributesService _attributesService;
@@ -20,12 +22,14 @@
         private readonly IStringTools _stringTools;
 
         public AutowiringObjectBuilder(
+            ILog<AutowiringObjectBuilder> log,
             IDiagnostic diagnostic,
             IBuildContext buildContext, 
             IAttributesService attributesService,
             ITracer tracer,
             IStringTools stringTools)
         {
+            _log = log;
             _diagnostic = diagnostic;
             _buildContext = buildContext;
             _attributesService = attributesService;
@@ -36,23 +40,22 @@
         [SuppressMessage("ReSharper", "InvertIf")]
         public ExpressionSyntax? TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
         {
-            var objectCreationExpression = (
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            var ctorInfo = (
                 from ctor in 
                     dependency.Implementation.Type is INamedTypeSymbol implementationType
                         ? implementationType.Constructors
                         : Enumerable.Empty<IMethodSymbol>()
+                where !_buildContext.IsCancellationRequested
                 where ctor.DeclaredAccessibility is Accessibility.Internal or Accessibility.Public or Accessibility.Friend
                 let order = GetOrder(ctor) ?? int.MaxValue
-                let parameters = ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, dependency, ctor, true).ToList()
+                let parameters = ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, dependency, ctor, true).ToArray()
                 where parameters.All(i => i.Result != default)
                 let paramsResolvedCount = parameters.Count(i => i.DefaultType == DefaultType.ResolvedValue)
                 let paramsResolveWeight = parameters.Sum(i => (int)i.ResolveType)
                 let paramsTypeWeight = parameters.Sum(i => (int)i.DefaultType)
-                let arguments = SyntaxFactory.SeparatedList(
-                    from parameter in parameters
-                    select SyntaxFactory.Argument(parameter.Result!))
-                let expression = CreateObject(ctor, dependency, arguments)
-                select (ctor, expression, order, paramsResolvedCount, paramsResolveWeight, paramsTypeWeight))
+                select (ctor, parameters, order, paramsResolvedCount, paramsResolveWeight, paramsTypeWeight))
                 // By an Order attribute
                 .OrderBy(i => i.order)
                 // By a number of resolved parameters
@@ -63,14 +66,23 @@
                 .ThenByDescending(i => i.paramsResolveWeight)
                 // By param type
                 .ThenByDescending(i => i.paramsTypeWeight)
-                .FirstOrDefault()
-                .expression;
+                .FirstOrDefault();
             
-            if (objectCreationExpression == default)
+            stopwatch.Stop();
+            _log.Trace(() => new []{$"[{stopwatch.ElapsedMilliseconds}] Found a constructor for {dependency}: {ctorInfo.ctor?.ToString() ?? "null"}."});
+
+            if (ctorInfo == default || _buildContext.IsCancellationRequested)
             {
                 _tracer.Save();
                 return default;
             }
+
+            var objectCreationExpression = CreateObject(
+                ctorInfo.ctor,
+                dependency,
+                SyntaxFactory.SeparatedList(
+                    from parameter in ctorInfo.parameters
+                    select SyntaxFactory.Argument(parameter.Result!)));
 
             var members = (
                 from member in dependency.Implementation.Type.GetMembers()
@@ -79,101 +91,97 @@
                 where order != default
                 orderby order
                 select member)
-                .Distinct(SymbolEqualityComparer.Default)
-                .ToList();
+                .Distinct(SymbolEqualityComparer.Default);
 
-            if (members.Any())
+            List<StatementSyntax> factoryStatements = new();
+            foreach (var member in members)
             {
-                List<StatementSyntax> factoryStatements = new();
-                foreach (var member in members)
+                if (member.IsStatic || member.DeclaredAccessibility != Accessibility.Public && member.DeclaredAccessibility != Accessibility.Internal)
                 {
-                    if (member.IsStatic || member.DeclaredAccessibility != Accessibility.Public && member.DeclaredAccessibility != Accessibility.Internal)
-                    {
-                        var error = $"{member} is inaccessible in {dependency.Implementation}.";
-                        _diagnostic.Error(Diagnostics.Error.MemberIsInaccessible, error, member.Locations.FirstOrDefault());
-                        throw new HandledException(error);
-                    }
+                    var error = $"{member} is inaccessible in {dependency.Implementation}.";
+                    _diagnostic.Error(Diagnostics.Error.MemberIsInaccessible, error, member.Locations.FirstOrDefault());
+                    throw new HandledException(error);
+                }
 
-                    switch (member)
-                    {
-                        case IMethodSymbol method:
-                            var arguments =
-                                from parameter in ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, dependency, method, false)
-                                where parameter.Result != default
-                                select SyntaxFactory.Argument(parameter.Result!);
+                switch (member)
+                {
+                    case IMethodSymbol method:
+                        var arguments =
+                            from parameter in ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, dependency, method, false)
+                            where parameter.Result != default
+                            select SyntaxFactory.Argument(parameter.Result!);
 
-                            var call = SyntaxFactory.InvocationExpression(
+                        var call = SyntaxFactory.InvocationExpression(
                                 SyntaxFactory.MemberAccessExpression(
                                     SyntaxKind.SimpleMemberAccessExpression,
                                     SyntaxFactory.ParseName(InstanceVarName),
                                     SyntaxFactory.Token(SyntaxKind.DotToken),
                                     SyntaxFactory.IdentifierName(method.Name)))
-                                .AddArgumentListArguments(arguments.ToArray());
+                            .AddArgumentListArguments(arguments.ToArray());
 
-                            factoryStatements.Add(SyntaxFactory.ExpressionStatement(call));
-                            break;
+                        factoryStatements.Add(SyntaxFactory.ExpressionStatement(call));
+                        break;
 
-                        case IFieldSymbol filed:
-                            if (!filed.IsReadOnly && !filed.IsStatic && !filed.IsConst)
-                            {
-                                var fieldValue = ResolveInstance(filed, dependency, filed.Type, _buildContext.TypeResolver, buildStrategy, filed.Locations, false);
-                                var assignmentExpression = SyntaxFactory.AssignmentExpression(
-                                    SyntaxKind.SimpleAssignmentExpression,
-                                    SyntaxFactory.MemberAccessExpression(
-                                        SyntaxKind.SimpleMemberAccessExpression,
-                                        SyntaxFactory.IdentifierName(InstanceVarName),
-                                        SyntaxFactory.Token(SyntaxKind.DotToken),
-                                        SyntaxFactory.IdentifierName(filed.Name)),
-                                    fieldValue.Result!);
+                    case IFieldSymbol filed:
+                        if (!filed.IsReadOnly && !filed.IsStatic && !filed.IsConst)
+                        {
+                            var fieldValue = ResolveInstance(filed, dependency, filed.Type, _buildContext.TypeResolver, buildStrategy, filed.Locations, false);
+                            var assignmentExpression = SyntaxFactory.AssignmentExpression(
+                                SyntaxKind.SimpleAssignmentExpression,
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    SyntaxFactory.IdentifierName(InstanceVarName),
+                                    SyntaxFactory.Token(SyntaxKind.DotToken),
+                                    SyntaxFactory.IdentifierName(filed.Name)),
+                                fieldValue.Result!);
 
-                                factoryStatements.Add(SyntaxFactory.ExpressionStatement(assignmentExpression));
-                            }
+                            factoryStatements.Add(SyntaxFactory.ExpressionStatement(assignmentExpression));
+                        }
 
-                            break;
+                        break;
 
-                        case IPropertySymbol property:
-                            if (property.SetMethod != null && !property.IsReadOnly && !property.IsStatic)
-                            {
-                                var propertyValue = ResolveInstance(property, dependency, property.Type, _buildContext.TypeResolver, buildStrategy, property.Locations, false);
-                                var assignmentExpression = SyntaxFactory.AssignmentExpression(
-                                    SyntaxKind.SimpleAssignmentExpression,
-                                    SyntaxFactory.MemberAccessExpression(
-                                        SyntaxKind.SimpleMemberAccessExpression,
-                                        SyntaxFactory.IdentifierName(InstanceVarName),
-                                        SyntaxFactory.Token(SyntaxKind.DotToken),
-                                        SyntaxFactory.IdentifierName(property.Name)),
-                                    propertyValue.Result!);
+                    case IPropertySymbol property:
+                        if (property.SetMethod != null && !property.IsReadOnly && !property.IsStatic)
+                        {
+                            var propertyValue = ResolveInstance(property, dependency, property.Type, _buildContext.TypeResolver, buildStrategy, property.Locations, false);
+                            var assignmentExpression = SyntaxFactory.AssignmentExpression(
+                                SyntaxKind.SimpleAssignmentExpression,
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    SyntaxFactory.IdentifierName(InstanceVarName),
+                                    SyntaxFactory.Token(SyntaxKind.DotToken),
+                                    SyntaxFactory.IdentifierName(property.Name)),
+                                propertyValue.Result!);
 
-                                factoryStatements.Add(SyntaxFactory.ExpressionStatement(assignmentExpression));
-                            }
+                            factoryStatements.Add(SyntaxFactory.ExpressionStatement(assignmentExpression));
+                        }
 
-                            break;
-                    }
+                        break;
                 }
+            }
 
-                if (factoryStatements.Any())
-                {
-                    var memberKey = new MemberKey($"Create{_stringTools.ConvertToTitle(dependency.Binding.Implementation?.ToString() ?? string.Empty)}", dependency);
-                    var factoryName = _buildContext.NameService.FindName(memberKey);
-                    var type = dependency.Implementation.TypeSyntax;
-                    var factoryMethod = SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
-                        .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
-                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
-                        .AddBodyStatements(
-                            SyntaxFactory.LocalDeclarationStatement(
-                                SyntaxFactory.VariableDeclaration(type)
-                                    .AddVariables(
-                                        SyntaxFactory.VariableDeclarator(InstanceVarName)
-                                            .WithInitializer(SyntaxFactory.EqualsValueClause(objectCreationExpression)))))
-                        .AddBodyStatements(factoryStatements.ToArray())
-                        .AddBodyStatements(
-                            SyntaxFactory.ReturnStatement(
-                                SyntaxFactory.IdentifierName(InstanceVarName)));
+            if (factoryStatements.Any())
+            {
+                var memberKey = new MemberKey($"Create{_stringTools.ConvertToTitle(dependency.Binding.Implementation?.ToString() ?? string.Empty)}", dependency);
+                var factoryName = _buildContext.NameService.FindName(memberKey);
+                var type = dependency.Implementation.TypeSyntax;
+                var factoryMethod = SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
+                    .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                    .AddBodyStatements(
+                        SyntaxFactory.LocalDeclarationStatement(
+                            SyntaxFactory.VariableDeclaration(type)
+                                .AddVariables(
+                                    SyntaxFactory.VariableDeclarator(InstanceVarName)
+                                        .WithInitializer(SyntaxFactory.EqualsValueClause(objectCreationExpression)))))
+                    .AddBodyStatements(factoryStatements.ToArray())
+                    .AddBodyStatements(
+                        SyntaxFactory.ReturnStatement(
+                            SyntaxFactory.IdentifierName(InstanceVarName)));
 
-                    _buildContext.GetOrAddMember(memberKey, () => factoryMethod);
-                    return SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryName))
-                        .WithCommentBefore($"// {dependency.Binding}");
-                }
+                _buildContext.GetOrAddMember(memberKey, () => factoryMethod);
+                return SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryName))
+                    .WithCommentBefore($"// {dependency.Binding}");
             }
 
             return objectCreationExpression
@@ -189,81 +197,91 @@
             ImmutableArray<Location> resolveLocations,
             bool probe)
         {
-            ExpressionSyntax? defaultValue = null;
-            var defaultResolveType = DefaultType.ResolvedValue;
-            if (target is IParameterSymbol parameter)
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            try
             {
-                if (parameter.HasExplicitDefaultValue)
+                ExpressionSyntax? defaultValue = null;
+                var defaultResolveType = DefaultType.ResolvedValue;
+                if (target is IParameterSymbol parameter)
                 {
-                    defaultValue = parameter.ExplicitDefaultValue.ToLiteralExpression();
-                    defaultResolveType = DefaultType.DefaultValue;
-                }
-                else
-                {
-                    if (parameter.Type.NullableAnnotation == NullableAnnotation.Annotated)
+                    if (parameter.HasExplicitDefaultValue)
                     {
-                        defaultValue = SyntaxFactory.DefaultExpression(new SemanticType(parameter.Type, targetDependency.Implementation).TypeSyntax);
-                        defaultResolveType = DefaultType.NullableValue;
+                        defaultValue = parameter.ExplicitDefaultValue.ToLiteralExpression();
+                        defaultResolveType = DefaultType.DefaultValue;
                     }
-                }
-            }
-            
-            var resolvingType = GetDependencyType(target, targetDependency.Implementation) ?? new SemanticType(defaultType, targetDependency.Implementation);
-            var tag = (ExpressionSyntax?) _attributesService.GetAttributeArgumentExpressions(AttributeKind.Tag, target).FirstOrDefault();
-            var dependency = typeResolver.Resolve(resolvingType, tag);
-            if (!dependency.IsResolved && defaultValue != null)
-            {
-                return new ResolveResult(defaultValue, ResolveType.ResolvedUnbound, defaultResolveType);
-            }
-
-            switch (dependency.Implementation.Type)
-            {
-                case INamedTypeSymbol namedType:
-                {
-                    var type = new SemanticType(namedType, targetDependency.Implementation);
-                    var constructedType = dependency.TypesMap.ConstructType(type);
-                    if (!dependency.Implementation.Equals(constructedType))
+                    else
                     {
-                        _buildContext.AddBinding(new BindingMetadata(dependency.Binding, constructedType, null));
+                        if (parameter.Type.NullableAnnotation == NullableAnnotation.Annotated)
+                        {
+                            defaultValue = SyntaxFactory.DefaultExpression(new SemanticType(parameter.Type, targetDependency.Implementation).TypeSyntax);
+                            defaultResolveType = DefaultType.NullableValue;
+                        }
                     }
-
-                    if (dependency.IsResolved)
-                    {
-                        return new ResolveResult(buildStrategy.TryBuild(dependency, resolvingType), ResolveType.Resolved, DefaultType.ResolvedValue);
-                    }
-
-                    if (probe)
-                    {
-                        return ResolveResult.NotResolved;
-                    }
-
-                    var dependencyType = dependency.Implementation.TypeSyntax;
-                    return new ResolveResult(SyntaxFactory.CastExpression(dependencyType,
-                        SyntaxFactory.InvocationExpression(SyntaxFactory.ParseName(nameof(IContext.Resolve)))
-                            .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependencyType)))), ResolveType.ResolvedUnbound, DefaultType.ResolvedValue);
                 }
 
-                case IArrayTypeSymbol arrayType:
+                var resolvingType = GetDependencyType(target, targetDependency.Implementation) ?? new SemanticType(defaultType, targetDependency.Implementation);
+                var tag = (ExpressionSyntax?)_attributesService.GetAttributeArgumentExpressions(AttributeKind.Tag, target).FirstOrDefault();
+                var dependency = typeResolver.Resolve(resolvingType, tag);
+                if (!dependency.IsResolved && defaultValue != null)
                 {
-                    var type = new SemanticType(arrayType, targetDependency.Implementation);
-                    var arrayTypeDescription = typeResolver.Resolve(type, null);
-                    if (arrayTypeDescription.IsResolved)
+                    return new ResolveResult(defaultValue, ResolveType.ResolvedUnbound, defaultResolveType);
+                }
+
+                switch (dependency.Implementation.Type)
+                {
+                    case INamedTypeSymbol namedType:
                     {
-                        return new ResolveResult(buildStrategy.TryBuild(arrayTypeDescription, type), ResolveType.Resolved, DefaultType.ResolvedValue);
+                        var type = new SemanticType(namedType, targetDependency.Implementation);
+                        var constructedType = dependency.TypesMap.ConstructType(type);
+                        if (!dependency.Implementation.Equals(constructedType))
+                        {
+                            _buildContext.AddBinding(new BindingMetadata(dependency.Binding, constructedType, null));
+                        }
+
+                        if (dependency.IsResolved)
+                        {
+                            return new ResolveResult(buildStrategy.TryBuild(dependency, resolvingType), ResolveType.Resolved, DefaultType.ResolvedValue);
+                        }
+
+                        if (probe)
+                        {
+                            return ResolveResult.NotResolved;
+                        }
+
+                        var dependencyType = dependency.Implementation.TypeSyntax;
+                        return new ResolveResult(SyntaxFactory.CastExpression(dependencyType,
+                            SyntaxFactory.InvocationExpression(SyntaxFactory.ParseName(nameof(IContext.Resolve)))
+                                .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependencyType)))), ResolveType.ResolvedUnbound, DefaultType.ResolvedValue);
                     }
 
-                    break;
-                }
-            }
-            
-            if (buildStrategy.TryBuild(dependency, resolvingType) == null)
-            {
-                return ResolveResult.NotResolved;
-            }
+                    case IArrayTypeSymbol arrayType:
+                    {
+                        var type = new SemanticType(arrayType, targetDependency.Implementation);
+                        var arrayTypeDescription = typeResolver.Resolve(type, null);
+                        if (arrayTypeDescription.IsResolved)
+                        {
+                            return new ResolveResult(buildStrategy.TryBuild(arrayTypeDescription, type), ResolveType.Resolved, DefaultType.ResolvedValue);
+                        }
 
-            var error = $"Unsupported type {dependency.Implementation}.";
-            _diagnostic.Error(Diagnostics.Error.Unsupported, error, resolveLocations.FirstOrDefault());
-            throw new HandledException(error);
+                        break;
+                    }
+                }
+
+                if (buildStrategy.TryBuild(dependency, resolvingType) == null)
+                {
+                    return ResolveResult.NotResolved;
+                }
+
+                var error = $"Unsupported type {dependency.Implementation}.";
+                _diagnostic.Error(Diagnostics.Error.Unsupported, error, resolveLocations.FirstOrDefault());
+                throw new HandledException(error);
+            }
+            finally
+            {
+                stopwatch.Stop();
+                _log.Trace(() => new []{$"[{stopwatch.ElapsedMilliseconds}] Instance resolved for {targetDependency}."});
+            }
         }
 
         private IEnumerable<ResolveResult> ResolveMethodParameters(ITypeResolver typeResolver, IBuildStrategy buildStrategy, Dependency dependency, IMethodSymbol method, bool probe) =>

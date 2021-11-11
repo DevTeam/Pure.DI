@@ -1,9 +1,9 @@
 namespace Pure.DI.Core
 {
-    internal interface ICache<in TKey, TValue>
-    {
-        bool TryGetValue(TKey key, out TValue value);
+    using System;
 
-        void Add(TKey key, TValue value);
+    internal interface ICache<TKey, TValue>
+    {
+        TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory);
     }
 }
