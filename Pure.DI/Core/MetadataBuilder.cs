@@ -78,7 +78,7 @@ namespace Pure.DI.Core
             {
                 return _stateCache.GetOrAdd(
                         csharpCompilation.LanguageVersion,
-                        i => new SourceBuilderState(new SourceSet(new CSharpParseOptions(csharpCompilation.LanguageVersion))))
+                        _ => new SourceBuilderState(new SourceSet(new CSharpParseOptions(csharpCompilation.LanguageVersion))))
                     .SourceSet;
             }
 

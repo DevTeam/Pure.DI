@@ -9,7 +9,6 @@ namespace Pure.DI.Core
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using Microsoft.CodeAnalysis.Operations;
 
     internal class FactoryRewriter: CSharpSyntaxRewriter
     {
@@ -61,18 +60,6 @@ namespace Pure.DI.Core
             return SyntaxFactory.TypeArgumentList().AddArguments(args);
         }
 
-        public override SyntaxNode VisitGenericName(GenericNameSyntax node)
-        {
-            if (node.IsUnboundGenericName)
-            {
-                return node;
-            }
-
-            var args = node.TypeArgumentList.Arguments.ToArray();
-            ReplaceTypes(args);
-            return SyntaxFactory.GenericName(node.Identifier).AddTypeArgumentListArguments(args);
-        }
-
         public override SyntaxNode? VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
         {
             if (
@@ -84,12 +71,18 @@ namespace Pure.DI.Core
                 if (method != null)
                 {
                     var args = method.TypeArgumentList.Arguments.ToArray();
-                    ReplaceTypes(args, true);
+                    ReplaceTypes(args);
                     if (_dependency.Binding.AnyTag && _dependency.Tag != null)
                     {
-                        return SyntaxFactory.ParenthesizedLambdaExpression(
-                            SyntaxFactory.InvocationExpression((GenericNameSyntax) VisitGenericName(method))
-                                .AddArgumentListArguments(SyntaxFactory.Argument(_dependency.Tag)));
+                        var expression = VisitGenericName(method);
+                        if (expression is GenericNameSyntax genericName)
+                        {
+                            return SyntaxFactory.ParenthesizedLambdaExpression(
+                                SyntaxFactory.InvocationExpression(genericName)
+                                    .AddArgumentListArguments(SyntaxFactory.Argument(_dependency.Tag)));
+                        }
+
+                        return expression;
                     }
                 }
 
@@ -99,70 +92,76 @@ namespace Pure.DI.Core
             return base.VisitMemberAccessExpression(node);
         }
 
-        public override SyntaxNode? Visit(SyntaxNode? node)
-        {
-            if (node is GenericNameSyntax genericName)
-            {
-                var args = genericName.TypeArgumentList.Arguments.ToArray();
-                ReplaceTypes(args);
-                return SyntaxFactory.GenericName(genericName.Identifier).AddTypeArgumentListArguments(args);
-            }
-
-            return base.Visit(node);
-        }
-
         public override SyntaxNode VisitTypeOfExpression(TypeOfExpressionSyntax node) => 
             SyntaxFactory.TypeOfExpression(ReplaceType(node.Type));
 
         public override SyntaxNode? VisitVariableDeclaration(VariableDeclarationSyntax node) =>
             base.VisitVariableDeclaration(node.WithType(ReplaceType(node.Type)));
 
-        public override SyntaxNode? VisitInvocationExpression(InvocationExpressionSyntax node)
+        public override SyntaxNode VisitGenericName(GenericNameSyntax node)
         {
-            if (node.DescendantNodes().OfType<GenericNameSyntax>().FirstOrDefault() is not { Identifier: { Text: nameof(IContext.Resolve) } })
+            if (node.IsUnboundGenericName)
             {
-                return base.VisitInvocationExpression(node);
+                return node;
             }
-            
-            return _nodeCache.GetOrAdd(new FactoryKey(_dependency, node), _ => VisitInvocationExpressionInternal(node));
-        }
 
-        private SyntaxNode? VisitInvocationExpressionInternal(InvocationExpressionSyntax node)
-        {
-            var semanticModel = node.GetSemanticModel(_dependency.Implementation);
-            var operation = semanticModel.GetOperation(node);
-            if (operation is IInvocationOperation invocationOperation)
+            if (node.Identifier.Text == nameof(IContext.Resolve) && node.Parent?.Parent is InvocationExpressionSyntax invocation && IsResolveMethod(invocation))
             {
-                if (
-                    invocationOperation.TargetMethod.IsGenericMethod
-                    && invocationOperation.TargetMethod.TypeArguments.Length == 1)
+                var semanticModel = node.GetSemanticModel(_dependency.Implementation);
+                var argType = node.TypeArgumentList.Arguments[0];
+                var type = _typeCache.GetOrAdd(argType, i => semanticModel.GetTypeInfo(i).Type); 
+                if (type != default)
                 {
-                    if (invocationOperation.TargetMethod.Name == nameof(IContext.Resolve)
-                        && new SemanticType(invocationOperation.TargetMethod.ContainingType, _dependency.Implementation.SemanticModel).Equals(typeof(IContext))
-                        && SymbolEqualityComparer.Default.Equals(invocationOperation.TargetMethod.TypeArguments[0], invocationOperation.TargetMethod.ReturnType))
+                    var tag = invocation.ArgumentList.Arguments.Count == 1 ? invocation.ArgumentList.Arguments[0].Expression : _defaultTag;
+                    var dependencyType = _dependency.TypesMap.ConstructType(new SemanticType(type, semanticModel));
+                    var dependency = _buildContext.TypeResolver.Resolve(dependencyType, tag);
+                    try
                     {
-                        var tag = invocationOperation.Arguments.Length == 1 ? invocationOperation.Arguments[0].Value.Syntax as ExpressionSyntax : _defaultTag;
-                        var dependencyType = _dependency.TypesMap.ConstructType(new SemanticType(invocationOperation.TargetMethod.ReturnType, semanticModel));
-                        var dependency = _buildContext.TypeResolver.Resolve(dependencyType, tag);
-                        try
+                        return ReplaceLambdaByCreateExpression(dependency, dependencyType);
+                    }
+                    catch (BuildException ex)
+                    {
+                        if (ex.Id == Diagnostics.Error.CircularDependency)
                         {
-                            return ReplaceLambdaByCreateExpression(dependency, dependencyType);
+                            return ReplaceLambdaByResolveCall(dependencyType, tag);
                         }
-                        catch (BuildException ex)
-                        {
-                            if (ex.Id == Diagnostics.Error.CircularDependency)
-                            {
-                                return ReplaceLambdaByResolveCall(dependencyType, tag);
-                            }
 
-                            throw;
-                        }
+                        throw;
                     }
                 }
             }
             
+            var args = node.TypeArgumentList.Arguments.ToArray();
+            ReplaceTypes(args);
+            return node.WithTypeArgumentList(SyntaxFactory.TypeArgumentList().AddArguments(args.ToArray()));
+        }
+
+        public override SyntaxNode? VisitInvocationExpression(InvocationExpressionSyntax node) => 
+            IsResolveMethod(node) ? 
+                _nodeCache.GetOrAdd(new FactoryKey(_dependency, node), _ => VisitInvocationExpressionInternal(node))
+                : base.VisitInvocationExpression(node);
+
+        private SyntaxNode? VisitInvocationExpressionInternal(InvocationExpressionSyntax node)
+        {
+            if (IsResolveMethod(node))
+            {
+                var expression = base.VisitInvocationExpression(node);
+                if (expression is InvocationExpressionSyntax invocation)
+                {
+                    return invocation.Expression;
+                }
+            }
+
             return base.VisitInvocationExpression(node);
         }
+
+        private static bool IsResolveMethod(InvocationExpressionSyntax invocation) =>
+            invocation.ArgumentList.Arguments.Count <= 1
+            && invocation.Expression is MemberAccessExpressionSyntax memberAccess
+            && memberAccess.Kind() == SyntaxKind.SimpleMemberAccessExpression
+            && memberAccess.Name is GenericNameSyntax genericName
+            && genericName.Identifier.Text == nameof(IContext.Resolve)
+            && genericName.TypeArgumentList.Arguments.Count == 1;
 
         private static SyntaxNode ReplaceLambdaByResolveCall(SemanticType dependencyType, ExpressionSyntax? tag)
         {
@@ -189,66 +188,44 @@ namespace Pure.DI.Core
             return expression;
         }
 
-        private void ReplaceTypes(IList<TypeSyntax> args, bool addBinding = false)
+        private void ReplaceTypes(IList<TypeSyntax> args)
         {
             for (var i = 0; i < args.Count; i++)
             {
-                args[i] = ReplaceType(args[i], addBinding);
+                args[i] = ReplaceType(args[i]);
             }
         }
 
         // ReSharper disable once SuggestBaseTypeForParameter
-        private TypeSyntax ReplaceType(TypeSyntax typeSyntax, bool addBinding = false) => 
-            (TypeSyntax)_nodeCache.GetOrAdd(new FactoryKey(_dependency, typeSyntax), _ => ReplaceTypeInternal(typeSyntax, addBinding))!;
+        private TypeSyntax ReplaceType(TypeSyntax typeSyntax) => 
+            (TypeSyntax)_nodeCache.GetOrAdd(new FactoryKey(_dependency, typeSyntax), _ => ReplaceTypeInternal(typeSyntax))!;
 
-        private TypeSyntax ReplaceTypeInternal(TypeSyntax typeSyntax, bool addBinding = false)
+        private TypeSyntax ReplaceTypeInternal(TypeSyntax typeSyntax)
         {
             var semanticModel = typeSyntax.SyntaxTree.GetRoot().GetSemanticModel(_dependency.Implementation);
             var typeSymbol = _typeCache.GetOrAdd(typeSyntax, _ => semanticModel.GetTypeInfo(typeSyntax).Type);
-            SemanticType? sematicType = default;
-            TypeSyntax result;
+            SemanticType? sematicType;
             switch (typeSymbol)
             {
                 case INamedTypeSymbol namedTypeSymbol:
                 {
                     var curType = new SemanticType(namedTypeSymbol, _dependency.Implementation);
                     sematicType= _dependency.TypesMap.ConstructType(curType);
-                    result = sematicType.TypeSyntax;
-                    break;
+                    return sematicType.TypeSyntax;
                 }
                 
                 case IArrayTypeSymbol arrayTypeSymbol:
                 {
                     var curType = new SemanticType(arrayTypeSymbol.ElementType, _dependency.Implementation);
                     sematicType = _dependency.TypesMap.ConstructType(curType);
-                    result = SyntaxFactory.ArrayType(sematicType).AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
-                    break;
+                    return SyntaxFactory.ArrayType(sematicType).AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
                 }
                 
                 default:
-                    result = typeSyntax;
-                    break;
+                    return typeSyntax;
             }
-            
-            if (addBinding && sematicType != default)
-            {
-                AddBinding(sematicType);
-            }
-
-            return result;
         }
 
-        private void AddBinding(SemanticType constructedType)
-        {
-            var binding = new BindingMetadata(_dependency.Binding, constructedType, null);
-            if (_dependency.Tag != null)
-            {
-                binding.AddTags(_dependency.Tag);
-            }
-
-            _buildContext.AddBinding(binding);
-        }
-        
         internal class FactoryKey
         {
             private readonly Dependency _dependency;

@@ -214,7 +214,7 @@
                     {
                         if (parameter.Type.NullableAnnotation == NullableAnnotation.Annotated)
                         {
-                            defaultValue = SyntaxFactory.DefaultExpression(new SemanticType(parameter.Type, targetDependency.Implementation).TypeSyntax);
+                            defaultValue = SyntaxFactory.DefaultExpression(new SemanticType(parameter.Type.WithNullableAnnotation(NullableAnnotation.None), targetDependency.Implementation).TypeSyntax);
                             defaultResolveType = DefaultType.NullableValue;
                         }
                     }

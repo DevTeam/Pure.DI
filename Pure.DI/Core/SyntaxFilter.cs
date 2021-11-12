@@ -27,6 +27,7 @@ namespace Pure.DI.Core
 
         public bool Accept(SyntaxNode node)
         {
+            // ReSharper disable once ConvertIfStatementToReturnStatement
             if (Types.Any(i => i.IsInstanceOfType(node)))
             {
                 return true;

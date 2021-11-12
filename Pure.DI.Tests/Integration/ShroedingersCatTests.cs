@@ -55,6 +55,8 @@
                 {
                     static Composer()
                     {
+                        // verbosity=diagnostic
+                        // out=C:\Projects\_temp\a
                         DI.Setup()
                             // Models a random subatomic event that may or may not occur
                             .Bind<Random>().As(Singleton).To<Random>()
