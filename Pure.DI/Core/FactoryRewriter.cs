@@ -92,6 +92,19 @@ namespace Pure.DI.Core
             return base.VisitMemberAccessExpression(node);
         }
 
+        public override SyntaxNode VisitArrayCreationExpression(ArrayCreationExpressionSyntax node)
+        {
+            var newArrayElementType = (ArrayTypeSyntax)ReplaceType(node.Type);
+            var newNode = SyntaxFactory.ArrayCreationExpression(newArrayElementType);
+            if (node.Initializer != default
+                && VisitInitializerExpression(node.Initializer) is InitializerExpressionSyntax initializer)
+            {
+                newNode = newNode.WithInitializer(initializer);
+            }
+
+            return newNode;
+        }
+
         public override SyntaxNode VisitTypeOfExpression(TypeOfExpressionSyntax node) => 
             SyntaxFactory.TypeOfExpression(ReplaceType(node.Type));
 
@@ -210,15 +223,26 @@ namespace Pure.DI.Core
                 case INamedTypeSymbol namedTypeSymbol:
                 {
                     var curType = new SemanticType(namedTypeSymbol, _dependency.Implementation);
-                    sematicType= _dependency.TypesMap.ConstructType(curType);
-                    return sematicType.TypeSyntax;
+                    if (!curType.IsValidTypeToResolve)
+                    {
+                        sematicType = _dependency.TypesMap.ConstructType(curType);
+                        return sematicType.TypeSyntax;
+                    }
+
+                    return typeSyntax;
                 }
                 
                 case IArrayTypeSymbol arrayTypeSymbol:
                 {
                     var curType = new SemanticType(arrayTypeSymbol.ElementType, _dependency.Implementation);
-                    sematicType = _dependency.TypesMap.ConstructType(curType);
-                    return SyntaxFactory.ArrayType(sematicType).AddRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
+                    if (!curType.IsValidTypeToResolve)
+                    {
+                        sematicType = _dependency.TypesMap.ConstructType(curType);
+                        var arrayType = semanticModel.Compilation.CreateArrayTypeSymbol(sematicType.Type);
+                        return SyntaxFactory.ParseTypeName(arrayType.ToString());
+                    }
+
+                    return typeSyntax;
                 }
                 
                 default:

@@ -22,10 +22,10 @@
                     .AddExpressions(objectCreationExpressions.ToArray()));
             }
 
-            var elementTye = new SemanticType(arrayTypeSymbol.ElementType, dependency.Implementation);
+            var elementType = new SemanticType(arrayTypeSymbol.ElementType, dependency.Implementation);
             var elements =
-                from element in _typeResolver.Resolve(elementTye)
-                let objectCreationExpression = buildStrategy.TryBuild(element, elementTye)
+                from element in _typeResolver.Resolve(elementType)
+                let objectCreationExpression = buildStrategy.TryBuild(element, elementType)
                 where objectCreationExpression != null
                 select (ExpressionSyntax)objectCreationExpression;
 

@@ -148,10 +148,9 @@ namespace Pure.DI.Core
                     // To<>()
                     if (invocationOperation.TargetMethod.Name == nameof(IBinding.To)
                         && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IBinding))
-                        && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
-                        && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol implementationType)
+                        && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration)))
                     {
-                        _binding.Implementation = new SemanticType(implementationType, _semanticModel);
+                        _binding.Implementation = new SemanticType(invocationOperation.TargetMethod.TypeArguments[0], _semanticModel);
                         _binding.Location = node.GetLocation();
                         _resolver?.Bindings.Add(_binding);
                         _binding = new BindingMetadata
@@ -169,12 +168,12 @@ namespace Pure.DI.Core
                     if (invocationOperation.TargetMethod.Name == nameof(IBinding.Bind)
                         && (new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IBinding)) || new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IConfiguration)))
                         && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IBinding))
-                        && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol dependencyType
                         && invocationOperation.Arguments[0].ArgumentKind == ArgumentKind.ParamArray
                         && invocationOperation.Arguments[0].Value is IArrayCreationOperation arrayCreationOperation
                         && arrayCreationOperation.Type is IArrayTypeSymbol arrayTypeSymbol
                         && new SemanticType(arrayTypeSymbol.ElementType, _semanticModel).Equals(typeof(object)))
                     {
+                        var dependencyType = invocationOperation.TargetMethod.TypeArguments[0];
                         var dependency = new SemanticType(dependencyType, _semanticModel);
                         _binding.AddDependencyTags(dependency, (arrayCreationOperation.Initializer?.ElementValues.OfType<IConversionOperation>().Select(i => i.Syntax).OfType<ExpressionSyntax>()  ?? Enumerable.Empty<ExpressionSyntax>()).ToArray());
                         _binding.AddDependency(new SemanticType(dependencyType, _semanticModel));
@@ -183,10 +182,9 @@ namespace Pure.DI.Core
                     // To<>(ctx => new ...())
                     if (invocationOperation.TargetMethod.Name == nameof(IBinding.To)
                         && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IBinding))
-                        && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
-                        && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol implementationType)
+                        && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration)))
                     {
-                        _binding.Implementation = new SemanticType(implementationType, _semanticModel);
+                        _binding.Implementation = new SemanticType(invocationOperation.TargetMethod.TypeArguments[0], _semanticModel);
                         if (
                             invocationOperation.Arguments[0].Syntax is ArgumentSyntax factory
                             && factory.Expression is SimpleLambdaExpressionSyntax lambda)

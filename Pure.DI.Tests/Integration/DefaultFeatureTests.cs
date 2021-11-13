@@ -321,7 +321,7 @@
                     {
                         DI.Setup()
                             .Bind<string>().Tags(1).To(_ => ""1"")
-                            .Bind<string>().To(_ => ""2"")                            
+                            .Bind<string>().To(_ => ""2"")
                             .Bind<string>().Tags(3).To(_ => ""3"")
                             // Composition Root
                             .Bind<CompositionRoot>().To<CompositionRoot>();

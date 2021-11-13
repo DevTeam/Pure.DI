@@ -255,16 +255,9 @@
                                 .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependencyType)))), ResolveType.ResolvedUnbound, DefaultType.ResolvedValue);
                     }
 
-                    case IArrayTypeSymbol arrayType:
+                    case IArrayTypeSymbol:
                     {
-                        var type = new SemanticType(arrayType, targetDependency.Implementation);
-                        var arrayTypeDescription = typeResolver.Resolve(type, null);
-                        if (arrayTypeDescription.IsResolved)
-                        {
-                            return new ResolveResult(buildStrategy.TryBuild(arrayTypeDescription, type), ResolveType.Resolved, DefaultType.ResolvedValue);
-                        }
-
-                        break;
+                        return new ResolveResult(buildStrategy.TryBuild(dependency, dependency.Implementation), ResolveType.Resolved, DefaultType.ResolvedValue);
                     }
                 }
 

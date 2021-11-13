@@ -106,7 +106,7 @@ namespace Pure.DI.Core
 
                 case IArrayTypeSymbol arrayTypeSymbol:
                 {
-                    var originalElementType = new SemanticType(arrayTypeSymbol.ElementType, type);
+                    var originalElementType = ConstructType(new SemanticType(arrayTypeSymbol.ElementType, type));
                     if (!_map.TryGetValue(originalElementType, out var elementType))
                     {
                         elementType = originalElementType;

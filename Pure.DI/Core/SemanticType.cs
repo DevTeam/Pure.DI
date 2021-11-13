@@ -121,6 +121,23 @@ namespace Pure.DI.Core
 
             return new SemanticType(unboundGeneric.Construct(typeArg.Select(i => i.Type).ToArray()), SemanticModel);
         }
+        
+        public SemanticType ConstructUnbound()
+        {
+            switch (Type)
+            {
+                case INamedTypeSymbol namedTypeSymbol:
+                    return IsComposedGenericTypeMarker ? new SemanticType(namedTypeSymbol.ConstructUnboundGenericType(), SemanticModel) : this;
+
+                case IArrayTypeSymbol arrayTypeSymbol:
+                    var elementType = new SemanticType(arrayTypeSymbol.ElementType, SemanticModel).ConstructUnbound();
+                    var arrayType = SemanticModel.Compilation.CreateArrayTypeSymbol(elementType.Type);
+                    return new SemanticType(arrayType, SemanticModel);
+
+                default:
+                    return this;
+            }
+        }
 
         public bool IsGenericTypeMarker
         {
@@ -163,7 +180,7 @@ namespace Pure.DI.Core
             Type switch
             {
                 INamedTypeSymbol namedTypeSymbol => !namedTypeSymbol.IsUnboundGenericType && !IsComposedGenericTypeMarker && !namedTypeSymbol.IsRefLikeType,
-                IArrayTypeSymbol arrayTypeSymbol => new SemanticType(arrayTypeSymbol, SemanticModel).IsValidTypeToResolve,
+                IArrayTypeSymbol arrayTypeSymbol => new SemanticType(arrayTypeSymbol.ElementType, SemanticModel).IsValidTypeToResolve,
                 _ => false
             };
 

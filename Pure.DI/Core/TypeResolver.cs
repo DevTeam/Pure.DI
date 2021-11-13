@@ -1,4 +1,5 @@
 ﻿// ReSharper disable InvertIf
+// ReSharper disable ConvertIfStatementToReturnStatement
 namespace Pure.DI.Core
 {
     using System;
@@ -49,23 +50,20 @@ namespace Pure.DI.Core
 
                 _implementations.Add(binding.Implementation);
                 var dependencies = new HashSet<SemanticType>(binding.Dependencies);
-                foreach (var dependency in dependencies)
+                foreach (var type in dependencies)
                 {
-                    foreach (var tag in binding.GetTags(dependency).DefaultIfEmpty<ExpressionSyntax?>(null))
+                    foreach (var tag in binding.GetTags(type).DefaultIfEmpty<ExpressionSyntax?>(null))
                     {
-                        var semanticType = dependency.IsComposedGenericTypeMarker
-                                  && dependency.Type is INamedTypeSymbol namedType
-                                ? new SemanticType(namedType.ConstructUnboundGenericType(), dependency.SemanticModel)
-                                : dependency;
-                        
+                        SemanticType unboundType = type.ConstructUnbound();
                         if (
-                            !GetSpecialTypes(semanticType).Contains(semanticType)
-                            && dependency.SemanticModel.Compilation.GetTypeByMetadataName(semanticType.Name) == null)
+                            !GetSpecialTypes(unboundType).Contains(unboundType)
+                            && type.SemanticModel.Compilation.GetTypeByMetadataName(unboundType.Name) == null
+                            && type.Type is INamedTypeSymbol)
                         {
                             continue;
                         }
 
-                        var key = new Key(semanticType, tag, binding.AnyTag);
+                        var key = new Key(unboundType, tag, binding.AnyTag);
                         if (_map.TryGetValue(key, out var prev))
                         {
                             diagnostic.Information(Diagnostics.Information.BindingAlreadyExists, $"{prev.Metadata} exists and will be overridden by a new one {binding}.");
@@ -80,41 +78,44 @@ namespace Pure.DI.Core
 
                         if (binding.Lifetime is Lifetime.Scoped or Lifetime.ContainerSingleton)
                         {
-                            var serviceProviderInstance = new SemanticType(dependency.SemanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance<>).FullName)!, dependency.SemanticModel).Construct(dependency);
+                            var serviceProviderInstance = new SemanticType(type.SemanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance<>).FullName)!, type.SemanticModel).Construct(type);
                             _buildContext.AddBinding(new BindingMetadata(binding, serviceProviderInstance, binding.Id));
                         }
                     }
                 }
             }
         }
+        
+        public Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, bool anyTag = false) =>
+            Resolve(dependency, tag, anyTag, i => i);
 
-        public Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, bool anyTag = false)
+        private Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, bool anyTag, Func<SemanticType, SemanticType> typeSelector)
         {
             switch (dependency.Type)
             {
                 case INamedTypeSymbol namedType:
                 {
-                    Binding<SemanticType> implementationEntry;
                     if (namedType.IsGenericType)
                     {
                         var unboundDependency = new SemanticType(namedType.ConstructUnboundGenericType(), dependency);
                         var keys = new[]
                         {
-                            new Key(dependency, tag, anyTag),
-                            new Key(unboundDependency, tag, anyTag)
+                            new Key(typeSelector(dependency), tag, anyTag),
+                            new Key(typeSelector(unboundDependency), tag, anyTag)
                         };
 
                         foreach (var key in keys)
                         {
-                            if (_map.TryGetValue(key, out implementationEntry))
+                            if (_map.TryGetValue(key, out var implementationEntry))
                             {
                                 var typesMap = _typesMapFactory();
-                                var hasTypesMap = typesMap.Setup(implementationEntry.Details, dependency);
+                                var dep = typeSelector(dependency);
+                                var hasTypesMap = typesMap.Setup(implementationEntry.Details, dep);
                                 var constructedImplementation = typesMap.ConstructType(implementationEntry.Details);
-                                var constructedDependency = typesMap.ConstructType(dependency);
+                                var constructedDependency = typesMap.ConstructType(dep);
                                 if (_factories.TryGetValue(key, out var factory))
                                 {
-                                   return new Dependency(factory.Metadata, dependency, tag, _factoryBuilder(), typesMap);
+                                   return new Dependency(factory.Metadata, dep, tag, _factoryBuilder(), typesMap);
                                 }
 
                                 if (hasTypesMap && implementationEntry.Metadata.Implementation != null)
@@ -142,19 +143,34 @@ namespace Pure.DI.Core
 
                         if (unboundDependency.Equals(typeof(IEnumerable<>)))
                         {
-                            return new Dependency(new BindingMetadata(dependency), dependency, null, _enumerableBuilder(), _typesMapFactory());
+                            return new Dependency(new BindingMetadata(dependency), typeSelector(dependency), null, _enumerableBuilder(), _typesMapFactory());
                         }
                     }
                     else
                     {
-                        var key = new Key(dependency, tag);
-                        if (_map.TryGetValue(key, out implementationEntry))
+                        SemanticType dependency1 = typeSelector(dependency);
+                        Dependency? resolvedDependency;
+                        bool ret;
+                        var key = new Key(dependency1, tag);
+                        if (_map.TryGetValue(key, out var implementationEntry))
                         {
                             var typesMap = _typesMapFactory();
-                            typesMap.Setup(implementationEntry.Details, dependency);
-                            return _factories.TryGetValue(key, out var factory)
-                                ? new Dependency(factory.Metadata, dependency, tag, _factoryBuilder(), typesMap)
+                            typesMap.Setup(implementationEntry.Details, dependency1);
+                            resolvedDependency = _factories.TryGetValue(key, out var factory)
+                                ? new Dependency(factory.Metadata, dependency1, tag, _factoryBuilder(), typesMap)
                                 : new Dependency(implementationEntry.Metadata, implementationEntry.Details, tag, _constructorBuilder(), typesMap);
+
+                            ret = true;
+                        }
+                        else
+                        {
+                            resolvedDependency = default;
+                            ret = false;
+                        }
+
+                        if (ret)
+                        {
+                            return resolvedDependency!.Value;
                         }
                     }
 
@@ -179,13 +195,27 @@ namespace Pure.DI.Core
                     break;
                 }
 
-                case IArrayTypeSymbol:
+                case IArrayTypeSymbol arrayTypeSymbol:
+                    var resolved =  Resolve(
+                        new SemanticType(arrayTypeSymbol.ElementType, dependency),
+                        tag,
+                        anyTag,
+                        type =>
+                        {
+                            return new SemanticType(type.SemanticModel.Compilation.CreateArrayTypeSymbol(type.Type), type);
+                        });
+
+                    if (resolved.IsResolved)
+                    {
+                        return resolved;
+                    }
+
                     return new Dependency(new BindingMetadata(dependency), dependency, null, _arrayBuilder(), _typesMapFactory());
             }
 
             return new Dependency(new BindingMetadata(dependency) { FromProbe = true }, dependency, null, _constructorBuilder(), _typesMapFactory(), false);
         }
-        
+
         public IEnumerable<Dependency> Resolve(SemanticType dependency)
         {
             List<SemanticType> dependencies = new();
