@@ -33,6 +33,7 @@
   - [Sets](#sets)
   - [Thread Local](#thread-local)
   - [Tuples](#tuples)
+  - [Array binding override](#array-binding-override)
 - Interception
   - [Decorator](#decorator)
   - [Intercept specific types](#intercept-specific-types)
@@ -368,6 +369,8 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 Use a _tag_ to bind several dependencies for the same types.
 
 ``` CSharp
+// verbosity=diagnostic
+// out=C:\Projects\_temp\a
 DI.Setup()
     .Bind<IDependency>().Tags("MyDep").To<Dependency>()
     // Configure autowiring and inject dependency tagged by "MyDep"
@@ -1001,6 +1004,29 @@ var (service, namedService) = TuplesDI.Resolve<CompositionRoot<(IService, INamed
 ```
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+
+### Array binding override
+
+
+
+``` CSharp
+DI.Setup()
+    .Bind<IDependency>().To<Dependency>()
+    // Bind to the implementation #1
+    .Bind<IService>(1).To<Service>()
+    // Bind to the implementation #2
+    .Bind<IService>(99).Tags(2, "abc").To<Service>()
+    // Bind to the implementation #3
+    .Bind<IService>().Tags(3).To<Service>()
+    // Bind array
+    .Bind<IService[]>().To(ctx => new[] {ctx.Resolve<IService>(1), ctx.Resolve<IService>("abc")})
+    .Bind<CompositionRoot<IService[]>>()
+        .To<CompositionRoot<IService[]>>();
+
+var composition = ArrayBindingOverrideDI.Resolve<CompositionRoot<IService[]>>();
+```
+
+
 
 ### Decorator
 
