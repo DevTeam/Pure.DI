@@ -3,6 +3,7 @@ namespace Pure.DI.Core
 {
     using System;
     using System.Linq;
+    using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -29,45 +30,41 @@ namespace Pure.DI.Core
         public ExpressionSyntax? TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
         {
             var factory = dependency.Binding.Factory;
-            ExpressionSyntax? resultExpression = factory;
-            if (factory?.ExpressionBody != null)
+            if (factory != default)
             {
-                resultExpression = factory.ExpressionBody;
-            }
-            else
-            {
-                if (factory?.Block != null)
+                if (factory.ExpressionBody != default)
                 {
-                    var memberKey = new MemberKey($"Create{_stringTools.ConvertToTitle(dependency.Binding.Implementation?.ToString() ?? String.Empty)}", dependency);
+                    return Rewrite(buildStrategy, dependency, factory, factory.ExpressionBody);
+                }
+
+                if (factory.Block != default)
+                {
+                    var type = dependency.Implementation.TypeSyntax;
+                    var memberKey = new MemberKey($"Create{_stringTools.ConvertToTitle(type.ToString() ?? String.Empty)}", dependency);
                     var factoryMethod = (MethodDeclarationSyntax)_buildContext.GetOrAddMember(memberKey, () =>
                     {
                         var factoryName = _buildContext.NameService.FindName(memberKey);
-                        var type = dependency.Implementation.TypeSyntax;
+                        var block = Rewrite(buildStrategy, dependency, factory, factory.Block)!;
                         return SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
                             .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
                             .AddParameterListParameters(factory.Parameter.WithType(SyntaxFactory.ParseTypeName(_memberNameService.GetName(MemberNameKind.ContextClass))))
                             .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
-                            .AddBodyStatements(factory.Block.Statements.ToArray());
+                            .AddBodyStatements(block);
                     });
 
-                    resultExpression = 
-                        SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryMethod.Identifier))
-                            .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName(_memberNameService.GetName(MemberNameKind.ContextField))));
+                    return SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryMethod.Identifier))
+                        .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName(_memberNameService.GetName(MemberNameKind.ContextField))));
                 }
-            }
-
-            if (factory != null && resultExpression != null)
-            {
-                return ((ExpressionSyntax?) _factoryRewriter()
-                        .Initialize(
-                            dependency,
-                            buildStrategy,
-                            factory.Parameter.Identifier)
-                    .Visit(resultExpression))
-                    ?.WithCommentBefore($"// {dependency.Binding}");
             }
 
             return SyntaxFactory.DefaultExpression(SyntaxFactory.ParseTypeName(dependency.Implementation.Type.Name));
         }
+
+        private T? Rewrite<T>(IBuildStrategy buildStrategy, Dependency dependency, SimpleLambdaExpressionSyntax factory, T resultExpression)
+            where T: SyntaxNode =>
+            ((T?)_factoryRewriter()
+                .Initialize(dependency, buildStrategy, factory.Parameter.Identifier)
+                .Visit(resultExpression))
+            ?.WithCommentBefore($"// {dependency.Binding}");
     }
 }

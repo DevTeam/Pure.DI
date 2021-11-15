@@ -12,7 +12,6 @@ namespace Pure.DI.Core
 
         public bool Setup(SemanticType dependency, SemanticType implementation)
         {
-            _map.Clear();
             CreateMap(dependency, implementation);
             return _map.Count > 0;
         }
@@ -27,7 +26,7 @@ namespace Pure.DI.Core
                 {
                     return;
                 }
-
+                
                 if (_map.ContainsKey(dependency))
                 {
                     return;
@@ -64,10 +63,9 @@ namespace Pure.DI.Core
                 dependency.Type is IArrayTypeSymbol dependencyArrayType
                 && implementation.Type is IArrayTypeSymbol implementationArrayType)
             {
-                var dependencyArray = new SemanticType(dependencyArrayType.ElementType, dependency);
-                var implementationArray = new SemanticType(implementationArrayType.ElementType, implementation);
-                _map[dependencyArray] = implementationArray;
-                CreateMap(new SemanticType(dependencyArrayType.ElementType, dependencyArray), new SemanticType(implementationArrayType.ElementType, implementationArray));
+                var dependencyArrayElement = new SemanticType(dependencyArrayType.ElementType, dependency);
+                var implementationArrayElement = new SemanticType(implementationArrayType.ElementType, implementation);
+                CreateMap(dependencyArrayElement, implementationArrayElement);
             }
 
             foreach (var implementationInterfaceType in implementation.Type.Interfaces)

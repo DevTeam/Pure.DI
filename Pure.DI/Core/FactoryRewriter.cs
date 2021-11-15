@@ -52,12 +52,18 @@ namespace Pure.DI.Core
             }
             return this;
         }
-
-        public override SyntaxNode VisitTypeArgumentList(TypeArgumentListSyntax node)
+        
+        public override SyntaxNode? VisitTypeArgumentList(TypeArgumentListSyntax node)
         {
-            var args = node.Arguments.ToArray();
-            ReplaceTypes(args);
-            return SyntaxFactory.TypeArgumentList().AddArguments(args);
+            var newNode = base.VisitTypeArgumentList(node);
+            if (newNode is TypeArgumentListSyntax typeArgument)
+            {
+                var args = node.Arguments.ToArray();
+                ReplaceTypes(args);
+                newNode = typeArgument.AddArguments(args);
+            }
+
+            return newNode;
         }
 
         public override SyntaxNode? VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
@@ -104,12 +110,40 @@ namespace Pure.DI.Core
 
             return newNode;
         }
+        
+        public override SyntaxNode? VisitCastExpression(CastExpressionSyntax node)
+        {
+            var newNode = base.VisitCastExpression(node);
+            if (newNode is CastExpressionSyntax cast)
+            {
+                var type = ReplaceType(node.Type);
+                newNode = cast.WithType(type);
+            }
 
-        public override SyntaxNode VisitTypeOfExpression(TypeOfExpressionSyntax node) => 
-            SyntaxFactory.TypeOfExpression(ReplaceType(node.Type));
+            return newNode;
+        }
 
-        public override SyntaxNode? VisitVariableDeclaration(VariableDeclarationSyntax node) =>
-            base.VisitVariableDeclaration(node.WithType(ReplaceType(node.Type)));
+        public override SyntaxNode? VisitTypeOfExpression(TypeOfExpressionSyntax node)
+        {
+            var newNode = base.VisitTypeOfExpression(node);
+            if (newNode is TypeOfExpressionSyntax typeOf)
+            {
+                newNode = typeOf.WithType(ReplaceType(node.Type));
+            }
+
+            return newNode;
+        }
+
+        public override SyntaxNode? VisitVariableDeclaration(VariableDeclarationSyntax node)
+        {
+            var newNode = base.VisitVariableDeclaration(node);
+            if (newNode is VariableDeclarationSyntax variableDeclaration)
+            {
+                newNode = variableDeclaration.WithType(ReplaceType(node.Type));
+            }
+
+            return newNode;
+        }
 
         public override SyntaxNode VisitGenericName(GenericNameSyntax node)
         {
@@ -217,37 +251,33 @@ namespace Pure.DI.Core
         {
             var semanticModel = typeSyntax.SyntaxTree.GetRoot().GetSemanticModel(_dependency.Implementation);
             var typeSymbol = _typeCache.GetOrAdd(typeSyntax, _ => semanticModel.GetTypeInfo(typeSyntax).Type);
-            SemanticType? sematicType;
-            switch (typeSymbol)
+            // ReSharper disable once ConvertIfStatementToSwitchStatement
+            if (typeSymbol == default)
             {
-                case INamedTypeSymbol namedTypeSymbol:
-                {
-                    var curType = new SemanticType(namedTypeSymbol, _dependency.Implementation);
-                    if (!curType.IsValidTypeToResolve)
-                    {
-                        sematicType = _dependency.TypesMap.ConstructType(curType);
-                        return sematicType.TypeSyntax;
-                    }
-
-                    return typeSyntax;
-                }
-                
-                case IArrayTypeSymbol arrayTypeSymbol:
-                {
-                    var curType = new SemanticType(arrayTypeSymbol.ElementType, _dependency.Implementation);
-                    if (!curType.IsValidTypeToResolve)
-                    {
-                        sematicType = _dependency.TypesMap.ConstructType(curType);
-                        var arrayType = semanticModel.Compilation.CreateArrayTypeSymbol(sematicType.Type);
-                        return SyntaxFactory.ParseTypeName(arrayType.ToString());
-                    }
-
-                    return typeSyntax;
-                }
-                
-                default:
-                    return typeSyntax;
+                return typeSyntax;
             }
+            
+            if (typeSymbol is IArrayTypeSymbol arrayTypeSymbol)
+            {
+                var arrayType = new SemanticType(arrayTypeSymbol.ElementType, _dependency.Implementation);
+                if (!arrayType.IsValidTypeToResolve)
+                {
+                    var sematicType = _dependency.TypesMap.ConstructType(arrayType);
+                    var array = semanticModel.Compilation.CreateArrayTypeSymbol(sematicType.Type);
+                    return SyntaxFactory.ParseTypeName(array.ToString());
+                }
+
+                return typeSyntax;
+            }
+            
+            var type = new SemanticType(typeSymbol, _dependency.Implementation);
+            if (!type.IsValidTypeToResolve)
+            {
+                var sematicType = _dependency.TypesMap.ConstructType(type);
+                return sematicType.TypeSyntax;
+            }
+
+            return typeSyntax;
         }
 
         internal class FactoryKey

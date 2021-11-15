@@ -200,10 +200,7 @@ namespace Pure.DI.Core
                         new SemanticType(arrayTypeSymbol.ElementType, dependency),
                         tag,
                         anyTag,
-                        type =>
-                        {
-                            return new SemanticType(type.SemanticModel.Compilation.CreateArrayTypeSymbol(type.Type), type);
-                        });
+                        type => new SemanticType(type.SemanticModel.Compilation.CreateArrayTypeSymbol(type.Type), type));
 
                     if (resolved.IsResolved)
                     {
