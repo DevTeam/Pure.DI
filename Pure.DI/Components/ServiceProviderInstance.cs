@@ -30,6 +30,33 @@ namespace Pure.DI
         [System.ThreadStatic] public static System.IServiceProvider ServiceProvider;
     }
 
+    internal class DefaultServiceProvider: System.IServiceProvider
+    {
+        private readonly System.Func<System.Type, object> _resolver;
+
+        public DefaultServiceProvider(System.Func<System.Type, object> resolver)
+        {
+            _resolver = resolver;
+        }
+
+        public object GetService(System.Type serviceType)
+        {
+            try
+            {
+                return _resolver(serviceType);
+            }
+            catch (System.ArgumentException ex)
+            {
+                if (ex.Message.StartsWith(Tables.CannotResolveMessage))
+                {
+                    return null;
+                }
+
+                throw;
+            }
+        }
+    }
+
     internal struct ServiceProviderInstance<T>
     {
         public T Value

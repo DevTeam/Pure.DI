@@ -55,8 +55,6 @@
                 {
                     static Composer()
                     {
-                        // verbosity=diagnostic
-                        // out=C:\Projects\_temp\a
                         DI.Setup()
                             // Models a random subatomic event that may or may not occur
                             .Bind<Random>().As(Singleton).To<Random>()
@@ -65,7 +63,6 @@
                             // Represents schrodinger's cat
                             .Bind<ICat>().To<ShroedingersCat>();
 
-                        // verbosity=diagnostic
                         DI.Setup()
                             // Represents a cardboard box with any content
                             .Bind<IBox<TT>>().To<CardboardBox<TT>>()

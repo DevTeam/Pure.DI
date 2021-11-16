@@ -15,8 +15,6 @@
             // $header=Use a _tag_ to bind several dependencies for the same types.
             // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
             // {
-            // verbosity=diagnostic
-            // out=C:\Projects\_temp\a
             DI.Setup()
                 .Bind<IDependency>().Tags("MyDep").To<Dependency>()
                 // Configure autowiring and inject dependency tagged by "MyDep"

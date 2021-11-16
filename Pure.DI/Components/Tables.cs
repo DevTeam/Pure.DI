@@ -47,6 +47,11 @@ namespace Pure.DI
         }
     }
 
+    internal static class Tables
+    {
+        internal const string CannotResolveMessage = "Cannot resolve an instance ";
+    } 
+
     internal class Table<TKey, TValue>
     {
         protected readonly uint Divisor;
@@ -127,7 +132,7 @@ namespace Pure.DI
                 pair = pair.Next;
             } while (pair != null);
 
-            throw new System.ArgumentException("Cannot resolve an instance " + type + ", consider adding it to the DI setup.");
+            throw new System.ArgumentException(Tables.CannotResolveMessage + type + ", consider adding it to the DI setup.");
         }
 
         [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x100)]
@@ -146,7 +151,7 @@ namespace Pure.DI
 
             return new System.Func<object>(() =>
             {
-                throw new System.ArgumentException("Cannot resolve an instance " + typeof(T) + ", consider adding it to the DI setup.");
+                throw new System.ArgumentException(Tables.CannotResolveMessage + typeof(T) + ", consider adding it to the DI setup.");
             });
         }
     }
@@ -197,7 +202,7 @@ namespace Pure.DI
                 } while (typePair != null);
             }
 
-            throw new System.ArgumentException("Cannot resolve an instance " + key + ", consider adding it to the DI setup.");
+            throw new System.ArgumentException(Tables.CannotResolveMessage + key + ", consider adding it to the DI setup.");
         }
     }
 

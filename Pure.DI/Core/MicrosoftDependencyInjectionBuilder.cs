@@ -52,14 +52,12 @@
             var serviceProviderType = semanticModel.Compilation.GetTypeByMetadataName(typeof(System.IServiceProvider).FullName);
             var serviceCollectionType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.IServiceCollection");
             var serviceDescriptorType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.ServiceDescriptor");
-            var serviceCollectionDescriptorExtensionsType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions");
             var serviceCollectionServiceExtensionsType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions");
 
             if (
                 serviceProviderType == null
                 || serviceCollectionType == null
                 || serviceDescriptorType == null
-                || serviceCollectionDescriptorExtensionsType == null
                 || serviceCollectionServiceExtensionsType == null)
             {
                 foreach (var (dependency, lifetime, binding, _) in dependencies.Where(i => i.lifetime is Lifetime.Scoped or Lifetime.ContainerSingleton))
@@ -83,7 +81,6 @@
                     var serviceProvider = new SemanticType(serviceProviderType, semanticModel);
                     var serviceCollection = new SemanticType(serviceCollectionType, semanticModel);
                     var serviceDescriptor = new SemanticType(serviceDescriptorType, semanticModel);
-                    var serviceCollectionDescriptorExtensions = new SemanticType(serviceCollectionDescriptorExtensionsType, semanticModel);
                     var serviceCollectionServiceExtensions = new SemanticType(serviceCollectionServiceExtensionsType, semanticModel);
 
                     var thisParameter = SyntaxFactory.Parameter(
@@ -102,18 +99,21 @@
                     var controllerFeatureType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Mvc.Controllers.ControllerFeature");
                     var controllerActivatorType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Mvc.Controllers.IControllerActivator");
                     var serviceBasedControllerActivatorType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Mvc.Controllers.ServiceBasedControllerActivator");
+                    var serviceCollectionDescriptorExtensionsType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions");
 
                     if (mvcBuilderType != null
                         && mvcServiceCollectionExtensionsType != null
                         && controllerFeatureType != null
                         && controllerActivatorType != null
-                        && serviceBasedControllerActivatorType != null)
+                        && serviceBasedControllerActivatorType != null
+                        && serviceCollectionDescriptorExtensionsType != null)
                     {
                         var mvcBuilder = new SemanticType(mvcBuilderType, semanticModel);
                         var mvcServiceCollectionExtensions = new SemanticType(mvcServiceCollectionExtensionsType, semanticModel);
                         var controllerFeature = new SemanticType(controllerFeatureType, semanticModel);
                         var controllerActivator = new SemanticType(controllerActivatorType, semanticModel);
                         var serviceBasedControllerActivator = new SemanticType(serviceBasedControllerActivatorType, semanticModel);
+                        var serviceCollectionDescriptorExtensions = new SemanticType(serviceCollectionDescriptorExtensionsType, semanticModel);
 
                         var getBuilder = SyntaxFactory.InvocationExpression(
                                 SyntaxFactory.MemberAccessExpression(
@@ -206,7 +206,7 @@
 
                         var resolve = SyntaxFactory.CastExpression(dependency, objectExpression);
 
-                        var serviceProviderInstance = new SemanticType(semanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance).ToString())!, semanticModel);
+                        var serviceProviderInstance = new SemanticType(semanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance).FullName)!, semanticModel);
 
                         var serviceProviderValue = SyntaxFactory.MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,

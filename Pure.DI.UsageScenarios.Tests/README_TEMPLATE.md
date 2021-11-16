@@ -30,6 +30,8 @@
   - [Enumerables](#enumerables)
   - [Func](#func)
   - [Lazy](#lazy)
+  - [Lazy with metadata](#lazy-with-metadata)
+  - [Service provider](#service-provider)
   - [Sets](#sets)
   - [Thread Local](#thread-local)
   - [Tuples](#tuples)
@@ -369,8 +371,6 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 Use a _tag_ to bind several dependencies for the same types.
 
 ``` CSharp
-// verbosity=diagnostic
-// out=C:\Projects\_temp\a
 DI.Setup()
     .Bind<IDependency>().Tags("MyDep").To<Dependency>()
     // Configure autowiring and inject dependency tagged by "MyDep"
@@ -928,7 +928,7 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Lazy
 
-_Lazy_ dependency helps when a logic needs to inject _Lazy<T>_ to get instance once on demand.
+_Lazy_ dependency helps when a logic needs to inject _Lazy<T>_ to get instance once on-demand.
 
 ``` CSharp
 DI.Setup()
@@ -944,6 +944,44 @@ var instance = lazy.Value;
 ```
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+
+### Lazy with metadata
+
+_Lazy_ dependency helps when a logic needs to inject _Lazy<T, TMetadata>_ to get instance once on-demand and the metadata associated with the referenced object.
+
+``` CSharp
+DI.Setup()
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>()
+    .Bind<IService<TT>>().To<Service<TT>>()
+    .Bind<CompositionRoot<Lazy<IService, IService<int>>>>().To<CompositionRoot<Lazy<IService, IService<int>>>>();
+
+// Resolve the instance of Lazy<IService> with some metadata, for instance of type IService<int>
+var lazy = LazyWithMetadataDI.Resolve<CompositionRoot<Lazy<IService, IService<int>>>>().Root;
+
+// Get the instance via Lazy
+var instance = lazy.Value;
+```
+
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+
+### Service provider
+
+
+
+``` CSharp
+DI.Setup()
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>();
+
+// Resolve the instance of IServiceProvider
+var serviceProvider = ServiceProviderDI.Resolve<IServiceProvider>();
+
+// Get the instance via service provider
+var instance = serviceProvider.GetService(typeof(IService));
+```
+
+
 
 ### Sets
 

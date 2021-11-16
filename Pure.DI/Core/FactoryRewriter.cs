@@ -232,7 +232,7 @@ namespace Pure.DI.Core
                 throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, "a factory");
             }
 
-            return expression;
+            return SyntaxFactory.ParenthesizedExpression(expression);
         }
 
         private void ReplaceTypes(IList<TypeSyntax> args)
