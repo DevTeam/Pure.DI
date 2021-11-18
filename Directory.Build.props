@@ -9,7 +9,7 @@
         <Copyright>Copyright (C) 2021 Nikolay Pianikov</Copyright>
 
 <!--    <AnalyzerRoslynVersion Condition="'$(AnalyzerRoslynVersion)'==''">4.0</AnalyzerRoslynVersion>
-        <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">4.0.0-6.final</AnalyzerRoslynPackageVersion>-->
+        <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">4.0.1</AnalyzerRoslynPackageVersion>-->
         <AnalyzerRoslynVersion Condition="'$(AnalyzerRoslynVersion)'==''">3.8</AnalyzerRoslynVersion>
         <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">3.8.0</AnalyzerRoslynPackageVersion>
         <DefineConstants Condition="'$(AnalyzerRoslynVersion)'=='3.8'">$(DefineConstants);ROSLYN38</DefineConstants>

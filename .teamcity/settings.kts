@@ -27,7 +27,7 @@ open class Settings {
             "WriteLine($\"Version: {Props[\"version\"]}\", Success);"
         val versions = setOf(
             PackageVersion("3.8", "3.8.0"),
-            PackageVersion("4.0", "4.0.0-6.final")
+            PackageVersion("4.0", "4.0.1")
         )
     }
 }
