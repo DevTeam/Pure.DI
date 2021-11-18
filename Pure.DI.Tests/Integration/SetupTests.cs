@@ -24,7 +24,7 @@
             {
                 using System;
                 using Pure.DI;
-                
+
                 static partial class Composer
                 {
                     static Composer()
@@ -75,7 +75,7 @@
                 internal class CompositionRoot
                 {
                     public readonly string Value;
-                    internal CompositionRoot(string value = ""abc"") => Value = value;        
+                    internal CompositionRoot(string value = ""abc"") => Value = value;
                 }
             }".Run(out var generatedCode);
 
@@ -1546,6 +1546,76 @@
             // Then
             // ReSharper disable once StringLiteralTypo
             output.ShouldBe(new[] { "Sample.Service" }, generatedCode);
+        }
+        
+        [Fact]
+        public void ShouldSupportRecord()
+        {
+            // Given
+
+            // When
+            var output = @"
+            using System;
+            using static Pure.DI.Lifetime;
+            using Pure.DI;
+
+            namespace Sample
+            {
+                // Let's create an abstraction
+
+                interface IBox<out T> { T Content { get; } }
+
+                enum State { Alive, Dead }
+
+                // Here is our implementation
+
+                class CardboardBox<T> : IBox<T>
+                {
+                    public CardboardBox(T content) => Content = content;
+
+                    public T Content { get; }
+
+                    public override string ToString() => $""[{ Content}]"";
+                }
+
+                record ShroedingersCat(Lazy<State> Superposition) : ICat
+                {
+                    public State State => Superposition.Value;
+                }
+
+                // Let's glue all together
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            // Models a random subatomic event that may or may not occur
+                            .Bind<Random>().As(Singleton).To<Random>()
+                            // Represents a quantum superposition of 2 states: Alive or Dead
+                            .Bind<State>().To(ctx => (State)ctx.Resolve<Random>().Next(2))
+                            // Represents schrodinger's cat
+                            .Bind<ICat>().To<ShroedingersCat>();
+
+                        DI.Setup()
+                            // Represents a cardboard box with any content
+                            .Bind<IBox<TT>>().To<CardboardBox<TT>>()
+                            // Composition Root
+                            .Bind<CompositionRoot>().As(Singleton).To<CompositionRoot>();
+                    }
+                }
+
+                // Time to open boxes!
+
+                internal class CompositionRoot
+                {
+                    public readonly IBox<ICat> Value;
+                    internal CompositionRoot(IBox<ICat> box) => Value = box;
+                }
+            }".Run(out var generatedCode, new RunOptions { AdditionalCode = { "namespace Sample { interface ICat { State State { get; } } }" } });
+
+            // Then
+            (output.Contains("[ShroedingersCat { Superposition = Value is not created., State = Dead }]") || output.Contains("[ShroedingersCat { Superposition = Value is not created., State = Alive }]")).ShouldBeTrue(generatedCode);
         }
     }
 }

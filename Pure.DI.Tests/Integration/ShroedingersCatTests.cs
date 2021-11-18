@@ -16,9 +16,9 @@
             using System;
             using static Pure.DI.Lifetime;
             using Pure.DI;
-                           
+
             namespace Sample
-            {         
+            {
                 // Let's create an abstraction
 
                 interface IBox<out T> { T Content { get; } }
@@ -76,7 +76,7 @@
                 internal class CompositionRoot
                 {
                     public readonly IBox<ICat> Value;
-                    internal CompositionRoot(IBox<ICat> box) => Value = box;        
+                    internal CompositionRoot(IBox<ICat> box) => Value = box;
                 }
             }".Run(out var generatedCode, new RunOptions { AdditionalCode = { "namespace Sample { interface ICat { State State { get; } } }" } });
 
