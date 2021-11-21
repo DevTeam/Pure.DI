@@ -82,7 +82,7 @@ class ShroedingersCat : ICat
 }
 ```
 
-It is important to note that our abstraction and implementation do not know anything about DI magic or any frameworks.
+It is important to note that our abstraction and implementation do not know anything about DI magic or any frameworks. Also, please make attention that an instance of type *__Lazy<>__* was used here only as a sample. Still, using this type with nontrivial logic as a dependency is not recommended, so consider replacing it with some simple abstract type.
 
 ### Let's glue all together
 
@@ -124,7 +124,7 @@ static partial class Composer
 }
 ```
 
-The code above is a chain of hints to define a dependency graph used to generate a static class *__Composer__* with method *__Resolve__*, which creates a composition root *__Program__* below.
+The code above is a chain of hints to define a dependency graph used to generate a static class *__Composer__* with method *__Resolve__*, which creates a composition root *__Program__* below. In fact, there is no reason to run this code, because it does nothing, so it can be placed anywhere in the class (in methods,  in constructors, or in properties), and better where it will not run. Its purpose is only to check the syntax of dependencies and to help build a dependency graph at compile-time. In the example above, the name of the method ```Setup()``` was chosen arbitrarily, made private, and is not called anywhere. Only the name of the owner class matters, since it will be implicitly used to create a static partial class that will contain the logic for creating objects, in our case it is ```static partial class Composer```, although it can be defined explicitly.
 
 > Defining generic type arguments using special marker types like *__TT__* in this sample is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints.
 
@@ -438,7 +438,14 @@ var val = ConstantsDI.ResolveInt();
 val.ShouldBe(10);
 ```
 
-
+The compiler replaces the statement:
+```CSharp
+var val = ConstantsDI.ResolveInt();
+```
+by the statement:
+```CSharp
+var val = 10;
+```
 
 ### Generics
 
@@ -460,10 +467,14 @@ var instance = GenericsDI.Resolve<Consumer>();
 ```
 
 Open generic type instance, for instance, like IService&lt;TT&gt; here, cannot be a composition root instance. This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+The actual composition for the example above looks like this:
+```CSharp
+new Consumer(new Service<int>(Dependency()));
+```
 
 ### Manual binding
 
-We can specify a constructor manually with all its arguments and even call some methods before an instance will be returned to consumers.
+We can specify a constructor manually with all its arguments and even call some methods before an instance will be returned to consumers. Would also like to point out that invocations like *__ctx.Resolve<>()__* will be replaced by a related expression to create a required composition for the performance boost where possible, except when it might cause a circular dependency.
 
 ``` CSharp
 DI.Setup()
@@ -478,7 +489,11 @@ var instance = ManualBindingDI.Resolve<IService>();
 instance.State.ShouldBe("some state");
 ```
 
-This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+The actual composition for the example above looks like this:
+```CSharp
+new Service(new Dependency()), "some state");
+```
+... and no any additional method calls. This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Resolving by a type parameter
 

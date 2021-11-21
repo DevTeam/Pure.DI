@@ -85,7 +85,14 @@ var val = ConstantsDI.ResolveInt();
 val.ShouldBe(10);
 ```
 
-
+The compiler replaces the statement:
+```CSharp
+var val = ConstantsDI.ResolveInt();
+```
+by the statement:
+```CSharp
+var val = 10;
+```
 
 ### Generics
 
@@ -107,10 +114,14 @@ var instance = GenericsDI.Resolve<Consumer>();
 ```
 
 Open generic type instance, for instance, like IService&lt;TT&gt; here, cannot be a composition root instance. This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+The actual composition for the example above looks like this:
+```CSharp
+new Consumer(new Service<int>(Dependency()));
+```
 
 ### Manual binding
 
-We can specify a constructor manually with all its arguments and even call some methods before an instance will be returned to consumers.
+We can specify a constructor manually with all its arguments and even call some methods before an instance will be returned to consumers. Would also like to point out that invocations like *__ctx.Resolve<>()__* will be replaced by a related expression to create a required composition for the performance boost where possible, except when it might cause a circular dependency.
 
 ``` CSharp
 DI.Setup()
@@ -125,7 +136,11 @@ var instance = ManualBindingDI.Resolve<IService>();
 instance.State.ShouldBe("some state");
 ```
 
-This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+The actual composition for the example above looks like this:
+```CSharp
+new Service(new Dependency()), "some state");
+```
+... and no any additional method calls. This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Resolving by a type parameter
 

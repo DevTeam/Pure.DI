@@ -82,7 +82,7 @@ class ShroedingersCat : ICat
 }
 ```
 
-It is important to note that our abstraction and implementation do not know anything about DI magic or any frameworks.
+It is important to note that our abstraction and implementation do not know anything about DI magic or any frameworks. Also, please make attention that an instance of type *__Lazy<>__* was used here only as a sample. Still, using this type with nontrivial logic as a dependency is not recommended, so consider replacing it with some simple abstract type.
 
 ### Let's glue all together
 
@@ -124,7 +124,7 @@ static partial class Composer
 }
 ```
 
-The code above is a chain of hints to define a dependency graph used to generate a static class *__Composer__* with method *__Resolve__*, which creates a composition root *__Program__* below.
+The code above is a chain of hints to define a dependency graph used to generate a static class *__Composer__* with method *__Resolve__*, which creates a composition root *__Program__* below. In fact, there is no reason to run this code, because it does nothing, so it can be placed anywhere in the class (in methods,  in constructors, or in properties), and better where it will not run. Its purpose is only to check the syntax of dependencies and to help build a dependency graph at compile-time. In the example above, the name of the method ```Setup()``` was chosen arbitrarily, made private, and is not called anywhere. Only the name of the owner class matters, since it will be implicitly used to create a static partial class that will contain the logic for creating objects, in our case it is ```static partial class Composer```, although it can be defined explicitly.
 
 > Defining generic type arguments using special marker types like *__TT__* in this sample is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints.
 
