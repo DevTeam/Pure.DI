@@ -133,7 +133,7 @@ namespace Pure.DI.Core
                     var elementType = new SemanticType(arrayTypeSymbol.ElementType, SemanticModel).ConstructUnbound();
                     var arrayType = SemanticModel.Compilation.CreateArrayTypeSymbol(elementType.Type);
                     return new SemanticType(arrayType, SemanticModel);
-
+                
                 default:
                     return this;
             }
@@ -169,7 +169,7 @@ namespace Pure.DI.Core
                 return Type switch
                 {
                     INamedTypeSymbol {IsGenericType: false} => false,
-                    INamedTypeSymbol namedTypeSymbol => namedTypeSymbol.TypeArguments.OfType<INamedTypeSymbol>().Any(type => new SemanticType(type, SemanticModel).IsComposedGenericTypeMarker),
+                    INamedTypeSymbol namedTypeSymbol => namedTypeSymbol.TypeArguments.Any(type => new SemanticType(type, SemanticModel).IsComposedGenericTypeMarker),
                     IArrayTypeSymbol arrayTypeSymbol => new SemanticType(arrayTypeSymbol.ElementType, SemanticModel).IsComposedGenericTypeMarker,
                     _ => false
                 };

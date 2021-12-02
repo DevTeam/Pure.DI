@@ -370,5 +370,44 @@
             // Then
             output.ShouldBe(new[] { "3" }, generatedCode);
         }
+        
+        [Fact]
+        public void ShouldSupportComplexFunc()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using System.Linq;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly int Value;
+                    internal CompositionRoot([Tag(1)] Func<int, IDep<int>[]> value) => Value = value(3).Length;
+                }
+
+                public interface IDep<T> { }
+
+                public class Dep<T>: IDep<T> { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<IDep<TT>>().To<Dep<TT>>()
+                            .Bind<Func<int, IDep<TT>[]>>(1).To(ctx => new Func<int, IDep<TT>[]>(size => Enumerable.Repeat(ctx.Resolve<IDep<TT>>(), size).ToArray()))
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+            }".Run(out var generatedCode);
+
+            // Then
+            output.ShouldBe(new[] { "3" }, generatedCode);
+        }
     }
 }
