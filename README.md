@@ -126,7 +126,7 @@ static partial class Composer
 
 The code above is a chain of hints to define a dependency graph used to generate a static class *__Composer__* with method *__Resolve__*, which creates a composition root *__Program__* below. In fact, there is no reason to run this code, because it does nothing, so it can be placed anywhere in the class (in methods,  in constructors, or in properties), and better where it will not run. Its purpose is only to check the syntax of dependencies and to help build a dependency graph at compile-time. In the example above, the name of the method ```Setup()``` was chosen arbitrarily, made private, and is not called anywhere. Only the name of the owner class matters, since it will be implicitly used to create a static partial class that will contain the logic for creating objects, in our case it is ```static partial class Composer```, although it can be defined explicitly.
 
-> Defining generic type arguments using special marker types like *__TT__* in this sample is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints.
+> Defining generic type arguments using special marker types like *__TT__* in this sample is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints. For instance ``` interface IService<T1, T2, T3> where T3: IDictionary<T1, T2[]> { }``` and its binding to the some implementation ```Bind<IService<TT1, TT2, IDictionary<TT1, TT2[]>>>().To<Service<TT1, TT2, IDictionary<TT1, TT2[]>>>()``` with all checks and code-generation at the compile time.
 
 ### Time to open boxes!
 
@@ -369,6 +369,7 @@ DI.Setup()
   - [Injection of default parameters](#injection-of-default-parameters)
   - [Injection of nullable parameters](#injection-of-nullable-parameters)
   - [Advanced generic autowiring](#advanced-generic-autowiring)
+  - [Complex generics with constraints](#complex-generics-with-constraints)
   - [Depends On](#depends-on)
   - [Unbound instance resolving](#unbound-instance-resolving)
 - Lifetimes
@@ -459,7 +460,7 @@ public class Consumer
 
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
-    // Bind open generic interface to open generic implementation
+    // Bind a generic type
     .Bind<IService<TT>>().To<Service<TT>>()
     .Bind<Consumer>().To<Consumer>();
 
@@ -818,6 +819,50 @@ public class SomeService: IService
 
     public string State { get; }
 }
+```
+
+
+
+### Complex generics with constraints
+
+
+
+``` CSharp
+public class Program
+{
+    public Program(IConsumer<int> consumer)
+    { }
+}
+
+public interface IConsumer<T>
+{ }
+
+public class Consumer<T>: IConsumer<T>
+{
+    public Consumer(IService<T, string, IDictionary<T, string[]>> service) { }
+}
+
+public class Consumer
+{
+    public Consumer(IService<int, string, IDictionary<int, string[]>> service) { }
+}
+
+public interface IService<T1, T2, T3>
+    where T3: IDictionary<T1, T2[]>
+{ }
+
+public class Service<T1, T2, T3> : IService<T1, T2, T3>
+    where T3: IDictionary<T1, T2[]>
+{ }
+
+DI.Setup()
+    .Bind<Program>().To<Program>()
+    // Bind complex generic types
+    .Bind<IService<TT1, TT2, IDictionary<TT1, TT2[]>>>().To<Service<TT1, TT2, IDictionary<TT1, TT2[]>>>()
+    .Bind<IConsumer<TT>>().To<Consumer<TT>>();
+
+// var instance = new Program(new Consumer<int>(new Service<int, string, System.Collections.Generic.IDictionary<int, string[]>>()));
+var instance = ComplexGenericsWithConstraintsDI.Resolve<Program>();
 ```
 
 

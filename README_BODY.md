@@ -126,7 +126,7 @@ static partial class Composer
 
 The code above is a chain of hints to define a dependency graph used to generate a static class *__Composer__* with method *__Resolve__*, which creates a composition root *__Program__* below. In fact, there is no reason to run this code, because it does nothing, so it can be placed anywhere in the class (in methods,  in constructors, or in properties), and better where it will not run. Its purpose is only to check the syntax of dependencies and to help build a dependency graph at compile-time. In the example above, the name of the method ```Setup()``` was chosen arbitrarily, made private, and is not called anywhere. Only the name of the owner class matters, since it will be implicitly used to create a static partial class that will contain the logic for creating objects, in our case it is ```static partial class Composer```, although it can be defined explicitly.
 
-> Defining generic type arguments using special marker types like *__TT__* in this sample is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints.
+> Defining generic type arguments using special marker types like *__TT__* in this sample is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints. For instance ``` interface IService<T1, T2, T3> where T3: IDictionary<T1, T2[]> { }``` and its binding to the some implementation ```Bind<IService<TT1, TT2, IDictionary<TT1, TT2[]>>>().To<Service<TT1, TT2, IDictionary<TT1, TT2[]>>>()``` with all checks and code-generation at the compile time.
 
 ### Time to open boxes!
 

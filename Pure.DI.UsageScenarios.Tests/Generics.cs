@@ -32,7 +32,7 @@ namespace Pure.DI.UsageScenarios.Tests
             // {
         DI.Setup()
             .Bind<IDependency>().To<Dependency>()
-            // Bind open generic interface to open generic implementation
+            // Bind a generic type
             .Bind<IService<TT>>().To<Service<TT>>()
             .Bind<Consumer>().To<Consumer>();
 
