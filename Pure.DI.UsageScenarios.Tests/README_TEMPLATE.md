@@ -12,6 +12,8 @@
   - [Several contracts](#several-contracts)
   - [Aspect-oriented DI with custom attributes](#aspect-oriented-di-with-custom-attributes)
   - [Instance initialization](#instance-initialization)
+  - [Record structs](#record-structs)
+  - [Records](#records)
   - [Dependency tag](#dependency-tag)
   - [Injection of default parameters](#injection-of-default-parameters)
   - [Injection of nullable parameters](#injection-of-nullable-parameters)
@@ -381,6 +383,46 @@ instance.Name.ShouldBe("Initialized!");
 ```
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+
+### Records
+
+
+
+``` CSharp
+public void Run()
+{
+    DI.Setup()
+        .Bind<IDependency>().To<Dependency>()
+        .Bind<IService>().To<RecordService>();
+    
+    var service = RecordsDI.Resolve<IService>();
+    service.ShouldBeOfType<RecordService>();
+}
+
+public record RecordService(IDependency Dependency, string State = "") : IService;
+```
+
+
+
+### Record structs
+
+
+
+``` CSharp
+public void Run()
+{
+    DI.Setup()
+        .Bind<IDependency>().To<Dependency>()
+        .Bind<IService>().To<RecordStructService>();
+    
+    var service = RecordStructsDI.Resolve<IService>();
+    service.ShouldBeOfType<RecordStructService>();
+}
+
+public readonly record struct RecordStructService(IDependency Dependency, string State = "") : IService;
+```
+
+
 
 ### Dependency tag
 
