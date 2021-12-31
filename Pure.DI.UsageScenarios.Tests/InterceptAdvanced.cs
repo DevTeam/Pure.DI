@@ -18,6 +18,7 @@ namespace Pure.DI.UsageScenarios.Tests
         // $tag=5 Interception
         // $priority=03
         // $description=Intercept advanced
+        // $header=This approach represents a fastest way of working with interceptors.
         // {
         public void Run()
         {

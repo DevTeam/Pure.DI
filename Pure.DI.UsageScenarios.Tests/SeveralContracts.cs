@@ -19,7 +19,7 @@
             // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
-                .Bind<Service>().Bind<IService>().Bind<IAnotherService>().To<Service>();
+                .Bind<IService>().Bind<IAnotherService>().To<Service>();
 
             // Resolve instances
             var instance1 = SeveralContractsDI.Resolve<IService>();

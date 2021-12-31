@@ -3,6 +3,7 @@
     using Shouldly;
     using System.Collections.Generic;
     using Xunit;
+    using static Lifetime;
 
     public class Sets
     {
@@ -21,7 +22,7 @@
                 // Bind to the implementation #1
                 .Bind<IService>().Tags(1).To<Service>()
                 // Bind to the implementation #2
-                .Bind<IService>().Tags(2, "abc").To<Service>()
+                .Bind<IService>().Tags(2, "abc").As(Singleton).To<Service>()
                 // Bind to the implementation #3
                 .Bind<IService>().Tags(3).To<Service>()
                 .Bind<CompositionRoot<ISet<IService>>>().To<CompositionRoot<ISet<IService>>>();

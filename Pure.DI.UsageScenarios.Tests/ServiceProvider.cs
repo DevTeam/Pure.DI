@@ -12,9 +12,10 @@
         public void Run()
         {
             // $visible=true
-            // $tag=3 BCL types
+            // $tag=1 Basics
             // $priority=01
             // $description=Service provider
+            // $header=It is easy to get an instance of the _IServiceProvider_ type at any time without any additional effort.
             // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()

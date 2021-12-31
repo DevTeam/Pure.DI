@@ -14,6 +14,7 @@ namespace Pure.DI.UsageScenarios.Tests
     using System;
     using Moq;
     using Xunit;
+    using static Lifetime;
 
     public class AspectOriented
     {
@@ -34,7 +35,7 @@ namespace Pure.DI.UsageScenarios.Tests
             DI.Setup()
                 .Bind<IConsole>().Tags("MyConsole").To(_ => AspectOriented.Console.Object)
                 .Bind<string>().Tags("Prefix").To(_ => "info")
-                .Bind<ILogger>().To<Logger>();
+                .Bind<ILogger>().As(Singleton).To<Logger>();
 
             // Create a logger
             var logger = AspectOrientedDI.Resolve<ILogger>();

@@ -18,7 +18,7 @@
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
                 // Bind to the implementation #1
-                .Bind<IService>(1).To<Service>()
+                .Bind<IService>(1).As(lifetime: Lifetime.PerResolve).To<Service>()
                 // Bind to the implementation #2
                 .Bind<IService>(99).Tags(2, "abc").To<Service>()
                 // Bind to the implementation #3

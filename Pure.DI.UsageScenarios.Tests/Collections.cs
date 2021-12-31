@@ -3,6 +3,7 @@
     using Shouldly;
     using System.Collections.Generic;
     using Xunit;
+    using static Lifetime;
 
     public class Collections
     {
@@ -19,11 +20,11 @@
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
                 // Bind to the implementation #1
-                .Bind<IService>(1).To<Service>()
+                .Bind<IService>(1).As(PerResolve).To<Service>()
                 // Bind to the implementation #2
                 .Bind<IService>(2).Tags("abc").To<Service>()
                 // Bind to the implementation #3
-                .Bind<IService>().As(Lifetime.Singleton).Tags(3).To<Service>()
+                .Bind<IService>().As(Singleton).Tags(3).To<Service>()
                 .Bind<CompositionRoot<ICollection<IService>>>().To<CompositionRoot<ICollection<IService>>>();
 
             // Resolve all appropriate instances

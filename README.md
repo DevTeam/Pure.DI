@@ -126,7 +126,7 @@ static partial class Composer
 
 The code above is a chain of hints to define a dependency graph used to generate a static class *__Composer__* with method *__Resolve__*, which creates a composition root *__Program__* below. In fact, there is no reason to run this code, because it does nothing, so it can be placed anywhere in the class (in methods,  in constructors, or in properties), and better where it will not run. Its purpose is only to check the syntax of dependencies and to help build a dependency graph at compile-time. In the example above, the name of the method ```Setup()``` was chosen arbitrarily, made private, and is not called anywhere. Only the name of the owner class matters, since it will be implicitly used to create a static partial class that will contain the logic for creating objects, in our case it is ```static partial class Composer```, although it can be defined explicitly.
 
-> Defining generic type arguments using special marker types like *__TT__* in this sample is one of the distinguishing features of this library. So there is an easy way to bind complex generic types with nested generic types and with any type constraints. For instance ``` interface IService<T1, T2, T3> where T3: IDictionary<T1, T2[]> { }``` and its binding to the some implementation ```Bind<IService<TT1, TT2, IDictionary<TT1, TT2[]>>>().To<Service<TT1, TT2, IDictionary<TT1, TT2[]>>>()``` with all checks and code-generation at the compile time.
+> Defining generic type arguments using particular marker types like ```TT``` in this sample is a distinguishing and outstanding feature. This allows binding complex generic types with nested generic types and with any type constraints. For instance ``` interface IService<T1, T2, T3> where T3: IDictionary<T1, T2[]> { }``` and its binding to the some implementation ```Bind<IService<TT1, TT2, IDictionary<TT1, TT2[]>>>().To<Service<TT1, TT2, IDictionary<TT1, TT2[]>>>()``` with all checks and code-generation at the compile time. It is clear that this example is exaggerated, it just demonstrates the ease of working with marker types like ```TT, TTEnumerable, TTSet``` and etc. for binding complex generic types.
 
 ### Time to open boxes!
 
@@ -359,7 +359,7 @@ DI.Setup()
   - [Constants](#constants)
   - [Generics](#generics)
   - [Manual binding](#manual-binding)
-  - [Resolving by a type parameter](#resolving-by-a-type-parameter)
+  - [Service provider](#service-provider)
   - [Tags](#tags)
   - [Aspect-oriented DI](#aspect-oriented-di)
   - [Several contracts](#several-contracts)
@@ -370,7 +370,7 @@ DI.Setup()
   - [Dependency tag](#dependency-tag)
   - [Injection of default parameters](#injection-of-default-parameters)
   - [Injection of nullable parameters](#injection-of-nullable-parameters)
-  - [Advanced generic autowiring](#advanced-generic-autowiring)
+  - [Complex generics](#complex-generics)
   - [Complex generics with constraints](#complex-generics-with-constraints)
   - [Depends On](#depends-on)
   - [Unbound instance resolving](#unbound-instance-resolving)
@@ -387,7 +387,6 @@ DI.Setup()
   - [Func](#func)
   - [Lazy](#lazy)
   - [Lazy with metadata](#lazy-with-metadata)
-  - [Service provider](#service-provider)
   - [Sets](#sets)
   - [Thread Local](#thread-local)
   - [Tuples](#tuples)
@@ -498,20 +497,23 @@ new Service(new Dependency()), "some state");
 ```
 ... and no any additional method calls. This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
-### Resolving by a type parameter
+### Service provider
 
-
+It is easy to get an instance of the _IServiceProvider_ type at any time without any additional effort.
 
 ``` CSharp
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>();
 
-// Resolves an instance of interface `IService`
-var instance = ResolvingByTypeParameterDI.Resolve<IService>();
+// Resolve the instance of IServiceProvider
+var serviceProvider = ServiceProviderDI.Resolve<IServiceProvider>();
+
+// Get the instance via service provider
+var instance = serviceProvider.GetService(typeof(IService));
 ```
 
-This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs) as many others.
+
 
 ### Tags
 
@@ -542,7 +544,7 @@ public void Run()
     DI.Setup()
         .Bind<IConsole>().Tags("MyConsole").To(_ => AspectOriented.Console.Object)
         .Bind<string>().Tags("Prefix").To(_ => "info")
-        .Bind<ILogger>().To<Logger>();
+        .Bind<ILogger>().As(Singleton).To<Logger>();
 
     // Create a logger
     var logger = AspectOrientedDI.Resolve<ILogger>();
@@ -597,7 +599,7 @@ It is possible to bind several types to a single implementation.
 ``` CSharp
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
-    .Bind<Service>().Bind<IService>().Bind<IAnotherService>().To<Service>();
+    .Bind<IService>().Bind<IAnotherService>().To<Service>();
 
 // Resolve instances
 var instance1 = SeveralContractsDI.Resolve<IService>();
@@ -621,7 +623,7 @@ public void Run()
 
         .Bind<IConsole>().Tags("MyConsole").To(_ => AspectOrientedWithCustomAttributes.Console.Object)
         .Bind<string>().Tags("Prefix").To(_ => "info")
-        .Bind<ILogger>().To<Logger>();
+        .Bind<ILogger>().As(Singleton).To<Logger>();
 
     // Create a logger
     var logger = AspectOrientedWithCustomAttributesDI.Resolve<ILogger>();
@@ -865,6 +867,59 @@ public class SomeService: IService
 
 
 
+### Complex generics
+
+Autowiring of generic types as simple as autowiring of other simple types. Just use a generic parameters markers like _TT_, _TT1_, _TT2_ and etc. or TTI, TTI1, TTI2 ... for interfaces or _TTS_, _TTS1_, _TTS2_ ... for value types or other special markers like _TTDisposable_, _TTDisposable1_ and etc. _TTList<>_, _TTDictionary<>_ ... or create your own generic parameters markers or bind open generic types.
+
+``` CSharp
+public void Run()
+{
+    // Create and configure the container using autowiring
+    DI.Setup()
+        .Bind<IDependency>().To<Dependency>()
+        // Bind using the predefined generic parameters marker TT (or TT1, TT2, TT3 ...)
+        .Bind<IService<TT>>().To<Service<TT>>()
+        // Bind using the predefined generic parameters marker TTList (or TTList1, TTList2 ...)
+        // For other cases there are TTComparable, TTComparable<in T>,
+        // TTEquatable<T>, TTEnumerable<out T>, TTDictionary<TKey, TValue> and etc.
+        .Bind<IListService<TTList<int>>>().To<ListService<TTList<int>>>()
+        // Bind using the custom generic parameters marker TCustom
+        .Bind<IService<TTMy>>().Tags("custom tag").To<Service<TTMy>>()
+        .Bind<Consumer>().To<Consumer>();
+
+    // Resolve a generic instance
+    var consumer = ComplexGenericsDI.Resolve<Consumer>();
+    
+    consumer.Services2.Count.ShouldBe(2);
+    // Check the instance's type
+    foreach (var instance in consumer.Services2)
+    {
+        instance.ShouldBeOfType<Service<int>>();
+    }
+
+    consumer.Services1.ShouldBeOfType<ListService<IList<int>>>();
+}
+
+public class Consumer
+{
+    public Consumer(IListService<IList<int>> services1, ICollection<IService<int>> services2)
+    {
+        Services1 = services1;
+        Services2 = services2;
+    }
+    
+    public IListService<IList<int>> Services1 { get; }
+
+    public ICollection<IService<int>> Services2 { get; }
+}
+
+// Custom generic type marker using predefined attribute `GenericTypeArgument`
+[GenericTypeArgument]
+class TTMy { }
+```
+
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+
 ### Complex generics with constraints
 
 
@@ -929,59 +984,6 @@ static partial class MyDependentComposer
 
 // Resolve an instance of interface `IService`
 var instance = MyDependentComposer.Resolve<IService>();
-```
-
-This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
-
-### Advanced generic autowiring
-
-Autowiring of generic types as simple as autowiring of other simple types. Just use a generic parameters markers like _TT_, _TT1_, _TT2_ and etc. or TTI, TTI1, TTI2 ... for interfaces or TTS, TTS1, TTS2 ... for value types or other special markers like TTDisposable, TTDisposable1 and etc. TTList<>, TTDictionary<> ... or create your own generic parameters markers or bind open generic types.
-
-``` CSharp
-public void Run()
-{
-    // Create and configure the container using autowiring
-    DI.Setup()
-        .Bind<IDependency>().To<Dependency>()
-        // Bind using the predefined generic parameters marker TT (or TT1, TT2, TT3 ...)
-        .Bind<IService<TT>>().To<Service<TT>>()
-        // Bind using the predefined generic parameters marker TTList (or TTList1, TTList2 ...)
-        // For other cases there are TTComparable, TTComparable<in T>,
-        // TTEquatable<T>, TTEnumerable<out T>, TTDictionary<TKey, TValue> and etc.
-        .Bind<IListService<TTList<int>>>().To<ListService<TTList<int>>>()
-        // Bind using the custom generic parameters marker TCustom
-        .Bind<IService<TTMy>>().Tags("custom tag").To<Service<TTMy>>()
-        .Bind<Consumer>().To<Consumer>();
-
-    // Resolve a generic instance
-    var consumer = GenericAutowiringAdvancedDI.Resolve<Consumer>();
-    
-    consumer.Services2.Count.ShouldBe(2);
-    // Check the instance's type
-    foreach (var instance in consumer.Services2)
-    {
-        instance.ShouldBeOfType<Service<int>>();
-    }
-
-    consumer.Services1.ShouldBeOfType<ListService<IList<int>>>();
-}
-
-public class Consumer
-{
-    public Consumer(IListService<IList<int>> services1, ICollection<IService<int>> services2)
-    {
-        Services1 = services1;
-        Services2 = services2;
-    }
-    
-    public IListService<IList<int>> Services1 { get; }
-
-    public ICollection<IService<int>> Services2 { get; }
-}
-
-// Custom generic type marker using predefined attribute `GenericTypeArgument`
-[GenericTypeArgument]
-class TTMy { }
 ```
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
@@ -1299,7 +1301,7 @@ To resolve all possible instances of any tags of the specific type as an _array_
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     // Bind to the implementation #1
-    .Bind<IService>(1).To<Service>()
+    .Bind<IService>(1).As(lifetime: Lifetime.PerResolve).To<Service>()
     // Bind to the implementation #2
     .Bind<IService>(99).Tags(2, "abc").To<Service>()
     // Bind to the implementation #3
@@ -1321,11 +1323,11 @@ To resolve all possible instances of any tags of the specific type as a _collect
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     // Bind to the implementation #1
-    .Bind<IService>(1).To<Service>()
+    .Bind<IService>(1).As(PerResolve).To<Service>()
     // Bind to the implementation #2
     .Bind<IService>(2).Tags("abc").To<Service>()
     // Bind to the implementation #3
-    .Bind<IService>().As(Lifetime.Singleton).Tags(3).To<Service>()
+    .Bind<IService>().As(Singleton).Tags(3).To<Service>()
     .Bind<CompositionRoot<ICollection<IService>>>().To<CompositionRoot<ICollection<IService>>>();
 
 // Resolve all appropriate instances
@@ -1420,24 +1422,6 @@ var instance = lazy.Value;
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
-### Service provider
-
-
-
-``` CSharp
-DI.Setup()
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>();
-
-// Resolve the instance of IServiceProvider
-var serviceProvider = ServiceProviderDI.Resolve<IServiceProvider>();
-
-// Get the instance via service provider
-var instance = serviceProvider.GetService(typeof(IService));
-```
-
-
-
 ### Sets
 
 To resolve all possible instances of any tags of the specific type as a _ISet<>_ just use the injection _ISet<T>_.
@@ -1448,7 +1432,7 @@ DI.Setup()
     // Bind to the implementation #1
     .Bind<IService>().Tags(1).To<Service>()
     // Bind to the implementation #2
-    .Bind<IService>().Tags(2, "abc").To<Service>()
+    .Bind<IService>().Tags(2, "abc").As(Singleton).To<Service>()
     // Bind to the implementation #3
     .Bind<IService>().Tags(3).To<Service>()
     .Bind<CompositionRoot<ISet<IService>>>().To<CompositionRoot<ISet<IService>>>();
@@ -1624,7 +1608,7 @@ public class Service : IService
 
 ### Intercept advanced
 
-
+This approach represents a fastest way of working with interceptors.
 
 ``` CSharp
 public void Run()

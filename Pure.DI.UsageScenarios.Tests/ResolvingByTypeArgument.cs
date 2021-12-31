@@ -2,6 +2,7 @@
 {
     using Shouldly;
     using Xunit;
+    using static Lifetime;
 
     public class ResolvingByTypeArgument
     {
@@ -15,13 +16,16 @@
             // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
-                .Bind<IService>().To<Service>();
+                .Bind<IService>().To<Service>()
+                .Bind<IService>("Some tag").As(PerResolve).To<Service>();;
 
             // Resolves an instance of interface `IService`
             var instance = ResolvingByTypeArgumentDI.Resolve(typeof(IService));
+            var taggedInstance = ResolvingByTypeArgumentDI.Resolve(typeof(IService), "Some tag");
             // }
             // Check the instance
             instance.ShouldBeOfType<Service>();
+            taggedInstance.ShouldBeOfType<Service>();
         }
     }
 }

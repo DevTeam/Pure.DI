@@ -10,14 +10,14 @@ namespace Pure.DI.UsageScenarios.Tests
     using System.Collections.Generic;
     using Xunit;
 
-    public class GenericAutowiringAdvanced
+    public class ComplexGenerics
     {
         [Fact]
         // $visible=true
         // $tag=1 Basics
         // $priority=10
-        // $description=Advanced generic autowiring
-        // $header=Autowiring of generic types as simple as autowiring of other simple types. Just use a generic parameters markers like _TT_, _TT1_, _TT2_ and etc. or TTI, TTI1, TTI2 ... for interfaces or TTS, TTS1, TTS2 ... for value types or other special markers like TTDisposable, TTDisposable1 and etc. TTList<>, TTDictionary<> ... or create your own generic parameters markers or bind open generic types.
+        // $description=Complex generics
+        // $header=Autowiring of generic types as simple as autowiring of other simple types. Just use a generic parameters markers like _TT_, _TT1_, _TT2_ and etc. or TTI, TTI1, TTI2 ... for interfaces or _TTS_, _TTS1_, _TTS2_ ... for value types or other special markers like _TTDisposable_, _TTDisposable1_ and etc. _TTList<>_, _TTDictionary<>_ ... or create your own generic parameters markers or bind open generic types.
         // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
         // {
         public void Run()
@@ -36,7 +36,7 @@ namespace Pure.DI.UsageScenarios.Tests
                 .Bind<Consumer>().To<Consumer>();
 
             // Resolve a generic instance
-            var consumer = GenericAutowiringAdvancedDI.Resolve<Consumer>();
+            var consumer = ComplexGenericsDI.Resolve<Consumer>();
             
             consumer.Services2.Count.ShouldBe(2);
             // Check the instance's type
