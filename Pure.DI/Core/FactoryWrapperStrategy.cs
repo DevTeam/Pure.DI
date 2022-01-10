@@ -66,7 +66,7 @@
                 throw _cannotResolveExceptionFactory.Create(factoryDependency.Binding, factoryDependency.Tag, "a factory");
             }
             
-            var methodKey = new MemberKey($"Resolve{_stringTools.ConvertToTitle(dependency.Implementation.ToString())}", dependency);
+            var methodKey = new MemberKey($"FactoryWrapperResolve_{_stringTools.ConvertToTitle(dependency.Implementation.ToString())}", dependency);
             var createMethodSyntax = _buildContext.GetOrAddMember(methodKey, () => 
                 SyntaxFactory.MethodDeclaration(dependency.Implementation, _buildContext.NameService.FindName(methodKey))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))

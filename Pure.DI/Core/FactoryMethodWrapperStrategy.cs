@@ -63,7 +63,7 @@ namespace Pure.DI.Core
                 return objectBuildExpression;
             }
             
-            var methodKey = new MemberKey($"Resolve{_stringTools.ConvertToTitle(dependency.Implementation.ToString())}", dependency);
+            var methodKey = new MemberKey($"FactoryMethodResolve_{_stringTools.ConvertToTitle(dependency.Implementation.ToString())}", dependency);
             var createMethodSyntax = _buildContext.GetOrAddMember(methodKey, () => 
                 SyntaxFactory.MethodDeclaration(dependency.Implementation, _buildContext.NameService.FindName(methodKey))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))

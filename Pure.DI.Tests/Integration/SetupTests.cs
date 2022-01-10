@@ -407,7 +407,7 @@
                 internal class CompositionRoot
                 {
                     public readonly string Value;
-                    internal CompositionRoot(string value) => Value = value;        
+                    internal CompositionRoot(string value) => Value = value;
                 }
             }".Run(out var generatedCode);
 
@@ -1501,6 +1501,42 @@
             // Then
             // ReSharper disable once StringLiteralTypo
             output.ShouldBe(new[] { "abcabcabc" }, generatedCode);
+        }
+        
+        [Fact]
+        public void ShouldSupportDependencyOverrideByTag()
+        {
+            // Given
+
+            // When
+            var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<string>(1, ""A"").To(_ => ""abc"")
+                            .Bind<string>(1, ""B"").To(_ => ""xyz"")
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot() => Value = Composer.ResolveString(1) + Composer.ResolveString(""A"");
+                }
+            }".Run(out var generatedCode);
+
+            // Then
+            // ReSharper disable once StringLiteralTypo
+            output.ShouldBe(new[] { "xyzabc" }, generatedCode);
         }
         
         [Fact]

@@ -404,7 +404,7 @@ DI.Setup()
 
 ### Composition Root
 
-This sample demonstrates the most efficient way of getting a composition root object, free from any impact on memory consumption and performance. Each tag-free binding has its method to resolve a related instance as a composition root object.
+This sample demonstrates the most efficient way of getting a composition root object, free from any impact on memory consumption and performance.
 
 ``` CSharp
 DI.Setup("Composer")
@@ -412,7 +412,6 @@ DI.Setup("Composer")
     .Bind<IService>().To<Service>();
 
 // Resolves an instance of interface `IService`
-// using a particular method generated for each tag-free binding
 var instance = Composer.ResolveIService();
 ```
 
@@ -523,13 +522,18 @@ Tags are useful while binding to several implementations of the same abstract ty
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     // Bind using several tags
-    .Bind<IService>(10, 'a').Tags("abc", 99).To<Service>();
+    .Bind<IService>(10, 'a').Tags("abc", 99).To<Service>()
+    .Bind<IService>('b').Tags("abc", 33).To<ServiceRecord>()
+    .Bind<IService>().To<Service>();
 
 // Resolve instances using tags
 var instance1 = TagsDI.Resolve<IService>(10);
 var instance2 = TagsDI.Resolve<IService>('a');
-var instance3 = TagsDI.Resolve<IService>("abc");
-var instance4 = TagsDI.Resolve<IService>(99);
+var instance3 = TagsDI.ResolveIService("abc");
+var instance4 = TagsDI.ResolveIService(99);
+var instance5 = TagsDI.ResolveIService('b');
+var instance6 = TagsDI.Resolve<IService>(33);
+var instance7 = TagsDI.ResolveIService(null);
 ```
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).

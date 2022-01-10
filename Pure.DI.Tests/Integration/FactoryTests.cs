@@ -12,7 +12,7 @@
             // Given
             const string? statements = "var root = Composer.Resolve<CompositionRoot>();" +
                                        "System.Console.WriteLine(root.Value.IsDisposed);" +
-                                       "Composer.MyLifetime.Dispose();" +
+                                       "Composer.Resolve<DisposingLifetime<MyClass>>().Dispose();" +
                                        "System.Console.WriteLine(root.Value.IsDisposed);";
 
             // When
@@ -62,21 +62,19 @@
                     public void Dispose()
                     {
                         IsDisposed = true;
-                    }                    
+                    }
                 }
 
                 internal static partial class Composer
                 {
-                    internal static readonly DisposingLifetime<MyClass> MyLifetime = new ();
-
                     static Composer()
                     {
                         DI.Setup()
-                            .Bind<IFactory<MyClass>>().As(Lifetime.Singleton).To(_ => MyLifetime)
+                            .Bind<IFactory<MyClass>>().Bind<DisposingLifetime<MyClass>>().As(Lifetime.Singleton).To<DisposingLifetime<MyClass>>()
                             .Bind<MyClass>().To<MyClass>()
                             .Bind<CompositionRoot>().To<CompositionRoot>();
-                    }                    
-                }    
+                    }
+                }
             }".Run(out var generatedCode, new RunOptions { Statements = statements});
 
             // Then

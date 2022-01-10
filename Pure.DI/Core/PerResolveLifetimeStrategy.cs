@@ -37,7 +37,7 @@
                     ? resolvedType.TypeSyntax
                     : SyntaxRepo.ObjectTypeSyntax;
                 
-                if (_buildContext.Compilation.Options.NullableContextOptions == NullableContextOptions.Enable)
+                if ((_buildContext.Compilation.Options.NullableContextOptions & NullableContextOptions.Enable) == NullableContextOptions.Enable)
                 {
                     fieldType = SyntaxFactory.NullableType(fieldType);
                 }

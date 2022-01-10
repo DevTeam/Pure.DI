@@ -40,52 +40,56 @@ namespace Pure.DI.Core
             _factoryBuilder = factoryBuilder;
             _arrayBuilder = arrayBuilder;
             _enumerableBuilder = enumerableBuilder;
-
             foreach (var binding in metadata.Bindings)
             {
-                if (binding.Implementation == null)
-                {
-                    continue;
-                }
+                AddBinding(binding, diagnostic);
+            }
+        }
 
-                _implementations.Add(binding.Implementation);
-                var dependencies = new HashSet<SemanticType>(binding.Dependencies);
-                foreach (var type in dependencies)
+        private void AddBinding(IBindingMetadata binding, IDiagnostic? diagnostic = default)
+        {
+            if (binding.Implementation == null)
+            {
+                return;
+            }
+
+            _implementations.Add(binding.Implementation);
+            var dependencies = new HashSet<SemanticType>(binding.Dependencies);
+            foreach (var type in dependencies)
+            {
+                foreach (var tag in binding.GetTags(type).DefaultIfEmpty<ExpressionSyntax?>(null))
                 {
-                    foreach (var tag in binding.GetTags(type).DefaultIfEmpty<ExpressionSyntax?>(null))
+                    SemanticType unboundType = type.ConstructUnbound();
+                    if (
+                        !GetSpecialTypes(unboundType).Contains(unboundType)
+                        && type.SemanticModel.Compilation.GetTypeByMetadataName(unboundType.Name) == null
+                        && type.Type is INamedTypeSymbol)
                     {
-                        SemanticType unboundType = type.ConstructUnbound();
-                        if (
-                            !GetSpecialTypes(unboundType).Contains(unboundType)
-                            && type.SemanticModel.Compilation.GetTypeByMetadataName(unboundType.Name) == null
-                            && type.Type is INamedTypeSymbol)
-                        {
-                            continue;
-                        }
+                        continue;
+                    }
 
-                        var key = new Key(unboundType, tag, binding.AnyTag);
-                        if (_map.TryGetValue(key, out var prev))
-                        {
-                            diagnostic.Information(Diagnostics.Information.BindingAlreadyExists, $"{prev.Metadata} exists and will be overridden by a new one {binding}.");
-                        }
+                    var key = new Key(unboundType, tag, binding.AnyTag);
+                    if (diagnostic != default && _map.TryGetValue(key, out var prev))
+                    {
+                        diagnostic.Information(Diagnostics.Information.BindingAlreadyExists, $"{prev.Metadata} exists and will be overridden by a new one {binding}.");
+                    }
 
-                        _map[key] = new Binding<SemanticType>(binding, binding.Implementation);
+                    _map[key] = new Binding<SemanticType>(binding, binding.Implementation);
 
-                        if (binding.Factory != null)
-                        {
-                            _factories[key] = new Binding<SimpleLambdaExpressionSyntax>(binding, binding.Factory);
-                        }
+                    if (binding.Factory != null)
+                    {
+                        _factories[key] = new Binding<SimpleLambdaExpressionSyntax>(binding, binding.Factory);
+                    }
 
-                        if (binding.Lifetime is Lifetime.Scoped or Lifetime.ContainerSingleton)
-                        {
-                            var serviceProviderInstance = new SemanticType(type.SemanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance<>).FullName)!, type.SemanticModel).Construct(type);
-                            _buildContext.AddBinding(new BindingMetadata(binding, serviceProviderInstance, binding.Id));
-                        }
+                    if (binding.Lifetime is Lifetime.Scoped or Lifetime.ContainerSingleton)
+                    {
+                        var serviceProviderInstance = new SemanticType(type.SemanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance<>).FullName)!, type.SemanticModel).Construct(type);
+                        _buildContext.AddBinding(new BindingMetadata(binding, serviceProviderInstance, binding.Id));
                     }
                 }
             }
         }
-        
+
         public Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, bool anyTag = false) =>
             Resolve(dependency, tag, anyTag, i => i);
 
@@ -109,13 +113,18 @@ namespace Pure.DI.Core
                             if (_map.TryGetValue(key, out var implementationEntry))
                             {
                                 var typesMap = _typesMapFactory();
+                                if (key.Dependency.Equals(dependency))
+                                {
+                                    return new Dependency(implementationEntry.Metadata, implementationEntry.Details, tag, _constructorBuilder(), typesMap);
+                                }
+
                                 var dep = typeSelector(dependency);
                                 var hasTypesMap = typesMap.Setup(implementationEntry.Details, dep);
                                 var constructedImplementation = typesMap.ConstructType(implementationEntry.Details);
                                 var constructedDependency = typesMap.ConstructType(dep);
                                 if (_factories.TryGetValue(key, out var factory))
                                 {
-                                   return new Dependency(factory.Metadata, dep, tag, _factoryBuilder(), typesMap);
+                                    return new Dependency(factory.Metadata, dep, tag, _factoryBuilder(), typesMap);
                                 }
 
                                 if (hasTypesMap && implementationEntry.Metadata.Implementation != null)
@@ -135,6 +144,7 @@ namespace Pure.DI.Core
                                     binding.AddDependency(constructedDependency);
                                     binding.AddDependency(constructedImplementation);
 
+                                    AddBinding(binding);
                                     _buildContext.AddBinding(binding);
                                     return new Dependency(implementationEntry.Metadata, constructedImplementation, tag, _constructorBuilder(), typesMap);
                                 }
@@ -189,6 +199,7 @@ namespace Pure.DI.Core
                         };
 
                         newBinding.AddDependency(dependency);
+                        AddBinding(newBinding);
                         return new Dependency(newBinding, dependency, tag, _constructorBuilder(), typesMap);
                     }
 

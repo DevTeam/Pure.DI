@@ -21,21 +21,27 @@
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
                 // Bind using several tags
-                .Bind<IService>(10, 'a').Tags("abc", 99).To<Service>();
+                .Bind<IService>(10, 'a').Tags("abc", 99).To<Service>()
+                .Bind<IService>('b').Tags("abc", 33).To<ServiceRecord>()
+                .Bind<IService>().To<Service>();
 
             // Resolve instances using tags
             var instance1 = TagsDI.Resolve<IService>(10);
             var instance2 = TagsDI.Resolve<IService>('a');
-            var instance3 = TagsDI.Resolve<IService>("abc");
-            var instance4 = TagsDI.Resolve<IService>(99);
+            var instance3 = TagsDI.ResolveIService("abc");
+            var instance4 = TagsDI.ResolveIService(99);
+            var instance5 = TagsDI.ResolveIService('b');
+            var instance6 = TagsDI.Resolve<IService>(33);
+            var instance7 = TagsDI.ResolveIService(null);
             // }
             // Check instances
-            // Resolve the instance using the empty tag
-            var instance5 = Should.Throw<ArgumentException>(TagsDI.Resolve<Service>);
             instance1.ShouldBeOfType<Service>();
             instance2.ShouldBeOfType<Service>();
-            instance3.ShouldBeOfType<Service>();
+            instance3.ShouldBeOfType<ServiceRecord>();
             instance4.ShouldBeOfType<Service>();
+            instance5.ShouldBeOfType<ServiceRecord>();
+            instance6.ShouldBeOfType<ServiceRecord>();
+            instance7.ShouldBeOfType<Service>();
         }
     }
 }

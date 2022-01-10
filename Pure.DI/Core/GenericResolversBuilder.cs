@@ -14,8 +14,6 @@ namespace Pure.DI.Core
         private readonly IBuildContext _buildContext;
         private readonly ITypeResolver _typeResolver;
         private readonly IBuildStrategy _buildStrategy;
-        private readonly Log<GenericResolversBuilder> _log;
-        private readonly ITracer _tracer;
         private readonly IStringTools _stringTools;
 
         public GenericResolversBuilder(
@@ -23,16 +21,12 @@ namespace Pure.DI.Core
             IBuildContext buildContext,
             ITypeResolver typeResolver,
             IBuildStrategy buildStrategy,
-            Log<GenericResolversBuilder> log,
-            ITracer tracer,
             IStringTools stringTools)
         {
             _metadata = metadata;
             _buildContext = buildContext;
             _typeResolver = typeResolver;
             _buildStrategy = buildStrategy;
-            _log = log;
-            _tracer = tracer;
             _stringTools = stringTools;
         }
 
@@ -40,54 +34,74 @@ namespace Pure.DI.Core
 
         public IEnumerable<MemberDeclarationSyntax> BuildMembers(SemanticModel semanticModel)
         {
-            var resolvingTypes = (
-                from binding in _metadata.Bindings.Concat(_buildContext.AdditionalBindings)
+            var methods =
+                from binding in _metadata.Bindings.Concat(_buildContext.AdditionalBindings).ToArray()
+                where !binding.FromProbe
                 from dependency in binding.Dependencies
-                where !binding.GetTags(dependency).Any()
                 where !dependency.IsComposedGenericTypeMarker
-                group binding by dependency into groups
-                let binding = groups.First()
-                select groups.Key)
-                .ToArray();
+                let minAccessibility = GetAccessibility(dependency.Type).Min()
+                where minAccessibility >= Accessibility.Internal
+                let accessibility = minAccessibility == Accessibility.Public ? SyntaxKind.PublicKeyword : SyntaxKind.InternalKeyword
+                let name = GetMethodName(dependency.Type)
+                let methodName = _buildContext.NameService.FindName(new MemberKey(name, dependency.Type))
+                let method = SyntaxFactory.MethodDeclaration(dependency.TypeSyntax, methodName)
+                    .AddModifiers(SyntaxFactory.Token(accessibility), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                    .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
+                let tags = binding.GetTags(dependency).ToArray()
+                from tag in tags.DefaultIfEmpty(default)
+                let resolvedDependency = _typeResolver.Resolve(dependency, tag)
+                where resolvedDependency.IsResolved
+                select (method, tag, dependency, resolvedDependency);
 
-            foreach (var resolvingType in resolvingTypes)
+            var methodGroups = methods.GroupBy(i => i.method, MethodComparer.Shared);
+            foreach (var methodGroup in methodGroups)
             {
-                if (_buildContext.IsCancellationRequested)
+                var items = methodGroup.ToArray();
+                var method = methodGroup.Key;
+                var uniqueItems = items.GroupBy(i => i.tag?.ToString()).Select(i => i.First()).ToArray();
+                var itemsByBinding = uniqueItems.GroupBy(i => i.resolvedDependency.Binding, BindingComparer.Shared);
+                foreach (var item in itemsByBinding)
                 {
-                    _log.Trace(() => new[] { "Build canceled" });
-                    break;
+                    var tagItems = item.ToArray();
+                    var first = tagItems.First();
+                    var checkTags = tagItems.Skip(1).Aggregate(CreateCheckTagExpression(tagItems.First().tag), (current, next) => SyntaxFactory.BinaryExpression(SyntaxKind.LogicalOrExpression, current, CreateCheckTagExpression(next.tag)));
+                    var objectExpression = _buildStrategy.TryBuild(first.resolvedDependency, first.dependency);
+                    method = method.AddBodyStatements(SyntaxFactory.IfStatement(checkTags, SyntaxFactory.ReturnStatement(objectExpression)));
                 }
-                
-                var minAccessibility = GetAccessibility(resolvingType.Type).Min();
-                if (minAccessibility < Accessibility.Internal)
+
+                foreach (var defaultItem in items.Where(i => i.tag == default).Reverse().Take(1))
                 {
-                    _tracer.Save();
+                    var objectExpression = _buildStrategy.TryBuild(defaultItem.resolvedDependency, defaultItem.dependency);
+                    yield return methodGroup.Key.AddBodyStatements(SyntaxFactory.ReturnStatement(objectExpression));
+                }
+
+                if (method.Body?.Statements.Any() != true)
+                {
                     continue;
                 }
 
-                var resolvedDependency = _typeResolver.Resolve(resolvingType, null);
-                if (!resolvedDependency.IsResolved)
+                var tagType = SyntaxRepo.ObjectTypeSyntax;
+                if ((_buildContext.Compilation.Options.NullableContextOptions & NullableContextOptions.Enable) == NullableContextOptions.Enable)
                 {
-                    _tracer.Save();
-                    continue;
+                    tagType = SyntaxFactory.NullableType(SyntaxRepo.ObjectTypeSyntax);
                 }
 
-                var objectExpression = _buildStrategy.TryBuild(resolvedDependency, resolvingType);
-                if (objectExpression == null)
-                {
-                    _tracer.Save();
-                    continue;
-                }
-
-                var accessibility = minAccessibility == Accessibility.Public ? SyntaxKind.PublicKeyword : SyntaxKind.InternalKeyword;
-                var methodName = GetMethodName(resolvingType.Type);
-                methodName = _buildContext.NameService.FindName(new MemberKey(methodName, resolvingType.Type));
-                yield return 
-                    SyntaxFactory.MethodDeclaration(resolvingType.TypeSyntax, methodName)
-                        .AddModifiers(SyntaxFactory.Token(accessibility), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
-                        .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
-                        .AddBodyStatements(SyntaxFactory.ReturnStatement(objectExpression));
+                yield return method
+                    .AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("tag")).WithType(tagType))
+                    .AddBodyStatements(
+                        SyntaxFactory.ThrowStatement(
+                            SyntaxFactory.ObjectCreationExpression(
+                                    SyntaxFactory.ParseTypeName("System.ArgumentOutOfRangeException"))
+                                .AddArgumentListArguments(SyntaxFactory.Argument("tag".ToLiteralExpression()!))));
             }
+        }
+
+        private static ExpressionSyntax CreateCheckTagExpression(ExpressionSyntax? tag)
+        {
+            return SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName("object.Equals"))
+                .AddArgumentListArguments(
+                    SyntaxFactory.Argument(tag ?? SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax)),
+                    SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")));
         }
 
         private static IEnumerable<Accessibility> GetAccessibility(ISymbol symbol)
@@ -135,6 +149,28 @@ namespace Pure.DI.Core
                         break;
                 }
             }
+        }
+        
+        private class MethodComparer: IEqualityComparer<MethodDeclarationSyntax>
+        {
+            public static readonly IEqualityComparer<MethodDeclarationSyntax> Shared = new MethodComparer();
+
+            private MethodComparer() { }
+
+            public bool Equals(MethodDeclarationSyntax x, MethodDeclarationSyntax y) => x.Identifier.Text == y.Identifier.Text;
+
+            public int GetHashCode(MethodDeclarationSyntax obj) => obj.Identifier.Text.GetHashCode();
+        }
+        
+        private class BindingComparer: IEqualityComparer<IBindingMetadata>
+        {
+            public static readonly IEqualityComparer<IBindingMetadata> Shared = new BindingComparer();
+
+            private BindingComparer() { }
+
+            public bool Equals(IBindingMetadata x, IBindingMetadata y) => x.Id == y.Id;
+
+            public int GetHashCode(IBindingMetadata obj) => obj.Id.GetHashCode();
         }
     }
 }

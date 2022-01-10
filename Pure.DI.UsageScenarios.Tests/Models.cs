@@ -61,6 +61,8 @@ namespace Pure.DI.UsageScenarios.Tests
         }
     }
 
+    public record ServiceRecord(IDependency Dependency, string State = "") : IService;
+
     // Generic
     public interface IService<T>: IService { }
 

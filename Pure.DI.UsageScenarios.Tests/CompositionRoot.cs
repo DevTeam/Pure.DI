@@ -12,7 +12,7 @@
             // $tag=1 Basics
             // $priority=00
             // $description=Composition Root
-            // $header=This sample demonstrates the most efficient way of getting a composition root object, free from any impact on memory consumption and performance. Each tag-free binding has its method to resolve a related instance as a composition root object.
+            // $header=This sample demonstrates the most efficient way of getting a composition root object, free from any impact on memory consumption and performance.
             // $footer=Actually, the method _ResolveIService_ looks like this:
             // $footer=```csharp
             // $footer=[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -28,7 +28,6 @@
                 .Bind<IService>().To<Service>();
 
             // Resolves an instance of interface `IService`
-            // using a particular method generated for each tag-free binding
             var instance = Composer.ResolveIService();
             // }
             instance.ShouldBeOfType<Service>();

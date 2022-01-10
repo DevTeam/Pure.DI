@@ -67,8 +67,8 @@
                         DI.Setup()
                             .Bind<Foo<TT>>().As(Pure.DI.Lifetime.Singleton).To<Foo<TT>>()
                             .Bind<CompositionRoot>().To<CompositionRoot>();
-                    }                    
-                }    
+                    }
+                }
             }".Run(out var generatedCode);
 
             // Then
