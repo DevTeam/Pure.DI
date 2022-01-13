@@ -100,7 +100,13 @@
         foreach(var info in group.OrderBy(i => i["priority"] + "_" + i["description"]))
         {
             var description = info["description"];
-            var reference = "#" + description.Replace(" ", "-").Replace("'", string.Empty).ToLowerInvariant();
+            var reference = "#"+ 
+                            description.Replace(" ", "-")
+                                .Replace("'", string.Empty)
+                                .Replace("/", string.Empty)
+                                .Replace("`", string.Empty)
+                                .Replace("\\", string.Empty)
+                                .ToLowerInvariant();
 #>  - [<#=description#>](<#=reference#>)
 <#
         }

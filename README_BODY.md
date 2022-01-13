@@ -8,16 +8,16 @@
 
 ## Key features
 
-_Pure.DI_ is __NOT__ a framework or library, but a tool. It generates static method code for creating an object graph in the paradigm of pure DI using a set of hints. The generated code does not rely on library calls or .NET reflection, so it is efficient.
+_Pure.DI_ is __NOT__ a framework or library, but a code generator, creating static methods code for creating an object graph in the paradigm of pure DI using a set of hints, which are checking on the compile-time. The generated code does not rely on library calls or .NET reflection, and it is efficient in the scope of performance and memory consumption.
 
 - [X] DI without any IoC/DI containers, frameworks, dependencies and therefore without any performance impact and side effects. 
-  >_Pure.DI_ is actually a [.NET code generator](https://docs.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/source-generators-overview). It generates simple code as if you were doing it yourself: de facto just a bunch of constructors` calls. And you can see this code at any time.
+  >_Pure.DI_ is actually a [.NET code generator](https://docs.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/source-generators-overview). It generates simple code as well as if you were doing it yourself: de facto just a bunch of constructors` calls. And you can see this code at any time.
 - [X] A predictable and verified dependency graph is built and verified on the fly while you write your code.
-  >All the logic for analyzing the graph of objects, constructors, methods happens at compile time. Thus, the _Pure.DI_ tool notifies the developer about missing dependencies, circular dependencies, for cases when some dependency is not suitable for injection, etc. at compile-time. Developers have no chance of getting a program that crashes at runtime due to these errors. All this magic happens at the same time as the code is written. This way, you have instant feedback between the fact that you made some changes to your code and _Pure.DI_ checked your code.
-- [X] Does not add dependencies to other assemblies.
-  >Using a pure DI approach, you don't add any runtime dependencies to your assemblies.
+  >All the logic for analyzing the graph of objects, constructors, methods happens at compile time. Thus, the _Pure.DI_ tool notifies the developer about missing or circular dependency, for cases when some dependencies are not suitable for injection, etc., at compile-time. Developers have no chance of getting a program that crashes at runtime due to these errors. All this magic happens simultaneously as the code is written, this way, you have instant feedback between the fact that you made some changes to your code and your code was already checked and ready for use.
+- [X] It does not add any dependencies to any other assemblies.
+  >Using a pure DI approach, you don't add runtime dependencies to your assemblies.
 - [X] High performance, including C# and JIT compilers optimizations.
-  >All generated code runs as fast as your own, in pure DI style, including compile-time and run-time optimizations. As mentioned above, graph analysis is done at compile time. At runtime, there is just a bunch of nested compiled constructors and that's it.
+  >All generated code runs as fast as your own, in pure DI style, including compile-time and run-time optimizations. As mentioned above, graph analysis doing at compile-time, but at run-time, there are just a bunch of nested constructors, and that's it.
 - [X] Works everywhere.
   >Since a pure DI approach does not use any dependencies or the [.NET reflection](https://docs.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/reflection) at runtime, it does not prevent your code from working as expected on any platform: .NET Framework, .NET Core, UWP / XBOX, .NET IoT, Xamarin, etc.
 - [X] Ease of Use.
@@ -102,7 +102,7 @@ Add a package reference to:
   dotnet add package Pure.DI
   ```
 
-Bind interfaces to their implementations or factories, define lifetimes and other options in a class like the following:
+Bind abstractions to their implementations or factories, define lifetimes and other options in a class like the following:
 
 ```csharp
 static partial class Composer
@@ -124,7 +124,7 @@ static partial class Composer
 }
 ```
 
-The code above is a chain of hints to define a dependency graph used to generate a static class *__Composer__* with method *__Resolve__*, which creates a composition root *__Program__* below. In fact, there is no reason to run this code, because it does nothing, so it can be placed anywhere in the class (in methods,  in constructors, or in properties), and better where it will not run. Its purpose is only to check the syntax of dependencies and to help build a dependency graph at compile-time. In the example above, the name of the method ```Setup()``` was chosen arbitrarily, made private, and is not called anywhere. Only the name of the owner class matters, since it will be implicitly used to create a static partial class that will contain the logic for creating objects, in our case it is ```static partial class Composer```, although it can be defined explicitly.
+The code above is just a chain of hints to define a dependency graph used to generate a static class *__Composer__* with method *__Resolve__*, which creates a composition root *__Program__* below. In fact, there is no reason to run this code, because it does nothing ant run-time, so it can be placed anywhere in the class (in methods,  in constructors, or in properties), and better where it will not be called. Its purpose is only to check the syntax of dependencies and to help in building a dependency graph at compile-time to generate static methods. In the example above, the name of the method ```Setup()``` was chosen arbitrarily, made private, and is not called anywhere. Only the name of the owner class matters, since it will be implicitly used to create a static partial class that will contain the logic for creating objects, in our case it is ```static partial class Composer```, although it can be defined explicitly.
 
 > Defining generic type arguments using particular marker types like ```TT``` in this sample is a distinguishing and outstanding feature. This allows binding complex generic types with nested generic types and with any type constraints. For instance ``` interface IService<T1, T2, T3> where T3: IDictionary<T1, T2[]> { }``` and its binding to the some implementation ```Bind<IService<TT1, TT2, IDictionary<TT1, TT2[]>>>().To<Service<TT1, TT2, IDictionary<TT1, TT2[]>>>()``` with all checks and code-generation at the compile time. It is clear that this example is exaggerated, it just demonstrates the ease of working with marker types like ```TT, TTEnumerable, TTSet``` and etc. for binding complex generic types.
 
@@ -145,7 +145,7 @@ class Program
 }
 ```
 
-*__Program__* is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) here, a single place in an application where the composition of the object graphs for an application take place. Each instance is resolved by a strongly-typed block of statements like the operator [*__new__*](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/new-operator) which are compiled with all optimizations with minimal impact on performance or memory consumption. The creating of a composition root *__Program__*  is looking as ``````Composer.ResolveProgram()`````` here and the compiler replace this statement with the set of constructor calls:
+*__Program__* is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) here, a single place in an application where the composition of the object graphs for an application takes place. Each instance is resolved by a strongly-typed block of statements like the operator [*__new__*](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/new-operator), which are compiling with all optimizations with minimal impact on performance or memory consumption. The creating of a composition root *__Program__*  is looking as ``````Composer.ResolveProgram()`````` here and the compiler replaces this statement with the set of constructor calls:
 
 ```csharp
 new Sample.Program(
@@ -158,7 +158,7 @@ new Sample.Program(
         true))))
 ```
 
-where _SingletonSystemRandom_ is a private static class to support the _Random_ singleton most effectively:
+where ```SingletonSystemRandom``` is a private static class to support the ```Random``` singleton most effectively:
 
 ```csharp
 private static class SingletonSystemRandom

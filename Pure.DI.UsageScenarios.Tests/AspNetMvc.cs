@@ -15,8 +15,8 @@ namespace Pure.DI.UsageScenarios.Tests
     using Xunit;
     
     // $visible=true
-    // $tag=6 Advanced
-    // $priority=04
+    // $tag=7 Samples
+    // $priority=00
     // $description=ASPNET
     // {
     public class AspNetMvc

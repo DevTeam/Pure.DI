@@ -10,22 +10,27 @@
         public void Run()
         {
             // $visible=true
-            // $tag=6 Advanced
+            // $tag=3 BCL types
             // $priority=00
-            // $description=Microsoft Dependency Injection
-            // $header=In the cases when a project references to Microsoft Dependency Injection and there are no tagged bindings, an IServiceCollection extension method is generated automatically with a name like _Add..._ plus the name of a generated class.
+            // $description=IServiceProvider/IServiceCollection and Microsoft Dependency Injection
+            // $header=In the cases when a project references the Microsoft Dependency Injection library, an extension method for ```IServiceCollection``` is generating automatically with a name like _Add..._ plus the name of a generated class, here it is ```AddMicrosoftDependencyInjectionDI()``` for class ```public class MicrosoftDependencyInjection { }```.
             // {
             DI.Setup()
+                // Add Transient
                 .Bind<IDependency>().To<Dependency>()
-                .Bind<IService>().To<Service>();
+                // Add Scoped
+                .Bind<IService>().As(Lifetime.Scoped).To<Service>();
 
+            // Creates a ServiceProvider for the DI specified above.
             var serviceProvider = new ServiceCollection()
                 .AddMicrosoftDependencyInjectionDI()
                 .BuildServiceProvider();
             
-            var instance = serviceProvider.GetRequiredService<IService>();
+            var instance1 = serviceProvider.GetRequiredService<IService>();
+            var instance2 = serviceProvider.GetService(typeof(IService));
             // }
-            instance.ShouldBeOfType<Service>();
+            instance1.ShouldBeOfType<Service>();
+            instance2.ShouldBeOfType<Service>();
         }
     }
 }

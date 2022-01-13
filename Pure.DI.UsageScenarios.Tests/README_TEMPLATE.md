@@ -28,6 +28,7 @@
   - [Transient lifetime](#transient-lifetime)
   - [Custom singleton lifetime](#custom-singleton-lifetime)
 - BCL types
+  - [IServiceProvider/IServiceCollection and Microsoft Dependency Injection](#iserviceprovideriservicecollection-and-microsoft-dependency-injection)
   - [Arrays](#arrays)
   - [Collections](#collections)
   - [Enumerables](#enumerables)
@@ -43,10 +44,8 @@
   - [Intercept specific types](#intercept-specific-types)
   - [Intercept a set of types](#intercept-a-set-of-types)
   - [Intercept advanced](#intercept-advanced)
-- Advanced
-  - [Microsoft Dependency Injection](#microsoft-dependency-injection)
-  - [ASPNET](#aspnet)
 - Samples
+  - [ASPNET](#aspnet)
   - [OS specific implementations](#os-specific-implementations)
 
 ### Composition Root
@@ -944,6 +943,28 @@ public class Service : IService
 
 
 
+### IServiceProvider/IServiceCollection and Microsoft Dependency Injection
+
+In the cases when a project references the Microsoft Dependency Injection library, an extension method for ```IServiceCollection``` is generating automatically with a name like _Add..._ plus the name of a generated class, here it is ```AddMicrosoftDependencyInjectionDI()``` for class ```public class MicrosoftDependencyInjection { }```.
+
+``` CSharp
+DI.Setup()
+    // Add Transient
+    .Bind<IDependency>().To<Dependency>()
+    // Add Scoped
+    .Bind<IService>().As(Lifetime.Scoped).To<Service>();
+
+// Creates a ServiceProvider for the DI specified above.
+var serviceProvider = new ServiceCollection()
+    .AddMicrosoftDependencyInjectionDI()
+    .BuildServiceProvider();
+
+var instance1 = serviceProvider.GetRequiredService<IService>();
+var instance2 = serviceProvider.GetService(typeof(IService));
+```
+
+
+
 ### Arrays
 
 To resolve all possible instances of any tags of the specific type as an _array_ just use the injection of _T[]_.
@@ -1393,24 +1414,6 @@ public class Service : IService
 
     public void Run() { _dependency?.Run(); }
 }
-```
-
-
-
-### Microsoft Dependency Injection
-
-In the cases when a project references to Microsoft Dependency Injection and there are no tagged bindings, an IServiceCollection extension method is generated automatically with a name like _Add..._ plus the name of a generated class.
-
-``` CSharp
-DI.Setup()
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>();
-
-var serviceProvider = new ServiceCollection()
-    .AddMicrosoftDependencyInjectionDI()
-    .BuildServiceProvider();
-
-var instance = serviceProvider.GetRequiredService<IService>();
 ```
 
 
