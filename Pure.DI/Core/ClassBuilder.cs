@@ -80,7 +80,13 @@ namespace Pure.DI.Core
             }
 
             NamespaceDeclarationSyntax? prevNamespaceNode = null;
-            foreach (var originalNamespaceNode in _metadata.SetupNode.Ancestors().OfType<NamespaceDeclarationSyntax>().Reverse())
+            foreach (var originalNamespaceNode in _metadata.SetupNode.Ancestors()
+#if ROSLYN38
+                         .OfType<NamespaceDeclarationSyntax>()
+#else
+                         .OfType<BaseNamespaceDeclarationSyntax>()
+#endif
+                         .Reverse())
             {
                 var namespaceNode = 
                     SyntaxFactory.NamespaceDeclaration(originalNamespaceNode.Name)
