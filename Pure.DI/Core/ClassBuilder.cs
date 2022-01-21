@@ -1,12 +1,21 @@
 ﻿// ReSharper disable LoopCanBeConvertedToQuery
+// ReSharper disable IdentifierTypo
 namespace Pure.DI.Core
 {
+    using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Diagnostics.CodeAnalysis;
+    using System.Diagnostics.Contracts;
     using System.Linq;
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
+#if ROSLYN38
+    using NamespaceType = Microsoft.CodeAnalysis.CSharp.Syntax.NamespaceDeclarationSyntax;
+#else
+    using NamespaceType = Microsoft.CodeAnalysis.CSharp.Syntax.BaseNamespaceDeclarationSyntax;
+#endif
 
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
@@ -72,31 +81,7 @@ namespace Pure.DI.Core
                 }
             }
 
-            var compilationUnit = SyntaxFactory.CompilationUnit();
-            var originalCompilationUnit = _metadata.SetupNode.Ancestors().OfType<CompilationUnitSyntax>().FirstOrDefault();
-            if (originalCompilationUnit != null)
-            {
-                compilationUnit = compilationUnit.AddUsings(originalCompilationUnit.Usings.ToArray());
-            }
-
-            NamespaceDeclarationSyntax? prevNamespaceNode = null;
-            foreach (var originalNamespaceNode in _metadata.SetupNode.Ancestors()
-#if ROSLYN38
-                         .OfType<NamespaceDeclarationSyntax>()
-#else
-                         .OfType<BaseNamespaceDeclarationSyntax>()
-#endif
-                         .Reverse())
-            {
-                var namespaceNode = 
-                    SyntaxFactory.NamespaceDeclaration(originalNamespaceNode.Name)
-                        .AddUsings(originalNamespaceNode.Usings.ToArray());
-
-                prevNamespaceNode = prevNamespaceNode == null ? namespaceNode : prevNamespaceNode.AddMembers(namespaceNode);
-            }
-
             _bindingsProbe.Probe();
-
             var contextTypeSyntax = SyntaxFactory.ParseTypeName(_memberNameService.GetName(MemberNameKind.ContextClass));
             var resolverClass = SyntaxFactory.ClassDeclaration(_metadata.ComposerTypeName)
                 .WithKeyword(SyntaxFactory.Token(SyntaxKind.ClassKeyword))
@@ -171,19 +156,39 @@ namespace Pure.DI.Core
                                                 .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag"))))))
                 ).WithPragmaWarningDisable(0067, 8600, 8602, 8603, 8604, 8618, 8625);
 
-            if (prevNamespaceNode != null)
-            {
-                prevNamespaceNode = prevNamespaceNode.AddMembers(resolverClass);
-                compilationUnit = compilationUnit.AddMembers(prevNamespaceNode);
-            }
-            else
-            {
-                compilationUnit = compilationUnit.AddMembers(resolverClass);
-            }
-
+            var rootNode = CreateRootNode(_metadata.SetupNode, Array.Empty<UsingDirectiveSyntax>(), resolverClass);
             var sampleDependency = _metadata.Bindings.LastOrDefault()?.Dependencies.FirstOrDefault()?.ToString() ?? "T";
             _diagnostic.Information(Diagnostics.Information.Generated, $"{_metadata.ComposerTypeName} was generated. Please use a method like {_metadata.ComposerTypeName}.Resolve<{sampleDependency}>() to create a composition root.", _metadata.Bindings.FirstOrDefault()?.Location);
-            return compilationUnit;
+            return rootNode;
+        }
+        
+        [Pure]
+        private static CompilationUnitSyntax CreateRootNode(SyntaxNode targetNode, UsingDirectiveSyntax[] additionalUsings, params MemberDeclarationSyntax[] members)
+        {
+            var namespaces = targetNode.Ancestors().OfType<NamespaceType>();
+            NamespaceType? rootNamespace = default;
+            foreach (var ns in namespaces)
+            {
+                var nextNs = ns.WithMembers(new SyntaxList<MemberDeclarationSyntax>(Enumerable.Empty<MemberDeclarationSyntax>()));
+                rootNamespace = rootNamespace == default 
+                    ? nextNs.AddMembers(members).AddUsings(GetUsings(nextNs.Usings, additionalUsings))
+                    : nextNs.AddMembers(rootNamespace);
+            }
+            
+            var baseCompilationUnit = targetNode.Ancestors().OfType<CompilationUnitSyntax>().FirstOrDefault();
+            var rootCompilationUnit = (baseCompilationUnit ?? SyntaxFactory.CompilationUnit())
+                .WithMembers(new SyntaxList<MemberDeclarationSyntax>(Enumerable.Empty<MemberDeclarationSyntax>()));
+
+            return rootNamespace != default
+                ? rootCompilationUnit.AddMembers(rootNamespace)
+                : rootCompilationUnit.AddUsings(GetUsings(rootCompilationUnit.Usings, additionalUsings)).AddMembers(members);
+        }
+
+        [Pure]
+        private static UsingDirectiveSyntax[] GetUsings(IEnumerable<UsingDirectiveSyntax> usings, IEnumerable<UsingDirectiveSyntax> additionalUsings)
+        {
+            var currentUsins = usings.Select(i => i.Name.ToString()).ToImmutableHashSet();
+            return additionalUsings.Where(i => !currentUsins.Contains(i.Name.ToString())).ToArray();
         }
     }
 }
