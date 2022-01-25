@@ -13,6 +13,7 @@
 
         <SignAssembly>false</SignAssembly>
         <PublicSign>false</PublicSign>
+        <OutputPath>bin</OutputPath>
     </PropertyGroup>
 
     <ItemGroup>
