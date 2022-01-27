@@ -39,42 +39,38 @@
 
         public IEnumerable<MemberDeclarationSyntax> BuildMembers(SemanticModel semanticModel)
         {
+            _log.Trace(() => new []{"Start"});
             var dependencies = (
                 from binding in _metadata.Bindings.Concat(_buildContext.AdditionalBindings)
                 from dependency in binding.Dependencies
                 let tags = binding.GetTags(dependency)
+                where !tags.Any()
                 where dependency.Type.IsReferenceType && !dependency.IsComposedGenericTypeMarker
-                group (binding, tags) by dependency
+                group binding by dependency
                 into groups
                 let item = groups.First()
-                select (dependency: groups.Key, lifetime: item.binding.Lifetime, item.binding, item.tags)).ToArray();
+                select (dependency: groups.Key, lifetime: item.Lifetime, item)).ToArray();
 
             var serviceProviderType = semanticModel.Compilation.GetTypeByMetadataName(typeof(System.IServiceProvider).FullName);
             var serviceCollectionType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.IServiceCollection");
             var serviceDescriptorType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.ServiceDescriptor");
             var serviceCollectionServiceExtensionsType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions");
+            
+            _log.Trace(() => new []
+            {
+                $"serviceProviderType: {serviceProviderType}",
+                $"serviceCollectionType: {serviceCollectionType}",
+                $"serviceDescriptorType: {serviceDescriptorType}",
+                $"serviceCollectionServiceExtensionsType: {serviceCollectionServiceExtensionsType}"
+            });
 
             if (
-                serviceProviderType == null
-                || serviceCollectionType == null
-                || serviceDescriptorType == null
-                || serviceCollectionServiceExtensionsType == null)
-            {
-                foreach (var (dependency, lifetime, binding, _) in dependencies.Where(i => i.lifetime is Lifetime.Scoped or Lifetime.ContainerSingleton))
-                {
-                    var error = $"Impossible to use the lifetime {lifetime} for {dependency} outside an ASP.NET context.";
-                    _diagnostic.Error(Diagnostics.Error.Unsupported, error, binding.Location);
-                }
-            }
-            else
+                serviceProviderType != null
+                && serviceCollectionType != null
+                && serviceDescriptorType != null
+                && serviceCollectionServiceExtensionsType != null)
             {
                 var extensionMethodName = $"Add{_metadata.ComposerTypeName}";
-                if (dependencies.Any(i => i.tags.Any()))
-                {
-                    _diagnostic.Information(Diagnostics.Information.Unsupported, $"The IServiceCollection extension method \"{extensionMethodName}\" was not generated due to it is not supported for a tagged binding.");
-                    yield break;
-                }
-
                 var extensionKey = new MemberKey(extensionMethodName, GetType());
                 yield return _buildContext.GetOrAddMember(extensionKey, () =>
                 {
@@ -101,6 +97,12 @@
                     var serviceBasedControllerActivatorType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Mvc.Controllers.ServiceBasedControllerActivator");
                     var serviceCollectionDescriptorExtensionsType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.Extensions.ServiceCollectionDescriptorExtensions");
 
+                    _log.Trace(() => new[]
+                    {
+                        $"mvcBuilderType: {mvcBuilderType}", $"mvcServiceCollectionExtensionsType: {mvcServiceCollectionExtensionsType}", $"controllerFeatureType: {controllerFeatureType}", $"controllerActivatorType: {controllerActivatorType}", $"serviceBasedControllerActivatorType: {serviceBasedControllerActivatorType}", $"serviceCollectionDescriptorExtensionsType: {serviceCollectionDescriptorExtensionsType}"
+                    });
+
+                    //bool mvc = false;
                     if (mvcBuilderType != null
                         && mvcServiceCollectionExtensionsType != null
                         && controllerFeatureType != null
@@ -108,6 +110,7 @@
                         && serviceBasedControllerActivatorType != null
                         && serviceCollectionDescriptorExtensionsType != null)
                     {
+                        //mvc = true;
                         var mvcBuilder = new SemanticType(mvcBuilderType, semanticModel);
                         var mvcServiceCollectionExtensions = new SemanticType(mvcServiceCollectionExtensionsType, semanticModel);
                         var controllerFeature = new SemanticType(controllerFeatureType, semanticModel);
@@ -169,8 +172,16 @@
 
                         method = method.AddBodyStatements(SyntaxFactory.ExpressionStatement(bindControllerActivator));
                     }
+                    else
+                    {
+                        foreach (var (dependency, lifetime, binding) in dependencies.Where(i => i.lifetime is Lifetime.Scoped or Lifetime.ContainerSingleton))
+                        {
+                            var error = $"Impossible to use the lifetime {lifetime} for {dependency} outside an ASP.NET context.";
+                            _diagnostic.Error(Diagnostics.Error.Unsupported, error, binding.Location);
+                        }
+                    }
 
-                    foreach (var (dependency, lifetime, _, _) in dependencies)
+                    foreach (var (dependency, lifetime, _) in dependencies)
                     {
                         if (dependency.Equals(serviceProvider))
                         {
@@ -188,7 +199,7 @@
                             continue;
                         }
 
-                        string lifetimeName = lifetime switch
+                        var lifetimeName = lifetime switch
                         {
                             Lifetime.ContainerSingleton => "AddSingleton",
                             Lifetime.Scoped => "AddScoped",
@@ -196,6 +207,11 @@
                         };
 
                         var curDependency = _typeResolver.Resolve(dependency, null);
+                        if (!curDependency.IsResolved)
+                        {
+                            _tracer.Save();
+                            continue;
+                        }
 
                         var objectExpression = curDependency.ObjectBuilder.TryBuild(_buildStrategy, curDependency);
                         if (objectExpression == null)
@@ -204,10 +220,8 @@
                             continue;
                         }
 
-                        var resolve = SyntaxFactory.CastExpression(dependency, objectExpression);
-
+                        //objectExpression = SyntaxFactory.CastExpression(dependency, objectExpression);
                         var serviceProviderInstance = new SemanticType(semanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance).FullName)!, semanticModel);
-
                         var serviceProviderValue = SyntaxFactory.MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
                             serviceProviderInstance,
@@ -218,7 +232,7 @@
                             .AddStatements(SyntaxFactory.ExpressionStatement(
                                 SyntaxFactory.AssignmentExpression(
                                     SyntaxKind.SimpleAssignmentExpression, serviceProviderValue, SyntaxFactory.IdentifierName("serviceProvider"))))
-                            .AddStatements(SyntaxFactory.ReturnStatement(resolve));
+                            .AddStatements(SyntaxFactory.ReturnStatement(objectExpression));
 
                         var finallyBlock = SyntaxFactory.Block()
                             .AddStatements(SyntaxFactory.ExpressionStatement(
@@ -249,7 +263,7 @@
                                     SyntaxFactory.MemberAccessExpression(
                                         SyntaxKind.SimpleMemberAccessExpression,
                                         serviceCollectionServiceExtensions,
-                                        SyntaxFactory.IdentifierName(lifetimeName)))
+                                        SyntaxFactory.GenericName(lifetimeName).AddTypeArgumentListArguments(dependency.TypeSyntax)))
                                 .AddArgumentListArguments(
                                     SyntaxFactory.Argument(SyntaxFactory.IdentifierName("services")),
                                     SyntaxFactory.Argument(resolveLambda)
@@ -261,6 +275,11 @@
                     return method.AddBodyStatements(SyntaxFactory.ReturnStatement(SyntaxFactory.IdentifierName("services")));
                 });
             }
+            else
+            {
+            }
+
+            _log.Trace(() => new []{"Finish"});
         }
     }
 }
