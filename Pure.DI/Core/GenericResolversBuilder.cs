@@ -14,25 +14,32 @@ namespace Pure.DI.Core
         private readonly IBuildContext _buildContext;
         private readonly ITypeResolver _typeResolver;
         private readonly IBuildStrategy _buildStrategy;
-        private readonly IStringTools _stringTools;
+        private readonly IStatementsFinalizer _statementsFinalizer;
+        private readonly IStaticResolverNameProvider _staticResolverNameProvider;
 
         public GenericResolversBuilder(
             ResolverMetadata metadata,
             IBuildContext buildContext,
             ITypeResolver typeResolver,
             IBuildStrategy buildStrategy,
-            IStringTools stringTools)
+            IStatementsFinalizer statementsFinalizer,
+            IStaticResolverNameProvider staticResolverNameProvider)
         {
             _metadata = metadata;
             _buildContext = buildContext;
             _typeResolver = typeResolver;
             _buildStrategy = buildStrategy;
-            _stringTools = stringTools;
+            _statementsFinalizer = statementsFinalizer;
+            _staticResolverNameProvider = staticResolverNameProvider;
         }
 
         public int Order => 2;
 
-        public IEnumerable<MemberDeclarationSyntax> BuildMembers(SemanticModel semanticModel)
+        public IEnumerable<MemberDeclarationSyntax> BuildMembers(SemanticModel semanticModel) =>
+            BuildMethods(semanticModel)
+                .Select(method => method.WithBody(_statementsFinalizer.AddFinalizationStatements(method.Body)));
+
+        private IEnumerable<MethodDeclarationSyntax> BuildMethods(SemanticModel semanticModel)
         {
             var methods =
                 from binding in _metadata.Bindings.Concat(_buildContext.AdditionalBindings).ToArray()
@@ -42,8 +49,7 @@ namespace Pure.DI.Core
                 let minAccessibility = GetAccessibility(dependency.Type).Min()
                 where minAccessibility >= Accessibility.Internal
                 let accessibility = minAccessibility == Accessibility.Public ? SyntaxKind.PublicKeyword : SyntaxKind.InternalKeyword
-                let name = GetMethodName(dependency.Type)
-                let methodName = _buildContext.NameService.FindName(new MemberKey(name, dependency.Type))
+                let methodName = _staticResolverNameProvider.GetName(dependency)
                 let method = SyntaxFactory.MethodDeclaration(dependency.TypeSyntax, methodName)
                     .AddModifiers(SyntaxFactory.Token(accessibility), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
                     .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
@@ -130,27 +136,6 @@ namespace Pure.DI.Core
             }
         }
 
-        private string GetMethodName(ISymbol symbol) => $"Resolve{string.Join(string.Empty, GetParts(symbol))}";
-
-        private IEnumerable<string> GetParts(ISymbol symbol)
-        {
-            foreach (var part in symbol.ToDisplayParts())
-            {
-                switch (part.Kind)
-                {
-                    case SymbolDisplayPartKind.NamespaceName:
-                        break;
-                    
-                    case SymbolDisplayPartKind.Punctuation:
-                        break;
-
-                    default:
-                        yield return _stringTools.ConvertToTitle(part.ToString());
-                        break;
-                }
-            }
-        }
-        
         private class MethodComparer: IEqualityComparer<MethodDeclarationSyntax>
         {
             public static readonly IEqualityComparer<MethodDeclarationSyntax> Shared = new MethodComparer();

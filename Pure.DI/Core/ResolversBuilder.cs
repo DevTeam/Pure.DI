@@ -21,6 +21,7 @@ namespace Pure.DI.Core
         private readonly ITypeResolver _typeResolver;
         private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
         private readonly ITracer _tracer;
+        private readonly IStatementsFinalizer _statementsFinalizer;
         private const string Comments = "\n\t//- - - - - - - - - - - - - - - - - - - - - - - - -";
 
         public ResolversBuilder(
@@ -32,7 +33,8 @@ namespace Pure.DI.Core
             ILog<ResolversBuilder> log,
             ITypeResolver typeResolver,
             ICannotResolveExceptionFactory cannotResolveExceptionFactory,
-            ITracer tracer)
+            ITracer tracer,
+            IStatementsFinalizer statementsFinalizer)
         {
             _metadata = metadata;
             _resolveMethodBuilders = resolveMethodBuilders;
@@ -43,6 +45,7 @@ namespace Pure.DI.Core
             _typeResolver = typeResolver;
             _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
             _tracer = tracer;
+            _statementsFinalizer = statementsFinalizer;
         }
 
         public int Order => 0;
@@ -68,90 +71,17 @@ namespace Pure.DI.Core
             {
                 yield return member;
             }
+            
+            var methods = _resolveMethodBuilders
+                .Select(i => i.Build())
+                .Where(_ => !_buildContext.IsCancellationRequested)
+                .Select(i => i.TargetMethod.AddBodyStatements(i.PostStatements))
+                .Select(i => i.WithBody(_statementsFinalizer.AddFinalizationStatements(i.Body)))
+                .Concat(_buildContext.AdditionalMembers);
 
-            var allMethods = _resolveMethodBuilders.Select(i => i.Build()).ToArray();
-
-            // Post statements
-            foreach (var method in allMethods)
+            foreach (var member in methods)
             {
-                method.TargetMethod = method.TargetMethod
-                    .AddBodyStatements(method.PostStatements);
-            }
-
-            if (!_buildContext.IsCancellationRequested)
-            {
-                List<MemberDeclarationSyntax> internalMembers = new();
-                if (_buildContext.FinalizationStatements.Any())
-                {
-                    const string deepnessFieldName = "_deepness";
-                    var deepnessField = SyntaxFactory.FieldDeclaration(
-                            SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName("int"))
-                                .AddVariables(
-                                    SyntaxFactory.VariableDeclarator(deepnessFieldName)
-                                )
-                        )
-                        .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.ThreadStaticAttr))
-                        .AddModifiers(
-                            SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                            SyntaxFactory.Token(SyntaxKind.StaticKeyword));
-
-                    internalMembers.Add(deepnessField);
-
-                    var refToDeepness = SyntaxFactory.Argument(SyntaxFactory.IdentifierName(deepnessFieldName)).WithRefKindKeyword(SyntaxFactory.Token(SyntaxKind.RefKeyword));
-
-                    var incrementStatement = SyntaxFactory.InvocationExpression(
-                        SyntaxFactory.IdentifierName("System.Threading.Interlocked.Increment"),
-                        SyntaxFactory.ArgumentList().AddArguments(refToDeepness));
-
-                    var decrementStatement = SyntaxFactory.InvocationExpression(
-                        SyntaxFactory.IdentifierName("System.Threading.Interlocked.Decrement"),
-                        SyntaxFactory.ArgumentList().AddArguments(refToDeepness));
-
-                    foreach (var method in allMethods)
-                    {
-                        if (_buildContext.IsCancellationRequested)
-                        {
-                            _log.Trace(() => new[] { "Build canceled" });
-                            break;
-                        }
-
-                        var curStatements = method.TargetMethod.Body;
-                        if (curStatements != null)
-                        {
-                            var releaseBlock = SyntaxFactory.Block()
-                                .AddStatements(
-                                    SyntaxFactory.IfStatement(
-                                        SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, decrementStatement, SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0))),
-                                        SyntaxFactory.Block().AddStatements(_buildContext.FinalizationStatements.ToArray())
-                                    ));
-
-                            var tryStatement = SyntaxFactory.TryStatement(
-                                curStatements,
-                                SyntaxFactory.List<CatchClauseSyntax>(),
-                                SyntaxFactory.FinallyClause(releaseBlock));
-
-                            method.TargetMethod = method.TargetMethod.WithBody(
-                                SyntaxFactory.Block()
-                                    .AddStatements(SyntaxFactory.ExpressionStatement(incrementStatement))
-                                    .AddStatements(tryStatement));
-                        }
-                    }
-                }
-
-                var members =
-                    allMethods
-                        .Select(strategy => strategy.TargetMethod)
-                        .Concat(_buildContext.AdditionalMembers)
-                        .Concat(internalMembers);
-
-                foreach (var member in members)
-                {
-                    yield return member;
-                }
-            }
-            else
-            {
-                _log.Trace(() => new[] { "Build canceled" });
+                yield return member;
             }
         }
 

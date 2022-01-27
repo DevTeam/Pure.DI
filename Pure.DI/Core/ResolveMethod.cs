@@ -4,7 +4,7 @@
 
     internal class ResolveMethod
     {
-        public MethodDeclarationSyntax TargetMethod;
+        public readonly MethodDeclarationSyntax TargetMethod;
         public readonly StatementSyntax[] PostStatements;
 
         public ResolveMethod(

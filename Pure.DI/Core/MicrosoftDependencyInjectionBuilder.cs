@@ -16,6 +16,7 @@
         private readonly IDiagnostic _diagnostic;
         private readonly Log<MicrosoftDependencyInjectionBuilder> _log;
         private readonly ITracer _tracer;
+        private readonly IStatementsFinalizer _statementsFinalizer;
 
         public MicrosoftDependencyInjectionBuilder(
             ResolverMetadata metadata,
@@ -24,7 +25,8 @@
             IBuildStrategy buildStrategy,
             IDiagnostic diagnostic,
             Log<MicrosoftDependencyInjectionBuilder> log,
-            ITracer tracer)
+            ITracer tracer,
+            IStatementsFinalizer statementsFinalizer)
         {
             _metadata = metadata;
             _buildContext = buildContext;
@@ -33,6 +35,7 @@
             _diagnostic = diagnostic;
             _log = log;
             _tracer = tracer;
+            _statementsFinalizer = statementsFinalizer;
         }
 
         public int Order => 1;
@@ -255,6 +258,8 @@
                                         tryBlock,
                                         SyntaxFactory.List<CatchClauseSyntax>(),
                                         SyntaxFactory.FinallyClause(finallyBlock)));
+
+                        lambdaBlock = _statementsFinalizer.AddFinalizationStatements(lambdaBlock)!;
 
                         var resolveLambda = SyntaxFactory.SimpleLambdaExpression(SyntaxFactory.Parameter(SyntaxFactory.Identifier("serviceProvider")), lambdaBlock);
 
