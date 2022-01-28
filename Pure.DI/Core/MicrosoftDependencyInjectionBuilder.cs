@@ -52,7 +52,7 @@
                 group binding by dependency
                 into groups
                 let item = groups.First()
-                select (dependency: groups.Key, lifetime: item.Lifetime, item)).ToArray();
+                select (resolvedDependency: groups.Key, lifetime: item.Lifetime, item)).ToArray();
 
             var serviceProviderType = semanticModel.Compilation.GetTypeByMetadataName(typeof(System.IServiceProvider).FullName);
             var serviceCollectionType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.IServiceCollection");
@@ -105,7 +105,6 @@
                         $"mvcBuilderType: {mvcBuilderType}", $"mvcServiceCollectionExtensionsType: {mvcServiceCollectionExtensionsType}", $"controllerFeatureType: {controllerFeatureType}", $"controllerActivatorType: {controllerActivatorType}", $"serviceBasedControllerActivatorType: {serviceBasedControllerActivatorType}", $"serviceCollectionDescriptorExtensionsType: {serviceCollectionDescriptorExtensionsType}"
                     });
 
-                    //bool mvc = false;
                     if (mvcBuilderType != null
                         && mvcServiceCollectionExtensionsType != null
                         && controllerFeatureType != null
@@ -113,7 +112,6 @@
                         && serviceBasedControllerActivatorType != null
                         && serviceCollectionDescriptorExtensionsType != null)
                     {
-                        //mvc = true;
                         var mvcBuilder = new SemanticType(mvcBuilderType, semanticModel);
                         var mvcServiceCollectionExtensions = new SemanticType(mvcServiceCollectionExtensionsType, semanticModel);
                         var controllerFeature = new SemanticType(controllerFeatureType, semanticModel);
@@ -177,16 +175,16 @@
                     }
                     else
                     {
-                        foreach (var (dependency, lifetime, binding) in dependencies.Where(i => i.lifetime is Lifetime.Scoped or Lifetime.ContainerSingleton))
+                        foreach (var (resoledDependency, lifetime, binding) in dependencies.Where(i => i.lifetime is Lifetime.Scoped or Lifetime.ContainerSingleton))
                         {
-                            var error = $"Impossible to use the lifetime {lifetime} for {dependency} outside an ASP.NET context.";
+                            var error = $"Impossible to use the lifetime {lifetime} for {resoledDependency} outside an ASP.NET context.";
                             _diagnostic.Error(Diagnostics.Error.Unsupported, error, binding.Location);
                         }
                     }
 
-                    foreach (var (dependency, lifetime, _) in dependencies)
+                    foreach (var (resolvedDependency, lifetime, _) in dependencies)
                     {
-                        if (dependency.Equals(serviceProvider))
+                        if (resolvedDependency.Equals(serviceProvider))
                         {
                             // Skip IServiceProvider
                             continue;
@@ -201,29 +199,41 @@
 
                             continue;
                         }
-
-                        var lifetimeName = lifetime switch
-                        {
-                            Lifetime.ContainerSingleton => "AddSingleton",
-                            Lifetime.Scoped => "AddScoped",
-                            _ => "AddTransient"
-                        };
-
-                        var curDependency = _typeResolver.Resolve(dependency, null);
-                        if (!curDependency.IsResolved)
+                        
+                        var dependency = _typeResolver.Resolve(resolvedDependency, null);
+                        if (!dependency.IsResolved)
                         {
                             _tracer.Save();
                             continue;
                         }
 
-                        var objectExpression = curDependency.ObjectBuilder.TryBuild(_buildStrategy, curDependency);
+                        string lifetimeName;
+                        ExpressionSyntax? objectExpression;
+                        // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+                        switch (lifetime)
+                        {
+                            case Lifetime.ContainerSingleton:
+                                objectExpression = dependency.ObjectBuilder.TryBuild(_buildStrategy, dependency);
+                                lifetimeName = "AddSingleton";
+                                break;
+
+                            case Lifetime.Scoped:
+                                objectExpression = dependency.ObjectBuilder.TryBuild(_buildStrategy, dependency);
+                                lifetimeName = "AddScoped";
+                                break;
+
+                            default:
+                                objectExpression = _buildStrategy.TryBuild(dependency, resolvedDependency);
+                                lifetimeName = "AddTransient";
+                                break;
+                        }
+
                         if (objectExpression == null)
                         {
                             _tracer.Save();
                             continue;
                         }
 
-                        //objectExpression = SyntaxFactory.CastExpression(dependency, objectExpression);
                         var serviceProviderInstance = new SemanticType(semanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance).FullName)!, semanticModel);
                         var serviceProviderValue = SyntaxFactory.MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
@@ -268,7 +278,7 @@
                                     SyntaxFactory.MemberAccessExpression(
                                         SyntaxKind.SimpleMemberAccessExpression,
                                         serviceCollectionServiceExtensions,
-                                        SyntaxFactory.GenericName(lifetimeName).AddTypeArgumentListArguments(dependency.TypeSyntax)))
+                                        SyntaxFactory.GenericName(lifetimeName).AddTypeArgumentListArguments(resolvedDependency.TypeSyntax)))
                                 .AddArgumentListArguments(
                                     SyntaxFactory.Argument(SyntaxFactory.IdentifierName("services")),
                                     SyntaxFactory.Argument(resolveLambda)

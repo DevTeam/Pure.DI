@@ -17,7 +17,7 @@
             // {
             DI.Setup()
                 // Add Transient
-                .Bind<IDependency>().To<Dependency>()
+                .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
                 // Add Scoped
                 .Bind<IService>().As(Lifetime.Scoped).To<Service>();
 
