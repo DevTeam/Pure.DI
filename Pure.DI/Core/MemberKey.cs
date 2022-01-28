@@ -6,20 +6,20 @@ namespace Pure.DI.Core
     internal readonly struct MemberKey
     {
         public readonly string Prefix;
-        private readonly object _bindingId;
+        private readonly object _uniqId;
         
         public MemberKey(string prefix, Dependency dependency) 
             : this(prefix, dependency.Binding.Id)
         {
         }
 
-        public MemberKey(string prefix, object bindingId)
+        public MemberKey(string prefix, object uniqId)
         {
             Prefix = new string(prefix.Where(i => char.IsLetterOrDigit(i) || i == '_').ToArray());
-            _bindingId = bindingId;
+            _uniqId = uniqId;
         }
 
-        public bool Equals(MemberKey other) => Prefix == other.Prefix && _bindingId.Equals(other._bindingId);
+        public bool Equals(MemberKey other) => Prefix == other.Prefix && _uniqId.Equals(other._uniqId);
 
         public override bool Equals(object? obj) => obj is MemberKey other && Equals(other);
 
@@ -27,7 +27,7 @@ namespace Pure.DI.Core
         {
             unchecked
             {
-                return (Prefix.GetHashCode() * 397) ^ _bindingId.GetHashCode();
+                return (Prefix.GetHashCode() * 397) ^ _uniqId.GetHashCode();
             }
         }
     }

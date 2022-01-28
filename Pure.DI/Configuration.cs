@@ -77,8 +77,8 @@
                 .Bind<IIncludeTypeFilter>().As(Singleton).To<IncludeTypeFilter>()
                 .Bind<IMembersBuilder>().Tag(GenericResolvers).To<GenericResolversBuilder>()
                 .Bind<IStringTools>().As(Singleton).To<StringTools>()
-                .Bind<IStatementsFinalizer>().As(Singleton).To<StatementsFinalizer>()
-                .Bind<IStaticResolverNameProvider>().As(Singleton).To<StaticResolverNameProvider>();
+                .Bind<IStatementsFinalizer>().Bind<IMembersBuilder>().To<StatementsFinalizer>()
+                .Bind<IStaticResolverNameProvider>().To<StaticResolverNameProvider>();
         }
     }
 }

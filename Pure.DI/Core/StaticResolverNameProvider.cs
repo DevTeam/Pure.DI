@@ -1,3 +1,4 @@
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ internal class StaticResolverNameProvider : IStaticResolverNameProvider
     public string GetName(SemanticType dependency)
     {
         var name = GetMethodName(dependency.Type);
-        return _buildContext.NameService.FindName(new MemberKey(name, dependency.Type));
+        return _buildContext.NameService.FindName(new MemberKey(name, dependency.Name));
     }
 
     private string GetMethodName(ISymbol symbol) => $"Resolve{string.Join(string.Empty, GetParts(symbol))}";
