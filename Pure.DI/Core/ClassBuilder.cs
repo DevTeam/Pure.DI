@@ -13,6 +13,11 @@ using NamespaceType = BaseNamespaceDeclarationSyntax;
 // ReSharper disable once ClassNeverInstantiated.Global
 internal class ClassBuilder : IClassBuilder
 {
+    private static readonly UsingDirectiveSyntax[] AdditionalUsings =
+    {
+        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Pure.DI"))
+    };
+    
     private readonly IMembersBuilder[] _membersBuilder;
     private readonly IDiagnostic _diagnostic;
     private readonly IBindingsProbe _bindingsProbe;
@@ -147,7 +152,7 @@ internal class ClassBuilder : IClassBuilder
                                             .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag"))))))
             ).WithPragmaWarningDisable(0067, 8600, 8602, 8603, 8604, 8618, 8625);
 
-        var rootNode = CreateRootNode(_metadata.SetupNode, Array.Empty<UsingDirectiveSyntax>(), resolverClass);
+        var rootNode = CreateRootNode(_metadata.SetupNode, AdditionalUsings, resolverClass);
         var sampleDependency = _metadata.Bindings.LastOrDefault()?.Dependencies.FirstOrDefault()?.ToString() ?? "T";
         _diagnostic.Information(Diagnostics.Information.Generated, $"{_metadata.ComposerTypeName} was generated. Please use a method like {_metadata.ComposerTypeName}.Resolve<{sampleDependency}>() to create a composition root.", _metadata.Bindings.FirstOrDefault()?.Location);
         return rootNode;

@@ -1,39 +1,43 @@
-﻿namespace Pure.DI.UsageScenarios.Tests;
-
-public class Arrays
+﻿namespace Pure.DI.UsageScenarios.Tests
 {
-    [Fact]
-    public void Run()
+    using Shouldly;
+    using Xunit;
+
+    public class Arrays
     {
-        // $visible=true
-        // $tag=3 BCL types
-        // $priority=01
-        // $description=Arrays
-        // $header=To resolve all possible instances of any tags of the specific type as an _array_ just use the injection of _T[]_.
-        // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
-        // {
-        // out=C:\Projects\TeamCity\Teamcity.CSharpInteractive\TeamCity.CSharpInteractive\obj\Generated
-        DI.Setup()
-            .Bind<IDependency>().To<Dependency>()
-            // Bind to the implementation #1
-            .Bind<IService>(1).As(Lifetime.PerResolve).To<Service>()
-            // Bind to the implementation #2
-            .Bind<IService>(99).Tags(2, "abc").To<Service>()
-            // Bind to the implementation #3
-            .Bind<IService>().Tags(3).To<Service>()
-            .Bind<CompositionRoot<IService[]>>()
-            .To<CompositionRoot<IService[]>>();
-
-        // Resolve all appropriate instances
-        var composition = ArraysDI.Resolve<CompositionRoot<IService[]>>();
-        // }
-        // Check the number of resolved instances
-        composition.Root.Length.ShouldBe(3);
-
-        foreach (var instance in composition.Root)
+        [Fact]
+        public void Run()
         {
-            // Check the instance
-            instance.ShouldBeOfType<Service>();
+            // $visible=true
+            // $tag=3 BCL types
+            // $priority=01
+            // $description=Arrays
+            // $header=To resolve all possible instances of any tags of the specific type as an _array_ just use the injection of _T[]_.
+            // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+            // {
+            // out=C:\Projects\TeamCity\Teamcity.CSharpInteractive\TeamCity.CSharpInteractive\obj\Generated
+            DI.Setup()
+                .Bind<IDependency>().To<Dependency>()
+                // Bind to the implementation #1
+                .Bind<IService>(1).As(Lifetime.PerResolve).To<Service>()
+                // Bind to the implementation #2
+                .Bind<IService>(99).Tags(2, "abc").To<Service>()
+                // Bind to the implementation #3
+                .Bind<IService>().Tags(3).To<Service>()
+                .Bind<CompositionRoot<IService[]>>()
+                    .To<CompositionRoot<IService[]>>();
+
+            // Resolve all appropriate instances
+            var composition = ArraysDI.Resolve<CompositionRoot<IService[]>>();
+            // }
+            // Check the number of resolved instances
+            composition.Root.Length.ShouldBe(3);
+
+            foreach (var instance in composition.Root)
+            {
+                // Check the instance
+                instance.ShouldBeOfType<Service>();
+            }
         }
     }
 }

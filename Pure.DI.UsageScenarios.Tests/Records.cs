@@ -1,26 +1,31 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
-namespace Pure.DI.UsageScenarios.Tests;
-
-public class Records
+namespace Pure.DI.UsageScenarios.Tests
 {
-    [Fact]
-    // $visible=true
-    // $tag=1 Basics
-    // $priority=03
-    // $description=Records
-    // {
-    public void Run()
+    using Shouldly;
+    using Xunit;
+    using Pure.DI;
+
+    public class Records
     {
-        DI.Setup()
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<RecordService>();
+        [Fact]
+        // $visible=true
+        // $tag=1 Basics
+        // $priority=03
+        // $description=Records
+        // {
+        public void Run()
+        {
+            DI.Setup()
+                .Bind<IDependency>().To<Dependency>()
+                .Bind<IService>().To<RecordService>();
+            
+            var service = RecordsDI.Resolve<IService>();
+            service.ShouldBeOfType<RecordService>();
+        }
 
-        var service = RecordsDI.Resolve<IService>();
-        service.ShouldBeOfType<RecordService>();
+        public record RecordService(IDependency Dependency, string State = "") : IService;
+        // }
     }
-
-    public record RecordService(IDependency Dependency, string State = "") : IService;
-    // }
 }

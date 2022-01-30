@@ -1,22 +1,22 @@
 ﻿<#@ template debug="false" hostspecific="true" language="C#" #>
 <#@ assembly name="System.Core" #>
-<#@ output extension=".md" #>
-<#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".md" #>
 
 <#
     var currentPath = Host.ResolvePath("");
     var solutionPath = Path.Combine(currentPath, "..");
 
     var infos = new List<Dictionary<string, string>>();
-    foreach (var file in Directory.GetFiles(currentPath, "*.cs"))
+    foreach(var file in Directory.GetFiles(currentPath, "*.cs"))
     {
         var isBody = false;
         var vars = new Dictionary<string, string>();
         var body = new List<string>();
         int? offset = null;
-        foreach (var line in File.ReadAllLines(file))
+        foreach(var line in File.ReadAllLines(file))
         {
             if (vars.Count == 0)
             {
@@ -36,7 +36,7 @@
                 case "// {":
                     isBody = true;
                     continue;
-
+                
                 case "// }":
                     isBody = false;
                     continue;
@@ -44,10 +44,7 @@
 
             if (str.StartsWith("// $"))
             {
-                var parts = str.Substring(4, str.Length - 4).Split(new[]
-                {
-                    '='
-                }, 2, StringSplitOptions.RemoveEmptyEntries);
+                var parts = str.Substring(4, str.Length - 4).Split(new []{'='}, 2, StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length == 2)
                 {
                     var key = parts[0];
@@ -89,45 +86,44 @@
         var content =
             from line in body
             select line.Length > offset ? line.Substring(offset.Value, line.Length - offset.Value) : line.Trim();
-
+            
         vars["body"] = string.Join(Environment.NewLine, content) + Environment.NewLine;
-    }
-#>
+    }#>
 ## Usage Scenarios
 
 <#
-    foreach (var group in infos.Where(info => info["visible"] == "true").GroupBy(i => i["tag"]).OrderBy(i => i.Key[0]))
+    foreach(var group in infos.Where(info => info["visible"] == "true").GroupBy(i => i["tag"]).OrderBy(i => i.Key[0]))
     {
         var groupName = group.Key.Substring(1).Trim();
-#>- <#= groupName #>
+    #>- <#=groupName#>
 <#
-        foreach (var info in group.OrderBy(i => i["priority"] + "_" + i["description"]))
+        foreach(var info in group.OrderBy(i => i["priority"] + "_" + i["description"]))
         {
             var description = info["description"];
-            var reference = "#" +
+            var reference = "#"+ 
                             description.Replace(" ", "-")
                                 .Replace("'", string.Empty)
                                 .Replace("/", string.Empty)
                                 .Replace("`", string.Empty)
                                 .Replace("\\", string.Empty)
                                 .ToLowerInvariant();
-#>  - [<#= description #>](<#= reference #>)
+#>  - [<#=description#>](<#=reference#>)
 <#
         }
     }
 #>
 
 <#
-    foreach (var info in infos.OrderBy(i => i["tag"] + i["priority"]).Where(info => info["visible"] == "true"))
+    foreach(var info in infos.OrderBy(i => i["tag"] + i["priority"]).Where(info => info["visible"] == "true"))
     {
-#>### <#= info["description"] #>
+#>### <#=info["description"]#>
 
-<#= info["header"] #>
+<#=info["header"]#>
 
 ``` CSharp
-<#= info["body"] #>```
+<#=info["body"]#>```
 
-<#= info["footer"] #>
+<#=info["footer"]#>
 
 <#
     }
@@ -135,9 +131,9 @@
     var readmeBodyFile = Path.Combine(solutionPath, "README_BODY.md");
     var readmeFile = Path.Combine(solutionPath, "README.md");
     var samplesFile = Path.Combine(currentPath, "README_TEMPLATE.md");
-
+    
     File.Copy(readmeBodyFile, readmeFile, true);
 
     var samplesContent = File.ReadAllText(samplesFile);
-    File.AppendAllText(readmeFile, samplesContent);
+    File.AppendAllText(readmeFile, samplesContent);    
 #>

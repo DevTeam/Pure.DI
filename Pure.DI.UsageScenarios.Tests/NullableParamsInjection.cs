@@ -2,44 +2,49 @@
 // ReSharper disable RedundantTypeArgumentsOfMethod
 // ReSharper disable EmptyConstructor
 // ReSharper disable UnusedVariable
-namespace Pure.DI.UsageScenarios.Tests;
-
-[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-public class NullableParamsInjection
+namespace Pure.DI.UsageScenarios.Tests
 {
-    [Fact]
-    // $visible=true
-    // $tag=1 Basics
-    // $priority=06
-    // $description=Injection of nullable parameters
-    // {
-    public void Run()
+    using Shouldly;
+    using System.Diagnostics.CodeAnalysis;
+    using Xunit;
+
+    [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+    [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+    public class NullableParamsInjection
     {
-        DI.Setup()
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<SomeService>();
-
-        // Resolve an instance
-        var instance = NullableParamsInjectionDI.Resolve<IService>();
-
-        // Check the optional dependency
-        instance.State.ShouldBe("my default value");
-    }
-
-    public class SomeService : IService
-    {
-        // There is no registered dependency for parameter "state" of type "string",
-        // but parameter "state" has a nullable annotation
-        public SomeService(IDependency dependency, string? state)
+        [Fact]
+        // $visible=true
+        // $tag=1 Basics
+        // $priority=06
+        // $description=Injection of nullable parameters
+        // {
+        public void Run()
         {
-            Dependency = dependency;
-            State = state ?? "my default value";
+            DI.Setup()
+                .Bind<IDependency>().To<Dependency>()
+                .Bind<IService>().To<SomeService>();
+
+            // Resolve an instance
+            var instance = NullableParamsInjectionDI.Resolve<IService>();
+
+            // Check the optional dependency
+            instance.State.ShouldBe("my default value");
         }
 
-        public IDependency Dependency { get; }
+        public class SomeService: IService
+        {
+            // There is no registered dependency for parameter "state" of type "string",
+            // but parameter "state" has a nullable annotation
+            public SomeService(IDependency dependency, string? state)
+            {
+                Dependency = dependency;
+                State = state ?? "my default value";
+            }
 
-        public string State { get; }
+            public IDependency Dependency { get; }
+
+            public string State { get; }
+        }
+        // }
     }
-    // }
 }

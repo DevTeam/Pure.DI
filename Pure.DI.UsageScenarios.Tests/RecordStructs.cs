@@ -1,26 +1,31 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
-namespace Pure.DI.UsageScenarios.Tests;
-
-public class RecordStructs
+namespace Pure.DI.UsageScenarios.Tests
 {
-    [Fact]
-    // $visible=true
-    // $tag=1 Basics
-    // $priority=03
-    // $description=Record structs
-    // {
-    public void Run()
+    using Shouldly;
+    using Xunit;
+    using Pure.DI;
+
+    public class RecordStructs
     {
-        DI.Setup()
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<RecordStructService>();
+        [Fact]
+        // $visible=true
+        // $tag=1 Basics
+        // $priority=03
+        // $description=Record structs
+        // {
+        public void Run()
+        {
+            DI.Setup()
+                .Bind<IDependency>().To<Dependency>()
+                .Bind<IService>().To<RecordStructService>();
+            
+            var service = RecordStructsDI.Resolve<IService>();
+            service.ShouldBeOfType<RecordStructService>();
+        }
 
-        var service = RecordStructsDI.Resolve<IService>();
-        service.ShouldBeOfType<RecordStructService>();
+        public readonly record struct RecordStructService(IDependency Dependency, string State = "") : IService;
+        // }
     }
-
-    public readonly record struct RecordStructService(IDependency Dependency, string State = "") : IService;
-    // }
 }

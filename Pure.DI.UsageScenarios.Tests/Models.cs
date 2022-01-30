@@ -29,13 +29,11 @@ namespace Pure.DI.UsageScenarios.Tests
         string State { get; }
     }
 
-    public interface IAnotherService
-    {
-    }
+    public interface IAnotherService { }
 
     public interface IDisposableService : IService, IDisposable
 #if NET5_0_OR_GREATER || NETCOREAPP3_1
-        , IAsyncDisposable
+    , IAsyncDisposable
 #endif
     {
     }
@@ -66,9 +64,7 @@ namespace Pure.DI.UsageScenarios.Tests
     public record ServiceRecord(IDependency Dependency, string State = "") : IService;
 
     // Generic
-    public interface IService<T> : IService
-    {
-    }
+    public interface IService<T>: IService { }
 
     public class Service<T> : IService<T>
     {
@@ -105,7 +101,7 @@ namespace Pure.DI.UsageScenarios.Tests
     }
 
     public interface IListService<T>
-        where T : IList<int>
+        where T: IList<int>
     {
     }
 
