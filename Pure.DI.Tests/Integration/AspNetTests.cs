@@ -1,15 +1,12 @@
-﻿namespace Pure.DI.Tests.Integration
-{
-    using Shouldly;
-    using Xunit;
+﻿namespace Pure.DI.Tests.Integration;
 
-    public class AspNetTests
+public class AspNetTests
+{
+    [Fact]
+    public void ShouldSupportAspNet()
     {
-        [Fact]
-        public void ShouldSupportAspNet()
-        {
-            // Given
-            const string statements = @"
+        // Given
+        const string statements = @"
             //var hostBuilder = new WebHostBuilder()
             //    .ConfigureServices(x => x.AddTransient<Controller>())
             //    .UseStartup<Startup>();
@@ -17,8 +14,8 @@
             //Console.WriteLine(server.CreateClient().GetStringAsync("" / controller"").Result);
             ";
 
-            // When
-            var output = @"
+        // When
+        var output = @"
             namespace Sample
             {
                 using Microsoft.AspNetCore.Builder;
@@ -73,10 +70,12 @@
                             .Bind<Controller>().As(Lifetime.Scoped).To<Controller>();
                     }
                 }                                    
-            }".Run(out var generatedCode, new RunOptions { Statements = statements});
+            }".Run(out var generatedCode, new RunOptions
+        {
+            Statements = statements
+        });
 
-            // Then
-            output.ShouldBeEmpty(generatedCode);
-        }
+        // Then
+        output.ShouldBeEmpty(generatedCode);
     }
 }

@@ -3,8 +3,6 @@
 // ReSharper disable UnusedMember.Local
 namespace BlazorServerApp
 {
-    using System;
-    using System.Diagnostics;
     using Clock.Models;
     using Clock.ViewModels;
     using Pure.DI;

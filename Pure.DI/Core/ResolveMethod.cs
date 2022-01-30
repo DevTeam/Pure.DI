@@ -1,18 +1,15 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal class ResolveMethod
 {
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+    public readonly MethodDeclarationSyntax TargetMethod;
+    public readonly StatementSyntax[] PostStatements;
 
-    internal class ResolveMethod
+    public ResolveMethod(
+        MethodDeclarationSyntax targetMethod,
+        params StatementSyntax[] postStatements)
     {
-        public readonly MethodDeclarationSyntax TargetMethod;
-        public readonly StatementSyntax[] PostStatements;
-
-        public ResolveMethod(
-            MethodDeclarationSyntax targetMethod,
-            params StatementSyntax[] postStatements)
-        {
-            TargetMethod = targetMethod;
-            PostStatements = postStatements;
-        }
+        TargetMethod = targetMethod;
+        PostStatements = postStatements;
     }
 }

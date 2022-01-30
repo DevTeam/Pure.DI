@@ -1,10 +1,6 @@
-﻿namespace Pure.DI.Core
-{
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿namespace Pure.DI.Core;
 
-    internal interface IClassBuilder
-    {
-        CompilationUnitSyntax Build(SemanticModel semanticModel);
-    }
+internal interface IClassBuilder
+{
+    CompilationUnitSyntax Build(SemanticModel semanticModel);
 }

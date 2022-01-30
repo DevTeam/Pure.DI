@@ -1,9 +1,6 @@
-﻿namespace Pure.DI.Core
-{
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿namespace Pure.DI.Core;
 
-    internal interface ISyntaxRegistry
-    {
-        MethodDeclarationSyntax FindMethod(string className, string methodName);
-    }
+internal interface ISyntaxRegistry
+{
+    MethodDeclarationSyntax FindMethod(string className, string methodName);
 }

@@ -1,65 +1,65 @@
-﻿namespace Pure.DI.Benchmark.Containers
+﻿namespace Pure.DI.Benchmark.Containers;
+
+using global::SimpleInjector;
+
+// ReSharper disable once ClassNeverInstantiated.Global
+internal sealed class SimpleInjector : BaseAbstractContainer<Container>
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using global::SimpleInjector;
+    private readonly Container _container = new();
+    private readonly Lazy<Container> _containerProvider;
+    private readonly Dictionary<Type, List<Type>> _collections = new();
 
-    // ReSharper disable once ClassNeverInstantiated.Global
-    internal sealed class SimpleInjector: BaseAbstractContainer<Container>
+    public SimpleInjector()
     {
-        private readonly Container _container = new();
-        private readonly Lazy<Container> _containerProvider;
-        private readonly Dictionary<Type, List<Type>> _collections = new();
+        _container.Options.EnableAutoVerification = false;
+        _container.Options.UseStrictLifestyleMismatchBehavior = false;
+        _container.Options.SuppressLifestyleMismatchVerification = true;
 
-        public SimpleInjector()
+        _containerProvider = new Lazy<Container>(() =>
         {
-            _container.Options.EnableAutoVerification = false;
-            _container.Options.UseStrictLifestyleMismatchBehavior = false;
-            _container.Options.SuppressLifestyleMismatchVerification = true;
-            
-            _containerProvider = new Lazy<Container>(() =>
+            foreach (var (contractType, implementations) in _collections.Where(i => i.Value.Count > 1))
             {
-                foreach (var (contractType, implementations) in _collections.Where(i => i.Value.Count > 1))
+                _container.Collection.Register(contractType, implementations);
+            }
+
+            return _container;
+        });
+    }
+
+    public override Container CreateContainer() => _containerProvider.Value;
+
+    public override void Register(Type contractType, Type implementationType, AbstractLifetime lifetime = AbstractLifetime.Transient, string name = null)
+    {
+        switch (lifetime)
+        {
+            case AbstractLifetime.Transient:
+                if (!_collections.TryGetValue(contractType, out var implementations))
                 {
-                    _container.Collection.Register(contractType, implementations);
+                    implementations = new List<Type>
+                    {
+                        implementationType
+                    };
+
+                    _collections.Add(contractType, implementations);
+                    _container.Register(contractType, implementationType);
+                }
+                else
+                {
+                    implementations.Add(contractType);
                 }
 
-                return _container;
-            });
+                break;
+
+            case AbstractLifetime.Singleton:
+                _container.RegisterSingleton(contractType, implementationType);
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException(nameof(lifetime), lifetime, null);
         }
-
-        public override Container CreateContainer() => _containerProvider.Value;
-
-        public override void Register(Type contractType, Type implementationType, AbstractLifetime lifetime = AbstractLifetime.Transient, string name = null)
-        {
-            switch (lifetime)
-            {
-                case AbstractLifetime.Transient:
-                    if (!_collections.TryGetValue(contractType, out var implementations))
-                    {
-                        implementations = new List<Type> { implementationType };
-                        _collections.Add(contractType, implementations);
-                        _container.Register(contractType, implementationType);
-                    }
-                    else
-                    {
-                        implementations.Add(contractType);
-                    }
-
-                    break;
-
-                case AbstractLifetime.Singleton:
-                    _container.RegisterSingleton(contractType, implementationType);
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(lifetime), lifetime, null);
-            }
-        }
-
-        public override T Resolve<T>() where T : class => _container.GetInstance<T>();
-
-        public override void Dispose() => _container.Dispose();
     }
+
+    public override T Resolve<T>() where T : class => _container.GetInstance<T>();
+
+    public override void Dispose() => _container.Dispose();
 }

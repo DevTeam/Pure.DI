@@ -1,11 +1,6 @@
-﻿namespace Pure.DI.Core
-{
-    using System.Collections.Generic;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿namespace Pure.DI.Core;
 
-    internal interface IAttributesService
-    {
-        IEnumerable<ExpressionSyntax> GetAttributeArgumentExpressions(AttributeKind attributeKind, ISymbol type);
-    }
+internal interface IAttributesService
+{
+    IEnumerable<ExpressionSyntax> GetAttributeArgumentExpressions(AttributeKind attributeKind, ISymbol type);
 }

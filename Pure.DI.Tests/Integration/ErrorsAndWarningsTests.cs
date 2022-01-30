@@ -1,21 +1,18 @@
-﻿namespace Pure.DI.Tests.Integration
+﻿namespace Pure.DI.Tests.Integration;
+
+using Core;
+
+public class ErrorsAndWarningsTests
 {
-    using System.Linq;
-    using Core;
-    using Shouldly;
-    using Xunit;
-
-    public class ErrorsAndWarningsTests
+    [Theory]
+    [InlineData("int")]
+    [InlineData("string")]
+    public void ShouldShowCompilationErrorWhenCannotResolve(string type)
     {
-        [Theory]
-        [InlineData("int")]
-        [InlineData("string")]
-        public void ShouldShowCompilationErrorWhenCannotResolve(string type)
-        {
-            // Given
+        // Given
 
-            // When
-            var output = @"
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -38,17 +35,17 @@
                 }    
             }".Replace("string", type).Run(out var generatedCode);
 
-            // Then
-            output.Any(i => i.Contains(Diagnostics.Error.CannotResolve)).ShouldBeTrue(generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldShowCompilationErrorWhenCannotResolveDependency()
-        {
-            // Given
+        // Then
+        output.Any(i => i.Contains(Diagnostics.Error.CannotResolve)).ShouldBeTrue(generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldShowCompilationErrorWhenCannotResolveDependency()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -83,17 +80,17 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.Any(i => i.Contains(Diagnostics.Error.CannotResolve)).ShouldBeTrue(generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldDetectCircularDependency()
-        {
-            // Given
+        // Then
+        output.Any(i => i.Contains(Diagnostics.Error.CannotResolve)).ShouldBeTrue(generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldDetectCircularDependency()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -122,17 +119,17 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.Any(i => i.Contains(Diagnostics.Error.CircularDependency)).ShouldBeTrue(generatedCode);
-        }
+        // Then
+        output.Any(i => i.Contains(Diagnostics.Error.CircularDependency)).ShouldBeTrue(generatedCode);
+    }
 
-        [Fact]
-        public void ShouldHandleCannotFindCtor()
-        {
-            // Given
+    [Fact]
+    public void ShouldHandleCannotFindCtor()
+    {
+        // Given
 
-            // When
-            var output = @"
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -167,18 +164,18 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.Any(i => i.Contains(Diagnostics.Error.CannotResolve)).ShouldBeTrue(generatedCode);
-            output.Any(i => i.Contains("MyClass")).ShouldBeTrue(generatedCode);
-        }
+        // Then
+        output.Any(i => i.Contains(Diagnostics.Error.CannotResolve)).ShouldBeTrue(generatedCode);
+        output.Any(i => i.Contains("MyClass")).ShouldBeTrue(generatedCode);
+    }
 
-        [Fact]
-        public void ShouldHandleCannotFindCtor2()
-        {
-            // Given
+    [Fact]
+    public void ShouldHandleCannotFindCtor2()
+    {
+        // Given
 
-            // When
-            var output = @"
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -209,17 +206,17 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.Any(i => i.Contains(Diagnostics.Warning.CtorIsObsoleted)).ShouldBeTrue(generatedCode);
-        }
+        // Then
+        output.Any(i => i.Contains(Diagnostics.Warning.CtorIsObsoleted)).ShouldBeTrue(generatedCode);
+    }
 
-        [Fact]
-        public void ShouldUsePredefinedOrderAttributeWhenMethod()
-        {
-            // Given
+    [Fact]
+    public void ShouldUsePredefinedOrderAttributeWhenMethod()
+    {
+        // Given
 
-            // When
-            var output = @"
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -245,8 +242,7 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.Any(i => i.Contains(Diagnostics.Error.MemberIsInaccessible)).ShouldBeTrue(generatedCode);
-        }
+        // Then
+        output.Any(i => i.Contains(Diagnostics.Error.MemberIsInaccessible)).ShouldBeTrue(generatedCode);
     }
 }

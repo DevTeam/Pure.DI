@@ -1,18 +1,16 @@
-﻿namespace Pure.DI.Tests.Integration
+﻿namespace Pure.DI.Tests.Integration;
+
+using System.Collections.Generic;
+
+public class DefaultFeatureTests
 {
-    using System.Collections.Generic;
-    using Shouldly;
-    using Xunit;
-
-    public class DefaultFeatureTests
+    [Fact]
+    public void ShouldSupportFunc()
     {
-        [Fact]
-        public void ShouldSupportFunc()
-        {
-            // Given
+        // Given
 
-            // When
-            var output = @"
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -36,17 +34,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new [] { "abc" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSupportFuncWhenCircularDependency()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "abc"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportFuncWhenCircularDependency()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -85,17 +86,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new [] { "Sample.Service" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportFuncWithTag()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "Sample.Service"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportFuncWithTag()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -119,17 +123,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "abc" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportLazy()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "abc"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportLazy()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -153,17 +160,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "abc" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportThreadLocal()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "abc"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportThreadLocal()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -189,17 +199,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "abc" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportTask()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "abc"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportTask()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -228,17 +241,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "abc" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportTuple()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "abc"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportTuple()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -263,17 +279,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "abc333" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportValueTuple()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "abc333"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportValueTuple()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -299,17 +318,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "abc33399" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportArray()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "abc33399"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportArray()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -335,17 +357,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "1.2.3" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportArrayWhenHasNoBindings()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "1.2.3"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportArrayWhenHasNoBindings()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -368,38 +393,41 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "" }, generatedCode);
-        }
-
-        [Theory]
-        [InlineData("IEnumerable")]
-        [InlineData("ICollection")]
-        [InlineData("IReadOnlyCollection")]
-        [InlineData("IList")]
-        [InlineData("List")]
-        [InlineData("IReadOnlyList")]
-        [InlineData("ISet")]
-        [InlineData("HashSet")]
-        [InlineData("SortedSet")]
-        [InlineData("Queue")]
-        [InlineData("Stack")]
-        [InlineData("ImmutableArray")]
-        [InlineData("IImmutableList")]
-        [InlineData("ImmutableList")]
-        [InlineData("IImmutableSet")]
-        [InlineData("ImmutableHashSet")]
-        [InlineData("ImmutableSortedSet")]
-        [InlineData("IImmutableQueue")]
-        [InlineData("ImmutableQueue")]
-        [InlineData("IImmutableStack")]
-        [InlineData("ImmutableStack")]
-        public void ShouldSupportCollections(string collectionType)
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            ""
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Theory]
+    [InlineData("IEnumerable")]
+    [InlineData("ICollection")]
+    [InlineData("IReadOnlyCollection")]
+    [InlineData("IList")]
+    [InlineData("List")]
+    [InlineData("IReadOnlyList")]
+    [InlineData("ISet")]
+    [InlineData("HashSet")]
+    [InlineData("SortedSet")]
+    [InlineData("Queue")]
+    [InlineData("Stack")]
+    [InlineData("ImmutableArray")]
+    [InlineData("IImmutableList")]
+    [InlineData("ImmutableList")]
+    [InlineData("IImmutableSet")]
+    [InlineData("ImmutableHashSet")]
+    [InlineData("ImmutableSortedSet")]
+    [InlineData("IImmutableQueue")]
+    [InlineData("ImmutableQueue")]
+    [InlineData("IImmutableStack")]
+    [InlineData("ImmutableStack")]
+    public void ShouldSupportCollections(string collectionType)
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -427,18 +455,23 @@
                 }
             }".Replace("ICollection", collectionType).Run(out var generatedCode);
 
-            // Then
-            output.Count.ShouldBe(1, generatedCode);
-            new HashSet<string>(output[0].Split(".")).SetEquals(new HashSet<string> { "1", "2", "3"} ).ShouldBeTrue(output[0]);
-        }
-
-        [Fact]
-        public void ShouldSupportEnumerablesWhenHasNoBindings()
+        // Then
+        output.Count.ShouldBe(1, generatedCode);
+        new HashSet<string>(output[0].Split(".")).SetEquals(new HashSet<string>
         {
-            // Given
+            "1",
+            "2",
+            "3"
+        }).ShouldBeTrue(output[0]);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportEnumerablesWhenHasNoBindings()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -462,17 +495,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportSet()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            ""
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportSet()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -499,8 +535,10 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "1.2.3" }, generatedCode);
-        }
+        // Then
+        output.ShouldBe(new[]
+        {
+            "1.2.3"
+        }, generatedCode);
     }
 }

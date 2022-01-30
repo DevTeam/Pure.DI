@@ -1,46 +1,41 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable InvertIf
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+internal class TargetClassNameProvider : ITargetClassNameProvider
 {
-    using System.Linq;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
-
-    internal class TargetClassNameProvider : ITargetClassNameProvider
+    public string? TryGetName(string composerTypeName, SyntaxNode node, ClassDeclarationSyntax? ownerClass)
     {
-        public string? TryGetName(string composerTypeName, SyntaxNode node, ClassDeclarationSyntax? ownerClass)
+        if (ownerClass == null)
         {
-            if (ownerClass == null)
+            if (string.IsNullOrWhiteSpace(composerTypeName))
             {
-                if (string.IsNullOrWhiteSpace(composerTypeName))
-                {
-                    var parentNodeName =
-                        node.Ancestors()
-                            .Select(TryGetNodeName)
-                            .FirstOrDefault(i => !string.IsNullOrWhiteSpace(i));
+                var parentNodeName =
+                    node.Ancestors()
+                        .Select(TryGetNodeName)
+                        .FirstOrDefault(i => !string.IsNullOrWhiteSpace(i));
 
-                    composerTypeName = $"{parentNodeName}DI";
-                    return composerTypeName;
-                }
+                composerTypeName = $"{parentNodeName}DI";
+                return composerTypeName;
             }
-            else
+        }
+        else
+        {
+            if (string.IsNullOrWhiteSpace(composerTypeName))
             {
-                if (string.IsNullOrWhiteSpace(composerTypeName))
-                {
-                    return ownerClass.Identifier.Text;
-                }
+                return ownerClass.Identifier.Text;
             }
-
-            return null;
         }
 
-        private static string? TryGetNodeName(SyntaxNode node) =>
-            node switch
-            {
-                ClassDeclarationSyntax classDeclaration => classDeclaration.Identifier.Text,
-                StructDeclarationSyntax structDeclaration => structDeclaration.Identifier.Text,
-                RecordDeclarationSyntax recordDeclaration => recordDeclaration.Identifier.Text,
-                _ => null
-            };
+        return null;
     }
+
+    private static string? TryGetNodeName(SyntaxNode node) =>
+        node switch
+        {
+            ClassDeclarationSyntax classDeclaration => classDeclaration.Identifier.Text,
+            StructDeclarationSyntax structDeclaration => structDeclaration.Identifier.Text,
+            RecordDeclarationSyntax recordDeclaration => recordDeclaration.Identifier.Text,
+            _ => null
+        };
 }

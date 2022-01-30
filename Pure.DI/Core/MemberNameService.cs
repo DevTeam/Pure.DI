@@ -1,28 +1,25 @@
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+internal class MemberNameService : IMemberNameService
 {
-    using System;
+    private static readonly object Id = new();
+    private readonly IBuildContext _buildContext;
 
-    internal class MemberNameService : IMemberNameService
+    public MemberNameService(IBuildContext buildContext) => _buildContext = buildContext;
+
+    public string GetName(MemberNameKind kind)
     {
-        private static readonly object Id = new();
-        private readonly IBuildContext _buildContext;
-
-        public MemberNameService(IBuildContext buildContext) => _buildContext = buildContext;
-
-        public string GetName(MemberNameKind kind)
+        var baseName = kind switch
         {
-            string baseName = kind switch
-            {
-                MemberNameKind.ContextClass => "Context",
-                MemberNameKind.ContextField => "SharedContext",
-                MemberNameKind.FactoriesField => "Resolvers",
-                MemberNameKind.FactoriesByTagField => "ResolversByTag",
-                MemberNameKind.ResolverClass => "Resolver",
-                _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null)
-            };
+            MemberNameKind.ContextClass => "Context",
+            MemberNameKind.ContextField => "SharedContext",
+            MemberNameKind.FactoriesField => "Resolvers",
+            MemberNameKind.FactoriesByTagField => "ResolversByTag",
+            MemberNameKind.ResolverClass => "Resolver",
+            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null)
+        };
 
-            return _buildContext.NameService.FindName(new MemberKey(baseName, Id));
-        }
+        return _buildContext.NameService.FindName(new MemberKey(baseName, Id));
     }
 }

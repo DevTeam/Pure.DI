@@ -1,45 +1,44 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
-namespace Pure.DI.UsageScenarios.Tests
+namespace Pure.DI.UsageScenarios.Tests;
+
+public class Decorator
 {
-    using Shouldly;
-    using Xunit;
-    using Pure.DI;
-
-    public class Decorator
+    [Fact]
+    // $visible=true
+    // $tag=5 Interception
+    // $priority=01
+    // $description=Decorator
+    // {
+    public void Run()
     {
-        [Fact]
-        // $visible=true
-        // $tag=5 Interception
-        // $priority=01
-        // $description=Decorator
-        // {
-        public void Run()
-        {
-            DI.Setup()
-                .Bind<IService>().Tags("base").To<Service>()
-                .Bind<IService>().To<DecoratorService>();
-            
-            var service = DecoratorDI.Resolve<IService>();
+        DI.Setup()
+            .Bind<IService>().Tags("base").To<Service>()
+            .Bind<IService>().To<DecoratorService>();
 
-            service.GetMessage().ShouldBe("Hello World !!!");
-        }
+        var service = DecoratorDI.Resolve<IService>();
 
-        public interface IService { string GetMessage(); }
-
-        public class Service : IService {
-            public string GetMessage() => "Hello World";
-        }
-        
-        public class DecoratorService : IService
-        {
-            private readonly IService _baseService;
-
-            public DecoratorService([Tag("base")] IService baseService) => _baseService = baseService;
-
-            public string GetMessage() => $"{_baseService.GetMessage()} !!!";
-        }
-        // }
+        service.GetMessage().ShouldBe("Hello World !!!");
     }
+
+    public interface IService
+    {
+        string GetMessage();
+    }
+
+    public class Service : IService
+    {
+        public string GetMessage() => "Hello World";
+    }
+
+    public class DecoratorService : IService
+    {
+        private readonly IService _baseService;
+
+        public DecoratorService([Tag("base")] IService baseService) => _baseService = baseService;
+
+        public string GetMessage() => $"{_baseService.GetMessage()} !!!";
+    }
+    // }
 }

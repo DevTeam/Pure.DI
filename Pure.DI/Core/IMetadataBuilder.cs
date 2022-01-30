@@ -1,10 +1,6 @@
-namespace Pure.DI.Core
-{
-    using System.Threading;
-    using Microsoft.CodeAnalysis;
+namespace Pure.DI.Core;
 
-    internal interface IMetadataBuilder
-    {
-        MetadataContext Build(Compilation compilation, CancellationToken cancellationToken);
-    }
+internal interface IMetadataBuilder
+{
+    MetadataContext Build(Compilation compilation, CancellationToken cancellationToken);
 }

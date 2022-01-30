@@ -1,30 +1,28 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+using System.IO;
+
+internal class FileSystem : IFileSystem
 {
-    using System.Collections.Generic;
-    using System.IO;
+    private readonly object _lockObject = new();
 
-    internal class FileSystem : IFileSystem
+    public DirectoryInfo CreateDirectory(string path) =>
+        Directory.CreateDirectory(path);
+
+    public void WriteFile(string path, string contents)
     {
-        private readonly object _lockObject = new();
-        
-        public DirectoryInfo CreateDirectory(string path) => 
-            Directory.CreateDirectory(path);
-
-        public void WriteFile(string path, string contents)
+        lock (_lockObject)
         {
-            lock (_lockObject)
-            {
-                File.WriteAllText(path, contents);
-            }
+            File.WriteAllText(path, contents);
         }
+    }
 
-        public void AppendFile(string path, IEnumerable<string> contents)
+    public void AppendFile(string path, IEnumerable<string> contents)
+    {
+        lock (_lockObject)
         {
-            lock (_lockObject)
-            {
-                File.AppendAllLines(path, contents);
-            }
+            File.AppendAllLines(path, contents);
         }
     }
 }

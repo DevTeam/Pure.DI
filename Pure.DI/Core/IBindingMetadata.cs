@@ -1,29 +1,24 @@
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+internal interface IBindingMetadata
 {
-    using System.Collections.Generic;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+    object Id { get; }
 
-    internal interface IBindingMetadata
-    {
-        object Id { get; }
-        
-        Location? Location { get; }
+    Location? Location { get; }
 
-        SemanticType? Implementation { get; }
+    SemanticType? Implementation { get; }
 
-        SimpleLambdaExpressionSyntax? Factory { get; }
+    SimpleLambdaExpressionSyntax? Factory { get; }
 
-        Lifetime Lifetime { get; }
+    Lifetime Lifetime { get; }
 
-        bool AnyTag { get; }
+    bool AnyTag { get; }
 
-        bool FromProbe { get; }
+    bool FromProbe { get; }
 
-        IEnumerable<SemanticType> Dependencies { get; }
-        
-        IEnumerable<ExpressionSyntax> Tags  { get; }
+    IEnumerable<SemanticType> Dependencies { get; }
 
-        IEnumerable<ExpressionSyntax> GetTags(SemanticType dependencyType);
-    }
+    IEnumerable<ExpressionSyntax> Tags { get; }
+
+    IEnumerable<ExpressionSyntax> GetTags(SemanticType dependencyType);
 }

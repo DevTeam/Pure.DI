@@ -1,17 +1,14 @@
-﻿namespace Pure.DI.Tests.Integration
+﻿namespace Pure.DI.Tests.Integration;
+
+public class ConstructorChoosingTests
 {
-    using Shouldly;
-    using Xunit;
-
-    public class ConstructorChoosingTests
+    [Fact]
+    public void ShouldSelectCtor()
     {
-        [Fact]
-        public void ShouldSelectCtor()
-        {
-            // Given
+        // Given
 
-            // When
-            var output = @"
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -49,17 +46,20 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "abc" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSelectCtorWhenInternal()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "abc"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSelectCtorWhenInternal()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -97,17 +97,20 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "abc" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSelectCtor2()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "abc"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSelectCtor2()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -144,8 +147,10 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "abc" }, generatedCode);
-        }
+        // Then
+        output.ShouldBe(new[]
+        {
+            "abc"
+        }, generatedCode);
     }
 }

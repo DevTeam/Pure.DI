@@ -1,9 +1,6 @@
-namespace Pure.DI.Core
-{
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+namespace Pure.DI.Core;
 
-    internal interface ICannotResolveExceptionFactory
-    {
-        HandledException Create(IBindingMetadata binding, ExpressionSyntax? tag, string description);
-    }
+internal interface ICannotResolveExceptionFactory
+{
+    HandledException Create(IBindingMetadata binding, ExpressionSyntax? tag, string description);
 }

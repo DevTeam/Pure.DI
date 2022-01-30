@@ -1,80 +1,77 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+internal class Generator : IGenerator
 {
-    using System;
-    using System.Threading;
+    private readonly IMetadataBuilder _metadataBuilder;
+    private readonly ISourceBuilder _sourceBuilder;
+    private readonly IDiagnostic _diagnostic;
 
-    internal class Generator : IGenerator
+    public Generator(
+        IMetadataBuilder metadataBuilder,
+        ISourceBuilder sourceBuilder,
+        IDiagnostic diagnostic)
     {
-        private readonly IMetadataBuilder _metadataBuilder;
-        private readonly ISourceBuilder _sourceBuilder;
-        private readonly IDiagnostic _diagnostic;
+        _metadataBuilder = metadataBuilder;
+        _sourceBuilder = sourceBuilder;
+        _diagnostic = diagnostic;
+    }
 
-        public Generator(
-            IMetadataBuilder metadataBuilder,
-            ISourceBuilder sourceBuilder,
-            IDiagnostic diagnostic)
+    public void Generate(IExecutionContext context)
+    {
+        var workingThread = new Thread(() => GenerateInternal(context), 0xff_ffff)
         {
-            _metadataBuilder = metadataBuilder;
-            _sourceBuilder = sourceBuilder;
-            _diagnostic = diagnostic;
+            Name = "Pure.DI",
+            IsBackground = true,
+            Priority = ThreadPriority.BelowNormal
+        };
+
+        workingThread.Start();
+        while (!workingThread.Join(10) && !context.CancellationToken.IsCancellationRequested)
+        {
         }
 
-        public void Generate(IExecutionContext context)
+        if (context.CancellationToken.IsCancellationRequested && !workingThread.Join(1))
         {
-            var workingThread = new Thread(() => GenerateInternal(context), 0xff_ffff)
-            {
-                Name = "Pure.DI",
-                IsBackground = true,
-                Priority = ThreadPriority.BelowNormal
-            };
-            workingThread.Start();
-            while (!workingThread.Join(10) && !context.CancellationToken.IsCancellationRequested)
-            {
-            }
+            workingThread.Abort();
+        }
+    }
 
-            if (context.CancellationToken.IsCancellationRequested && !workingThread.Join(1))
-            {
-                workingThread.Abort();
-            }
+    private void GenerateInternal(IExecutionContext context)
+    {
+        if (_diagnostic is CompilationDiagnostic compilationDiagnostic)
+        {
+            compilationDiagnostic.Context = context;
         }
 
-        private void GenerateInternal(IExecutionContext context)
+        try
         {
-            if (_diagnostic is CompilationDiagnostic compilationDiagnostic)
+            var metadata = _metadataBuilder.Build(context.Compilation, context.CancellationToken);
+            foreach (var source in metadata.Components)
             {
-                compilationDiagnostic.Context = context;
+                context.AddSource(source.HintName, source.Code);
             }
 
-            try
+            foreach (var source in _sourceBuilder.Build(metadata))
             {
-                var metadata = _metadataBuilder.Build(context.Compilation, context.CancellationToken);
-                foreach (var source in metadata.Components)
+                if (context.CancellationToken.IsCancellationRequested)
                 {
-                    context.AddSource(source.HintName, source.Code);
+                    break;
                 }
 
-                foreach (var source in _sourceBuilder.Build(metadata))
-                {
-                    if (context.CancellationToken.IsCancellationRequested)
-                    {
-                        break;
-                    }
-
-                    context.AddSource(source.HintName, source.Code);
-                }
+                context.AddSource(source.HintName, source.Code);
             }
-            catch (BuildException buildException)
-            {
-                _diagnostic.Error(buildException.Id, buildException.Message, buildException.Location);
-            }
-            catch (HandledException)
-            {
-            }
-            catch (Exception ex)
-            {
-                _diagnostic.Error(Diagnostics.Error.Unhandled, $"{ex}: {ex.StackTrace}");
-            }
+        }
+        catch (BuildException buildException)
+        {
+            _diagnostic.Error(buildException.Id, buildException.Message, buildException.Location);
+        }
+        catch (HandledException)
+        {
+        }
+        catch (Exception ex)
+        {
+            _diagnostic.Error(Diagnostics.Error.Unhandled, $"{ex}: {ex.StackTrace}");
         }
     }
 }

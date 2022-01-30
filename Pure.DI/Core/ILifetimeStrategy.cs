@@ -1,11 +1,8 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal interface ILifetimeStrategy
 {
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
-    
-    internal interface ILifetimeStrategy
-    {
-        Lifetime Lifetime { get; }
-        
-        ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression);
-    }
+    Lifetime Lifetime { get; }
+
+    ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression);
 }

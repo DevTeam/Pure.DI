@@ -1,41 +1,34 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal interface IBuildContext
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+    int Id { get; }
 
-    internal interface IBuildContext
-    {
-        int Id { get; }
+    Compilation Compilation { get; }
 
-        Compilation Compilation { get; }
+    bool IsCancellationRequested { get; }
 
-        bool IsCancellationRequested { get; }
+    ResolverMetadata Metadata { get; }
 
-        ResolverMetadata Metadata { get; }
+    void Prepare(int id, Compilation compilation, CancellationToken cancellationToken, ResolverMetadata metadata);
 
-        void Prepare(int id, Compilation compilation, CancellationToken cancellationToken, ResolverMetadata metadata);
+    INameService NameService { get; }
 
-        INameService NameService { get; }
+    ITypeResolver TypeResolver { get; }
 
-        ITypeResolver TypeResolver { get; }
+    IEnumerable<IBindingMetadata> AdditionalBindings { get; }
 
-        IEnumerable<IBindingMetadata> AdditionalBindings { get; }
-        
-        IEnumerable<MemberDeclarationSyntax> AdditionalMembers { get; }
+    IEnumerable<MemberDeclarationSyntax> AdditionalMembers { get; }
 
-        IEnumerable<StatementSyntax> FinalizationStatements { get; }
-        
-        IEnumerable<StatementSyntax> FinalDisposeStatements { get; }
+    IEnumerable<StatementSyntax> FinalizationStatements { get; }
 
-        void AddBinding(IBindingMetadata binding);
+    IEnumerable<StatementSyntax> FinalDisposeStatements { get; }
 
-        T GetOrAddMember<T>(MemberKey key, Func<T> additionalMemberFactory) where T: MemberDeclarationSyntax;
+    void AddBinding(IBindingMetadata binding);
 
-        void AddFinalizationStatements(IEnumerable<StatementSyntax> finalizationStatement);
-        
-        void AddFinalDisposeStatements(IEnumerable<StatementSyntax> releaseStatements);
-    }
+    T GetOrAddMember<T>(MemberKey key, Func<T> additionalMemberFactory) where T : MemberDeclarationSyntax;
+
+    void AddFinalizationStatements(IEnumerable<StatementSyntax> finalizationStatement);
+
+    void AddFinalDisposeStatements(IEnumerable<StatementSyntax> releaseStatements);
 }

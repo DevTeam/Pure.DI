@@ -1,7 +1,6 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal interface IStdOut
 {
-    internal interface IStdOut
-    {
-        void WriteLine(string info);
-    }
+    void WriteLine(string info);
 }

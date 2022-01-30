@@ -1,10 +1,6 @@
-namespace Pure.DI.Core
-{
-    using System.Collections.Generic;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+namespace Pure.DI.Core;
 
-    internal interface IDisposeStatementsBuilder
-    {
-        IEnumerable<StatementSyntax> Build(MemberAccessExpressionSyntax instanceExpression, ExpressionSyntax hasInstanceExpression);
-    }
+internal interface IDisposeStatementsBuilder
+{
+    IEnumerable<StatementSyntax> Build(MemberAccessExpressionSyntax instanceExpression, ExpressionSyntax hasInstanceExpression);
 }

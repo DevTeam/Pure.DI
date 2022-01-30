@@ -1,9 +1,8 @@
-﻿namespace Pure.DI.Core
-{
-    internal interface ITypesMap
-    {
-        bool Setup(SemanticType dependency, SemanticType implementation);
+﻿namespace Pure.DI.Core;
 
-        SemanticType ConstructType(SemanticType type);
-    }
+internal interface ITypesMap
+{
+    bool Setup(SemanticType dependency, SemanticType implementation);
+
+    SemanticType ConstructType(SemanticType type);
 }

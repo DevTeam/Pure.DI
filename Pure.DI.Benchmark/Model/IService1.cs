@@ -1,6 +1,5 @@
-﻿namespace Pure.DI.Benchmark.Model
+﻿namespace Pure.DI.Benchmark.Model;
+
+public interface IService1
 {
-    public interface IService1
-    {
-    }
 }

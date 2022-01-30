@@ -1,7 +1,6 @@
-﻿namespace Pure.DI.Benchmark.Model
+﻿namespace Pure.DI.Benchmark.Model;
+
+public interface ICompositionRoot
 {
-    public interface ICompositionRoot
-    {
-        bool Verify();
-    }
+    bool Verify();
 }

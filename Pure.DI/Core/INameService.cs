@@ -1,9 +1,8 @@
-﻿namespace Pure.DI.Core
-{
-    internal interface INameService
-    {
-        string FindName(MemberKey memberKey);
+﻿namespace Pure.DI.Core;
 
-        void ReserveName(string name);
-    }
+internal interface INameService
+{
+    string FindName(MemberKey memberKey);
+
+    void ReserveName(string name);
 }

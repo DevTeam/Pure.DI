@@ -1,17 +1,14 @@
-﻿namespace Pure.DI.Tests.Integration
+﻿namespace Pure.DI.Tests.Integration;
+
+public class SingletonTests
 {
-    using Shouldly;
-    using Xunit;
-
-    public class SingletonTests
+    [Fact]
+    public void ShouldSupportSingleton()
     {
-        [Fact]
-        public void ShouldSupportSingleton()
-        {
-            // Given
+        // Given
 
-            // When
-            var output = @"
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -36,17 +33,20 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "True" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportGenericSingleton()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "True"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportGenericSingleton()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -71,17 +71,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "True" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportSingletonWhenNested()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "True"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportSingletonWhenNested()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -114,17 +117,20 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "True" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportSingletonWhenFactory()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "True"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportSingletonWhenFactory()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -149,17 +155,20 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new []{"4"}, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportSingletonForSeveralDependencies()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "4"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportSingletonForSeveralDependencies()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -187,17 +196,20 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "True" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportSingletonWhenFuncAndGeneric()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "True"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportSingletonWhenFuncAndGeneric()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -222,8 +234,10 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "True" }, generatedCode);
-        }
+        // Then
+        output.ShouldBe(new[]
+        {
+            "True"
+        }, generatedCode);
     }
 }

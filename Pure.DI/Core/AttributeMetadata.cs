@@ -1,18 +1,15 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal readonly struct AttributeMetadata
 {
-    using Microsoft.CodeAnalysis;
+    public readonly AttributeKind Kind;
+    public readonly INamedTypeSymbol Type;
+    public readonly int ArgumentPosition;
 
-    internal readonly struct AttributeMetadata
+    public AttributeMetadata(AttributeKind kind, INamedTypeSymbol type, int argumentPosition)
     {
-        public readonly AttributeKind Kind;
-        public readonly INamedTypeSymbol Type;
-        public readonly int ArgumentPosition;
-
-        public AttributeMetadata(AttributeKind kind, INamedTypeSymbol type, int argumentPosition)
-        {
-            Kind = kind;
-            Type = type;
-            ArgumentPosition = argumentPosition;
-        }
+        Kind = kind;
+        Type = type;
+        ArgumentPosition = argumentPosition;
     }
 }

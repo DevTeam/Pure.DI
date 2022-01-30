@@ -12,7 +12,9 @@
             <TextBlock Text="{Binding Date}" FontSize="64" />
             <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
             <TextBlock Text="{Binding Time}" FontSize="64" />
-            <StackPanel.Effect> <DropShadowEffect Color="Black" Direction="20" ShadowDepth="5" Opacity="0.5"/> </StackPanel.Effect>
+            <StackPanel.Effect>
+                <DropShadowEffect Color="Black" Direction="20" ShadowDepth="5" Opacity="0.5" />
+            </StackPanel.Effect>
         </StackPanel>
     </Grid>
 </Window>

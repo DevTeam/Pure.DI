@@ -1,10 +1,7 @@
-﻿namespace Pure.DI.Core
-{
-    using System;
+﻿namespace Pure.DI.Core;
 
-    [Serializable]
-    internal class HandledException: Exception
-    {
-        public HandledException(string error) : base(error) { }
-    }
+[Serializable]
+internal class HandledException : Exception
+{
+    public HandledException(string error) : base(error) { }
 }

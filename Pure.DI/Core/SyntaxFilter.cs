@@ -1,39 +1,28 @@
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+internal class SyntaxFilter : ISyntaxFilter
 {
-    using System;
-    using System.Linq;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
-
-    internal class SyntaxFilter : ISyntaxFilter
+    private static readonly Type[] Types =
     {
-        private static readonly Type[] Types = {
-            typeof(BaseListSyntax),
-            typeof(ArgumentListSyntax),
-            typeof(TypeArgumentListSyntax),
-            typeof(AttributeListSyntax),
-            typeof(ConstructorDeclarationSyntax),
-            typeof(InvocationExpressionSyntax)
-        };
-        
-        private static readonly Type[] TypesWithAttribute = {
-            typeof(BaseMethodDeclarationSyntax),
-            typeof(BasePropertyDeclarationSyntax),
-            typeof(BaseFieldDeclarationSyntax)
-        };
+        typeof(BaseListSyntax), typeof(ArgumentListSyntax), typeof(TypeArgumentListSyntax), typeof(AttributeListSyntax), typeof(ConstructorDeclarationSyntax), typeof(InvocationExpressionSyntax)
+    };
 
-        public IComparable Order => 0;
+    private static readonly Type[] TypesWithAttribute =
+    {
+        typeof(BaseMethodDeclarationSyntax), typeof(BasePropertyDeclarationSyntax), typeof(BaseFieldDeclarationSyntax)
+    };
 
-        public bool Accept(SyntaxNode node)
+    public IComparable Order => 0;
+
+    public bool Accept(SyntaxNode node)
+    {
+        // ReSharper disable once ConvertIfStatementToReturnStatement
+        if (Types.Any(i => i.IsInstanceOfType(node)))
         {
-            // ReSharper disable once ConvertIfStatementToReturnStatement
-            if (Types.Any(i => i.IsInstanceOfType(node)))
-            {
-                return true;
-            }
-
-            return TypesWithAttribute.Any(i => i.IsInstanceOfType(node));
+            return true;
         }
+
+        return TypesWithAttribute.Any(i => i.IsInstanceOfType(node));
     }
 }

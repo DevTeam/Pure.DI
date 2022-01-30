@@ -1,42 +1,35 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+// ReSharper disable once ClassNeverInstantiated.Global
+internal class ArrayObjectBuilder : IObjectBuilder
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+    private readonly ITypeResolver _typeResolver;
 
-    // ReSharper disable once ClassNeverInstantiated.Global
-    internal class ArrayObjectBuilder: IObjectBuilder
+    public ArrayObjectBuilder(ITypeResolver typeResolver) => _typeResolver = typeResolver;
+
+    public ExpressionSyntax TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
     {
-        private readonly ITypeResolver _typeResolver;
-
-        public ArrayObjectBuilder(ITypeResolver typeResolver) => _typeResolver = typeResolver;
-
-        public ExpressionSyntax TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
+        var objectCreationExpressions = new List<ExpressionSyntax>();
+        if (dependency.Implementation.Type is not IArrayTypeSymbol arrayTypeSymbol)
         {
-            var objectCreationExpressions = new List<ExpressionSyntax>();
-            if (dependency.Implementation.Type is not IArrayTypeSymbol arrayTypeSymbol)
-            {
-                return SyntaxFactory.ImplicitArrayCreationExpression(SyntaxFactory.InitializerExpression(SyntaxKind.ArrayInitializerExpression)
-                    .AddExpressions(objectCreationExpressions.ToArray()));
-            }
-
-            var elementType = new SemanticType(arrayTypeSymbol.ElementType, dependency.Implementation);
-            var elements =
-                from element in _typeResolver.Resolve(elementType)
-                let objectCreationExpression = buildStrategy.TryBuild(element, elementType)
-                where objectCreationExpression != null
-                select (ExpressionSyntax)objectCreationExpression;
-
-            objectCreationExpressions.AddRange(elements);
-
-            return SyntaxFactory.ArrayCreationExpression(
-                    SyntaxFactory.ArrayType(new SemanticType(arrayTypeSymbol.ElementType, dependency.Implementation).TypeSyntax))
-                .AddTypeRankSpecifiers(SyntaxFactory.ArrayRankSpecifier().AddSizes(SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(objectCreationExpressions.Count))))
-                .WithInitializer(
-                    SyntaxFactory.InitializerExpression(SyntaxKind.ArrayInitializerExpression)
-                        .AddExpressions(objectCreationExpressions.ToArray()));
+            return SyntaxFactory.ImplicitArrayCreationExpression(SyntaxFactory.InitializerExpression(SyntaxKind.ArrayInitializerExpression)
+                .AddExpressions(objectCreationExpressions.ToArray()));
         }
+
+        var elementType = new SemanticType(arrayTypeSymbol.ElementType, dependency.Implementation);
+        var elements =
+            from element in _typeResolver.Resolve(elementType)
+            let objectCreationExpression = buildStrategy.TryBuild(element, elementType)
+            where objectCreationExpression != null
+            select (ExpressionSyntax)objectCreationExpression;
+
+        objectCreationExpressions.AddRange(elements);
+
+        return SyntaxFactory.ArrayCreationExpression(
+                SyntaxFactory.ArrayType(new SemanticType(arrayTypeSymbol.ElementType, dependency.Implementation).TypeSyntax))
+            .AddTypeRankSpecifiers(SyntaxFactory.ArrayRankSpecifier().AddSizes(SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(objectCreationExpressions.Count))))
+            .WithInitializer(
+                SyntaxFactory.InitializerExpression(SyntaxKind.ArrayInitializerExpression)
+                    .AddExpressions(objectCreationExpressions.ToArray()));
     }
 }

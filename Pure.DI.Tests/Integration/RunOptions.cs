@@ -1,17 +1,16 @@
-﻿namespace Pure.DI.Tests.Integration
+﻿namespace Pure.DI.Tests.Integration;
+
+using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+
+public class RunOptions
 {
-    using System.Collections.Generic;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp;
+    public string Statements = "System.Console.WriteLine(Composer.Resolve<CompositionRoot>().Value);";
 
-    public class RunOptions
-    {
-        public string Statements = "System.Console.WriteLine(Composer.Resolve<CompositionRoot>().Value);";
-        
-        public readonly List<string> AdditionalCode = new();
+    public readonly List<string> AdditionalCode = new();
 
-        public LanguageVersion LanguageVersion = LanguageVersion.Latest;
+    public LanguageVersion LanguageVersion = LanguageVersion.Latest;
 
-        public NullableContextOptions NullableContextOptions = NullableContextOptions.Disable;
-    }
+    public NullableContextOptions NullableContextOptions = NullableContextOptions.Disable;
 }

@@ -1,11 +1,9 @@
 ﻿namespace Clock.ViewModels
 {
-    using System.ComponentModel;
-    using System.Runtime.CompilerServices;
-
-    internal abstract class ViewModel: INotifyPropertyChanged
+    internal abstract class ViewModel : INotifyPropertyChanged
     {
         private readonly IDispatcher? _dispatcher;
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected ViewModel(IDispatcher? dispatcher = null) =>
@@ -18,7 +16,7 @@
             {
                 return;
             }
-            
+
             if (_dispatcher == null)
             {
                 propertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));

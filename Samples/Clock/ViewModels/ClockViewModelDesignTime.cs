@@ -1,7 +1,7 @@
 ﻿namespace Clock.ViewModels
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    internal class ClockViewModelDesignTime: IClockViewModel
+    internal class ClockViewModelDesignTime : IClockViewModel
     {
         public string Time => "01:15:17";
 

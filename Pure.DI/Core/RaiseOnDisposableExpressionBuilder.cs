@@ -1,23 +1,18 @@
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+internal class RaiseOnDisposableExpressionBuilder : IRaiseOnDisposableExpressionBuilder
 {
-    using System;
-    using Microsoft.CodeAnalysis.CSharp;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
-
-    internal class RaiseOnDisposableExpressionBuilder : IRaiseOnDisposableExpressionBuilder
+    public ExpressionSyntax Build(SemanticType type, Lifetime lifetime, ExpressionSyntax instanceExpression)
     {
-        public ExpressionSyntax Build(SemanticType type, Lifetime lifetime, ExpressionSyntax instanceExpression)
+        if (!type.ImplementsInterface<IDisposable>())
         {
-            if (!type.ImplementsInterface<IDisposable>())
-            {
-                return instanceExpression;
-            }
-
-            return SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(SyntaxRepo.RaiseOnDisposableMethodName))
-                .AddArgumentListArguments(
-                    SyntaxFactory.Argument(instanceExpression),
-                    SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.IdentifierName(typeof(Lifetime).ToString()), SyntaxFactory.IdentifierName(lifetime.ToString()))));
+            return instanceExpression;
         }
+
+        return SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(SyntaxRepo.RaiseOnDisposableMethodName))
+            .AddArgumentListArguments(
+                SyntaxFactory.Argument(instanceExpression),
+                SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.IdentifierName(typeof(Lifetime).ToString()), SyntaxFactory.IdentifierName(lifetime.ToString()))));
     }
 }

@@ -1,7 +1,6 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal interface IGenerator
 {
-    internal interface IGenerator
-    {
-        void Generate(IExecutionContext context);
-    }
+    void Generate(IExecutionContext context);
 }

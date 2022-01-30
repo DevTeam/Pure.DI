@@ -1,6 +1,5 @@
 ﻿namespace Clock.Models
 {
-    using System;
     using System.Collections.Generic;
 
     // ReSharper disable once ClassNeverInstantiated.Global
@@ -44,7 +43,7 @@
             }
         }
 
-        private class Token: IDisposable
+        private class Token : IDisposable
         {
             private readonly Action _action;
 

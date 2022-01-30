@@ -1,18 +1,15 @@
-﻿namespace Pure.DI.Tests.Integration
+﻿namespace Pure.DI.Tests.Integration;
+
+public class ResolveTests
 {
-    using Shouldly;
-    using Xunit;
-
-    public class ResolveTests
+    [Fact]
+    public void ShouldResolveWhenGeneticResolveAndTagIsNull()
     {
-        [Fact]
-        public void ShouldResolveWhenGeneticResolveAndTagIsNull()
-        {
-            // Given
-            const string? statements = "System.Console.WriteLine(Composer.Resolve<string>(null));";
+        // Given
+        const string? statements = "System.Console.WriteLine(Composer.Resolve<string>(null));";
 
-            // When
-            var output = @"
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -26,20 +23,26 @@
                             .Bind<string>().To(_ => ""abc"");
                     }
                 }
-            }".Run(out var generatedCode, new RunOptions { Statements = statements });
-
-            // Then
-            output.ShouldBe(new [] { "abc" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldResolveWhenTagIsNull()
+            }".Run(out var generatedCode, new RunOptions
         {
-            // Given
-            const string? statements = "System.Console.WriteLine(Composer.Resolve(typeof(string), null));";
+            Statements = statements
+        });
 
-            // When
-            var output = @"
+        // Then
+        output.ShouldBe(new[]
+        {
+            "abc"
+        }, generatedCode);
+    }
+
+    [Fact]
+    public void ShouldResolveWhenTagIsNull()
+    {
+        // Given
+        const string? statements = "System.Console.WriteLine(Composer.Resolve(typeof(string), null));";
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -53,10 +56,15 @@
                             .Bind<string>().To(_ => ""abc"");
                     }
                 }
-            }".Run(out var generatedCode, new RunOptions { Statements = statements });
+            }".Run(out var generatedCode, new RunOptions
+        {
+            Statements = statements
+        });
 
-            // Then
-            output.ShouldBe(new[] { "abc" }, generatedCode);
-        }
+        // Then
+        output.ShouldBe(new[]
+        {
+            "abc"
+        }, generatedCode);
     }
 }

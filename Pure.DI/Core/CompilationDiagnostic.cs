@@ -1,83 +1,89 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+// ReSharper disable once ClassNeverInstantiated.Global
+internal class CompilationDiagnostic : IDiagnostic
 {
-    using Microsoft.CodeAnalysis;
+    private readonly ILog<CompilationDiagnostic> _log;
 
-    // ReSharper disable once ClassNeverInstantiated.Global
-    internal class CompilationDiagnostic : IDiagnostic
+    public CompilationDiagnostic(ILog<CompilationDiagnostic> log) => _log = log;
+
+    public IExecutionContext? Context { get; set; }
+
+    public void Error(string id, string message, Location? location = null)
     {
-        private readonly ILog<CompilationDiagnostic> _log;
-
-        public CompilationDiagnostic(ILog<CompilationDiagnostic> log) => _log = log;
-
-        public IExecutionContext? Context { get; set; }
-
-        public void Error(string id, string message, Location? location = null)
+        try
         {
-            try
-            {
-                Context?.ReportDiagnostic(Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        id,
-                        "Error",
-                        message,
-                        "Error",
-                        DiagnosticSeverity.Error,
-                        true),
-                    location));
-            }
-            catch
-            {
-                // ignored
-            }
-
-            if (id != Diagnostics.Error.Unhandled)
-            {
-                _log.Trace(() => new []{ $"{id} {message}"});
-            }
+            Context?.ReportDiagnostic(Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    id,
+                    "Error",
+                    message,
+                    "Error",
+                    DiagnosticSeverity.Error,
+                    true),
+                location));
+        }
+        catch
+        {
+            // ignored
         }
 
-        public void Warning(string id, string message, Location? location = null)
+        if (id != Diagnostics.Error.Unhandled)
         {
-            try
+            _log.Trace(() => new[]
             {
-                Context?.ReportDiagnostic(Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        id,
-                        "Warning",
-                        message,
-                        "Warning",
-                        DiagnosticSeverity.Warning,
-                        true),
-                    location));
-            }
-            catch
-            {
-                // ignored
-            }
+                $"{id} {message}"
+            });
+        }
+    }
 
-            _log.Trace(() => new []{ $"{id} {message}" });
+    public void Warning(string id, string message, Location? location = null)
+    {
+        try
+        {
+            Context?.ReportDiagnostic(Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    id,
+                    "Warning",
+                    message,
+                    "Warning",
+                    DiagnosticSeverity.Warning,
+                    true),
+                location));
+        }
+        catch
+        {
+            // ignored
         }
 
-        public void Information(string id, string message, Location? location = null)
+        _log.Trace(() => new[]
         {
-            try
-            {
-                Context?.ReportDiagnostic(Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        id,
-                        "Info",
-                        message,
-                        "Info",
-                        DiagnosticSeverity.Info,
-                        true),
-                    location));
-            }
-            catch
-            {
-                // ignored
-            }
+            $"{id} {message}"
+        });
+    }
 
-            _log.Trace(() => new []{ $"{id} {message}" });
+    public void Information(string id, string message, Location? location = null)
+    {
+        try
+        {
+            Context?.ReportDiagnostic(Diagnostic.Create(
+                new DiagnosticDescriptor(
+                    id,
+                    "Info",
+                    message,
+                    "Info",
+                    DiagnosticSeverity.Info,
+                    true),
+                location));
         }
+        catch
+        {
+            // ignored
+        }
+
+        _log.Trace(() => new[]
+        {
+            $"{id} {message}"
+        });
     }
 }

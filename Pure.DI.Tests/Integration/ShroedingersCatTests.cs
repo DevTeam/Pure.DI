@@ -1,18 +1,14 @@
-﻿namespace Pure.DI.Tests.Integration
+﻿namespace Pure.DI.Tests.Integration;
+
+public class ShroedingersCatTests
 {
-    using System.Linq;
-    using Shouldly;
-    using Xunit;
-
-    public class ShroedingersCatTests
+    [Fact]
+    public void ShouldSupportShroedingersCatScenario()
     {
-        [Fact]
-        public void ShouldSupportShroedingersCatScenario()
-        {
-            // Given
+        // Given
 
-            // When
-            var output = @"
+        // When
+        var output = @"
             using System;
             using static Pure.DI.Lifetime;
             using Pure.DI;
@@ -78,10 +74,15 @@
                     public readonly IBox<ICat> Value;
                     internal CompositionRoot(IBox<ICat> box) => Value = box;
                 }
-            }".Run(out var generatedCode, new RunOptions { AdditionalCode = { "namespace Sample { interface ICat { State State { get; } } }" } });
+            }".Run(out var generatedCode, new RunOptions
+        {
+            AdditionalCode =
+            {
+                "namespace Sample { interface ICat { State State { get; } } }"
+            }
+        });
 
-            // Then
-            (output.Contains("[Dead cat]") || output.Contains("[Alive cat]")).ShouldBeTrue(generatedCode);
-        }
+        // Then
+        (output.Contains("[Dead cat]") || output.Contains("[Alive cat]")).ShouldBeTrue(generatedCode);
     }
 }

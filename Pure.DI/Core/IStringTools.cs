@@ -1,7 +1,6 @@
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+internal interface IStringTools
 {
-    internal interface IStringTools
-    {
-        string ConvertToTitle(string input);
-    }
+    string ConvertToTitle(string input);
 }

@@ -1,22 +1,20 @@
-﻿namespace Pure.DI.Tests.Integration
+﻿namespace Pure.DI.Tests.Integration;
+
+using Microsoft.CodeAnalysis.CSharp;
+
+public class FactoryTests
 {
-    using Microsoft.CodeAnalysis.CSharp;
-    using Shouldly;
-    using Xunit;
-
-    public class FactoryTests
+    [Fact]
+    public void ShouldImplementDisposingViaFactory()
     {
-        [Fact]
-        public void ShouldImplementDisposingViaFactory()
-        {
-            // Given
-            const string? statements = "var root = Composer.Resolve<CompositionRoot>();" +
-                                       "System.Console.WriteLine(root.Value.IsDisposed);" +
-                                       "Composer.Resolve<DisposingLifetime<MyClass>>().Dispose();" +
-                                       "System.Console.WriteLine(root.Value.IsDisposed);";
+        // Given
+        const string? statements = "var root = Composer.Resolve<CompositionRoot>();" +
+                                   "System.Console.WriteLine(root.Value.IsDisposed);" +
+                                   "Composer.Resolve<DisposingLifetime<MyClass>>().Dispose();" +
+                                   "System.Console.WriteLine(root.Value.IsDisposed);";
 
-            // When
-            var output = @"
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -75,19 +73,25 @@
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }
                 }
-            }".Run(out var generatedCode, new RunOptions { Statements = statements});
-
-            // Then
-            output.ShouldBe(new[] { "False", "True" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportFactory()
+            }".Run(out var generatedCode, new RunOptions
         {
-            // Given
+            Statements = statements
+        });
 
-            // When
-            var output = @"
+        // Then
+        output.ShouldBe(new[]
+        {
+            "False", "True"
+        }, generatedCode);
+    }
+
+    [Fact]
+    public void ShouldSupportFactory()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -119,17 +123,20 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "xyz_abc" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSupportFactoryWhenFilter()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "xyz_abc"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportFactoryWhenFilter()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -162,17 +169,20 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "xyz_abc" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSupportFactoryWhenTag()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "xyz_abc"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportFactoryWhenTag()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -205,17 +215,20 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "xyz_abc123" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSupportMethodFactory()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "xyz_abc123"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportMethodFactory()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -248,17 +261,20 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "xyz_abc" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldIntercept()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "xyz_abc"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldIntercept()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -299,19 +315,25 @@
                         }
                     }
                 }    
-            }".Run(out var generatedCode, new RunOptions { LanguageVersion = LanguageVersion.CSharp4 });
-
-            // Then
-            output.ShouldBe(new[] { "CompositionRoot: CompositionRoot()", "MyClass: IMyInterface(1)", "Sample.MyClass" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldInterceptMany()
+            }".Run(out var generatedCode, new RunOptions
         {
-            // Given
+            LanguageVersion = LanguageVersion.CSharp4
+        });
 
-            // When
-            var output = @"
+        // Then
+        output.ShouldBe(new[]
+        {
+            "CompositionRoot: CompositionRoot()", "MyClass: IMyInterface(1)", "Sample.MyClass"
+        }, generatedCode);
+    }
+
+    [Fact]
+    public void ShouldInterceptMany()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -347,19 +369,25 @@
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }
                 }    
-            }".Run(out var generatedCode, new RunOptions { LanguageVersion = LanguageVersion.CSharp4 });
-
-            // Then
-            output.ShouldBe(new[] { "CompositionRoot: CompositionRoot()", "MyClass: IMyInterface1()", "MyClass: IMyInterface2(2)", "Sample.MyClass" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldInterceptManyWhenFunc()
+            }".Run(out var generatedCode, new RunOptions
         {
-            // Given
+            LanguageVersion = LanguageVersion.CSharp4
+        });
 
-            // When
-            var output = @"
+        // Then
+        output.ShouldBe(new[]
+        {
+            "CompositionRoot: CompositionRoot()", "MyClass: IMyInterface1()", "MyClass: IMyInterface2(2)", "Sample.MyClass"
+        }, generatedCode);
+    }
+
+    [Fact]
+    public void ShouldInterceptManyWhenFunc()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -398,8 +426,10 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "CompositionRoot: CompositionRoot()", "IMyInterface1: IMyInterface1()", "IMyInterface2: IMyInterface2(2)", "Sample.MyClass" }, generatedCode);
-        }
+        // Then
+        output.ShouldBe(new[]
+        {
+            "CompositionRoot: CompositionRoot()", "IMyInterface1: IMyInterface1()", "IMyInterface2: IMyInterface2(2)", "Sample.MyClass"
+        }, generatedCode);
     }
 }

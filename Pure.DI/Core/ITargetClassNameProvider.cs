@@ -1,10 +1,6 @@
-﻿namespace Pure.DI.Core
-{
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿namespace Pure.DI.Core;
 
-    internal interface ITargetClassNameProvider
-    {
-        string? TryGetName(string composerTypeName, SyntaxNode node, ClassDeclarationSyntax? ownerClass);
-    }
+internal interface ITargetClassNameProvider
+{
+    string? TryGetName(string composerTypeName, SyntaxNode node, ClassDeclarationSyntax? ownerClass);
 }

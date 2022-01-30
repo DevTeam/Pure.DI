@@ -5,7 +5,7 @@ namespace Clock.Models
 
     internal class Log<T> : ILog<T>
     {
-        public void Info(string message) => 
+        public void Info(string message) =>
             Debug.WriteLine($"{typeof(T).Name} {message}");
     }
 }

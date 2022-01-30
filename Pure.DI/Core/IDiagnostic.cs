@@ -1,13 +1,10 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal interface IDiagnostic
 {
-    using Microsoft.CodeAnalysis;
+    void Error(string id, string message, Location? location = null);
 
-    internal interface IDiagnostic
-    {
-        void Error(string id, string message, Location? location = null);
+    void Warning(string id, string message, Location? location = null);
 
-        void Warning(string id, string message, Location? location = null);
-
-        void Information(string id, string message, Location? location = null);
-    }
+    void Information(string id, string message, Location? location = null);
 }

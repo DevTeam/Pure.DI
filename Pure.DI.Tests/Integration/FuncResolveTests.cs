@@ -1,18 +1,14 @@
-﻿namespace Pure.DI.Tests.Integration
+﻿namespace Pure.DI.Tests.Integration;
+
+public class FuncResolveTests
 {
-    using System;
-    using Shouldly;
-    using Xunit;
-
-    public class FuncResolveTests
+    [Fact]
+    public void ShouldSupportArray()
     {
-        [Fact]
-        public void ShouldSupportArray()
-        {
-            // Given
+        // Given
 
-            // When
-            var output = @"
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -40,17 +36,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "2" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSupportGenericArray()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "2"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportGenericArray()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -78,17 +77,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "2" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSupportGenericCast()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "2"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportGenericCast()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -116,17 +118,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "1" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSupportGenericVar()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "1"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportGenericVar()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -157,17 +162,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "1" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSupportGenericSimpleLambda()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "1"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportGenericSimpleLambda()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -198,17 +206,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "2" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSupportGenericLambda()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "2"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportGenericLambda()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -239,17 +250,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "1" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSupportGenericTypeOf()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "1"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportGenericTypeOf()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -280,17 +294,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { nameof(Int32), "1" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSupportGenericLocalFunction()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            nameof(Int32), "1"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportGenericLocalFunction()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -321,17 +338,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "2" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSupportGenericPatternMatching()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "2"
+        }, generatedCode);
+    }
 
-            // When
-            var output = $@"
+    [Fact]
+    public void ShouldSupportGenericPatternMatching()
+    {
+        // Given
+
+        // When
+        var output = $@"
             namespace Sample
             {{
                 using System;
@@ -367,17 +387,20 @@
                 }}
             }}".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "3" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSupportComplexFunc()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "3"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportComplexFunc()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -406,8 +429,10 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "3" }, generatedCode);
-        }
+        // Then
+        output.ShouldBe(new[]
+        {
+            "3"
+        }, generatedCode);
     }
 }

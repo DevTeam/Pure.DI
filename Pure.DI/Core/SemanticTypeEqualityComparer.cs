@@ -1,16 +1,12 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal class SemanticTypeEqualityComparer : IEqualityComparer<SemanticType>
 {
-    using System.Collections.Generic;
-    using Microsoft.CodeAnalysis;
+    public static readonly IEqualityComparer<SemanticType> Default = new SemanticTypeEqualityComparer();
 
-    internal class SemanticTypeEqualityComparer: IEqualityComparer<SemanticType>
-    {
-        public static readonly IEqualityComparer<SemanticType> Default = new SemanticTypeEqualityComparer();
+    public bool Equals(SemanticType x, SemanticType y) =>
+        SymbolEqualityComparer.Default.Equals(x.Type, y.Type);
 
-        public bool Equals(SemanticType x, SemanticType y) =>
-            SymbolEqualityComparer.Default.Equals(x.Type, y.Type);
-
-        public int GetHashCode(SemanticType obj) =>
-            SymbolEqualityComparer.Default.GetHashCode(obj.Type);
-    }
+    public int GetHashCode(SemanticType obj) =>
+        SymbolEqualityComparer.Default.GetHashCode(obj.Type);
 }

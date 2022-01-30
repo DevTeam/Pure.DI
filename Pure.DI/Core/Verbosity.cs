@@ -1,13 +1,12 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal enum Verbosity
 {
-    internal enum Verbosity
-    {
-        Quiet = 0,
+    Quiet = 0,
 
-        Minimal = 1,
+    Minimal = 1,
 
-        Normal = 2,
+    Normal = 2,
 
-        Diagnostic = 3
-    }
+    Diagnostic = 3
 }

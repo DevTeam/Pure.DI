@@ -1,10 +1,6 @@
-﻿namespace Pure.DI.Core
-{
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿namespace Pure.DI.Core;
 
-    internal interface IOwnerProvider
-    {
-        ClassDeclarationSyntax? TryGetOwner(SyntaxNode node);
-    }
+internal interface IOwnerProvider
+{
+    ClassDeclarationSyntax? TryGetOwner(SyntaxNode node);
 }

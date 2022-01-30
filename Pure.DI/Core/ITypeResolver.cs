@@ -1,12 +1,8 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal interface ITypeResolver
 {
-    using System.Collections.Generic;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+    Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, bool anyTag = false);
 
-    internal interface ITypeResolver
-    {
-        Dependency Resolve(SemanticType dependency, ExpressionSyntax? tag, bool anyTag = false);
-
-        IEnumerable<Dependency> Resolve(SemanticType dependency);
-    }
+    IEnumerable<Dependency> Resolve(SemanticType dependency);
 }

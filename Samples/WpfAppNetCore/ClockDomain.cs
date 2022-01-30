@@ -3,7 +3,6 @@
 // ReSharper disable UnusedMember.Local
 namespace WpfAppNetCore
 {
-    using System;
     using System.Diagnostics;
     using Clock.Models;
     using Clock.ViewModels;

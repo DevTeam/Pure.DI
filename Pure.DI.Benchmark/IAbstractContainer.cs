@@ -1,12 +1,11 @@
-﻿namespace Pure.DI.Benchmark
+﻿namespace Pure.DI.Benchmark;
+
+using IoC;
+
+public interface IAbstractContainer<out TActualContainer> : IDisposable
 {
-    using System;
-    using IoC;
+    [CanBeNull]
+    TActualContainer TryCreate();
 
-    public interface IAbstractContainer<out TActualContainer>: IDisposable
-    {
-        [CanBeNull] TActualContainer TryCreate();
-
-        void Register(Type contractType, Type implementationType, AbstractLifetime lifetime = AbstractLifetime.Transient, string name = null);
-    }
+    void Register(Type contractType, Type implementationType, AbstractLifetime lifetime = AbstractLifetime.Transient, string name = null);
 }

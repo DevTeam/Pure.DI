@@ -1,60 +1,53 @@
 ﻿// ReSharper disable MergeIntoNegatedPattern
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+// ReSharper disable once ClassNeverInstantiated.Global
+internal class EnumerableObjectBuilder : IObjectBuilder
 {
-    using System;
-    using System.Linq;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+    private readonly IBuildContext _buildContext;
+    private readonly ITypeResolver _typeResolver;
+    private readonly IStringTools _stringTools;
 
-    // ReSharper disable once ClassNeverInstantiated.Global
-    internal class EnumerableObjectBuilder : IObjectBuilder
+    public EnumerableObjectBuilder(
+        IBuildContext buildContext,
+        ITypeResolver typeResolver,
+        IStringTools stringTools)
     {
-        private readonly IBuildContext _buildContext;
-        private readonly ITypeResolver _typeResolver;
-        private readonly IStringTools _stringTools;
+        _buildContext = buildContext;
+        _typeResolver = typeResolver;
+        _stringTools = stringTools;
+    }
 
-        public EnumerableObjectBuilder(
-            IBuildContext buildContext,
-            ITypeResolver typeResolver,
-            IStringTools stringTools)
+    public ExpressionSyntax TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
+    {
+        if (
+            dependency.Implementation.Type is not INamedTypeSymbol namedTypeSymbol
+            || namedTypeSymbol.TypeArguments.Length != 1)
         {
-            _buildContext = buildContext;
-            _typeResolver = typeResolver;
-            _stringTools = stringTools;
+            throw new InvalidOperationException($"Invalid enumerable type {dependency.Implementation}.");
         }
 
-        public ExpressionSyntax TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
+        var elementType = namedTypeSymbol.TypeArguments[0];
+        var memberKey = new MemberKey($"EnumerableOf{_stringTools.ConvertToTitle(elementType.Name)}", dependency);
+
+        var factoryMethod = _buildContext.GetOrAddMember(memberKey, () =>
         {
-            if (
-                dependency.Implementation.Type is not INamedTypeSymbol namedTypeSymbol
-                || namedTypeSymbol.TypeArguments.Length != 1)
-            {
-                throw new InvalidOperationException($"Invalid enumerable type {dependency.Implementation}.");
-            }
+            var resolvingType = new SemanticType(elementType, dependency.Implementation);
+            var yields =
+                from element in _typeResolver.Resolve(resolvingType)
+                let objectCreationExpression = buildStrategy.TryBuild(element, resolvingType)
+                where objectCreationExpression != null
+                select (StatementSyntax)SyntaxFactory.YieldStatement(SyntaxKind.YieldReturnStatement).WithExpression(objectCreationExpression);
 
-            var elementType = namedTypeSymbol.TypeArguments[0];
-            var memberKey = new MemberKey($"EnumerableOf{_stringTools.ConvertToTitle(elementType.Name)}", dependency);
+            var factoryName = _buildContext.NameService.FindName(memberKey);
+            var type = dependency.Implementation.TypeSyntax;
+            return SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
+                .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
+                .AddParameterListParameters()
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                .AddBodyStatements(yields.DefaultIfEmpty(SyntaxFactory.YieldStatement(SyntaxKind.YieldBreakStatement)).ToArray());
+        });
 
-            var factoryMethod = _buildContext.GetOrAddMember(memberKey, () =>
-            {
-                var resolvingType = new SemanticType(elementType, dependency.Implementation);
-                var yields =
-                    from element in _typeResolver.Resolve(resolvingType)
-                    let objectCreationExpression = buildStrategy.TryBuild(element, resolvingType)
-                    where objectCreationExpression != null
-                    select (StatementSyntax)SyntaxFactory.YieldStatement(SyntaxKind.YieldReturnStatement).WithExpression(objectCreationExpression);
-
-                var factoryName = _buildContext.NameService.FindName(memberKey);
-                var type = dependency.Implementation.TypeSyntax;
-                return SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
-                    .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
-                    .AddParameterListParameters()
-                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
-                    .AddBodyStatements(yields.DefaultIfEmpty(SyntaxFactory.YieldStatement(SyntaxKind.YieldBreakStatement)).ToArray());
-            });
-
-            return SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryMethod.Identifier.Text));
-        }
+        return SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryMethod.Identifier.Text));
     }
 }

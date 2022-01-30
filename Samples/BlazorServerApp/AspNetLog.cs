@@ -6,7 +6,7 @@ namespace BlazorServerApp
     using Clock.Models;
     using Microsoft.Extensions.Logging;
 
-    internal class AspNetLog<T>: ILog<T>
+    internal class AspNetLog<T> : ILog<T>
     {
         private readonly ILogger<T> _logger;
 

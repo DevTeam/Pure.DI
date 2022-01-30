@@ -1,14 +1,8 @@
 ﻿// ReSharper disable All
 namespace Pure.DI.Core
 {
-    using System;
-    using System.Linq;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
-
     // ReSharper disable once ClassNeverInstantiated.Global
-    internal class FactoryObjectBuilder: IObjectBuilder
+    internal class FactoryObjectBuilder : IObjectBuilder
     {
         private readonly IBuildContext _buildContext;
         private readonly IMemberNameService _memberNameService;
@@ -61,7 +55,7 @@ namespace Pure.DI.Core
         }
 
         private T? Rewrite<T>(IBuildStrategy buildStrategy, Dependency dependency, SimpleLambdaExpressionSyntax factory, T resultExpression)
-            where T: SyntaxNode =>
+            where T : SyntaxNode =>
             ((T?)_factoryRewriter()
                 .Initialize(dependency, buildStrategy, factory.Parameter.Identifier)
                 .Visit(resultExpression))

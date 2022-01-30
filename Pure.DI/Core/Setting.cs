@@ -1,13 +1,12 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal enum Setting
 {
-    internal enum Setting
-    {
-        Out,
+    Out,
 
-        Debug,
+    Debug,
 
-        Verbosity,
-        
-        Trace
-    }
+    Verbosity,
+
+    Trace
 }

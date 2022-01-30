@@ -1,6 +1,5 @@
 ﻿namespace Clock.ViewModels
 {
-    using System;
     using Models;
 
     // ReSharper disable once ClassNeverInstantiated.Global
@@ -15,7 +14,7 @@
             IClock clock,
             ITimer timer,
             IDispatcher? dispatcher = null)
-            :base(dispatcher)
+            : base(dispatcher)
         {
             _log = log;
             _clock = clock ?? throw new ArgumentNullException(nameof(clock));

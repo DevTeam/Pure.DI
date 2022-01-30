@@ -1,16 +1,12 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal interface ITracer
 {
-    using System;
-    using System.Collections.Generic;
+    IEnumerable<Dependency[]> Paths { get; }
 
-    internal interface ITracer
-    {
-        IEnumerable<Dependency[]> Paths { get; }
-        
-        IDisposable RegisterResolving(Dependency dependency);
+    IDisposable RegisterResolving(Dependency dependency);
 
-        void Save();
+    void Save();
 
-        void Reset();
-    }
+    void Reset();
 }

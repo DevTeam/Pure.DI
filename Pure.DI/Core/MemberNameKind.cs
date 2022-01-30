@@ -1,15 +1,14 @@
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+internal enum MemberNameKind
 {
-    internal enum MemberNameKind
-    {
-        ContextClass,
+    ContextClass,
 
-        ContextField,
+    ContextField,
 
-        FactoriesField,
+    FactoriesField,
 
-        FactoriesByTagField,
-        
-        ResolverClass
-    }
+    FactoriesByTagField,
+
+    ResolverClass
 }

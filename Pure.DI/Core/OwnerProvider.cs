@@ -1,30 +1,24 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable InvertIf
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+internal class OwnerProvider : IOwnerProvider
 {
-    using System.Linq;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
-
-    internal class OwnerProvider : IOwnerProvider
+    public ClassDeclarationSyntax? TryGetOwner(SyntaxNode node)
     {
-        public ClassDeclarationSyntax? TryGetOwner(SyntaxNode node)
+        var classes = node.Ancestors().OfType<ClassDeclarationSyntax>().ToArray();
+        if (classes.All(
+                cls =>
+                    cls.Modifiers.Any(i => i.IsKind(SyntaxKind.PartialKeyword))
+                    && cls.Modifiers.Any(i => !i.IsKind(SyntaxKind.PrivateKeyword) && !i.IsKind(SyntaxKind.ProtectedKeyword))))
         {
-            var classes = node.Ancestors().OfType<ClassDeclarationSyntax>().ToArray();
-            if (classes.All(
-                    cls => 
-                        cls.Modifiers.Any(i => i.IsKind(SyntaxKind.PartialKeyword))
-                        && cls.Modifiers.Any(i => !i.IsKind(SyntaxKind.PrivateKeyword) && !i.IsKind(SyntaxKind.ProtectedKeyword))))
+            var cls = classes.FirstOrDefault();
+            if (cls != null && cls.Modifiers.Any(i => i.IsKind(SyntaxKind.StaticKeyword)))
             {
-                var cls = classes.FirstOrDefault();
-                if (cls != null && cls.Modifiers.Any(i => i.IsKind(SyntaxKind.StaticKeyword)))
-                {
-                    return cls;
-                }
+                return cls;
             }
-
-            return null;
         }
+
+        return null;
     }
 }

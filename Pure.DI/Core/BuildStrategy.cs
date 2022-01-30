@@ -3,72 +3,69 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 // ReSharper disable MemberCanBePrivate.Local
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+using static Tags;
+
+// ReSharper disable once ClassNeverInstantiated.Global
+internal class BuildStrategy : IBuildStrategy
 {
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
-    using static Tags;
+    private readonly IDiagnostic _diagnostic;
+    private readonly ITracer _tracer;
+    private readonly ILog<BuildStrategy> _log;
+    private readonly IBuildContext _buildContext;
+    private readonly IBindingResultStrategy _resultStrategy;
+    private readonly ICache<BuildStrategyKey, ExpressionSyntax?> _cache;
+    private readonly Dictionary<Lifetime, ILifetimeStrategy> _lifetimes;
 
-    // ReSharper disable once ClassNeverInstantiated.Global
-    internal class BuildStrategy : IBuildStrategy
+    public BuildStrategy(
+        IDiagnostic diagnostic,
+        ITracer tracer,
+        ILog<BuildStrategy> log,
+        IBuildContext buildContext,
+        [Tag(AsIsResult)] IBindingResultStrategy resultStrategy,
+        IEnumerable<ILifetimeStrategy> lifetimeStrategies,
+        [Tag(ContainerScope)] ICache<BuildStrategyKey, ExpressionSyntax?> cache)
     {
-        private readonly IDiagnostic _diagnostic;
-        private readonly ITracer _tracer;
-        private readonly ILog<BuildStrategy> _log;
-        private readonly IBuildContext _buildContext;
-        private readonly IBindingResultStrategy _resultStrategy;
-        private readonly ICache<BuildStrategyKey, ExpressionSyntax?> _cache;
-        private readonly Dictionary<Lifetime, ILifetimeStrategy> _lifetimes;
+        _diagnostic = diagnostic;
+        _tracer = tracer;
+        _log = log;
+        _buildContext = buildContext;
+        _resultStrategy = resultStrategy;
+        _cache = cache;
+        _lifetimes = lifetimeStrategies.ToDictionary(i => i.Lifetime, i => i);
+    }
 
-        public BuildStrategy(
-            IDiagnostic diagnostic,
-            ITracer tracer,
-            ILog<BuildStrategy> log,
-            IBuildContext buildContext,
-            [Tag(AsIsResult)] IBindingResultStrategy resultStrategy,
-            IEnumerable<ILifetimeStrategy> lifetimeStrategies,
-            [Tag(ContainerScope)] ICache<BuildStrategyKey, ExpressionSyntax?> cache)
+    public ExpressionSyntax? TryBuild(Dependency dependency, SemanticType resolvingType) =>
+        _cache.GetOrAdd(new BuildStrategyKey(_buildContext.Id, dependency), _ => TryBuildInternal(dependency, resolvingType));
+
+    public ExpressionSyntax? TryBuildInternal(Dependency dependency, SemanticType resolvingType)
+    {
+        using var traceToken = _tracer.RegisterResolving(dependency);
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
+        var objectBuildExpression = dependency.ObjectBuilder.TryBuild(this, dependency);
+        if (objectBuildExpression == default)
         {
-            _diagnostic = diagnostic;
-            _tracer = tracer;
-            _log = log;
-            _buildContext = buildContext;
-            _resultStrategy = resultStrategy;
-            _cache = cache;
-            _lifetimes = lifetimeStrategies.ToDictionary(i => i.Lifetime, i => i);
-        }
-        
-        public ExpressionSyntax? TryBuild(Dependency dependency, SemanticType resolvingType) => 
-            _cache.GetOrAdd(new BuildStrategyKey(_buildContext.Id, dependency), _ => TryBuildInternal(dependency, resolvingType));
-
-        public ExpressionSyntax? TryBuildInternal(Dependency dependency, SemanticType resolvingType)
-        {
-            using var traceToken = _tracer.RegisterResolving(dependency);
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            var objectBuildExpression = dependency.ObjectBuilder.TryBuild(this, dependency);
-            if (objectBuildExpression == default)
-            {
-                return objectBuildExpression;
-            }
-
-            // Apply lifetime
-            if (!_lifetimes.TryGetValue(dependency.Binding.Lifetime, out var lifetimeStrategy))
-            {
-                var error = $"{dependency.Binding.Lifetime} lifetime is not supported.";
-                _diagnostic.Error(Diagnostics.Error.Unsupported, error, dependency.Implementation.Type.Locations.FirstOrDefault());
-                throw new HandledException(error);
-            }
-
-            objectBuildExpression = lifetimeStrategy.Build(resolvingType, dependency, objectBuildExpression);
-            objectBuildExpression = _resultStrategy.Build(objectBuildExpression);
-            stopwatch.Stop();
-            _log.Info(() => new []{ $"[{stopwatch.ElapsedMilliseconds}] {dependency} => {objectBuildExpression.NormalizeWhitespace()}"});
-
             return objectBuildExpression;
         }
+
+        // Apply lifetime
+        if (!_lifetimes.TryGetValue(dependency.Binding.Lifetime, out var lifetimeStrategy))
+        {
+            var error = $"{dependency.Binding.Lifetime} lifetime is not supported.";
+            _diagnostic.Error(Diagnostics.Error.Unsupported, error, dependency.Implementation.Type.Locations.FirstOrDefault());
+            throw new HandledException(error);
+        }
+
+        objectBuildExpression = lifetimeStrategy.Build(resolvingType, dependency, objectBuildExpression);
+        objectBuildExpression = _resultStrategy.Build(objectBuildExpression);
+        stopwatch.Stop();
+        _log.Info(() => new[]
+        {
+            $"[{stopwatch.ElapsedMilliseconds}] {dependency} => {objectBuildExpression.NormalizeWhitespace()}"
+        });
+
+        return objectBuildExpression;
     }
 }

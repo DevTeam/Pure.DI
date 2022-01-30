@@ -1,9 +1,6 @@
-﻿namespace Pure.DI.Core
-{
-    using System.Collections.Generic;
+﻿namespace Pure.DI.Core;
 
-    internal interface ISourceBuilder
-    {
-        IEnumerable<Source>Build(MetadataContext context);
-    }
+internal interface ISourceBuilder
+{
+    IEnumerable<Source> Build(MetadataContext context);
 }

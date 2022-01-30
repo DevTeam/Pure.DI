@@ -1,25 +1,22 @@
-﻿namespace Pure.DI.Tests.Integration
+﻿namespace Pure.DI.Tests.Integration;
+
+using Microsoft.CodeAnalysis;
+
+public class SetupTests
 {
-    using System.Linq;
-    using Microsoft.CodeAnalysis;
-    using Shouldly;
-    using Xunit;
-
-    public class SetupTests
+    [Theory]
+    [InlineData("partial class")]
+    [InlineData("static class")]
+    [InlineData("partial struct")]
+    [InlineData("struct")]
+    [InlineData("partial record")]
+    [InlineData("record")]
+    public void ShouldChangeComposerNameAddingDIWhenItIsNotPossibleToMakeStaticPartialClass(string classDefinition)
     {
-        [Theory]
-        [InlineData("partial class")]
-        [InlineData("static class")]
-        [InlineData("partial struct")]
-        [InlineData("struct")]
-        [InlineData("partial record")]
-        [InlineData("record")]
-        public void ShouldChangeComposerNameAddingDIWhenItIsNotPossibleToMakeStaticPartialClass(string classDefinition)
-        {
-            // Given
+        // Given
 
-            // When
-            var output = @"
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -43,20 +40,23 @@
                     public readonly string Value;
                     internal CompositionRoot(string value) => Value = value;        
                 }
-            }".Replace("static partial class", classDefinition).Run(out var generatedCode, new RunOptions { Statements = @"System.Console.WriteLine(ComposerDI.Resolve<CompositionRoot>().Value);" });
-
-            // Then
-            output.Count.ShouldBe(1, generatedCode);
-            output[0].ShouldBe("abc", generatedCode);
-        }
-
-        [Fact]
-        public void ShouldUseDefaultValue()
+            }".Replace("static partial class", classDefinition).Run(out var generatedCode, new RunOptions
         {
-            // Given
+            Statements = @"System.Console.WriteLine(ComposerDI.Resolve<CompositionRoot>().Value);"
+        });
 
-            // When
-            var output = @"
+        // Then
+        output.Count.ShouldBe(1, generatedCode);
+        output[0].ShouldBe("abc", generatedCode);
+    }
+
+    [Fact]
+    public void ShouldUseDefaultValue()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -79,17 +79,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "abc" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldPreferDefaultValueOverNullableOne()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "abc"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldPreferDefaultValueOverNullableOne()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -111,19 +114,25 @@
                     internal CompositionRoot(string? value, long i = 0) => Value = value ?? ""zyx"";
                     internal CompositionRoot(string value = ""abc"", int i = 0) => Value = value;
                 }
-            }".Run(out var generatedCode, new RunOptions { NullableContextOptions = NullableContextOptions.Annotations });
-
-            // Then
-            output.ShouldBe(new[] { "abc" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldPreferResolvedValueOverDefaultOneWhenParamsCountIsEq()
+            }".Run(out var generatedCode, new RunOptions
         {
-            // Given
+            NullableContextOptions = NullableContextOptions.Annotations
+        });
 
-            // When
-            var output = @"
+        // Then
+        output.ShouldBe(new[]
+        {
+            "abc"
+        }, generatedCode);
+    }
+
+    [Fact]
+    public void ShouldPreferResolvedValueOverDefaultOneWhenParamsCountIsEq()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -148,17 +157,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "xyz" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldPreferPublicOverInternal()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "xyz"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldPreferPublicOverInternal()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -182,17 +194,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "xyz" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldPreferResolvedValueOverDefaultOneWhenParamsCountIsNotEq()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "xyz"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldPreferResolvedValueOverDefaultOneWhenParamsCountIsNotEq()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -215,19 +230,25 @@
                     internal CompositionRoot(int value = 99, int i = 0) => Value = value.ToString();
                     internal CompositionRoot(string value) => Value = value;
                 }
-            }".Run(out var generatedCode, new RunOptions { NullableContextOptions = NullableContextOptions.Annotations });
-
-            // Then
-            output.ShouldBe(new[] { "xyz" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSupportNullableDependencies()
+            }".Run(out var generatedCode, new RunOptions
         {
-            // Given
+            NullableContextOptions = NullableContextOptions.Annotations
+        });
 
-            // When
-            var output = @"
+        // Then
+        output.ShouldBe(new[]
+        {
+            "xyz"
+        }, generatedCode);
+    }
+
+    [Fact]
+    public void ShouldSupportNullableDependencies()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -253,19 +274,25 @@
                     public readonly string Value;
                     internal CompositionRoot(string? value, Dependency dependency) => Value = (value ?? ""null"") + "", "" + dependency.ToString();
                 }
-            }".Run(out var generatedCode, new RunOptions { NullableContextOptions = NullableContextOptions.Annotations });
-
-            // Then
-            output.ShouldBe(new[] { "null, Sample.Dependency" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSetupForNestedClass()
+            }".Run(out var generatedCode, new RunOptions
         {
-            // Given
+            NullableContextOptions = NullableContextOptions.Annotations
+        });
 
-            // When
-            var output = @"
+        // Then
+        output.ShouldBe(new[]
+        {
+            "null, Sample.Dependency"
+        }, generatedCode);
+    }
+
+    [Fact]
+    public void ShouldSetupForNestedClass()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -295,17 +322,20 @@
                 }                
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "abc" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSetupForNestedClassWhenComposerTypeNameIsSpecified()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "abc"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSetupForNestedClassWhenComposerTypeNameIsSpecified()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -333,19 +363,25 @@
                     public readonly string Value;
                     internal CompositionRoot(string value) => Value = value;        
                 }                
-            }".Run(out var generatedCode, new RunOptions { Statements = @"System.Console.WriteLine(Resolver.Resolve<CompositionRoot>().Value);" });
-
-            // Then
-            output.ShouldBe(new[] { "abc" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldAddPostfixDIWhenCannotUseOwnerClass()
+            }".Run(out var generatedCode, new RunOptions
         {
-            // Given
+            Statements = @"System.Console.WriteLine(Resolver.Resolve<CompositionRoot>().Value);"
+        });
 
-            // When
-            var output = @"
+        // Then
+        output.ShouldBe(new[]
+        {
+            "abc"
+        }, generatedCode);
+    }
+
+    [Fact]
+    public void ShouldAddPostfixDIWhenCannotUseOwnerClass()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -373,20 +409,23 @@
                     public readonly string Value;
                     internal CompositionRoot(string value) => Value = value;        
                 }                
-            }".Run(out var generatedCode, new RunOptions { Statements = @"System.Console.WriteLine(ComposerDI.Resolve<CompositionRoot>().Value);" });
-
-            // Then
-            output.Count.ShouldBe(1, generatedCode);
-            output[0].ShouldBe("abc", generatedCode);
-        }
-
-        [Fact]
-        public void ShouldOverrideBinding()
+            }".Run(out var generatedCode, new RunOptions
         {
-            // Given
+            Statements = @"System.Console.WriteLine(ComposerDI.Resolve<CompositionRoot>().Value);"
+        });
 
-            // When
-            var output = @"
+        // Then
+        output.Count.ShouldBe(1, generatedCode);
+        output[0].ShouldBe("abc", generatedCode);
+    }
+
+    [Fact]
+    public void ShouldOverrideBinding()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -411,17 +450,17 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.Any(i => i == "xyz").ShouldBeTrue(generatedCode);
-        }
+        // Then
+        output.Any(i => i == "xyz").ShouldBeTrue(generatedCode);
+    }
 
-        [Fact]
-        public void ShouldBindUsingStatementsLambda()
-        {
-            // Given
+    [Fact]
+    public void ShouldBindUsingStatementsLambda()
+    {
+        // Given
 
-            // When
-            var output = @"
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -446,17 +485,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "abc_xyz" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldUsePredefinedTagAttribute()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "abc_xyz"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldUsePredefinedTagAttribute()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -481,17 +523,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "abc" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldUsePredefinedTagAttributeAdv()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "abc"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldUsePredefinedTagAttributeAdv()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -525,17 +570,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "Sample.MyClass" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldUsePredefinedTagAttributeAdvWhenSingleton()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "Sample.MyClass"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldUsePredefinedTagAttributeAdvWhenSingleton()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -570,17 +618,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "Sample.MyClass" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldUseCustomTagAttribute()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "Sample.MyClass"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldUseCustomTagAttribute()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -612,17 +663,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "abc" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldUsePredefinedTypeAttribute()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "abc"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldUsePredefinedTypeAttribute()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -646,17 +700,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "xyz" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldUseCustomTypeAttribute()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "xyz"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldUseCustomTypeAttribute()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -687,17 +744,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "xyz" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldUsePredefinedOrderAttributeWhenMethod()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "xyz"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldUsePredefinedOrderAttributeWhenMethod()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -723,17 +783,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "xyz" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldUsePredefinedOrderAttributeWhenField()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "xyz"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldUsePredefinedOrderAttributeWhenField()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -757,17 +820,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "xyz" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldUsePredefinedOrderAttributeWhenProperty()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "xyz"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldUsePredefinedOrderAttributeWhenProperty()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -791,17 +857,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "xyz" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldUseCustomOrderAttributeWhenProperty()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "xyz"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldUseCustomOrderAttributeWhenProperty()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -832,17 +901,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "xyz" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldUsePredefinedOrderAttributeWhenCtor()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "xyz"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldUsePredefinedOrderAttributeWhenCtor()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -875,17 +947,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "xyz" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldUsePredefinedOrderAttributeWhenCtorAndFewAttributes()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "xyz"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldUsePredefinedOrderAttributeWhenCtorAndFewAttributes()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -918,17 +993,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "xyz" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldUsePredefinedOrderAttributeWhenCtorAndCannotUseMarked()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "xyz"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldUsePredefinedOrderAttributeWhenCtorAndCannotUseMarked()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -961,17 +1039,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "xyz" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldResolveInstanceWithoutBinding()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "xyz"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldResolveInstanceWithoutBinding()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -996,17 +1077,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "Sample.MyClass" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportSpecifiedGenerics()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "Sample.MyClass"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportSpecifiedGenerics()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -1033,17 +1117,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "Sample.MyClass`1[System.String]" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportResolveOfGenericDependencies()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "Sample.MyClass`1[System.String]"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportResolveOfGenericDependencies()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -1079,22 +1166,27 @@
                     public readonly string Value;
                     internal CompositionRoot(IMyClass<string> value) => Value = value.ToString();
                 }
-            }".Run(out var generatedCode, new RunOptions { Statements = 
+            }".Run(out var generatedCode, new RunOptions
+        {
+            Statements =
                 @"System.Console.WriteLine(Composer.Resolve<IMyClass2<int>>());
                   System.Console.WriteLine(Composer.Resolve<IMyClass<string>>());"
-            });
+        });
 
-            // Then
-            output.ShouldBe(new[] { "Sample.MyClass2`1[System.Int32]", "Sample.MyClass`1[System.String]" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportTypeOfT()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "Sample.MyClass2`1[System.Int32]", "Sample.MyClass`1[System.String]"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportTypeOfT()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -1124,17 +1216,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "System.String" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportGenericsWithoutBinding()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "System.String"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportGenericsWithoutBinding()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -1159,17 +1254,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "Sample.MyClass`1[System.String]" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldUseDependsOn()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "Sample.MyClass`1[System.String]"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldUseDependsOn()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -1203,17 +1301,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new []{ "xyz" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportAnyTag()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "xyz"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportAnyTag()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -1237,17 +1338,20 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "abc" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldUseFreeMemberNameWhenType()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "abc"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldUseFreeMemberNameWhenType()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -1274,17 +1378,20 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "True" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldUseFreeMemberNameWhenContextType()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "True"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldUseFreeMemberNameWhenContextType()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -1311,17 +1418,20 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "True" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldUseFreeMemberNameWhenMethod()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "True"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldUseFreeMemberNameWhenMethod()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -1348,17 +1458,20 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "True" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldUseFreeMemberNameWhenField()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "True"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldUseFreeMemberNameWhenField()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -1386,17 +1499,20 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "True" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldUseFreeMemberNameWhenResolversField()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "True"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldUseFreeMemberNameWhenResolversField()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -1424,17 +1540,20 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "True" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSupportDefaultLifetime()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "True"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportDefaultLifetime()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -1464,17 +1583,20 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "True" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSupportDependencyTags()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
+            "True"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportDependencyTags()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -1498,18 +1620,21 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            // ReSharper disable once StringLiteralTypo
-            output.ShouldBe(new[] { "abcabcabc" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSupportDependencyOverrideByTag()
+        // Then
+        // ReSharper disable once StringLiteralTypo
+        output.ShouldBe(new[]
         {
-            // Given
+            "abcabcabc"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportDependencyOverrideByTag()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -1534,18 +1659,21 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            // ReSharper disable once StringLiteralTypo
-            output.ShouldBe(new[] { "xyzabc" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldNotChangeEmptyTagOfResolveWithinFactoryWhenTagIsNotEmpty()
+        // Then
+        // ReSharper disable once StringLiteralTypo
+        output.ShouldBe(new[]
         {
-            // Given
+            "xyzabc"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldNotChangeEmptyTagOfResolveWithinFactoryWhenTagIsNotEmpty()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -1579,18 +1707,21 @@
                 }
             }".Run(out var generatedCode);
 
-            // Then
-            // ReSharper disable once StringLiteralTypo
-            output.ShouldBe(new[] { "Sample.Service" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSupportRecord()
+        // Then
+        // ReSharper disable once StringLiteralTypo
+        output.ShouldBe(new[]
         {
-            // Given
+            "Sample.Service"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportRecord()
+    {
+        // Given
+
+        // When
+        var output = @"
             using System;
             using static Pure.DI.Lifetime;
             using Pure.DI;
@@ -1648,10 +1779,15 @@
                     public readonly IBox<ICat> Value;
                     internal CompositionRoot(IBox<ICat> box) => Value = box;
                 }
-            }".Run(out var generatedCode, new RunOptions { AdditionalCode = { "namespace Sample { interface ICat { State State { get; } } }" } });
+            }".Run(out var generatedCode, new RunOptions
+        {
+            AdditionalCode =
+            {
+                "namespace Sample { interface ICat { State State { get; } } }"
+            }
+        });
 
-            // Then
-            (output.Contains("[ShroedingersCat { Superposition = Value is not created., State = Dead }]") || output.Contains("[ShroedingersCat { Superposition = Value is not created., State = Alive }]")).ShouldBeTrue(generatedCode);
-        }
+        // Then
+        (output.Contains("[ShroedingersCat { Superposition = Value is not created., State = Dead }]") || output.Contains("[ShroedingersCat { Superposition = Value is not created., State = Alive }]")).ShouldBeTrue(generatedCode);
     }
 }

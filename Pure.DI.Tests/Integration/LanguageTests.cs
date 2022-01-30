@@ -1,18 +1,16 @@
-﻿namespace Pure.DI.Tests.Integration
+﻿namespace Pure.DI.Tests.Integration;
+
+using Microsoft.CodeAnalysis.CSharp;
+
+public class LanguageTests
 {
-    using Microsoft.CodeAnalysis.CSharp;
-    using Shouldly;
-    using Xunit;
-
-    public class LanguageTests
+    [Fact]
+    public void ShouldSupportCSharp4()
     {
-        [Fact]
-        public void ShouldSupportCSharp4()
-        {
-            // Given
+        // Given
 
-            // When
-            var output = @"
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -34,20 +32,26 @@
                     public readonly string Value;
                     internal CompositionRoot(Func<string> value) { Value = value(); }
                 }
-            }".Run(out var generatedCode, new RunOptions { LanguageVersion = LanguageVersion.CSharp4 });
+            }".Run(out var generatedCode, new RunOptions
+        {
+            LanguageVersion = LanguageVersion.CSharp4
+        });
 
-            // Then
-            output.ShouldBe(new [] { "abc" }, generatedCode);
-        }
+        // Then
+        output.ShouldBe(new[]
+        {
+            "abc"
+        }, generatedCode);
+    }
 
 #if !ROSLYN38
-        [Fact]
-        public void ShouldSupportBlockFreeNamespaceWhenCSharp10()
-        {
-            // Given
+    [Fact]
+    public void ShouldSupportBlockFreeNamespaceWhenCSharp10()
+    {
+        // Given
 
-            // When
-            var output = @"
+        // When
+        var output = @"
             namespace Sample;
 
             using System;
@@ -69,11 +73,16 @@
                 public readonly string Value;
                 internal CompositionRoot(Func<string> value) { Value = value(); }
             }
-            ".Run(out var generatedCode, new RunOptions { LanguageVersion = LanguageVersion.CSharp10 });
+            ".Run(out var generatedCode, new RunOptions
+        {
+            LanguageVersion = LanguageVersion.CSharp10
+        });
 
-            // Then
-            output.ShouldBe(new [] { "abc" }, generatedCode);
-        }
-#endif
+        // Then
+        output.ShouldBe(new[]
+        {
+            "abc"
+        }, generatedCode);
     }
+#endif
 }

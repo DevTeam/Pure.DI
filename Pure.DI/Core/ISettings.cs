@@ -1,15 +1,14 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal interface ISettings
 {
-    internal interface ISettings
-    {
-        bool Debug { get; }
-        
-        bool Trace { get; }
+    bool Debug { get; }
 
-        bool TryGetOutputPath(out string outputPath);
+    bool Trace { get; }
 
-        Verbosity Verbosity { get; }
+    bool TryGetOutputPath(out string outputPath);
 
-        bool TryGetLogFile(out string logFilePath);
-    }
+    Verbosity Verbosity { get; }
+
+    bool TryGetLogFile(out string logFilePath);
 }

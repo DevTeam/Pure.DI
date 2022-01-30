@@ -1,7 +1,6 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal interface IBindingsProbe
 {
-    internal interface IBindingsProbe
-    {
-        void Probe();
-    }
+    void Probe();
 }

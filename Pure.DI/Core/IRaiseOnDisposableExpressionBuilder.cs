@@ -1,9 +1,6 @@
-namespace Pure.DI.Core
-{
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+namespace Pure.DI.Core;
 
-    internal interface IRaiseOnDisposableExpressionBuilder
-    {
-        ExpressionSyntax Build(SemanticType type, Lifetime lifetime, ExpressionSyntax instanceExpression);
-    }
+internal interface IRaiseOnDisposableExpressionBuilder
+{
+    ExpressionSyntax Build(SemanticType type, Lifetime lifetime, ExpressionSyntax instanceExpression);
 }

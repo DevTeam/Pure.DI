@@ -1,9 +1,6 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-using System.Collections.Generic;
-using Microsoft.CodeAnalysis;
-
 internal class StaticResolverNameProvider : IStaticResolverNameProvider
 {
     private readonly IBuildContext _buildContext;
@@ -34,7 +31,7 @@ internal class StaticResolverNameProvider : IStaticResolverNameProvider
             {
                 case SymbolDisplayPartKind.NamespaceName:
                     break;
-                    
+
                 case SymbolDisplayPartKind.Punctuation:
                     break;
 

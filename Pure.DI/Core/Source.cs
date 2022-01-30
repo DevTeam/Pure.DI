@@ -1,16 +1,13 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal readonly struct Source
 {
-    using Microsoft.CodeAnalysis.Text;
+    public readonly string HintName;
+    public readonly SourceText Code;
 
-    internal readonly struct Source
+    public Source(string hintName, SourceText code)
     {
-        public readonly string HintName;
-        public readonly SourceText Code;
-
-        public Source(string hintName, SourceText code)
-        {
-            HintName = hintName;
-            Code = code;
-        }
+        HintName = hintName;
+        Code = code;
     }
 }

@@ -1,7 +1,6 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal interface IStdErr
 {
-    internal interface IStdErr
-    {
-        void WriteErrorLine(string info);
-    }
+    void WriteErrorLine(string info);
 }

@@ -1,42 +1,40 @@
-﻿namespace Pure.DI.Benchmark.Containers
+﻿namespace Pure.DI.Benchmark.Containers;
+
+using global::Autofac;
+
+// ReSharper disable once ClassNeverInstantiated.Global
+internal sealed class Autofac : BaseAbstractContainer<IContainer>
 {
-    using System;
-    using global::Autofac;
+    private readonly ContainerBuilder _builder = new();
+    private readonly Lazy<IContainer> _container;
 
-    // ReSharper disable once ClassNeverInstantiated.Global
-    internal sealed class Autofac: BaseAbstractContainer<IContainer>
+    public Autofac() => _container = new Lazy<IContainer>(() => _builder.Build());
+
+    public override IContainer CreateContainer() => _container.Value;
+
+    public override void Register(Type contractType, Type implementationType, AbstractLifetime lifetime = AbstractLifetime.Transient, string name = null)
     {
-        private readonly ContainerBuilder _builder = new();
-        private readonly Lazy<IContainer> _container;
-
-        public Autofac() => _container = new Lazy<IContainer>(() => _builder.Build());
-
-        public override IContainer CreateContainer() => _container.Value;
-
-        public override void Register(Type contractType, Type implementationType, AbstractLifetime lifetime = AbstractLifetime.Transient, string name = null)
+        var registration = _builder.RegisterType(implementationType).As(contractType);
+        switch (lifetime)
         {
-            var registration = _builder.RegisterType(implementationType).As(contractType);
-            switch (lifetime)
-            {
-                case AbstractLifetime.Transient:
-                    break;
+            case AbstractLifetime.Transient:
+                break;
 
-                case AbstractLifetime.Singleton:
-                    registration.SingleInstance();
-                    break;
-                
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(lifetime), lifetime, null);
-            }
+            case AbstractLifetime.Singleton:
+                registration.SingleInstance();
+                break;
 
-            if (name != null)
-            {
-                registration.Keyed<object>(name);
-            }
+            default:
+                throw new ArgumentOutOfRangeException(nameof(lifetime), lifetime, null);
         }
 
-        public override T Resolve<T>() where T : class => _container.Value.Resolve<T>();
-
-        public override void Dispose() => _container.Value.Dispose();
+        if (name != null)
+        {
+            registration.Keyed<object>(name);
+        }
     }
+
+    public override T Resolve<T>() where T : class => _container.Value.Resolve<T>();
+
+    public override void Dispose() => _container.Value.Dispose();
 }

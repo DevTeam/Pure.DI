@@ -1,7 +1,6 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal interface IResolveMethodBuilder
 {
-    internal interface IResolveMethodBuilder
-    {
-        ResolveMethod Build();
-    }
+    ResolveMethod Build();
 }

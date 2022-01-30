@@ -1,9 +1,6 @@
-﻿namespace Pure.DI.Core
-{
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿namespace Pure.DI.Core;
 
-    internal interface IObjectBuilder
-    {
-        ExpressionSyntax? TryBuild(IBuildStrategy buildStrategy, Dependency dependency);
-    }
+internal interface IObjectBuilder
+{
+    ExpressionSyntax? TryBuild(IBuildStrategy buildStrategy, Dependency dependency);
 }

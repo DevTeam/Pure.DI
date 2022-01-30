@@ -1,47 +1,47 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+// ReSharper disable once ClassNeverInstantiated.Global
+internal class BindingsProbe : IBindingsProbe
 {
-    using System.Linq;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+    private readonly IBuildContext _buildContext;
+    private readonly IBuildStrategy _buildStrategy;
+    private readonly Log<BindingsProbe> _log;
 
-    // ReSharper disable once ClassNeverInstantiated.Global
-    internal class BindingsProbe : IBindingsProbe
+    public BindingsProbe(
+        IBuildContext buildContext,
+        IBuildStrategy buildStrategy,
+        Log<BindingsProbe> log)
     {
-        private readonly IBuildContext _buildContext;
-        private readonly IBuildStrategy _buildStrategy;
-        private readonly Log<BindingsProbe> _log;
+        _buildContext = buildContext;
+        _buildStrategy = buildStrategy;
+        _log = log;
+    }
 
-        public BindingsProbe(
-            IBuildContext buildContext,
-            IBuildStrategy buildStrategy,
-            Log<BindingsProbe> log)
+    public void Probe()
+    {
+        var dependencies = (
+                from binding in _buildContext.Metadata.Bindings
+                from dependency in binding.Dependencies
+                where dependency.IsValidTypeToResolve
+                // ReSharper disable once RedundantTypeArgumentsOfMethod
+                from tag in binding.GetTags(dependency).DefaultIfEmpty<ExpressionSyntax?>(null)
+                select (dependency, tag))
+            .Distinct()
+            .ToArray();
+
+        foreach (var (dependency, tag) in dependencies)
         {
-            _buildContext = buildContext;
-            _buildStrategy = buildStrategy;
-            _log = log;
-        }
-
-        public void Probe()
-        {
-            var dependencies = (
-                    from binding in _buildContext.Metadata.Bindings
-                    from dependency in binding.Dependencies
-                    where dependency.IsValidTypeToResolve
-                    // ReSharper disable once RedundantTypeArgumentsOfMethod
-                    from tag in binding.GetTags(dependency).DefaultIfEmpty<ExpressionSyntax?>(null)
-                    select (dependency, tag))
-                .Distinct()
-                .ToArray();
-
-            foreach (var (dependency, tag) in dependencies)
+            if (_buildContext.IsCancellationRequested)
             {
-                if (_buildContext.IsCancellationRequested)
+                _log.Trace(() => new[]
                 {
-                    _log.Trace(() => new []{ "Build canceled" });
-                    break;
-                }
+                    "Build canceled"
+                });
 
-                _buildStrategy.TryBuild(_buildContext.TypeResolver.Resolve(dependency, tag), dependency);
+                break;
             }
+
+            _buildStrategy.TryBuild(_buildContext.TypeResolver.Resolve(dependency, tag), dependency);
         }
     }
 }

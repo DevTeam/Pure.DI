@@ -1,35 +1,32 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+// ReSharper disable once ClassNeverInstantiated.Global
+internal class GenericStaticWithTagResolveMethodBuilder : IResolveMethodBuilder
 {
-    using Microsoft.CodeAnalysis.CSharp;
+    private readonly IMemberNameService _memberNameService;
 
-    // ReSharper disable once ClassNeverInstantiated.Global
-    internal class GenericStaticWithTagResolveMethodBuilder : IResolveMethodBuilder
+    public GenericStaticWithTagResolveMethodBuilder(IMemberNameService memberNameService) =>
+        _memberNameService = memberNameService;
+
+    public ResolveMethod Build()
     {
-        private readonly IMemberNameService _memberNameService;
+        var key = SyntaxFactory.ObjectCreationExpression(SyntaxRepo.TagTypeTypeSyntax)
+            .AddArgumentListArguments(
+                SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(SyntaxRepo.TTypeSyntax)),
+                SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")));
 
-        public GenericStaticWithTagResolveMethodBuilder(IMemberNameService memberNameService) =>
-            _memberNameService = memberNameService;
-
-        public ResolveMethod Build()
-        {
-            var key = SyntaxFactory.ObjectCreationExpression(SyntaxRepo.TagTypeTypeSyntax)
-                .AddArgumentListArguments(
-                    SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(SyntaxRepo.TTypeSyntax)),
-                    SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")));
-
-            var resolve = SyntaxFactory.InvocationExpression(
+        var resolve = SyntaxFactory.InvocationExpression(
                 SyntaxFactory.MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            SyntaxFactory.ParseName(_memberNameService.GetName(MemberNameKind.FactoriesByTagField)),
-                            SyntaxFactory.Token(SyntaxKind.DotToken),
-                            SyntaxFactory.IdentifierName(nameof(ResolversByTagTable.Resolve))))
-                    .AddArgumentListArguments(
-                        SyntaxFactory.Argument(key)
-                    );
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    SyntaxFactory.ParseName(_memberNameService.GetName(MemberNameKind.FactoriesByTagField)),
+                    SyntaxFactory.Token(SyntaxKind.DotToken),
+                    SyntaxFactory.IdentifierName(nameof(ResolversByTagTable.Resolve))))
+            .AddArgumentListArguments(
+                SyntaxFactory.Argument(key)
+            );
 
-            return new ResolveMethod(
-                SyntaxRepo.GenericStaticResolveWithTagMethodSyntax.AddBodyStatements(
-                    SyntaxFactory.ReturnStatement(SyntaxFactory.CastExpression(SyntaxRepo.TTypeSyntax, resolve))));
-        }
+        return new ResolveMethod(
+            SyntaxRepo.GenericStaticResolveWithTagMethodSyntax.AddBodyStatements(
+                SyntaxFactory.ReturnStatement(SyntaxFactory.CastExpression(SyntaxRepo.TTypeSyntax, resolve))));
     }
 }

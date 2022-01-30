@@ -1,12 +1,8 @@
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+internal interface ISyntaxFilter
 {
-    using System;
-    using Microsoft.CodeAnalysis;
+    IComparable Order { get; }
 
-    internal interface ISyntaxFilter
-    {
-        IComparable Order { get; }
-
-        bool Accept(SyntaxNode node);
-    }
+    bool Accept(SyntaxNode node);
 }

@@ -1,7 +1,6 @@
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+internal interface IIncludeTypeFilter
 {
-    internal interface IIncludeTypeFilter
-    {
-        bool IsAccepted(SemanticType factoryType, SemanticType targetType);
-    }
+    bool IsAccepted(SemanticType factoryType, SemanticType targetType);
 }

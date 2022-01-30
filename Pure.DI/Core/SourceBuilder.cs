@@ -1,162 +1,152 @@
 ﻿// ReSharper disable InvertIf
 // ReSharper disable InvertIf
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+using System.IO;
+
+// ReSharper disable once ClassNeverInstantiated.Global
+internal class SourceBuilder : ISourceBuilder
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.IO;
-    using System.Linq;
-    using System.Text;
-    using System.Threading;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.Text;
+    private readonly IBuildContext _context;
+    private readonly ISettings _settings;
+    private readonly IFileSystem _fileSystem;
+    private readonly ILog<SourceBuilder> _log;
+    private readonly Func<IClassBuilder> _resolverBuilderFactory;
 
-    // ReSharper disable once ClassNeverInstantiated.Global
-    internal class SourceBuilder : ISourceBuilder
+    public SourceBuilder(
+        ILog<SourceBuilder> log,
+        IBuildContext context,
+        ISettings settings,
+        IFileSystem fileSystem,
+        Func<IClassBuilder> resolverBuilderFactory)
     {
-        private readonly IBuildContext _context;
-        private readonly ISettings _settings;
-        private readonly IFileSystem _fileSystem;
-        private readonly ILog<SourceBuilder> _log;
-        private readonly Func<IClassBuilder> _resolverBuilderFactory;
-        
-        public SourceBuilder(
-            ILog<SourceBuilder> log,
-            IBuildContext context,
-            ISettings settings,
-            IFileSystem fileSystem,
-            Func<IClassBuilder> resolverBuilderFactory)
-        {
-            _context = context;
-            _settings = settings;
-            _fileSystem = fileSystem;
-            _log = log;
-            _resolverBuilderFactory = resolverBuilderFactory;
-        }
+        _context = context;
+        _settings = settings;
+        _fileSystem = fileSystem;
+        _log = log;
+        _resolverBuilderFactory = resolverBuilderFactory;
+    }
 
-        public IEnumerable<Source> Build(MetadataContext context)
+    public IEnumerable<Source> Build(MetadataContext context)
+    {
+        var allMetadata = context.BaseMetadata.Concat(context.CurrentMetadata).ToList();
+        Stopwatch stopwatch = new();
+        stopwatch.Start();
+
+        var curId = 0;
+        Process? traceProcess = default;
+        foreach (var rawMetadata in context.CurrentMetadata)
         {
-            var allMetadata = context.BaseMetadata.Concat(context.CurrentMetadata).ToList();
-            Stopwatch stopwatch = new();
             stopwatch.Start();
-            
-            var curId = 0;
-            Process? traceProcess = default;
-            foreach (var rawMetadata in context.CurrentMetadata)
+            var semanticModel = context.Compilation.GetSemanticModel(rawMetadata.SetupNode.SyntaxTree);
+            var metadata = CreateMetadata(rawMetadata, allMetadata);
+            _context.Prepare(curId++, context.Compilation, context.CancellationToken, metadata);
+            if (_settings.Debug)
             {
-                stopwatch.Start();
-                var semanticModel = context.Compilation.GetSemanticModel(rawMetadata.SetupNode.SyntaxTree);
-                var metadata = CreateMetadata(rawMetadata, allMetadata);
-                _context.Prepare(curId++, context.Compilation, context.CancellationToken, metadata);
-                if (_settings.Debug)
-                {
-                    if (!Debugger.IsAttached)
-                    {
-                        _log.Info(() => new[]
-                        {
-                            "Launch a debugger."
-                        });
-
-                        Debugger.Launch();
-                    }
-                    else
-                    {
-                        _log.Info(() => new[]
-                        {
-                            "A debugger is already attached"
-                        });
-                    }
-                }
-
-                if (traceProcess == default && _settings.Trace && _settings.TryGetOutputPath(out var outputPath))
-                {
-                    var traceFile = Path.Combine(outputPath, $"dotTrace{Guid.NewGuid().ToString().Substring(0, 4)}.dtt");
-                    var profiler = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".dotnet", "tools", "dottrace.exe");
-                    traceProcess = new Process
-                    {
-                        StartInfo = new ProcessStartInfo(
-                            profiler,
-                            $@"attach {Process.GetCurrentProcess().Id} --save-to=""{traceFile}"" --profiling-type=Sampling --timeout=30s")
-                        {
-                            WindowStyle = ProcessWindowStyle.Hidden,
-                            CreateNoWindow = true
-                        }
-                    };
-
-                    traceProcess.Start();
-                    Thread.Sleep(2000);
-                }
-
-                _log.Info(() =>
-                {
-                    var messages = new List<string>
-                    {
-                        $"Processing {rawMetadata.ComposerTypeName}",
-                        $"{nameof(DI)}.{nameof(DI.Setup)}()"
-                    };
-
-                    messages.AddRange(metadata.Bindings.Select(binding => $"  .{binding}"));
-                    return messages.ToArray();
-                });
-
-                var compilationUnitSyntax = _resolverBuilderFactory().Build(semanticModel).NormalizeWhitespace();
-                var source = new Source($"{metadata.ComposerTypeName}.cs", SourceText.From(compilationUnitSyntax.ToFullString(), Encoding.UTF8));
-                if (_settings.TryGetOutputPath(out outputPath))
+                if (!Debugger.IsAttached)
                 {
                     _log.Info(() => new[]
                     {
-                        $"The output path: {outputPath}"
+                        "Launch a debugger."
                     });
 
-                    _fileSystem.WriteFile(Path.Combine(outputPath, source.HintName), source.Code.ToString());
+                    Debugger.Launch();
                 }
+                else
+                {
+                    _log.Info(() => new[]
+                    {
+                        "A debugger is already attached"
+                    });
+                }
+            }
 
-                stopwatch.Stop();
+            if (traceProcess == default && _settings.Trace && _settings.TryGetOutputPath(out var outputPath))
+            {
+                var traceFile = Path.Combine(outputPath, $"dotTrace{Guid.NewGuid().ToString().Substring(0, 4)}.dtt");
+                var profiler = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".dotnet", "tools", "dottrace.exe");
+                traceProcess = new Process
+                {
+                    StartInfo = new ProcessStartInfo(
+                        profiler,
+                        $@"attach {Process.GetCurrentProcess().Id} --save-to=""{traceFile}"" --profiling-type=Sampling --timeout=30s")
+                    {
+                        WindowStyle = ProcessWindowStyle.Hidden,
+                        CreateNoWindow = true
+                    }
+                };
+
+                traceProcess.Start();
+                Thread.Sleep(2000);
+            }
+
+            _log.Info(() =>
+            {
+                var messages = new List<string>
+                {
+                    $"Processing {rawMetadata.ComposerTypeName}",
+                    $"{nameof(DI)}.{nameof(DI.Setup)}()"
+                };
+
+                messages.AddRange(metadata.Bindings.Select(binding => $"  .{binding}"));
+                return messages.ToArray();
+            });
+
+            var compilationUnitSyntax = _resolverBuilderFactory().Build(semanticModel).NormalizeWhitespace();
+            var source = new Source($"{metadata.ComposerTypeName}.cs", SourceText.From(compilationUnitSyntax.ToFullString(), Encoding.UTF8));
+            if (_settings.TryGetOutputPath(out outputPath))
+            {
                 _log.Info(() => new[]
                 {
-                    $"Initialize {context.InitDurationMilliseconds} ms.",
-                    $"Generate {stopwatch.ElapsedMilliseconds} ms."
+                    $"The output path: {outputPath}"
                 });
 
-                yield return source;
-            }
-        }
-
-        private static ResolverMetadata CreateMetadata(ResolverMetadata metadata, IReadOnlyCollection<ResolverMetadata> allMetadata)
-        {
-            var newMetadata = new ResolverMetadata(metadata.SetupNode, metadata.ComposerTypeName, metadata.Owner);
-            var dependencies = GetDependencies(metadata, new HashSet<ResolverMetadata>(), allMetadata);
-            foreach (var dependency in dependencies)
-            {
-                newMetadata.Merge(dependency);
+                _fileSystem.WriteFile(Path.Combine(outputPath, source.HintName), source.Code.ToString());
             }
 
-            newMetadata.Merge(metadata);
-            return newMetadata;
+            stopwatch.Stop();
+            _log.Info(() => new[]
+            {
+                $"Initialize {context.InitDurationMilliseconds} ms.", $"Generate {stopwatch.ElapsedMilliseconds} ms."
+            });
+
+            yield return source;
+        }
+    }
+
+    private static ResolverMetadata CreateMetadata(ResolverMetadata metadata, IReadOnlyCollection<ResolverMetadata> allMetadata)
+    {
+        var newMetadata = new ResolverMetadata(metadata.SetupNode, metadata.ComposerTypeName, metadata.Owner);
+        var dependencies = GetDependencies(metadata, new HashSet<ResolverMetadata>(), allMetadata);
+        foreach (var dependency in dependencies)
+        {
+            newMetadata.Merge(dependency);
         }
 
-        private static IEnumerable<ResolverMetadata> GetDependencies(ResolverMetadata metadata, ISet<ResolverMetadata> processed, IReadOnlyCollection<ResolverMetadata> allMetadata)
+        newMetadata.Merge(metadata);
+        return newMetadata;
+    }
+
+    private static IEnumerable<ResolverMetadata> GetDependencies(ResolverMetadata metadata, ISet<ResolverMetadata> processed, IReadOnlyCollection<ResolverMetadata> allMetadata)
+    {
+        var dependencies =
+            from dependencyName in metadata.DependsOn
+            from dependency in allMetadata
+            where dependencyName.Equals(dependency.ComposerTypeName, StringComparison.InvariantCultureIgnoreCase)
+            select dependency;
+
+        foreach (var dependency in dependencies)
         {
-            var dependencies =
-                from dependencyName in metadata.DependsOn
-                from dependency in allMetadata
-                where dependencyName.Equals(dependency.ComposerTypeName, StringComparison.InvariantCultureIgnoreCase)
-                select dependency;
-
-            foreach (var dependency in dependencies)
+            if (!processed.Add(dependency))
             {
-                if (!processed.Add(dependency))
-                {
-                    continue;
-                }
+                continue;
+            }
 
-                yield return dependency;
+            yield return dependency;
 
-                foreach (var nested in GetDependencies(dependency, processed, allMetadata))
-                {
-                    yield return nested;
-                }
+            foreach (var nested in GetDependencies(dependency, processed, allMetadata))
+            {
+                yield return nested;
             }
         }
     }

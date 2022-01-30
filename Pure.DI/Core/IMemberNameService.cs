@@ -1,7 +1,6 @@
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+internal interface IMemberNameService
 {
-    internal interface IMemberNameService
-    {
-        string GetName(MemberNameKind kind);
-    }
+    string GetName(MemberNameKind kind);
 }

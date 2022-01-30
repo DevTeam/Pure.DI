@@ -1,11 +1,10 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal enum AttributeKind
 {
-    internal enum AttributeKind
-    {
-        Type,
+    Type,
 
-        Tag,
+    Tag,
 
-        Order
-    }
+    Order
 }

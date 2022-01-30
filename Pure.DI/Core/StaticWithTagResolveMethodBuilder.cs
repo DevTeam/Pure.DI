@@ -1,35 +1,31 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+// ReSharper disable once ClassNeverInstantiated.Global
+internal class StaticWithTagResolveMethodBuilder : IResolveMethodBuilder
 {
-    using System.Linq;
-    using Microsoft.CodeAnalysis.CSharp;
+    private readonly ISyntaxRegistry _syntaxRegistry;
 
-    // ReSharper disable once ClassNeverInstantiated.Global
-    internal class StaticWithTagResolveMethodBuilder : IResolveMethodBuilder
+    public StaticWithTagResolveMethodBuilder(ISyntaxRegistry syntaxRegistry) =>
+        _syntaxRegistry = syntaxRegistry;
+
+    public ResolveMethod Build()
     {
-        private readonly ISyntaxRegistry _syntaxRegistry;
+        var key = SyntaxFactory.ObjectCreationExpression(SyntaxRepo.TagTypeTypeSyntax)
+            .AddArgumentListArguments(
+                SyntaxFactory.Argument(SyntaxFactory.IdentifierName("type")),
+                SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")));
 
-        public StaticWithTagResolveMethodBuilder(ISyntaxRegistry syntaxRegistry) =>
-            _syntaxRegistry = syntaxRegistry;
+        var keyVar = SyntaxFactory.LocalDeclarationStatement(
+            SyntaxFactory.VariableDeclaration(SyntaxRepo.TagTypeTypeSyntax)
+                .AddVariables(
+                    SyntaxFactory.VariableDeclarator("key")
+                        .WithInitializer(SyntaxFactory.EqualsValueClause(key))));
 
-        public ResolveMethod Build()
-        {
-            var key = SyntaxFactory.ObjectCreationExpression(SyntaxRepo.TagTypeTypeSyntax)
-                .AddArgumentListArguments(
-                    SyntaxFactory.Argument(SyntaxFactory.IdentifierName("type")),
-                    SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")));
+        var methodBlock = SyntaxFactory.Block()
+            .AddStatements(keyVar)
+            .AddStatements(_syntaxRegistry.FindMethod(nameof(ResolversByTagTable), nameof(ResolversByTagTable.Resolve)).Body!.Statements.ToArray());
 
-            var keyVar = SyntaxFactory.LocalDeclarationStatement(
-                SyntaxFactory.VariableDeclaration(SyntaxRepo.TagTypeTypeSyntax)
-                    .AddVariables(
-                        SyntaxFactory.VariableDeclarator("key")
-                            .WithInitializer(SyntaxFactory.EqualsValueClause(key))));
-
-            var methodBlock = SyntaxFactory.Block()
-                .AddStatements(keyVar)
-                .AddStatements(_syntaxRegistry.FindMethod(nameof(ResolversByTagTable), nameof(ResolversByTagTable.Resolve)).Body!.Statements.ToArray());
-
-            return new ResolveMethod(
-                SyntaxRepo.StaticResolveWithTagMethodSyntax.AddBodyStatements(methodBlock.Statements.ToArray()));
-        }
+        return new ResolveMethod(
+            SyntaxRepo.StaticResolveWithTagMethodSyntax.AddBodyStatements(methodBlock.Statements.ToArray()));
     }
 }

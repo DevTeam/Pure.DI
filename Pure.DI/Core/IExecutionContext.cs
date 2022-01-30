@@ -1,17 +1,12 @@
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+internal interface IExecutionContext
 {
-    using System.Threading;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.Text;
+    Compilation Compilation { get; }
 
-    internal interface IExecutionContext
-    {
-        Compilation Compilation { get; }
-        
-        CancellationToken CancellationToken { get; }
-        
-        void AddSource(string hintName, SourceText sourceText);
+    CancellationToken CancellationToken { get; }
 
-        public void ReportDiagnostic(Diagnostic diagnostic);
-    }
+    void AddSource(string hintName, SourceText sourceText);
+
+    public void ReportDiagnostic(Diagnostic diagnostic);
 }

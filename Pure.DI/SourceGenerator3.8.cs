@@ -1,42 +1,37 @@
 ﻿//#if ROSLYN38
-namespace Pure.DI
+namespace Pure.DI;
+
+using Core;
+using IoC;
+
+[Generator]
+public class SourceGenerator : ISourceGenerator
 {
-    using System;
-    using System.Threading;
-    using Core;
-    using IoC;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.Text;
+    private static readonly IContainer GeneratorContainer = ContainerExtensions.Create();
 
-    [Generator]
-    public class SourceGenerator: ISourceGenerator
+    public void Initialize(GeneratorInitializationContext context) { }
+
+    public void Execute(GeneratorExecutionContext context) =>
+        GeneratorContainer.Create().Resolve<IGenerator>().Generate(new ExecutionContext(context));
+
+    private class ExecutionContext : IExecutionContext
     {
-        private static readonly IContainer GeneratorContainer = ContainerExtensions.Create();
+        private readonly GeneratorExecutionContext _context;
 
-        public void Initialize(GeneratorInitializationContext context) { }
+        public ExecutionContext(GeneratorExecutionContext context) => _context = context;
 
-        public void Execute(GeneratorExecutionContext context) =>
-            GeneratorContainer.Create().Resolve<IGenerator>().Generate(new ExecutionContext(context));
-        
-        private class ExecutionContext: IExecutionContext
+        public Compilation Compilation => _context.Compilation;
+
+        public CancellationToken CancellationToken => _context.CancellationToken;
+
+        public void AddSource(string hintName, SourceText sourceText)
         {
-            private readonly GeneratorExecutionContext _context;
-
-            public ExecutionContext(GeneratorExecutionContext context) => _context = context;
-
-            public Compilation Compilation => _context.Compilation;
-
-            public CancellationToken CancellationToken => _context.CancellationToken;
-
-            public void AddSource(string hintName, SourceText sourceText)
-            {
-                Action<string, SourceText> addSource = _context.AddSource;
-                addSource(hintName, sourceText);
-            }
-
-            public void ReportDiagnostic(Diagnostic diagnostic) =>
-                _context.ReportDiagnostic(diagnostic);
+            Action<string, SourceText> addSource = _context.AddSource;
+            addSource(hintName, sourceText);
         }
+
+        public void ReportDiagnostic(Diagnostic diagnostic) =>
+            _context.ReportDiagnostic(diagnostic);
     }
 }
 //#endif

@@ -1,13 +1,8 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal interface IMembersBuilder
 {
-    using System.Collections.Generic;
-    using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+    int Order { get; }
 
-    internal interface IMembersBuilder
-    {
-        int Order { get; }
-
-        IEnumerable<MemberDeclarationSyntax> BuildMembers(SemanticModel semanticModel);
-    }
+    IEnumerable<MemberDeclarationSyntax> BuildMembers(SemanticModel semanticModel);
 }

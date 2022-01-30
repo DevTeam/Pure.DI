@@ -1,18 +1,12 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-
 internal class StatementsFinalizer : IStatementsFinalizer, IMembersBuilder
 {
     private readonly IBuildContext _buildContext;
 
     public StatementsFinalizer(IBuildContext buildContext) => _buildContext = buildContext;
-    
+
     public int Order => int.MaxValue;
 
     private bool IsActive => _buildContext.FinalizationStatements.Any();
@@ -66,7 +60,7 @@ internal class StatementsFinalizer : IStatementsFinalizer, IMembersBuilder
             block,
             SyntaxFactory.List<CatchClauseSyntax>(),
             SyntaxFactory.FinallyClause(releaseBlock));
-        
+
         return
             SyntaxFactory.Block()
                 .AddStatements(SyntaxFactory.ExpressionStatement(incrementStatement))

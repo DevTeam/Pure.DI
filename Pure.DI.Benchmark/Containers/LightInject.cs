@@ -1,51 +1,49 @@
-﻿namespace Pure.DI.Benchmark.Containers
+﻿namespace Pure.DI.Benchmark.Containers;
+
+using Castle.Core.Internal;
+using global::LightInject;
+
+// ReSharper disable once ClassNeverInstantiated.Global
+internal sealed class LightInject : BaseAbstractContainer<ServiceContainer>
 {
-    using System;
-    using Castle.Core.Internal;
-    using global::LightInject;
+    private readonly ServiceContainer _container = new();
 
-    // ReSharper disable once ClassNeverInstantiated.Global
-    internal sealed class LightInject: BaseAbstractContainer<ServiceContainer>
+    public override ServiceContainer CreateContainer() => _container;
+
+    public override void Register(Type contractType, Type implementationType, AbstractLifetime lifetime = AbstractLifetime.Transient, string name = null)
     {
-        private readonly ServiceContainer _container = new();
-
-        public override ServiceContainer CreateContainer() => _container;
-
-        public override void Register(Type contractType, Type implementationType, AbstractLifetime lifetime = AbstractLifetime.Transient, string name = null)
+        switch (lifetime)
         {
-            switch (lifetime)
-            {
-                case AbstractLifetime.Transient:
-                    if (name.IsNullOrEmpty())
-                    {
-                        _container.Register(contractType, implementationType);
-                    }
-                    else
-                    {
-                        _container.Register(contractType, implementationType, name);
-                    }
+            case AbstractLifetime.Transient:
+                if (name.IsNullOrEmpty())
+                {
+                    _container.Register(contractType, implementationType);
+                }
+                else
+                {
+                    _container.Register(contractType, implementationType, name);
+                }
 
-                    break;
+                break;
 
-                case AbstractLifetime.Singleton:
-                    if (name.IsNullOrEmpty())
-                    {
-                        _container.Register(contractType, implementationType, new PerContainerLifetime());
-                    }
-                    else
-                    {
-                        _container.Register(contractType, implementationType, name, new PerContainerLifetime());
-                    }
+            case AbstractLifetime.Singleton:
+                if (name.IsNullOrEmpty())
+                {
+                    _container.Register(contractType, implementationType, new PerContainerLifetime());
+                }
+                else
+                {
+                    _container.Register(contractType, implementationType, name, new PerContainerLifetime());
+                }
 
-                    break;
+                break;
 
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(lifetime), lifetime, null);
-            }
+            default:
+                throw new ArgumentOutOfRangeException(nameof(lifetime), lifetime, null);
         }
-
-        public override T Resolve<T>() where T : class => _container.GetInstance<T>();
-
-        public override void Dispose() => _container.Dispose();
     }
+
+    public override T Resolve<T>() where T : class => _container.GetInstance<T>();
+
+    public override void Dispose() => _container.Dispose();
 }

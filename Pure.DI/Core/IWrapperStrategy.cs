@@ -1,9 +1,6 @@
-namespace Pure.DI.Core
-{
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+namespace Pure.DI.Core;
 
-    internal interface IWrapperStrategy
-    {
-        ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression);
-    }
+internal interface IWrapperStrategy
+{
+    ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression);
 }

@@ -1,87 +1,85 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+using System.IO;
+
+internal class Settings : ISettings
 {
-    using System;
-    using System.IO;
+    private readonly IBuildContext _buildContext;
+    private readonly IFileSystem _fileSystem;
 
-    internal class Settings : ISettings
+    public Settings(
+        IBuildContext buildContext,
+        IFileSystem fileSystem)
     {
-        private readonly IBuildContext _buildContext;
-        private readonly IFileSystem _fileSystem;
+        _buildContext = buildContext;
+        _fileSystem = fileSystem;
+    }
 
-        public Settings(
-            IBuildContext buildContext, 
-            IFileSystem fileSystem)
+    public bool Debug =>
+        TryGet(Setting.Debug, out var debugValue)
+        && bool.TryParse(debugValue, out var debug)
+        && debug;
+
+    public bool Trace =>
+        TryGet(Setting.Trace, out var traceValue)
+        && bool.TryParse(traceValue, out var trace)
+        && trace;
+
+    public bool TryGetOutputPath(out string outputPath)
+    {
+        if (!TryGet(Setting.Out, out outputPath))
         {
-            _buildContext = buildContext;
-            _fileSystem = fileSystem;
+            outputPath = string.Empty;
+            return false;
         }
 
-        public bool Debug =>
-            TryGet(Setting.Debug, out var debugValue)
-            && bool.TryParse(debugValue, out var debug)
-            && debug;
+        outputPath = EnsureExists(Path.Combine(outputPath, _buildContext.Metadata.ComposerTypeName));
+        return true;
+    }
 
-        public bool Trace =>
-            TryGet(Setting.Trace, out var traceValue)
-            && bool.TryParse(traceValue, out var trace)
-            && trace;
+    public Verbosity Verbosity =>
+        TryGet(Setting.Verbosity, out var verbosityValue)
+        && Enum.TryParse(verbosityValue, true, out Verbosity verbosity)
+            ? verbosity
+            : Verbosity.Quiet;
 
-        public bool TryGetOutputPath(out string outputPath)
+    public bool TryGetLogFile(out string logFilePath)
+    {
+        if (Verbosity > Verbosity.Quiet)
         {
-            if (!TryGet(Setting.Out, out outputPath))
-            {
-                outputPath = string.Empty;
-                return false;
-            }
-
-            outputPath = EnsureExists(Path.Combine(outputPath, _buildContext.Metadata.ComposerTypeName));
+            logFilePath = GetFullPath($"{_buildContext.Metadata.ComposerTypeName}.log");
             return true;
         }
 
-        public Verbosity Verbosity =>
-            TryGet(Setting.Verbosity, out var verbosityValue)
-            && Enum.TryParse(verbosityValue, true, out Verbosity verbosity)
-                ? verbosity
-                : Verbosity.Quiet;
-        
-        public bool TryGetLogFile(out string logFilePath)
-        {
-            if (Verbosity > Verbosity.Quiet)
-            {
-                logFilePath = GetFullPath($"{_buildContext.Metadata.ComposerTypeName}.log");
-                return true;
-            }
+        logFilePath = string.Empty;
+        return false;
+    }
 
-            logFilePath = string.Empty;
-            return false;
-        }               
+    private bool TryGet(Setting setting, out string value)
+    {
+        var settings = _buildContext.Metadata.Settings;
+        return settings.TryGetValue(setting, out value);
+    }
 
-        private bool TryGet(Setting setting, out string value)
+    private string GetFullPath(string path)
+    {
+        if (TryGetOutputPath(out var outputPath))
         {
-            var settings = _buildContext.Metadata.Settings;
-            return settings.TryGetValue(setting, out value);
+            path = Path.Combine(outputPath, path);
         }
 
-        private string GetFullPath(string path)
-        {
-            if (TryGetOutputPath(out var outputPath))
-            {
-                path = Path.Combine(outputPath, path);
-            }
+        return path;
+    }
 
-            return path;
+    private string EnsureExists(string path)
+    {
+        if (!Path.IsPathRooted(path))
+        {
+            path = Path.Combine(Directory.GetCurrentDirectory(), path);
         }
 
-        private string EnsureExists(string path)
-        {
-            if (!Path.IsPathRooted(path))
-            {
-                path = Path.Combine(Directory.GetCurrentDirectory(), path);
-            }
-
-            _fileSystem.CreateDirectory(path);
-            return path;
-        }
+        _fileSystem.CreateDirectory(path);
+        return path;
     }
 }

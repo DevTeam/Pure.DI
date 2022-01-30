@@ -1,10 +1,7 @@
-﻿namespace Pure.DI.Core
-{
-    using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿namespace Pure.DI.Core;
 
-    internal interface IBuildStrategy
-    {
-        // ReSharper disable once UnusedParameter.Global
-        ExpressionSyntax? TryBuild(Dependency dependency, SemanticType resolvingType);
-    }
+internal interface IBuildStrategy
+{
+    // ReSharper disable once UnusedParameter.Global
+    ExpressionSyntax? TryBuild(Dependency dependency, SemanticType resolvingType);
 }

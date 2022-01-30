@@ -1,12 +1,7 @@
 namespace Clock.Tests
 {
-    using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Models;
-    using Moq;
-    using Shouldly;
     using ViewModels;
 
     [TestClass]
@@ -65,10 +60,10 @@ namespace Clock.Tests
                 .Setup(i => i.Subscribe(It.IsAny<IObserver<Tick>>()))
                 .Returns(subscription.Object);
 
-            var viewModel = new ClockViewModel(Mock.Of<ILog<ClockViewModel>>(),Mock.Of<IClock>(), timer.Object);
-          
+            var viewModel = new ClockViewModel(Mock.Of<ILog<ClockViewModel>>(), Mock.Of<IClock>(), timer.Object);
+
             // When
-            ((IDisposable) viewModel).Dispose();
+            ((IDisposable)viewModel).Dispose();
 
             // Then
             subscription.Verify(i => i.Dispose(), Times.Once);

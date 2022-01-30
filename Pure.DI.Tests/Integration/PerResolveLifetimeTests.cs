@@ -1,22 +1,19 @@
-﻿namespace Pure.DI.Tests.Integration
+﻿namespace Pure.DI.Tests.Integration;
+
+public class PerResolveLifetimeTests
 {
-    using Shouldly;
-    using Xunit;
-
-    public class PerResolveLifetimeTests
+    [Fact]
+    public void ShouldSupportPerResolve()
     {
-        [Fact]
-        public void ShouldSupportPerResolve()
-        {
-            // Given
-            const string? statements = "var root1 = Composer.Resolve<CompositionRoot>();" +
-                                       "var root2 = Composer.Resolve<CompositionRoot>();" +
-                                       "System.Console.WriteLine(root1.Value1 == root1.Value2);" +
-                                       "System.Console.WriteLine(root2.Value1 == root2.Value2);" +
-                                       "System.Console.WriteLine(root1.Value1 != root2.Value1);";
+        // Given
+        const string? statements = "var root1 = Composer.Resolve<CompositionRoot>();" +
+                                   "var root2 = Composer.Resolve<CompositionRoot>();" +
+                                   "System.Console.WriteLine(root1.Value1 == root1.Value2);" +
+                                   "System.Console.WriteLine(root2.Value1 == root2.Value2);" +
+                                   "System.Console.WriteLine(root1.Value1 != root2.Value1);";
 
-            // When
-            var output = @"
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -44,19 +41,25 @@
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }                    
                 }    
-            }".Run(out var generatedCode, new RunOptions { Statements = statements });
-
-            // Then
-            output.ShouldBe(new[] { "True", "True", "True" }, generatedCode);
-        }
-
-        [Fact]
-        public void ShouldSupportPerResolveWhenValueType()
+            }".Run(out var generatedCode, new RunOptions
         {
-            // Given
+            Statements = statements
+        });
 
-            // When
-            var output = @"
+        // Then
+        output.ShouldBe(new[]
+        {
+            "True", "True", "True"
+        }, generatedCode);
+    }
+
+    [Fact]
+    public void ShouldSupportPerResolveWhenValueType()
+    {
+        // Given
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -84,22 +87,25 @@
                 }    
             }".Run(out var generatedCode);
 
-            // Then
-            output.ShouldBe(new[] { "10" }, generatedCode);
-        }
-        
-        [Fact]
-        public void ShouldSupportPerResolveWhenStaticMethodResolve()
+        // Then
+        output.ShouldBe(new[]
         {
-            // Given
-            const string? statements = "var root1 = Composer.ResolveCompositionRoot();" +
-                                       "var root2 = Composer.ResolveCompositionRoot();" +
-                                       "System.Console.WriteLine(root1.Value1 == root1.Value2);" +
-                                       "System.Console.WriteLine(root2.Value1 == root2.Value2);" +
-                                       "System.Console.WriteLine(root1.Value1 != root2.Value1);";
+            "10"
+        }, generatedCode);
+    }
 
-            // When
-            var output = @"
+    [Fact]
+    public void ShouldSupportPerResolveWhenStaticMethodResolve()
+    {
+        // Given
+        const string? statements = "var root1 = Composer.ResolveCompositionRoot();" +
+                                   "var root2 = Composer.ResolveCompositionRoot();" +
+                                   "System.Console.WriteLine(root1.Value1 == root1.Value2);" +
+                                   "System.Console.WriteLine(root2.Value1 == root2.Value2);" +
+                                   "System.Console.WriteLine(root1.Value1 != root2.Value1);";
+
+        // When
+        var output = @"
             namespace Sample
             {
                 using System;
@@ -127,10 +133,15 @@
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }                    
                 }    
-            }".Run(out var generatedCode, new RunOptions { Statements = statements });
+            }".Run(out var generatedCode, new RunOptions
+        {
+            Statements = statements
+        });
 
-            // Then
-            output.ShouldBe(new[] { "True", "True", "True" }, generatedCode);
-        }
+        // Then
+        output.ShouldBe(new[]
+        {
+            "True", "True", "True"
+        }, generatedCode);
     }
 }

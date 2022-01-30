@@ -1,61 +1,56 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+internal class Log<T> : ILog<T>
 {
-    using System;
-    using System.Diagnostics;
-    using System.Linq;
+    private readonly ISettings _settings;
+    private readonly IFileSystem _fileSystem;
 
-    internal class Log<T> : ILog<T>
+    public Log(
+        ISettings settings,
+        IFileSystem fileSystem)
     {
-        private readonly ISettings _settings;
-        private readonly IFileSystem _fileSystem;
+        _settings = settings;
+        _fileSystem = fileSystem;
+    }
 
-        public Log(
-            ISettings settings,
-            IFileSystem fileSystem)
+    public void Trace(Func<string[]> messageFactory)
+    {
+        if (_settings.Verbosity >= Verbosity.Diagnostic)
         {
-            _settings = settings;
-            _fileSystem = fileSystem;
+            Write("TRC", messageFactory);
+        }
+    }
+
+    public void Info(Func<string[]> messageFactory)
+    {
+        if (_settings.Verbosity >= Verbosity.Normal)
+        {
+            Write("INF", messageFactory);
+        }
+    }
+
+    public void Warning(params string[] warning)
+    {
+        if (_settings.Verbosity >= Verbosity.Minimal)
+        {
+            Write("WRN", () => warning);
         }
 
-        public void Trace(Func<string[]> messageFactory)
-        {
-            if (_settings.Verbosity >= Verbosity.Diagnostic)
-            {
-                Write("TRC", messageFactory);
-            }
-        }
+        Debug.Assert(true, string.Join(Environment.NewLine, warning));
+    }
 
-        public void Info(Func<string[]> messageFactory)
-        {
-            if (_settings.Verbosity >= Verbosity.Normal)
-            {
-                Write("INF", messageFactory);
-            }
-        }
+    public void Error(params string[] error)
+    {
+        Write("ERR", () => error);
+        Debug.Assert(true, string.Join(Environment.NewLine, error));
+    }
 
-        public void Warning(params string[] warning)
+    private void Write(string category, Func<string[]> messageFactory)
+    {
+        if (_settings.TryGetLogFile(out var logFile))
         {
-            if (_settings.Verbosity >= Verbosity.Minimal)
-            {
-                Write("WRN", () => warning);
-            }
-
-            Debug.Assert(true, string.Join(Environment.NewLine, warning));
-        }
-
-        public void Error(params string[] error)
-        {
-            Write("ERR", () => error);
-            Debug.Assert(true, string.Join(Environment.NewLine, error));
-        }
-
-        private void Write(string category, Func<string[]> messageFactory)
-        {
-            if (_settings.TryGetLogFile(out var logFile))
-            {
-                _fileSystem.AppendFile(logFile, messageFactory().Select(i => $"{DateTime.Now:HH:mm:ss:fff} {category} {typeof(T).Name}: {i}"));
-            }
+            _fileSystem.AppendFile(logFile, messageFactory().Select(i => $"{DateTime.Now:HH:mm:ss:fff} {category} {typeof(T).Name}: {i}"));
         }
     }
 }

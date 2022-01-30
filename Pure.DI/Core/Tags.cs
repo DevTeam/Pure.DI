@@ -1,26 +1,25 @@
-﻿namespace Pure.DI.Core
+﻿namespace Pure.DI.Core;
+
+internal enum Tags
 {
-    internal enum Tags
-    {
-        Default,
-        AutowiringBuilder,
-        FactoryBuilder,
-        ArrayBuilder,
-        EnumerableBuilder,
-        AsIsResult,
-        GenericResult,
-        StaticResolve,
-        StaticWithTag,
-        GenericStaticResolve,
-        GenericStaticWithTag,
-        Resolvers,
-        MicrosoftDependencyInjection,
-        Factory,
-        FactoryMethod,
-        GenericResolvers,
-        ContainerScope,
-        GlobalScope,
-        Syntax,
-        MetadataSyntax
-    }
+    Default,
+    AutowiringBuilder,
+    FactoryBuilder,
+    ArrayBuilder,
+    EnumerableBuilder,
+    AsIsResult,
+    GenericResult,
+    StaticResolve,
+    StaticWithTag,
+    GenericStaticResolve,
+    GenericStaticWithTag,
+    Resolvers,
+    MicrosoftDependencyInjection,
+    Factory,
+    FactoryMethod,
+    GenericResolvers,
+    ContainerScope,
+    GlobalScope,
+    Syntax,
+    MetadataSyntax
 }
