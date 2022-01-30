@@ -151,9 +151,7 @@ In the cases when a project references the Microsoft Dependency Injection librar
 public void Run()
 {
     DI.Setup("MyComposer")
-        // Add Transient
         .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-        // Add Scoped
         .Bind<IService>().To<Service>();
     
     var serviceProvider =
@@ -161,7 +159,7 @@ public void Run()
         new ServiceCollection()
             // Adds some registrations with any lifetime
             .AddScoped<ServiceConsumer>()
-        // Adds Pure DI registrations
+        // Adds registrations produced by Pure DI above
         .AddMyComposer()
         // Builds a service provider
         .BuildServiceProvider();
