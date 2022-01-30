@@ -1,56 +1,56 @@
-﻿## Usage Scenarios
+﻿
+## Usage Scenarios
 
 - Basics
-    - [Composition Root](#composition-root)
-    - [Constants](#constants)
-    - [Generics](#generics)
-    - [Manual binding](#manual-binding)
-    - [Service collection](#service-collection)
-    - [Tags](#tags)
-    - [Aspect-oriented DI](#aspect-oriented-di)
-    - [Service provider](#service-provider)
-    - [Several contracts](#several-contracts)
-    - [Aspect-oriented DI with custom attributes](#aspect-oriented-di-with-custom-attributes)
-    - [Instance initialization](#instance-initialization)
-    - [Record structs](#record-structs)
-    - [Records](#records)
-    - [Dependency tag](#dependency-tag)
-    - [Injection of default parameters](#injection-of-default-parameters)
-    - [Injection of nullable parameters](#injection-of-nullable-parameters)
-    - [Complex generics](#complex-generics)
-    - [Complex generics with constraints](#complex-generics-with-constraints)
-    - [Depends On](#depends-on)
-    - [Unbound instance resolving](#unbound-instance-resolving)
+  - [Composition Root](#composition-root)
+  - [Constants](#constants)
+  - [Generics](#generics)
+  - [Manual binding](#manual-binding)
+  - [Service collection](#service-collection)
+  - [Tags](#tags)
+  - [Aspect-oriented DI](#aspect-oriented-di)
+  - [Service provider](#service-provider)
+  - [Several contracts](#several-contracts)
+  - [Aspect-oriented DI with custom attributes](#aspect-oriented-di-with-custom-attributes)
+  - [Instance initialization](#instance-initialization)
+  - [Record structs](#record-structs)
+  - [Records](#records)
+  - [Dependency tag](#dependency-tag)
+  - [Injection of default parameters](#injection-of-default-parameters)
+  - [Injection of nullable parameters](#injection-of-nullable-parameters)
+  - [Complex generics](#complex-generics)
+  - [Complex generics with constraints](#complex-generics-with-constraints)
+  - [Depends On](#depends-on)
+  - [Unbound instance resolving](#unbound-instance-resolving)
 - Lifetimes
-    - [Default lifetime](#default-lifetime)
-    - [Per resolve lifetime](#per-resolve-lifetime)
-    - [Singleton lifetime](#singleton-lifetime)
-    - [Transient lifetime](#transient-lifetime)
-    - [Custom singleton lifetime](#custom-singleton-lifetime)
+  - [Default lifetime](#default-lifetime)
+  - [Per resolve lifetime](#per-resolve-lifetime)
+  - [Singleton lifetime](#singleton-lifetime)
+  - [Transient lifetime](#transient-lifetime)
+  - [Custom singleton lifetime](#custom-singleton-lifetime)
 - BCL types
-    - [Arrays](#arrays)
-    - [Collections](#collections)
-    - [Enumerables](#enumerables)
-    - [Func](#func)
-    - [Lazy](#lazy)
-    - [Lazy with metadata](#lazy-with-metadata)
-    - [Sets](#sets)
-    - [Thread Local](#thread-local)
-    - [Tuples](#tuples)
-    - [Array binding override](#array-binding-override)
+  - [Arrays](#arrays)
+  - [Collections](#collections)
+  - [Enumerables](#enumerables)
+  - [Func](#func)
+  - [Lazy](#lazy)
+  - [Lazy with metadata](#lazy-with-metadata)
+  - [Sets](#sets)
+  - [Thread Local](#thread-local)
+  - [Tuples](#tuples)
+  - [Array binding override](#array-binding-override)
 - Interception
-    - [Decorator](#decorator)
-    - [Intercept specific types](#intercept-specific-types)
-    - [Intercept a set of types](#intercept-a-set-of-types)
-    - [Intercept advanced](#intercept-advanced)
+  - [Decorator](#decorator)
+  - [Intercept specific types](#intercept-specific-types)
+  - [Intercept a set of types](#intercept-a-set-of-types)
+  - [Intercept advanced](#intercept-advanced)
 - Samples
-    - [ASPNET](#aspnet)
-    - [OS specific implementations](#os-specific-implementations)
+  - [ASPNET](#aspnet)
+  - [OS specific implementations](#os-specific-implementations)
 
 ### Composition Root
 
-This sample demonstrates the most efficient way of getting a composition root object, free from any impact on memory
-consumption and performance.
+This sample demonstrates the most efficient way of getting a composition root object, free from any impact on memory consumption and performance.
 
 ``` CSharp
 DI.Setup("Composer")
@@ -62,14 +62,11 @@ var instance = Composer.ResolveIService();
 ```
 
 Actually, the method _ResolveIService_ looks like this:
-
 ```csharp
 [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 public static IService ResolveIService() => new Service(new Dependency());
 ```
-
 and the compiler just inserts this set of constructor calls instead of ```Composer.ResolveIService()```:
-
 ```csharp
 new Service(new Dependency())
 ```
@@ -89,13 +86,10 @@ val.ShouldBe(10);
 ```
 
 The compiler replaces the statement:
-
 ```CSharp
 var val = ConstantsDI.ResolveInt();
 ```
-
 by the statement:
-
 ```CSharp
 var val = 10;
 ```
@@ -119,20 +113,15 @@ public class Consumer
     var instance = GenericsDI.Resolve<Consumer>();
 ```
 
-Open generic type instance, for instance, like IService&lt;TT&gt; here, cannot be a composition root instance. This
-sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs). The actual composition for the example
-above looks like this:
-
+Open generic type instance, for instance, like IService&lt;TT&gt; here, cannot be a composition root instance. This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+The actual composition for the example above looks like this:
 ```CSharp
 new Consumer(new Service<int>(Dependency()));
 ```
 
 ### Manual binding
 
-We can specify a constructor manually with all its arguments and even call some methods before an instance will be
-returned to consumers. Would also like to point out that invocations like *__ctx.Resolve<>()__* will be replaced by a
-related expression to create a required composition for the performance boost where possible, except when it might cause
-a circular dependency.
+We can specify a constructor manually with all its arguments and even call some methods before an instance will be returned to consumers. Would also like to point out that invocations like *__ctx.Resolve<>()__* will be replaced by a related expression to create a required composition for the performance boost where possible, except when it might cause a circular dependency.
 
 ``` CSharp
 DI.Setup()
@@ -148,19 +137,14 @@ instance.State.ShouldBe("some state");
 ```
 
 The actual composition for the example above looks like this:
-
 ```CSharp
 new Service(new Dependency()), "some state");
 ```
-
-... and no any additional method calls. This sample references types
-from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+... and no any additional method calls. This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Service collection
 
-In the cases when a project references the Microsoft Dependency Injection library, an extension method
-for ```IServiceCollection``` is generating automatically with a name like _Add..._ plus the name of a generated class,
-here it is ```AddMyComposer()``` for class ```public class MyComposer { }```.
+In the cases when a project references the Microsoft Dependency Injection library, an extension method for ```IServiceCollection``` is generating automatically with a name like _Add..._ plus the name of a generated class, here it is ```AddMyComposer()``` for class ```public class MyComposer { }```.
 
 ``` CSharp
 [Fact]
@@ -200,6 +184,8 @@ public class ServiceConsumer
 }
 ```
 
+
+
 ### Tags
 
 Tags are useful while binding to several implementations of the same abstract types.
@@ -226,11 +212,13 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Aspect-oriented DI
 
+
+
 ``` CSharp
 public void Run()
 {
     DI.Setup()
-        .Bind<IConsole>().Tags("MyConsole").To(_ => Console.Object)
+        .Bind<IConsole>().Tags("MyConsole").To(_ => AspectOriented.Console.Object)
         .Bind<string>().Tags("Prefix").To(_ => "info")
         .Bind<ILogger>().As(Singleton).To<Logger>();
 
@@ -244,20 +232,11 @@ public void Run()
     Console.Verify(i => i.WriteLine(It.IsRegex(".+ - info: Hello")));
 }
 
-public interface IConsole
-{
-    void WriteLine(string text);
-}
+public interface IConsole { void WriteLine(string text); }
 
-public interface IClock
-{
-    DateTimeOffset Now { get; }
-}
+public interface IClock { DateTimeOffset Now { get; } }
 
-public interface ILogger
-{
-    void Log(string message);
-}
+public interface ILogger { void Log(string message); }
 
 public class Logger : ILogger
 {
@@ -268,8 +247,7 @@ public class Logger : ILogger
     public Logger([Tag("MyConsole")] IConsole console) => _console = console;
 
     // Method injection after constructor using specified type _Clock_
-    [Order(1)]
-    public void Initialize([Type(typeof(Clock))] IClock clock) => _clock = clock;
+    [Order(1)] public void Initialize([Type(typeof(Clock))] IClock clock) => _clock = clock;
 
     // Setter injection after the method injection above using the tag "Prefix"
     [Tag("Prefix"), Order(2)]
@@ -288,6 +266,8 @@ public class Clock : IClock
 }
 ```
 
+
+
 ### Service provider
 
 It is easy to get an instance of the _IServiceProvider_ type at any time without any additional effort.
@@ -303,6 +283,8 @@ var serviceProvider = ServiceProviderDI.Resolve<IServiceProvider>();
 // Get the instance via service provider
 var instance = serviceProvider.GetService(typeof(IService));
 ```
+
+
 
 ### Several contracts
 
@@ -322,8 +304,7 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Aspect-oriented DI with custom attributes
 
-There is already a set of predefined attributes to support aspect-oriented autowiring such as _TypeAttribute_. But in
-addition, you can use your own attributes, see the sample below.
+There is already a set of predefined attributes to support aspect-oriented autowiring such as _TypeAttribute_. But in addition, you can use your own attributes, see the sample below.
 
 ``` CSharp
 public void Run()
@@ -333,7 +314,8 @@ public void Run()
         .TypeAttribute<MyTypeAttribute>()
         .OrderAttribute<MyOrderAttribute>()
         .TagAttribute<MyTagAttribute>()
-        .Bind<IConsole>().Tags("MyConsole").To(_ => Console.Object)
+
+        .Bind<IConsole>().Tags("MyConsole").To(_ => AspectOrientedWithCustomAttributes.Console.Object)
         .Bind<string>().Tags("Prefix").To(_ => "info")
         .Bind<ILogger>().As(Singleton).To<Logger>();
 
@@ -387,20 +369,11 @@ public class MyOrderAttribute : Attribute
     public MyOrderAttribute(int order) => Order = order;
 }
 
-public interface IConsole
-{
-    void WriteLine(string text);
-}
+public interface IConsole { void WriteLine(string text); }
 
-public interface IClock
-{
-    DateTimeOffset Now { get; }
-}
+public interface IClock { DateTimeOffset Now { get; } }
 
-public interface ILogger
-{
-    void Log(string message);
-}
+public interface ILogger { void Log(string message); }
 
 public class Logger : ILogger
 {
@@ -411,8 +384,7 @@ public class Logger : ILogger
     public Logger([MyTag("MyConsole")] IConsole console) => _console = console;
 
     // Method injection after constructor using specified type _Clock_
-    [MyOrder(1)]
-    public void Initialize([MyType(typeof(Clock))] IClock clock) => _clock = clock;
+    [MyOrder(1)] public void Initialize([MyType(typeof(Clock))] IClock clock) => _clock = clock;
 
     // Setter injection after the method injection above using the tag "Prefix"
     [MyTag("Prefix"), MyOrder(2)]
@@ -431,11 +403,11 @@ public class Clock : IClock
 }
 ```
 
+
+
 ### Instance initialization
 
-Sometimes instances required some actions before you give them to use - some methods of initialization or fields which
-should be defined. You can solve these things easily. :warning: But this approach is not recommended because it is a
-cause of hidden dependencies.
+Sometimes instances required some actions before you give them to use - some methods of initialization or fields which should be defined. You can solve these things easily. :warning: But this approach is not recommended because it is a cause of hidden dependencies.
 
 ``` CSharp
 DI.Setup()
@@ -463,6 +435,8 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Records
 
+
+
 ``` CSharp
 public void Run()
 {
@@ -477,7 +451,11 @@ public void Run()
 public record RecordService(IDependency Dependency, string State = "") : IService;
 ```
 
+
+
 ### Record structs
+
+
 
 ``` CSharp
 public void Run()
@@ -492,6 +470,8 @@ public void Run()
 
 public readonly record struct RecordStructService(IDependency Dependency, string State = "") : IService;
 ```
+
+
 
 ### Dependency tag
 
@@ -510,6 +490,8 @@ var instance = DependencyTagDI.Resolve<IService>();
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Injection of default parameters
+
+
 
 ``` CSharp
 public void Run()
@@ -541,7 +523,11 @@ public class SomeService : IService
 }
 ```
 
+
+
 ### Injection of nullable parameters
+
+
 
 ``` CSharp
 public void Run()
@@ -573,12 +559,11 @@ public class SomeService : IService
 }
 ```
 
+
+
 ### Complex generics
 
-Autowiring of generic types as simple as autowiring of other simple types. Just use a generic parameters markers like _
-TT_, _TT1_, _TT2_ and etc. or TTI, TTI1, TTI2 ... for interfaces or _TTS_, _TTS1_, _TTS2_ ... for value types or other
-special markers like _TTDisposable_, _TTDisposable1_ and etc. _TTList<>_, _TTDictionary<>_ ... or create your own
-generic parameters markers or bind open generic types.
+Autowiring of generic types as simple as autowiring of other simple types. Just use a generic parameters markers like _TT_, _TT1_, _TT2_ and etc. or TTI, TTI1, TTI2 ... for interfaces or _TTS_, _TTS1_, _TTS2_ ... for value types or other special markers like _TTDisposable_, _TTDisposable1_ and etc. _TTList<>_, _TTDictionary<>_ ... or create your own generic parameters markers or bind open generic types.
 
 ``` CSharp
 public void Run()
@@ -633,6 +618,8 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Complex generics with constraints
 
+
+
 ``` CSharp
 public class Program
 {
@@ -675,7 +662,11 @@ public class Service<T1, T2, T3> : IService<T1, T2, T3>
     var instance = ComplexGenericsWithConstraintsDI.Resolve<Program>();
 ```
 
+
+
 ### Depends On
+
+
 
 ``` CSharp
 static partial class MyBaseComposer
@@ -699,9 +690,7 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Unbound instance resolving
 
-Autowiring automatically injects dependencies based on implementations even if it does not have an appropriate
-binding. :warning: This approach is not recommended. When you follow the dependency inversion principle you want to make
-sure that you do not depend on anything concrete.
+Autowiring automatically injects dependencies based on implementations even if it does not have an appropriate binding. :warning: This approach is not recommended. When you follow the dependency inversion principle you want to make sure that you do not depend on anything concrete.
 
 ``` CSharp
 public void Run()
@@ -726,7 +715,11 @@ public class Service : IService
 }
 ```
 
+
+
 ### Default lifetime
+
+
 
 ``` CSharp
 public void Run()
@@ -775,7 +768,11 @@ public class Service : IService
 }
 ```
 
+
+
 ### Per resolve lifetime
+
+
 
 ``` CSharp
 public void Run()
@@ -827,12 +824,11 @@ public class Service : IService
 }
 ```
 
+
+
 ### Singleton lifetime
 
-[Singleton](https://en.wikipedia.org/wiki/Singleton_pattern) is a design pattern that supposes for having only one
-instance of some class during the whole application lifetime. The main complaint about Singleton is that it contradicts
-the Dependency Injection principle and thus hinders testability. It essentially acts as a global constant, and it is
-hard to substitute it with a test when needed. The _Singleton lifetime_ is indispensable in this case.
+[Singleton](https://en.wikipedia.org/wiki/Singleton_pattern) is a design pattern that supposes for having only one instance of some class during the whole application lifetime. The main complaint about Singleton is that it contradicts the Dependency Injection principle and thus hinders testability. It essentially acts as a global constant, and it is hard to substitute it with a test when needed. The _Singleton lifetime_ is indispensable in this case.
 
 ``` CSharp
 public void Run()
@@ -892,7 +888,11 @@ public class Service : IService
 }
 ```
 
+
+
 ### Transient lifetime
+
+
 
 ``` CSharp
 public void Run()
@@ -951,6 +951,8 @@ public class Service : IService
 }
 ```
 
+
+
 ### Custom singleton lifetime
 
 *__IFactory__* is a powerful tool that allows controlling most the aspects while resolving dependencies.
@@ -1008,6 +1010,8 @@ public class Service : IService
 }
 ```
 
+
+
 ### Arrays
 
 To resolve all possible instances of any tags of the specific type as an _array_ just use the injection of _T[]_.
@@ -1033,8 +1037,7 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Collections
 
-To resolve all possible instances of any tags of the specific type as a _collection_ just use the injection _
-ICollection<T>_
+To resolve all possible instances of any tags of the specific type as a _collection_ just use the injection _ICollection<T>_
 
 ``` CSharp
 DI.Setup()
@@ -1058,8 +1061,7 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Enumerables
 
-To resolve all possible instances of any tags of the specific type as an _enumerable_ just use the injection _
-IEnumerable<T>_.
+To resolve all possible instances of any tags of the specific type as an _enumerable_ just use the injection _IEnumerable<T>_.
 
 ``` CSharp
 DI.Setup()
@@ -1083,9 +1085,7 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Func
 
-_Func<>_ with the required type specified helps when a logic needs to inject some type of instances on-demand. Also, it
-is possible to solve circular dependency issues, but it is not the best way - better to reconsider the dependencies
-between classes.
+_Func<>_ with the required type specified helps when a logic needs to inject some type of instances on-demand. Also, it is possible to solve circular dependency issues, but it is not the best way - better to reconsider the dependencies between classes.
 
 ``` CSharp
 DI.Setup()
@@ -1124,8 +1124,7 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Lazy with metadata
 
-_Lazy_ dependency helps when a logic needs to inject _Lazy<T, TMetadata>_ to get instance once on-demand and the
-metadata associated with the referenced object.
+_Lazy_ dependency helps when a logic needs to inject _Lazy<T, TMetadata>_ to get instance once on-demand and the metadata associated with the referenced object.
 
 ``` CSharp
 DI.Setup()
@@ -1169,6 +1168,8 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Thread Local
 
+
+
 ``` CSharp
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
@@ -1186,8 +1187,7 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Tuples
 
-[Tuple](https://docs.microsoft.com/en-us/dotnet/api/system.tuple) has a set of elements that should be resolved at the
-same time.
+[Tuple](https://docs.microsoft.com/en-us/dotnet/api/system.tuple) has a set of elements that should be resolved at the same time.
 
 ``` CSharp
 DI.Setup()
@@ -1203,6 +1203,8 @@ var (service, namedService) = TuplesDI.Resolve<CompositionRoot<(IService, INamed
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Array binding override
+
+
 
 ``` CSharp
 DI.Setup()
@@ -1224,7 +1226,11 @@ DI.Setup()
 var composition = ArrayBindingOverrideDI.Resolve<CompositionRoot<IService[]>>();
 ```
 
+
+
 ### Decorator
+
+
 
 ``` CSharp
 public void Run()
@@ -1258,7 +1264,11 @@ public class DecoratorService : IService
 }
 ```
 
+
+
 ### Intercept specific types
+
+
 
 ``` CSharp
 public void Run()
@@ -1328,6 +1338,8 @@ public class Service : IService
     public void Run() { _dependency?.Run(); }
 }
 ```
+
+
 
 ### Intercept advanced
 
@@ -1413,7 +1425,11 @@ public class Service : IService
 }
 ```
 
+
+
 ### Intercept a set of types
+
+
 
 ``` CSharp
 public void Run()
@@ -1479,7 +1495,11 @@ public class Service : IService
 }
 ```
 
+
+
 ### ASPNET
+
+
 
 ``` CSharp
 public class AspNetMvc
@@ -1549,7 +1569,11 @@ public class Startup
 }
 ```
 
+
+
 ### OS specific implementations
+
+
 
 ``` CSharp
 public void Run()
@@ -1558,23 +1582,20 @@ public void Run()
         .Bind<IOsSpecific<TT>>().As(Lifetime.Singleton).To<OsSpecific<TT>>()
 
         // OS specific bindings
-        .Bind<IDependency>(OSPlatform.Windows).To<WindowsImpl>()
-        .Bind<IDependency>(OSPlatform.Linux).To<LinuxImpl>()
-        .Bind<IDependency>(OSPlatform.OSX).To<OSXImpl>()
+        .Bind<IDependency>(OSSpecificImplementations.OSPlatform.Windows).To<WindowsImpl>()
+        .Bind<IDependency>(OSSpecificImplementations.OSPlatform.Linux).To<LinuxImpl>()
+        .Bind<IDependency>(OSSpecificImplementations.OSPlatform.OSX).To<OSXImpl>()
         .Bind<IDependency>().To(ctx => ctx.Resolve<IOsSpecific<IDependency>>().Instance)
 
         // Other bindings
         .Bind<IService>().To<Service>();
-
+    
     var service = OSSpecificImplementationsDI.Resolve<IService>();
 
     service.Run().Contains("Hello from").ShouldBeTrue();
 }
 
-public interface IOsSpecific<out T>
-{
-    T Instance { get; }
-}
+public interface IOsSpecific<out T> {  T Instance { get; } }
 
 public enum OSPlatform
 {
@@ -1583,16 +1604,16 @@ public enum OSPlatform
     OSX
 }
 
-public class OsSpecific<T> : IOsSpecific<T>
+public class OsSpecific<T>: IOsSpecific<T>
 {
     private readonly Func<T> _windowsFactory;
     private readonly Func<T> _linuxFactory;
     private readonly Func<T> _osxFactory;
 
     public OsSpecific(
-        [Tag(OSPlatform.Windows)] Func<T> windowsFactory,
-        [Tag(OSPlatform.Linux)] Func<T> linuxFactory,
-        [Tag(OSPlatform.OSX)] Func<T> osxFactory)
+        [Tag(OSSpecificImplementations.OSPlatform.Windows)] Func<T> windowsFactory,
+        [Tag(OSSpecificImplementations.OSPlatform.Linux)] Func<T> linuxFactory,
+        [Tag(OSSpecificImplementations.OSPlatform.OSX)] Func<T> osxFactory)
     {
         _windowsFactory = windowsFactory;
         _linuxFactory = linuxFactory;
@@ -1600,7 +1621,7 @@ public class OsSpecific<T> : IOsSpecific<T>
     }
 
     public T Instance =>
-        Environment.OSVersion.Platform switch
+            Environment.OSVersion.Platform switch
             {
                 PlatformID.Win32S => OSPlatform.Windows,
                 PlatformID.Win32Windows => OSPlatform.Windows,
@@ -1619,35 +1640,20 @@ public class OsSpecific<T> : IOsSpecific<T>
             };
 }
 
-public interface IDependency
-{
-    string GetMessage();
-}
+public interface IDependency { string GetMessage(); }
 
-public class WindowsImpl : IDependency
-{
-    public string GetMessage() => "Hello from Windows";
-}
+public class WindowsImpl : IDependency { public string GetMessage() => "Hello from Windows"; }
 
-public class LinuxImpl : IDependency
-{
-    public string GetMessage() => "Hello from Linux";
-}
+public class LinuxImpl : IDependency { public string GetMessage() => "Hello from Linux"; }
 
-public class OSXImpl : IDependency
-{
-    public string GetMessage() => "Hello from OSX";
-}
+public class OSXImpl : IDependency { public string GetMessage() => "Hello from OSX"; }
 
-public interface IService
-{
-    string Run();
-}
+public interface IService { string Run(); }
 
 public class Service : IService
 {
     private readonly IDependency _dependency;
-
+    
     public Service(IDependency dependency) => _dependency = dependency;
 
     public string Run() => _dependency.GetMessage();

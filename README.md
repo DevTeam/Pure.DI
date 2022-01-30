@@ -351,59 +351,59 @@ DI.Setup()
 * [C# script tool](https://github.com/JetBrains/teamcity-csharp-interactive/blob/master/TeamCity.CSharpInteractive/Composer.cs) - JetBrain TeamCity interactive tool for running C# scripts
 * [MSBuild logger](https://github.com/JetBrains/teamcity-msbuild-logger/blob/master/TeamCity.MSBuild.Logger/Composer.cs) - Provides the JetBrain TeamCity integration with Microsoft MSBuild.
 * [Performance comparison](https://danielpalme.github.io/IocPerformance/) - performance comparison of the most popular .NET DI/IoC containers
+
 ## Usage Scenarios
 
 - Basics
-    - [Composition Root](#composition-root)
-    - [Constants](#constants)
-    - [Generics](#generics)
-    - [Manual binding](#manual-binding)
-    - [Service collection](#service-collection)
-    - [Tags](#tags)
-    - [Aspect-oriented DI](#aspect-oriented-di)
-    - [Service provider](#service-provider)
-    - [Several contracts](#several-contracts)
-    - [Aspect-oriented DI with custom attributes](#aspect-oriented-di-with-custom-attributes)
-    - [Instance initialization](#instance-initialization)
-    - [Record structs](#record-structs)
-    - [Records](#records)
-    - [Dependency tag](#dependency-tag)
-    - [Injection of default parameters](#injection-of-default-parameters)
-    - [Injection of nullable parameters](#injection-of-nullable-parameters)
-    - [Complex generics](#complex-generics)
-    - [Complex generics with constraints](#complex-generics-with-constraints)
-    - [Depends On](#depends-on)
-    - [Unbound instance resolving](#unbound-instance-resolving)
+  - [Composition Root](#composition-root)
+  - [Constants](#constants)
+  - [Generics](#generics)
+  - [Manual binding](#manual-binding)
+  - [Service collection](#service-collection)
+  - [Tags](#tags)
+  - [Aspect-oriented DI](#aspect-oriented-di)
+  - [Service provider](#service-provider)
+  - [Several contracts](#several-contracts)
+  - [Aspect-oriented DI with custom attributes](#aspect-oriented-di-with-custom-attributes)
+  - [Instance initialization](#instance-initialization)
+  - [Record structs](#record-structs)
+  - [Records](#records)
+  - [Dependency tag](#dependency-tag)
+  - [Injection of default parameters](#injection-of-default-parameters)
+  - [Injection of nullable parameters](#injection-of-nullable-parameters)
+  - [Complex generics](#complex-generics)
+  - [Complex generics with constraints](#complex-generics-with-constraints)
+  - [Depends On](#depends-on)
+  - [Unbound instance resolving](#unbound-instance-resolving)
 - Lifetimes
-    - [Default lifetime](#default-lifetime)
-    - [Per resolve lifetime](#per-resolve-lifetime)
-    - [Singleton lifetime](#singleton-lifetime)
-    - [Transient lifetime](#transient-lifetime)
-    - [Custom singleton lifetime](#custom-singleton-lifetime)
+  - [Default lifetime](#default-lifetime)
+  - [Per resolve lifetime](#per-resolve-lifetime)
+  - [Singleton lifetime](#singleton-lifetime)
+  - [Transient lifetime](#transient-lifetime)
+  - [Custom singleton lifetime](#custom-singleton-lifetime)
 - BCL types
-    - [Arrays](#arrays)
-    - [Collections](#collections)
-    - [Enumerables](#enumerables)
-    - [Func](#func)
-    - [Lazy](#lazy)
-    - [Lazy with metadata](#lazy-with-metadata)
-    - [Sets](#sets)
-    - [Thread Local](#thread-local)
-    - [Tuples](#tuples)
-    - [Array binding override](#array-binding-override)
+  - [Arrays](#arrays)
+  - [Collections](#collections)
+  - [Enumerables](#enumerables)
+  - [Func](#func)
+  - [Lazy](#lazy)
+  - [Lazy with metadata](#lazy-with-metadata)
+  - [Sets](#sets)
+  - [Thread Local](#thread-local)
+  - [Tuples](#tuples)
+  - [Array binding override](#array-binding-override)
 - Interception
-    - [Decorator](#decorator)
-    - [Intercept specific types](#intercept-specific-types)
-    - [Intercept a set of types](#intercept-a-set-of-types)
-    - [Intercept advanced](#intercept-advanced)
+  - [Decorator](#decorator)
+  - [Intercept specific types](#intercept-specific-types)
+  - [Intercept a set of types](#intercept-a-set-of-types)
+  - [Intercept advanced](#intercept-advanced)
 - Samples
-    - [ASPNET](#aspnet)
-    - [OS specific implementations](#os-specific-implementations)
+  - [ASPNET](#aspnet)
+  - [OS specific implementations](#os-specific-implementations)
 
 ### Composition Root
 
-This sample demonstrates the most efficient way of getting a composition root object, free from any impact on memory
-consumption and performance.
+This sample demonstrates the most efficient way of getting a composition root object, free from any impact on memory consumption and performance.
 
 ``` CSharp
 DI.Setup("Composer")
@@ -415,14 +415,11 @@ var instance = Composer.ResolveIService();
 ```
 
 Actually, the method _ResolveIService_ looks like this:
-
 ```csharp
 [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 public static IService ResolveIService() => new Service(new Dependency());
 ```
-
 and the compiler just inserts this set of constructor calls instead of ```Composer.ResolveIService()```:
-
 ```csharp
 new Service(new Dependency())
 ```
@@ -442,13 +439,10 @@ val.ShouldBe(10);
 ```
 
 The compiler replaces the statement:
-
 ```CSharp
 var val = ConstantsDI.ResolveInt();
 ```
-
 by the statement:
-
 ```CSharp
 var val = 10;
 ```
@@ -463,29 +457,24 @@ public class Consumer
     public Consumer(IService<int> service) { }
 }
 
-DI.Setup()
-    .Bind<IDependency>().To<Dependency>()
-    // Bind a generic type
-    .Bind<IService<TT>>().To<Service<TT>>()
-    .Bind<Consumer>().To<Consumer>();
+    DI.Setup()
+        .Bind<IDependency>().To<Dependency>()
+        // Bind a generic type
+        .Bind<IService<TT>>().To<Service<TT>>()
+        .Bind<Consumer>().To<Consumer>();
 
-var instance = GenericsDI.Resolve<Consumer>();
+    var instance = GenericsDI.Resolve<Consumer>();
 ```
 
-Open generic type instance, for instance, like IService&lt;TT&gt; here, cannot be a composition root instance. This
-sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs). The actual composition for the example
-above looks like this:
-
+Open generic type instance, for instance, like IService&lt;TT&gt; here, cannot be a composition root instance. This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+The actual composition for the example above looks like this:
 ```CSharp
 new Consumer(new Service<int>(Dependency()));
 ```
 
 ### Manual binding
 
-We can specify a constructor manually with all its arguments and even call some methods before an instance will be
-returned to consumers. Would also like to point out that invocations like *__ctx.Resolve<>()__* will be replaced by a
-related expression to create a required composition for the performance boost where possible, except when it might cause
-a circular dependency.
+We can specify a constructor manually with all its arguments and even call some methods before an instance will be returned to consumers. Would also like to point out that invocations like *__ctx.Resolve<>()__* will be replaced by a related expression to create a required composition for the performance boost where possible, except when it might cause a circular dependency.
 
 ``` CSharp
 DI.Setup()
@@ -501,19 +490,14 @@ instance.State.ShouldBe("some state");
 ```
 
 The actual composition for the example above looks like this:
-
 ```CSharp
 new Service(new Dependency()), "some state");
 ```
-
-... and no any additional method calls. This sample references types
-from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+... and no any additional method calls. This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Service collection
 
-In the cases when a project references the Microsoft Dependency Injection library, an extension method
-for ```IServiceCollection``` is generating automatically with a name like _Add..._ plus the name of a generated class,
-here it is ```AddMyComposer()``` for class ```public class MyComposer { }```.
+In the cases when a project references the Microsoft Dependency Injection library, an extension method for ```IServiceCollection``` is generating automatically with a name like _Add..._ plus the name of a generated class, here it is ```AddMyComposer()``` for class ```public class MyComposer { }```.
 
 ``` CSharp
 [Fact]
@@ -522,17 +506,17 @@ public void Run()
     DI.Setup("MyComposer")
         .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
         .Bind<IService>().To<Service>();
-    
+
     var serviceProvider =
         // Creates some serviceCollection
         new ServiceCollection()
             // Adds some registrations with any lifetime
             .AddScoped<ServiceConsumer>()
-        // Adds registrations produced by Pure DI above
-        .AddMyComposer()
-        // Builds a service provider
-        .BuildServiceProvider();
-    
+            // Adds registrations produced by Pure DI above
+            .AddMyComposer()
+            // Builds a service provider
+            .BuildServiceProvider();
+
     var consumer = serviceProvider.GetRequiredService<ServiceConsumer>();
     var instance = serviceProvider.GetRequiredService<IService>();
     consumer.Service.Dependency.ShouldBe(instance.Dependency);
@@ -552,6 +536,8 @@ public class ServiceConsumer
     public IService Service { get; }
 }
 ```
+
+
 
 ### Tags
 
@@ -578,6 +564,8 @@ var instance7 = TagsDI.ResolveIService(null);
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Aspect-oriented DI
+
+
 
 ``` CSharp
 public void Run()
@@ -631,6 +619,8 @@ public class Clock : IClock
 }
 ```
 
+
+
 ### Service provider
 
 It is easy to get an instance of the _IServiceProvider_ type at any time without any additional effort.
@@ -646,6 +636,8 @@ var serviceProvider = ServiceProviderDI.Resolve<IServiceProvider>();
 // Get the instance via service provider
 var instance = serviceProvider.GetService(typeof(IService));
 ```
+
+
 
 ### Several contracts
 
@@ -665,8 +657,7 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Aspect-oriented DI with custom attributes
 
-There is already a set of predefined attributes to support aspect-oriented autowiring such as _TypeAttribute_. But in
-addition, you can use your own attributes, see the sample below.
+There is already a set of predefined attributes to support aspect-oriented autowiring such as _TypeAttribute_. But in addition, you can use your own attributes, see the sample below.
 
 ``` CSharp
 public void Run()
@@ -765,11 +756,11 @@ public class Clock : IClock
 }
 ```
 
+
+
 ### Instance initialization
 
-Sometimes instances required some actions before you give them to use - some methods of initialization or fields which
-should be defined. You can solve these things easily. :warning: But this approach is not recommended because it is a
-cause of hidden dependencies.
+Sometimes instances required some actions before you give them to use - some methods of initialization or fields which should be defined. You can solve these things easily. :warning: But this approach is not recommended because it is a cause of hidden dependencies.
 
 ``` CSharp
 DI.Setup()
@@ -797,13 +788,15 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Records
 
+
+
 ``` CSharp
 public void Run()
 {
     DI.Setup()
         .Bind<IDependency>().To<Dependency>()
         .Bind<IService>().To<RecordService>();
-    
+
     var service = RecordsDI.Resolve<IService>();
     service.ShouldBeOfType<RecordService>();
 }
@@ -811,7 +804,11 @@ public void Run()
 public record RecordService(IDependency Dependency, string State = "") : IService;
 ```
 
+
+
 ### Record structs
+
+
 
 ``` CSharp
 public void Run()
@@ -819,13 +816,15 @@ public void Run()
     DI.Setup()
         .Bind<IDependency>().To<Dependency>()
         .Bind<IService>().To<RecordStructService>();
-    
+
     var service = RecordStructsDI.Resolve<IService>();
     service.ShouldBeOfType<RecordStructService>();
 }
 
 public readonly record struct RecordStructService(IDependency Dependency, string State = "") : IService;
 ```
+
+
 
 ### Dependency tag
 
@@ -845,6 +844,8 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Injection of default parameters
 
+
+
 ``` CSharp
 public void Run()
 {
@@ -859,7 +860,7 @@ public void Run()
     instance.State.ShouldBe("my default value");
 }
 
-public class SomeService: IService
+public class SomeService : IService
 {
     // There is no registered dependency for parameter "state" of type "string",
     // but constructor has the default parameter value "my default value"
@@ -875,7 +876,11 @@ public class SomeService: IService
 }
 ```
 
+
+
 ### Injection of nullable parameters
+
+
 
 ``` CSharp
 public void Run()
@@ -891,7 +896,7 @@ public void Run()
     instance.State.ShouldBe("my default value");
 }
 
-public class SomeService: IService
+public class SomeService : IService
 {
     // There is no registered dependency for parameter "state" of type "string",
     // but parameter "state" has a nullable annotation
@@ -907,12 +912,11 @@ public class SomeService: IService
 }
 ```
 
+
+
 ### Complex generics
 
-Autowiring of generic types as simple as autowiring of other simple types. Just use a generic parameters markers like _
-TT_, _TT1_, _TT2_ and etc. or TTI, TTI1, TTI2 ... for interfaces or _TTS_, _TTS1_, _TTS2_ ... for value types or other
-special markers like _TTDisposable_, _TTDisposable1_ and etc. _TTList<>_, _TTDictionary<>_ ... or create your own
-generic parameters markers or bind open generic types.
+Autowiring of generic types as simple as autowiring of other simple types. Just use a generic parameters markers like _TT_, _TT1_, _TT2_ and etc. or TTI, TTI1, TTI2 ... for interfaces or _TTS_, _TTS1_, _TTS2_ ... for value types or other special markers like _TTDisposable_, _TTDisposable1_ and etc. _TTList<>_, _TTDictionary<>_ ... or create your own generic parameters markers or bind open generic types.
 
 ``` CSharp
 public void Run()
@@ -932,7 +936,7 @@ public void Run()
 
     // Resolve a generic instance
     var consumer = ComplexGenericsDI.Resolve<Consumer>();
-    
+
     consumer.Services2.Count.ShouldBe(2);
     // Check the instance's type
     foreach (var instance in consumer.Services2)
@@ -950,7 +954,7 @@ public class Consumer
         Services1 = services1;
         Services2 = services2;
     }
-    
+
     public IListService<IList<int>> Services1 { get; }
 
     public ICollection<IService<int>> Services2 { get; }
@@ -958,24 +962,30 @@ public class Consumer
 
 // Custom generic type marker using predefined attribute `GenericTypeArgument`
 [GenericTypeArgument]
-class TTMy { }
+class TTMy
+{
+}
 ```
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Complex generics with constraints
 
+
+
 ``` CSharp
 public class Program
 {
     public Program(IConsumer<int> consumer)
-    { }
+    {
+    }
 }
 
 public interface IConsumer<T>
-{ }
+{
+}
 
-public class Consumer<T>: IConsumer<T>
+public class Consumer<T> : IConsumer<T>
 {
     public Consumer(IService<T, string, IDictionary<T, string[]>> service) { }
 }
@@ -986,24 +996,30 @@ public class Consumer
 }
 
 public interface IService<T1, T2, T3>
-    where T3: IDictionary<T1, T2[]>
-{ }
+    where T3 : IDictionary<T1, T2[]>
+{
+}
 
 public class Service<T1, T2, T3> : IService<T1, T2, T3>
-    where T3: IDictionary<T1, T2[]>
-{ }
+    where T3 : IDictionary<T1, T2[]>
+{
+}
 
-DI.Setup()
-    .Bind<Program>().To<Program>()
-    // Bind complex generic types
-    .Bind<IService<TT1, TT2, IDictionary<TT1, TT2[]>>>().To<Service<TT1, TT2, IDictionary<TT1, TT2[]>>>()
-    .Bind<IConsumer<TT>>().To<Consumer<TT>>();
+    DI.Setup()
+        .Bind<Program>().To<Program>()
+        // Bind complex generic types
+        .Bind<IService<TT1, TT2, IDictionary<TT1, TT2[]>>>().To<Service<TT1, TT2, IDictionary<TT1, TT2[]>>>()
+        .Bind<IConsumer<TT>>().To<Consumer<TT>>();
 
-// var instance = new Program(new Consumer<int>(new Service<int, string, System.Collections.Generic.IDictionary<int, string[]>>()));
-var instance = ComplexGenericsWithConstraintsDI.Resolve<Program>();
+    // var instance = new Program(new Consumer<int>(new Service<int, string, System.Collections.Generic.IDictionary<int, string[]>>()));
+    var instance = ComplexGenericsWithConstraintsDI.Resolve<Program>();
 ```
 
+
+
 ### Depends On
+
+
 
 ``` CSharp
 static partial class MyBaseComposer
@@ -1019,30 +1035,32 @@ static partial class MyDependentComposer
         .Bind<IService>().To<Service>();
 }
 
-// Resolve an instance of interface `IService`
-var instance = MyDependentComposer.Resolve<IService>();
+        // Resolve an instance of interface `IService`
+        var instance = MyDependentComposer.Resolve<IService>();
 ```
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Unbound instance resolving
 
-Autowiring automatically injects dependencies based on implementations even if it does not have an appropriate
-binding. :warning: This approach is not recommended. When you follow the dependency inversion principle you want to make
-sure that you do not depend on anything concrete.
+Autowiring automatically injects dependencies based on implementations even if it does not have an appropriate binding. :warning: This approach is not recommended. When you follow the dependency inversion principle you want to make sure that you do not depend on anything concrete.
 
 ``` CSharp
 public void Run()
 {
     DI.Setup()
         .Bind<IService>().To<Service>();
-    
+
     var instance = UnboundInstanceResolvingDI.Resolve<IService>();
 }
 
-public class Dependency { }
+public class Dependency
+{
+}
 
-public interface IService { }
+public interface IService
+{
+}
 
 public class Service : IService
 {
@@ -1050,7 +1068,11 @@ public class Service : IService
 }
 ```
 
+
+
 ### Default lifetime
+
+
 
 ``` CSharp
 public void Run()
@@ -1058,11 +1080,11 @@ public void Run()
     DI.Setup()
         // Makes Singleton as default lifetime
         .Default(Singleton)
-            .Bind<IDependency>().To<Dependency>()
+        .Bind<IDependency>().To<Dependency>()
         // Makes Transient as default lifetime
         .Default(Transient)
-            .Bind<IService>().To<Service>();
-    
+        .Bind<IService>().To<Service>();
+
     // Resolve the singleton twice
     var instance = DefaultLifetimeDI.Resolve<IService>();
 
@@ -1070,14 +1092,18 @@ public void Run()
     instance.Dependency1.ShouldBe(instance.Dependency2);
 }
 
-public interface IDependency { }
+public interface IDependency
+{
+}
 
-public class Dependency : IDependency { }
+public class Dependency : IDependency
+{
+}
 
 public interface IService
 {
     IDependency Dependency1 { get; }
-    
+
     IDependency Dependency2 { get; }
 }
 
@@ -1090,12 +1116,16 @@ public class Service : IService
     }
 
     public IDependency Dependency1 { get; }
-    
+
     public IDependency Dependency2 { get; }
 }
 ```
 
+
+
 ### Per resolve lifetime
+
+
 
 ``` CSharp
 public void Run()
@@ -1112,12 +1142,14 @@ public void Run()
 
     // Check that dependencies are equal
     instance.Dependency1.ShouldBe(instance.Dependency2);
-    
+
     // Check disposable instances created
     disposables.Count.ShouldBe(1);
 }
 
-public interface IDependency { }
+public interface IDependency
+{
+}
 
 public class Dependency : IDependency, IDisposable
 {
@@ -1127,7 +1159,7 @@ public class Dependency : IDependency, IDisposable
 public interface IService
 {
     IDependency Dependency1 { get; }
-    
+
     IDependency Dependency2 { get; }
 }
 
@@ -1140,17 +1172,16 @@ public class Service : IService
     }
 
     public IDependency Dependency1 { get; }
-    
+
     public IDependency Dependency2 { get; }
 }
 ```
 
+
+
 ### Singleton lifetime
 
-[Singleton](https://en.wikipedia.org/wiki/Singleton_pattern) is a design pattern that supposes for having only one
-instance of some class during the whole application lifetime. The main complaint about Singleton is that it contradicts
-the Dependency Injection principle and thus hinders testability. It essentially acts as a global constant, and it is
-hard to substitute it with a test when needed. The _Singleton lifetime_ is indispensable in this case.
+[Singleton](https://en.wikipedia.org/wiki/Singleton_pattern) is a design pattern that supposes for having only one instance of some class during the whole application lifetime. The main complaint about Singleton is that it contradicts the Dependency Injection principle and thus hinders testability. It essentially acts as a global constant, and it is hard to substitute it with a test when needed. The _Singleton lifetime_ is indispensable in this case.
 
 ``` CSharp
 public void Run()
@@ -1159,7 +1190,7 @@ public void Run()
         // Use the Singleton lifetime
         .Bind<IDependency>().As(Singleton).To<Dependency>()
         .Bind<IService>().To<Service>();
-    
+
     // Resolve the singleton twice
     var instance = SingletonLifetimeDI.Resolve<IService>();
     var dependency = SingletonLifetimeDI.ResolveSingletonLifetimeIDependency();
@@ -1167,7 +1198,7 @@ public void Run()
     // Check that instances are equal
     instance.Dependency1.ShouldBe(instance.Dependency2);
     instance.Dependency1.ShouldBe(dependency);
-    
+
     // Dispose of singletons, this method should be invoked once
     SingletonLifetimeDI.FinalDispose();
     instance.Dependency1.IsDisposed.ShouldBeTrue();
@@ -1181,7 +1212,7 @@ public interface IDependency
 public class Dependency : IDependency, IDisposable
 {
     public bool IsDisposed { get; private set; }
-    
+
     public void Dispose()
     {
         IsDisposed = true;
@@ -1192,7 +1223,7 @@ public class Dependency : IDependency, IDisposable
 public interface IService
 {
     IDependency Dependency1 { get; }
-    
+
     IDependency Dependency2 { get; }
 }
 
@@ -1205,12 +1236,16 @@ public class Service : IService
     }
 
     public IDependency Dependency1 { get; }
-    
+
     public IDependency Dependency2 { get; }
 }
 ```
 
+
+
 ### Transient lifetime
+
+
 
 ``` CSharp
 public void Run()
@@ -1230,16 +1265,18 @@ public void Run()
 
     // Check that dependencies are not equal
     instance.Dependency1.ShouldNotBe(instance.Dependency2);
-    
+
     // Check the number of transient disposable instances
     disposables.Count.ShouldBe(2);
-    
+
     // Dispose instances
     disposables.ForEach(disposable => disposable.Dispose());
     disposables.Clear();
 }
 
-public interface IDependency { }
+public interface IDependency
+{
+}
 
 public class Dependency : IDependency, IDisposable
 {
@@ -1249,7 +1286,7 @@ public class Dependency : IDependency, IDisposable
 public interface IService
 {
     IDependency Dependency1 { get; }
-    
+
     IDependency Dependency2 { get; }
 }
 
@@ -1262,10 +1299,12 @@ public class Service : IService
     }
 
     public IDependency Dependency1 { get; }
-    
+
     public IDependency Dependency2 { get; }
 }
 ```
+
+
 
 ### Custom singleton lifetime
 
@@ -1279,7 +1318,7 @@ public void Run()
         .Bind<IFactory>().As(Singleton).To<CustomSingletonLifetime>()
         .Bind<IDependency>().To<DependencySingleton>()
         .Bind<IService>().To<Service>();
-    
+
     var instance1 = CustomSingletonDI.Resolve<IService>();
     var instance2 = CustomSingletonDI.Resolve<IService>();
 
@@ -1290,7 +1329,7 @@ public void Run()
 
 // A pattern of the class name ending by word "Singleton"
 [Include(".*Singleton$")]
-public class CustomSingletonLifetime: IFactory
+public class CustomSingletonLifetime : IFactory
 {
     // Stores singleton instances by key
     private readonly ConcurrentDictionary<Key, object> _instances = new();
@@ -1303,11 +1342,18 @@ public class CustomSingletonLifetime: IFactory
     private record Key(Type Type, object? Tag);
 }
 
-public interface IDependency { }
+public interface IDependency
+{
+}
 
-public class DependencySingleton : IDependency { }
+public class DependencySingleton : IDependency
+{
+}
 
-public interface IService { IDependency Dependency { get; } }
+public interface IService
+{
+    IDependency Dependency { get; }
+}
 
 public class Service : IService
 {
@@ -1316,6 +1362,8 @@ public class Service : IService
     public IDependency Dependency { get; }
 }
 ```
+
+
 
 ### Arrays
 
@@ -1332,7 +1380,7 @@ DI.Setup()
     // Bind to the implementation #3
     .Bind<IService>().Tags(3).To<Service>()
     .Bind<CompositionRoot<IService[]>>()
-        .To<CompositionRoot<IService[]>>();
+    .To<CompositionRoot<IService[]>>();
 
 // Resolve all appropriate instances
 var composition = ArraysDI.Resolve<CompositionRoot<IService[]>>();
@@ -1342,8 +1390,7 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Collections
 
-To resolve all possible instances of any tags of the specific type as a _collection_ just use the injection _
-ICollection<T>_
+To resolve all possible instances of any tags of the specific type as a _collection_ just use the injection _ICollection<T>_
 
 ``` CSharp
 DI.Setup()
@@ -1367,8 +1414,7 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Enumerables
 
-To resolve all possible instances of any tags of the specific type as an _enumerable_ just use the injection _
-IEnumerable<T>_.
+To resolve all possible instances of any tags of the specific type as an _enumerable_ just use the injection _IEnumerable<T>_.
 
 ``` CSharp
 DI.Setup()
@@ -1392,9 +1438,7 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Func
 
-_Func<>_ with the required type specified helps when a logic needs to inject some type of instances on-demand. Also, it
-is possible to solve circular dependency issues, but it is not the best way - better to reconsider the dependencies
-between classes.
+_Func<>_ with the required type specified helps when a logic needs to inject some type of instances on-demand. Also, it is possible to solve circular dependency issues, but it is not the best way - better to reconsider the dependencies between classes.
 
 ``` CSharp
 DI.Setup()
@@ -1433,8 +1477,7 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Lazy with metadata
 
-_Lazy_ dependency helps when a logic needs to inject _Lazy<T, TMetadata>_ to get instance once on-demand and the
-metadata associated with the referenced object.
+_Lazy_ dependency helps when a logic needs to inject _Lazy<T, TMetadata>_ to get instance once on-demand and the metadata associated with the referenced object.
 
 ``` CSharp
 DI.Setup()
@@ -1478,6 +1521,8 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Thread Local
 
+
+
 ``` CSharp
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
@@ -1495,8 +1540,7 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Tuples
 
-[Tuple](https://docs.microsoft.com/en-us/dotnet/api/system.tuple) has a set of elements that should be resolved at the
-same time.
+[Tuple](https://docs.microsoft.com/en-us/dotnet/api/system.tuple) has a set of elements that should be resolved at the same time.
 
 ``` CSharp
 DI.Setup()
@@ -1513,6 +1557,8 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Array binding override
 
+
+
 ``` CSharp
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
@@ -1523,14 +1569,21 @@ DI.Setup()
     // Bind to the implementation #3
     .Bind<IService>().Tags(3).To<Service>()
     // Bind array
-    .Bind<IService[]>().To(ctx => new[] {ctx.Resolve<IService>(1), ctx.Resolve<IService>("abc")})
+    .Bind<IService[]>().To(ctx => new[]
+    {
+        ctx.Resolve<IService>(1), ctx.Resolve<IService>("abc")
+    })
     .Bind<CompositionRoot<IService[]>>()
-        .To<CompositionRoot<IService[]>>();
+    .To<CompositionRoot<IService[]>>();
 
 var composition = ArrayBindingOverrideDI.Resolve<CompositionRoot<IService[]>>();
 ```
 
+
+
 ### Decorator
+
+
 
 ``` CSharp
 public void Run()
@@ -1538,15 +1591,19 @@ public void Run()
     DI.Setup()
         .Bind<IService>().Tags("base").To<Service>()
         .Bind<IService>().To<DecoratorService>();
-    
+
     var service = DecoratorDI.Resolve<IService>();
 
     service.GetMessage().ShouldBe("Hello World !!!");
 }
 
-public interface IService { string GetMessage(); }
+public interface IService
+{
+    string GetMessage();
+}
 
-public class Service : IService {
+public class Service : IService
+{
     public string GetMessage() => "Hello World";
 }
 
@@ -1560,7 +1617,11 @@ public class DecoratorService : IService
 }
 ```
 
+
+
 ### Intercept specific types
+
+
 
 ``` CSharp
 public void Run()
@@ -1573,10 +1634,9 @@ public void Run()
         .Bind<IFactory<IDependency>>().To<MyInterceptor<IDependency>>()
         // Controls creating instances of type Service
         .Bind<IFactory<IService>>().To<MyInterceptor<IService>>()
-
         .Bind<IDependency>().To<Dependency>()
         .Bind<IService>().As(Transient).To<Service>();
-    
+
     var instance = InterceptDI.Resolve<IService>();
     instance.Run();
     instance.Run();
@@ -1587,8 +1647,8 @@ public void Run()
     ((MyInterceptor<IDependency>)InterceptDI.Resolve<IFactory<IDependency>>()).InvocationCounter.ShouldBe(3);
 }
 
-public class MyInterceptor<T>: IFactory<T>, IInterceptor
-    where T: class
+public class MyInterceptor<T> : IFactory<T>, IInterceptor
+    where T : class
 {
     private readonly IProxyGenerator _proxyGenerator;
 
@@ -1607,11 +1667,20 @@ public class MyInterceptor<T>: IFactory<T>, IInterceptor
     }
 }
 
-public interface IDependency { void Run();}
+public interface IDependency
+{
+    void Run();
+}
 
-public class Dependency : IDependency { public void Run() {} }
+public class Dependency : IDependency
+{
+    public void Run() { }
+}
 
-public interface IService { void Run(); }
+public interface IService
+{
+    void Run();
+}
 
 public class Service : IService
 {
@@ -1622,6 +1691,8 @@ public class Service : IService
     public void Run() { _dependency?.Run(); }
 }
 ```
+
+
 
 ### Intercept advanced
 
@@ -1636,10 +1707,9 @@ public void Run()
         .Bind<IProxyBuilder>().To<DefaultProxyBuilder>()
         // Controls creating instances of types Dependency and Service filtered by the [Include(...)] attribute
         .Bind<IFactory<TT>>().To<MyInterceptor<TT>>()
-        
         .Bind<IDependency>().To<Dependency>()
         .Bind<IService>().As(Transient).To<Service>();
-    
+
     var instance = InterceptAdvancedDI.Resolve<IService>();
     instance.Run();
     instance.Run();
@@ -1652,8 +1722,8 @@ public void Run()
 
 // Filters for Service and for Dependency classes
 [Include("(Service|Dependency)$")]
-public class MyInterceptor<T>: IFactory<T>, IInterceptor
-    where T: class
+public class MyInterceptor<T> : IFactory<T>, IInterceptor
+    where T : class
 {
     private readonly Func<T, T> _proxyFactory;
 
@@ -1671,7 +1741,7 @@ public class MyInterceptor<T>: IFactory<T>, IInterceptor
         InvocationCounter++;
         invocation.Proceed();
     }
-    
+
     // Compiles a delegate to create a proxy for the performance boost
     private static Func<T, T> CreateProxyFactory(IProxyBuilder proxyBuilder, params IInterceptor[] interceptors)
     {
@@ -1683,11 +1753,20 @@ public class MyInterceptor<T>: IFactory<T>, IInterceptor
     }
 }
 
-public interface IDependency { void Run();}
+public interface IDependency
+{
+    void Run();
+}
 
-public class Dependency : IDependency { public void Run() {} }
+public class Dependency : IDependency
+{
+    public void Run() { }
+}
 
-public interface IService { void Run(); }
+public interface IService
+{
+    void Run();
+}
 
 public class Service : IService
 {
@@ -1699,7 +1778,11 @@ public class Service : IService
 }
 ```
 
+
+
 ### Intercept a set of types
+
+
 
 ``` CSharp
 public void Run()
@@ -1709,10 +1792,9 @@ public void Run()
         .Bind<IProxyGenerator>().As(Singleton).To<ProxyGenerator>()
         // Controls creating instances
         .Bind<IFactory>().Bind<MyInterceptor>().As(Singleton).To<MyInterceptor>()
-
         .Bind<IDependency>().As(Singleton).To<Dependency>()
         .Bind<IService>().To<Service>();
-    
+
     var instance = InterceptManyDI.Resolve<IService>();
     instance.Run();
     instance.Run();
@@ -1722,16 +1804,16 @@ public void Run()
 }
 
 [Exclude(nameof(ProxyGenerator))]
-public class MyInterceptor: IFactory, IInterceptor
+public class MyInterceptor : IFactory, IInterceptor
 {
     private readonly IProxyGenerator _proxyGenerator;
 
     public MyInterceptor(IProxyGenerator proxyGenerator) =>
         _proxyGenerator = proxyGenerator;
-    
+
     public int InvocationCounter { get; private set; }
 
-    public T Create<T>(Func<T> factory, Type implementationType, object tag) => 
+    public T Create<T>(Func<T> factory, Type implementationType, object tag) =>
         (T)_proxyGenerator.CreateInterfaceProxyWithTarget(typeof(T), factory(), this);
 
     void IInterceptor.Intercept(IInvocation invocation)
@@ -1741,11 +1823,20 @@ public class MyInterceptor: IFactory, IInterceptor
     }
 }
 
-public interface IDependency { void Run();}
+public interface IDependency
+{
+    void Run();
+}
 
-public class Dependency : IDependency { public void Run() {} }
+public class Dependency : IDependency
+{
+    public void Run() { }
+}
 
-public interface IService { void Run(); }
+public interface IService
+{
+    void Run();
+}
 
 public class Service : IService
 {
@@ -1757,7 +1848,11 @@ public class Service : IService
 }
 ```
 
+
+
 ### ASPNET
+
+
 
 ``` CSharp
 public class AspNetMvc
@@ -1767,7 +1862,7 @@ public class AspNetMvc
         var hostBuilder = new WebHostBuilder().UseStartup<Startup>();
         using var server = new TestServer(hostBuilder);
         using var client = server.CreateClient();
-        
+
         var response = await client.GetStringAsync("/Greeting");
         response.ShouldBe("Hello!");
     }
@@ -1791,7 +1886,8 @@ public class GreetingController : ControllerBase
 
     public GreetingController(IGreeting greeting) => _greeting = greeting;
 
-    [HttpGet] public string Get() => _greeting.Hello;
+    [HttpGet]
+    public string Get() => _greeting.Hello;
 }
 
 public static partial class GreetingDomain
@@ -1806,12 +1902,12 @@ public static partial class GreetingDomain
 
 public class Startup
 {
-    public Startup(Microsoft.Extensions.Configuration.IConfiguration configuration) =>
+    public Startup(IConfiguration configuration) =>
         Configuration = configuration;
 
-    public Microsoft.Extensions.Configuration.IConfiguration Configuration { get; }
-    
-    public void ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+    public IConfiguration Configuration { get; }
+
+    public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
         // AddGreetingDomain(this IServiceCollection services) method was generated automatically
@@ -1821,15 +1917,16 @@ public class Startup
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         app.UseRouting();
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-        });
+        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
 }
 ```
 
+
+
 ### OS specific implementations
+
+
 
 ``` CSharp
 public void Run()
