@@ -359,9 +359,10 @@ DI.Setup()
   - [Constants](#constants)
   - [Generics](#generics)
   - [Manual binding](#manual-binding)
-  - [Service provider](#service-provider)
+  - [Service collection](#service-collection)
   - [Tags](#tags)
   - [Aspect-oriented DI](#aspect-oriented-di)
+  - [Service provider](#service-provider)
   - [Several contracts](#several-contracts)
   - [Aspect-oriented DI with custom attributes](#aspect-oriented-di-with-custom-attributes)
   - [Instance initialization](#instance-initialization)
@@ -381,7 +382,6 @@ DI.Setup()
   - [Transient lifetime](#transient-lifetime)
   - [Custom singleton lifetime](#custom-singleton-lifetime)
 - BCL types
-  - [IServiceProvider/IServiceCollection and Microsoft Dependency Injection](#iserviceprovideriservicecollection-and-microsoft-dependency-injection)
   - [Arrays](#arrays)
   - [Collections](#collections)
   - [Enumerables](#enumerables)
@@ -495,20 +495,48 @@ new Service(new Dependency()), "some state");
 ```
 ... and no any additional method calls. This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
-### Service provider
+### Service collection
 
-It is easy to get an instance of the _IServiceProvider_ type at any time without any additional effort.
+In the cases when a project references the Microsoft Dependency Injection library, an extension method for ```IServiceCollection``` is generating automatically with a name like _Add..._ plus the name of a generated class, here it is ```AddMyComposer()``` for class ```public class MyComposer { }```.
 
 ``` CSharp
-DI.Setup()
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>();
+[Fact]
+public void Run()
+{
+    DI.Setup("MyComposer")
+        // Add Transient
+        .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+        // Add Scoped
+        .Bind<IService>().To<Service>();
+    
+    var serviceProvider =
+        // Creates some serviceCollection
+        new ServiceCollection()
+            // Adds some registrations with any lifetime
+            .AddScoped<ServiceConsumer>()
+        // Adds Pure DI registrations
+        .AddMyComposer()
+        // Builds a service provider
+        .BuildServiceProvider();
+    
+    var consumer = serviceProvider.GetRequiredService<ServiceConsumer>();
+    var instance = serviceProvider.GetRequiredService<IService>();
+    consumer.Service.Dependency.ShouldBe(instance.Dependency);
+    consumer.Service.ShouldNotBe(instance);
 
-// Resolve the instance of IServiceProvider
-var serviceProvider = ServiceProviderDI.Resolve<IServiceProvider>();
+    // Creates a service provider directly
+    var otherServiceProvider = MyComposer.Resolve<IServiceProvider>();
+    var otherInstance = otherServiceProvider.GetRequiredService<IService>();
+    otherInstance.Dependency.ShouldBe(consumer.Service.Dependency);
+}
 
-// Get the instance via service provider
-var instance = serviceProvider.GetService(typeof(IService));
+public class ServiceConsumer
+{
+    public ServiceConsumer(IService service) =>
+        Service = service;
+
+    public IService Service { get; }
+}
 ```
 
 
@@ -591,6 +619,24 @@ public class Clock : IClock
 
     public DateTimeOffset Now => DateTimeOffset.Now;
 }
+```
+
+
+
+### Service provider
+
+It is easy to get an instance of the _IServiceProvider_ type at any time without any additional effort.
+
+``` CSharp
+DI.Setup()
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>();
+
+// Resolve the instance of IServiceProvider
+var serviceProvider = ServiceProviderDI.Resolve<IServiceProvider>();
+
+// Get the instance via service provider
+var instance = serviceProvider.GetService(typeof(IService));
 ```
 
 
@@ -1296,37 +1342,16 @@ public class Service : IService
 
 
 
-### IServiceProvider/IServiceCollection and Microsoft Dependency Injection
-
-In the cases when a project references the Microsoft Dependency Injection library, an extension method for ```IServiceCollection``` is generating automatically with a name like _Add..._ plus the name of a generated class, here it is ```AddMicrosoftDependencyInjectionDI()``` for class ```public class MicrosoftDependencyInjection { }```.
-
-``` CSharp
-DI.Setup()
-    // Add Transient
-    .Bind<IDependency>().To<Dependency>()
-    // Add Scoped
-    .Bind<IService>().As(Lifetime.Scoped).To<Service>();
-
-// Creates a ServiceProvider for the DI specified above.
-var serviceProvider = new ServiceCollection()
-    .AddMicrosoftDependencyInjectionDI()
-    .BuildServiceProvider();
-
-var instance1 = serviceProvider.GetRequiredService<IService>();
-var instance2 = serviceProvider.GetService(typeof(IService));
-```
-
-
-
 ### Arrays
 
 To resolve all possible instances of any tags of the specific type as an _array_ just use the injection of _T[]_.
 
 ``` CSharp
+// out=C:\Projects\TeamCity\Teamcity.CSharpInteractive\TeamCity.CSharpInteractive\obj\Generated
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     // Bind to the implementation #1
-    .Bind<IService>(1).As(lifetime: Lifetime.PerResolve).To<Service>()
+    .Bind<IService>(1).As(Lifetime.PerResolve).To<Service>()
     // Bind to the implementation #2
     .Bind<IService>(99).Tags(2, "abc").To<Service>()
     // Bind to the implementation #3
@@ -1827,7 +1852,7 @@ public class Startup
 
     public Microsoft.Extensions.Configuration.IConfiguration Configuration { get; }
     
-    public void ConfigureServices(IServiceCollection services)
+    public void ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
     {
         services.AddControllers();
         // AddGreetingDomain(this IServiceCollection services) method was generated automatically

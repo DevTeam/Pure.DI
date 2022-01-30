@@ -13,7 +13,7 @@
         {
             // $visible=true
             // $tag=1 Basics
-            // $priority=01
+            // $priority=02
             // $description=Service provider
             // $header=It is easy to get an instance of the _IServiceProvider_ type at any time without any additional effort.
             // {

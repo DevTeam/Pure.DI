@@ -73,7 +73,7 @@ namespace Pure.DI.UsageScenarios.Tests
 
         public Microsoft.Extensions.Configuration.IConfiguration Configuration { get; }
         
-        public void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
         {
             services.AddControllers();
             // AddGreetingDomain(this IServiceCollection services) method was generated automatically
