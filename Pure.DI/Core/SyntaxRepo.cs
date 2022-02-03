@@ -106,9 +106,6 @@ internal static class SyntaxRepo
 
     private static IEnumerable<string> SplitLines(IEnumerable<string> strings) =>
         from str in strings
-        from subStr in str.Split(new[]
-        {
-            Environment.NewLine
-        }, StringSplitOptions.RemoveEmptyEntries)
+        from subStr in str.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries)
         select subStr.TrimStart().StartsWith("//") ? subStr : $"// {subStr}";
 }
