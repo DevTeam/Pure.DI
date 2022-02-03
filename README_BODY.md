@@ -2,7 +2,7 @@
 
 [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[<img src="http://tcavs2015.cloudapp.net/app/rest/builds/buildType:(id:DevTeam_Pure_Di_BuildAndTestBuildType)/statusIcon"/>](http://tcavs2015.cloudapp.net/viewType.html?buildTypeId=DevTeam_Pure_Di_BuildAndTestBuildType&guest=1)
+[<img src="http://teamcity.jetbrains.com/app/rest/builds/buildType:(id:OpenSourceProjects_DevTeam_PureDi_BuildAndTestBuildType)/statusIcon"/>](http://teamcity.jetbrains.com/viewType.html?buildTypeId=OpenSourceProjects_DevTeam_PureDi_BuildAndTestBuildType&guest=1)
 
 <img src="Docs/Images/demo.gif"/>
 
@@ -278,23 +278,23 @@ For details please see [this sample](IoC.Tests/UsageScenarios/Interception.cs).
 
 ### Graph of 27 transient instances
 
-![Transient](http://tcavs2015.cloudapp.net/guestAuth/app/rest/builds/buildType:DevTeam_Pure_Di_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.Transient-report.jpg)
+![Transient](http://teamcity.jetbrains.com/guestAuth/app/rest/builds/buildType:DevTeam_Pure_Di_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.Transient-report.jpg)
 
 ### Graph of 20 transient instances and 1 singleton instance
 
-![Singleton](http://tcavs2015.cloudapp.net/guestAuth/app/rest/builds/buildType:DevTeam_Pure_Di_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.Singleton-report.jpg)
+![Singleton](http://teamcity.jetbrains.com/guestAuth/app/rest/builds/buildType:DevTeam_Pure_Di_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.Singleton-report.jpg)
 
 ### Graph of 22 transient instances, including 3 Func to create 4 instances each time
 
-![Func](http://tcavs2015.cloudapp.net/guestAuth/app/rest/builds/buildType:DevTeam_Pure_Di_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.Func-report.jpg)
+![Func](http://teamcity.jetbrains.com/guestAuth/app/rest/builds/buildType:DevTeam_Pure_Di_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.Func-report.jpg)
 
 ### Graph of 22 transient instances, including 3 arrays of 4 instances in each
 
-![Array](http://tcavs2015.cloudapp.net/guestAuth/app/rest/builds/buildType:DevTeam_Pure_Di_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.Array-report.jpg)
+![Array](http://teamcity.jetbrains.com/guestAuth/app/rest/builds/buildType:DevTeam_Pure_Di_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.Array-report.jpg)
 
 ### Graph of 22 transient instances, including 3 enumerable of 4 instances in each
 
-![Enum](http://tcavs2015.cloudapp.net/guestAuth/app/rest/builds/buildType:DevTeam_Pure_Di_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.Enum-report.jpg)
+![Enum](http://teamcity.jetbrains.com/guestAuth/app/rest/builds/buildType:DevTeam_Pure_Di_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.Enum-report.jpg)
 
 _[BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) was used to measure and analyze these results._
 
