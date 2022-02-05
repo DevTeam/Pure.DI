@@ -93,7 +93,7 @@ internal class SourceBuilder : ISourceBuilder
             });
 
             var compilationUnitSyntax = _resolverBuilderFactory().Build(semanticModel).NormalizeWhitespace();
-            var source = new Source($"{metadata.ComposerTypeName}.cs", SourceText.From(compilationUnitSyntax.ToFullString(), Encoding.UTF8));
+            var source = new Source(SourceType.GeneratedCode, $"{metadata.ComposerTypeName}.cs", SourceText.From(compilationUnitSyntax.ToFullString(), Encoding.UTF8));
             if (_settings.TryGetOutputPath(out outputPath))
             {
                 _log.Info(() => new[]

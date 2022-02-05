@@ -24,11 +24,9 @@ internal class MetadataBuilder : IMetadataBuilder
     {
         Stopwatch stopwatch = new();
         stopwatch.Start();
-        var components = GetComponents(compilation).ToList().AsReadOnly();
-
         var sourceSet = GetSourceSet(compilation);
         var syntaxTreesCount = compilation.SyntaxTrees.Count();
-        compilation = compilation.AddSyntaxTrees(sourceSet.ComponentsTrees.Concat(sourceSet.FeaturesTrees));
+        compilation = compilation.AddSyntaxTrees(sourceSet.ApiTrees.Concat(sourceSet.FeaturesTrees));
         var featuresTrees = compilation.SyntaxTrees.Skip(syntaxTreesCount);
         var featuresMetadata = GetMetadata(compilation, featuresTrees, cancellationToken).ToList();
         foreach (var metadata in featuresMetadata)
@@ -38,14 +36,16 @@ internal class MetadataBuilder : IMetadataBuilder
 
         var currentTrees = compilation.SyntaxTrees.Take(syntaxTreesCount);
         var currentMetadata = GetMetadata(compilation, currentTrees, cancellationToken).ToList();
+        var api = GetApi(compilation);
         stopwatch.Stop();
-        return new MetadataContext(compilation, cancellationToken, components, featuresMetadata.AsReadOnly(), currentMetadata.AsReadOnly(), stopwatch.ElapsedMilliseconds);
+
+        return new MetadataContext(compilation, cancellationToken, api, featuresMetadata.AsReadOnly(), currentMetadata.AsReadOnly(), stopwatch.ElapsedMilliseconds);
     }
 
-    private IEnumerable<Source> GetComponents(Compilation compilation) =>
-        AreComponentsAvailable(compilation) ? Enumerable.Empty<Source>() : GetSourceSet(compilation).ComponentSources;
+    private IEnumerable<Source> GetApi(Compilation compilation) =>
+        AreApiAvailable(compilation) ? Enumerable.Empty<Source>() : GetSourceSet(compilation).ApiSources;
 
-    private static bool AreComponentsAvailable(Compilation compilation)
+    private static bool AreApiAvailable(Compilation compilation)
     {
         var diType = compilation.GetTypesByMetadataName(typeof(DI).FullName).FirstOrDefault();
         if (diType == null)

@@ -5,15 +5,18 @@ internal class Generator : IGenerator
 {
     private readonly IMetadataBuilder _metadataBuilder;
     private readonly ISourceBuilder _sourceBuilder;
+    private readonly ISettings _settings;
     private readonly IDiagnostic _diagnostic;
 
     public Generator(
         IMetadataBuilder metadataBuilder,
         ISourceBuilder sourceBuilder,
+        ISettings settings,
         IDiagnostic diagnostic)
     {
         _metadataBuilder = metadataBuilder;
         _sourceBuilder = sourceBuilder;
+        _settings = settings;
         _diagnostic = diagnostic;
     }
 
@@ -47,11 +50,6 @@ internal class Generator : IGenerator
         try
         {
             var metadata = _metadataBuilder.Build(context.Compilation, context.CancellationToken);
-            foreach (var source in metadata.Components)
-            {
-                context.AddSource(source.HintName, source.Code);
-            }
-
             foreach (var source in _sourceBuilder.Build(metadata))
             {
                 if (context.CancellationToken.IsCancellationRequested)
@@ -60,6 +58,14 @@ internal class Generator : IGenerator
                 }
 
                 context.AddSource(source.HintName, source.Code);
+            }
+
+            if (_settings.Api)
+            {
+                foreach (var source in metadata.Api)
+                {
+                    context.AddSource(source.HintName, source.Code);
+                }
             }
         }
         catch (BuildException buildException)

@@ -50,7 +50,8 @@ namespace Sample
     {
         // Actually, this code never runs and the method might have any name or be a constructor for instance
         // because this is just a hint to set up an object graph.
-        private static void Setup() => DI.Setup()
+        private static void Setup() =>
+            DI.Setup()
             // Models a random subatomic event that may or may not occur
             .Bind<Random>().As(Singleton).To<Random>()
             // Represents a quantum superposition of 2 states: Alive or Dead

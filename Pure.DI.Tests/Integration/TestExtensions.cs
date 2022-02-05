@@ -83,7 +83,7 @@ public static class TestExtensions
         try
         {
             var metadataContext = container.Resolve<IMetadataBuilder>().Build(compilation, CancellationToken.None);
-            generatedSources.AddRange(metadataContext.Components);
+            generatedSources.AddRange(metadataContext.Api);
             generatedSources.AddRange(container.Resolve<ISourceBuilder>().Build(metadataContext));
         }
         catch (BuildException buildException)

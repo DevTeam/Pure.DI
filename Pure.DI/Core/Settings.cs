@@ -16,16 +16,12 @@ internal class Settings : ISettings
         _fileSystem = fileSystem;
     }
 
-    public bool Debug =>
-        TryGet(Setting.Debug, out var debugValue)
-        && bool.TryParse(debugValue, out var debug)
-        && debug;
+    public bool Debug => GetBool(Setting.Debug);
 
-    public bool Trace =>
-        TryGet(Setting.Trace, out var traceValue)
-        && bool.TryParse(traceValue, out var trace)
-        && trace;
+    public bool Trace => GetBool(Setting.Trace);
 
+    public bool Api => GetBool(Setting.Api, true);
+    
     public bool TryGetOutputPath(out string outputPath)
     {
         if (!TryGet(Setting.Out, out outputPath))
@@ -61,6 +57,11 @@ internal class Settings : ISettings
         var settings = _buildContext.Metadata.Settings;
         return settings.TryGetValue(setting, out value);
     }
+
+    private bool GetBool(Setting setting, bool defaultValue = false) => 
+        TryGet(setting, out var valueStr) && bool.TryParse(valueStr, out var value)
+            ? value
+            : defaultValue;
 
     private string GetFullPath(string path)
     {
