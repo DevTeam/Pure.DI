@@ -30,17 +30,20 @@ internal class SourceBuilder : ISourceBuilder
     public IEnumerable<Source> Build(MetadataContext context)
     {
         var allMetadata = context.BaseMetadata.Concat(context.CurrentMetadata).ToList();
+        
+        // Init context
+        var curId = 0;
+        _context.Initialize(curId++, context.Compilation, context.CancellationToken, allMetadata.First());
+        
         Stopwatch stopwatch = new();
         stopwatch.Start();
-
-        var curId = 0;
         Process? traceProcess = default;
         foreach (var rawMetadata in context.CurrentMetadata)
         {
             stopwatch.Start();
             var semanticModel = context.Compilation.GetSemanticModel(rawMetadata.SetupNode.SyntaxTree);
             var metadata = CreateMetadata(rawMetadata, allMetadata);
-            _context.Prepare(curId++, context.Compilation, context.CancellationToken, metadata);
+            _context.Initialize(curId++, context.Compilation, context.CancellationToken, metadata);
             if (_settings.Debug)
             {
                 if (!Debugger.IsAttached)
@@ -93,7 +96,7 @@ internal class SourceBuilder : ISourceBuilder
             });
 
             var compilationUnitSyntax = _resolverBuilderFactory().Build(semanticModel).NormalizeWhitespace();
-            var source = new Source(SourceType.GeneratedCode, $"{metadata.ComposerTypeName}.cs", SourceText.From(compilationUnitSyntax.ToFullString(), Encoding.UTF8));
+            var source = new Source($"{metadata.ComposerTypeName}.cs", SourceText.From(compilationUnitSyntax.ToFullString(), Encoding.UTF8));
             if (_settings.TryGetOutputPath(out outputPath))
             {
                 _log.Info(() => new[]

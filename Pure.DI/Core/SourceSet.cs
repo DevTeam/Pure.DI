@@ -16,8 +16,8 @@ internal class SourceSet
     {
         Regex featuresRegex = new(@"Pure.DI.Features.[\w]+.cs", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase);
         Regex componentsRegex = new(@"Pure.DI.Components.[\w]+.cs", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase);
-        Features = GetResources(featuresRegex, SourceType.Feature).ToList();
-        Api = GetResources(componentsRegex, SourceType.Api).ToList();
+        Features = GetResources(featuresRegex).ToList();
+        Api = GetResources(componentsRegex).ToList();
     }
 
     public SourceSet(CSharpParseOptions parseOptions)
@@ -27,7 +27,7 @@ internal class SourceSet
         ApiTrees = Api.Select(source => CSharpSyntaxTree.ParseText(source.Code, parseOptions));
     }
 
-    private static IEnumerable<Source> GetResources(Regex filter, SourceType sourceType)
+    private static IEnumerable<Source> GetResources(Regex filter)
     {
         var assembly = typeof(SourceSet).Assembly;
         foreach (var resourceName in assembly.GetManifestResourceNames())
@@ -39,7 +39,7 @@ internal class SourceSet
 
             using var reader = new StreamReader(assembly.GetManifestResourceStream(resourceName) ?? throw new InvalidOperationException($"Cannot read {resourceName}."));
             var code = reader.ReadToEnd();
-            yield return new Source(sourceType, resourceName, SourceText.From(code, Encoding.UTF8));
+            yield return new Source(resourceName, SourceText.From(code, Encoding.UTF8));
         }
     }
 }

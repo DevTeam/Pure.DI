@@ -20,8 +20,10 @@ internal class MetadataBuilder : IMetadataBuilder
         _stateCache = stateCache;
     }
 
-    public MetadataContext Build(Compilation compilation, CancellationToken cancellationToken)
+    public MetadataContext Build(IExecutionContext executionContext)
     {
+        var compilation = executionContext.Compilation;
+        var cancellationToken = executionContext.CancellationToken;
         Stopwatch stopwatch = new();
         stopwatch.Start();
         var sourceSet = GetSourceSet(compilation);

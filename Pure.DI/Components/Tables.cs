@@ -20,6 +20,7 @@
 // ReSharper disable RedundantNameQualifier
 // ReSharper disable RedundantDelegateCreation
 // ReSharper disable ArrangeObjectCreationWhenTypeEvident
+// ReSharper disable InvokeAsExtensionMethod
 #pragma warning disable 8618
 #pragma warning disable 8604
 #pragma warning disable 8603

@@ -9,7 +9,8 @@ internal readonly struct MetadataContext
     public readonly IReadOnlyCollection<ResolverMetadata> CurrentMetadata;
     public readonly long InitDurationMilliseconds;
 
-    public MetadataContext(Compilation compilation,
+    public MetadataContext(
+        Compilation compilation,
         CancellationToken cancellationToken,
         IEnumerable<Source> api,
         IReadOnlyCollection<ResolverMetadata> baseMetadata,

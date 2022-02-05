@@ -3,6 +3,8 @@
         <TargetFramework>net6.0</TargetFramework>
         <OutputType>Exe</OutputType>
         <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+        <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
     </PropertyGroup>
     <PropertyGroup>
         <PlatformTarget>AnyCPU</PlatformTarget>

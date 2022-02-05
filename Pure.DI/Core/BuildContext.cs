@@ -43,7 +43,7 @@ internal class BuildContext : IBuildContext
 
     public IEnumerable<StatementSyntax> FinalDisposeStatements => _finalDisposeStatements;
 
-    public void Prepare(int id, Compilation compilation, CancellationToken cancellationToken, ResolverMetadata metadata)
+    public void Initialize(int id, Compilation compilation, CancellationToken cancellationToken, ResolverMetadata metadata)
     {
         Id = id;
         _compilation = compilation;

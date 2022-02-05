@@ -10,7 +10,7 @@ internal interface IBuildContext
 
     ResolverMetadata Metadata { get; }
 
-    void Prepare(int id, Compilation compilation, CancellationToken cancellationToken, ResolverMetadata metadata);
+    void Initialize(int id, Compilation compilation, CancellationToken cancellationToken, ResolverMetadata metadata);
 
     INameService NameService { get; }
 

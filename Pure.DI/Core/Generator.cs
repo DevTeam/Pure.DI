@@ -3,6 +3,7 @@ namespace Pure.DI.Core;
 
 internal class Generator : IGenerator
 {
+    private const string DefaultNamespace = "Pure.DI";
     private readonly IMetadataBuilder _metadataBuilder;
     private readonly ISourceBuilder _sourceBuilder;
     private readonly ISettings _settings;
@@ -49,7 +50,7 @@ internal class Generator : IGenerator
 
         try
         {
-            var metadata = _metadataBuilder.Build(context.Compilation, context.CancellationToken);
+            var metadata = _metadataBuilder.Build(context);
             foreach (var source in _sourceBuilder.Build(metadata))
             {
                 if (context.CancellationToken.IsCancellationRequested)
@@ -77,7 +78,7 @@ internal class Generator : IGenerator
         }
         catch (Exception ex)
         {
-            _diagnostic.Error(Diagnostics.Error.Unhandled, $"{ex}: {ex.StackTrace}");
+            _diagnostic.Error(Diagnostics.Error.Unhandled, ex.ToString().Replace(Environment.NewLine, " "));
         }
     }
 }

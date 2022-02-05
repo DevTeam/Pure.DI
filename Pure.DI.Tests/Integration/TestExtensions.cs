@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.Extensions.DependencyInjection;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
@@ -82,7 +83,7 @@ public static class TestExtensions
         var generatedSources = new List<Source>();
         try
         {
-            var metadataContext = container.Resolve<IMetadataBuilder>().Build(compilation, CancellationToken.None);
+            var metadataContext = container.Resolve<IMetadataBuilder>().Build(new ExecutionContext(compilation, CancellationToken.None));
             generatedSources.AddRange(metadataContext.Api);
             generatedSources.AddRange(container.Resolve<ISourceBuilder>().Build(metadataContext));
         }
@@ -242,5 +243,16 @@ public static class TestExtensions
         public void WriteLine(string line) => _lines.Add(line);
 
         public void WriteErrorLine(string error) => _errors.Add(error);
+    }
+
+    private record ExecutionContext(Compilation Compilation, CancellationToken CancellationToken) : IExecutionContext
+    {
+        public void AddSource(string hintName, SourceText sourceText)
+        {
+        }
+
+        public void ReportDiagnostic(Diagnostic diagnostic)
+        {
+        }
     }
 }
