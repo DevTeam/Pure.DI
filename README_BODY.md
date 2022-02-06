@@ -302,7 +302,7 @@ _[BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) was used to measur
 
 #### Changing the _Pure.DI_ API namespace
 
-To change the default _Pure.DI_ namespace for the generated API to something else add few lines to your project file by adding to settings:
+To change the default _Pure.DI_ namespace for the generated API to something else add a few lines to your project file:
 
 ```xml
 <PropertyGroup>
