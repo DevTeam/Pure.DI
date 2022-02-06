@@ -1,6 +1,8 @@
 ﻿// ReSharper disable InvertIf
 namespace Pure.DI.Core;
 
+using NS35EBD81B;
+
 internal class BindingMetadata : IBindingMetadata
 {
     private static int _currentId;

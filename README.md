@@ -298,6 +298,34 @@ For details please see [this sample](IoC.Tests/UsageScenarios/Interception.cs).
 
 _[BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) was used to measure and analyze these results._
 
+### Global Options
+
+#### Changing the _Pure.DI_ API namespace
+
+To change the default _Pure.DI_ namespace for the generated API to something else add few lines to your project file by adding to settings:
+
+```xml
+<PropertyGroup>
+  <PureDINamespace>MyNameSpace</PureDINamespace>
+</PropertyGroup>
+
+<ItemGroup>
+  <CompilerVisibleProperty Include="PureDINamespace" />
+</ItemGroup>
+```
+
+For instance, to use the default project namespace, you could specify the following lines:
+
+```xml
+<PropertyGroup>
+  <PureDINamespace>$(RootNamespace)</PureDINamespace>
+</PropertyGroup>
+
+<ItemGroup>
+  <CompilerVisibleProperty Include="PureDINamespace" />
+</ItemGroup>
+```
+
 ### Troubleshooting
 
 To get all generated source code and log, add a hint like ```// out=<path to the diagnostics directory >``` as a comment before calling the method ```DI.Setup()```, for instance:

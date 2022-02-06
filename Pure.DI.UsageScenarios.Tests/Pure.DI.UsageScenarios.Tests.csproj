@@ -12,17 +12,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0"/>
-        <PackageReference Include="xunit" Version="2.4.1"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+        <PackageReference Include="xunit" Version="2.4.1" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <ProjectReference Include="..\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
-        <PackageReference Include="Moq" Version="4.16.1"/>
-        <PackageReference Include="Shouldly" Version="4.0.3"/>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.1"/>
-        <PackageReference Include="Castle.Core" Version="4.4.1"/>
+        <ProjectReference Include="..\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <PackageReference Include="Moq" Version="4.16.1" />
+        <PackageReference Include="Shouldly" Version="4.0.3" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.1" />
+        <PackageReference Include="Castle.Core" Version="4.4.1" />
         <None Update="README_TEMPLATE.md">
             <DesignTime>True</DesignTime>
             <AutoGen>True</AutoGen>
@@ -35,7 +35,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}"/>
+        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
     </ItemGroup>
 
 </Project>

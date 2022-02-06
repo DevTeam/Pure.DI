@@ -2,8 +2,10 @@
 // ReSharper disable IdentifierTypo
 namespace Pure.DI.Core;
 
+using NS35EBD81B;
+
 #if ROSLYN38
-    using NamespaceType = Microsoft.CodeAnalysis.CSharp.Syntax.NamespaceDeclarationSyntax;
+using NamespaceType = Microsoft.CodeAnalysis.CSharp.Syntax.NamespaceDeclarationSyntax;
 #else
 using NamespaceType = BaseNamespaceDeclarationSyntax;
 #endif
@@ -13,11 +15,6 @@ using NamespaceType = BaseNamespaceDeclarationSyntax;
 // ReSharper disable once ClassNeverInstantiated.Global
 internal class ClassBuilder : IClassBuilder
 {
-    private static readonly UsingDirectiveSyntax[] AdditionalUsings =
-    {
-        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Pure.DI"))
-    };
-    
     private readonly IMembersBuilder[] _membersBuilder;
     private readonly IDiagnostic _diagnostic;
     private readonly IBindingsProbe _bindingsProbe;
@@ -78,6 +75,10 @@ internal class ClassBuilder : IClassBuilder
         }
 
         _bindingsProbe.Probe();
+        
+        var registerDisposableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(RegisterDisposable).FullName.ReplaceNamespace());
+        var registerDisposableEventTypeSyntax = SyntaxFactory.ParseTypeName(typeof(RegisterDisposableEvent).FullName.ReplaceNamespace());
+        var iContextTypeSyntax = SyntaxFactory.ParseTypeName(typeof(IContext).FullName.ReplaceNamespace());
         var contextTypeSyntax = SyntaxFactory.ParseTypeName(_memberNameService.GetName(MemberNameKind.ContextClass));
         var resolverClass = SyntaxFactory.ClassDeclaration(_metadata.ComposerTypeName)
             .WithKeyword(SyntaxFactory.Token(SyntaxKind.ClassKeyword))
@@ -97,7 +98,7 @@ internal class ClassBuilder : IClassBuilder
             .AddMembers(SyntaxRepo.FinalDisposeMethodSyntax.AddBodyStatements(_buildContext.FinalDisposeStatements.ToArray()))
             .AddMembers(
                 SyntaxFactory.EventFieldDeclaration(
-                        SyntaxFactory.VariableDeclaration(SyntaxRepo.RegisterDisposableTypeSyntax).AddVariables(
+                        SyntaxFactory.VariableDeclaration(registerDisposableTypeSyntax).AddVariables(
                             SyntaxFactory.VariableDeclarator(SyntaxRepo.OnDisposableEventName)
                                 .WithInitializer(
                                     SyntaxFactory.EqualsValueClause(
@@ -113,7 +114,7 @@ internal class ClassBuilder : IClassBuilder
                         SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(SyntaxRepo.OnDisposableEventName))
                             .AddArgumentListArguments(
                                 SyntaxFactory.Argument(
-                                    SyntaxFactory.ObjectCreationExpression(SyntaxRepo.RegisterDisposableEventTypeSyntax)
+                                    SyntaxFactory.ObjectCreationExpression(registerDisposableEventTypeSyntax)
                                         .AddArgumentListArguments(
                                             SyntaxFactory.Argument(SyntaxFactory.IdentifierName("disposable")),
                                             SyntaxFactory.Argument(SyntaxFactory.IdentifierName("lifetime")))))),
@@ -123,7 +124,7 @@ internal class ClassBuilder : IClassBuilder
                 SyntaxFactory.ClassDeclaration(_memberNameService.GetName(MemberNameKind.ContextClass))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.SealedKeyword))
-                    .AddBaseListTypes(SyntaxFactory.SimpleBaseType(SyntaxRepo.IContextTypeSyntax))
+                    .AddBaseListTypes(SyntaxFactory.SimpleBaseType(iContextTypeSyntax))
                     .AddMembers(
                         SyntaxRepo.TResolveMethodSyntax
                             .AddBodyStatements(
@@ -152,7 +153,7 @@ internal class ClassBuilder : IClassBuilder
                                             .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag"))))))
             ).WithPragmaWarningDisable(0067, 8600, 8602, 8603, 8604, 8618, 8625);
 
-        var rootNode = CreateRootNode(_metadata.SetupNode, AdditionalUsings, resolverClass);
+        var rootNode = CreateRootNode(_metadata.SetupNode, new []{SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(Defaults.DefaultNamespace))}, resolverClass);
         var sampleDependency = _metadata.Bindings.LastOrDefault()?.Dependencies.FirstOrDefault()?.ToString() ?? "T";
         _diagnostic.Information(Diagnostics.Information.Generated, $"{_metadata.ComposerTypeName} was generated. Please use a method like {_metadata.ComposerTypeName}.Resolve<{sampleDependency}>() to create a composition root.", _metadata.Bindings.FirstOrDefault()?.Location);
         return rootNode;

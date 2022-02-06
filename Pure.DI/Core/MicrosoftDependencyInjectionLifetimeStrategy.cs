@@ -2,6 +2,8 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
+using NS35EBD81B;
+
 internal class MicrosoftDependencyInjectionLifetimeStrategy : ILifetimeStrategy
 {
     private readonly IBuildContext _buildContext;
@@ -29,7 +31,7 @@ internal class MicrosoftDependencyInjectionLifetimeStrategy : ILifetimeStrategy
     public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression)
     {
         var type = dependency.Binding.Dependencies.FirstOrDefault() ?? dependency.Implementation;
-        var serviceProviderInstance = new SemanticType(dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance<>).FullName)!, dependency.Implementation.SemanticModel);
+        var serviceProviderInstance = new SemanticType(dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance<>).FullName.ReplaceNamespace())!, dependency.Implementation.SemanticModel);
         var instanceType = serviceProviderInstance.Construct(type);
         var serviceProviderDependency = _buildContext.TypeResolver.Resolve(instanceType, dependency.Tag);
         var serviceProvider = _buildStrategy().TryBuild(serviceProviderDependency, instanceType);

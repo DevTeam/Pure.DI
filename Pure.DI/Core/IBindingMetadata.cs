@@ -1,5 +1,7 @@
 namespace Pure.DI.Core;
 
+using NS35EBD81B;
+
 internal interface IBindingMetadata
 {
     object Id { get; }

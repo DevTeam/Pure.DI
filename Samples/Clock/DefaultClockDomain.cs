@@ -3,9 +3,7 @@
 namespace Clock
 {
     using Models;
-    using Pure.DI;
     using ViewModels;
-    using static Pure.DI.Lifetime;
 
     public static partial class DefaultClockDomain
     {
@@ -15,8 +13,8 @@ namespace Clock
                 .Bind<IClockViewModel>().To<ClockViewModel>()
 
                 // Models
-                .Bind<ILog<TT>>().As(Singleton).To<Log<TT>>()
-                .Bind<ITimer>().As(Singleton).To(_ => new Timer(TimeSpan.FromSeconds(1)))
-                .Bind<IClock>().As(Singleton).To<SystemClock>();
+                .Bind<ILog<TT>>().As(Lifetime.Singleton).To<Log<TT>>()
+                .Bind<ITimer>().As(Lifetime.Singleton).To(_ => new Timer(TimeSpan.FromSeconds(1)))
+                .Bind<IClock>().As(Lifetime.Singleton).To<SystemClock>();
     }
 }

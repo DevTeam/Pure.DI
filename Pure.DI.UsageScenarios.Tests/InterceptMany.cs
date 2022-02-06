@@ -7,7 +7,8 @@ namespace Pure.DI.UsageScenarios.Tests
     using Castle.DynamicProxy;
     using Shouldly;
     using Xunit;
-    using static Lifetime;
+    using Pure.DI;
+    using static Pure.DI.Lifetime;
 
     public class InterceptMany
     {

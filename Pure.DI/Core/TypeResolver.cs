@@ -2,6 +2,8 @@
 // ReSharper disable ConvertIfStatementToReturnStatement
 namespace Pure.DI.Core;
 
+using NS35EBD81B;
+
 [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
 // ReSharper disable once ClassNeverInstantiated.Global
 internal class TypeResolver : ITypeResolver
@@ -76,7 +78,7 @@ internal class TypeResolver : ITypeResolver
 
                 if (binding.Lifetime is Lifetime.Scoped or Lifetime.ContainerSingleton)
                 {
-                    var serviceProviderInstance = new SemanticType(type.SemanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance<>).FullName)!, type.SemanticModel).Construct(type);
+                    var serviceProviderInstance = new SemanticType(type.SemanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance<>).FullName.ReplaceNamespace())!, type.SemanticModel).Construct(type);
                     _buildContext.AddBinding(new BindingMetadata(binding, serviceProviderInstance, binding.Id));
                 }
             }

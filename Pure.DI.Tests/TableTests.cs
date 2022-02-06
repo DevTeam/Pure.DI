@@ -1,5 +1,7 @@
 ﻿namespace Pure.DI.Tests;
 
+using NS35EBD81B;
+
 public class TableTests
 {
     [Fact]

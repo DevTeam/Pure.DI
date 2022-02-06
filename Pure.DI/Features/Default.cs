@@ -1,18 +1,18 @@
 ﻿// ReSharper disable PartialTypeWithSinglePart
-namespace Pure.DI.Features
+namespace NS35EBD81B.Features
 {
     using System;
-    using Pure.DI;
+    using NS35EBD81B;
 
     // ReSharper disable once UnusedType.Global
-    internal static partial class Default
+    internal static class Default
     {
         private static void Setup()
         {
-            DI.Setup("DefaultFeature")
-                .TypeAttribute<TypeAttribute>()
-                .TagAttribute<TagAttribute>()
-                .OrderAttribute<OrderAttribute>()
+            NS35EBD81B.DI.Setup("DefaultFeature")
+                .TypeAttribute<NS35EBD81B.TypeAttribute>()
+                .TagAttribute<NS35EBD81B.TagAttribute>()
+                .OrderAttribute<NS35EBD81B.OrderAttribute>()
 
                 .Bind<System.Func<TT>>()
                     .AnyTag()

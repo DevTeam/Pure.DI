@@ -3,7 +3,6 @@ namespace Pure.DI.Core;
 
 internal class Generator : IGenerator
 {
-    private const string DefaultNamespace = "Pure.DI";
     private readonly IMetadataBuilder _metadataBuilder;
     private readonly ISourceBuilder _sourceBuilder;
     private readonly ISettings _settings;
@@ -50,6 +49,8 @@ internal class Generator : IGenerator
 
         try
         {
+            //Debugger.Launch();
+            Defaults.DefaultNamespace = context.TryGetOption("build_property.PureDINamespace", out var newNamespace) ? newNamespace : string.Empty;
             var metadata = _metadataBuilder.Build(context);
             foreach (var source in _sourceBuilder.Build(metadata))
             {

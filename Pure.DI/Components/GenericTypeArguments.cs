@@ -6,7 +6,7 @@
 // ReSharper disable UnusedType.Global
 #pragma warning disable 0436
 #pragma warning disable 8714
-namespace Pure.DI
+namespace NS35EBD81B
 {    
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.

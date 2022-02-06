@@ -7,7 +7,7 @@
 // ReSharper disable MemberCanBePrivate.Global
 #pragma warning disable 0436
 #pragma warning disable 8625
-namespace Pure.DI
+namespace NS35EBD81B
 {
     using System;
 
@@ -464,7 +464,7 @@ namespace Pure.DI
         IBinding Bind<T>(params object[] tags);
 
         /// <summary>
-        /// Determines a binding <see cref="Pure.DI.Lifetime"/>.
+        /// Determines a binding <see cref="Lifetime"/>.
         /// <example>
         /// <code>
         /// static partial class Composer
@@ -475,7 +475,7 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="lifetime">The binding <see cref="Pure.DI.Lifetime"/>.</param>
+        /// <param name="lifetime">The binding <see cref="Lifetime"/>.</param>
         /// <returns>Binding configuration API.</returns>
         IBinding As(Lifetime lifetime);
 
@@ -549,7 +549,7 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// The abstraction to resolve a DI dependency via <see cref="IBinding.To{T}(System.Func{Pure.DI.IContext,T})"/>.
+    /// The abstraction to resolve a DI dependency via <see cref="IBinding.To{T}(System.Func{IContext,T})"/>.
     /// </summary>
     internal interface IContext
     {

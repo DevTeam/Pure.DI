@@ -4,6 +4,8 @@
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 namespace Pure.DI.Core;
 
+using NS35EBD81B;
+
 internal class SemanticType
 {
     public readonly ITypeSymbol Type;
@@ -186,7 +188,7 @@ internal class SemanticType
 
     public bool ImplementsInterface<T>()
     {
-        var interfaceType = SemanticModel.Compilation.GetTypeByMetadataName(typeof(T).ToString());
+        var interfaceType = SemanticModel.Compilation.GetTypeByMetadataName(typeof(T).FullName.ReplaceNamespace());
         return interfaceType != null && ImplementsInterface(interfaceType);
     }
 
@@ -202,17 +204,20 @@ internal class SemanticType
 
         if (type.IsGenericTypeDefinition)
         {
-            return SemanticModel.Compilation.GetTypeByMetadataName(type.FullName)?.ConstructUnboundGenericType() ?? throw new InvalidOperationException("Cannot convert type.");
+            var typeName = type.FullName.ReplaceNamespace();
+            return SemanticModel.Compilation.GetTypeByMetadataName(typeName)?.ConstructUnboundGenericType() ?? throw new InvalidOperationException($"Cannot convert type {typeName}.");
         }
 
         if (!type.IsConstructedGenericType)
         {
-            return SemanticModel.Compilation.GetTypeByMetadataName(type.FullName) ?? throw new InvalidOperationException("Cannot convert type.");
+            var typeName = type.FullName.ReplaceNamespace();
+            return SemanticModel.Compilation.GetTypeByMetadataName(typeName) ?? throw new InvalidOperationException($"Cannot convert type {typeName}.");
         }
 
         var typeArgumentsTypeInfos = type.GenericTypeArguments.Select(ToTypeSymbol);
         var openType = type.GetGenericTypeDefinition();
-        var typeSymbol = SemanticModel.Compilation.GetTypeByMetadataName(openType.FullName ?? throw new InvalidOperationException("Cannot get generic type name."));
+        var openTypeName = openType.FullName?.ReplaceNamespace();
+        var typeSymbol = SemanticModel.Compilation.GetTypeByMetadataName(openTypeName ?? throw new InvalidOperationException($"Cannot get generic type name {openTypeName}."));
         return typeSymbol?.Construct(typeArgumentsTypeInfos.ToArray<ITypeSymbol>()) ?? throw new InvalidOperationException("Cannot convert generic type.");
     }
 }

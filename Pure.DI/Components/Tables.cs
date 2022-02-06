@@ -28,7 +28,7 @@
 #pragma warning disable 8625
 #pragma warning disable 8765
 #pragma warning disable 0436
-namespace Pure.DI
+namespace NS35EBD81B
 {
     internal class Pair<TKey, TValue>
     {

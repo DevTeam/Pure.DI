@@ -1,6 +1,8 @@
 ﻿// ReSharper disable InvertIf
 namespace Pure.DI.Core;
 
+using NS35EBD81B;
+
 // ReSharper disable once ClassNeverInstantiated.Global
 [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
 internal class ResolversBuilder : IMembersBuilder
@@ -81,8 +83,7 @@ internal class ResolversBuilder : IMembersBuilder
 
     private IEnumerable<MemberDeclarationSyntax> CreateDependencyTable(IEnumerable<(IBindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
     {
-        var keyValuePairType = SyntaxFactory.GenericName(
-                SyntaxRepo.KeyValuePairTypeToken)
+        var keyValuePairType = SyntaxFactory.GenericName(SyntaxFactory.Identifier($"{Defaults.DefaultNamespace}.Pair"))
             .AddTypeArgumentListArguments(SyntaxRepo.TypeTypeSyntax, SyntaxRepo.FuncOfObjectTypeSyntax);
 
         var keyValuePairs = new List<ExpressionSyntax>();
@@ -126,13 +127,14 @@ internal class ResolversBuilder : IMembersBuilder
                 SyntaxFactory.InitializerExpression(SyntaxKind.ArrayInitializerExpression).AddExpressions(keyValuePairs.ToArray()))
             .AddTypeRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
 
-        var resolversTable = SyntaxFactory.FieldDeclaration(
-                SyntaxFactory.VariableDeclaration(SyntaxRepo.ResolversTableTypeSyntax)
+    var resolversTableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(ResolversTable).FullName.ReplaceNamespace());
+    var resolversTable = SyntaxFactory.FieldDeclaration(
+                SyntaxFactory.VariableDeclaration(resolversTableTypeSyntax)
                     .AddVariables(
                         SyntaxFactory.VariableDeclarator(_memberNameService.GetName(MemberNameKind.FactoriesField))
                             .WithInitializer(
                                 SyntaxFactory.EqualsValueClause(
-                                    SyntaxFactory.ObjectCreationExpression(SyntaxRepo.ResolversTableTypeSyntax)
+                                    SyntaxFactory.ObjectCreationExpression(resolversTableTypeSyntax)
                                         .AddArgumentListArguments(
                                             SyntaxFactory.Argument(arr))))))
             .AddModifiers(
@@ -150,8 +152,7 @@ internal class ResolversBuilder : IMembersBuilder
 
     private IEnumerable<MemberDeclarationSyntax> CreateDependencyWithTagTable(IEnumerable<(IBindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
     {
-        var keyValuePairType = SyntaxFactory.GenericName(
-                SyntaxRepo.KeyValuePairTypeToken)
+        var keyValuePairType = SyntaxFactory.GenericName(SyntaxFactory.Identifier($"{Defaults.DefaultNamespace}.Pair"))
             .AddTypeArgumentListArguments(SyntaxRepo.TagTypeTypeSyntax, SyntaxRepo.FuncOfObjectTypeSyntax);
 
         var keyValuePairs = new List<ExpressionSyntax>();
@@ -200,11 +201,12 @@ internal class ResolversBuilder : IMembersBuilder
                 SyntaxFactory.InitializerExpression(SyntaxKind.ArrayInitializerExpression).AddExpressions(keyValuePairs.ToArray()))
             .AddTypeRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
 
-        var resolversTable = SyntaxFactory.FieldDeclaration(
-                SyntaxFactory.VariableDeclaration(SyntaxRepo.ResolversWithTagTableTypeSyntax)
+    var resolversWithTagTableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(ResolversByTagTable).FullName.ReplaceNamespace());
+    var resolversTable = SyntaxFactory.FieldDeclaration(
+                SyntaxFactory.VariableDeclaration(resolversWithTagTableTypeSyntax)
                     .AddVariables(
                         SyntaxFactory.VariableDeclarator(_memberNameService.GetName(MemberNameKind.FactoriesByTagField))
-                            .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(SyntaxRepo.ResolversWithTagTableTypeSyntax)
+                            .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(resolversWithTagTableTypeSyntax)
                                 .AddArgumentListArguments(
                                     SyntaxFactory.Argument(SyntaxFactory.IdentifierName(_memberNameService.GetName(MemberNameKind.FactoriesField))),
                                     SyntaxFactory.Argument(arr))))))

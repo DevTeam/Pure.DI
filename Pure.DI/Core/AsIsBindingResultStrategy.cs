@@ -1,9 +1,10 @@
 ﻿// ReSharper disable All
-namespace Pure.DI.Core
+namespace Pure.DI.Core;
+
+using Core;
+
+// ReSharper disable once ClassNeverInstantiated.Global
+internal class AsIsBindingResultStrategy : IBindingResultStrategy
 {
-    // ReSharper disable once ClassNeverInstantiated.Global
-    class AsIsBindingResultStrategy : IBindingResultStrategy
-    {
-        public ExpressionSyntax Build(ExpressionSyntax objectExpression) => objectExpression;
-    }
+    public ExpressionSyntax Build(ExpressionSyntax objectExpression) => objectExpression;
 }

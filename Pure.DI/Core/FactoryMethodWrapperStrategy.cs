@@ -1,6 +1,8 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
+using NS35EBD81B;
+
 internal class FactoryMethodWrapperStrategy : IWrapperStrategy
 {
     private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
@@ -28,7 +30,7 @@ internal class FactoryMethodWrapperStrategy : IWrapperStrategy
 
     public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression)
     {
-        var factoryType = _buildContext.Compilation.GetTypeByMetadataName(typeof(IFactory).FullName);
+        var factoryType = _buildContext.Compilation.GetTypeByMetadataName(typeof(IFactory).FullName.ReplaceNamespace());
         if (factoryType == null)
         {
             const string error = "Factory is not supported.";

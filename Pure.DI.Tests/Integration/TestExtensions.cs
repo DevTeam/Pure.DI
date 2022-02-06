@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using Core;
 using IoC;
+using NS35EBD81B;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -18,6 +19,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.Extensions.DependencyInjection;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
+using Lifetime = IoC.Lifetime;
 
 public static class TestExtensions
 {
@@ -253,6 +255,12 @@ public static class TestExtensions
 
         public void ReportDiagnostic(Diagnostic diagnostic)
         {
+        }
+
+        public bool TryGetOption(string optionName, out string value)
+        {
+            value = string.Empty;
+            return false;
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
+using NS35EBD81B;
+
 // ReSharper disable once ClassNeverInstantiated.Global
 internal class StaticResolveMethodBuilder : IResolveMethodBuilder
 {

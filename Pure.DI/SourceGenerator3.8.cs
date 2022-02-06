@@ -32,6 +32,9 @@ public class SourceGenerator : ISourceGenerator
 
         public void ReportDiagnostic(Diagnostic diagnostic) =>
             _context.ReportDiagnostic(diagnostic);
+
+        public bool TryGetOption(string optionName, out string value) => 
+            _context.AnalyzerConfigOptions.GlobalOptions.TryGetValue(optionName, out value!);
     }
 }
 //#endif

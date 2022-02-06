@@ -5,6 +5,7 @@
 // ReSharper disable MemberCanBePrivate.Local
 namespace Pure.DI.Core;
 
+using NS35EBD81B;
 using static Tags;
 
 // ReSharper disable once ClassNeverInstantiated.Global

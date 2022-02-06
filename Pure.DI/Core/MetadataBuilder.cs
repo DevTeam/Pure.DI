@@ -1,18 +1,20 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
+using NS35EBD81B;
+
 internal class MetadataBuilder : IMetadataBuilder
 {
     private readonly ILog<MetadataBuilder> _log;
     private readonly IDiagnostic _diagnostic;
     private readonly Func<SemanticModel, IMetadataWalker> _metadataWalkerFactory;
-    private readonly ICache<LanguageVersion, SourceBuilderState> _stateCache;
+    private readonly ICache<SourceSetKey, SourceBuilderState> _stateCache;
 
     public MetadataBuilder(
         ILog<MetadataBuilder> log,
         IDiagnostic diagnostic,
         Func<SemanticModel, IMetadataWalker> metadataWalkerFactory,
-        [Tag(Tags.GlobalScope)] ICache<LanguageVersion, SourceBuilderState> stateCache)
+        [Tag(Tags.GlobalScope)] ICache<SourceSetKey, SourceBuilderState> stateCache)
     {
         _log = log;
         _diagnostic = diagnostic;
@@ -49,7 +51,7 @@ internal class MetadataBuilder : IMetadataBuilder
 
     private static bool AreApiAvailable(Compilation compilation)
     {
-        var diType = compilation.GetTypesByMetadataName(typeof(DI).FullName).FirstOrDefault();
+        var diType = compilation.GetTypesByMetadataName(typeof(DI).FullName.ReplaceNamespace()).FirstOrDefault();
         if (diType == null)
         {
             return false;
@@ -70,7 +72,7 @@ internal class MetadataBuilder : IMetadataBuilder
         if (compilation is CSharpCompilation csharpCompilation)
         {
             return _stateCache.GetOrAdd(
-                    csharpCompilation.LanguageVersion,
+                    new SourceSetKey(csharpCompilation.LanguageVersion, Defaults.DefaultNamespace),
                     _ => new SourceBuilderState(new SourceSet(new CSharpParseOptions(csharpCompilation.LanguageVersion))))
                 .SourceSet;
         }
@@ -110,6 +112,35 @@ internal class MetadataBuilder : IMetadataBuilder
         public SourceBuilderState(SourceSet sourceSet)
         {
             SourceSet = sourceSet;
+        }
+    }
+    
+    internal class SourceSetKey
+    {
+        private readonly LanguageVersion _languageVersion;
+        private readonly string _ns;
+
+        public SourceSetKey(LanguageVersion languageVersion, string ns)
+        {
+            _languageVersion = languageVersion;
+            _ns = ns;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            var other = (SourceSetKey)obj;
+            return _languageVersion == other._languageVersion && _ns == other._ns;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((int)_languageVersion * 397) ^ _ns.GetHashCode();
+            }
         }
     }
 }

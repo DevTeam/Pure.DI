@@ -7,7 +7,7 @@
 // ReSharper disable UnusedType.Global
 #pragma warning disable 0436
 #pragma warning disable 8714
-namespace Pure.DI
+namespace NS35EBD81B
 {    
 <#
 var baseTypes = new Dictionary<string, string> { 

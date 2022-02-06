@@ -7,6 +7,7 @@
 // ReSharper disable UnassignedField.Global
 // ReSharper disable ArrangeAccessorOwnerBody
 
+// ReSharper disable RedundantNameQualifier
 #if NETSTANDARD1_6 || NETSTANDARD1_5 || NETSTANDARD1_4 || NETSTANDARD1_3 || NETSTANDARD1_2 || NETSTANDARD1_1 || NETSTANDARD1_0
 namespace System
 {
@@ -23,7 +24,7 @@ namespace System
 #pragma warning disable 8600
 #pragma warning disable 8603
 #pragma warning disable 0436
-namespace Pure.DI
+namespace NS35EBD81B
 {
     internal struct ServiceProviderInstance
     {

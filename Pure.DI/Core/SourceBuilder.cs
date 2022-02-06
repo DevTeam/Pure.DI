@@ -3,6 +3,7 @@
 namespace Pure.DI.Core;
 
 using System.IO;
+using NS35EBD81B;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 internal class SourceBuilder : ISourceBuilder
@@ -30,11 +31,11 @@ internal class SourceBuilder : ISourceBuilder
     public IEnumerable<Source> Build(MetadataContext context)
     {
         var allMetadata = context.BaseMetadata.Concat(context.CurrentMetadata).ToList();
-        
+
         // Init context
         var curId = 0;
         _context.Initialize(curId++, context.Compilation, context.CancellationToken, allMetadata.First());
-        
+
         Stopwatch stopwatch = new();
         stopwatch.Start();
         Process? traceProcess = default;
@@ -96,7 +97,7 @@ internal class SourceBuilder : ISourceBuilder
             });
 
             var compilationUnitSyntax = _resolverBuilderFactory().Build(semanticModel).NormalizeWhitespace();
-            var source = new Source($"{metadata.ComposerTypeName}.cs", SourceText.From(compilationUnitSyntax.ToFullString(), Encoding.UTF8));
+            var source = new Source($"{metadata.ComposerTypeName}.cs", SourceText.From(compilationUnitSyntax.ToFullString().ReplaceNamespace(), Encoding.UTF8));
             if (_settings.TryGetOutputPath(out outputPath))
             {
                 _log.Info(() => new[]

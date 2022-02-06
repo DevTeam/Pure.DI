@@ -2,6 +2,7 @@
 namespace Pure.DI.Core;
 
 using System.Text.RegularExpressions;
+using NS35EBD81B;
 
 internal class IncludeTypeFilter : IIncludeTypeFilter
 {

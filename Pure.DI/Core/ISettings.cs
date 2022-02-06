@@ -5,7 +5,7 @@ internal interface ISettings
     bool Debug { get; }
 
     bool Trace { get; }
-    
+
     bool Api { get; }
 
     bool TryGetOutputPath(out string outputPath);

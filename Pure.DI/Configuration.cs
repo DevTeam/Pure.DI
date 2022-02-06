@@ -2,9 +2,11 @@
 
 using Core;
 using IoC;
+using NS35EBD81B;
 using static IoC.Lifetime;
 using static Core.Tags;
 using IBuildContext = Core.IBuildContext;
+using Lifetime = NS35EBD81B.Lifetime;
 
 internal class Configuration : IoC.IConfiguration
 {

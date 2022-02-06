@@ -21,7 +21,7 @@ internal class Settings : ISettings
     public bool Trace => GetBool(Setting.Trace);
 
     public bool Api => GetBool(Setting.Api, true);
-    
+
     public bool TryGetOutputPath(out string outputPath)
     {
         if (!TryGet(Setting.Out, out outputPath))
@@ -58,7 +58,7 @@ internal class Settings : ISettings
         return settings.TryGetValue(setting, out value);
     }
 
-    private bool GetBool(Setting setting, bool defaultValue = false) => 
+    private bool GetBool(Setting setting, bool defaultValue = false) =>
         TryGet(setting, out var valueStr) && bool.TryParse(valueStr, out var value)
             ? value
             : defaultValue;

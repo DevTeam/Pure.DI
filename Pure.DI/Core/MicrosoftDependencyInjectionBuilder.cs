@@ -1,5 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
+using NS35EBD81B;
+
 // ReSharper disable once ClassNeverInstantiated.Global
 internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
 {
@@ -52,7 +54,7 @@ internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
             let item = groups.First()
             select (resolvedDependency: groups.Key, lifetime: item.Lifetime, item)).ToArray();
 
-        var serviceProviderType = semanticModel.Compilation.GetTypeByMetadataName(typeof(IServiceProvider).FullName);
+        var serviceProviderType = semanticModel.Compilation.GetTypeByMetadataName(typeof(IServiceProvider).FullName.ReplaceNamespace());
         var serviceCollectionType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.IServiceCollection");
         var serviceDescriptorType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.ServiceDescriptor");
         var serviceCollectionServiceExtensionsType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions");
@@ -229,7 +231,7 @@ internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
                         continue;
                     }
 
-                    var serviceProviderInstance = new SemanticType(semanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance).FullName)!, semanticModel);
+                    var serviceProviderInstance = new SemanticType(semanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance).FullName.ReplaceNamespace())!, semanticModel);
                     var serviceProviderValue = SyntaxFactory.MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
                         serviceProviderInstance,

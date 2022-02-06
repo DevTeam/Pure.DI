@@ -1,6 +1,8 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
+using NS35EBD81B;
+
 internal class MetadataSyntaxFilter : ISyntaxFilter
 {
     private static readonly ISet<string> Names = new HashSet<string>

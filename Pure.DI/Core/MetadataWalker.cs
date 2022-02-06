@@ -5,6 +5,7 @@ namespace Pure.DI.Core;
 
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.Operations;
+using NS35EBD81B;
 
 internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
 {

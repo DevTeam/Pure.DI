@@ -1,5 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
+using NS35EBD81B;
+
 // ReSharper disable once ClassNeverInstantiated.Global
 internal class FactoryWrapperStrategy : IWrapperStrategy
 {
@@ -25,7 +27,7 @@ internal class FactoryWrapperStrategy : IWrapperStrategy
 
     public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression)
     {
-        var baseFactoryType = dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName(typeof(IFactory<>).FullName);
+        var baseFactoryType = dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName(typeof(IFactory<>).FullName.ReplaceNamespace());
         var factoryType = baseFactoryType?.Construct(resolvingType.Type);
         if (factoryType == null)
         {

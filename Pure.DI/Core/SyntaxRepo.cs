@@ -2,6 +2,7 @@
 namespace Pure.DI.Core;
 
 using System.Runtime.CompilerServices;
+using NS35EBD81B;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 internal static class SyntaxRepo
@@ -15,18 +16,12 @@ internal static class SyntaxRepo
     private static readonly TypeSyntax DisposableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(IDisposable).ToString());
     public static readonly TypeSyntax TTypeSyntax = SyntaxFactory.ParseTypeName("T");
     private static readonly TypeSyntax LifetimeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(Lifetime).ToString());
-    public static readonly TypeSyntax RegisterDisposableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(RegisterDisposable).ToString());
-    public static readonly TypeSyntax RegisterDisposableEventTypeSyntax = SyntaxFactory.ParseTypeName(typeof(RegisterDisposableEvent).ToString());
     public static readonly TypeSyntax TypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(Type).ToString());
     public static readonly TypeSyntax UIntTypeSyntax = SyntaxFactory.ParseTypeName(typeof(uint).ToString());
     public static readonly TypeSyntax ObjectTypeSyntax = SyntaxFactory.ParseTypeName("object");
-    public static readonly SyntaxToken KeyValuePairTypeToken = SyntaxFactory.Identifier("Pure.DI.Pair");
     public static readonly TypeSyntax TagTypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(TagKey).ToString());
     private static readonly SyntaxToken FuncTypeToken = SyntaxFactory.Identifier("System.Func");
     public static readonly TypeSyntax FuncOfObjectTypeSyntax = SyntaxFactory.GenericName(FuncTypeToken).AddTypeArgumentListArguments(ObjectTypeSyntax);
-    public static readonly TypeSyntax ResolversTableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(ResolversTable).ToString());
-    public static readonly TypeSyntax ResolversWithTagTableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(ResolversByTagTable).ToString());
-    public static readonly TypeSyntax IContextTypeSyntax = SyntaxFactory.ParseTypeName(typeof(IContext).ToString());
     public static readonly TypeParameterSyntax TTypeParameterSyntax = SyntaxFactory.TypeParameter("T");
 
     public static readonly AttributeSyntax ThreadStaticAttr = SyntaxFactory.Attribute(
@@ -106,6 +101,9 @@ internal static class SyntaxRepo
 
     private static IEnumerable<string> SplitLines(IEnumerable<string> strings) =>
         from str in strings
-        from subStr in str.Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries)
+        from subStr in str.Split(new[]
+        {
+            '\r', '\n'
+        }, StringSplitOptions.RemoveEmptyEntries)
         select subStr.TrimStart().StartsWith("//") ? subStr : $"// {subStr}";
 }
