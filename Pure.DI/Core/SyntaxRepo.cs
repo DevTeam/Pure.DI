@@ -15,11 +15,9 @@ internal static class SyntaxRepo
     public static readonly TypeSyntax BoolTypeSyntax = SyntaxFactory.ParseTypeName("bool");
     private static readonly TypeSyntax DisposableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(IDisposable).ToString());
     public static readonly TypeSyntax TTypeSyntax = SyntaxFactory.ParseTypeName("T");
-    private static readonly TypeSyntax LifetimeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(Lifetime).ToString());
     public static readonly TypeSyntax TypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(Type).ToString());
     public static readonly TypeSyntax UIntTypeSyntax = SyntaxFactory.ParseTypeName(typeof(uint).ToString());
     public static readonly TypeSyntax ObjectTypeSyntax = SyntaxFactory.ParseTypeName("object");
-    public static readonly TypeSyntax TagTypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(TagKey).ToString());
     private static readonly SyntaxToken FuncTypeToken = SyntaxFactory.Identifier("System.Func");
     public static readonly TypeSyntax FuncOfObjectTypeSyntax = SyntaxFactory.GenericName(FuncTypeToken).AddTypeArgumentListArguments(ObjectTypeSyntax);
     public static readonly TypeParameterSyntax TTypeParameterSyntax = SyntaxFactory.TypeParameter("T");
@@ -71,11 +69,11 @@ internal static class SyntaxRepo
             .AddParameterListParameters()
             .AddTypeParameterListParameters(TTypeParameterSyntax);
 
-    public static readonly MethodDeclarationSyntax RaiseOnDisposableMethodSyntax =
+    public static MethodDeclarationSyntax RaiseOnDisposableMethodSyntax =>
         SyntaxFactory.MethodDeclaration(TTypeSyntax, RaiseOnDisposableMethodName)
             .AddParameterListParameters(
                 SyntaxFactory.Parameter(SyntaxFactory.Identifier("disposable")).WithType(TTypeSyntax),
-                SyntaxFactory.Parameter(SyntaxFactory.Identifier("lifetime")).WithType(LifetimeTypeSyntax))
+                SyntaxFactory.Parameter(SyntaxFactory.Identifier("lifetime")).WithType(SyntaxFactory.ParseTypeName(typeof(Lifetime).FullName.ReplaceNamespace())))
             .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
             .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(AggressiveInliningAttr))
             .AddTypeParameterListParameters(TTypeParameterSyntax)

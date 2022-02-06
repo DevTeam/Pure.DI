@@ -12,7 +12,8 @@ internal class GenericStaticWithTagResolveMethodBuilder : IResolveMethodBuilder
 
     public ResolveMethod Build()
     {
-        var key = SyntaxFactory.ObjectCreationExpression(SyntaxRepo.TagTypeTypeSyntax)
+        var tagTypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(TagKey).FullName.ReplaceNamespace());
+        var key = SyntaxFactory.ObjectCreationExpression(tagTypeTypeSyntax)
             .AddArgumentListArguments(
                 SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(SyntaxRepo.TTypeSyntax)),
                 SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")));

@@ -15,6 +15,6 @@ internal class RaiseOnDisposableExpressionBuilder : IRaiseOnDisposableExpression
         return SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(SyntaxRepo.RaiseOnDisposableMethodName))
             .AddArgumentListArguments(
                 SyntaxFactory.Argument(instanceExpression),
-                SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.IdentifierName(typeof(Lifetime).ToString()), SyntaxFactory.IdentifierName(lifetime.ToString()))));
+                SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.IdentifierName(typeof(Lifetime).FullName.ReplaceNamespace()), SyntaxFactory.IdentifierName(lifetime.ToString()))));
     }
 }

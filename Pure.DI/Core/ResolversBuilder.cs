@@ -152,8 +152,9 @@ internal class ResolversBuilder : IMembersBuilder
 
     private IEnumerable<MemberDeclarationSyntax> CreateDependencyWithTagTable(IEnumerable<(IBindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)
     {
+        var tagTypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(TagKey).FullName.ReplaceNamespace());
         var keyValuePairType = SyntaxFactory.GenericName(SyntaxFactory.Identifier($"{Defaults.DefaultNamespace}.Pair"))
-            .AddTypeArgumentListArguments(SyntaxRepo.TagTypeTypeSyntax, SyntaxRepo.FuncOfObjectTypeSyntax);
+            .AddTypeArgumentListArguments(tagTypeTypeSyntax, SyntaxRepo.FuncOfObjectTypeSyntax);
 
         var keyValuePairs = new List<ExpressionSyntax>();
         foreach (var (binding, resolvingType, resolvingTag) in items)
@@ -173,7 +174,7 @@ internal class ResolversBuilder : IMembersBuilder
                 continue;
             }
 
-            var key = SyntaxFactory.ObjectCreationExpression(SyntaxRepo.TagTypeTypeSyntax)
+            var key = SyntaxFactory.ObjectCreationExpression(tagTypeTypeSyntax)
                 .AddArgumentListArguments(
                     SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(resolvingType.TypeSyntax)),
                     SyntaxFactory.Argument(resolvingTag));
