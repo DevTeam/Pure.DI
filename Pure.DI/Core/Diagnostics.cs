@@ -5,23 +5,22 @@ internal static class Diagnostics
 {
     internal static class Error
     {
-        public const string CannotResolve = "DIE0001";
-        public const string Unhandled = "DIE0002";
-        public const string Unsupported = "DIE0003";
-        public const string CircularDependency = "DIE0004";
-        public const string MemberIsInaccessible = "DIE0005";
-        public const string InvalidSetup = "DIE0006";
+        public const string CannotResolve = "DI001";
+        public const string Unhandled = "DI002";
+        public const string Unsupported = "DI003";
+        public const string CircularDependency = "DI004";
+        public const string MemberIsInaccessible = "DI005";
+        public const string InvalidSetup = "DI006";
     }
 
     internal static class Warning
     {
-        public const string CtorIsObsoleted = "DIW0002";
+        public const string CtorIsObsoleted = "DIW001";
     }
 
     internal static class Information
     {
-        public const string Generated = "DII0001";
-        public const string BindingAlreadyExists = "DII0002";
-        public const string Unsupported = "DII0003";
+        public const string Generated = "DII001";
+        public const string BindingAlreadyExists = "DII002";
     }
 }
