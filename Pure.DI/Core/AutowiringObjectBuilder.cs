@@ -72,9 +72,9 @@ internal class AutowiringObjectBuilder : IObjectBuilder
             {
                 $"[{stopwatch.ElapsedMilliseconds}] Cannot found a constructor for {dependency}: {reasons}."
             });
-            
+
             _tracer.Save();
-            return Optional<ExpressionSyntax>.CreateEmpty(reasons);
+            return Optional<ExpressionSyntax>.CreateEmpty(reasons, dependency.Implementation.Type.Locations.FirstOrDefault());
         }
         
         _log.Trace(() => new[]

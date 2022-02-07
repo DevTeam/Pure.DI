@@ -14,12 +14,12 @@ internal class CannotResolveExceptionFactory : ICannotResolveExceptionFactory
         _tracer = tracer;
     }
 
-    public HandledException Create(IBindingMetadata binding, ExpressionSyntax? tag, string description)
+    public HandledException Create(IBindingMetadata binding, ExpressionSyntax? tag, string description, Location? location = default)
     {
         var tagName = tag != default ? $"({tag})" : string.Empty;
         var error = new StringBuilder($"Cannot resolve {binding.Implementation?.ToString() ?? binding.Factory?.ToString() ?? binding.ToString()}{tagName}: {description}.");
         var errorMessage = error.ToString();
-        _diagnostic.Error(Diagnostics.Error.CannotResolve, errorMessage, binding.Location);
+        _diagnostic.Error(Diagnostics.Error.CannotResolve, errorMessage, location ?? binding.Location);
         return new HandledException(errorMessage);
     }
 }

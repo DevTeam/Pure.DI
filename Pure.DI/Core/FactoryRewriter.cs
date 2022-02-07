@@ -226,7 +226,7 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
         var expression = _buildStrategy!.TryBuild(dependency, dependencyType);
         if (!expression.HasValue)
         {
-            throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, expression.Description);
+            throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, expression.Description, expression.Location);
         }
 
         return SyntaxFactory.ParenthesizedExpression(expression.Value);

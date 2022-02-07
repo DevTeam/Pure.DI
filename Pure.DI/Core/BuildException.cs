@@ -2,7 +2,7 @@ namespace Pure.DI.Core;
 
 public class BuildException : Exception
 {
-    public BuildException(string id, string message, Location? location = null)
+    public BuildException(string id, string message, Location? location = default)
         : base(message)
     {
         Id = id;

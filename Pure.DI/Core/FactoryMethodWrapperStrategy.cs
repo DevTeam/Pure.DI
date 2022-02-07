@@ -69,7 +69,7 @@ internal class FactoryMethodWrapperStrategy : IWrapperStrategy
         var factoryExpression = _buildStrategy().TryBuild(factoryTypeDescription, factoryTypeDescription.Implementation);
         if (!factoryExpression.HasValue)
         {
-            throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, factoryExpression.Description);
+            throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, factoryExpression.Description, factoryExpression.Location);
         }
 
         return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, factoryExpression.Value, SyntaxFactory.GenericName(nameof(IFactory.Create)).AddTypeArgumentListArguments(resolvingType)))

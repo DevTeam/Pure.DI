@@ -64,7 +64,7 @@ internal class BuildStrategy : IBuildStrategy
                 description = $"{description}; the chain is {chain}";
             }
 
-            return new Optional<ExpressionSyntax>(objectBuildExpression.Value, objectBuildExpression.HasValue, description);
+            return new Optional<ExpressionSyntax>(objectBuildExpression.Value, objectBuildExpression.HasValue, description, objectBuildExpression.Location);
         }
 
         // Apply lifetime
