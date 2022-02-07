@@ -23,7 +23,7 @@ internal class SemanticType
 
     public bool Equals(SemanticType other) => SymbolEqualityComparer.Default.Equals(Type, other.Type);
 
-    public override string ToString() => Type.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat);
+    public override string ToString() => Type.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
 
     public override bool Equals(object? obj)
     {
@@ -194,6 +194,29 @@ internal class SemanticType
 
     private bool ImplementsInterface(ISymbol interfaceType) =>
         Type.AllInterfaces.Any(i => i.Equals(interfaceType, SymbolEqualityComparer.Default));
+    
+    public bool Implements(ISymbol interfaceType) =>
+        GetBaseTypes(Type).Any(i => i.Equals(interfaceType, SymbolEqualityComparer.Default));
+
+    private static IEnumerable<ITypeSymbol> GetBaseTypes(ITypeSymbol symbol)
+    {
+        while (true)
+        {
+            yield return symbol;
+            foreach (var type in symbol.AllInterfaces.SelectMany(GetBaseTypes))
+            {
+                yield return type;
+            }
+
+            if (symbol.BaseType != default)
+            {
+                symbol = symbol.BaseType;
+                continue;
+            }
+
+            break;
+        }
+    }
 
     private INamedTypeSymbol ToTypeSymbol(Type type)
     {

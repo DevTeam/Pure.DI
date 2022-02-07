@@ -31,10 +31,17 @@ internal class CompilationDiagnostic : IDiagnostic
 
         if (id != Diagnostics.Error.Unhandled)
         {
-            _log.Trace(() => new[]
+            try
             {
-                $"{id} {message}"
-            });
+                _log.Trace(() => new[]
+                {
+                    $"{id} {message}"
+                });
+            }
+            catch
+            {
+                // ignored
+            }
         }
     }
 

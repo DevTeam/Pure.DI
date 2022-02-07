@@ -1,6 +1,7 @@
 ﻿// ReSharper disable InvertIf
 // ReSharper disable ConvertIfStatementToSwitchStatement
 // ReSharper disable MergeIntoPattern
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
 using System.Text.RegularExpressions;
@@ -10,28 +11,37 @@ using NS35EBD81B;
 internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
 {
     private static readonly Regex CommentRegex = new(@"//\s*(\w+)\s*=\s*(.+)\s*", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-    private readonly SemanticModel _semanticModel;
     private readonly IOwnerProvider _ownerProvider;
     private readonly ITargetClassNameProvider _targetClassNameProvider;
     private readonly ISyntaxFilter _syntaxFilter;
+    private readonly IDiagnostic _diagnostic;
     private readonly List<ResolverMetadata> _metadata = new();
     private ResolverMetadata? _resolver;
     private BindingMetadata _binding = new();
     private Lifetime _defaultLifetime = Lifetime.Transient;
+    private SemanticModel? _semanticModel;
 
     public MetadataWalker(
-        SemanticModel semanticModel,
         IOwnerProvider ownerProvider,
         ITargetClassNameProvider targetClassNameProvider,
-        ISyntaxFilter syntaxFilter)
+        [Tag(Tags.MetadataSyntax)] ISyntaxFilter syntaxFilter,
+        IDiagnostic diagnostic)
     {
-        _semanticModel = semanticModel ?? throw new ArgumentNullException(nameof(semanticModel));
         _ownerProvider = ownerProvider;
         _targetClassNameProvider = targetClassNameProvider;
         _syntaxFilter = syntaxFilter;
+        _diagnostic = diagnostic;
     }
 
     public IEnumerable<ResolverMetadata> Metadata => _metadata;
+
+    private SemanticModel SemanticModel => _semanticModel ?? throw new InvalidOperationException("SemanticModel is not initialized.");
+
+    public MetadataWalker Initialize(SemanticModel semanticModel )
+    {
+        _semanticModel = semanticModel;
+        return this;
+    }
 
     public override void VisitInvocationExpression(InvocationExpressionSyntax node)
     {
@@ -41,7 +51,7 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
             return;
         }
 
-        var operation = _semanticModel.GetOperation(node);
+        var operation = SemanticModel.GetOperation(node);
         if (operation is IInvalidOperation)
         {
             _binding = new BindingMetadata();
@@ -60,9 +70,9 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
                 invocationOperation.TargetMethod.Parameters.Length == 1
                 && !invocationOperation.TargetMethod.IsGenericMethod
                 && invocationOperation.TargetMethod.Name == nameof(DI.Setup)
-                && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(DI))
-                && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
-                && TryGetValue(invocationOperation.Arguments[0].Value, _semanticModel, out var composerTypeName, string.Empty))
+                && new SemanticType(invocationOperation.TargetMethod.ContainingType, SemanticModel).Equals(typeof(DI))
+                && new SemanticType(invocationOperation.TargetMethod.ReturnType, SemanticModel).Equals(typeof(IConfiguration))
+                && TryGetValue(invocationOperation.Arguments[0].Value, SemanticModel, out var composerTypeName, string.Empty))
             {
                 var owner = _ownerProvider.TryGetOwner(node);
                 composerTypeName = _targetClassNameProvider.TryGetName(composerTypeName, node, owner) ?? composerTypeName;
@@ -114,9 +124,9 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
             && invocationOperation.TargetMethod.Parameters.Length == 1
             && !invocationOperation.TargetMethod.IsGenericMethod
             && invocationOperation.TargetMethod.Name == nameof(IConfiguration.DependsOn)
-            && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IConfiguration))
-            && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
-            && TryGetValue(invocationOperation.Arguments[0].Value, _semanticModel, out var baseConfigurationName, string.Empty)
+            && new SemanticType(invocationOperation.TargetMethod.ContainingType, SemanticModel).Equals(typeof(IConfiguration))
+            && new SemanticType(invocationOperation.TargetMethod.ReturnType, SemanticModel).Equals(typeof(IConfiguration))
+            && TryGetValue(invocationOperation.Arguments[0].Value, SemanticModel, out var baseConfigurationName, string.Empty)
             && !string.IsNullOrWhiteSpace(baseConfigurationName))
         {
             _resolver?.DependsOn.Add(baseConfigurationName);
@@ -128,9 +138,9 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
             && invocationOperation.TargetMethod.Parameters.Length == 1
             && !invocationOperation.TargetMethod.IsGenericMethod
             && invocationOperation.TargetMethod.Name == nameof(IConfiguration.Default)
-            && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IConfiguration))
-            && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
-            && TryGetValue(invocationOperation.Arguments[0].Value, _semanticModel, out var defaultLifetime, Lifetime.Transient))
+            && new SemanticType(invocationOperation.TargetMethod.ContainingType, SemanticModel).Equals(typeof(IConfiguration))
+            && new SemanticType(invocationOperation.TargetMethod.ReturnType, SemanticModel).Equals(typeof(IConfiguration))
+            && TryGetValue(invocationOperation.Arguments[0].Value, SemanticModel, out var defaultLifetime, Lifetime.Transient))
         {
             _defaultLifetime = defaultLifetime;
             _binding.Lifetime = defaultLifetime;
@@ -144,12 +154,16 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
             {
                 // To<>()
                 if (invocationOperation.TargetMethod.Name == nameof(IBinding.To)
-                    && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IBinding))
-                    && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration)))
+                    && new SemanticType(invocationOperation.TargetMethod.ContainingType, SemanticModel).Equals(typeof(IBinding))
+                    && new SemanticType(invocationOperation.TargetMethod.ReturnType, SemanticModel).Equals(typeof(IConfiguration)))
                 {
-                    _binding.Implementation = new SemanticType(invocationOperation.TargetMethod.TypeArguments[0], _semanticModel);
+                    _binding.Implementation = new SemanticType(invocationOperation.TargetMethod.TypeArguments[0], SemanticModel);
                     _binding.Location = node.GetLocation();
-                    _resolver?.Bindings.Add(_binding);
+                    if (Check(node))
+                    {
+                        _resolver?.Bindings.Add(_binding);
+                    }
+
                     _binding = new BindingMetadata
                     {
                         Lifetime = _defaultLifetime
@@ -163,25 +177,25 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
             {
                 // Bind<>(params object[] tags)
                 if (invocationOperation.TargetMethod.Name == nameof(IBinding.Bind)
-                    && (new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IBinding)) || new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IConfiguration)))
-                    && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IBinding))
+                    && (new SemanticType(invocationOperation.TargetMethod.ContainingType, SemanticModel).Equals(typeof(IBinding)) || new SemanticType(invocationOperation.TargetMethod.ContainingType, SemanticModel).Equals(typeof(IConfiguration)))
+                    && new SemanticType(invocationOperation.TargetMethod.ReturnType, SemanticModel).Equals(typeof(IBinding))
                     && invocationOperation.Arguments[0].ArgumentKind == ArgumentKind.ParamArray
                     && invocationOperation.Arguments[0].Value is IArrayCreationOperation arrayCreationOperation
                     && arrayCreationOperation.Type is IArrayTypeSymbol arrayTypeSymbol
-                    && new SemanticType(arrayTypeSymbol.ElementType, _semanticModel).Equals(typeof(object)))
+                    && new SemanticType(arrayTypeSymbol.ElementType, SemanticModel).Equals(typeof(object)))
                 {
                     var dependencyType = invocationOperation.TargetMethod.TypeArguments[0];
-                    var dependency = new SemanticType(dependencyType, _semanticModel);
+                    var dependency = new SemanticType(dependencyType, SemanticModel);
                     _binding.AddDependencyTags(dependency, (arrayCreationOperation.Initializer?.ElementValues.OfType<IConversionOperation>().Select(i => i.Syntax).OfType<ExpressionSyntax>() ?? Enumerable.Empty<ExpressionSyntax>()).ToArray());
-                    _binding.AddDependency(new SemanticType(dependencyType, _semanticModel));
+                    _binding.AddDependency(new SemanticType(dependencyType, SemanticModel));
                 }
 
                 // To<>(ctx => new ...())
                 if (invocationOperation.TargetMethod.Name == nameof(IBinding.To)
-                    && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IBinding))
-                    && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration)))
+                    && new SemanticType(invocationOperation.TargetMethod.ContainingType, SemanticModel).Equals(typeof(IBinding))
+                    && new SemanticType(invocationOperation.TargetMethod.ReturnType, SemanticModel).Equals(typeof(IConfiguration)))
                 {
-                    _binding.Implementation = new SemanticType(invocationOperation.TargetMethod.TypeArguments[0], _semanticModel);
+                    _binding.Implementation = new SemanticType(invocationOperation.TargetMethod.TypeArguments[0], SemanticModel);
                     if (
                         invocationOperation.Arguments[0].Syntax is ArgumentSyntax factory
                         && factory.Expression is SimpleLambdaExpressionSyntax lambda)
@@ -189,7 +203,11 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
                         _binding.Factory = lambda;
                     }
 
-                    _resolver?.Bindings.Add(_binding);
+                    if (Check(node))
+                    {
+                        _resolver?.Bindings.Add(_binding);
+                    }
+
                     _binding = new BindingMetadata
                     {
                         Lifetime = _defaultLifetime
@@ -198,10 +216,10 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
 
                 // TagAttribute<>(...)
                 if (invocationOperation.TargetMethod.Parameters.Length == 1
-                    && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IConfiguration))
-                    && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IConfiguration))
+                    && new SemanticType(invocationOperation.TargetMethod.ContainingType, SemanticModel).Equals(typeof(IConfiguration))
+                    && new SemanticType(invocationOperation.TargetMethod.ReturnType, SemanticModel).Equals(typeof(IConfiguration))
                     && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol attributeType
-                    && TryGetValue(invocationOperation.Arguments[0].Value, _semanticModel, out var argumentPosition, 0))
+                    && TryGetValue(invocationOperation.Arguments[0].Value, SemanticModel, out var argumentPosition, 0))
                 {
                     AttributeKind? attributeKind = invocationOperation.TargetMethod.Name switch
                     {
@@ -228,21 +246,21 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
         {
             // As(Lifetime)
             if (invocationOperation.TargetMethod.Name == nameof(IBinding.As)
-                && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IBinding))
-                && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IBinding))
-                && TryGetValue(invocationOperation.Arguments[0].Value, _semanticModel, out var lifetime, Lifetime.Transient))
+                && new SemanticType(invocationOperation.TargetMethod.ContainingType, SemanticModel).Equals(typeof(IBinding))
+                && new SemanticType(invocationOperation.TargetMethod.ReturnType, SemanticModel).Equals(typeof(IBinding))
+                && TryGetValue(invocationOperation.Arguments[0].Value, SemanticModel, out var lifetime, Lifetime.Transient))
             {
                 _binding.Lifetime = lifetime;
             }
 
             // Tags(params object[] tags)
             if (invocationOperation.TargetMethod.Name == nameof(IBinding.Tags)
-                && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IBinding))
-                && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IBinding))
+                && new SemanticType(invocationOperation.TargetMethod.ContainingType, SemanticModel).Equals(typeof(IBinding))
+                && new SemanticType(invocationOperation.TargetMethod.ReturnType, SemanticModel).Equals(typeof(IBinding))
                 && invocationOperation.Arguments[0].ArgumentKind == ArgumentKind.ParamArray
                 && invocationOperation.Arguments[0].Value is IArrayCreationOperation arrayCreationOperation
                 && arrayCreationOperation.Type is IArrayTypeSymbol arrayTypeSymbol
-                && new SemanticType(arrayTypeSymbol.ElementType, _semanticModel).Equals(typeof(object)))
+                && new SemanticType(arrayTypeSymbol.ElementType, SemanticModel).Equals(typeof(object)))
             {
                 _binding.AddTags((arrayCreationOperation.Initializer?.ElementValues.OfType<IConversionOperation>().Select(i => i.Syntax).OfType<ExpressionSyntax>() ?? Enumerable.Empty<ExpressionSyntax>()).ToArray());
             }
@@ -253,8 +271,8 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
         {
             // AnyTag()
             if (invocationOperation.TargetMethod.Name == nameof(IBinding.AnyTag)
-                && new SemanticType(invocationOperation.TargetMethod.ContainingType, _semanticModel).Equals(typeof(IBinding))
-                && new SemanticType(invocationOperation.TargetMethod.ReturnType, _semanticModel).Equals(typeof(IBinding)))
+                && new SemanticType(invocationOperation.TargetMethod.ContainingType, SemanticModel).Equals(typeof(IBinding))
+                && new SemanticType(invocationOperation.TargetMethod.ReturnType, SemanticModel).Equals(typeof(IBinding)))
             {
                 _binding.AnyTag = true;
             }
@@ -278,5 +296,26 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
 
         value = defaultValue;
         return false;
+    }
+
+    private bool Check(InvocationExpressionSyntax invocation)
+    {
+        var errors = 0;
+        foreach (var dependency in _binding.Dependencies)
+        {
+            if (_binding.Implementation?.Implements(dependency.Type) == false)
+            {
+                errors++;
+                var lastNode = 
+                    invocation.DescendantNodes().OfType<GenericNameSyntax>().LastOrDefault(i => i.Identifier.Text == nameof(IBinding.To))
+                    ?? invocation.DescendantNodes().LastOrDefault()
+                    ?? invocation;
+
+                var location = lastNode.GetLocation();
+                _diagnostic.Error(Diagnostics.Error.InvalidSetup, $"{_binding.Implementation} does not implement {dependency}", new []{location}.ToArray());
+            }
+        }
+
+        return errors == 0;
     }
 }

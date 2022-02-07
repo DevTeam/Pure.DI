@@ -305,7 +305,7 @@ public class DefaultFeatureTests
                         DI.Setup()
                             .Bind<string>().To(_ => ""abc"")
                             .Bind<int>().To(_ => 333)
-                            .Bind<long>().To(_ => 99)
+                            .Bind<long>().To(_ => 99L)
                             // Composition Root
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }

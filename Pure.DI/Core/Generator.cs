@@ -52,7 +52,6 @@ internal class Generator : IGenerator
             // Debugger.Launch();
             Defaults.DefaultNamespace = context.TryGetOption("build_property.PureDINamespace", out var newNamespace) ? newNamespace : string.Empty;
             var metadata = _metadataBuilder.Build(context);
-
             try
             {
                 foreach (var source in _sourceBuilder.Build(metadata))

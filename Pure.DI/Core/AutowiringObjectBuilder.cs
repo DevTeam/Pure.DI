@@ -74,7 +74,6 @@ internal class AutowiringObjectBuilder : IObjectBuilder
             });
 
             _tracer.Save();
-            // dependency.Implementation.Type.Locations.ToArray()
             return Optional<ExpressionSyntax>.CreateEmpty(reasons, ctorInfos.SelectMany(i => i.ctor.Locations).ToArray());
         }
         
