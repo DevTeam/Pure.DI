@@ -18,7 +18,7 @@ internal class EnumerableObjectBuilder : IObjectBuilder
         _stringTools = stringTools;
     }
 
-    public ExpressionSyntax TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
+    public Optional<ExpressionSyntax> TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
     {
         if (
             dependency.Implementation.Type is not INamedTypeSymbol namedTypeSymbol
@@ -36,8 +36,8 @@ internal class EnumerableObjectBuilder : IObjectBuilder
             var yields =
                 from element in _typeResolver.Resolve(resolvingType)
                 let objectCreationExpression = buildStrategy.TryBuild(element, resolvingType)
-                where objectCreationExpression != null
-                select (StatementSyntax)SyntaxFactory.YieldStatement(SyntaxKind.YieldReturnStatement).WithExpression(objectCreationExpression);
+                where objectCreationExpression.HasValue
+                select (StatementSyntax)SyntaxFactory.YieldStatement(SyntaxKind.YieldReturnStatement).WithExpression(objectCreationExpression.Value);
 
             var factoryName = _buildContext.NameService.FindName(memberKey);
             var type = dependency.Implementation.TypeSyntax;

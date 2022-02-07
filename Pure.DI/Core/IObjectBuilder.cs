@@ -2,5 +2,5 @@
 
 internal interface IObjectBuilder
 {
-    ExpressionSyntax? TryBuild(IBuildStrategy buildStrategy, Dependency dependency);
+    Optional<ExpressionSyntax> TryBuild(IBuildStrategy buildStrategy, Dependency dependency);
 }

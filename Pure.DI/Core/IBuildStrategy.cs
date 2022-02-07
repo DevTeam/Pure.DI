@@ -3,5 +3,5 @@
 internal interface IBuildStrategy
 {
     // ReSharper disable once UnusedParameter.Global
-    ExpressionSyntax? TryBuild(Dependency dependency, SemanticType resolvingType);
+    Optional<ExpressionSyntax> TryBuild(Dependency dependency, SemanticType resolvingType);
 }

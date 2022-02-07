@@ -23,14 +23,15 @@ internal class FactoryObjectBuilder : IObjectBuilder
         _factoryRewriter = factoryRewriter;
     }
 
-    public ExpressionSyntax? TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
+    public Optional<ExpressionSyntax> TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
     {
         var factory = dependency.Binding.Factory;
         if (factory != default)
         {
             if (factory.ExpressionBody != default)
             {
-                return Rewrite(buildStrategy, dependency, factory, factory.ExpressionBody);
+                var result = Rewrite(buildStrategy, dependency, factory, factory.ExpressionBody);
+                return result != default ? result : new Optional<ExpressionSyntax>();
             }
 
             if (factory.Block != default)

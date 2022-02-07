@@ -49,17 +49,28 @@ internal class Generator : IGenerator
 
         try
         {
-            //Debugger.Launch();
+            // Debugger.Launch();
             Defaults.DefaultNamespace = context.TryGetOption("build_property.PureDINamespace", out var newNamespace) ? newNamespace : string.Empty;
             var metadata = _metadataBuilder.Build(context);
-            foreach (var source in _sourceBuilder.Build(metadata))
-            {
-                if (context.CancellationToken.IsCancellationRequested)
-                {
-                    break;
-                }
 
-                context.AddSource(source.HintName, source.Code);
+            try
+            {
+                foreach (var source in _sourceBuilder.Build(metadata))
+                {
+                    if (context.CancellationToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
+
+                    context.AddSource(source.HintName, source.Code);
+                }
+            }
+            catch (BuildException buildException)
+            {
+                _diagnostic.Error(buildException.Id, buildException.Message, buildException.Location);
+            }
+            catch (HandledException)
+            {
             }
 
             if (_settings.Api)

@@ -30,11 +30,11 @@ internal class AutowiringObjectBuilder : IObjectBuilder
     }
 
     [SuppressMessage("ReSharper", "InvertIf")]
-    public ExpressionSyntax? TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
+    public Optional<ExpressionSyntax> TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
     {
         var stopwatch = new Stopwatch();
         stopwatch.Start();
-        var ctorInfo = (
+        var ctorInfos = (
                 from ctor in
                     dependency.Implementation.Type is INamedTypeSymbol implementationType
                         ? implementationType.Constructors
@@ -43,11 +43,13 @@ internal class AutowiringObjectBuilder : IObjectBuilder
                 where ctor.DeclaredAccessibility is Accessibility.Internal or Accessibility.Public or Accessibility.Friend
                 let order = GetOrder(ctor) ?? int.MaxValue
                 let parameters = ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, dependency, ctor, true).ToArray()
-                where parameters.All(i => i.Result != default)
-                let paramsResolvedCount = parameters.Count(i => i.DefaultType == DefaultType.ResolvedValue)
-                let paramsResolveWeight = parameters.Sum(i => (int)i.ResolveType)
-                let paramsTypeWeight = parameters.Sum(i => (int)i.DefaultType)
-                select (ctor, parameters, order, paramsResolvedCount, paramsResolveWeight, paramsTypeWeight))
+                let description = new StringBuilder(ctor.ToString())
+                let resolvedParams = parameters.Where(i => i.Expression.HasValue).ToArray()
+                let isResolved = parameters.Length == resolvedParams.Length
+                let paramsResolvedCount = resolvedParams.Count(i => i.DefaultType == DefaultType.ResolvedValue)
+                let paramsResolveWeight = resolvedParams.Sum(i => (int)i.ResolveType)
+                let paramsTypeWeight = resolvedParams.Sum(i => (int)i.DefaultType)
+                select (ctor, resolvedParams, parameters, order, paramsResolvedCount, paramsResolveWeight, paramsTypeWeight, isResolved))
             // By an Order attribute
             .OrderBy(i => i.order)
             // By a number of resolved parameters
@@ -58,26 +60,35 @@ internal class AutowiringObjectBuilder : IObjectBuilder
             .ThenByDescending(i => i.paramsResolveWeight)
             // By param type
             .ThenByDescending(i => i.paramsTypeWeight)
-            .FirstOrDefault();
+            .ToArray();
 
         stopwatch.Stop();
+
+        var ctorInfo = ctorInfos.FirstOrDefault(i => i.isResolved);
+        if (ctorInfo == default || _buildContext.IsCancellationRequested)
+        {
+            var reasons = string.Join("; ", ctorInfos.Select(i => CreateDescription(i.ctor, i.parameters)));
+            _log.Trace(() => new[]
+            {
+                $"[{stopwatch.ElapsedMilliseconds}] Cannot found a constructor for {dependency}: {reasons}."
+            });
+            
+            _tracer.Save();
+            return Optional<ExpressionSyntax>.CreateEmpty(reasons);
+        }
+        
         _log.Trace(() => new[]
         {
             $"[{stopwatch.ElapsedMilliseconds}] Found a constructor for {dependency}: {ctorInfo.ctor?.ToString() ?? "null"}."
         });
 
-        if (ctorInfo == default || _buildContext.IsCancellationRequested)
-        {
-            _tracer.Save();
-            return default;
-        }
-
         var objectCreationExpression = CreateObject(
             ctorInfo.ctor,
             dependency,
             SyntaxFactory.SeparatedList(
-                from parameter in ctorInfo.parameters
-                select SyntaxFactory.Argument(parameter.Result!)));
+                from parameter in ctorInfo.resolvedParams
+                where parameter.Expression.HasValue
+                select SyntaxFactory.Argument(parameter.Expression.Value)));
 
         var members = (
                 from member in dependency.Implementation.Type.GetMembers()
@@ -103,8 +114,8 @@ internal class AutowiringObjectBuilder : IObjectBuilder
                 case IMethodSymbol method:
                     var arguments =
                         from parameter in ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, dependency, method, false)
-                        where parameter.Result != default
-                        select SyntaxFactory.Argument(parameter.Result!);
+                        where parameter.Expression.HasValue
+                        select SyntaxFactory.Argument(parameter.Expression.Value);
 
                     var call = SyntaxFactory.InvocationExpression(
                             SyntaxFactory.MemberAccessExpression(
@@ -121,16 +132,19 @@ internal class AutowiringObjectBuilder : IObjectBuilder
                     if (!filed.IsReadOnly && !filed.IsStatic && !filed.IsConst)
                     {
                         var fieldValue = ResolveInstance(filed, dependency, filed.Type, _buildContext.TypeResolver, buildStrategy, filed.Locations, false);
-                        var assignmentExpression = SyntaxFactory.AssignmentExpression(
-                            SyntaxKind.SimpleAssignmentExpression,
-                            SyntaxFactory.MemberAccessExpression(
-                                SyntaxKind.SimpleMemberAccessExpression,
-                                SyntaxFactory.IdentifierName(InstanceVarName),
-                                SyntaxFactory.Token(SyntaxKind.DotToken),
-                                SyntaxFactory.IdentifierName(filed.Name)),
-                            fieldValue.Result!);
+                        if (fieldValue.Expression.HasValue)
+                        {
+                            var assignmentExpression = SyntaxFactory.AssignmentExpression(
+                                SyntaxKind.SimpleAssignmentExpression,
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    SyntaxFactory.IdentifierName(InstanceVarName),
+                                    SyntaxFactory.Token(SyntaxKind.DotToken),
+                                    SyntaxFactory.IdentifierName(filed.Name)),
+                                fieldValue.Expression.Value);
 
-                        factoryStatements.Add(SyntaxFactory.ExpressionStatement(assignmentExpression));
+                            factoryStatements.Add(SyntaxFactory.ExpressionStatement(assignmentExpression));
+                        }
                     }
 
                     break;
@@ -139,16 +153,19 @@ internal class AutowiringObjectBuilder : IObjectBuilder
                     if (property.SetMethod != null && !property.IsReadOnly && !property.IsStatic)
                     {
                         var propertyValue = ResolveInstance(property, dependency, property.Type, _buildContext.TypeResolver, buildStrategy, property.Locations, false);
-                        var assignmentExpression = SyntaxFactory.AssignmentExpression(
-                            SyntaxKind.SimpleAssignmentExpression,
-                            SyntaxFactory.MemberAccessExpression(
-                                SyntaxKind.SimpleMemberAccessExpression,
-                                SyntaxFactory.IdentifierName(InstanceVarName),
-                                SyntaxFactory.Token(SyntaxKind.DotToken),
-                                SyntaxFactory.IdentifierName(property.Name)),
-                            propertyValue.Result!);
+                        if (propertyValue.Expression.HasValue)
+                        {
+                            var assignmentExpression = SyntaxFactory.AssignmentExpression(
+                                SyntaxKind.SimpleAssignmentExpression,
+                                SyntaxFactory.MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    SyntaxFactory.IdentifierName(InstanceVarName),
+                                    SyntaxFactory.Token(SyntaxKind.DotToken),
+                                    SyntaxFactory.IdentifierName(property.Name)),
+                                propertyValue.Expression.Value);
 
-                        factoryStatements.Add(SyntaxFactory.ExpressionStatement(assignmentExpression));
+                            factoryStatements.Add(SyntaxFactory.ExpressionStatement(assignmentExpression));
+                        }
                     }
 
                     break;
@@ -181,6 +198,14 @@ internal class AutowiringObjectBuilder : IObjectBuilder
 
         return objectCreationExpression
             .WithCommentBefore($"// {dependency.Binding}");
+    }
+    
+    private static string CreateDescription(IMethodSymbol ctor, IEnumerable<ResolveResult> results)
+    {
+        var unresolvedParameters = results.Where(i => !i.Expression.HasValue).Select((i, index) => $"at position {index} of the type \"{i.Target}\"").ToArray();
+        var reason = string.Join(", ", unresolvedParameters);
+        var suf = unresolvedParameters.Length > 1 ? "s" : "";
+        return unresolvedParameters.Length > 0 ? $"the constructor {ctor} has unresolved parameter{suf} {reason}" : string.Empty;
     }
 
     private ResolveResult ResolveInstance(
@@ -220,7 +245,7 @@ internal class AutowiringObjectBuilder : IObjectBuilder
             var dependency = typeResolver.Resolve(resolvingType, tag);
             if (!dependency.IsResolved && defaultValue != null)
             {
-                return new ResolveResult(defaultValue, ResolveType.ResolvedUnbound, defaultResolveType);
+                return new ResolveResult(target, defaultValue, ResolveType.ResolvedUnbound, defaultResolveType);
             }
 
             switch (dependency.Implementation.Type)
@@ -236,29 +261,29 @@ internal class AutowiringObjectBuilder : IObjectBuilder
 
                     if (dependency.IsResolved)
                     {
-                        return new ResolveResult(buildStrategy.TryBuild(dependency, resolvingType), ResolveType.Resolved, DefaultType.ResolvedValue);
+                        return new ResolveResult(target, buildStrategy.TryBuild(dependency, resolvingType), ResolveType.Resolved, DefaultType.ResolvedValue);
                     }
 
                     if (probe)
                     {
-                        return ResolveResult.NotResolved;
+                        return new ResolveResult(target, new Optional<ExpressionSyntax>(), ResolveType.NotResolved, DefaultType.DefaultValue);
                     }
 
                     var dependencyType = dependency.Implementation.TypeSyntax;
-                    return new ResolveResult(SyntaxFactory.CastExpression(dependencyType,
+                    return new ResolveResult(target, SyntaxFactory.CastExpression(dependencyType,
                         SyntaxFactory.InvocationExpression(SyntaxFactory.ParseName(nameof(IContext.Resolve)))
                             .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependencyType)))), ResolveType.ResolvedUnbound, DefaultType.ResolvedValue);
                 }
 
                 case IArrayTypeSymbol:
                 {
-                    return new ResolveResult(buildStrategy.TryBuild(dependency, dependency.Implementation), ResolveType.Resolved, DefaultType.ResolvedValue);
+                    return new ResolveResult(target, buildStrategy.TryBuild(dependency, dependency.Implementation), ResolveType.Resolved, DefaultType.ResolvedValue);
                 }
             }
 
-            if (buildStrategy.TryBuild(dependency, resolvingType) == null)
+            if (!buildStrategy.TryBuild(dependency, resolvingType).HasValue)
             {
-                return ResolveResult.NotResolved;
+                return new ResolveResult(target, new Optional<ExpressionSyntax>(), ResolveType.NotResolved, DefaultType.DefaultValue);
             }
 
             var error = $"Unsupported type {dependency.Implementation}.";
@@ -320,14 +345,15 @@ internal class AutowiringObjectBuilder : IObjectBuilder
 
     private readonly struct ResolveResult
     {
-        public readonly ExpressionSyntax? Result;
+        public readonly ISymbol Target;
+        public readonly Optional<ExpressionSyntax> Expression;
         public readonly ResolveType ResolveType;
         public readonly DefaultType DefaultType;
-        public static readonly ResolveResult NotResolved = new(null, ResolveType.NotResolved, DefaultType.DefaultValue);
 
-        public ResolveResult(ExpressionSyntax? result, ResolveType resolveType, DefaultType defaultType)
+        public ResolveResult(ISymbol target, Optional<ExpressionSyntax> expression, ResolveType resolveType, DefaultType defaultType)
         {
-            Result = result;
+            Target = target;
+            Expression = expression;
             ResolveType = resolveType;
             DefaultType = defaultType;
         }

@@ -31,7 +31,7 @@ internal class FactoryWrapperStrategy : IWrapperStrategy
         var factoryType = baseFactoryType?.Construct(resolvingType.Type);
         if (factoryType == null)
         {
-            throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, "a factory");
+            throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, $"cannot construct a factory of the type \"{resolvingType.Type}\"");
         }
 
         if (dependency.Implementation.Type is INamedTypeSymbol { IsGenericType: true } namedTypeSymbol)
@@ -57,9 +57,9 @@ internal class FactoryWrapperStrategy : IWrapperStrategy
         }
 
         var instance = _buildStrategy().TryBuild(factoryDependency, factoryDependency.Implementation);
-        if (instance == null)
+        if (!instance.HasValue)
         {
-            throw _cannotResolveExceptionFactory.Create(factoryDependency.Binding, factoryDependency.Tag, "a factory");
+            throw _cannotResolveExceptionFactory.Create(factoryDependency.Binding, factoryDependency.Tag, instance.Description);
         }
 
         var methodKey = new MemberKey($"FactoryWrapperResolve_{_stringTools.ConvertToTitle(dependency.Implementation.ToString())}", dependency);
@@ -69,7 +69,7 @@ internal class FactoryWrapperStrategy : IWrapperStrategy
                 .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
                 .AddBodyStatements(SyntaxFactory.ReturnStatement(objectBuildExpression)));
 
-        return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, instance, SyntaxFactory.IdentifierName(nameof(IFactory<object>.Create))))
+        return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, instance.Value, SyntaxFactory.IdentifierName(nameof(IFactory<object>.Create))))
             .AddArgumentListArguments(
                 SyntaxFactory.Argument(SyntaxFactory.IdentifierName(createMethodSyntax.Identifier)),
                 SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependency.Implementation)),

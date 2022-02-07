@@ -16,7 +16,7 @@ internal class BuildStrategy : IBuildStrategy
     private readonly ILog<BuildStrategy> _log;
     private readonly IBuildContext _buildContext;
     private readonly IBindingResultStrategy _resultStrategy;
-    private readonly ICache<BuildStrategyKey, ExpressionSyntax?> _cache;
+    private readonly ICache<BuildStrategyKey, Optional<ExpressionSyntax>> _cache;
     private readonly Dictionary<Lifetime, ILifetimeStrategy> _lifetimes;
 
     public BuildStrategy(
@@ -26,7 +26,7 @@ internal class BuildStrategy : IBuildStrategy
         IBuildContext buildContext,
         [Tag(AsIsResult)] IBindingResultStrategy resultStrategy,
         IEnumerable<ILifetimeStrategy> lifetimeStrategies,
-        [Tag(ContainerScope)] ICache<BuildStrategyKey, ExpressionSyntax?> cache)
+        [Tag(ContainerScope)] ICache<BuildStrategyKey, Optional<ExpressionSyntax>> cache)
     {
         _diagnostic = diagnostic;
         _tracer = tracer;
@@ -37,18 +37,34 @@ internal class BuildStrategy : IBuildStrategy
         _lifetimes = lifetimeStrategies.ToDictionary(i => i.Lifetime, i => i);
     }
 
-    public ExpressionSyntax? TryBuild(Dependency dependency, SemanticType resolvingType) =>
+    public Optional<ExpressionSyntax> TryBuild(Dependency dependency, SemanticType resolvingType) =>
         _cache.GetOrAdd(new BuildStrategyKey(_buildContext.Id, dependency), _ => TryBuildInternal(dependency, resolvingType));
 
-    public ExpressionSyntax? TryBuildInternal(Dependency dependency, SemanticType resolvingType)
+    public Optional<ExpressionSyntax> TryBuildInternal(Dependency dependency, SemanticType resolvingType)
     {
         using var traceToken = _tracer.RegisterResolving(dependency);
         var stopwatch = new Stopwatch();
         stopwatch.Start();
         var objectBuildExpression = dependency.ObjectBuilder.TryBuild(this, dependency);
-        if (objectBuildExpression == default)
+        if (!objectBuildExpression.HasValue)
         {
-            return objectBuildExpression;
+            var path = _tracer.Paths
+                           .Where(i => i.Length > 1)
+                           .OrderBy(i => i.Length)
+                           .LastOrDefault()
+                           ?.Reverse()
+                           .Select(i => i.ToString())
+                           .ToArray()
+                       ?? Array.Empty<string>();
+
+            var chain = string.Join(" -> ", path);
+            var description = objectBuildExpression.Description;
+            if (chain.Length > 0)
+            {
+                description = $"{description}; the chain is {chain}";
+            }
+
+            return new Optional<ExpressionSyntax>(objectBuildExpression.Value, objectBuildExpression.HasValue, description);
         }
 
         // Apply lifetime
@@ -59,12 +75,12 @@ internal class BuildStrategy : IBuildStrategy
             throw new HandledException(error);
         }
 
-        objectBuildExpression = lifetimeStrategy.Build(resolvingType, dependency, objectBuildExpression);
-        objectBuildExpression = _resultStrategy.Build(objectBuildExpression);
+        objectBuildExpression = lifetimeStrategy.Build(resolvingType, dependency, objectBuildExpression.Value);
+        objectBuildExpression = _resultStrategy.Build(objectBuildExpression.Value);
         stopwatch.Stop();
         _log.Info(() => new[]
         {
-            $"[{stopwatch.ElapsedMilliseconds}] {dependency} => {objectBuildExpression.NormalizeWhitespace()}"
+            $"[{stopwatch.ElapsedMilliseconds}] {dependency} => {objectBuildExpression.Value.NormalizeWhitespace()}"
         });
 
         return objectBuildExpression;

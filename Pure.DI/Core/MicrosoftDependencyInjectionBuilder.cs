@@ -205,7 +205,7 @@ internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
                     }
 
                     string lifetimeName;
-                    ExpressionSyntax? objectExpression;
+                    Optional<ExpressionSyntax> objectExpression;
                     // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
                     switch (lifetime)
                     {
@@ -225,7 +225,7 @@ internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
                             break;
                     }
 
-                    if (objectExpression == null)
+                    if (!objectExpression.HasValue)
                     {
                         _tracer.Save();
                         continue;
@@ -242,7 +242,7 @@ internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
                         .AddStatements(SyntaxFactory.ExpressionStatement(
                             SyntaxFactory.AssignmentExpression(
                                 SyntaxKind.SimpleAssignmentExpression, serviceProviderValue, SyntaxFactory.IdentifierName("serviceProvider"))))
-                        .AddStatements(SyntaxFactory.ReturnStatement(objectExpression));
+                        .AddStatements(SyntaxFactory.ReturnStatement(objectExpression.Value));
 
                     var finallyBlock = SyntaxFactory.Block()
                         .AddStatements(SyntaxFactory.ExpressionStatement(

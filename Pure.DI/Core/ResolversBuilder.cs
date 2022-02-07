@@ -250,7 +250,7 @@ internal class ResolversBuilder : IMembersBuilder
         {
             var dependency = _typeResolver.Resolve(resolvingType, resolvingTag);
             var instance = buildStrategy.TryBuild(dependency, resolvingType);
-            if (instance == null)
+            if (!instance.HasValue)
             {
                 if (binding.FromProbe)
                 {
@@ -263,10 +263,10 @@ internal class ResolversBuilder : IMembersBuilder
                     yield break;
                 }
 
-                throw _cannotResolveExceptionFactory.Create(binding, resolvingTag, "a dependency");
+                throw _cannotResolveExceptionFactory.Create(binding, resolvingTag, instance.Description);
             }
 
-            yield return SyntaxFactory.ReturnStatement(instance);
+            yield return SyntaxFactory.ReturnStatement(instance.Value);
         }
         finally
         {

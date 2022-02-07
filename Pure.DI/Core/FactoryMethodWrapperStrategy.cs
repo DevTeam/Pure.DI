@@ -67,12 +67,12 @@ internal class FactoryMethodWrapperStrategy : IWrapperStrategy
                 .AddBodyStatements(SyntaxFactory.ReturnStatement(objectBuildExpression)));
 
         var factoryExpression = _buildStrategy().TryBuild(factoryTypeDescription, factoryTypeDescription.Implementation);
-        if (factoryExpression == null)
+        if (!factoryExpression.HasValue)
         {
-            throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, "a factory");
+            throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, factoryExpression.Description);
         }
 
-        return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, factoryExpression, SyntaxFactory.GenericName(nameof(IFactory.Create)).AddTypeArgumentListArguments(resolvingType)))
+        return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, factoryExpression.Value, SyntaxFactory.GenericName(nameof(IFactory.Create)).AddTypeArgumentListArguments(resolvingType)))
             .AddArgumentListArguments(
                 SyntaxFactory.Argument(SyntaxFactory.IdentifierName(createMethodSyntax.Identifier)),
                 SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependency.Implementation)),

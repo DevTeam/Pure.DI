@@ -35,14 +35,14 @@ internal class MicrosoftDependencyInjectionLifetimeStrategy : ILifetimeStrategy
         var instanceType = serviceProviderInstance.Construct(type);
         var serviceProviderDependency = _buildContext.TypeResolver.Resolve(instanceType, dependency.Tag);
         var serviceProvider = _buildStrategy().TryBuild(serviceProviderDependency, instanceType);
-        if (serviceProvider == null)
+        if (!serviceProvider.HasValue)
         {
-            throw _cannotResolveExceptionFactory.Create(serviceProviderDependency.Binding, serviceProviderDependency.Tag, "a lifetime");
+            throw _cannotResolveExceptionFactory.Create(serviceProviderDependency.Binding, serviceProviderDependency.Tag, serviceProvider.Description);
         }
 
         var instanceExpression = SyntaxFactory.MemberAccessExpression(
             SyntaxKind.SimpleMemberAccessExpression,
-            serviceProvider,
+            serviceProvider.Value,
             SyntaxFactory.IdentifierName(nameof(ServiceProviderInstance<object>.Value)));
 
         return _wrapperStrategy.Build(resolvingType, dependency, instanceExpression);

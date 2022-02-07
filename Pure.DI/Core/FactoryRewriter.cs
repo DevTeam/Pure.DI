@@ -224,12 +224,12 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
     private SyntaxNode ReplaceLambdaByCreateExpression(Dependency dependency, SemanticType dependencyType)
     {
         var expression = _buildStrategy!.TryBuild(dependency, dependencyType);
-        if (expression == null)
+        if (!expression.HasValue)
         {
-            throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, "a factory");
+            throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, expression.Description);
         }
 
-        return SyntaxFactory.ParenthesizedExpression(expression);
+        return SyntaxFactory.ParenthesizedExpression(expression.Value);
     }
 
     private void ReplaceTypes(IList<TypeSyntax> args)

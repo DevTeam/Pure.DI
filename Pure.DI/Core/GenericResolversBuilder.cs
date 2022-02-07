@@ -66,13 +66,19 @@ internal class GenericResolversBuilder : IMembersBuilder
                 var first = tagItems.First();
                 var checkTags = tagItems.Skip(1).Aggregate(CreateCheckTagExpression(tagItems.First().tag), (current, next) => SyntaxFactory.BinaryExpression(SyntaxKind.LogicalOrExpression, current, CreateCheckTagExpression(next.tag)));
                 var objectExpression = _buildStrategy.TryBuild(first.resolvedDependency, first.dependency);
-                method = method.AddBodyStatements(SyntaxFactory.IfStatement(checkTags, SyntaxFactory.ReturnStatement(objectExpression)));
+                if (objectExpression.HasValue)
+                {
+                    method = method.AddBodyStatements(SyntaxFactory.IfStatement(checkTags, SyntaxFactory.ReturnStatement(objectExpression.Value)));
+                }
             }
 
             foreach (var defaultItem in items.Where(i => i.tag == default).Reverse().Take(1))
             {
                 var objectExpression = _buildStrategy.TryBuild(defaultItem.resolvedDependency, defaultItem.dependency);
-                yield return methodGroup.Key.AddBodyStatements(SyntaxFactory.ReturnStatement(objectExpression));
+                if (objectExpression.HasValue)
+                {
+                    yield return methodGroup.Key.AddBodyStatements(SyntaxFactory.ReturnStatement(objectExpression.Value));
+                }
             }
 
             if (method.Body?.Statements.Any() != true)

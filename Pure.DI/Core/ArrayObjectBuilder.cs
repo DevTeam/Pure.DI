@@ -7,7 +7,7 @@ internal class ArrayObjectBuilder : IObjectBuilder
 
     public ArrayObjectBuilder(ITypeResolver typeResolver) => _typeResolver = typeResolver;
 
-    public ExpressionSyntax TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
+    public Optional<ExpressionSyntax> TryBuild(IBuildStrategy buildStrategy, Dependency dependency)
     {
         var objectCreationExpressions = new List<ExpressionSyntax>();
         if (dependency.Implementation.Type is not IArrayTypeSymbol arrayTypeSymbol)
@@ -20,8 +20,8 @@ internal class ArrayObjectBuilder : IObjectBuilder
         var elements =
             from element in _typeResolver.Resolve(elementType)
             let objectCreationExpression = buildStrategy.TryBuild(element, elementType)
-            where objectCreationExpression != null
-            select (ExpressionSyntax)objectCreationExpression;
+            where objectCreationExpression.HasValue
+            select objectCreationExpression.Value;
 
         objectCreationExpressions.AddRange(elements);
 
