@@ -202,7 +202,10 @@ internal class AutowiringObjectBuilder : IObjectBuilder
     
     private static string CreateDescription(IMethodSymbol ctor, IEnumerable<ResolveResult> results)
     {
-        var unresolvedParameters = results.Where(i => !i.Expression.HasValue).Select((i, index) => $"at position {index} of the type \"{i.Target}\"").ToArray();
+        var unresolvedParameters = results
+            .Select((i, index) => i.Expression.HasValue ? string.Empty : $"at position {index} of the type {i.Target}")
+            .Where(i => !string.IsNullOrWhiteSpace(i))
+            .ToArray();
         var reason = string.Join(", ", unresolvedParameters);
         var suf = unresolvedParameters.Length > 1 ? "s" : "";
         return unresolvedParameters.Length > 0 ? $"the constructor {ctor} has unresolved parameter{suf} {reason}" : string.Empty;

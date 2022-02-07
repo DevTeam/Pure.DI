@@ -53,11 +53,11 @@ internal class BuildStrategy : IBuildStrategy
                            .OrderBy(i => i.Length)
                            .LastOrDefault()
                            ?.Reverse()
-                           .Select(i => i.ToString())
+                           .Select(i => $"[{i}]")
                            .ToArray()
                        ?? Array.Empty<string>();
 
-            var chain = string.Join(" -> ", path);
+            var chain = string.Join("---", path);
             var description = objectBuildExpression.Description;
             if (chain.Length > 0)
             {
