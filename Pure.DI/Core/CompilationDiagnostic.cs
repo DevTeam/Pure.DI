@@ -9,7 +9,7 @@ internal class CompilationDiagnostic : IDiagnostic
 
     public IExecutionContext? Context { get; set; }
 
-    public void Error(string id, string message, Location? location = null)
+    public void Error(string id, string message, params Location[] locations)
     {
         try
         {
@@ -21,7 +21,8 @@ internal class CompilationDiagnostic : IDiagnostic
                     "Error",
                     DiagnosticSeverity.Error,
                     true),
-                location));
+                GetMainLocation(locations),
+                GetAdditionalLocations(locations)));
         }
         catch
         {
@@ -37,7 +38,7 @@ internal class CompilationDiagnostic : IDiagnostic
         }
     }
 
-    public void Warning(string id, string message, Location? location = null)
+    public void Warning(string id, string message, params Location[] locations)
     {
         try
         {
@@ -49,7 +50,8 @@ internal class CompilationDiagnostic : IDiagnostic
                     "Warning",
                     DiagnosticSeverity.Warning,
                     true),
-                location));
+                GetMainLocation(locations),
+                GetAdditionalLocations(locations)));
         }
         catch
         {
@@ -62,7 +64,7 @@ internal class CompilationDiagnostic : IDiagnostic
         });
     }
 
-    public void Information(string id, string message, Location? location = null)
+    public void Information(string id, string message, params Location[] locations)
     {
         try
         {
@@ -74,7 +76,8 @@ internal class CompilationDiagnostic : IDiagnostic
                     "Info",
                     DiagnosticSeverity.Info,
                     true),
-                location));
+                GetMainLocation(locations),
+                GetAdditionalLocations(locations)));
         }
         catch
         {
@@ -85,5 +88,14 @@ internal class CompilationDiagnostic : IDiagnostic
         {
             $"{id} {message}"
         });
+    }
+
+    private static Location? GetMainLocation(params Location[] locations) =>
+        locations.FirstOrDefault(i => i.IsInSource);
+
+    private static IEnumerable<Location> GetAdditionalLocations(params Location[] locations)
+    {
+        var main = GetMainLocation(locations);
+        return main != default ? locations.Except(new []{main}) : ImmutableArray<Location>.Empty;
     }
 }

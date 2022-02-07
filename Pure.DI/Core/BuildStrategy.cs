@@ -64,14 +64,14 @@ internal class BuildStrategy : IBuildStrategy
                 description = $"{description}; the chain is {chain}";
             }
 
-            return new Optional<ExpressionSyntax>(objectBuildExpression.Value, objectBuildExpression.HasValue, description, objectBuildExpression.Location);
+            return new Optional<ExpressionSyntax>(objectBuildExpression.Value, objectBuildExpression.HasValue, description, objectBuildExpression.Locations);
         }
 
         // Apply lifetime
         if (!_lifetimes.TryGetValue(dependency.Binding.Lifetime, out var lifetimeStrategy))
         {
             var error = $"{dependency.Binding.Lifetime} lifetime is not supported.";
-            _diagnostic.Error(Diagnostics.Error.Unsupported, error, dependency.Implementation.Type.Locations.FirstOrDefault());
+            _diagnostic.Error(Diagnostics.Error.Unsupported, error, dependency.Implementation.Type.Locations.ToArray());
             throw new HandledException(error);
         }
 

@@ -74,7 +74,8 @@ internal class AutowiringObjectBuilder : IObjectBuilder
             });
 
             _tracer.Save();
-            return Optional<ExpressionSyntax>.CreateEmpty(reasons, dependency.Implementation.Type.Locations.FirstOrDefault());
+            // dependency.Implementation.Type.Locations.ToArray()
+            return Optional<ExpressionSyntax>.CreateEmpty(reasons, ctorInfos.SelectMany(i => i.ctor.Locations).ToArray());
         }
         
         _log.Trace(() => new[]
@@ -105,7 +106,7 @@ internal class AutowiringObjectBuilder : IObjectBuilder
             if (member.IsStatic || member.DeclaredAccessibility != Accessibility.Public && member.DeclaredAccessibility != Accessibility.Internal)
             {
                 var error = $"{member} is inaccessible in {dependency.Implementation}.";
-                _diagnostic.Error(Diagnostics.Error.MemberIsInaccessible, error, member.Locations.FirstOrDefault());
+                _diagnostic.Error(Diagnostics.Error.MemberIsInaccessible, error, member.Locations.ToArray());
                 throw new HandledException(error);
             }
 
@@ -200,15 +201,15 @@ internal class AutowiringObjectBuilder : IObjectBuilder
             .WithCommentBefore($"// {dependency.Binding}");
     }
     
-    private static string CreateDescription(IMethodSymbol ctor, IEnumerable<ResolveResult> results)
+    private static string CreateDescription(ISymbol ctor, IEnumerable<ResolveResult> results)
     {
         var unresolvedParameters = results
-            .Select((i, index) => i.Expression.HasValue ? string.Empty : $"at position {index} of the type {i.Target}")
+            .Select(i => i.Expression.HasValue ? string.Empty : $"\"{i.Target.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat)} {i.Target.Name}\"")
             .Where(i => !string.IsNullOrWhiteSpace(i))
             .ToArray();
         var reason = string.Join(", ", unresolvedParameters);
         var suf = unresolvedParameters.Length > 1 ? "s" : "";
-        return unresolvedParameters.Length > 0 ? $"the constructor {ctor} has unresolved parameter{suf} {reason}" : string.Empty;
+        return unresolvedParameters.Length > 0 ? $"the constructor {ctor.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat)} has unresolved parameter{suf} {reason}" : string.Empty;
     }
 
     private ResolveResult ResolveInstance(
@@ -290,7 +291,7 @@ internal class AutowiringObjectBuilder : IObjectBuilder
             }
 
             var error = $"Unsupported type {dependency.Implementation}.";
-            _diagnostic.Error(Diagnostics.Error.Unsupported, error, resolveLocations.FirstOrDefault());
+            _diagnostic.Error(Diagnostics.Error.Unsupported, error, resolveLocations.ToArray());
             throw new HandledException(error);
         }
         finally
@@ -329,7 +330,7 @@ internal class AutowiringObjectBuilder : IObjectBuilder
 
         if (ctor.GetAttributes(typeof(ObsoleteAttribute), dependency.Implementation.SemanticModel).Any())
         {
-            _diagnostic.Warning(Diagnostics.Warning.CtorIsObsoleted, $"The constructor {ctor} marked as obsoleted is used.", ctor.Locations.FirstOrDefault());
+            _diagnostic.Warning(Diagnostics.Warning.CtorIsObsoleted, $"The constructor {ctor} marked as obsoleted is used.", ctor.Locations.ToArray());
         }
 
         return SyntaxFactory.ObjectCreationExpression(typeSyntax)

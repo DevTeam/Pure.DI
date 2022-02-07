@@ -67,7 +67,7 @@ internal class Generator : IGenerator
             }
             catch (BuildException buildException)
             {
-                _diagnostic.Error(buildException.Id, buildException.Message, buildException.Location);
+                _diagnostic.Error(buildException.Id, buildException.Message, buildException.Locations);
             }
             catch (HandledException)
             {
@@ -83,7 +83,7 @@ internal class Generator : IGenerator
         }
         catch (BuildException buildException)
         {
-            _diagnostic.Error(buildException.Id, buildException.Message, buildException.Location);
+            _diagnostic.Error(buildException.Id, buildException.Message, buildException.Locations);
         }
         catch (HandledException)
         {

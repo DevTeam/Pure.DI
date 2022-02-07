@@ -2,9 +2,9 @@
 
 internal interface IDiagnostic
 {
-    void Error(string id, string message, Location? location = null);
+    void Error(string id, string message, params Location[] locations);
 
-    void Warning(string id, string message, Location? location = null);
+    void Warning(string id, string message, params Location[] locations);
 
-    void Information(string id, string message, Location? location = null);
+    void Information(string id, string message, params Location[] locations);
 }

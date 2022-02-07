@@ -59,7 +59,7 @@ internal class FactoryWrapperStrategy : IWrapperStrategy
         var instance = _buildStrategy().TryBuild(factoryDependency, factoryDependency.Implementation);
         if (!instance.HasValue)
         {
-            throw _cannotResolveExceptionFactory.Create(factoryDependency.Binding, factoryDependency.Tag, instance.Description, instance.Location);
+            throw _cannotResolveExceptionFactory.Create(factoryDependency.Binding, factoryDependency.Tag, instance.Description, instance.Locations);
         }
 
         var methodKey = new MemberKey($"FactoryWrapperResolve_{_stringTools.ConvertToTitle(dependency.Implementation.ToString())}", dependency);

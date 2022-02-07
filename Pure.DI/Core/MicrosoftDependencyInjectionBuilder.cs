@@ -175,7 +175,7 @@ internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
                     foreach (var (resoledDependency, lifetime, binding) in dependencies.Where(i => i.lifetime is Lifetime.Scoped or Lifetime.ContainerSingleton))
                     {
                         var error = $"Impossible to use the lifetime {lifetime} for {resoledDependency} outside an ASP.NET context.";
-                        _diagnostic.Error(Diagnostics.Error.Unsupported, error, binding.Location);
+                        _diagnostic.Error(Diagnostics.Error.Unsupported, error, new []{ binding.Location }.Where(i => i != default).Select(i => i!).ToArray());
                     }
                 }
 

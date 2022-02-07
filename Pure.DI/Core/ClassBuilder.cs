@@ -155,7 +155,7 @@ internal class ClassBuilder : IClassBuilder
 
         var rootNode = CreateRootNode(_metadata.SetupNode, new []{SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(Defaults.DefaultNamespace))}, resolverClass);
         var sampleDependency = _metadata.Bindings.LastOrDefault()?.Dependencies.FirstOrDefault()?.ToString() ?? "T";
-        _diagnostic.Information(Diagnostics.Information.Generated, $"{_metadata.ComposerTypeName} was generated. Please use a method like {_metadata.ComposerTypeName}.Resolve<{sampleDependency}>() to create a composition root.", _metadata.Bindings.FirstOrDefault()?.Location);
+        _diagnostic.Information(Diagnostics.Information.Generated, $"{_metadata.ComposerTypeName} was generated. Please use a method like {_metadata.ComposerTypeName}.Resolve<{sampleDependency}>() to create a composition root.", _metadata.Bindings.Where(i => i.Location != default).Select(i => i.Location!).ToArray());
         return rootNode;
     }
 

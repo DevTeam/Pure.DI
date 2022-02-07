@@ -2,14 +2,14 @@ namespace Pure.DI.Core;
 
 public class BuildException : Exception
 {
-    public BuildException(string id, string message, Location? location = default)
+    public BuildException(string id, string message, params Location[] location)
         : base(message)
     {
         Id = id;
-        Location = location;
+        Locations = location;
     }
 
     public string Id { get; }
 
-    public Location? Location { get; }
+    public Location[] Locations { get; }
 }

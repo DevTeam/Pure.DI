@@ -23,7 +23,7 @@ internal class SemanticType
 
     public bool Equals(SemanticType other) => SymbolEqualityComparer.Default.Equals(Type, other.Type);
 
-    public override string ToString() => Type.ToString();
+    public override string ToString() => Type.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat);
 
     public override bool Equals(object? obj)
     {

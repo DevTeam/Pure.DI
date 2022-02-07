@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal readonly record struct Optional<T>(T Value, bool HasValue = true, string Description = "", Location? Location = default)
+internal readonly record struct Optional<T>(T Value, bool HasValue = true, string Description = "", params Location[] Locations)
     where T: class
 {
     public T Value { get; } = Value;
@@ -9,12 +9,12 @@ internal readonly record struct Optional<T>(T Value, bool HasValue = true, strin
 
     public string Description { get; } = Description;
 
-    public Location? Location { get; } = Location;
+    public Location[] Locations { get; } = Locations;
 
     public static implicit operator Optional<T>(T value) => new(value);
     
     public override string ToString() => HasValue ? Value?.ToString() ?? $"null: {Description}" : "unspecified";
 
-    public static Optional<T> CreateEmpty(string description, Location? location) => 
-        new(default!, false, description, location);
+    public static Optional<T> CreateEmpty(string description, params Location[] locations) => 
+        new(default!, false, description, locations);
 }
