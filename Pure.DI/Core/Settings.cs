@@ -20,8 +20,6 @@ internal class Settings : ISettings
 
     public bool Trace => GetBool(Setting.Trace);
 
-    public bool Api => GetBool(Setting.Api, true);
-
     public bool TryGetOutputPath(out string outputPath)
     {
         if (!TryGet(Setting.Out, out outputPath))

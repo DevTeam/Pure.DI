@@ -33,7 +33,7 @@ public class ErrorsAndWarningsTests
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }                   
                 }    
-            }".Replace("string", type).Run(out var generatedCode);
+            }".Replace("string", type).Run(out var generatedCode, new RunOptions {Statements = string.Empty});
 
         // Then
         output.Any(i => i.Contains(Diagnostics.Error.CannotResolve)).ShouldBeTrue(generatedCode);
@@ -78,7 +78,7 @@ public class ErrorsAndWarningsTests
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }                   
                 }    
-            }".Run(out var generatedCode);
+            }".Run(out var generatedCode, new RunOptions {Statements = string.Empty});
 
         // Then
         output.Any(i => i.Contains(Diagnostics.Error.CannotResolve)).ShouldBeTrue(generatedCode);
@@ -162,7 +162,7 @@ public class ErrorsAndWarningsTests
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }                   
                 }    
-            }".Run(out var generatedCode);
+            }".Run(out var generatedCode, new RunOptions {Statements = string.Empty});
 
         // Then
         output.Any(i => i.Contains(Diagnostics.Error.CannotResolve)).ShouldBeTrue(generatedCode);
@@ -211,7 +211,7 @@ public class ErrorsAndWarningsTests
     }
 
     [Fact]
-    public void ShouldUsePredefinedOrderAttributeWhenMethod()
+    public void ShouldHandleMemberIsInaccessible()
     {
         // Given
 
@@ -240,7 +240,7 @@ public class ErrorsAndWarningsTests
 
                     [Order(1)] private void Init(string value) => Value = value;
                 }
-            }".Run(out var generatedCode);
+            }".Run(out var generatedCode, new RunOptions {Statements = string.Empty});
 
         // Then
         output.Any(i => i.Contains(Diagnostics.Error.MemberIsInaccessible)).ShouldBeTrue(generatedCode);

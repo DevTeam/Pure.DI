@@ -85,9 +85,8 @@ public static class TestExtensions
         var generatedSources = new List<Source>();
         try
         {
-            var metadataContext = container.Resolve<IMetadataBuilder>().Build(new ExecutionContext(compilation, CancellationToken.None));
-            generatedSources.AddRange(metadataContext.Api);
-            generatedSources.AddRange(container.Resolve<ISourceBuilder>().Build(metadataContext));
+            var executionContext = new ExecutionContext(generatedSources, compilation, CancellationToken.None);
+            container.Resolve<ISourceBuilder>().Build(executionContext);
         }
         catch (BuildException buildException)
         {
@@ -247,11 +246,10 @@ public static class TestExtensions
         public void WriteErrorLine(string error) => _errors.Add(error);
     }
 
-    private record ExecutionContext(Compilation Compilation, CancellationToken CancellationToken) : IExecutionContext
+    private record ExecutionContext(ICollection<Source> Sources, Compilation Compilation, CancellationToken CancellationToken) : IExecutionContext
     {
-        public void AddSource(string hintName, SourceText sourceText)
-        {
-        }
+        public void AddSource(string hintName, SourceText sourceText) => 
+            Sources.Add(new Source(hintName, sourceText));
 
         public void ReportDiagnostic(Diagnostic diagnostic)
         {

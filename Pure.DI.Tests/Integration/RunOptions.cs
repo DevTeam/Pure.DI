@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
+
 public class RunOptions
 {
     public string Statements = "System.Console.WriteLine(Composer.Resolve<CompositionRoot>().Value);";

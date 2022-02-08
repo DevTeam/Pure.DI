@@ -312,7 +312,9 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
                     ?? invocation;
 
                 var location = lastNode.GetLocation();
-                _diagnostic.Error(Diagnostics.Error.InvalidSetup, $"{_binding.Implementation} does not implement {dependency}", new []{location}.ToArray());
+                var error = $"{_binding.Implementation} does not implement {dependency}";
+                _diagnostic.Error(Diagnostics.Error.InvalidSetup, error, new []{location}.ToArray());
+                throw new HandledException(error);
             }
         }
 

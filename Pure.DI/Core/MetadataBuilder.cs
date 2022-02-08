@@ -40,31 +40,9 @@ internal class MetadataBuilder : IMetadataBuilder
 
         var currentTrees = compilation.SyntaxTrees.Take(syntaxTreesCount);
         var currentMetadata = GetMetadata(compilation, currentTrees, cancellationToken).ToList();
-        var api = GetApi(compilation);
         stopwatch.Stop();
 
-        return new MetadataContext(compilation, cancellationToken, api, featuresMetadata.AsReadOnly(), currentMetadata.AsReadOnly(), stopwatch.ElapsedMilliseconds);
-    }
-
-    private IEnumerable<Source> GetApi(Compilation compilation) =>
-        AreApiAvailable(compilation) ? Enumerable.Empty<Source>() : GetSourceSet(compilation).ApiSources;
-
-    private static bool AreApiAvailable(Compilation compilation)
-    {
-        var diType = compilation.GetTypesByMetadataName(typeof(DI).FullName.ReplaceNamespace()).FirstOrDefault();
-        if (diType == null)
-        {
-            return false;
-        }
-
-        var type = (
-            from tree in compilation.SyntaxTrees
-            let semanticModel = compilation.GetSemanticModel(tree)
-            from typeDeclaration in tree.GetRoot().DescendantNodes().OfType<TypeDeclarationSyntax>()
-            let symbol = ModelExtensions.GetDeclaredSymbol(semanticModel, typeDeclaration)
-            select symbol).FirstOrDefault();
-
-        return type != null && compilation.IsSymbolAccessibleWithin(diType, type);
+        return new MetadataContext(compilation, cancellationToken, GetSourceSet(compilation).ApiSources, featuresMetadata.AsReadOnly(), currentMetadata.AsReadOnly(), stopwatch.ElapsedMilliseconds);
     }
 
     private SourceSet GetSourceSet(Compilation compilation)

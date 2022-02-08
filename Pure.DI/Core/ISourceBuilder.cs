@@ -2,5 +2,5 @@
 
 internal interface ISourceBuilder
 {
-    IEnumerable<Source> Build(MetadataContext context);
+    void Build(IExecutionContext executionContext);
 }

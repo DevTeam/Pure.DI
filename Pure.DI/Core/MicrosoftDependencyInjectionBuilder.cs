@@ -176,6 +176,7 @@ internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
                     {
                         var error = $"Impossible to use the lifetime {lifetime} for {resoledDependency} outside an ASP.NET context.";
                         _diagnostic.Error(Diagnostics.Error.Unsupported, error, new []{ binding.Location }.Where(i => i != default).Select(i => i!).ToArray());
+                        throw new HandledException(error);
                     }
                 }
 

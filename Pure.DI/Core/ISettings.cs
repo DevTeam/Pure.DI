@@ -6,8 +6,6 @@ internal interface ISettings
 
     bool Trace { get; }
 
-    bool Api { get; }
-
     bool TryGetOutputPath(out string outputPath);
 
     Verbosity Verbosity { get; }
