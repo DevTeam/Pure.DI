@@ -22,7 +22,7 @@ internal class PerResolveLifetimeStrategy : ILifetimeStrategy
         _stringTools = stringTools;
     }
 
-    public Lifetime Lifetime => Lifetime.PerResolve;
+    public Lifetime? Lifetime => NS35EBD81B.Lifetime.PerResolve;
 
     public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression)
     {
@@ -66,7 +66,7 @@ internal class PerResolveLifetimeStrategy : ILifetimeStrategy
 
             var returnStatement = SyntaxFactory.ReturnStatement(fieldExpression);
 
-            objectBuildExpression = _raiseOnDisposableExpressionBuilder.Build(dependency.Implementation, Lifetime.PerResolve, objectBuildExpression);
+            objectBuildExpression = _raiseOnDisposableExpressionBuilder.Build(dependency.Implementation, NS35EBD81B.Lifetime.PerResolve, objectBuildExpression);
 
             var assignmentBlock = SyntaxFactory.Block()
                 .AddStatements(SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, resolveInstanceFieldIdentifier, objectBuildExpression)))

@@ -23,7 +23,7 @@ internal class SingletonLifetimeStrategy : ILifetimeStrategy
         _stringTools = stringTools;
     }
 
-    public Lifetime Lifetime => Lifetime.Singleton;
+    public Lifetime? Lifetime => NS35EBD81B.Lifetime.Singleton;
 
     public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression)
     {

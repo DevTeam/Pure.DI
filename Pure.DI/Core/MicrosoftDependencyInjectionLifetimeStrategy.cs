@@ -15,18 +15,22 @@ internal class MicrosoftDependencyInjectionLifetimeStrategy : ILifetimeStrategy
         IBuildContext buildContext,
         ICannotResolveExceptionFactory cannotResolveExceptionFactory,
         Func<IBuildStrategy> buildStrategy,
-        IWrapperStrategy wrapperStrategy,
-        Lifetime lifetime)
+        IWrapperStrategy wrapperStrategy)
     {
         _buildContext = buildContext;
         _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
         _buildStrategy = buildStrategy;
         _wrapperStrategy = wrapperStrategy;
-        Lifetime = lifetime;
     }
 
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-    public Lifetime Lifetime { get; set; }
+    public Lifetime? Lifetime { get; private set; }
+
+    public MicrosoftDependencyInjectionLifetimeStrategy Initialize(Lifetime lifetime)
+    {
+        Lifetime = lifetime;
+        return this;
+    }
 
     public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression)
     {

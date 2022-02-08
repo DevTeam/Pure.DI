@@ -16,11 +16,11 @@ internal class TransientLifetimeStrategy : ILifetimeStrategy
         _wrapperStrategy = wrapperStrategy;
     }
 
-    public Lifetime Lifetime => Lifetime.Transient;
+    public Lifetime? Lifetime => NS35EBD81B.Lifetime.Transient;
 
     public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression) =>
         _raiseOnDisposableExpressionBuilder.Build(
             dependency.Implementation,
-            Lifetime.Transient,
+            NS35EBD81B.Lifetime.Transient,
             _wrapperStrategy.Build(resolvingType, dependency, objectBuildExpression));
 }

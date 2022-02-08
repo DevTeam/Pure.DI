@@ -4,7 +4,7 @@ using NS35EBD81B;
 
 internal interface ILifetimeStrategy
 {
-    Lifetime Lifetime { get; }
+    Lifetime? Lifetime { get; }
 
     ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression);
 }

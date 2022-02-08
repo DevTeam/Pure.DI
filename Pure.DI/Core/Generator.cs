@@ -51,7 +51,13 @@ internal class Generator : IGenerator
         {
             // Debugger.Launch();
             Defaults.DefaultNamespace = context.TryGetOption("build_property.PureDINamespace", out var newNamespace) ? newNamespace : string.Empty;
+
             var metadata = _metadataBuilder.Build(context);
+            if (metadata.BaseMetadata.Count == 0)
+            {
+                _diagnostic.Error(Diagnostics.Error.InvalidSetup, "DI Setup is incorrect.");
+            }
+
             try
             {
                 foreach (var source in _sourceBuilder.Build(metadata))

@@ -34,7 +34,7 @@ internal class BuildStrategy : IBuildStrategy
         _buildContext = buildContext;
         _resultStrategy = resultStrategy;
         _cache = cache;
-        _lifetimes = lifetimeStrategies.ToDictionary(i => i.Lifetime, i => i);
+        _lifetimes = lifetimeStrategies.Where(i => i.Lifetime.HasValue).ToDictionary(i => (Lifetime)i.Lifetime!, i => i);
     }
 
     public Optional<ExpressionSyntax> TryBuild(Dependency dependency, SemanticType resolvingType) =>
