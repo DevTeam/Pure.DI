@@ -9,39 +9,47 @@
     public class Tags
     {
         [Fact]
+        // $visible=true
+        // $tag=1 Basics
+        // $priority=01
+        // $description=Tags
+        // $header=Tags are useful while binding to several implementations of the same abstract types.
+        // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+        // {
         public void Run()
         {
-            // $visible=true
-            // $tag=1 Basics
-            // $priority=01
-            // $description=Tags
-            // $header=Tags are useful while binding to several implementations of the same abstract types.
-            // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
-            // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
-                // Bind using several tags
-                .Bind<IService>(10, 'a').Tags("abc", 99).To<Service>()
-                .Bind<IService>('b').Tags("abc", 33).To<ServiceRecord>()
-                .Bind<IService>().To<Service>();
+                // Adds some tags for a specific contract
+                .Bind<IService>("Service 1").To<Service>()
+                // Adds some tags for a binding
+                .Bind<IService>().Tags("Service 2", 2).As(Lifetime.Singleton).To<ServiceRecord>()
+                .Bind<Consumer>().To<Consumer>();
 
-            // Resolve instances using tags
-            var instance1 = TagsDI.Resolve<IService>(10);
-            var instance2 = TagsDI.Resolve<IService>('a');
-            var instance3 = TagsDI.ResolveIService("abc");
-            var instance4 = TagsDI.ResolveIService(99);
-            var instance5 = TagsDI.ResolveIService('b');
-            var instance6 = TagsDI.Resolve<IService>(33);
-            var instance7 = TagsDI.ResolveIService(null);
-            // }
-            // Check instances
-            instance1.ShouldBeOfType<Service>();
-            instance2.ShouldBeOfType<Service>();
-            instance3.ShouldBeOfType<ServiceRecord>();
-            instance4.ShouldBeOfType<Service>();
-            instance5.ShouldBeOfType<ServiceRecord>();
-            instance6.ShouldBeOfType<ServiceRecord>();
-            instance7.ShouldBeOfType<Service>();
+            var consumer = TagsDI.Resolve<Consumer>();
+            consumer.Service1.ShouldBeOfType<Service>();
+            consumer.Service2.ShouldBeOfType<ServiceRecord>();
+            consumer.Service3.ShouldBe(consumer.Service2);
         }
+
+        internal class Consumer
+        {
+            public Consumer(
+                [Tag("Service 1")] IService service1,
+                [Tag("Service 2")] IService service2,
+                [Tag(2)] IService service3)
+            {
+                Service1 = service1;
+                Service2 = service2;
+                Service3 = service3;
+            }
+            
+            public IService Service1 { get; }
+
+            public IService Service2 { get; }
+
+            public IService Service3 { get; }
+        }
+        // }
     }
 }
