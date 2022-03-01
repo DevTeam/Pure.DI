@@ -107,11 +107,6 @@ internal class TypeResolver : ITypeResolver
                         if (_map.TryGetValue(key, out var implementationEntry))
                         {
                             var typesMap = _typesMapFactory();
-                            if (key.Dependency.Equals(dependency))
-                            {
-                                return new Dependency(implementationEntry.Metadata, implementationEntry.Details, tag, _constructorBuilder(), typesMap);
-                            }
-
                             var dep = typeSelector(dependency);
                             var hasTypesMap = typesMap.Setup(implementationEntry.Details, dep);
                             var constructedImplementation = typesMap.ConstructType(implementationEntry.Details);
@@ -119,6 +114,11 @@ internal class TypeResolver : ITypeResolver
                             if (_factories.TryGetValue(key, out var factory))
                             {
                                 return new Dependency(factory.Metadata, dep, tag, _factoryBuilder(), typesMap);
+                            }
+                            
+                            if (key.Dependency.Equals(dependency))
+                            {
+                                return new Dependency(implementationEntry.Metadata, implementationEntry.Details, tag, _constructorBuilder(), typesMap);
                             }
 
                             if (hasTypesMap && implementationEntry.Metadata.Implementation != null)

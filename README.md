@@ -419,6 +419,7 @@ DI.Setup()
   - [Sets](#sets)
   - [Thread Local](#thread-local)
   - [Tuples](#tuples)
+  - [Multi-statement func](#multi-statement-func)
   - [Array binding override](#array-binding-override)
 - Interception
   - [Decorator](#decorator)
@@ -1576,6 +1577,49 @@ var (service, namedService) = TuplesDI.Resolve<CompositionRoot<(IService, INamed
 ```
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+
+### Multi-statement func
+
+
+
+``` CSharp
+public void Run()
+{
+    DI.Setup()
+        .Bind<MultiStatementFunc.MyService>().To<MultiStatementFunc.MyService>()
+        .Bind<Func<string, MultiStatementFunc.IMyService>>().To(ctx => new Func<string, MultiStatementFunc.IMyService>(name =>
+        {
+            var service = ctx.Resolve<MyService>();
+            service.Name = name;
+            return service;
+        }))
+        .Bind<Consumer>().To<Consumer>();
+
+    // Resolve function to create instances
+    var consumer = MultiStatementFuncDI.Resolve<Consumer>();
+
+    consumer.Service.Name.ShouldBe("Abc");
+}
+
+public interface IMyService
+{
+    string Name { get; }
+}
+
+public class MyService: IMyService
+{
+    public string Name { get; set; } = "";
+}
+
+public class Consumer
+{
+    public Consumer(Func<string, IMyService> factory) => Service = factory("Abc");
+
+    public IMyService Service { get; }
+}
+```
+
+
 
 ### Array binding override
 

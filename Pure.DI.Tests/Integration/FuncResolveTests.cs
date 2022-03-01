@@ -435,4 +435,52 @@ public class FuncResolveTests
             "3"
         }, generatedCode);
     }
+    
+    [Fact]
+    public void ShouldSupportComplexFuncWithResolve()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using System.Linq;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly string Value;
+
+                    internal CompositionRoot([Tag(1)] Func<string, IDep> value) => Value = value(""Abc"").Name;
+                }
+
+                public interface IDep { string Name { get; } }
+
+                public class Dep: IDep { public string Name { get; set; } }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<IDep>().Bind<Dep>().To<Dep>()
+                            .Bind<Func<string, IDep>>(1).To(ctx => new Func<string, IDep>(name =>
+                            {
+                                var dep = ctx.Resolve<Dep>();
+                                dep.Name = name;
+                                return dep;
+                            }))
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+            }".Run(out var generatedCode);
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "Abc"
+        }, generatedCode);
+    }
 }
