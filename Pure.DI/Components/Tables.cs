@@ -73,18 +73,14 @@ namespace NS35EBD81B
                 Buckets[i] = emptyPair;
             }
 
-            var buckets = System.Linq.Enumerable.Select(System.Linq.Enumerable.GroupBy(pairs, pair => (uint)pair.Key.GetHashCode() % Divisor), groups => new
+            foreach (var pair in pairs)
             {
-                number = groups.Key,
-                pairs = System.Linq.Enumerable.ToArray(groups)
-            });
-
-            foreach (var bucket in buckets)
-            {
-                Buckets[bucket.number] = bucket.pairs[0];
-                for (var index = 1; index < bucket.pairs.Length; index++)
+                var bucket = (uint)pair.Key.GetHashCode() % Divisor;
+                var next = Buckets[bucket];
+                Buckets[bucket] = pair;
+                if (next != emptyPair)
                 {
-                    bucket.pairs[index - 1].Next = bucket.pairs[index];
+                    pair.Next = next;
                 }
             }
         }

@@ -8,21 +8,21 @@ public class TableTests
     public void ShouldProvideTryGet()
     {
         // Given
-        const int count = 10;
+        const int count = 10000;
         var pairs = (
             from index in Enumerable.Range(-count, count * 2)
-            select new Pair<long, long>(index, index)).ToArray();
+            select new Pair<string, long>(index.ToString(), index)).ToArray();
 
         // When
-        var table = new Table<long, long>(pairs);
+        var table = new Table<string, long>(pairs);
 
         // Then
         for (var index = -count; index < count; index++)
         {
-            table.Get(index).ShouldBe(index);
+            table.Get(index.ToString()).ShouldBe(index);
         }
 
-        table.Get(count).ShouldBe(0);
+        table.Get(count.ToString()).ShouldBe(0);
     }
 
     [Fact]
