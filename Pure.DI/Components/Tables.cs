@@ -78,7 +78,7 @@ namespace NS35EBD81B
                 var bucket = (uint)pair.Key.GetHashCode() % Divisor;
                 var next = Buckets[bucket];
                 Buckets[bucket] = pair;
-                if (next != emptyPair)
+                if (!ReferenceEquals(next, emptyPair))
                 {
                     pair.Next = next;
                 }
@@ -121,7 +121,7 @@ namespace NS35EBD81B
             var pair = ResolversBuckets[(uint)type.GetHashCode() % ResolversDivisor];
             do
             {
-                if (pair.Key == type)
+                if (ReferenceEquals(pair.Key, type))
                 {
                     return pair.Value();
                 }
@@ -138,7 +138,7 @@ namespace NS35EBD81B
             var pair = ResolversBuckets[(uint)typeof(T).GetHashCode() % ResolversDivisor];
             do
             {
-                if (pair.Key == typeof(T))
+                if (ReferenceEquals(pair.Key, typeof(T)))
                 {
                     return pair.Value;
                 }
@@ -176,7 +176,7 @@ namespace NS35EBD81B
             do
             {
                 // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
-                if (pair.Key.Type == key.Type && pair.Key.Tag.Equals(key.Tag))
+                if (ReferenceEquals(pair.Key.Type, key.Type) && pair.Key.Tag.Equals(key.Tag))
                 {
                     return pair.Value();
                 }
@@ -190,7 +190,7 @@ namespace NS35EBD81B
                 var typePair = ResolversBuckets[(uint)keyType.GetHashCode() % ResolversDivisor];
                 do
                 {
-                    if (typePair.Key == keyType)
+                    if (ReferenceEquals(typePair.Key, keyType))
                     {
                         return typePair.Value();
                     }
@@ -223,7 +223,7 @@ namespace NS35EBD81B
         // ReSharper disable once MemberCanBePrivate.Global
         public bool Equals(TagKey other)
         {
-            return Type == other.Type && Tag.Equals(other.Tag);
+            return ReferenceEquals(Type, other.Type) && Tag.Equals(other.Tag);
         }
 
         public override bool Equals(object obj)
