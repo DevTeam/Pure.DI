@@ -44,14 +44,14 @@ class DeployTemplate
         {
             var push = new DotNetNuGetPush()
                 .WithPackage(targetPackage)
+                .WithSources("https://api.nuget.org/v3/index.json")
                 .WithApiKey(_settings.NuGetKey);
 
-            /*Assertion.Succeed(_buildRunner.Run(push));*/
-            WriteLine($"Run {push}.");
+            Assertion.Succeed(_buildRunner.Run(push));
         }
         else
         {
-            Warning("The NuGet key was not specified, the package will not be pushed.");
+            Warning($"The NuGet key was not specified, the package {targetPackage} will not be pushed.");
         }
 
         return targetPackage;

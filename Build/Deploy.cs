@@ -1,4 +1,5 @@
 using HostApi;
+using JetBrains.TeamCity.ServiceMessages.Write.Special;
 
 class Deploy
 {
@@ -18,22 +19,19 @@ class Deploy
 
     public string Run()
     {
-        if (string.IsNullOrWhiteSpace(_settings.NuGetKey))
-        {
-            Error("NuGet key was not specified.");
-            Environment.Exit(1);
-        }
-
         var package = _build.Run();
         if (!string.IsNullOrWhiteSpace(_settings.NuGetKey))
         {
-            Warning("The NuGet key was not specified, the package will not be pushed.");
             var push = new DotNetNuGetPush()
                 .WithPackage(package)
+                .WithSources("https://api.nuget.org/v3/index.json")
                 .WithApiKey(_settings.NuGetKey);
 
-            /*Assertion.Succeed(_buildRunner.Run(push));*/
-            WriteLine($"Run {push}.");
+            Assertion.Succeed(_buildRunner.Run(push));
+        }
+        else
+        {
+            Warning($"The NuGet key was not specified, the package {package} will not be pushed.");
         }
 
         return package;
