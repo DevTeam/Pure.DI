@@ -8,10 +8,10 @@
 
 ## Key features
 
-_Pure.DI_ is __NOT__ a framework or library, but a code generator, creating static methods code for creating an object graph in the paradigm of pure DI using a set of hints, which are checking on the compile-time. The generated code does not rely on library calls or .NET reflection, and it is efficient in the scope of performance and memory consumption.
+_Pure.DI_ is __NOT__ a framework or library, but a code generator that generates static method code to create an object graph in a pure DI paradigm using a set of hints that are verified at compile time. Since all the work is done at compile time, at run time you only have efficient code that is ready to be used. This generated code does not depend on library calls or .NET reflection and is efficient in terms of performance and memory consumption.
 
 - [X] DI without any IoC/DI containers, frameworks, dependencies and therefore without any performance impact and side effects. 
-  >_Pure.DI_ is actually a [.NET code generator](https://docs.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/source-generators-overview). It generates simple code as well as if you were doing it yourself: de facto just a bunch of constructors` calls. And you can see this code at any time.
+  >_Pure.DI_ is actually a [.NET code generator](https://docs.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/source-generators-overview). It generates simple code as well as if you were doing it yourself: de facto just a bunch of nested constructors` calls. And you can see this code at any time.
 - [X] A predictable and verified dependency graph is built and verified on the fly while you write your code.
   >All the logic for analyzing the graph of objects, constructors, methods happens at compile time. Thus, the _Pure.DI_ tool notifies the developer about missing or circular dependency, for cases when some dependencies are not suitable for injection, etc., at compile-time. Developers have no chance of getting a program that crashes at runtime due to these errors. All this magic happens simultaneously as the code is written, this way, you have instant feedback between the fact that you made some changes to your code and your code was already checked and ready for use.
 - [X] It does not add any dependencies to any other assemblies.
@@ -20,12 +20,19 @@ _Pure.DI_ is __NOT__ a framework or library, but a code generator, creating stat
   >All generated code runs as fast as your own, in pure DI style, including compile-time and run-time optimizations. As mentioned above, graph analysis doing at compile-time, but at run-time, there are just a bunch of nested constructors, and that's it.
 - [X] Works everywhere.
   >Since a pure DI approach does not use any dependencies or the [.NET reflection](https://docs.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/reflection) at runtime, it does not prevent your code from working as expected on any platform: .NET Framework, .NET Core, UWP / XBOX, .NET IoT, Xamarin, etc.
-- [X] Ease of Use.
+- [X] Ease of use.
   >The _Pure.DI_ API is very similar to the API of most IoC/DI libraries. And it was a deliberate decision: the main reason is that programmers do not need to learn a new API.
 - [X] Ultra-fine tuning of generic types.
   >_Pure.DI_ offers special type markers instead of using open generic types. This allows you to more accurately build the object graph and take full advantage of generic types.
 - [X] Supports basic .NET BCL types out of the box.
   >_Pure.DI_ already supports many of [BCL types](https://docs.microsoft.com/en-us/dotnet/standard/framework-libraries#base-class-libraries) like Array, IEnumerable, IList, ISet, Func, ThreadLocal, etc. without any extra effort.
+
+## Try it easy!
+
+- Install the DI template `dotnet new -i Pure.DI.Templates`.
+- Create a project directory and make it current
+- Create an application `dotnet new di`
+- Run it `dotnet run`
 
 ## Contents
 
@@ -50,7 +57,7 @@ _Pure.DI_ is __NOT__ a framework or library, but a code generator, creating stat
 
 ### Let's create an abstraction
 
-```csharp
+```c#
 interface IBox<out T> { T Content { get; } }
 
 interface ICat { State State { get; } }
@@ -60,7 +67,7 @@ enum State { Alive, Dead }
 
 ### Here is our implementation
 
-```csharp
+```c#
 class CardboardBox<T> : IBox<T>
 {
     public CardboardBox(T content) => Content = content;
@@ -104,7 +111,7 @@ Add a package reference to:
 
 Bind abstractions to their implementations or factories, define lifetimes and other options in a class like the following:
 
-```csharp
+```c#
 static partial class Composer
 {
   // Actually, this code never runs and the method might have any name or be a constructor for instance
@@ -130,7 +137,7 @@ The code above is just a chain of hints to define a dependency graph used to gen
 
 ### Time to open boxes!
 
-```csharp
+```c#
 class Program
 {
   // Composition Root, a single place in an application
@@ -147,31 +154,35 @@ class Program
 
 *__Program__* is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) here, a single place in an application where the composition of the object graphs for an application takes place. Each instance is resolved by a strongly-typed block of statements like the operator [*__new__*](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/new-operator), which are compiling with all optimizations with minimal impact on performance or memory consumption. The creating of a composition root *__Program__*  is looking as ``````Composer.ResolveProgram()`````` here and the compiler replaces this statement with the set of constructor calls:
 
-```csharp
-new Sample.Program(
-  new Sample.CardboardBox<Sample.ICat>(
-    new Sample.ShroedingersCat(
-      new System.Lazy<Sample.State>(
-        new System.Func<Sample.State>(
-            SingletonSystemRandom.Shared.Next(2)
+```c#
+new Program(
+  new CardboardBox<ICat>(
+    new ShroedingersCat(
+      new Lazy<State>(
+        new Func<State>(
+            () => (State)SingletonSystemRandom.Shared.Next(2)
         ),
-        true))))
+        true // thread safe
+      )
+    )
+  )
+)
 ```
 
-where ```SingletonSystemRandom``` is a private static class to support the ```Random``` singleton most effectively:
+where ```SingletonSystemRandom``` is a private static class for the most efficient lazy-style ```Random``` singleton support, because the runtime loads the ```SingletonSystemRandom``` type and thread-safely initializes the static field ```Shared``` only the first time the composition code gets the value from ```SingletonSystemRandom.Shared```:
 
-```csharp
+```c#
 private static class SingletonSystemRandom
 {
   static readonly Random Shared = new Random();
 }
 ```
 
-So _Pure.DI_ works the same as calling a set of constructors but allows dependency injection. And that's a reason to take full advantage of Dependency Injection everywhere, every time, without any compromise!
+_Pure.DI_ works the same as calling a set of nested constructors, but allows dependency injection. And that's a reason to take full advantage of Dependency Injection everywhere, every time, without any compromise!
 
 ## Simple and powerful API.
 
-```csharp
+```c#
 // Starts DI configuration chain.
 // This method contains a single optional argument to specify a custom DI type name to generate.
 // By default, it is a name of an owner class.
