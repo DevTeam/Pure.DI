@@ -1,6 +1,7 @@
 using NuGet.Versioning;
 
 record Settings(
+    string configuration,
     NuGetVersion DefaultVersion,
     string NuGetKey,
     VersionRange RequiredSdkRange,

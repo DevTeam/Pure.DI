@@ -31,7 +31,7 @@ class Build
             Path.Combine(
                 "Pure.DI",
                 "bin",
-                "Release",
+                _settings.configuration,
                 $"Pure.DI.{packageVersion}.nupkg"));
 
         MergeNuGetPackages(packages, targetPackage);
@@ -47,7 +47,7 @@ class Build
 
         var props = new[]
         {
-            ("configuration", "Release"),
+            ("configuration", _settings.configuration),
             ("version", packageVersion.ToString()!),
             ("AnalyzerRoslynVersion", analyzerRoslynVersion.ToString()),
             ("AnalyzerRoslynPackageVersion", analyzerRoslynPackageVersion.ToString())
@@ -74,7 +74,7 @@ class Build
         return Path.Combine(
             "Pure.DI",
             "bin",
-            "Release",
+            _settings.configuration,
             $"roslyn{analyzerRoslynVersion}",
             $"Pure.DI.{packageVersion.ToString()}.nupkg");
     }

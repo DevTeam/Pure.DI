@@ -3,6 +3,8 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <Configurations>Debug;Release;Linux</Configurations>
+    <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="TeamCity.CSharpInteractive" Version="1.0.1" />

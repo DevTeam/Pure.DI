@@ -11,11 +11,13 @@
         <IncludePackageReferencesDuringMarkupCompilation>true</IncludePackageReferencesDuringMarkupCompilation>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
         <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
+        <Configurations>Debug;Release;Linux</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
-        <ProjectReference Include="..\Clock\Clock.csproj"/>
+        <ProjectReference Include="..\..\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="..\Clock\Clock.csproj" />
     </ItemGroup>
 
 </Project>

@@ -23,7 +23,7 @@ class DeployTemplate
         var templatePackageVersion = Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI.Templates"), new NuGetVersion(1, 0, 0));
         var props = new[]
         {
-            ("configuration", "Release"),
+            ("configuration", _settings.configuration),
             ("version", templatePackageVersion.ToString()!)
         };
 

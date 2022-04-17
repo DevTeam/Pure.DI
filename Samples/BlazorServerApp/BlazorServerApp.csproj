@@ -12,15 +12,17 @@
         <IsPackable>false</IsPackable>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
         <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
+        <Configurations>Debug;Release;Linux</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
-        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0"/>
+        <ProjectReference Include="..\..\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Clock\Clock.csproj"/>
+        <ProjectReference Include="..\Clock\Clock.csproj" />
     </ItemGroup>
 
 </Project>

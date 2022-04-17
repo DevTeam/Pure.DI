@@ -46,6 +46,7 @@ _Pure.DI_ is __NOT__ a framework or library, but a code generator that generates
   - [WPF](#wpf)
 - [Performance test](#performance-test)
 - [Troubleshooting](#troubleshooting)
+- [How to build this project](#how-to-build-this-project)
 - [Other resources](#other-resources)
 - [Usage scenarios](#usage-scenarios)
 
@@ -382,6 +383,18 @@ dotnet tool install --global JetBrains.dotTrace.GlobalTools
 DI.Setup()
   .Bind<IDependency>().To<Dependency>();
 ```
+
+### How to build this project
+
+To run a build and tests, use the following command line from the root directory of the solution:
+
+```dotnet run --project Build```
+
+To run benchmarks:
+
+```dotnet run --project Build -- -p target=Benchmark```
+
+Benchmarks results are here `BenchmarkDotNet.Artifacts/results`
 
 ### Other resources
 

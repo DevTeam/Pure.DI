@@ -46,6 +46,7 @@ _Pure.DI_ is __NOT__ a framework or library, but a code generator that generates
   - [WPF](#wpf)
 - [Performance test](#performance-test)
 - [Troubleshooting](#troubleshooting)
+- [How to build this project](#how-to-build-this-project)
 - [Other resources](#other-resources)
 - [Usage scenarios](#usage-scenarios)
 
@@ -383,6 +384,18 @@ DI.Setup()
   .Bind<IDependency>().To<Dependency>();
 ```
 
+### How to build this project
+
+To run a build and tests, use the following command line from the root directory of the solution:
+
+```dotnet run --project Build```
+
+To run benchmarks:
+
+```dotnet run --project Build -- -p target=Benchmark```
+
+Benchmarks results are here `BenchmarkDotNet.Artifacts/results`
+
 ### Other resources
 
 * [Project templates](https://github.com/DevTeam/Pure.DI/wiki/Project-templates) - project templates for _dotnet new_ command
@@ -390,7 +403,6 @@ DI.Setup()
 * [C# script tool](https://github.com/JetBrains/teamcity-csharp-interactive/blob/master/TeamCity.CSharpInteractive/Composer.cs) - JetBrain TeamCity interactive tool for running C# scripts
 * [MSBuild logger](https://github.com/JetBrains/teamcity-msbuild-logger/blob/master/TeamCity.MSBuild.Logger/Composer.cs) - Provides the JetBrain TeamCity integration with Microsoft MSBuild.
 * [Performance comparison](https://danielpalme.github.io/IocPerformance/) - performance comparison of the most popular .NET DI/IoC containers
-
 ## Usage Scenarios
 
 - Basics

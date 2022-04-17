@@ -2,8 +2,9 @@ using HostApi;
 using JetBrains.TeamCity.ServiceMessages.Write.Special;
 // ReSharper disable StringLiteralTypo
 
-public class Benchmark
+class Benchmark
 {
+    private readonly Settings _settings;
     private readonly ICommandLineRunner _commandLineRunner;
     private readonly ITeamCityWriter _teamCityWriter;
     private static readonly string[] Reports = {
@@ -15,9 +16,11 @@ public class Benchmark
     };
 
     public Benchmark(
+        Settings settings, 
         ICommandLineRunner commandLineRunner,
         ITeamCityWriter teamCityWriter)
     {
+        _settings = settings;
         _commandLineRunner = commandLineRunner;
         _teamCityWriter = teamCityWriter;
     }
@@ -27,7 +30,7 @@ public class Benchmark
         var benchmark = new DotNetRun()
             .WithProject(Path.Combine("Pure.DI.Benchmark", "Pure.DI.Benchmark.csproj"))
             .WithFramework("net6.0")
-            .WithConfiguration("Release")
+            .WithConfiguration(_settings.configuration)
             .WithArgs("--", "--filter")
             .AddArgs(Reports.Select(filter => $"*{filter}*").ToArray());
 
