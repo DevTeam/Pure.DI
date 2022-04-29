@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.UsageScenarios.Tests
+﻿// ReSharper disable ArrangeNamespaceBody
+namespace Pure.DI.UsageScenarios.Tests
 {
     using System;
     using Microsoft.Extensions.DependencyInjection;

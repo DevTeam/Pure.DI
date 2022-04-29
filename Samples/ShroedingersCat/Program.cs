@@ -6,52 +6,52 @@
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable UnusedMember.Local
-namespace Sample
+namespace Sample;
+
+using System;
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
+// Let's create an abstraction
+
+interface IBox<out T> { T Content { get; } }
+
+interface ICat { State State { get; } }
+
+enum State { Alive, Dead }
+
+// Here is our implementation
+
+class CardboardBox<T> : IBox<T>
 {
-    using System;
-    using Pure.DI;
-    using static Pure.DI.Lifetime;
+    public CardboardBox(T content) => Content = content;
 
-    // Let's create an abstraction
+    public T Content { get; }
 
-    interface IBox<out T> { T Content { get; } }
+    public override string ToString() => $"[{Content}]";
+}
 
-    interface ICat { State State { get; } }
+class ShroedingersCat : ICat
+{
+    // Represents the superposition of the states
+    private readonly Lazy<State> _superposition;
 
-    enum State { Alive, Dead }
+    public ShroedingersCat(Lazy<State> superposition) => _superposition = superposition;
 
-    // Here is our implementation
+    // The decoherence of the superposition at the time of observation via an irreversible process
+    public State State => _superposition.Value;
 
-    class CardboardBox<T> : IBox<T>
-    {
-        public CardboardBox(T content) => Content = content;
+    public override string ToString() => $"{State} cat";
+}
 
-        public T Content { get; }
+// Let's glue all together
 
-        public override string ToString() => $"[{Content}]";
-    }
-
-    class ShroedingersCat : ICat
-    {
-        // Represents the superposition of the states
-        private readonly Lazy<State> _superposition;
-
-        public ShroedingersCat(Lazy<State> superposition) => _superposition = superposition;
-
-        // The decoherence of the superposition at the time of observation via an irreversible process
-        public State State => _superposition.Value;
-
-        public override string ToString() => $"{State} cat";
-    }
-
-    // Let's glue all together
-
-    static partial class Composer
-    {
-        // Actually, this code never runs and the method might have any name or be a constructor for instance
-        // because this is just a hint to set up an object graph.
-        private static void Setup() =>
-            DI.Setup()
+static partial class Composer
+{
+    // Actually, this code never runs and the method might have any name or be a constructor for instance
+    // because this is just a hint to set up an object graph.
+    private static void Setup() =>
+        DI.Setup()
             // Models a random subatomic event that may or may not occur
             .Bind<Random>().As(Singleton).To<Random>()
             // Represents a quantum superposition of 2 states: Alive or Dead
@@ -62,19 +62,18 @@ namespace Sample
             .Bind<IBox<TT>>().To<CardboardBox<TT>>()
             // Composition Root
             .Bind<Program>().To<Program>();
-    }
+}
 
-    // Time to open boxes!
-    public class Program
-    {
-        // Composition Root, a single place in an application
-        // where the composition of the object graphs for an application take place
-        public static void Main() => Composer.ResolveProgram().Run();
+// Time to open boxes!
+public class Program
+{
+    // Composition Root, a single place in an application
+    // where the composition of the object graphs for an application take place
+    public static void Main() => Composer.ResolveProgram().Run();
 
-        private readonly IBox<ICat> _box;
+    private readonly IBox<ICat> _box;
 
-        internal Program(IBox<ICat> box) => _box = box;
+    internal Program(IBox<ICat> box) => _box = box;
 
-        private void Run() => Console.WriteLine(_box);
-    }
+    private void Run() => Console.WriteLine(_box);
 }

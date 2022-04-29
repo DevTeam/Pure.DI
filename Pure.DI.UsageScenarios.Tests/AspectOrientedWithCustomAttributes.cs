@@ -9,6 +9,7 @@
 // ReSharper disable NotAccessedField.Global
 // ReSharper disable UnusedMember.Global
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+// ReSharper disable ArrangeNamespaceBody
 namespace Pure.DI.UsageScenarios.Tests
 {
     using System;

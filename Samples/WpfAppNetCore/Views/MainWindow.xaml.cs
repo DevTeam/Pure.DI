@@ -1,10 +1,9 @@
-﻿namespace WpfAppNetCore.Views
+﻿namespace WpfAppNetCore.Views;
+
+internal partial class MainWindow : IMainWindowView
 {
-    internal partial class MainWindow : IMainWindowView
+    public MainWindow()
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

@@ -1,5 +1,7 @@
 using HostApi;
-using JetBrains.TeamCity.ServiceMessages.Write.Special;
+// ReSharper disable CheckNamespace
+// ReSharper disable UnusedMethodReturnValue.Global
+// ReSharper disable ArrangeTypeModifiers
 
 class Deploy
 {

@@ -245,4 +245,41 @@ public class ErrorsAndWarningsTests
         // Then
         output.Any(i => i.Contains(Diagnostics.Error.MemberIsInaccessible)).ShouldBeTrue(generatedCode);
     }
+    
+    [Fact]
+    public void ShouldHandleWhenNotImplemented()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+                using static Pure.DI.Lifetime;
+
+                public class MyClass
+                {                    
+                }
+
+                public class MyClass2
+                {                    
+                }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<IDisposable>().Bind<MyClass2>().To<MyClass>();
+                    }                   
+                }    
+            }".Run(out var generatedCode, new RunOptions {Statements = string.Empty});
+
+        // Then
+        output.Any(i => i.Contains(Diagnostics.Error.NotInherited)).ShouldBeTrue(generatedCode);
+        output.Any(i => i.Contains("IDisposable")).ShouldBeTrue(generatedCode);
+        output.Any(i => i.Contains("MyClass2")).ShouldBeTrue(generatedCode);
+    }
 }

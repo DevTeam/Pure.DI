@@ -1,6 +1,3 @@
-﻿namespace Clock.Models
-{
-    internal interface ITimer : IObservable<Tick>
-    {
-    }
-}
+﻿namespace Clock.Models;
+
+internal interface ITimer : IObservable<Tick> { }

@@ -1,4 +1,5 @@
-﻿namespace Pure.DI;
+﻿// ReSharper disable RedundantTypeArgumentsOfMethod
+namespace Pure.DI;
 
 using Core;
 using IoC;
@@ -18,7 +19,6 @@ internal class Configuration : IoC.IConfiguration
         yield return container
             .Bind<IAutowiringStrategy>().To(ctx => autowiringStrategy)
             .Bind<IGenerator>().To<Generator>()
-            .Bind<ISyntaxFilter>().As(Singleton).Tag(Syntax).To<SyntaxFilter>()
             .Bind<ISyntaxFilter>().As(Singleton).Tag(MetadataSyntax).To<MetadataSyntaxFilter>()
             .Bind<ICannotResolveExceptionFactory>().As(ContainerSingleton).To<CannotResolveExceptionFactory>()
             .Bind<IStdOut>().As(ContainerSingleton).To<StdOut>()

@@ -20,6 +20,5 @@ internal enum Tags
     GenericResolvers,
     ContainerScope,
     GlobalScope,
-    Syntax,
     MetadataSyntax
 }

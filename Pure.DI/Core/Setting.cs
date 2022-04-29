@@ -8,7 +8,5 @@ internal enum Setting
 
     Verbosity,
 
-    Trace,
-
-    Api
+    Trace
 }

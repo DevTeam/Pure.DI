@@ -1,7 +1,6 @@
-﻿namespace WpfAppNetCore.Views
+﻿namespace WpfAppNetCore.Views;
+
+internal interface IMainWindowView
 {
-    internal interface IMainWindowView
-    {
-        void Show();
-    }
+    void Show();
 }

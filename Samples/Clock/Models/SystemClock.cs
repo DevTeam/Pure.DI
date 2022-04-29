@@ -1,8 +1,7 @@
-﻿namespace Clock.Models
+﻿namespace Clock.Models;
+
+// ReSharper disable once ClassNeverInstantiated.Global
+internal class SystemClock : IClock
 {
-    // ReSharper disable once ClassNeverInstantiated.Global
-    internal class SystemClock : IClock
-    {
-        public DateTimeOffset Now => DateTimeOffset.Now;
-    }
+    public DateTimeOffset Now => DateTimeOffset.Now;
 }

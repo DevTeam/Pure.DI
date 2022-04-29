@@ -2,6 +2,8 @@ using System.IO.Compression;
 using HostApi;
 using JetBrains.TeamCity.ServiceMessages.Write.Special;
 using NuGet.Versioning;
+// ReSharper disable CheckNamespace
+// ReSharper disable ArrangeTypeModifiers
 
 class Build
 {
@@ -31,7 +33,7 @@ class Build
             Path.Combine(
                 "Pure.DI",
                 "bin",
-                _settings.configuration,
+                _settings.Configuration,
                 $"Pure.DI.{packageVersion}.nupkg"));
 
         MergeNuGetPackages(packages, targetPackage);
@@ -47,7 +49,7 @@ class Build
 
         var props = new[]
         {
-            ("configuration", _settings.configuration),
+            ("configuration", _settings.Configuration),
             ("version", packageVersion.ToString()!),
             ("AnalyzerRoslynVersion", analyzerRoslynVersion.ToString()),
             ("AnalyzerRoslynPackageVersion", analyzerRoslynPackageVersion.ToString())
@@ -74,7 +76,7 @@ class Build
         return Path.Combine(
             "Pure.DI",
             "bin",
-            _settings.configuration,
+            _settings.Configuration,
             $"roslyn{analyzerRoslynVersion}",
             $"Pure.DI.{packageVersion.ToString()}.nupkg");
     }

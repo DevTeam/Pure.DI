@@ -1,6 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
+// ReSharper disable ArrangeNamespaceBody
 namespace Pure.DI.UsageScenarios.Tests
 {
     using Shouldly;
@@ -46,6 +47,7 @@ namespace Pure.DI.UsageScenarios.Tests
                 (T)_instances.GetOrAdd(new Key(implementationType, tag), _ => factory()!);
 
             // Represents an instance key
+            [SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Local")]
             private record Key(Type Type, object? Tag);
         }
         

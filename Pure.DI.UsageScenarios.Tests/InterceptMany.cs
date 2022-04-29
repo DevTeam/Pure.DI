@@ -1,6 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
+// ReSharper disable ArrangeNamespaceBody
 namespace Pure.DI.UsageScenarios.Tests
 {
     using System;
@@ -8,7 +9,7 @@ namespace Pure.DI.UsageScenarios.Tests
     using Shouldly;
     using Xunit;
     using Pure.DI;
-    using static Pure.DI.Lifetime;
+    using static Lifetime;
 
     public class InterceptMany
     {

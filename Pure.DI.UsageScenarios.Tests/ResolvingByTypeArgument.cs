@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.UsageScenarios.Tests
+﻿// ReSharper disable ArrangeNamespaceBody
+namespace Pure.DI.UsageScenarios.Tests
 {
     using Shouldly;
     using Xunit;
@@ -17,7 +18,7 @@
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>()
-                .Bind<IService>("Some tag").As(PerResolve).To<Service>();;
+                .Bind<IService>("Some tag").As(PerResolve).To<Service>();
 
             // Resolves an instance of interface `IService`
             var instance = ResolvingByTypeArgumentDI.Resolve(typeof(IService));

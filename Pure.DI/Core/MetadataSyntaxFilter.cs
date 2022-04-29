@@ -22,8 +22,6 @@ internal class MetadataSyntaxFilter : ISyntaxFilter
         nameof(IBinding)
     };
 
-    public IComparable Order => 1;
-
     public bool Accept(SyntaxNode node)
     {
         if (node is not InvocationExpressionSyntax invocation)

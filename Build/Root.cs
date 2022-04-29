@@ -1,5 +1,7 @@
 using HostApi;
 using NuGet.Versioning;
+// ReSharper disable CheckNamespace
+// ReSharper disable ArrangeTypeModifiers
 
 class Root
 {

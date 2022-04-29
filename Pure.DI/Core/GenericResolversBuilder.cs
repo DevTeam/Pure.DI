@@ -30,10 +30,10 @@ internal class GenericResolversBuilder : IMembersBuilder
     public int Order => 2;
 
     public IEnumerable<MemberDeclarationSyntax> BuildMembers(SemanticModel semanticModel) =>
-        BuildMethods(semanticModel)
+        BuildMethods()
             .Select(method => method.WithBody(_statementsFinalizer.AddFinalizationStatements(method.Body)));
 
-    private IEnumerable<MethodDeclarationSyntax> BuildMethods(SemanticModel semanticModel)
+    private IEnumerable<MethodDeclarationSyntax> BuildMethods()
     {
         var methods =
             from binding in _metadata.Bindings.Concat(_buildContext.AdditionalBindings).ToArray()

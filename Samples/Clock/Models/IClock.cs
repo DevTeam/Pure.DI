@@ -1,7 +1,6 @@
-﻿namespace Clock.Models
+﻿namespace Clock.Models;
+
+internal interface IClock
 {
-    internal interface IClock
-    {
-        DateTimeOffset Now { get; }
-    }
+    DateTimeOffset Now { get; }
 }

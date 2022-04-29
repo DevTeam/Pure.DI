@@ -1,5 +1,6 @@
 ﻿// ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable ArrangeNamespaceBody
 namespace Pure.DI.UsageScenarios.Tests
 {
     using Shouldly;

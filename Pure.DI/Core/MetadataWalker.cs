@@ -298,26 +298,31 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
         return false;
     }
 
+    // ReSharper disable once SuggestBaseTypeForParameter
     private bool Check(InvocationExpressionSyntax invocation)
     {
-        var errors = 0;
-        foreach (var dependency in _binding.Dependencies)
+        if (_binding.Implementation == default)
         {
-            if (_binding.Implementation?.Implements(dependency.Type) == false)
-            {
-                errors++;
-                var lastNode = 
-                    invocation.DescendantNodes().OfType<GenericNameSyntax>().LastOrDefault(i => i.Identifier.Text == nameof(IBinding.To))
-                    ?? invocation.DescendantNodes().LastOrDefault()
-                    ?? invocation;
-
-                var location = lastNode.GetLocation();
-                var error = $"{_binding.Implementation} does not implement {dependency}";
-                _diagnostic.Error(Diagnostics.Error.InvalidSetup, error, new []{location}.ToArray());
-                throw new HandledException(error);
-            }
+            return true;
         }
 
-        return errors == 0;
+        var notImplemented =
+            _binding.Dependencies
+            .Where(dependency => !_binding.Implementation.Implements(dependency.Type))
+            .ToList();
+
+        if (notImplemented.Any())
+        {
+            var lastNode =
+                invocation.DescendantNodes().OfType<GenericNameSyntax>().LastOrDefault(i => i.Identifier.Text == nameof(IBinding.To))
+                ?? invocation.DescendantNodes().LastOrDefault()
+                ?? invocation;
+
+            var error = $"{_binding.Implementation} is not inherited from {string.Join(", ", notImplemented.Select(i => i.ToString()))}";
+            _diagnostic.Error(Diagnostics.Error.NotInherited, error, new[] { lastNode.GetLocation() }.ToArray());
+            throw new HandledException(error);
+        }
+
+        return true;
     }
 }

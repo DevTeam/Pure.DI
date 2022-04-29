@@ -351,6 +351,7 @@ public class FuncResolveTests
         // Given
 
         // When
+        // ReSharper disable once RedundantStringInterpolation
         var output = $@"
             namespace Sample
             {{

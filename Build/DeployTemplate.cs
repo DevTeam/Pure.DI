@@ -1,6 +1,9 @@
 using HostApi;
 using JetBrains.TeamCity.ServiceMessages.Write.Special;
 using NuGet.Versioning;
+// ReSharper disable CheckNamespace
+// ReSharper disable ArrangeTypeModifiers
+// ReSharper disable UnusedMethodReturnValue.Global
 
 class DeployTemplate
 {
@@ -23,7 +26,7 @@ class DeployTemplate
         var templatePackageVersion = Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI.Templates"), new NuGetVersion(1, 0, 0));
         var props = new[]
         {
-            ("configuration", _settings.configuration),
+            ("configuration", _settings.Configuration),
             ("version", templatePackageVersion.ToString()!)
         };
 

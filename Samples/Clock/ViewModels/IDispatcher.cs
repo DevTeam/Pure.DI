@@ -1,7 +1,6 @@
-﻿namespace Clock.ViewModels
+﻿namespace Clock.ViewModels;
+
+public interface IDispatcher
 {
-    public interface IDispatcher
-    {
-        void Dispatch(Action action);
-    }
+    void Dispatch(Action action);
 }

@@ -1,9 +1,8 @@
-﻿namespace Clock.ViewModels
-{
-    public interface IClockViewModel
-    {
-        string Time { get; }
+﻿namespace Clock.ViewModels;
 
-        string Date { get; }
-    }
+public interface IClockViewModel
+{
+    string Time { get; }
+
+    string Date { get; }
 }

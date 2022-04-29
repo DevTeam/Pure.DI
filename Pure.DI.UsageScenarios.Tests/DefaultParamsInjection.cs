@@ -2,6 +2,7 @@
 // ReSharper disable RedundantTypeArgumentsOfMethod
 // ReSharper disable EmptyConstructor
 // ReSharper disable UnusedVariable
+// ReSharper disable ArrangeNamespaceBody
 namespace Pure.DI.UsageScenarios.Tests
 {
     using Shouldly;

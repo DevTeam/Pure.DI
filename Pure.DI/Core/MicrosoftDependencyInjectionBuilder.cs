@@ -288,9 +288,6 @@ internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
                 return method.AddBodyStatements(SyntaxFactory.ReturnStatement(SyntaxFactory.IdentifierName("services")));
             });
         }
-        else
-        {
-        }
 
         _log.Trace(() => new[]
         {

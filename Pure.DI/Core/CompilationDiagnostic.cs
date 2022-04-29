@@ -29,6 +29,7 @@ internal class CompilationDiagnostic : IDiagnostic
             // ignored
         }
 
+        // ReSharper disable once InvertIf
         if (id != Diagnostics.Error.Unhandled)
         {
             try

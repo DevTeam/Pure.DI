@@ -4,6 +4,8 @@
 // ReSharper disable InvalidXmlDocComment
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedType.Global
+// ReSharper disable ArrangeNamespaceBody
+// ReSharper disable RedundantNameQualifier
 #pragma warning disable 0436
 #pragma warning disable 8714
 namespace NS35EBD81B

@@ -1,15 +1,15 @@
 ﻿@page "/"
 @using Clock.ViewModels
-@inject IClockViewModel _clockViewModel
+@inject IClockViewModel ClockViewModel
 
-<p>Date: @_clockViewModel.Date</p>
-<p>Time: @_clockViewModel.Time</p>
+<p>Date: @ClockViewModel.Date</p>
+<p>Time: @ClockViewModel.Time</p>
 
 @code {
 
     protected override void OnInitialized()
     {
-        ((INotifyPropertyChanged)_clockViewModel).PropertyChanged += (_, _) => InvokeAsync(StateHasChanged);
+        ((INotifyPropertyChanged)ClockViewModel).PropertyChanged += (_, _) => InvokeAsync(StateHasChanged);
         base.OnInitialized();
     }
 

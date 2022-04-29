@@ -1,8 +1,7 @@
 ﻿// ReSharper disable UnusedTypeParameter
-namespace Clock.Models
+namespace Clock.Models;
+
+public interface ILog<T>
 {
-    public interface ILog<T>
-    {
-        void Info(string message);
-    }
+    void Info(string message);
 }

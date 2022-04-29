@@ -3,6 +3,7 @@
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedVariable
 // ReSharper disable UnusedParameter.Local
+// ReSharper disable ArrangeNamespaceBody
 namespace Pure.DI.UsageScenarios.Tests
 {
     using Xunit;

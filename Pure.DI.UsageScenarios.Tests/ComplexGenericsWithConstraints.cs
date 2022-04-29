@@ -3,6 +3,8 @@
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedVariable
 // ReSharper disable UnusedParameter.Local
+// ReSharper disable ArrangeNamespaceBody
+// ReSharper disable UnusedTypeParameter
 namespace Pure.DI.UsageScenarios.Tests
 {
     using System.Collections.Generic;
@@ -29,11 +31,6 @@ namespace Pure.DI.UsageScenarios.Tests
             public Consumer(IService<T, string, IDictionary<T, string[]>> service) { }
         }
         
-        public class Consumer
-        {
-            public Consumer(IService<int, string, IDictionary<int, string[]>> service) { }
-        }
-
         public interface IService<T1, T2, T3>
             where T3: IDictionary<T1, T2[]>
         { }

@@ -10,6 +10,6 @@ internal static class ContainerExtensions
             .Create()
             .Using<Configuration>()
             .Create()
-            .Bind<CompilationDiagnostic>().Bind<IDiagnostic>().As(IoC.Lifetime.ContainerSingleton).To<CompilationDiagnostic>()
+            .Bind<CompilationDiagnostic>().Bind<IDiagnostic>().As(Lifetime.ContainerSingleton).To<CompilationDiagnostic>()
             .Container;
 }

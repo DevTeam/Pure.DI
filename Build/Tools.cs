@@ -1,5 +1,9 @@
 using HostApi;
 using NuGet.Versioning;
+// ReSharper disable ArrangeTypeModifiers
+// ReSharper disable UnusedMethodReturnValue.Global
+// ReSharper disable CheckNamespace
+// ReSharper disable UnusedMember.Global
 
 static class Tools
 {

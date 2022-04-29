@@ -11,6 +11,7 @@ internal static class Diagnostics
         public const string CircularDependency = "DI004";
         public const string MemberIsInaccessible = "DI005";
         public const string InvalidSetup = "DI006";
+        public const string NotInherited = "DI007";
     }
 
     internal static class Warning

@@ -1,6 +1,8 @@
 using HostApi;
 using JetBrains.TeamCity.ServiceMessages.Write.Special;
 // ReSharper disable StringLiteralTypo
+// ReSharper disable CheckNamespace
+// ReSharper disable ArrangeTypeModifiers
 
 class Benchmark
 {
@@ -30,7 +32,7 @@ class Benchmark
         var benchmark = new DotNetRun()
             .WithProject(Path.Combine("Pure.DI.Benchmark", "Pure.DI.Benchmark.csproj"))
             .WithFramework("net6.0")
-            .WithConfiguration(_settings.configuration)
+            .WithConfiguration(_settings.Configuration)
             .WithArgs("--", "--filter")
             .AddArgs(Reports.Select(filter => $"*{filter}*").ToArray());
 

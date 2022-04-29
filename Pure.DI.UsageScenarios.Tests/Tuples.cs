@@ -1,4 +1,5 @@
 ﻿// ReSharper disable RedundantUsingDirective
+// ReSharper disable ArrangeNamespaceBody
 namespace Pure.DI.UsageScenarios.Tests
 {
     using Shouldly;

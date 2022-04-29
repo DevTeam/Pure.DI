@@ -45,6 +45,7 @@ internal class SourceBuilder : ISourceBuilder
         var context = _metadataBuilder.Build(executionContext);
         if (!context.BaseMetadata.Any())
         {
+            // ReSharper disable once StringLiteralTypo
             var error = $"Pure.DI API in the namespace \"{Defaults.DefaultNamespace}\" conflicts with an existing code. Please consider changing the namespace: https://github.com/DevTeam/Pure.DI#changing-the-puredi-api-namespace";
             _diagnostic.Error(Diagnostics.Error.InvalidSetup, error);
             throw new HandledException(error);

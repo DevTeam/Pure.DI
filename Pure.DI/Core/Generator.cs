@@ -4,16 +4,13 @@ namespace Pure.DI.Core;
 internal class Generator : IGenerator
 {
     private readonly ISourceBuilder _sourceBuilder;
-    private readonly ISettings _settings;
     private readonly IDiagnostic _diagnostic;
 
     public Generator(
         ISourceBuilder sourceBuilder,
-        ISettings settings,
         IDiagnostic diagnostic)
     {
         _sourceBuilder = sourceBuilder;
-        _settings = settings;
         _diagnostic = diagnostic;
     }
 

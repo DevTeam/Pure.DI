@@ -8,6 +8,7 @@
 // ReSharper disable ArrangeAccessorOwnerBody
 
 // ReSharper disable RedundantNameQualifier
+// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 #if NETSTANDARD1_6 || NETSTANDARD1_5 || NETSTANDARD1_4 || NETSTANDARD1_3 || NETSTANDARD1_2 || NETSTANDARD1_1 || NETSTANDARD1_0
 namespace System
 {
