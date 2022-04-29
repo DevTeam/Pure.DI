@@ -1057,11 +1057,6 @@ public class Consumer<T>: IConsumer<T>
     public Consumer(IService<T, string, IDictionary<T, string[]>> service) { }
 }
 
-public class Consumer
-{
-    public Consumer(IService<int, string, IDictionary<int, string[]>> service) { }
-}
-
 public interface IService<T1, T2, T3>
     where T3: IDictionary<T1, T2[]>
 { }
@@ -1392,6 +1387,7 @@ public class CustomSingletonLifetime: IFactory
         (T)_instances.GetOrAdd(new Key(implementationType, tag), _ => factory()!);
 
     // Represents an instance key
+    [SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Local")]
     private record Key(Type Type, object? Tag);
 }
 
@@ -1964,7 +1960,7 @@ public class Startup
 
     public Microsoft.Extensions.Configuration.IConfiguration Configuration { get; }
     
-    public void ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
+    public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
         // AddGreetingDomain(this IServiceCollection services) method was generated automatically
