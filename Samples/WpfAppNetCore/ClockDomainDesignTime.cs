@@ -1,6 +1,7 @@
 // ReSharper disable UnusedType.Global
 // ReSharper disable RedundantUsingDirective
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable ArrangeNamespaceBody
 namespace WpfAppNetCore
 {
     using System;

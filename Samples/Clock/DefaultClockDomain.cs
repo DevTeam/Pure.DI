@@ -1,5 +1,6 @@
 // ReSharper disable UnusedType.Global
 // ReSharper disable PartialTypeWithSinglePart
+// ReSharper disable ArrangeNamespaceBody
 namespace Clock
 {
     using Models;

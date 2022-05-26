@@ -43,6 +43,12 @@ internal class SourceBuilder : ISourceBuilder
                 : string.Empty;
 
         var context = _metadataBuilder.Build(executionContext);
+        
+        if (executionContext.CancellationToken.IsCancellationRequested)
+        {
+            return;
+        }
+
         if (!context.BaseMetadata.Any())
         {
             // ReSharper disable once StringLiteralTypo

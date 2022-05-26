@@ -16,26 +16,6 @@ internal class Generator : IGenerator
 
     public void Generate(IExecutionContext context)
     {
-        var workingThread = new Thread(() => GenerateInternal(context), 0xff_ffff)
-        {
-            Name = "Pure.DI",
-            IsBackground = true,
-            Priority = ThreadPriority.BelowNormal
-        };
-
-        workingThread.Start();
-        while (!workingThread.Join(10) && !context.CancellationToken.IsCancellationRequested)
-        {
-        }
-
-        if (context.CancellationToken.IsCancellationRequested && !workingThread.Join(1))
-        {
-            workingThread.Abort();
-        }
-    }
-
-    private void GenerateInternal(IExecutionContext context)
-    {
         if (_diagnostic is CompilationDiagnostic compilationDiagnostic)
         {
             compilationDiagnostic.Context = context;
@@ -43,7 +23,6 @@ internal class Generator : IGenerator
 
         try
         {
-            //Debugger.Launch();
             _sourceBuilder.Build(context);
         }
         catch (BuildException buildException)

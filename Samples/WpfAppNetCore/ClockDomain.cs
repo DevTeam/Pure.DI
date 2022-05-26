@@ -1,6 +1,7 @@
 // ReSharper disable UnusedType.Global
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable UnusedMember.Local
+// ReSharper disable ArrangeNamespaceBody
 namespace WpfAppNetCore
 {
     using System.Diagnostics;

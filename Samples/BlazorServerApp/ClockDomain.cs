@@ -1,6 +1,7 @@
 // ReSharper disable UnusedType.Global
 // ReSharper disable PartialTypeWithSinglePart
 // ReSharper disable UnusedMember.Local
+// ReSharper disable ArrangeNamespaceBody
 namespace BlazorServerApp
 {
     using Clock.Models;

@@ -1,5 +1,4 @@
-﻿//#if ROSLYN38
-namespace Pure.DI;
+﻿namespace Pure.DI;
 
 using Core;
 using IoC;
@@ -11,8 +10,11 @@ public class SourceGenerator : ISourceGenerator
 
     public void Initialize(GeneratorInitializationContext context) { }
 
-    public void Execute(GeneratorExecutionContext context) =>
-        GeneratorContainer.Create().Resolve<IGenerator>().Generate(new ExecutionContext(context));
+    public void Execute(GeneratorExecutionContext context)
+    {
+        using var container = GeneratorContainer.Create();
+        container.Resolve<IGenerator>().Generate(new ExecutionContext(context));
+    }
 
     private class ExecutionContext : IExecutionContext
     {
@@ -37,4 +39,3 @@ public class SourceGenerator : ISourceGenerator
             _context.AnalyzerConfigOptions.GlobalOptions.TryGetValue(optionName, out value!);
     }
 }
-//#endif
