@@ -707,7 +707,8 @@ public class SetupTests
             "xyz"
         }, generatedCode);
     }
-    
+
+#if !ROSLYN38
     [Fact]
     public void ShouldUsePredefinedGenericTypeAttribute()
     {
@@ -744,6 +745,7 @@ public class SetupTests
             "xyz"
         }, generatedCode);
     }
+#endif
 
     [Fact]
     public void ShouldUseCustomTypeAttribute()
