@@ -11,6 +11,7 @@ namespace NS35EBD81B.Features
         {
             NS35EBD81B.DI.Setup("DefaultFeature")
                 .TypeAttribute<NS35EBD81B.TypeAttribute>()
+                .TypeAttribute<NS35EBD81B.TypeAttribute<TT>>()
                 .TagAttribute<NS35EBD81B.TagAttribute>()
                 .OrderAttribute<NS35EBD81B.OrderAttribute>()
 

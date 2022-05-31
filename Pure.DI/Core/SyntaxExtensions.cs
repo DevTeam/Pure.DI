@@ -9,7 +9,11 @@ internal static class SyntaxExtensions
 
     public static IEnumerable<AttributeData> GetAttributes(this ISymbol symbol, INamedTypeSymbol attributeType) =>
         from attr in symbol.GetAttributes()
-        where attr.AttributeClass != null && SymbolEqualityComparer.Default.Equals(attr.AttributeClass, attributeType)
+        where 
+            attr.AttributeClass != null
+            && SymbolEqualityComparer.Default.Equals(
+                attr.AttributeClass.IsGenericType ? attr.AttributeClass.ConstructUnboundGenericType() : attr.AttributeClass,
+                attributeType.IsGenericType ? attributeType.ConstructUnboundGenericType() : attributeType)
         select attr;
 
     public static SemanticModel GetSemanticModel(this SyntaxNode node, SemanticModel semanticModel) =>

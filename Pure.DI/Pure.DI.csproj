@@ -4,7 +4,6 @@
         <SignAssembly>True</SignAssembly>
         <AssemblyOriginatorKeyFile>..\DevTeam.snk</AssemblyOriginatorKeyFile>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
         <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
         <OutputPath>bin/$(Configuration)/roslyn$(AnalyzerRoslynVersion)</OutputPath>
@@ -43,6 +42,7 @@
         <None Include="$(PKGIoC_Container)\lib\netstandard2.0\IoC.dll" Pack="true" PackagePath="analyzers/dotnet/roslyn$(AnalyzerRoslynVersion)/cs" Visible="false" />
         
         <EmbeddedResource Include="Components\Contracts.cs" />
+        <EmbeddedResource Include="Components\Contracts_CSharp11.cs" />
         <EmbeddedResource Include="Components\GenericTypeArguments.cs" />
         <EmbeddedResource Include="Components\Tables.cs" />
         <EmbeddedResource Include="Components\ServiceProviderInstance.cs" />

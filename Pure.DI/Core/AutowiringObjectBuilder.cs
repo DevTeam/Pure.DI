@@ -309,8 +309,7 @@ internal class AutowiringObjectBuilder : IObjectBuilder
 
     private SemanticType? GetDependencyType(ISymbol type, SemanticModel semanticModel) =>
     (
-        from expression in _attributesService.GetAttributeArgumentExpressions(AttributeKind.Type, type)
-        let typeExpression = (expression as TypeOfExpressionSyntax)?.Type
+        from typeExpression in _attributesService.GetAttributeArgumentExpressions(AttributeKind.Type, type)
         where typeExpression != null
         let typeSemanticModel = typeExpression.GetSemanticModel(semanticModel)
         let typeSymbol = typeSemanticModel.GetTypeInfo(typeExpression).Type

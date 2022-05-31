@@ -62,8 +62,10 @@ namespace Pure.DI.UsageScenarios.Tests
             // Constructor injection using the tag "MyConsole"
             public Logger([Tag("MyConsole")] IConsole console) => _console = console;
 
-            // Method injection after constructor using specified type _Clock_
-            [Order(1)] public void Initialize([Type(typeof(Clock))] IClock clock) => _clock = clock;
+            // Method injection using the specified type "Clock"
+            // Starting C# 11 you can use a generic attribute like Type<Clock>
+            // otherwise use an attribute like Type(typeof(Clock)) instead
+            [Order(1)] public void Initialize([Type<Clock>] IClock clock) => _clock = clock;
 
             // Setter injection after the method injection above using the tag "Prefix"
             [Tag("Prefix"), Order(2)]

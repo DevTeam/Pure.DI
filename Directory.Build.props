@@ -7,6 +7,7 @@
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/DevTeam/Pure.DI.git</RepositoryUrl>
         <Copyright>Copyright (C) 2021 Nikolay Pianikov</Copyright>
+        <LangVersion>preview</LangVersion>
 
         <AnalyzerRoslynVersion Condition="'$(AnalyzerRoslynVersion)'==''">4.0</AnalyzerRoslynVersion>
         <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">4.0.1</AnalyzerRoslynPackageVersion>

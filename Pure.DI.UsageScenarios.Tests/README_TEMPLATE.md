@@ -266,8 +266,10 @@ public class Logger : ILogger
     // Constructor injection using the tag "MyConsole"
     public Logger([Tag("MyConsole")] IConsole console) => _console = console;
 
-    // Method injection after constructor using specified type _Clock_
-    [Order(1)] public void Initialize([Type(typeof(Clock))] IClock clock) => _clock = clock;
+    // Method injection using the specified type "Clock"
+    // Starting C# 11 you can use a generic attribute like Type<Clock>
+    // otherwise use an attribute like Type(typeof(Clock)) instead
+    [Order(1)] public void Initialize([Type<Clock>] IClock clock) => _clock = clock;
 
     // Setter injection after the method injection above using the tag "Prefix"
     [Tag("Prefix"), Order(2)]
@@ -334,6 +336,8 @@ public void Run()
         .TypeAttribute<MyTypeAttribute>()
         .OrderAttribute<MyOrderAttribute>()
         .TagAttribute<MyTagAttribute>()
+        // Starting C# 11 you can use a generic attributes
+        .TypeAttribute<MyTypeAttribute<TT>>()
 
         .Bind<IConsole>().Tags("MyConsole").To(_ => AspectOrientedWithCustomAttributes.Console.Object)
         .Bind<string>().Tags("Prefix").To(_ => "info")
@@ -356,10 +360,16 @@ public void Run()
     | AttributeTargets.Field)]
 public class MyTypeAttribute : Attribute
 {
-    // A type, which will be used during an injection
-    public readonly Type Type;
+    public MyTypeAttribute(Type type) { }
+}
 
-    public MyTypeAttribute(Type type) => Type = type;
+// Starting C# 11 you can use a generic attributes
+[AttributeUsage(
+    AttributeTargets.Parameter
+    | AttributeTargets.Property
+    | AttributeTargets.Field)]
+public class MyTypeAttribute<T> : Attribute
+{
 }
 
 // Represents the dependency aspect attribute to specify a tag for injection.
@@ -369,10 +379,7 @@ public class MyTypeAttribute : Attribute
     | AttributeTargets.Field)]
 public class MyTagAttribute : Attribute
 {
-    // A tag, which will be used during an injection
-    public readonly object Tag;
-
-    public MyTagAttribute(object tag) => Tag = tag;
+    public MyTagAttribute(object tag) { }
 }
 
 // Represents the dependency aspect attribute to specify an order for injection.
@@ -383,10 +390,7 @@ public class MyTagAttribute : Attribute
     | AttributeTargets.Field)]
 public class MyOrderAttribute : Attribute
 {
-    // An order to be used to invoke a method
-    public readonly int Order;
-
-    public MyOrderAttribute(int order) => Order = order;
+    public MyOrderAttribute(int order) { }
 }
 
 public interface IConsole { void WriteLine(string text); }
@@ -404,7 +408,7 @@ public class Logger : ILogger
     public Logger([MyTag("MyConsole")] IConsole console) => _console = console;
 
     // Method injection after constructor using specified type _Clock_
-    [MyOrder(1)] public void Initialize([MyType(typeof(Clock))] IClock clock) => _clock = clock;
+    [MyOrder(1)] public void Initialize([MyType<Clock>] IClock clock) => _clock = clock;
 
     // Setter injection after the method injection above using the tag "Prefix"
     [MyTag("Prefix"), MyOrder(2)]

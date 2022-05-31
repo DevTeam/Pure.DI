@@ -1,6 +1,7 @@
 ﻿namespace Pure.DI.Tests.Integration;
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 public class SetupTests
 {
@@ -699,6 +700,43 @@ public class SetupTests
                     internal CompositionRoot([Type(typeof(string))] object value) => Value = (string)value;        
                 }
             }".Run(out var generatedCode);
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "xyz"
+        }, generatedCode);
+    }
+    
+    [Fact]
+    public void ShouldUsePredefinedGenericTypeAttribute()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<string>().To(_ => ""xyz"")
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot([Type<string>] object value) => Value = (string)value;        
+                }
+            }".Run(out var generatedCode, new RunOptions { LanguageVersion = LanguageVersion.Preview });
 
         // Then
         output.ShouldBe(new[]
