@@ -530,6 +530,44 @@ public class SetupTests
             "abc"
         }, generatedCode);
     }
+    
+    [Fact]
+    public void ShouldUsePredefinedTagAttributeWhenTagIsTypeOf()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<string>().Tags(typeof(string)).To(_ => ""abc"")
+                            .Bind<string>().To(_ => ""xyz"")
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot([Tag(typeof(string))] string value) => Value = value;
+                }
+            }".Run(out var generatedCode);
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "abc"
+        }, generatedCode);
+    }
 
     [Fact]
     public void ShouldUsePredefinedTagAttributeAdv()

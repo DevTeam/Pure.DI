@@ -23,14 +23,18 @@ internal class AttributesService : IAttributesService
         if (args != null && metadata.ArgumentPosition < args.Count)
         {
             var expression = args[metadata.ArgumentPosition]?.Expression;
-            if (expression is TypeOfExpressionSyntax typeOfExpressionSyntax)
+            // TypeAttribute
+            if (
+                metadata.Kind == AttributeKind.Type
+                && expression is TypeOfExpressionSyntax typeOfExpressionSyntax)
             {
                 return typeOfExpressionSyntax.Type;
             }
 
             return expression;
         }
-
+        
+        // TypeAttribute<T> 
         if (
             metadata.Kind == AttributeKind.Type
             && attr.Name is GenericNameSyntax genericNameSyntax
