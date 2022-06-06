@@ -19,8 +19,8 @@
         <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
         <IsPackable>true</IsPackable>
         <PackageId>Pure.DI</PackageId>
-        <Description>Pure DI for .NET.</Description>
-        <PackageTags>di;pure;ioc</PackageTags>
+        <Description>Pure DI for .NET without frameworks!</Description>
+        <PackageTags>ioc;solid;dotnet;dependency-injection;inversion-of-control;di;injection-container;injection-framework;dip;csharp-sourcegenerator</PackageTags>
         <Product>Pure DI</Product>
     </PropertyGroup>
 
