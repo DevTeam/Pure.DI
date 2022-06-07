@@ -15,16 +15,19 @@ namespace WpfAppNetCore
     {
         [Conditional("DEBUG")] // To exclude this method from a compilation
         private static void Setup() => DI.Setup()
+            // Set default lifetime
+            .Default(Singleton)
+
             // Infrastructure
-            .Bind<IDispatcher>().As(Singleton).To<Dispatcher>()
-            .Bind<IMainWindowView>().As(Singleton).To<MainWindow>()
+            .Bind<IDispatcher>().To<Dispatcher>()
+            .Bind<IMainWindowView>().To<MainWindow>()
 
             // View Models
-            .Bind<IClockViewModel>().To<ClockViewModel>()
+            .Bind<IClockViewModel>().As(Transient).To<ClockViewModel>()
 
             // Models
-            .Bind<ILog<TT>>().As(Singleton).To<Log<TT>>()
-            .Bind<ITimer>().As(Singleton).To(_ => new Timer(TimeSpan.FromSeconds(1)))
-            .Bind<IClock>().As(Singleton).To<SystemClock>();
+            .Bind<ILog<TT>>().To<Log<TT>>()
+            .Bind<ITimer>().To(_ => new Timer(TimeSpan.FromSeconds(1)))
+            .Bind<IClock>().To<SystemClock>();
     }
 }

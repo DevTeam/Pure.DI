@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "teamcity.csi": {
+      "version": "1.0.4-beta4",
+      "commands": [
+        "dotnet-csi"
+      ]
+    }
+  }
+}
