@@ -286,7 +286,7 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
             ArrayTypeSyntax arrayTypeSyntax => IsValidTypeToResolve(arrayTypeSyntax.ElementType),
             GenericNameSyntax genericNameSyntax => genericNameSyntax.TypeArgumentList.Arguments.Any(IsValidTypeToResolve),
             QualifiedNameSyntax qualifiedNameSyntax => IsValidTypeToResolve(qualifiedNameSyntax.Left) || IsValidTypeToResolve(qualifiedNameSyntax.Right),
-            IdentifierNameSyntax identifierNameSyntax => identifierNameSyntax.Identifier.Text.StartsWith("TT"),
+            IdentifierNameSyntax identifierNameSyntax => identifierNameSyntax.Identifier.Text.StartsWith(SemanticType.GenericTypeArgumentPrefix),
             _ => true
         };
 

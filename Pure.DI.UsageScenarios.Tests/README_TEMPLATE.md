@@ -587,7 +587,7 @@ public class SomeService: IService
 
 ### Complex generics
 
-Autowiring of generic types as simple as autowiring of other simple types. Just use a generic parameters markers like _TT_, _TT1_, _TT2_ and etc. or TTI, TTI1, TTI2 ... for interfaces or _TTS_, _TTS1_, _TTS2_ ... for value types or other special markers like _TTDisposable_, _TTDisposable1_ and etc. _TTList<>_, _TTDictionary<>_ ... or create your own generic parameters markers or bind open generic types.
+Autowiring generic types is as easy as autowiring other simple types. Just use generic parameter markers like _TT_, _TT1_, _TT2_ etc or TTI, TTI1, TTI2... for interfaces or _TTS_, _TTS1_, _TTS2_... for value types or other special markers like _TTDisposable_ , _TTDisposable1_ , etc. _TTList <>_, _TTDictionary<>_ ... or create your own generic markers like _TTMy_ in the example below. Your own generic markers must meet 2 conditions: the type name must start with _TT_ and the type must have the _[GenericTypeArgument]_ attribute.
 
 ``` CSharp
 public void Run()
@@ -631,9 +631,11 @@ public class Consumer
     public ICollection<IService<int>> Services2 { get; }
 }
 
-// Custom generic type marker using predefined attribute `GenericTypeArgument`
+// Custom generic type marker:
+// The type name should start from "TT"
+// and this type should have the attribute "GenericTypeArgument"
 [GenericTypeArgument]
-class TTMy { }
+interface TTMy { }
 ```
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).

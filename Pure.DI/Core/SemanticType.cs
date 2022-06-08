@@ -8,6 +8,7 @@ using NS35EBD81B;
 
 internal class SemanticType
 {
+    public const string GenericTypeArgumentPrefix = "TT";
     public readonly ITypeSymbol Type;
     public readonly SemanticModel SemanticModel;
 
@@ -141,6 +142,11 @@ internal class SemanticType
     {
         get
         {
+            if (!Type.Name.StartsWith(GenericTypeArgumentPrefix))
+            {
+                return false;
+            }
+
             foreach (var attr in Type.GetAttributes())
             {
                 if (
