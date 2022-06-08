@@ -11,7 +11,7 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
     private readonly IBuildContext _buildContext;
     private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
     private readonly ICache<FactoryKey, SyntaxNode?> _nodeCache;
-    private readonly ICache<SyntaxNode, ITypeSymbol?> _typeCache;
+    private readonly ICache<string, ITypeSymbol?> _typeCache;
     private Dependency _dependency;
     private IBuildStrategy? _buildStrategy;
     private SyntaxToken _contextIdentifier;
@@ -21,7 +21,7 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
         IBuildContext buildContext,
         ICannotResolveExceptionFactory cannotResolveExceptionFactory,
         [Tag(Tags.ContainerScope)] ICache<FactoryKey, SyntaxNode?> nodeCache,
-        [Tag(Tags.ContainerScope)] ICache<SyntaxNode, ITypeSymbol?> typeCache)
+        [Tag(Tags.ContainerScope)] ICache<string, ITypeSymbol?> typeCache)
         : base(true)
     {
         _buildContext = buildContext;
@@ -153,7 +153,7 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
         {
             var semanticModel = node.GetSemanticModel(_dependency.Implementation);
             var argType = node.TypeArgumentList.Arguments[0];
-            var type = _typeCache.GetOrAdd(argType, i => semanticModel.GetTypeInfo(i).Type);
+            var type = _typeCache.GetOrAdd(argType.ToString(), i => semanticModel.GetTypeInfo(argType).Type);
             if (type != default)
             {
                 var tag = invocation.ArgumentList.Arguments.Count == 1 ? invocation.ArgumentList.Arguments[0].Expression : _defaultTag;
@@ -247,35 +247,48 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
     private TypeSyntax ReplaceTypeInternal(TypeSyntax typeSyntax)
     {
         var semanticModel = typeSyntax.SyntaxTree.GetRoot().GetSemanticModel(_dependency.Implementation);
-        var typeSymbol = _typeCache.GetOrAdd(typeSyntax, _ => semanticModel.GetTypeInfo(typeSyntax).Type);
-        // ReSharper disable once ConvertIfStatementToSwitchStatement
-        if (typeSymbol == default)
+        if (IsValidTypeToResolve(typeSyntax))
         {
-            return typeSyntax;
-        }
-
-        if (typeSymbol is IArrayTypeSymbol arrayTypeSymbol)
-        {
-            var arrayType = new SemanticType(arrayTypeSymbol.ElementType, _dependency.Implementation);
-            if (!arrayType.IsValidTypeToResolve)
+            var typeSymbol = _typeCache.GetOrAdd(typeSyntax.ToString(), _ => semanticModel.GetTypeInfo(typeSyntax).Type);
+            // ReSharper disable once ConvertIfStatementToSwitchStatement
+            if (typeSymbol == default)
             {
-                var sematicType = _dependency.TypesMap.ConstructType(arrayType);
-                var array = semanticModel.Compilation.CreateArrayTypeSymbol(sematicType.Type);
-                return SyntaxFactory.ParseTypeName(array.ToString());
+                return typeSyntax;
             }
 
-            return typeSyntax;
-        }
+            if (typeSymbol is IArrayTypeSymbol arrayTypeSymbol)
+            {
+                var arrayType = new SemanticType(arrayTypeSymbol.ElementType, _dependency.Implementation);
+                if (!arrayType.IsValidTypeToResolve)
+                {
+                    var sematicType = _dependency.TypesMap.ConstructType(arrayType);
+                    var array = semanticModel.Compilation.CreateArrayTypeSymbol(sematicType.Type);
+                    return SyntaxFactory.ParseTypeName(array.ToString());
+                }
 
-        var type = new SemanticType(typeSymbol, _dependency.Implementation);
-        if (!type.IsValidTypeToResolve)
-        {
-            var sematicType = _dependency.TypesMap.ConstructType(type);
-            return sematicType.TypeSyntax;
+                return typeSyntax;
+            }
+
+            var type = new SemanticType(typeSymbol, _dependency.Implementation);
+            if (!type.IsValidTypeToResolve)
+            {
+                var sematicType = _dependency.TypesMap.ConstructType(type);
+                return sematicType.TypeSyntax;
+            }
         }
 
         return typeSyntax;
     }
+
+    private static bool IsValidTypeToResolve(TypeSyntax typeSyntax) =>
+        typeSyntax switch
+        {
+            ArrayTypeSyntax arrayTypeSyntax => IsValidTypeToResolve(arrayTypeSyntax.ElementType),
+            GenericNameSyntax genericNameSyntax => genericNameSyntax.TypeArgumentList.Arguments.Any(IsValidTypeToResolve),
+            QualifiedNameSyntax qualifiedNameSyntax => IsValidTypeToResolve(qualifiedNameSyntax.Left) || IsValidTypeToResolve(qualifiedNameSyntax.Right),
+            IdentifierNameSyntax identifierNameSyntax => identifierNameSyntax.Identifier.Text.StartsWith("TT"),
+            _ => true
+        };
 
     internal class FactoryKey
     {
