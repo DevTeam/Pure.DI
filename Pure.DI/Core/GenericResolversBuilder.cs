@@ -44,8 +44,8 @@ internal class GenericResolversBuilder : IMembersBuilder
             where minAccessibility >= Accessibility.Internal
             let accessibility = minAccessibility == Accessibility.Public ? SyntaxKind.PublicKeyword : SyntaxKind.InternalKeyword
             let methodName = _staticResolverNameProvider.GetName(dependency)
-            let method = SyntaxFactory.MethodDeclaration(dependency.TypeSyntax, methodName)
-                .AddModifiers(SyntaxFactory.Token(accessibility), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+            let method = SyntaxRepo.MethodDeclaration(dependency.TypeSyntax, methodName)
+                .AddModifiers(accessibility.WithSpace(), SyntaxKind.StaticKeyword.WithSpace())
                 .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
             let tags = binding.GetTags(dependency).ToArray()
             from tag in tags.DefaultIfEmpty(default)
@@ -68,7 +68,7 @@ internal class GenericResolversBuilder : IMembersBuilder
                 var objectExpression = _buildStrategy.TryBuild(first.resolvedDependency, first.dependency);
                 if (objectExpression.HasValue)
                 {
-                    method = method.AddBodyStatements(SyntaxFactory.IfStatement(checkTags, SyntaxFactory.ReturnStatement(objectExpression.Value)));
+                    method = method.AddBodyStatements(SyntaxFactory.IfStatement(checkTags, SyntaxRepo.ReturnStatement(objectExpression.Value)));
                 }
             }
 
@@ -77,7 +77,7 @@ internal class GenericResolversBuilder : IMembersBuilder
                 var objectExpression = _buildStrategy.TryBuild(defaultItem.resolvedDependency, defaultItem.dependency);
                 if (objectExpression.HasValue)
                 {
-                    yield return methodGroup.Key.AddBodyStatements(SyntaxFactory.ReturnStatement(objectExpression.Value));
+                    yield return methodGroup.Key.AddBodyStatements(SyntaxRepo.ReturnStatement(objectExpression.Value));
                 }
             }
 
@@ -93,10 +93,10 @@ internal class GenericResolversBuilder : IMembersBuilder
             }
 
             yield return method
-                .AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("tag")).WithType(tagType))
+                .AddParameterListParameters(SyntaxRepo.Parameter(SyntaxFactory.Identifier("tag")).WithType(tagType))
                 .AddBodyStatements(
-                    SyntaxFactory.ThrowStatement(
-                        SyntaxFactory.ObjectCreationExpression(
+                    SyntaxRepo.ThrowStatement(
+                        SyntaxRepo.ObjectCreationExpression(
                                 SyntaxFactory.ParseTypeName("System.ArgumentOutOfRangeException"))
                             .AddArgumentListArguments(SyntaxFactory.Argument("tag".ToLiteralExpression()!))));
         }

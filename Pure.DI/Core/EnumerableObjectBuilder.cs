@@ -37,15 +37,15 @@ internal class EnumerableObjectBuilder : IObjectBuilder
                 from element in _typeResolver.Resolve(resolvingType)
                 let objectCreationExpression = buildStrategy.TryBuild(element, resolvingType)
                 where objectCreationExpression.HasValue
-                select (StatementSyntax)SyntaxFactory.YieldStatement(SyntaxKind.YieldReturnStatement).WithExpression(objectCreationExpression.Value);
+                select (StatementSyntax)SyntaxRepo.YieldStatement(SyntaxKind.YieldReturnStatement).WithExpression(objectCreationExpression.Value.WithSpace());
 
             var factoryName = _buildContext.NameService.FindName(memberKey);
             var type = dependency.Implementation.TypeSyntax;
-            return SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
+            return SyntaxRepo.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
                 .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
                 .AddParameterListParameters()
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
-                .AddBodyStatements(yields.DefaultIfEmpty(SyntaxFactory.YieldStatement(SyntaxKind.YieldBreakStatement)).ToArray());
+                .AddModifiers(SyntaxKind.PrivateKeyword.WithSpace(), SyntaxKind.StaticKeyword.WithSpace())
+                .AddBodyStatements(yields.DefaultIfEmpty(SyntaxRepo.YieldStatement(SyntaxKind.YieldBreakStatement)).ToArray());
         });
 
         return SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryMethod.Identifier.Text));

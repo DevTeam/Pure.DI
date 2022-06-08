@@ -8,12 +8,12 @@ internal class DisposeStatementsBuilder : IDisposeStatementsBuilder
         yield return SyntaxFactory.IfStatement(
             hasInstanceExpression,
             SyntaxFactory.Block().AddStatements(
-                SyntaxFactory.ExpressionStatement(
+                SyntaxRepo.ExpressionStatement(
                     SyntaxFactory.AssignmentExpression(
                         SyntaxKind.SimpleAssignmentExpression,
                         hasInstanceExpression,
                         SyntaxFactory.LiteralExpression(SyntaxKind.FalseLiteralExpression))),
-                SyntaxFactory.ExpressionStatement(
+                SyntaxRepo.ExpressionStatement(
                     SyntaxFactory.InvocationExpression(
                         SyntaxFactory.MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,

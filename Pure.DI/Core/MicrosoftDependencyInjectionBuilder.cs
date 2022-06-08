@@ -81,13 +81,13 @@ internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
 
                 var thisParameter = SyntaxFactory.Parameter(
                     SyntaxFactory.List<AttributeListSyntax>(),
-                    SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ThisKeyword)),
+                    SyntaxFactory.TokenList(SyntaxKind.ThisKeyword.WithSpace()),
                     serviceCollection,
-                    SyntaxFactory.Identifier("services"),
+                    SyntaxFactory.Identifier("services").WithSpace(),
                     null);
 
-                var method = SyntaxFactory.MethodDeclaration(serviceCollection, $"Add{_metadata.ComposerTypeName}")
-                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.InternalKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                var method = SyntaxRepo.MethodDeclaration(serviceCollection, $"Add{_metadata.ComposerTypeName}")
+                    .AddModifiers(SyntaxKind.InternalKeyword.WithSpace(), SyntaxKind.StaticKeyword.WithSpace())
                     .AddParameterListParameters(thisParameter);
 
                 var mvcBuilderType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.IMvcBuilder");
@@ -127,6 +127,7 @@ internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
                         SyntaxFactory.VariableDeclaration(mvcBuilder)
                             .AddVariables(
                                 SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier("builder"))
+                                    .WithSpace()
                                     .WithInitializer(SyntaxFactory.EqualsValueClause(getBuilder))));
 
                     method = method.AddBodyStatements(declareBuilder);
@@ -140,9 +141,9 @@ internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
                                         SyntaxFactory.IdentifierName("builder"),
                                         SyntaxFactory.IdentifierName("PartManager")),
                                     SyntaxFactory.IdentifierName("PopulateFeature")))
-                            .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.ObjectCreationExpression(controllerFeature).AddArgumentListArguments()));
+                            .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxRepo.ObjectCreationExpression(controllerFeature).AddArgumentListArguments()));
 
-                    method = method.AddBodyStatements(SyntaxFactory.ExpressionStatement(populateFeature));
+                    method = method.AddBodyStatements(SyntaxRepo.ExpressionStatement(populateFeature));
 
                     var transient = SyntaxFactory.InvocationExpression(
                             SyntaxFactory.MemberAccessExpression(
@@ -168,7 +169,7 @@ internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
                             SyntaxFactory.Argument(transient)
                         );
 
-                    method = method.AddBodyStatements(SyntaxFactory.ExpressionStatement(bindControllerActivator));
+                    method = method.AddBodyStatements(SyntaxRepo.ExpressionStatement(bindControllerActivator));
                 }
                 else
                 {
@@ -240,13 +241,13 @@ internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
 
                     var tryBlock = SyntaxFactory.Block()
                         .AddStatements()
-                        .AddStatements(SyntaxFactory.ExpressionStatement(
+                        .AddStatements(SyntaxRepo.ExpressionStatement(
                             SyntaxFactory.AssignmentExpression(
                                 SyntaxKind.SimpleAssignmentExpression, serviceProviderValue, SyntaxFactory.IdentifierName("serviceProvider"))))
-                        .AddStatements(SyntaxFactory.ReturnStatement(objectExpression.Value));
+                        .AddStatements(SyntaxRepo.ReturnStatement(objectExpression.Value));
 
                     var finallyBlock = SyntaxFactory.Block()
-                        .AddStatements(SyntaxFactory.ExpressionStatement(
+                        .AddStatements(SyntaxRepo.ExpressionStatement(
                             SyntaxFactory.AssignmentExpression(
                                 SyntaxKind.SimpleAssignmentExpression, serviceProviderValue, SyntaxFactory.IdentifierName("prevServiceProvider"))));
 
@@ -257,6 +258,7 @@ internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
                                     SyntaxFactory.VariableDeclaration(serviceProvider)
                                         .AddVariables(
                                             SyntaxFactory.VariableDeclarator("prevServiceProvider")
+                                                .WithSpace()
                                                 .WithInitializer(SyntaxFactory.EqualsValueClause(serviceProviderValue))
                                         )
                                 )
@@ -269,7 +271,7 @@ internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
 
                     lambdaBlock = _statementsFinalizer.AddFinalizationStatements(lambdaBlock)!;
 
-                    var resolveLambda = SyntaxFactory.SimpleLambdaExpression(SyntaxFactory.Parameter(SyntaxFactory.Identifier("serviceProvider")), lambdaBlock);
+                    var resolveLambda = SyntaxFactory.SimpleLambdaExpression(SyntaxRepo.Parameter(SyntaxFactory.Identifier("serviceProvider")), lambdaBlock);
 
                     var bind =
                         SyntaxFactory.InvocationExpression(
@@ -282,10 +284,10 @@ internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
                                 SyntaxFactory.Argument(resolveLambda)
                             );
 
-                    method = method.AddBodyStatements(SyntaxFactory.ExpressionStatement(bind));
+                    method = method.AddBodyStatements(SyntaxRepo.ExpressionStatement(bind));
                 }
 
-                return method.AddBodyStatements(SyntaxFactory.ReturnStatement(SyntaxFactory.IdentifierName("services")));
+                return method.AddBodyStatements(SyntaxRepo.ReturnStatement(SyntaxFactory.IdentifierName("services")));
             });
         }
 

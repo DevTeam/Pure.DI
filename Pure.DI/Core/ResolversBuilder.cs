@@ -17,7 +17,6 @@ internal class ResolversBuilder : IMembersBuilder
     private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
     private readonly ITracer _tracer;
     private readonly IStatementsFinalizer _statementsFinalizer;
-    private const string Comments = "\n\t//- - - - - - - - - - - - - - - - - - - - - - - - -";
 
     public ResolversBuilder(
         ResolverMetadata metadata,
@@ -110,37 +109,36 @@ internal class ResolversBuilder : IMembersBuilder
                 continue;
             }
 
-            var keyValuePair = SyntaxFactory.ObjectCreationExpression(keyValuePairType)
+            var keyValuePair = SyntaxRepo.ObjectCreationExpression(keyValuePairType)
                 .AddArgumentListArguments(
-                    SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(resolvingType.TypeSyntax))
-                        .WithCommentBefore(Comments),
+                    SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(resolvingType.TypeSyntax)),
                     SyntaxFactory.Argument(SyntaxFactory.ParenthesizedLambdaExpression()
-                            .WithBody(SyntaxFactory.Block(statements)))
-                        .WithCommentBefore(Comments))
-                .WithCommentBefore(Comments);
+                            .WithBody(SyntaxFactory.Block(statements)))).WithNewLine()
+                .WithCommentBefore(binding.ToString());
 
             keyValuePairs.Add(keyValuePair);
         }
 
-        var arr = SyntaxFactory.ArrayCreationExpression(
+        var arr = SyntaxRepo.ArrayCreationExpression(
                 SyntaxFactory.ArrayType(keyValuePairType),
                 SyntaxFactory.InitializerExpression(SyntaxKind.ArrayInitializerExpression).AddExpressions(keyValuePairs.ToArray()))
             .AddTypeRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
 
-    var resolversTableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(ResolversTable).FullName.ReplaceNamespace());
-    var resolversTable = SyntaxFactory.FieldDeclaration(
-                SyntaxFactory.VariableDeclaration(resolversTableTypeSyntax)
-                    .AddVariables(
-                        SyntaxFactory.VariableDeclarator(_memberNameService.GetName(MemberNameKind.FactoriesField))
-                            .WithInitializer(
-                                SyntaxFactory.EqualsValueClause(
-                                    SyntaxFactory.ObjectCreationExpression(resolversTableTypeSyntax)
-                                        .AddArgumentListArguments(
-                                            SyntaxFactory.Argument(arr))))))
+        var resolversTableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(ResolversTable).FullName.ReplaceNamespace());
+        var resolversTable = SyntaxFactory.FieldDeclaration(
+                    SyntaxFactory.VariableDeclaration(resolversTableTypeSyntax)
+                        .AddVariables(
+                            SyntaxFactory.VariableDeclarator(_memberNameService.GetName(MemberNameKind.FactoriesField))
+                                .WithSpace()
+                                .WithInitializer(
+                                    SyntaxFactory.EqualsValueClause(
+                                        SyntaxRepo.ObjectCreationExpression(resolversTableTypeSyntax)
+                                            .AddArgumentListArguments(
+                                                SyntaxFactory.Argument(arr))))))
             .AddModifiers(
-                SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                SyntaxFactory.Token(SyntaxKind.StaticKeyword),
-                SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword));
+                SyntaxKind.PrivateKeyword.WithSpace(),
+                SyntaxKind.StaticKeyword.WithSpace(),
+                SyntaxKind.ReadOnlyKeyword.WithSpace());
 
         yield return resolversTable;
 
@@ -174,7 +172,7 @@ internal class ResolversBuilder : IMembersBuilder
                 continue;
             }
 
-            var key = SyntaxFactory.ObjectCreationExpression(tagTypeTypeSyntax)
+            var key = SyntaxRepo.ObjectCreationExpression(tagTypeTypeSyntax)
                 .AddArgumentListArguments(
                     SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(resolvingType.TypeSyntax)),
                     SyntaxFactory.Argument(resolvingTag));
@@ -185,19 +183,17 @@ internal class ResolversBuilder : IMembersBuilder
                 continue;
             }
 
-            var keyValuePair = SyntaxFactory.ObjectCreationExpression(keyValuePairType)
+            var keyValuePair = SyntaxRepo.ObjectCreationExpression(keyValuePairType)
                 .AddArgumentListArguments(
-                    SyntaxFactory.Argument(key)
-                        .WithCommentBefore(Comments),
+                    SyntaxFactory.Argument(key),
                     SyntaxFactory.Argument(SyntaxFactory.ParenthesizedLambdaExpression()
-                            .WithBody(SyntaxFactory.Block(statements)))
-                        .WithCommentBefore(Comments))
-                .WithCommentBefore(Comments);
+                            .WithBody(SyntaxFactory.Block(statements))))
+                .WithCommentBefore(binding.ToString());
 
             keyValuePairs.Add(keyValuePair);
         }
 
-        var arr = SyntaxFactory.ArrayCreationExpression(
+        var arr = SyntaxRepo.ArrayCreationExpression(
                 SyntaxFactory.ArrayType(keyValuePairType),
                 SyntaxFactory.InitializerExpression(SyntaxKind.ArrayInitializerExpression).AddExpressions(keyValuePairs.ToArray()))
             .AddTypeRankSpecifiers(SyntaxFactory.ArrayRankSpecifier());
@@ -207,14 +203,15 @@ internal class ResolversBuilder : IMembersBuilder
                 SyntaxFactory.VariableDeclaration(resolversWithTagTableTypeSyntax)
                     .AddVariables(
                         SyntaxFactory.VariableDeclarator(_memberNameService.GetName(MemberNameKind.FactoriesByTagField))
-                            .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(resolversWithTagTableTypeSyntax)
+                            .WithSpace()
+                            .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxRepo.ObjectCreationExpression(resolversWithTagTableTypeSyntax)
                                 .AddArgumentListArguments(
                                     SyntaxFactory.Argument(SyntaxFactory.IdentifierName(_memberNameService.GetName(MemberNameKind.FactoriesField))),
                                     SyntaxFactory.Argument(arr))))))
             .AddModifiers(
-                SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                SyntaxFactory.Token(SyntaxKind.StaticKeyword),
-                SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword));
+                SyntaxKind.PrivateKeyword.WithSpace(),
+                SyntaxKind.StaticKeyword.WithSpace(),
+                SyntaxKind.ReadOnlyKeyword.WithSpace());
 
         yield return resolversTable;
 
@@ -235,9 +232,10 @@ internal class ResolversBuilder : IMembersBuilder
                 SyntaxFactory.VariableDeclaration(type)
                     .AddVariables(
                         SyntaxFactory.VariableDeclarator(name)
+                            .WithSpace()
                             .WithInitializer(SyntaxFactory.EqualsValueClause(initExpression))))
             .WithModifiers(SyntaxFactory.TokenList()
-                .AddRange(Enumerable.Repeat(SyntaxKind.PrivateKeyword, 1).Concat(modifiers).Select(SyntaxFactory.Token)));
+                .AddRange(Enumerable.Repeat(SyntaxKind.PrivateKeyword, 1).Concat(modifiers).Select(i => i.WithSpace())));
 
     private IEnumerable<StatementSyntax> CreateStatements(
         IBuildStrategy buildStrategy,
@@ -266,7 +264,7 @@ internal class ResolversBuilder : IMembersBuilder
                 throw _cannotResolveExceptionFactory.Create(binding, resolvingTag, instance.Description, instance.Locations);
             }
 
-            yield return SyntaxFactory.ReturnStatement(instance.Value);
+            yield return SyntaxRepo.ReturnStatement(instance.Value);
         }
         finally
         {

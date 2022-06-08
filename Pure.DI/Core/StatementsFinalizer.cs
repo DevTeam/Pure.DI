@@ -23,13 +23,13 @@ internal class StatementsFinalizer : IStatementsFinalizer, IMembersBuilder
                 SyntaxFactory.FieldDeclaration(
                         SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName("int"))
                             .AddVariables(
-                                SyntaxFactory.VariableDeclarator(DeepnessFieldName)
+                                SyntaxFactory.VariableDeclarator(DeepnessFieldName).WithSpace()
                             )
                     )
                     .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.ThreadStaticAttr))
                     .AddModifiers(
-                        SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                        SyntaxFactory.Token(SyntaxKind.StaticKeyword)));
+                        SyntaxKind.PrivateKeyword.WithSpace(),
+                        SyntaxKind.StaticKeyword.WithSpace()));
         }
     }
 
@@ -40,7 +40,7 @@ internal class StatementsFinalizer : IStatementsFinalizer, IMembersBuilder
             return block;
         }
 
-        var refToDeepness = SyntaxFactory.Argument(SyntaxFactory.IdentifierName(DeepnessFieldName)).WithRefKindKeyword(SyntaxFactory.Token(SyntaxKind.RefKeyword));
+        var refToDeepness = SyntaxFactory.Argument(SyntaxFactory.IdentifierName(DeepnessFieldName)).WithRefKindKeyword(SyntaxKind.RefKeyword.WithSpace());
         var incrementStatement = SyntaxFactory.InvocationExpression(
             SyntaxFactory.IdentifierName("System.Threading.Interlocked.Increment"),
             SyntaxFactory.ArgumentList().AddArguments(refToDeepness));
@@ -63,7 +63,7 @@ internal class StatementsFinalizer : IStatementsFinalizer, IMembersBuilder
 
         return
             SyntaxFactory.Block()
-                .AddStatements(SyntaxFactory.ExpressionStatement(incrementStatement))
+                .AddStatements(SyntaxRepo.ExpressionStatement(incrementStatement))
                 .AddStatements(tryStatement);
     }
 }

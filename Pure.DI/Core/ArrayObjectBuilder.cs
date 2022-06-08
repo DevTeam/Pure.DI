@@ -25,7 +25,7 @@ internal class ArrayObjectBuilder : IObjectBuilder
 
         objectCreationExpressions.AddRange(elements);
 
-        return SyntaxFactory.ArrayCreationExpression(
+        return SyntaxRepo.ArrayCreationExpression(
                 SyntaxFactory.ArrayType(new SemanticType(arrayTypeSymbol.ElementType, dependency.Implementation).TypeSyntax))
             .AddTypeRankSpecifiers(SyntaxFactory.ArrayRankSpecifier().AddSizes(SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(objectCreationExpressions.Count))))
             .WithInitializer(

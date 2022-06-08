@@ -125,7 +125,7 @@ internal class AutowiringObjectBuilder : IObjectBuilder
                                 SyntaxFactory.IdentifierName(method.Name)))
                         .AddArgumentListArguments(arguments.ToArray());
 
-                    factoryStatements.Add(SyntaxFactory.ExpressionStatement(call));
+                    factoryStatements.Add(SyntaxRepo.ExpressionStatement(call));
                     break;
 
                 case IFieldSymbol filed:
@@ -143,7 +143,7 @@ internal class AutowiringObjectBuilder : IObjectBuilder
                                     SyntaxFactory.IdentifierName(filed.Name)),
                                 fieldValue.Expression.Value);
 
-                            factoryStatements.Add(SyntaxFactory.ExpressionStatement(assignmentExpression));
+                            factoryStatements.Add(SyntaxRepo.ExpressionStatement(assignmentExpression));
                         }
                     }
 
@@ -164,7 +164,7 @@ internal class AutowiringObjectBuilder : IObjectBuilder
                                     SyntaxFactory.IdentifierName(property.Name)),
                                 propertyValue.Expression.Value);
 
-                            factoryStatements.Add(SyntaxFactory.ExpressionStatement(assignmentExpression));
+                            factoryStatements.Add(SyntaxRepo.ExpressionStatement(assignmentExpression));
                         }
                     }
 
@@ -177,27 +177,26 @@ internal class AutowiringObjectBuilder : IObjectBuilder
             var memberKey = new MemberKey($"Create{_stringTools.ConvertToTitle(dependency.Binding.Implementation?.ToString() ?? string.Empty)}", dependency);
             var factoryName = _buildContext.NameService.FindName(memberKey);
             var type = dependency.Implementation.TypeSyntax;
-            var factoryMethod = SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
+            var factoryMethod = SyntaxRepo.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
                 .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                .AddModifiers(SyntaxKind.PrivateKeyword.WithSpace(), SyntaxKind.StaticKeyword.WithSpace())
                 .AddBodyStatements(
                     SyntaxFactory.LocalDeclarationStatement(
                         SyntaxFactory.VariableDeclaration(type)
                             .AddVariables(
                                 SyntaxFactory.VariableDeclarator(InstanceVarName)
+                                    .WithSpace()
                                     .WithInitializer(SyntaxFactory.EqualsValueClause(objectCreationExpression)))))
                 .AddBodyStatements(factoryStatements.ToArray())
                 .AddBodyStatements(
-                    SyntaxFactory.ReturnStatement(
+                    SyntaxRepo.ReturnStatement(
                         SyntaxFactory.IdentifierName(InstanceVarName)));
 
             _buildContext.GetOrAddMember(memberKey, () => factoryMethod);
-            return SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryName))
-                .WithCommentBefore($"// {dependency.Binding}");
+            return SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryName));
         }
 
-        return objectCreationExpression
-            .WithCommentBefore($"// {dependency.Binding}");
+        return objectCreationExpression;
     }
     
     private static string CreateDescription(ISymbol ctor, IEnumerable<ResolveResult> results)
@@ -331,7 +330,7 @@ internal class AutowiringObjectBuilder : IObjectBuilder
             _diagnostic.Warning(Diagnostics.Warning.CtorIsObsoleted, $"The constructor {ctor} marked as obsoleted is used.", ctor.Locations.ToArray());
         }
 
-        return SyntaxFactory.ObjectCreationExpression(typeSyntax)
+        return SyntaxRepo.ObjectCreationExpression(typeSyntax)
             .WithArgumentList(SyntaxFactory.ArgumentList(arguments));
     }
 

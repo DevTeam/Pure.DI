@@ -61,10 +61,10 @@ internal class FactoryMethodWrapperStrategy : IWrapperStrategy
 
         var methodKey = new MemberKey($"FactoryMethodResolve_{_stringTools.ConvertToTitle(dependency.Implementation.ToString())}", dependency);
         var createMethodSyntax = _buildContext.GetOrAddMember(methodKey, () =>
-            SyntaxFactory.MethodDeclaration(dependency.Implementation, _buildContext.NameService.FindName(methodKey))
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+            SyntaxRepo.MethodDeclaration(dependency.Implementation, _buildContext.NameService.FindName(methodKey))
+                .AddModifiers(SyntaxKind.PrivateKeyword.WithSpace(), SyntaxKind.StaticKeyword.WithSpace())
                 .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
-                .AddBodyStatements(SyntaxFactory.ReturnStatement(objectBuildExpression)));
+                .AddBodyStatements(SyntaxRepo.ReturnStatement(objectBuildExpression)));
 
         var factoryExpression = _buildStrategy().TryBuild(factoryTypeDescription, factoryTypeDescription.Implementation);
         if (!factoryExpression.HasValue)

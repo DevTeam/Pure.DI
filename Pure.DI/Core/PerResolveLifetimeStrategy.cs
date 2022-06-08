@@ -46,30 +46,30 @@ internal class PerResolveLifetimeStrategy : ILifetimeStrategy
                 return SyntaxFactory.FieldDeclaration(
                         SyntaxFactory.VariableDeclaration(fieldType)
                             .AddVariables(
-                                SyntaxFactory.VariableDeclarator(resolveInstanceFieldName)))
+                                SyntaxFactory.VariableDeclarator(resolveInstanceFieldName).WithSpace()))
                     .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.ThreadStaticAttr))
                     .AddModifiers(
-                        SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                        SyntaxFactory.Token(SyntaxKind.StaticKeyword));
+                        SyntaxKind.PrivateKeyword.WithSpace(),
+                        SyntaxKind.StaticKeyword.WithSpace());
             });
 
             var factoryName = _buildContext.NameService.FindName(methodKey);
             var type = resolvedType.TypeSyntax;
-            var method = SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
+            var method = SyntaxRepo.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
                 .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword));
+                .AddModifiers(SyntaxKind.PrivateKeyword.WithSpace(), SyntaxKind.StaticKeyword.WithSpace());
 
             var resolveInstanceFieldIdentifier = SyntaxFactory.IdentifierName(perResolveField.Declaration.Variables.First().Identifier);
             ExpressionSyntax fieldExpression = resolvedType.Type.IsReferenceType
                 ? resolveInstanceFieldIdentifier
                 : SyntaxFactory.CastExpression(type, resolveInstanceFieldIdentifier);
 
-            var returnStatement = SyntaxFactory.ReturnStatement(fieldExpression);
+            var returnStatement = SyntaxRepo.ReturnStatement(fieldExpression);
 
             objectBuildExpression = _raiseOnDisposableExpressionBuilder.Build(dependency.Implementation, NS35EBD81B.Lifetime.PerResolve, objectBuildExpression);
 
             var assignmentBlock = SyntaxFactory.Block()
-                .AddStatements(SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, resolveInstanceFieldIdentifier, objectBuildExpression)))
+                .AddStatements(SyntaxRepo.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, resolveInstanceFieldIdentifier, objectBuildExpression)))
                 .AddStatements(returnStatement);
 
             var check = SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, resolveInstanceFieldIdentifier, SyntaxFactory.DefaultExpression(fieldType));
@@ -78,7 +78,7 @@ internal class PerResolveLifetimeStrategy : ILifetimeStrategy
             _buildContext.AddFinalizationStatements(
                 new[]
                 {
-                    SyntaxFactory.ExpressionStatement(
+                    SyntaxRepo.ExpressionStatement(
                         SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, resolveInstanceFieldIdentifier, SyntaxFactory.DefaultExpression(fieldType)))
                 });
 

@@ -25,7 +25,7 @@ internal static class SyntaxExtensions
     {
         if (value == null)
         {
-            return SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression, SyntaxFactory.Token(SyntaxKind.NullKeyword));
+            return SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression, SyntaxKind.NullKeyword.WithSpace());
         }
 
         return value switch

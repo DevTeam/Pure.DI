@@ -13,7 +13,7 @@ internal class GenericStaticWithTagResolveMethodBuilder : IResolveMethodBuilder
     public ResolveMethod Build()
     {
         var tagTypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(TagKey).FullName.ReplaceNamespace());
-        var key = SyntaxFactory.ObjectCreationExpression(tagTypeTypeSyntax)
+        var key = SyntaxRepo.ObjectCreationExpression(tagTypeTypeSyntax)
             .AddArgumentListArguments(
                 SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(SyntaxRepo.TTypeSyntax)),
                 SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")));
@@ -30,6 +30,6 @@ internal class GenericStaticWithTagResolveMethodBuilder : IResolveMethodBuilder
 
         return new ResolveMethod(
             SyntaxRepo.GenericStaticResolveWithTagMethodSyntax.AddBodyStatements(
-                SyntaxFactory.ReturnStatement(SyntaxFactory.CastExpression(SyntaxRepo.TTypeSyntax, resolve))));
+                SyntaxRepo.ReturnStatement(SyntaxFactory.CastExpression(SyntaxRepo.TTypeSyntax, resolve))));
     }
 }

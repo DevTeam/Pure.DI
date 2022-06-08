@@ -13,7 +13,7 @@ internal class StaticWithTagResolveMethodBuilder : IResolveMethodBuilder
     public ResolveMethod Build()
     {
         var tagTypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(TagKey).FullName.ReplaceNamespace());
-        var key = SyntaxFactory.ObjectCreationExpression(tagTypeTypeSyntax)
+        var key = SyntaxRepo.ObjectCreationExpression(tagTypeTypeSyntax)
             .AddArgumentListArguments(
                 SyntaxFactory.Argument(SyntaxFactory.IdentifierName("type")),
                 SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")));
@@ -22,6 +22,7 @@ internal class StaticWithTagResolveMethodBuilder : IResolveMethodBuilder
             SyntaxFactory.VariableDeclaration(tagTypeTypeSyntax)
                 .AddVariables(
                     SyntaxFactory.VariableDeclarator("key")
+                        .WithSpace()
                         .WithInitializer(SyntaxFactory.EqualsValueClause(key))));
 
         var methodBlock = SyntaxFactory.Block()

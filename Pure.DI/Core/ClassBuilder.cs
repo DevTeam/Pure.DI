@@ -44,9 +44,9 @@ internal class ClassBuilder : IClassBuilder
         _buildContext.NameService.ReserveName(_metadata.ComposerTypeName);
         if (_metadata.Owner == null)
         {
-            classModifiers.Add(SyntaxFactory.Token(SyntaxKind.InternalKeyword));
-            classModifiers.Add(SyntaxFactory.Token(SyntaxKind.StaticKeyword));
-            classModifiers.Add(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
+            classModifiers.Add(SyntaxKind.InternalKeyword.WithSpace());
+            classModifiers.Add(SyntaxKind.StaticKeyword.WithSpace());
+            classModifiers.Add(SyntaxKind.PartialKeyword.WithSpace());
         }
         else
         {
@@ -80,55 +80,61 @@ internal class ClassBuilder : IClassBuilder
         var registerDisposableEventTypeSyntax = SyntaxFactory.ParseTypeName(typeof(RegisterDisposableEvent).FullName.ReplaceNamespace());
         var iContextTypeSyntax = SyntaxFactory.ParseTypeName(typeof(IContext).FullName.ReplaceNamespace());
         var contextTypeSyntax = SyntaxFactory.ParseTypeName(_memberNameService.GetName(MemberNameKind.ContextClass));
-        var resolverClass = SyntaxFactory.ClassDeclaration(_metadata.ComposerTypeName)
-            .WithKeyword(SyntaxFactory.Token(SyntaxKind.ClassKeyword))
+        var resolverClass = SyntaxRepo.ClassDeclaration(_metadata.ComposerTypeName)
+            .WithKeyword(SyntaxKind.ClassKeyword.WithSpace())
             .AddModifiers(classModifiers.ToArray())
             .AddMembers(
                 SyntaxFactory.FieldDeclaration(
                         SyntaxFactory.VariableDeclaration(contextTypeSyntax)
                             .AddVariables(
                                 SyntaxFactory.VariableDeclarator(_memberNameService.GetName(MemberNameKind.ContextField))
-                                    .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.ObjectCreationExpression(contextTypeSyntax).AddArgumentListArguments()))))
+                                    .WithSpace()
+                                    .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxRepo.ObjectCreationExpression(contextTypeSyntax).AddArgumentListArguments()))))
                     .AddModifiers(
-                        SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                        SyntaxFactory.Token(SyntaxKind.StaticKeyword),
-                        SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword))
-                    .WithCommentBefore("// Shared context to use in factories"))
-            .AddMembers(_membersBuilder.SelectMany(i => i.BuildMembers(semanticModel)).ToArray())
-            .AddMembers(SyntaxRepo.FinalDisposeMethodSyntax.AddBodyStatements(_buildContext.FinalDisposeStatements.ToArray()))
+                        SyntaxKind.PrivateKeyword.WithSpace(),
+                        SyntaxKind.StaticKeyword.WithSpace(),
+                        SyntaxKind.ReadOnlyKeyword.WithSpace())
+                    .WithCommentBefore("// Shared context to use in factories")
+                    .WithNewLine()
+                    .WithNewLine())
+            .AddMembers(_membersBuilder.SelectMany(i => i.BuildMembers(semanticModel)).Select(i => i.WithNewLine().WithNewLine()).ToArray())
+            .AddMembers(SyntaxRepo.FinalDisposeMethodSyntax.AddBodyStatements(_buildContext.FinalDisposeStatements.ToArray()).WithNewLine())
             .AddMembers(
-                SyntaxFactory.EventFieldDeclaration(
+                SyntaxRepo.EventFieldDeclaration(
                         SyntaxFactory.VariableDeclaration(registerDisposableTypeSyntax).AddVariables(
                             SyntaxFactory.VariableDeclarator(SyntaxRepo.OnDisposableEventName)
+                                .WithSpace()
                                 .WithInitializer(
                                     SyntaxFactory.EqualsValueClause(
                                         SyntaxFactory.AnonymousMethodExpression()
-                                            .WithDelegateKeyword(SyntaxFactory.Token(SyntaxKind.DelegateKeyword))
+                                            .WithDelegateKeyword(SyntaxKind.DelegateKeyword.WithSpace())
                                             .WithBlock(SyntaxFactory.Block())))))
                     .AddModifiers(
-                        SyntaxFactory.Token(SyntaxKind.InternalKeyword),
-                        SyntaxFactory.Token(SyntaxKind.StaticKeyword)))
+                        SyntaxKind.InternalKeyword.WithSpace(),
+                        SyntaxKind.StaticKeyword.WithSpace())
+                    .WithNewLine()
+                    .WithNewLine())
             .AddMembers(
                 SyntaxRepo.RaiseOnDisposableMethodSyntax.AddBodyStatements(
-                    SyntaxFactory.ExpressionStatement(
+                    SyntaxRepo.ExpressionStatement(
                         SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(SyntaxRepo.OnDisposableEventName))
                             .AddArgumentListArguments(
                                 SyntaxFactory.Argument(
-                                    SyntaxFactory.ObjectCreationExpression(registerDisposableEventTypeSyntax)
+                                    SyntaxRepo.ObjectCreationExpression(registerDisposableEventTypeSyntax)
                                         .AddArgumentListArguments(
                                             SyntaxFactory.Argument(SyntaxFactory.IdentifierName("disposable")),
                                             SyntaxFactory.Argument(SyntaxFactory.IdentifierName("lifetime")))))),
-                    SyntaxFactory.ReturnStatement(SyntaxFactory.IdentifierName("disposable"))
-                ))
+                    SyntaxRepo.ReturnStatement(SyntaxFactory.IdentifierName("disposable"))
+                ).WithNewLine().WithNewLine())
             .AddMembers(
-                SyntaxFactory.ClassDeclaration(_memberNameService.GetName(MemberNameKind.ContextClass))
-                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword))
-                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.SealedKeyword))
+                SyntaxRepo.ClassDeclaration(_memberNameService.GetName(MemberNameKind.ContextClass))
+                    .AddModifiers(SyntaxKind.PrivateKeyword.WithSpace())
+                    .AddModifiers(SyntaxKind.SealedKeyword.WithSpace())
                     .AddBaseListTypes(SyntaxFactory.SimpleBaseType(iContextTypeSyntax))
                     .AddMembers(
                         SyntaxRepo.TResolveMethodSyntax
                             .AddBodyStatements(
-                                SyntaxFactory.ReturnStatement()
+                                SyntaxRepo.ReturnStatement()
                                     .WithExpression(
                                         SyntaxFactory.InvocationExpression(
                                             SyntaxFactory.MemberAccessExpression(
@@ -139,9 +145,9 @@ internal class ClassBuilder : IClassBuilder
                                                     .AddTypeArgumentListArguments(SyntaxRepo.TTypeSyntax))))))
                     .AddMembers(
                         SyntaxRepo.TResolveMethodSyntax
-                            .AddParameterListParameters(SyntaxFactory.Parameter(SyntaxFactory.Identifier("tag")).WithType(SyntaxRepo.ObjectTypeSyntax))
+                            .AddParameterListParameters(SyntaxRepo.Parameter(SyntaxFactory.Identifier("tag")).WithType(SyntaxRepo.ObjectTypeSyntax))
                             .AddBodyStatements(
-                                SyntaxFactory.ReturnStatement()
+                                SyntaxRepo.ReturnStatement()
                                     .WithExpression(
                                         SyntaxFactory.InvocationExpression(
                                                 SyntaxFactory.MemberAccessExpression(
@@ -151,9 +157,11 @@ internal class ClassBuilder : IClassBuilder
                                                     SyntaxFactory.GenericName(nameof(IContext.Resolve))
                                                         .AddTypeArgumentListArguments(SyntaxRepo.TTypeSyntax)))
                                             .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag"))))))
-            ).WithPragmaWarningDisable(0067, 8600, 8602, 8603, 8604, 8618, 8625);
+                    .WithNewLine())
+            .WithNewLine()
+            .WithPragmaWarningDisable(0067, 8600, 8602, 8603, 8604, 8618, 8625);
 
-        var rootNode = CreateRootNode(_metadata.SetupNode, new []{SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(Defaults.DefaultNamespace))}, resolverClass);
+        var rootNode = CreateRootNode(_metadata.SetupNode, new []{SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(Defaults.DefaultNamespace).WithSpace())}, resolverClass);
         var sampleDependency = _metadata.Bindings.LastOrDefault()?.Dependencies.FirstOrDefault()?.ToString() ?? "T";
         _diagnostic.Information(Diagnostics.Information.Generated, $"{_metadata.ComposerTypeName} was generated. Please use a method like {_metadata.ComposerTypeName}.Resolve<{sampleDependency}>() to create a composition root.", _metadata.Bindings.Where(i => i.Location != default).Select(i => i.Location!).ToArray());
         return rootNode;

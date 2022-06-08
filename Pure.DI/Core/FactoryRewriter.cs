@@ -98,7 +98,7 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
     public override SyntaxNode VisitArrayCreationExpression(ArrayCreationExpressionSyntax node)
     {
         var newArrayElementType = (ArrayTypeSyntax)ReplaceType(node.Type);
-        var newNode = SyntaxFactory.ArrayCreationExpression(newArrayElementType);
+        var newNode = SyntaxRepo.ArrayCreationExpression(newArrayElementType);
         if (node.Initializer != default
             && VisitInitializerExpression(node.Initializer) is InitializerExpressionSyntax initializer)
         {

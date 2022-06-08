@@ -37,22 +37,23 @@ internal class SingletonLifetimeStrategy : ILifetimeStrategy
 
             var isDisposable = dependency.Implementation.ImplementsInterface<IDisposable>();
 
-            var singletonClass = SyntaxFactory.ClassDeclaration(singletonClassName)
+            var singletonClass = SyntaxRepo.ClassDeclaration(singletonClassName)
                 .AddModifiers(
-                    SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                    SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                    SyntaxKind.PrivateKeyword.WithSpace(),
+                    SyntaxKind.StaticKeyword.WithSpace())
                 .AddMembers(
                     SyntaxFactory.FieldDeclaration(
                             SyntaxFactory.VariableDeclaration(resolvedDependency.Implementation)
                                 .AddVariables(
                                     SyntaxFactory.VariableDeclarator(ValueName)
+                                        .WithSpace()
                                         .WithInitializer(SyntaxFactory.EqualsValueClause(objectBuildExpression))
                                 )
                         )
                         .AddModifiers(
-                            SyntaxFactory.Token(SyntaxKind.InternalKeyword),
-                            SyntaxFactory.Token(SyntaxKind.StaticKeyword),
-                            SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword))
+                            SyntaxKind.InternalKeyword.WithSpace(),
+                            SyntaxKind.StaticKeyword.WithSpace(),
+                            SyntaxKind.ReadOnlyKeyword.WithSpace())
                 );
 
             if (!isDisposable)
@@ -63,16 +64,16 @@ internal class SingletonLifetimeStrategy : ILifetimeStrategy
             _buildContext.GetOrAddMember(fieldKey, () =>
                 SyntaxFactory.FieldDeclaration(
                         SyntaxFactory.VariableDeclaration(SyntaxRepo.BoolTypeSyntax).AddVariables(
-                            SyntaxFactory.VariableDeclarator(hasSingletonFieldName)))
+                            SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(hasSingletonFieldName).WithSpace())))
                     .AddModifiers(
-                        SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                        SyntaxFactory.Token(SyntaxKind.StaticKeyword),
-                        SyntaxFactory.Token(SyntaxKind.VolatileKeyword)));
+                        SyntaxKind.PrivateKeyword.WithSpace(),
+                        SyntaxKind.StaticKeyword.WithSpace(),
+                        SyntaxKind.VolatileKeyword.WithSpace()));
 
             singletonClass = singletonClass.AddMembers(
                 SyntaxFactory.ConstructorDeclaration(singletonClassName)
-                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.StaticKeyword)).WithBody(SyntaxFactory.Block().AddStatements(
-                        SyntaxFactory.ExpressionStatement(
+                    .AddModifiers(SyntaxKind.StaticKeyword.WithSpace()).WithBody(SyntaxFactory.Block().AddStatements(
+                        SyntaxRepo.ExpressionStatement(
                             SyntaxFactory.AssignmentExpression(
                                 SyntaxKind.SimpleAssignmentExpression,
                                 SyntaxFactory.IdentifierName(hasSingletonFieldName),

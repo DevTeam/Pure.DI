@@ -27,21 +27,22 @@ internal class GenericStaticResolveMethodBuilder : IResolveMethodBuilder
         {
             var getResolverKey = new MemberKey("GetResolver", typeof(GenericStaticResolveMethodBuilder));
             var getResolverMethod = _buildContext.GetOrAddMember(getResolverKey, () => SyntaxRepo.GetResolverMethodSyntax.WithBody(_syntaxRegistry.FindMethod(nameof(ResolversTable), nameof(ResolversTable.GetResolver)).Body));
-            return SyntaxFactory.ClassDeclaration(_memberNameService.GetName(MemberNameKind.ResolverClass))
+            return SyntaxRepo.ClassDeclaration(_memberNameService.GetName(MemberNameKind.ResolverClass))
                 .AddModifiers(
-                    SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                    SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                    SyntaxKind.PrivateKeyword.WithSpace(),
+                    SyntaxKind.StaticKeyword.WithSpace())
                 .AddTypeParameterListParameters(SyntaxRepo.TTypeParameterSyntax)
                 .AddMembers(
                     SyntaxFactory.FieldDeclaration(
                             SyntaxFactory.VariableDeclaration(SyntaxRepo.FuncOfObjectTypeSyntax)
                                 .AddVariables(
                                     SyntaxFactory.VariableDeclarator(resolverFieldName)
+                                        .WithSpace()
                                         .WithInitializer(SyntaxFactory.EqualsValueClause(SyntaxFactory.InvocationExpression(SyntaxFactory.GenericName(getResolverMethod.Identifier.Text).AddTypeArgumentListArguments(SyntaxRepo.TTypeSyntax))))))
                         .AddModifiers(
-                            SyntaxFactory.Token(SyntaxKind.InternalKeyword),
-                            SyntaxFactory.Token(SyntaxKind.StaticKeyword),
-                            SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword)));
+                            SyntaxKind.InternalKeyword.WithSpace(),
+                            SyntaxKind.StaticKeyword.WithSpace(),
+                            SyntaxKind.ReadOnlyKeyword.WithSpace()));
         });
 
         var resolve = SyntaxFactory.InvocationExpression(
@@ -54,6 +55,6 @@ internal class GenericStaticResolveMethodBuilder : IResolveMethodBuilder
 
         return new ResolveMethod(
             SyntaxRepo.GenericStaticResolveMethodSyntax.AddBodyStatements(
-                SyntaxFactory.ReturnStatement(SyntaxFactory.CastExpression(SyntaxRepo.TTypeSyntax, resolve))));
+                SyntaxRepo.ReturnStatement(SyntaxFactory.CastExpression(SyntaxRepo.TTypeSyntax, resolve))));
     }
 }

@@ -1,1 +1,1 @@
-dotnet run --project Build -- -p target=Benchmark
+dotnet csi -p:target=Benchmark Build

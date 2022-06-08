@@ -42,10 +42,10 @@ internal class FactoryObjectBuilder : IObjectBuilder
                 {
                     var factoryName = _buildContext.NameService.FindName(memberKey);
                     var block = Rewrite(buildStrategy, dependency, factory, factory.Block)!;
-                    return SyntaxFactory.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
+                    return SyntaxRepo.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
                         .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
-                        .AddParameterListParameters(factory.Parameter.WithType(SyntaxFactory.ParseTypeName(_memberNameService.GetName(MemberNameKind.ContextClass))))
-                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.StaticKeyword))
+                        .AddParameterListParameters(factory.Parameter.WithSpace().WithType(SyntaxFactory.ParseTypeName(_memberNameService.GetName(MemberNameKind.ContextClass))))
+                        .AddModifiers(SyntaxKind.PrivateKeyword.WithSpace(), SyntaxKind.StaticKeyword.WithSpace())
                         .AddBodyStatements(block);
                 });
 
@@ -61,6 +61,5 @@ internal class FactoryObjectBuilder : IObjectBuilder
         where T : SyntaxNode =>
         ((T?)_factoryRewriter()
             .Initialize(dependency, buildStrategy, factory.Parameter.Identifier)
-            .Visit(resultExpression))
-        ?.WithCommentBefore($"// {dependency.Binding}");
+            .Visit(resultExpression));
 }
