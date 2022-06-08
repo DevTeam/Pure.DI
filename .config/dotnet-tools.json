@@ -3,7 +3,7 @@
   "isRoot": true,
   "tools": {
     "teamcity.csi": {
-      "version": "1.0.4-beta5",
+      "version": "1.0.4-beta6",
       "commands": [
         "dotnet-csi"
       ]

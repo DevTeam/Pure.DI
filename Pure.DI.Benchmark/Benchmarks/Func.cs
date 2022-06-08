@@ -28,50 +28,14 @@ public class Func : BenchmarkBase
         return abstractContainer.TryCreate();
     }
 
-    [Benchmark(Description = "Pure.DI", OperationsPerInvoke = 10)]
-    public void PureDI()
-    {
-        FuncDI.Resolve<ICompositionRoot>();
-        FuncDI.Resolve<ICompositionRoot>();
-        FuncDI.Resolve<ICompositionRoot>();
-        FuncDI.Resolve<ICompositionRoot>();
-        FuncDI.Resolve<ICompositionRoot>();
-        FuncDI.Resolve<ICompositionRoot>();
-        FuncDI.Resolve<ICompositionRoot>();
-        FuncDI.Resolve<ICompositionRoot>();
-        FuncDI.Resolve<ICompositionRoot>();
-        FuncDI.Resolve<ICompositionRoot>();
-    }
+    [Benchmark(Description = "Pure.DI")]
+    public void PureDI() => FuncDI.Resolve<ICompositionRoot>();
 
-    [Benchmark(Description = "Pure.DI composition root", OperationsPerInvoke = 10)]
-    public void PureDIByCR()
-    {
-        FuncDI.ResolveICompositionRoot();
-        FuncDI.ResolveICompositionRoot();
-        FuncDI.ResolveICompositionRoot();
-        FuncDI.ResolveICompositionRoot();
-        FuncDI.ResolveICompositionRoot();
-        FuncDI.ResolveICompositionRoot();
-        FuncDI.ResolveICompositionRoot();
-        FuncDI.ResolveICompositionRoot();
-        FuncDI.ResolveICompositionRoot();
-        FuncDI.ResolveICompositionRoot();
-    }
+    [Benchmark(Description = "Pure.DI composition root")]
+    public void PureDIByCR() => FuncDI.ResolveICompositionRoot();
 
-    [Benchmark(Description = "Hand Coded", OperationsPerInvoke = 10, Baseline = true)]
-    public void HandCoded()
-    {
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-    }
+    [Benchmark(Description = "Hand Coded", Baseline = true)]
+    public void HandCoded() => NewInstance();
 
     private static readonly Func<IService3> Service3Factory = () => new Service3();
 

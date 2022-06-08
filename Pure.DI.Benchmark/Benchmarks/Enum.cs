@@ -34,50 +34,14 @@ public class Enum : BenchmarkBase
         return abstractContainer.TryCreate();
     }
 
-    [Benchmark(Description = "Pure.DI", OperationsPerInvoke = 10)]
-    public void PureDI()
-    {
-        EnumDI.Resolve<ICompositionRoot>();
-        EnumDI.Resolve<ICompositionRoot>();
-        EnumDI.Resolve<ICompositionRoot>();
-        EnumDI.Resolve<ICompositionRoot>();
-        EnumDI.Resolve<ICompositionRoot>();
-        EnumDI.Resolve<ICompositionRoot>();
-        EnumDI.Resolve<ICompositionRoot>();
-        EnumDI.Resolve<ICompositionRoot>();
-        EnumDI.Resolve<ICompositionRoot>();
-        EnumDI.Resolve<ICompositionRoot>();
-    }
+    [Benchmark(Description = "Pure.DI")]
+    public void PureDI() => EnumDI.Resolve<ICompositionRoot>();
 
-    [Benchmark(Description = "Pure.DI composition root", OperationsPerInvoke = 10)]
-    public void PureDIByCR()
-    {
-        EnumDI.ResolveICompositionRoot();
-        EnumDI.ResolveICompositionRoot();
-        EnumDI.ResolveICompositionRoot();
-        EnumDI.ResolveICompositionRoot();
-        EnumDI.ResolveICompositionRoot();
-        EnumDI.ResolveICompositionRoot();
-        EnumDI.ResolveICompositionRoot();
-        EnumDI.ResolveICompositionRoot();
-        EnumDI.ResolveICompositionRoot();
-        EnumDI.ResolveICompositionRoot();
-    }
+    [Benchmark(Description = "Pure.DI composition root")]
+    public void PureDIByCR() => EnumDI.ResolveICompositionRoot();
 
-    [Benchmark(Description = "Hand Coded", OperationsPerInvoke = 10, Baseline = true)]
-    public void HandCoded()
-    {
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-    }
+    [Benchmark(Description = "Hand Coded", Baseline = true)]
+    public void HandCoded() => NewInstance();
 
     private static readonly Func<IService3> Service3Factory = () => new Service3();
 

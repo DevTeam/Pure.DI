@@ -7,6 +7,6 @@
     <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="TeamCity.CSharpInteractive" Version="1.0.4-beta5" />
+    <PackageReference Include="TeamCity.CSharpInteractive" Version="1.0.4-beta6" />
   </ItemGroup>
 </Project>

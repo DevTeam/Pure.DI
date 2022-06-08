@@ -28,50 +28,14 @@ public class Transient : BenchmarkBase
         return abstractContainer.TryCreate();
     }
 
-    [Benchmark(Description = "Pure.DI", OperationsPerInvoke = 10)]
-    public void PureDI()
-    {
-        TransientDI.Resolve<ICompositionRoot>();
-        TransientDI.Resolve<ICompositionRoot>();
-        TransientDI.Resolve<ICompositionRoot>();
-        TransientDI.Resolve<ICompositionRoot>();
-        TransientDI.Resolve<ICompositionRoot>();
-        TransientDI.Resolve<ICompositionRoot>();
-        TransientDI.Resolve<ICompositionRoot>();
-        TransientDI.Resolve<ICompositionRoot>();
-        TransientDI.Resolve<ICompositionRoot>();
-        TransientDI.Resolve<ICompositionRoot>();
-    }
+    [Benchmark(Description = "Pure.DI")]
+    public void PureDI() => TransientDI.Resolve<ICompositionRoot>();
 
     [Benchmark(Description = "Pure.DI composition root", OperationsPerInvoke = 10)]
-    public void PureDIByCR()
-    {
-        TransientDI.ResolveICompositionRoot();
-        TransientDI.ResolveICompositionRoot();
-        TransientDI.ResolveICompositionRoot();
-        TransientDI.ResolveICompositionRoot();
-        TransientDI.ResolveICompositionRoot();
-        TransientDI.ResolveICompositionRoot();
-        TransientDI.ResolveICompositionRoot();
-        TransientDI.ResolveICompositionRoot();
-        TransientDI.ResolveICompositionRoot();
-        TransientDI.ResolveICompositionRoot();
-    }
+    public void PureDIByCR() => TransientDI.ResolveICompositionRoot();
 
-    [Benchmark(Description = "Hand Coded", OperationsPerInvoke = 10, Baseline = true)]
-    public void HandCoded()
-    {
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-        NewInstance();
-    }
+    [Benchmark(Description = "Hand Coded", Baseline = true)]
+    public void HandCoded() => NewInstance();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private static ICompositionRoot NewInstance() =>
