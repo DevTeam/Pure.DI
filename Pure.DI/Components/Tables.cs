@@ -23,10 +23,14 @@
 // ReSharper disable InvokeAsExtensionMethod
 // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 // ReSharper disable ArrangeNamespaceBody
+// ReSharper disable SuggestVarOrType_SimpleTypes
+// ReSharper disable SuggestVarOrType_Elsewhere
+// ReSharper disable SuggestVarOrType_BuiltInTypes
 #pragma warning disable 8618
 #pragma warning disable 8604
 #pragma warning disable 8603
 #pragma warning disable 8602
+#pragma warning disable 8601
 #pragma warning disable 8625
 #pragma warning disable 8765
 #pragma warning disable 0436
@@ -69,39 +73,39 @@ namespace NS35EBD81B
         {
             Divisor = GetDivisor(pairs.Length);
             Buckets = new Pair<TKey, TValue>[Divisor];
-            var emptyPair = new Pair<TKey, TValue>(default(TKey), default(TValue));
-            for (var i = 0; i < Buckets.Length; i++)
+            for (var index = 0; index < pairs.Length; index++)
             {
-                Buckets[i] = emptyPair;
-            }
-
-            foreach (var pair in pairs)
-            {
-                var bucket = (uint)pair.Key.GetHashCode() % Divisor;
-                var next = Buckets[bucket];
+                Pair<TKey, TValue> pair = pairs[index];
+                uint bucket = (uint)pair.Key.GetHashCode() % Divisor;
+                Pair<TKey, TValue> next = Buckets[bucket];
                 Buckets[bucket] = pair;
-                if (!ReferenceEquals(next, emptyPair))
-                {
-                    pair.Next = next;
-                }
+                pair.Next = next;
             }
         }
 
         [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
         public TValue Get(TKey key)
         {
-            var pair = Buckets[(uint)key.GetHashCode() % Divisor];
-            do
+            Pair<TKey, TValue> pair = Buckets[(uint)key.GetHashCode() % Divisor];
+            TKey pairKey;
+
+            start:
+            try
             {
-                if (Equals(pair.Key, key))
-                {
-                    return pair.Value;
-                }
+                pairKey = pair.Key;
+            }
+            catch
+            {
+                return default(TValue);
+            }
 
-                pair = pair.Next;
-            } while (pair != null);
+            if (Equals(pairKey, key))
+            {
+                return pair.Value;
+            }
 
-            return default(TValue);
+            pair = pair.Next;
+            goto start;
         }
     }
 
@@ -120,38 +124,54 @@ namespace NS35EBD81B
         [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x100)]
         public object Resolve(System.Type type)
         {
-            var pair = ResolversBuckets[(uint)type.GetHashCode() % ResolversDivisor];
-            do
+            Pair<System.Type, System.Func<object>> pair = ResolversBuckets[(uint)type.GetHashCode() % ResolversDivisor];
+            System.Type pairKey;
+            
+            start:
+            try
             {
-                if (ReferenceEquals(pair.Key, type))
-                {
-                    return pair.Value();
-                }
+                pairKey = pair.Key;
+            }
+            catch
+            {
+                throw new System.ArgumentException(Tables.CannotResolveMessage + type + ", consider adding it to the DI setup.");
+            }
+            
+            if (pairKey == type)
+            {
+                return pair.Value();
+            }
 
-                pair = pair.Next;
-            } while (pair != null);
-
-            throw new System.ArgumentException(Tables.CannotResolveMessage + type + ", consider adding it to the DI setup.");
+            pair = pair.Next;
+            goto start;
         }
 
         [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x100)]
         internal System.Func<object> GetResolver<T>()
         {
-            var pair = ResolversBuckets[(uint)typeof(T).GetHashCode() % ResolversDivisor];
-            do
+            Pair<System.Type, System.Func<object>> pair = ResolversBuckets[(uint)typeof(T).GetHashCode() % ResolversDivisor];
+            System.Type pairKey;
+            
+            start:
+            try
             {
-                if (ReferenceEquals(pair.Key, typeof(T)))
+                pairKey = pair.Key;
+            }
+            catch
+            {
+                return new System.Func<object>(() =>
                 {
-                    return pair.Value;
-                }
+                    throw new System.ArgumentException(Tables.CannotResolveMessage + typeof(T) + ", consider adding it to the DI setup.");
+                });
+            }
 
-                pair = pair.Next;
-            } while (pair != null);
-
-            return new System.Func<object>(() =>
+            if (pairKey == typeof(T))
             {
-                throw new System.ArgumentException(Tables.CannotResolveMessage + typeof(T) + ", consider adding it to the DI setup.");
-            });
+                return pair.Value;
+            }
+
+            pair = pair.Next;
+            goto start;
         }
     }
 
@@ -174,31 +194,41 @@ namespace NS35EBD81B
         [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x100)]
         public object Resolve(TagKey key)
         {
-            var pair = ResolversByTagBuckets[key.HashCode % ResolversByTagDivisor];
-            do
+            Pair<TagKey, System.Func<object>> pair = ResolversByTagBuckets[key.HashCode % ResolversByTagDivisor];
+            while (pair != null)
             {
-                // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
-                if (ReferenceEquals(pair.Key.Type, key.Type) && pair.Key.Tag.Equals(key.Tag))
+                var pairKey = pair.Key;
+                if (pairKey.Type == key.Type && (ReferenceEquals(pairKey.Tag, key.Tag) || Equals(pairKey.Tag, key.Tag)))
                 {
                     return pair.Value();
                 }
 
                 pair = pair.Next;
-            } while (pair != null);
+            }
 
             if (key.Tag == null)
             {
-                var keyType = key.Type;
-                var typePair = ResolversBuckets[(uint)keyType.GetHashCode() % ResolversDivisor];
-                do
+                System.Type keyType = key.Type;
+                Pair<System.Type, System.Func<object>> typePair = ResolversBuckets[(uint)keyType.GetHashCode() % ResolversDivisor];
+                System.Type typePairKey;
+                
+                start:
+                try
                 {
-                    if (ReferenceEquals(typePair.Key, keyType))
-                    {
-                        return typePair.Value();
-                    }
+                    typePairKey = typePair.Key;
+                }
+                catch
+                {
+                    throw new System.ArgumentException(Tables.CannotResolveMessage + key + ", consider adding it to the DI setup.");
+                }
+                
+                if (typePairKey == keyType)
+                {
+                    return typePair.Value();
+                }
 
-                    typePair = typePair.Next;
-                } while (typePair != null);
+                typePair = typePair.Next;
+                goto start;
             }
 
             throw new System.ArgumentException(Tables.CannotResolveMessage + key + ", consider adding it to the DI setup.");
@@ -219,19 +249,6 @@ namespace NS35EBD81B
             {
                 HashCode = (uint)((type.GetHashCode() * 397) ^ (tag != null ? tag.GetHashCode() : 0));
             }
-        }
-
-        [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x100)]
-        // ReSharper disable once MemberCanBePrivate.Global
-        public bool Equals(TagKey other)
-        {
-            return ReferenceEquals(Type, other.Type) && Tag.Equals(other.Tag);
-        }
-
-        public override bool Equals(object obj)
-        {
-            var key = obj as TagKey?;
-            return key != null && Equals(key);
         }
 
         public override int GetHashCode()
