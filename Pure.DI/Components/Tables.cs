@@ -23,14 +23,10 @@
 // ReSharper disable InvokeAsExtensionMethod
 // ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 // ReSharper disable ArrangeNamespaceBody
-// ReSharper disable SuggestVarOrType_SimpleTypes
-// ReSharper disable SuggestVarOrType_Elsewhere
-// ReSharper disable SuggestVarOrType_BuiltInTypes
 #pragma warning disable 8618
 #pragma warning disable 8604
 #pragma warning disable 8603
 #pragma warning disable 8602
-#pragma warning disable 8601
 #pragma warning disable 8625
 #pragma warning disable 8765
 #pragma warning disable 0436
@@ -61,6 +57,7 @@ namespace NS35EBD81B
 
     internal class Table<TKey, TValue>
     {
+        private static readonly Pair<TKey, TValue> EmptyPair = new Pair<TKey, TValue>(default(TKey), default(TValue));
         protected readonly uint Divisor;
         protected readonly Pair<TKey, TValue>[] Buckets;
 
@@ -73,39 +70,39 @@ namespace NS35EBD81B
         {
             Divisor = GetDivisor(pairs.Length);
             Buckets = new Pair<TKey, TValue>[Divisor];
-            for (var index = 0; index < pairs.Length; index++)
+            for (var i = 0; i < Buckets.Length; i++)
             {
-                Pair<TKey, TValue> pair = pairs[index];
-                uint bucket = (uint)pair.Key.GetHashCode() % Divisor;
-                Pair<TKey, TValue> next = Buckets[bucket];
+                Buckets[i] = EmptyPair;
+            }
+
+            for (var i = 0; i < pairs.Length; i++)
+            {
+                var pair = pairs[i];
+                var bucket = (uint)pair.Key.GetHashCode() % Divisor;
+                var next = Buckets[bucket];
                 Buckets[bucket] = pair;
-                pair.Next = next;
+                if (next != EmptyPair)
+                {
+                    pair.Next = next;
+                }
             }
         }
 
         [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
         public TValue Get(TKey key)
         {
-            Pair<TKey, TValue> pair = Buckets[(uint)key.GetHashCode() % Divisor];
-            TKey pairKey;
-
-            start:
-            try
+            var pair = Buckets[(uint)key.GetHashCode() % Divisor];
+            do
             {
-                pairKey = pair.Key;
-            }
-            catch
-            {
-                return default(TValue);
-            }
+                if (Equals(pair.Key, key))
+                {
+                    return pair.Value;
+                }
 
-            if (Equals(pairKey, key))
-            {
-                return pair.Value;
-            }
+                pair = pair.Next;
+            } while (pair != null);
 
-            pair = pair.Next;
-            goto start;
+            return default(TValue);
         }
     }
 
@@ -121,57 +118,41 @@ namespace NS35EBD81B
             ResolversDivisor = Divisor;
         }
 
-        [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+        [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
         public object Resolve(System.Type type)
         {
-            Pair<System.Type, System.Func<object>> pair = ResolversBuckets[(uint)type.GetHashCode() % ResolversDivisor];
-            System.Type pairKey;
-            
-            start:
-            try
+            var pair = ResolversBuckets[(uint)type.GetHashCode() % ResolversDivisor];
+            do
             {
-                pairKey = pair.Key;
-            }
-            catch
-            {
-                throw new System.ArgumentException(Tables.CannotResolveMessage + type + ", consider adding it to the DI setup.");
-            }
-            
-            if (pairKey == type)
-            {
-                return pair.Value();
-            }
+                if (pair.Key == type)
+                {
+                    return pair.Value();
+                }
 
-            pair = pair.Next;
-            goto start;
+                pair = pair.Next;
+            } while (pair != null);
+
+            throw new System.ArgumentException(Tables.CannotResolveMessage + type + ", consider adding it to the DI setup.");
         }
 
-        [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+        [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
         internal System.Func<object> GetResolver<T>()
         {
-            Pair<System.Type, System.Func<object>> pair = ResolversBuckets[(uint)typeof(T).GetHashCode() % ResolversDivisor];
-            System.Type pairKey;
-            
-            start:
-            try
+            var pair = ResolversBuckets[(uint)typeof(T).GetHashCode() % ResolversDivisor];
+            do
             {
-                pairKey = pair.Key;
-            }
-            catch
-            {
-                return new System.Func<object>(() =>
+                if (pair.Key == typeof(T))
                 {
-                    throw new System.ArgumentException(Tables.CannotResolveMessage + typeof(T) + ", consider adding it to the DI setup.");
-                });
-            }
+                    return pair.Value;
+                }
 
-            if (pairKey == typeof(T))
+                pair = pair.Next;
+            } while (pair != null);
+
+            return new System.Func<object>(() =>
             {
-                return pair.Value;
-            }
-
-            pair = pair.Next;
-            goto start;
+                throw new System.ArgumentException(Tables.CannotResolveMessage + typeof(T) + ", consider adding it to the DI setup.");
+            });
         }
     }
 
@@ -191,44 +172,34 @@ namespace NS35EBD81B
             ResolversDivisor = resolversTable.ResolversDivisor;
         }
 
-        [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+        [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
         public object Resolve(TagKey key)
         {
-            Pair<TagKey, System.Func<object>> pair = ResolversByTagBuckets[key.HashCode % ResolversByTagDivisor];
-            while (pair != null)
+            var pair = ResolversByTagBuckets[key.HashCode % ResolversByTagDivisor];
+            do
             {
-                var pairKey = pair.Key;
-                if (pairKey.Type == key.Type && (ReferenceEquals(pairKey.Tag, key.Tag) || Equals(pairKey.Tag, key.Tag)))
+                // ReSharper disable once PossiblyImpureMethodCallOnReadonlyVariable
+                if (pair.Key.Type == key.Type && (ReferenceEquals(pair.Key.Tag, key.Tag) || Equals(pair.Key.Tag, key.Tag)))
                 {
                     return pair.Value();
                 }
 
                 pair = pair.Next;
-            }
+            } while (pair != null);
 
             if (key.Tag == null)
             {
-                System.Type keyType = key.Type;
-                Pair<System.Type, System.Func<object>> typePair = ResolversBuckets[(uint)keyType.GetHashCode() % ResolversDivisor];
-                System.Type typePairKey;
-                
-                start:
-                try
+                var keyType = key.Type;
+                var typePair = ResolversBuckets[(uint)keyType.GetHashCode() % ResolversDivisor];
+                do
                 {
-                    typePairKey = typePair.Key;
-                }
-                catch
-                {
-                    throw new System.ArgumentException(Tables.CannotResolveMessage + key + ", consider adding it to the DI setup.");
-                }
-                
-                if (typePairKey == keyType)
-                {
-                    return typePair.Value();
-                }
+                    if (typePair.Key == keyType)
+                    {
+                        return typePair.Value();
+                    }
 
-                typePair = typePair.Next;
-                goto start;
+                    typePair = typePair.Next;
+                } while (typePair != null);
             }
 
             throw new System.ArgumentException(Tables.CannotResolveMessage + key + ", consider adding it to the DI setup.");

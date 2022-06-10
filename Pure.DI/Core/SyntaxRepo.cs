@@ -81,7 +81,7 @@ internal static class SyntaxRepo
                 SyntaxFactory.AttributeArgument(
                     SyntaxFactory.CastExpression(
                         SyntaxFactory.ParseTypeName(typeof(MethodImplOptions).FullName),
-                        SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0x100))))));
+                        SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(256 + 512))))));
 
     public static readonly MethodDeclarationSyntax TResolveMethodSyntax =
         SyntaxRepo.MethodDeclaration(TTypeSyntax, nameof(IContext.Resolve))
