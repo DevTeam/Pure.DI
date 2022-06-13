@@ -24,6 +24,11 @@ internal class MetadataSyntaxFilter : ISyntaxFilter
 
     public bool Accept(SyntaxNode node)
     {
+        if (node.SyntaxTree.GetDiagnostics().Any(i => i.Severity == DiagnosticSeverity.Error))
+        {
+            return false;
+        }
+
         if (node is not InvocationExpressionSyntax invocation)
         {
             return false;

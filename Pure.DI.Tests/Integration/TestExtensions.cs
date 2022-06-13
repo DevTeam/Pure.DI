@@ -51,6 +51,7 @@ public static class TestExtensions
 
     public static IReadOnlyList<string> Run(this string setupCode, out string generatedCode, RunOptions? options = default)
     {
+        var output = new List<string>();
         var curOptions = options ?? new RunOptions();
         var parseOptions = CSharpParseOptions.Default.WithLanguageVersion(curOptions.LanguageVersion);
 
@@ -110,7 +111,7 @@ public static class TestExtensions
                     .WithNullableContextOptions(options?.NullableContextOptions ?? NullableContextOptions.Disable))
             .AddSyntaxTrees(CSharpSyntaxTree.ParseText(hostCode, parseOptions))
             .AddSyntaxTrees(generatedSources.Select(i => CSharpSyntaxTree.ParseText(i.Code.ToString(), parseOptions)).ToArray())
-            .Check();
+            .Check(output, options);
 
         var tempFileName = Path.Combine(Environment.CurrentDirectory, Guid.NewGuid().ToString()[..4]);
         var assemblyPath = Path.ChangeExtension(tempFileName, "exe");
@@ -130,10 +131,16 @@ public static class TestExtensions
 
         try
         {
-            var output = new List<string>();
-            File.WriteAllText(configPath, config);
             var result = compilation.Emit(assemblyPath);
-            Assert.True(result.Success);
+            if (options?.CheckCompilationErrors ?? true)
+            {
+                Assert.True(result.Success);
+            }
+            
+            if(!result.Success)
+            {
+                return output;
+            }
 
             void OnOutputDataReceived(object sender, DataReceivedEventArgs args)
             {
@@ -143,6 +150,7 @@ public static class TestExtensions
                 }
             }
 
+            File.WriteAllText(configPath, config);
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -190,19 +198,24 @@ public static class TestExtensions
         }
     }
 
-    private static CSharpCompilation Check(this CSharpCompilation compilation)
+    private static CSharpCompilation Check(this CSharpCompilation compilation, List<string> output, RunOptions? options)
     {
         var errors = (
                 from diagnostic in compilation.GetDiagnostics()
                 where diagnostic.Severity is DiagnosticSeverity.Error or DiagnosticSeverity.Warning
                 select GetErrorMessage(diagnostic))
             .ToList();
+        
+        output.AddRange(errors);
 
-        var hasError = errors.Any();
-        if (hasError)
+        if (options?.CheckCompilationErrors ?? true)
         {
-            errors.Insert(0, $"Language Version: {compilation.LanguageVersion}, available: {string.Join(", ", Enum.GetNames<LanguageVersion>())}");
-            Assert.False(hasError, string.Join(Environment.NewLine + Environment.NewLine, errors));
+            var hasError = errors.Any();
+            if (hasError)
+            {
+                errors.Insert(0, $"Language Version: {compilation.LanguageVersion}, available: {string.Join(", ", Enum.GetNames<LanguageVersion>())}");
+                Assert.False(hasError, string.Join(Environment.NewLine + Environment.NewLine, errors));
+            }
         }
 
         return compilation;

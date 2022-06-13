@@ -14,4 +14,6 @@ public class RunOptions
     public LanguageVersion LanguageVersion = LanguageVersion.Latest;
 
     public NullableContextOptions NullableContextOptions = NullableContextOptions.Disable;
+    
+    public bool CheckCompilationErrors = true;
 }

@@ -306,8 +306,13 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
             return true;
         }
 
-        var notImplemented =
-            _binding.Dependencies
+        if (_binding.Implementation.Type is IErrorTypeSymbol)
+        {
+            return false;
+        }
+
+        var notImplemented = _binding.Dependencies
+            .Where(dependency => dependency.Type is not IErrorTypeSymbol)
             .Where(dependency => !_binding.Implementation.Implements(dependency.Type))
             .ToList();
 
@@ -317,7 +322,7 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
                 invocation.DescendantNodes().OfType<GenericNameSyntax>().LastOrDefault(i => i.Identifier.Text == nameof(IBinding.To))
                 ?? invocation.DescendantNodes().LastOrDefault()
                 ?? invocation;
-
+            
             var error = $"{_binding.Implementation} is not inherited from {string.Join(", ", notImplemented.Select(i => i.ToString()))}";
             _diagnostic.Error(Diagnostics.Error.NotInherited, error, new[] { lastNode.GetLocation() }.ToArray());
             throw new HandledException(error);

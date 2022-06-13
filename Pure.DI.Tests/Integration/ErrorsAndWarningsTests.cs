@@ -282,4 +282,66 @@ public class ErrorsAndWarningsTests
         output.Any(i => i.Contains("IDisposable")).ShouldBeTrue(generatedCode);
         output.Any(i => i.Contains("MyClass2")).ShouldBeTrue(generatedCode);
     }
+    
+    [Fact]
+    public void ShouldNotRaiseNotInheritedWhenInvalidImplementationType()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+                using static Pure.DI.Lifetime;
+
+                public class MyClass
+                {                    
+                }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<IDisposable>().To<MyClass2>();
+                    }                   
+                }    
+            }".Run(out var generatedCode, new RunOptions {Statements = string.Empty, CheckCompilationErrors = false});
+
+        // Then
+        output.Any(i => i.Contains(Diagnostics.Error.NotInherited)).ShouldBeFalse(generatedCode);
+    }
+    
+    [Fact]
+    public void ShouldNotRaiseNotInheritedWhenInvalidAbstractType()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+                using static Pure.DI.Lifetime;
+
+                public class MyClass
+                {                    
+                }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<IDisposable2>().To<MyClass>();
+                    }                   
+                }    
+            }".Run(out var generatedCode, new RunOptions {Statements = string.Empty, CheckCompilationErrors = false});
+
+        // Then
+        output.Any(i => i.Contains(Diagnostics.Error.NotInherited)).ShouldBeFalse(generatedCode);
+    }
 }
