@@ -28,7 +28,7 @@ internal class MetadataBuilder : IMetadataBuilder
         var cancellationToken = executionContext.CancellationToken;
         Stopwatch stopwatch = new();
         stopwatch.Start();
-        var sourceSet = GetSourceSet(compilation);
+        var sourceSet = GetSourceSet(executionContext);
         var syntaxTreesCount = compilation.SyntaxTrees.Count();
         compilation = compilation.AddSyntaxTrees(sourceSet.ApiTrees.Concat(sourceSet.FeaturesTrees));
         var featuresTrees = compilation.SyntaxTrees.Skip(syntaxTreesCount);
@@ -42,20 +42,22 @@ internal class MetadataBuilder : IMetadataBuilder
         var currentMetadata = GetMetadata(compilation, currentTrees, cancellationToken).ToList();
         stopwatch.Stop();
 
-        return new MetadataContext(compilation, cancellationToken, GetSourceSet(compilation).ApiSources, featuresMetadata.AsReadOnly(), currentMetadata.AsReadOnly(), stopwatch.ElapsedMilliseconds);
+        return new MetadataContext(compilation, cancellationToken, GetSourceSet(executionContext).ApiSources, featuresMetadata.AsReadOnly(), currentMetadata.AsReadOnly(), stopwatch.ElapsedMilliseconds);
     }
 
-    private SourceSet GetSourceSet(Compilation compilation)
+    private SourceSet GetSourceSet(IExecutionContext executionContext)
     {
-        if (compilation is CSharpCompilation csharpCompilation)
+        if (
+            executionContext.Compilation is CSharpCompilation csharpCompilation
+            && executionContext.ParseOptions is CSharpParseOptions cSharpParseOptions)
         {
             return _stateCache.GetOrAdd(
                     new SourceSetKey(csharpCompilation.LanguageVersion, Defaults.DefaultNamespace),
-                    _ => new SourceBuilderState(new SourceSet(new CSharpParseOptions(csharpCompilation.LanguageVersion))))
+                    _ => new SourceBuilderState(new SourceSet(cSharpParseOptions)))
                 .SourceSet;
         }
 
-        var error = $"{compilation.Language} is not supported.";
+        var error = $"{executionContext.Compilation.Language} is not supported.";
         _diagnostic.Error(Diagnostics.Error.Unsupported, error);
         throw new HandledException(error);
     }

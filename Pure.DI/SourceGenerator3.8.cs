@@ -26,6 +26,8 @@ public class SourceGenerator : ISourceGenerator
 
         public CancellationToken CancellationToken => _context.CancellationToken;
 
+        public ParseOptions ParseOptions => _context.ParseOptions;
+
         public void AddSource(string hintName, SourceText sourceText)
         {
             Action<string, SourceText> addSource = _context.AddSource;

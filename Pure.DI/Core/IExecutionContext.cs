@@ -3,6 +3,8 @@ namespace Pure.DI.Core;
 internal interface IExecutionContext
 {
     Compilation Compilation { get; }
+    
+    ParseOptions ParseOptions { get; }
 
     CancellationToken CancellationToken { get; }
 

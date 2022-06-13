@@ -86,7 +86,7 @@ public static class TestExtensions
         var generatedSources = new List<Source>();
         try
         {
-            var executionContext = new ExecutionContext(generatedSources, compilation, CancellationToken.None);
+            var executionContext = new ExecutionContext(generatedSources, compilation, parseOptions, CancellationToken.None);
             container.Resolve<ISourceBuilder>().Build(executionContext);
         }
         catch (BuildException buildException)
@@ -265,7 +265,11 @@ public static class TestExtensions
         public void WriteErrorLine(string error) => _errors.Add(error);
     }
 
-    private record ExecutionContext(ICollection<Source> Sources, Compilation Compilation, CancellationToken CancellationToken) : IExecutionContext
+    private record ExecutionContext(
+        ICollection<Source> Sources,
+        Compilation Compilation,
+        ParseOptions ParseOptions,
+        CancellationToken CancellationToken) : IExecutionContext
     {
         public void AddSource(string hintName, SourceText sourceText) => 
             Sources.Add(new Source(hintName, sourceText));
