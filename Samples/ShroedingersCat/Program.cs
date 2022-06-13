@@ -1,13 +1,4 @@
-﻿// ReSharper disable ArrangeTypeModifiers
-// ReSharper disable UnusedMemberInSuper.Global
-// ReSharper disable UnusedMember.Global
-// ReSharper disable IdentifierTypo
-// ReSharper disable CommentTypo
-// ReSharper disable ClassNeverInstantiated.Global
-// ReSharper disable PartialTypeWithSinglePart
-// ReSharper disable UnusedMember.Local
-// ReSharper disable ArrangeNamespaceBody
-namespace Sample
+﻿namespace Sample
 {
     using System;
     using Pure.DI;
@@ -15,17 +6,17 @@ namespace Sample
 
 // Let's create an abstraction
 
-    interface IBox<out T>
+    public interface IBox<out T>
     {
         T Content { get; }
     }
 
-    interface ICat
+    public interface ICat
     {
         State State { get; }
     }
 
-    enum State
+    public enum State
     {
         Alive,
         Dead
@@ -33,7 +24,7 @@ namespace Sample
 
 // Here is our implementation
 
-    class CardboardBox<T> : IBox<T>
+    public class CardboardBox<T> : IBox<T>
     {
         public CardboardBox(T content) => Content = content;
 
@@ -42,7 +33,7 @@ namespace Sample
         public override string ToString() => $"[{Content}]";
     }
 
-    class ShroedingersCat : ICat
+    public class ShroedingersCat : ICat
     {
         // Represents the superposition of the states
         private readonly Lazy<State> _superposition;
@@ -57,7 +48,7 @@ namespace Sample
 
 // Let's glue all together
 
-    static partial class Composer
+    public static partial class Composer
     {
         // Actually, this code never runs and the method might have any name or be a constructor for instance
         // because this is just a hint to set up an object graph.
