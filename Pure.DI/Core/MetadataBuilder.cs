@@ -47,17 +47,15 @@ internal class MetadataBuilder : IMetadataBuilder
 
     private SourceSet GetSourceSet(IExecutionContext executionContext)
     {
-        if (
-            executionContext.Compilation is CSharpCompilation csharpCompilation
-            && executionContext.ParseOptions is CSharpParseOptions cSharpParseOptions)
+        if (executionContext.ParseOptions is CSharpParseOptions parseOptions)
         {
             return _stateCache.GetOrAdd(
-                    new SourceSetKey(csharpCompilation.LanguageVersion, Defaults.DefaultNamespace),
-                    _ => new SourceBuilderState(new SourceSet(cSharpParseOptions)))
+                    new SourceSetKey(parseOptions.LanguageVersion, Defaults.DefaultNamespace),
+                    _ => new SourceBuilderState(new SourceSet(parseOptions)))
                 .SourceSet;
         }
 
-        var error = $"{executionContext.Compilation.Language} is not supported.";
+        var error = $"{executionContext.ParseOptions.Language} is not supported.";
         _diagnostic.Error(Diagnostics.Error.Unsupported, error);
         throw new HandledException(error);
     }
