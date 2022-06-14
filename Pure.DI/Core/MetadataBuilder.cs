@@ -50,7 +50,7 @@ internal class MetadataBuilder : IMetadataBuilder
         if (executionContext.ParseOptions is CSharpParseOptions parseOptions)
         {
             return _stateCache.GetOrAdd(
-                    new SourceSetKey(parseOptions.LanguageVersion, Defaults.DefaultNamespace),
+                    new SourceSetKey(parseOptions, Defaults.DefaultNamespace),
                     _ => new SourceBuilderState(new SourceSet(parseOptions)))
                 .SourceSet;
         }
@@ -95,29 +95,41 @@ internal class MetadataBuilder : IMetadataBuilder
     
     internal class SourceSetKey
     {
-        private readonly LanguageVersion _languageVersion;
+        private readonly ParseOptions _parseOptions;
         private readonly string _ns;
 
-        public SourceSetKey(LanguageVersion languageVersion, string ns)
+        public SourceSetKey(ParseOptions parseOptions, string ns)
         {
-            _languageVersion = languageVersion;
+            _parseOptions = parseOptions;
             _ns = ns;
         }
 
         public override bool Equals(object? obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
+            if (ReferenceEquals(null, obj))
+            {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
             var other = (SourceSetKey)obj;
-            return _languageVersion == other._languageVersion && _ns == other._ns;
+            return _parseOptions.Equals(other._parseOptions) && _ns == other._ns;
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return ((int)_languageVersion * 397) ^ _ns.GetHashCode();
+                return (_parseOptions.GetHashCode() * 397) ^ _ns.GetHashCode();
             }
         }
     }
