@@ -126,7 +126,7 @@ internal class SemanticType
         switch (Type)
         {
             case INamedTypeSymbol namedTypeSymbol:
-                return IsComposedGenericTypeMarker ? new SemanticType(namedTypeSymbol.ConstructUnboundGenericType(), SemanticModel) : this;
+                return IsComposedGenericTypeMarker && namedTypeSymbol.IsGenericType ? new SemanticType(namedTypeSymbol.ConstructUnboundGenericType(), SemanticModel) : this;
 
             case IArrayTypeSymbol arrayTypeSymbol:
                 var elementType = new SemanticType(arrayTypeSymbol.ElementType, SemanticModel).ConstructUnbound();

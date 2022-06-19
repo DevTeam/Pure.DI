@@ -21,6 +21,7 @@
   - [Complex generics](#complex-generics)
   - [Complex generics with constraints](#complex-generics-with-constraints)
   - [Depends On](#depends-on)
+  - [Default factory](#default-factory)
   - [Unbound instance resolving](#unbound-instance-resolving)
 - Lifetimes
   - [Default lifetime](#default-lifetime)
@@ -702,6 +703,40 @@ var instance = MyDependentComposer.Resolve<IService>();
 ```
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+
+### Default factory
+
+Sometimes it is necessary to add custom dependency resolution logic for types that do not have any bindings defined. In this case, you can only use factory binding for the generic type marker and implement your own dependency resolution logic, as in the example below:
+
+``` CSharp
+public void Run()
+{
+    DI.Setup()
+        .Bind<TT>().To(ctx =>
+        {
+            if (typeof(TT) == typeof(int))
+            {
+                return (TT)(object)33;
+            }
+            
+            if (typeof(TT) == typeof(string))
+            {
+                return (TT)(object)"Abc";
+            }
+
+            throw new Exception("Unknown type.");
+        })
+        .Bind<Consumer>().To<Consumer>();
+    
+    var instance = DefaultFactoryDI.Resolve<Consumer>();
+    instance.Value.ShouldBe(33);
+    instance.Text.ShouldBe("Abc");
+}
+
+public record Consumer(int Value, string Text);
+```
+
+
 
 ### Unbound instance resolving
 

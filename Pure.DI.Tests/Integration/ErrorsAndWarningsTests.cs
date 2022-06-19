@@ -344,4 +344,38 @@ public class ErrorsAndWarningsTests
         // Then
         output.Any(i => i.Contains(Diagnostics.Error.NotInherited)).ShouldBeFalse(generatedCode);
     }
+    
+    [Fact]
+    public void ShouldShowCompilationErrorWhenWhenBindingContainsGenericTypeMarkerOnly()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<TT>().To<TT>()
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(TT value) => Value = value.ToString();
+                }
+            }".Run(out var generatedCode, new RunOptions {Statements = string.Empty});
+
+        // Then
+        output.Any(i => i.Contains(Diagnostics.Error.InvalidSetup)).ShouldBeTrue(generatedCode);
+    }
 }

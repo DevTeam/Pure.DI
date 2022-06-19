@@ -8,6 +8,7 @@ using NS35EBD81B;
 // ReSharper disable once ClassNeverInstantiated.Global
 internal class TypeResolver : ITypeResolver
 {
+    private readonly IDiagnostic _diagnostic;
     private readonly IBuildContext _buildContext;
     private readonly Func<ITypesMap> _typesMapFactory;
     private readonly Func<IObjectBuilder> _constructorBuilder;
@@ -18,6 +19,7 @@ internal class TypeResolver : ITypeResolver
     private readonly Dictionary<Key, Binding<SimpleLambdaExpressionSyntax>> _factories = new();
     private readonly HashSet<SemanticType> _implementations = new(SemanticTypeEqualityComparer.Default);
     private readonly HashSet<SemanticType> _specialTypes = new(SemanticTypeEqualityComparer.Default);
+    private Binding<SimpleLambdaExpressionSyntax>? _defaultFactory;
 
     public TypeResolver(
         ResolverMetadata metadata,
@@ -29,6 +31,7 @@ internal class TypeResolver : ITypeResolver
         [Tag(Tags.ArrayBuilder)] Func<IObjectBuilder> arrayBuilder,
         [Tag(Tags.EnumerableBuilder)] Func<IObjectBuilder> enumerableBuilder)
     {
+        _diagnostic = diagnostic;
         _buildContext = buildContext;
         _typesMapFactory = typesMapFactory;
         _constructorBuilder = constructorBuilder;
@@ -52,6 +55,16 @@ internal class TypeResolver : ITypeResolver
         var dependencies = new HashSet<SemanticType>(binding.Dependencies);
         foreach (var type in dependencies)
         {
+            var isGenericTypeMarker = new Lazy<bool>(() => type.IsGenericTypeMarker);
+            if (binding.Factory == default && (binding.Implementation.IsGenericTypeMarker || isGenericTypeMarker.Value))
+            {
+                _diagnostic.Error(
+                    Diagnostics.Error.InvalidSetup,
+                    $"The type {type} is a generic type marker. It cannot be used in non-factory bindings directly outside of generic types.",
+                    new []{ binding.Location }.Where(i => i != default).Select(i => i!).ToArray());
+                continue;
+            }
+            
             foreach (var tag in binding.GetTags(type).DefaultIfEmpty<ExpressionSyntax?>(null))
             {
                 var unboundType = type.ConstructUnbound();
@@ -73,7 +86,15 @@ internal class TypeResolver : ITypeResolver
 
                 if (binding.Factory != null)
                 {
-                    _factories[key] = new Binding<SimpleLambdaExpressionSyntax>(binding, binding.Factory);
+                    var factoryBinding = new Binding<SimpleLambdaExpressionSyntax>(binding, binding.Factory);
+                    if (!isGenericTypeMarker.Value)
+                    {
+                        _factories[key] = factoryBinding;
+                    }
+                    else
+                    {
+                        _defaultFactory = factoryBinding;
+                    }
                 }
 
                 if (binding.Lifetime is Lifetime.Scoped or Lifetime.ContainerSingleton)
@@ -168,8 +189,23 @@ internal class TypeResolver : ITypeResolver
                     }
                     else
                     {
-                        resolvedDependency = default;
-                        ret = false;
+                        if (_defaultFactory.HasValue)
+                        {
+                            var defaultBinding = _defaultFactory.Value;
+                            var typesMap = _typesMapFactory();
+                            foreach (var defaultDependency in defaultBinding.Metadata.Dependencies)
+                            {
+                                typesMap.Setup(defaultDependency, dependency1);
+                            }
+
+                            resolvedDependency = new Dependency(defaultBinding.Metadata, dependency1, tag, _factoryBuilder(), typesMap);
+                            ret = true;
+                        }
+                        else
+                        {
+                            resolvedDependency = default;
+                            ret = false;
+                        }
                     }
 
                     if (ret)

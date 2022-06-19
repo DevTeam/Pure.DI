@@ -1868,4 +1868,41 @@ public class SetupTests
         // Then
         (output.Contains("[ShroedingersCat { Superposition = Value is not created., State = Dead }]") || output.Contains("[ShroedingersCat { Superposition = Value is not created., State = Alive }]")).ShouldBeTrue(generatedCode);
     }
+    
+    [Fact]
+    public void ShouldShowCompilationErrorWhenWhenBindingContainsGenericTypeMarkerOnly2()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<TT>().To(ctx => typeof(TT) == typeof(string) ? (TT)(object)""Abc"" : (TT)new object())
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string value) => Value = value.ToString();
+                }
+            }".Run(out var generatedCode);
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "Abc"
+        }, generatedCode);
+    }
 }
