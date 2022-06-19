@@ -4,10 +4,6 @@
     "skipRestore": {
       "longName": "no-restore",
       "shortName": ""
-    },
-    "classlib": {
-      "longName": "classlib",
-      "shortName": ""
     }
   }
 }

@@ -1,10 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup Condition="'$(classlib)' == 'false'">
-        <OutputType>Exe</OutputType>
-    </PropertyGroup>
     <PropertyGroup>
+        <OutputType>Exe</OutputType>
         <TargetFramework>$(Framework)</TargetFramework>
-        <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>

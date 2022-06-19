@@ -31,24 +31,20 @@
     "framework": {
       "type": "parameter",
       "datatype": "string",
-      "description": "The target framework for the project (e.g. net5.0). Default \"netstandard2.0\" if \"--classlib\" is true, \"net5.0\" if \"--classlib\" is false",
+      "description": "The target framework for the project (e.g. net6.0).",
       "defaultValue": ""
     },
     "frameworkDefault": {
       "type": "generated",
       "generator": "switch",
-      "description": "generate a default framework value based on classlib",
+      "description": "generate a default framework value",
       "parameters": {
         "evaluator": "C++",
         "datatype": "string",
         "cases": [
           {
-            "condition": "(framework == '' && classlib == true)",
-            "value": "netstandard2.0"
-          },
-          {
-            "condition": "(framework == '' && classlib == false)",
-            "value": "net5.0"
+            "condition": "(framework == '')",
+            "value": "net6.0"
           },
           {
             "condition": "(framework != '')",
@@ -74,12 +70,6 @@
         ]
       },
       "replaces": "$(Framework)"
-    },
-    "classlib": {
-      "type": "parameter",
-      "datatype": "bool",
-      "description": "If specified, the project is set up as class library.",
-      "defaultValue": "false"
     },
     "version": {
       "type": "parameter",
