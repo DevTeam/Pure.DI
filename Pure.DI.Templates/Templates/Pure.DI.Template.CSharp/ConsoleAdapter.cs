@@ -6,8 +6,8 @@ namespace _PureDIProjectName_;
 internal class ConsoleAdapter: IInput, IOutput
 {
     /// <inheritdoc />
-    public string? ReadLine() => System.Console.ReadLine();
+    public string? ReadLine() => Console.ReadLine();
 
     /// <inheritdoc />
-    public void WriteLine(string? line) => System.Console.WriteLine(line);
+    public void WriteLine(string? line) => Console.WriteLine(line);
 }

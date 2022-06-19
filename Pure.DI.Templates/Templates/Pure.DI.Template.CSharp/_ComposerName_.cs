@@ -13,6 +13,7 @@ namespace _PureDIProjectName_;
 /// </summary>
 internal static partial class $(ComposerName)
 {
+    // ReSharper disable once UnusedMember.Local
     /// <summary>
     /// It is never called, only for DI setup. For more details, please see: https://github.com/DevTeam/Pure.DI
     /// </summary>

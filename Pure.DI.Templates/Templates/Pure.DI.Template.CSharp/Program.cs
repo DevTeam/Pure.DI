@@ -1,14 +1,9 @@
-namespace _PureDIProjectName_;
-using System;
+// The application entry point and the composition root.
+// This is the only place in the application where the object graph is created.
+return $(ComposerName).Resolve<Program>().Run(args);
 
-public class Program
+internal partial class Program
 {
-    /// <summary>
-    /// Entry point. Creates a composition root and runs an application logic.
-    /// </summary>
-    /// <returns>The application exit code.</returns>
-    public static int Main() => $(ComposerName).Resolve<Program>().Run();
-
     /// <summary>
     /// The abstract input.
     /// </summary>
@@ -30,11 +25,12 @@ public class Program
         _output = output ?? throw new ArgumentNullException(nameof(output));
     }
 
+    // ReSharper disable once UnusedParameter.Local
     /// <summary>
-    /// Runs an application logic.
+    /// Runs the application logic.
     /// </summary>
     /// <returns>The application exit code.</returns>
-    private int Run()
+    private int Run(string[] args)
     {
         _output.WriteLine("Hello!");
 
