@@ -1,10 +1,10 @@
 ﻿namespace Pure.DI.Core;
 
-internal record ResolverMetadata
+internal record ResolverMetadata(SyntaxNode SetupNode, string ComposerTypeName, ClassDeclarationSyntax? Owner)
 {
-    public readonly string ComposerTypeName;
-    public readonly ClassDeclarationSyntax? Owner;
-    public readonly SyntaxNode SetupNode;
+    public readonly string ComposerTypeName = ComposerTypeName;
+    public readonly ClassDeclarationSyntax? Owner = Owner;
+    public readonly SyntaxNode SetupNode = SetupNode;
     public readonly ICollection<IBindingMetadata> Bindings = new List<IBindingMetadata>();
     public readonly ICollection<string> DependsOn = new HashSet<string>
     {
@@ -13,13 +13,6 @@ internal record ResolverMetadata
     };
     public readonly ICollection<AttributeMetadata> Attributes = new List<AttributeMetadata>();
     public readonly IDictionary<Setting, string> Settings = new Dictionary<Setting, string>();
-
-    public ResolverMetadata(SyntaxNode setupNode, string composerTypeName, ClassDeclarationSyntax? owner)
-    {
-        SetupNode = setupNode;
-        ComposerTypeName = composerTypeName;
-        Owner = owner;
-    }
 
     public void Merge(ResolverMetadata dependency)
     {

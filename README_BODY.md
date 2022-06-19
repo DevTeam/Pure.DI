@@ -179,6 +179,8 @@ private static class SingletonSystemRandom
 }
 ```
 
+You can find a complete analogue of this application with top level statements [here](Samples/ShroedingersCatTopLevelStatements). For a top level statements application the name of generated composer is "Composer" by default if it was not override in the Setup call.
+
 _Pure.DI_ works the same as calling a set of nested constructors, but allows dependency injection. And that's a reason to take full advantage of Dependency Injection everywhere, every time, without any compromise!
 
 ## Simple and powerful API.
@@ -399,7 +401,8 @@ Benchmarks results are here `BenchmarkDotNet.Artifacts/results`
 ### Other resources
 
 * [Project templates](https://github.com/DevTeam/Pure.DI/wiki/Project-templates) - project templates for _dotnet new_ command
-* [Schrödinger's cat](Samples/ShroedingersCat) - simple console application
+* [Schrödinger's cat sample](Samples/ShroedingersCat) - simple console application
+* [Top level statements sample](Samples/ShroedingersCatTopLevelStatements) - simple console top level statements application
 * [C# script tool](https://github.com/JetBrains/teamcity-csharp-interactive/blob/master/TeamCity.CSharpInteractive/Composer.cs) - JetBrain TeamCity interactive tool for running C# scripts
 * [MSBuild logger](https://github.com/JetBrains/teamcity-msbuild-logger/blob/master/TeamCity.MSBuild.Logger/Composer.cs) - Provides the JetBrain TeamCity integration with Microsoft MSBuild.
 * [Performance comparison](https://danielpalme.github.io/IocPerformance/) - performance comparison of the most popular .NET DI/IoC containers

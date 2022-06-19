@@ -1,4 +1,5 @@
 ﻿// ReSharper disable UnusedParameter.Global
+// ReSharper disable UnusedParameter.Global
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ClassNeverInstantiated.Global
@@ -212,7 +213,7 @@ namespace NS35EBD81B
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="composerTypeName">The optional argument specifying a custom DI composer type name to generate. By default, it is a name of an owner class if the owner class is <c>static partial class</c> otherwise, it is a name of an owner plus the "DI" postfix.</param>
+        /// <param name="composerTypeName">The optional argument specifying a custom DI composer type name to generate. By default, it is a name of an owner class if the owner class is <c>static partial class</c> otherwise, it is a name of an owner plus the "DI" postfix. /// <param name="composerTypeName">The optional argument specifying a custom DI composer type name to generate. By default, it is a name of an owner class if the owner class is <c>static partial class</c> otherwise, it is a name of an owner plus the "DI" postfix. For a top level statements application the name is <c>Composer</c> by default.</param></param>
         /// <returns>DI configuration API.</returns>
         internal static IConfiguration Setup(string composerTypeName = "")
         {

@@ -15,8 +15,7 @@ internal class TargetClassNameProvider : ITargetClassNameProvider
                         .Select(TryGetNodeName)
                         .FirstOrDefault(i => !string.IsNullOrWhiteSpace(i));
 
-                composerTypeName = $"{parentNodeName}DI";
-                return composerTypeName;
+                return string.IsNullOrWhiteSpace(parentNodeName) ? "Composer" : $"{parentNodeName}DI";
             }
         }
         else
