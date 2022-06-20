@@ -1870,7 +1870,7 @@ public class SetupTests
     }
     
     [Fact]
-    public void ShouldShowCompilationErrorWhenWhenBindingContainsGenericTypeMarkerOnly2()
+    public void ShouldShowCompilationErrorWhenWhenBindingContainsGenericTypeMarkerOnly()
     {
         // Given
 

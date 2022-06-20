@@ -315,6 +315,70 @@ public class ErrorsAndWarningsTests
     }
     
     [Fact]
+    public void ShouldNotRaiseNotInheritedWhenvalidImplementationWithGenericTypeMarker()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using System.Collections.Generic;
+                using Pure.DI;
+                using static Pure.DI.Lifetime;
+
+                public class MyClass
+                {                    
+                }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<IList<TT>>().To<List<TT>>();
+                    }                   
+                }    
+            }".Run(out var generatedCode, new RunOptions {Statements = string.Empty, CheckCompilationErrors = false});
+
+        // Then
+        output.Any(i => i.Contains(Diagnostics.Error.NotInherited)).ShouldBeFalse(generatedCode);
+    }
+    
+    [Fact]
+    public void ShouldRaiseNotInheritedWhenInvalidImplementationWithGenericTypeMarker()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using System.Collections.Generic;
+                using Pure.DI;
+                using static Pure.DI.Lifetime;
+
+                public class MyClass
+                {                    
+                }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<IList<TT>>().To<List<TT1>>();
+                    }                   
+                }    
+            }".Run(out var generatedCode, new RunOptions {Statements = string.Empty, CheckCompilationErrors = false});
+
+        // Then
+        output.Any(i => i.Contains(Diagnostics.Error.NotInherited)).ShouldBeTrue(generatedCode);
+    }
+    
+    [Fact]
     public void ShouldNotRaiseNotInheritedWhenInvalidAbstractType()
     {
         // Given
