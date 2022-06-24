@@ -240,4 +240,45 @@ public class SingletonTests
             "True"
         }, generatedCode);
     }
+    
+    [Fact]
+    public void ShouldSupportExplicitDisposableWhenSingleton()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly Foo Value;
+                    internal CompositionRoot(Foo value) => Value = value;        
+                }
+
+                public class Foo: IDisposable
+                {
+                    void IDisposable.Dispose() {}
+                }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<Foo>().As(Lifetime.Singleton).To<Foo>()
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                    
+                }    
+            }".Run(out var generatedCode);
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "Sample.Foo"
+        }, generatedCode);
+    }
 }

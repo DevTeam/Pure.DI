@@ -13,7 +13,7 @@ internal static class SyntaxRepo
     public const string RaiseOnDisposableMethodName = "RaiseOnDisposable";
     private static readonly TypeSyntax VoidTypeSyntax = SyntaxFactory.ParseTypeName("void");
     public static readonly TypeSyntax BoolTypeSyntax = SyntaxFactory.ParseTypeName("bool");
-    private static readonly TypeSyntax DisposableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(IDisposable).ToString());
+    public static readonly TypeSyntax DisposableTypeSyntax = SyntaxFactory.ParseTypeName(typeof(IDisposable).ToString());
     public static readonly TypeSyntax TTypeSyntax = SyntaxFactory.ParseTypeName("T");
     public static readonly TypeSyntax TypeTypeSyntax = SyntaxFactory.ParseTypeName(typeof(Type).ToString());
     public static readonly TypeSyntax UIntTypeSyntax = SyntaxFactory.ParseTypeName(typeof(uint).ToString());

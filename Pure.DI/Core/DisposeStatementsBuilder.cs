@@ -17,8 +17,13 @@ internal class DisposeStatementsBuilder : IDisposeStatementsBuilder
                     SyntaxFactory.InvocationExpression(
                         SyntaxFactory.MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
-                            instanceExpression,
-                            SyntaxFactory.IdentifierName(nameof(IDisposable.Dispose)))).AddArgumentListArguments())
+                            SyntaxFactory.ParenthesizedExpression(
+                                SyntaxFactory.CastExpression(
+                                    SyntaxRepo.DisposableTypeSyntax,
+                                    instanceExpression)
+                                ),
+                            SyntaxFactory.IdentifierName(nameof(IDisposable.Dispose)))
+                    ).AddArgumentListArguments())
             )
         );
     }
