@@ -30,6 +30,15 @@
 #pragma warning disable 8625
 #pragma warning disable 8765
 #pragma warning disable 0436
+
+#if NET20
+namespace System
+{
+    public delegate TResult Func<TResult>();
+    public delegate TResult Func<T, TResult>(T arg);
+}
+#endif
+
 namespace NS35EBD81B
 {
     internal class Pair<TKey, TValue>

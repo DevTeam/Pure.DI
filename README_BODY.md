@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [<img src="http://teamcity.jetbrains.com/app/rest/builds/buildType:(id:OpenSourceProjects_DevTeam_PureDi_BuildAndTestBuildType)/statusIcon"/>](http://teamcity.jetbrains.com/viewType.html?buildTypeId=OpenSourceProjects_DevTeam_PureDi_BuildAndTestBuildType&guest=1)
 
-<img src="Docs/Images/demo.gif"/>
+<img src="Docs/Images/demo.gif" alt="Demo"/>
 
 ## Key features
 
@@ -19,7 +19,7 @@ _Pure.DI_ is __NOT__ a framework or library, but a code generator that generates
 - [X] High performance, including C# and JIT compilers optimizations.
   >All generated code runs as fast as your own, in pure DI style, including compile-time and run-time optimizations. As mentioned above, graph analysis doing at compile-time, but at run-time, there are just a bunch of nested constructors, and that's it.
 - [X] Works everywhere.
-  >Since a pure DI approach does not use any dependencies or the [.NET reflection](https://docs.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/reflection) at runtime, it does not prevent your code from working as expected on any platform: .NET Framework, .NET Core, UWP / XBOX, .NET IoT, Xamarin, etc.
+  >Since a pure DI approach does not use any dependencies or the [.NET reflection](https://docs.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/reflection) at runtime, it does not prevent your code from working as expected on any platform: Full .NET Framework 2.0+, .NET Core, .NET, UWP/XBOX, .NET IoT, Xamarin, etc.
 - [X] Ease of use.
   >The _Pure.DI_ API is very similar to the API of most IoC/DI libraries. And it was a deliberate decision: the main reason is that programmers do not need to learn a new API.
 - [X] Ultra-fine tuning of generic types.
@@ -36,14 +36,14 @@ _Pure.DI_ is __NOT__ a framework or library, but a code generator that generates
 
 ## Contents
 
-- [How it works](#schrödingers-cat-shows-how-it-works)
+- [How it works](#schrdingers-catsamplesshroedingerscat-shows-how-it-works)
 - [API](#simple-and-powerful-api)
 - [Requirements](#development-environment-requirements)
 - [Supported frameworks](#supported-frameworks)
 - [Project templates](#project-templates)
 - [Samples](#samples)
-  - [ASP.NET Core Blazor](#aspnet-core-blazor) 
-  - [WPF](#wpf)
+  - [ASP.NET Core Blazor](#aspnet-core-blazorsamplesblazorserverapp) 
+  - [WPF](#wpfsampleswpfappnetcore)
 - [Performance test](#performance-test)
 - [Troubleshooting](#troubleshooting)
 - [How to build this project](#how-to-build-this-project)
@@ -286,8 +286,6 @@ When a targeting project is an ASP.NET project, a special extension method is ge
 
 This sample demonstrates how to apply DI for a WPF application. The crucial class is [DataProvider](Samples/WpfAppNetCore/DataProvider.cs), which connects view and view models. Besides that, it provides two sets of models for [design-time](Samples/WpfAppNetCore/ClockDomainDesignTime.cs) and [running](Samples/WpfAppNetCore/ClockDomain.cs) modes.
 
-For details please see [this sample](IoC.Tests/UsageScenarios/Interception.cs).
-
 ## Performance test
 
 ### Graph of 27 transient instances
@@ -322,7 +320,9 @@ To change the default _Pure.DI_ namespace for the generated API to something els
 <PropertyGroup>
   <PureDINamespace>MyNameSpace</PureDINamespace>
 </PropertyGroup>
+```
 
+```xml
 <ItemGroup>
   <CompilerVisibleProperty Include="PureDINamespace" />
 </ItemGroup>
@@ -334,7 +334,9 @@ For instance, to use the default project namespace, you could specify the follow
 <PropertyGroup>
   <PureDINamespace>$(RootNamespace)</PureDINamespace>
 </PropertyGroup>
+```
 
+```xml
 <ItemGroup>
   <CompilerVisibleProperty Include="PureDINamespace" />
 </ItemGroup>
