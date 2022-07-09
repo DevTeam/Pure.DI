@@ -8,13 +8,13 @@
 
 ## Key features
 
-_Pure.DI_ is __NOT__ a framework or library, but a code generator that generates static method code to create an object graph in a pure DI paradigm using a set of hints that are verified at compile time. Since all the work is done at compile time, at run time you only have efficient code that is ready to be used. This generated code does not depend on library calls or .NET reflection and is efficient in terms of performance and memory consumption.
+Pure.DI is __NOT__ a framework or library, but a code generator that generates static method code to create an object graph in a pure DI paradigm using a set of hints that are verified at compile time. Since all the work is done at compile time, at run time you only have efficient code that is ready to be used. This generated code does not depend on library calls or .NET reflection and is efficient in terms of performance and memory consumption.
 
 - [X] DI without any IoC/DI containers, frameworks, dependencies and therefore without any performance impact and side effects. 
   >_Pure.DI_ is actually a [.NET code generator](https://docs.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/source-generators-overview). It generates simple code as well as if you were doing it yourself: de facto just a bunch of nested constructors` calls. And you can see this code at any time.
 - [X] A predictable and verified dependency graph is built and verified on the fly while you write your code.
   >All the logic for analyzing the graph of objects, constructors, methods happens at compile time. Thus, the _Pure.DI_ tool notifies the developer about missing or circular dependency, for cases when some dependencies are not suitable for injection, etc., at compile-time. Developers have no chance of getting a program that crashes at runtime due to these errors. All this magic happens simultaneously as the code is written, this way, you have instant feedback between the fact that you made some changes to your code and your code was already checked and ready for use.
-- [X] It does not add any dependencies to any other assemblies.
+- [X] Does not add any dependencies to other assemblies.
   >Using a pure DI approach, you don't add runtime dependencies to your assemblies.
 - [X] High performance, including C# and JIT compilers optimizations.
   >All generated code runs as fast as your own, in pure DI style, including compile-time and run-time optimizations. As mentioned above, graph analysis doing at compile-time, but at run-time, there are just a bunch of nested constructors, and that's it.
@@ -29,10 +29,37 @@ _Pure.DI_ is __NOT__ a framework or library, but a code generator that generates
 
 ## Try it easy!
 
-- Install the DI template `dotnet new -i Pure.DI.Templates`.
-- Create a project directory and make it current
-- Create an application `dotnet new di`
-- Run it `dotnet run`
+Install the DI template [Pure.DI.Templates](https://www.nuget.org/packages/Pure.DI.Templates)
+
+```shell
+dotnet new -i Pure.DI.Templates
+```
+
+Create a project directory
+
+```shell
+md Sample
+```
+
+And make it current
+
+```shell
+cd ./Sample
+```
+ 
+Create an application from the template *__di__*
+
+```shell
+dotnet new di
+```
+
+And run it
+ 
+```shell
+dotnet run
+```
+
+Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates) for more details about the template.
 
 ## Contents
 
@@ -40,7 +67,6 @@ _Pure.DI_ is __NOT__ a framework or library, but a code generator that generates
 - [API](#simple-and-powerful-api)
 - [Requirements](#development-environment-requirements)
 - [Supported frameworks](#supported-frameworks)
-- [Project templates](#project-templates)
 - [Samples](#samples)
   - [ASP.NET Core Blazor](#aspnet-core-blazorsamplesblazorserverapp) 
   - [WPF](#wpfsampleswpfappnetcore)
@@ -94,21 +120,21 @@ It is important to note that our abstraction and implementation do not know anyt
 
 ### Let's glue all together
 
-Add a package reference to:
+Add a package reference to
 
 [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
 
-- Package Manager
+Package Manager
 
-  ```
-  Install-Package Pure.DI
-  ```
+```shell
+Install-Package Pure.DI
+```
   
-- .NET CLI
+.NET CLI
   
-  ```
-  dotnet add package Pure.DI
-  ```
+```shell
+dotnet add package Pure.DI
+```
 
 Bind abstractions to their implementations or factories, define lifetimes and other options in a class like the following:
 
@@ -243,34 +269,18 @@ You can [add a lifetime](#custom-singleton-lifetime) yourself.
 
 ## Development environment requirements
 
-- [.NET SDK 5.0.102+](https://dotnet.microsoft.com/download/dotnet/5.0)
+- [.NET SDK 5.0.102 or newer](https://dotnet.microsoft.com/download/dotnet/5.0)
 - [C# 4 or newer](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-version-history#c-version-40)
 
 ## Supported frameworks
 
 - [.NET and .NET Core](https://docs.microsoft.com/en-us/dotnet/core/) 1.0+
 - [.NET Standard](https://docs.microsoft.com/en-us/dotnet/standard/net-standard) 1.0+
-- [.NET Framework](https://docs.microsoft.com/en-us/dotnet/framework/) 3.5+
+- [.NET Framework](https://docs.microsoft.com/en-us/dotnet/framework/) 2.0+
 - [UWP/XBOX](https://docs.microsoft.com/en-us/windows/uwp/index)
 - [.NET IoT](https://dotnet.microsoft.com/apps/iot)
 - [Xamarin](https://dotnet.microsoft.com/apps/xamarin)
 - [.NET Multi-platform App UI (MAUI)](https://docs.microsoft.com/en-us/dotnet/maui/)
-
-## Project templates
-
-Run the following command to install [Pure.DI templates](https://www.nuget.org/packages/Pure.DI.Templates) for _dotnet new_ command:
-
-```dotnet new -i Pure.DI.Templates```
-
-To create a new C# DI-based console project from the template, run:
-
-```dotnet new di```
-
-After that, you can run the created application:
-
-```dotnet run```
-
-Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates) for more details.
 
 ## Samples
 
@@ -344,6 +354,15 @@ For instance, to use the default project namespace, you could specify the follow
 
 ### Troubleshooting
 
+See files emitted by the Pure.DU by adding these properties to your (*.csproj) project file:
+
+```xml
+<PropertyGroup>
+  <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+  <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
+</PropertyGroup>
+```
+
 To get all generated source code and log, add a hint like ```// out=<path to the diagnostics directory >``` as a comment before calling the method ```DI.Setup()```, for instance:
 
 ```c#
@@ -362,12 +381,13 @@ DI.Setup()
 ```
 
 The list of verbosity levels:
-- Quiet
-- Minimal
-- Normal
-- Diagnostic
+- *__Quiet__*
+- *__Minimal__*
+- *__Normal__*
+- *__Diagnostic__*
 
-To debug a code generation, add a hint like ```debug=true```:
+To debug a code generation, add a comment like `debug=true`:
+
 ```c#
 // debug=true
 DI.Setup()
@@ -375,12 +395,16 @@ DI.Setup()
 ```
 
 To get a code-generation performance snapshot:
+
 - install [JetBrains dotTrace command-line tool](https://www.jetbrains.com/help/profiler/Performance_Profiling__Profiling_Using_the_Command_Line.html#install-and-use-the-command-line-tool-as-a-net-core-tool):
-```
+
+```shell
 dotnet tool install --global JetBrains.dotTrace.GlobalTools
 ```
+
 - specify an output path like ```// out=<path to the diagnostics directory >```
-- add a hint like ```trace=true```:
+- add a comment like ```trace=true```:
+
 ```c#
 // out=c:\Projects\MyDiagnostics
 // trace=true
@@ -390,15 +414,23 @@ DI.Setup()
 
 ### How to build this project
 
-To run a build and tests, use the following command line from the root directory of the solution:
+To run a build, tests and create a NuGet package, use the following command line from the solution directory:
 
-```dotnet run --project Build```
+```shell
+dotnet tool restore
+dotnet csi -p:target=Build Build
+```
+
+The NuGet package is created here `./Pure.DI/bin/Release`
 
 To run benchmarks:
 
-```dotnet run --project Build -- -p target=Benchmark```
+```shell
+dotnet tool restore
+dotnet csi -p:target=Benchmark Build
+```
 
-Benchmarks results are here `BenchmarkDotNet.Artifacts/results`
+Benchmark results are placed here `./BenchmarkDotNet.Artifacts/results`
 
 ### Other resources
 
