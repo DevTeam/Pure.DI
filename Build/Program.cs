@@ -1,6 +1,8 @@
 ﻿using NuGet.Versioning;
 using Microsoft.Extensions.DependencyInjection;
 
+Tools.CheckRequiredSdk(new Version(6, 0, 301));
+
 var version = NuGetVersion.Parse(Property.Get("version", "1.0.0-dev", true));
 var nuGetKey = Property.Get("NuGetKey", string.Empty);
 var requiredSdkRange = VersionRange.Parse(Property.Get("RequiredSdkRange", "[6.0, )"), false);

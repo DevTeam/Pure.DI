@@ -9,8 +9,6 @@
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-        <Configurations>Debug;Release;Linux</Configurations>
-        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>

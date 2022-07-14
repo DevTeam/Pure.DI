@@ -10,9 +10,6 @@
         <IsPackable>false</IsPackable>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
         <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
-        <Configurations>Debug;Release;Linux</Configurations>
-        <Platforms>AnyCPU</Platforms>
-
         <AnalyzerRoslynVersion Condition="'$(AnalyzerRoslynVersion)'==''">4.0</AnalyzerRoslynVersion>
         <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">4.0.1</AnalyzerRoslynPackageVersion>
     </PropertyGroup>

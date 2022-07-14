@@ -14,8 +14,6 @@
         <SignAssembly>false</SignAssembly>
         <PublicSign>false</PublicSign>
         <OutputPath>bin</OutputPath>
-        <Configurations>Debug;Release;Linux</Configurations>
-        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <ItemGroup>

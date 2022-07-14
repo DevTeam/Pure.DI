@@ -7,7 +7,7 @@ using NuGet.Versioning;
 
 static class Tools
 {
-    public static  NuGetVersion GetNextVersion(NuGetRestoreSettings settings, NuGetVersion defaultVersion)
+    public static NuGetVersion GetNextVersion(NuGetRestoreSettings settings, NuGetVersion defaultVersion)
     {
         var floatRange = defaultVersion.Release != string.Empty
             ? new FloatRange(NuGetVersionFloatBehavior.Prerelease, defaultVersion)
@@ -21,6 +21,20 @@ static class Tools
                 ? new NuGetVersion(i.Major, i.Minor, i.Patch, defaultVersion.Release)
                 : new NuGetVersion(i.Major, i.Minor, i.Patch + 1))
             .Max() ?? defaultVersion;
+    }
+
+    public static void CheckRequiredSdk(Version requiredSdkVersion)
+    {
+        Version? sdkVersion = default;
+        if (
+            new DotNetCustom("--version")
+                .WithShortName($"Checking the .NET SDK version {requiredSdkVersion}")
+                .Run(output=> Version.TryParse(output.Line, out sdkVersion)) == 0
+            && sdkVersion != requiredSdkVersion)
+        {
+            Error($".NET SDK {requiredSdkVersion} is required.");
+            Environment.Exit(1);
+        }
     }
 }
 

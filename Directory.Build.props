@@ -17,6 +17,7 @@
 
         <DefineConstants Condition="'$(AnalyzerRoslynVersion)'=='3.8'">$(DefineConstants);ROSLYN38</DefineConstants>
         <DefineConstants Condition="'$(AnalyzerRoslynVersion)'=='4.0'">$(DefineConstants);ROSLYN40</DefineConstants>
+        <Configuration Condition="'$(Configuration)'==''">Debug</Configuration>
         <RoslynOutputPath>$(configuration)/roslyn$(AnalyzerRoslynVersion)</RoslynOutputPath>
         <OutputPath>bin/$(RoslynOutputPath)</OutputPath>
         <IntermediateOutputPath>obj/$(RoslynOutputPath)/</IntermediateOutputPath>

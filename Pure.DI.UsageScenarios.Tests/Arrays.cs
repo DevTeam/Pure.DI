@@ -16,7 +16,6 @@ namespace Pure.DI.UsageScenarios.Tests
             // $header=To resolve all possible instances of any tags of the specific type as an _array_ just use the injection of _T[]_.
             // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
             // {
-            // out=C:\Projects\TeamCity\Teamcity.CSharpInteractive\TeamCity.CSharpInteractive\obj\Generated
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
                 // Bind to the implementation #1

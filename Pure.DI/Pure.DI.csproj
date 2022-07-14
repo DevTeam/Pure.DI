@@ -7,8 +7,6 @@
         <Nullable>enable</Nullable>
         <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
         <OutputPath>bin/$(Configuration)/roslyn$(AnalyzerRoslynVersion)</OutputPath>
-        <Configurations>Debug;Release;Linux</Configurations>
-        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
     <PropertyGroup>
