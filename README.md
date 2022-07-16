@@ -35,28 +35,16 @@ Install the DI template [Pure.DI.Templates](https://www.nuget.org/packages/Pure.
 dotnet new -i Pure.DI.Templates
 ```
 
-Create a project directory
+Create a "Sample" console application from the template *__di__*
 
 ```shell
-md Sample
-```
-
-And make it current
-
-```shell
-cd ./Sample
-```
- 
-Create an application from the template *__di__*
-
-```shell
-dotnet new di
+dotnet new di -o ./Sample
 ```
 
 And run it
  
 ```shell
-dotnet run
+dotnet run --project Sample
 ```
 
 Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates) for more details about the template.
@@ -1490,7 +1478,6 @@ public class Service : IService
 To resolve all possible instances of any tags of the specific type as an _array_ just use the injection of _T[]_.
 
 ``` CSharp
-// out=C:\Projects\TeamCity\Teamcity.CSharpInteractive\TeamCity.CSharpInteractive\obj\Generated
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     // Bind to the implementation #1
