@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="CoreHtmlToImage" Version="1.0.6" />
     <PackageReference Include="TeamCity.CSharpInteractive" Version="1.0.4" />
   </ItemGroup>
 </Project>

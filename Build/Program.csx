@@ -15,6 +15,8 @@
 // Please see the page below for more details.
 // https://github.com/JetBrains/teamcity-csharp-interactive
 
+#r "nuget: CoreHtmlToImage, 1.0.6"
+
 #load "Tools.cs"
 #load "Settings.cs"
 #load "Build.cs"

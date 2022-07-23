@@ -1,3 +1,5 @@
+#nullable enable
+
 using HostApi;
 using NuGet.Versioning;
 // ReSharper disable ArrangeTypeModifiers

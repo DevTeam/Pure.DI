@@ -1,3 +1,4 @@
+using CoreHtmlToImage;
 using HostApi;
 using JetBrains.TeamCity.ServiceMessages.Write.Special;
 // ReSharper disable StringLiteralTypo
@@ -9,6 +10,8 @@ class Benchmark
     private readonly Settings _settings;
     private readonly ICommandLineRunner _commandLineRunner;
     private readonly ITeamCityWriter _teamCityWriter;
+    private readonly HtmlConverter _htmlConverter;
+
     private static readonly string[] Reports = {
         "Singleton",
         "Transient",
@@ -20,11 +23,13 @@ class Benchmark
     public Benchmark(
         Settings settings, 
         ICommandLineRunner commandLineRunner,
-        ITeamCityWriter teamCityWriter)
+        ITeamCityWriter teamCityWriter,
+        HtmlConverter htmlConverter)
     {
         _settings = settings;
         _commandLineRunner = commandLineRunner;
         _teamCityWriter = teamCityWriter;
+        _htmlConverter = htmlConverter;
     }
 
     public void Run()
@@ -39,17 +44,21 @@ class Benchmark
         Assertion.Succeed(_commandLineRunner.Run(benchmark), "Benchmarking");
 
         var resultsPath = Path.Combine("BenchmarkDotNet.Artifacts", "results");
-        var baseRenderCmd = new CommandLine(Path.Combine("Tools", "wkhtmltoimage", "wkhtmltoimage.exe"));
-        var renderTasks =
-            from reportName in Reports
-            let reportFileName = Path.Combine(resultsPath, $"Pure.DI.Benchmark.Benchmarks.{reportName}-report")
-            let reportFileNameHtml = reportFileName + ".html"
-            let reportFileNameJpg  = reportFileName + ".jpg"
-            let renderCmd = baseRenderCmd.AddArgs(reportFileNameHtml, reportFileNameJpg)
-            select _commandLineRunner.RunAsync(renderCmd);
+        foreach (var reportName in Reports)
+        {
+            var reportFileName = Path.Combine(resultsPath, $"Pure.DI.Benchmark.Benchmarks.{reportName}-report");
+            var reportFileNameHtml = reportFileName + ".html";
+            if (!File.Exists(reportName))
+            {
+                Warning($"{reportName} is missing.");
+                continue;
+            }
 
-        _teamCityWriter.PublishArtifact("BenchmarkDotNet.Artifacts/results/*.* => .");
-        var renderResults = Task.WhenAll(renderTasks).Result;
-        Assertion.Succeed(renderResults, "Result rendering");
+            _teamCityWriter.PublishArtifact($"{reportFileNameHtml} => .");
+            var bytes = _htmlConverter.FromHtmlString(File.ReadAllText(reportFileNameHtml));
+            var reportFileNameJpg = reportFileName + ".jpg";
+            File.WriteAllBytes(reportFileNameJpg, bytes);
+            _teamCityWriter.PublishArtifact($"{reportFileNameJpg} => .");
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using NuGet.Versioning;
+﻿using CoreHtmlToImage;
+using NuGet.Versioning;
 using Microsoft.Extensions.DependencyInjection;
 
 Tools.CheckRequiredSdk(new Version(6, 0, 301));
@@ -22,7 +23,8 @@ GetService<IServiceCollection>()
     .AddSingleton<Build>()
     .AddSingleton<Deploy>()
     .AddSingleton<DeployTemplate>()
-    .AddSingleton<Benchmark>() 
+    .AddSingleton<Benchmark>()
+    .AddSingleton<HtmlConverter>() 
 .BuildServiceProvider()
 .GetRequiredService<Root>()
 .Run();
