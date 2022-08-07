@@ -199,13 +199,20 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
         return base.VisitInvocationExpression(node);
     }
 
-    private static bool IsResolveMethod(InvocationExpressionSyntax invocation) =>
-        invocation.ArgumentList.Arguments.Count <= 1
-        && invocation.Expression is MemberAccessExpressionSyntax memberAccess
-        && memberAccess.Kind() == SyntaxKind.SimpleMemberAccessExpression
-        && memberAccess.Name is GenericNameSyntax genericName
-        && genericName.Identifier.Text == nameof(IContext.Resolve)
-        && genericName.TypeArgumentList.Arguments.Count == 1;
+    private bool IsResolveMethod(InvocationExpressionSyntax invocation)
+    {
+        if (invocation.ArgumentList.Arguments.Count > 1) return false;
+        if (invocation.Expression is not MemberAccessExpressionSyntax memberAccess) return false;
+        if (memberAccess.Kind() != SyntaxKind.SimpleMemberAccessExpression) return false;
+        if (memberAccess.Expression is IdentifierNameSyntax identifierName && identifierName.ToString() == _contextIdentifier.Text)
+        {
+            if (memberAccess.Name is not GenericNameSyntax genericName) return false;
+            if (genericName.Identifier.Text != nameof(IContext.Resolve)) return false;
+            return genericName.TypeArgumentList.Arguments.Count == 1;
+        }
+
+        return false;
+    }
 
     private static SyntaxNode ReplaceLambdaByResolveCall(SemanticType dependencyType, ExpressionSyntax? tag)
     {

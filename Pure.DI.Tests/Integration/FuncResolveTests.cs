@@ -484,4 +484,157 @@ public class FuncResolveTests
             "Abc"
         }, generatedCode);
     }
+    
+    [Fact]
+    public void ShouldSupportResolveFunctionName()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly int Value;
+                    internal CompositionRoot([Tag(1)] int[] value) => Value = value[0];
+                }
+
+                public interface IDep<T> { }
+
+                public class Dep<T>: IDep<T> { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<int[]>(1).To(_ => Utils.Resolve<int[]>())
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                  
+                }
+
+                public class Utils
+                {
+                    public static T Resolve<T>()
+                    { 
+                        if (typeof(T) == typeof(int[])) return (T)(object)new int[] {1, 2};
+                        return default(T);
+                    }  
+                }               
+            }".Run(out var generatedCode);
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "1"
+        }, generatedCode);
+    }
+    
+    [Fact]
+    // ReSharper disable once InconsistentNaming
+    public void ShouldSupportResolveFunctionNameWhenGenericTT()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly int Value;
+                    internal CompositionRoot([Tag(1)] int value) => Value = value;
+                }
+
+                public interface IDep<T> { }
+
+                public class Dep<T>: IDep<T> { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<TT>(1).To(_ => Utils.Resolve<TT>())
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                  
+                }
+
+                public class Utils
+                {
+                    public static T Resolve<T>()
+                    { 
+                        if (typeof(T) == typeof(int)) return (T)(object)1;
+                        return default(T);
+                    }  
+                }               
+            }".Run(out var generatedCode);
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "1"
+        }, generatedCode);
+    }
+    
+    [Fact]
+    // ReSharper disable once InconsistentNaming
+    public void ShouldSupportResolveFunctionNameWhenGenericTTAndOtherNamespace()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly int Value;
+                    internal CompositionRoot([Tag(1)] int value) => Value = value;
+                }
+
+                public interface IDep<T> { }
+
+                public class Dep<T>: IDep<T> { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<TT>(1).To(_ => Other.Utils.Resolve<TT>())
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                  
+                }                             
+            }
+            
+            namespace Other
+            {
+                public class Utils
+                {
+                    public static T Resolve<T>()
+                    { 
+                        if (typeof(T) == typeof(int)) return (T)(object)1;
+                        return default(T);
+                    }  
+                }
+            }
+".Run(out var generatedCode);
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "1"
+        }, generatedCode);
+    }
 }

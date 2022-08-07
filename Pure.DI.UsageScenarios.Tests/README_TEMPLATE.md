@@ -682,18 +682,18 @@ var instance = ComplexGenericsWithConstraintsDI.Resolve<Program>();
 
 ### Depends On
 
-
+Sometimes it becomes necessary to reuse a set of bindings in several composers. To do this, you can use the `DependsOn` function passing the name of the composer, where to get the set for reuse. It is important to note that this method works for composers within the same project.
 
 ``` CSharp
 static partial class MyBaseComposer
 {
-    static MyBaseComposer() => DI.Setup()
+    static void Setup() => DI.Setup()
         .Bind<IDependency>().To<Dependency>();
 }
 
 static partial class MyDependentComposer
 {
-    static MyDependentComposer() => DI.Setup()
+    static void Setup() => DI.Setup()
         .DependsOn(nameof(MyBaseComposer))
         .Bind<IService>().To<Service>();
 }
