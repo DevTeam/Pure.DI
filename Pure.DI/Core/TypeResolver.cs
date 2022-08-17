@@ -173,50 +173,24 @@ internal class TypeResolver : ITypeResolver
                 }
                 else
                 {
-                    var dependency1 = typeSelector(dependency);
-                    Dependency? resolvedDependency;
-                    bool ret;
-                    var key = new Key(dependency1, tag);
+                    var realDependency = typeSelector(dependency);
+                    var key = new Key(realDependency, tag);
                     if (_map.TryGetValue(key, out var implementationEntry))
                     {
                         var typesMap = _typesMapFactory();
-                        typesMap.Setup(implementationEntry.Details, dependency1);
-                        resolvedDependency = _factories.TryGetValue(key, out var factory)
-                            ? new Dependency(factory.Metadata, dependency1, tag, _factoryBuilder(), typesMap)
+                        typesMap.Setup(implementationEntry.Details, realDependency);
+                        var resolvedDependency = _factories.TryGetValue(key, out var factory)
+                            ? new Dependency(factory.Metadata, realDependency, tag, _factoryBuilder(), typesMap)
                             : new Dependency(implementationEntry.Metadata, implementationEntry.Details, tag, _constructorBuilder(), typesMap);
 
-                        ret = true;
-                    }
-                    else
-                    {
-                        if (_defaultFactory.HasValue)
-                        {
-                            var defaultBinding = _defaultFactory.Value;
-                            var typesMap = _typesMapFactory();
-                            foreach (var defaultDependency in defaultBinding.Metadata.Dependencies)
-                            {
-                                typesMap.Setup(defaultDependency, dependency1);
-                            }
-
-                            resolvedDependency = new Dependency(defaultBinding.Metadata, dependency1, tag, _factoryBuilder(), typesMap);
-                            ret = true;
-                        }
-                        else
-                        {
-                            resolvedDependency = default;
-                            ret = false;
-                        }
-                    }
-
-                    if (ret)
-                    {
-                        return resolvedDependency!.Value;
+                        return resolvedDependency;
                     }
                 }
 
                 if (
                     !dependency.Type.IsAbstract
                     && !_implementations.Contains(dependency)
+                    && !dependency.Name.StartsWith("System.Func`")
                     && !GetSpecialTypes(dependency.SemanticModel).Contains(dependency)
                     && dependency.IsValidTypeToResolve)
                 {
@@ -232,7 +206,19 @@ internal class TypeResolver : ITypeResolver
                     AddBinding(newBinding);
                     return new Dependency(newBinding, dependency, tag, _constructorBuilder(), typesMap);
                 }
+                
+                if (_defaultFactory.HasValue)
+                {
+                    var defaultBinding = _defaultFactory.Value;
+                    var typesMap = _typesMapFactory();
+                    foreach (var defaultDependency in defaultBinding.Metadata.Dependencies)
+                    {
+                        typesMap.Setup(defaultDependency, dependency);
+                    }
 
+                    return new Dependency(defaultBinding.Metadata, dependency, tag, _factoryBuilder(), typesMap);
+                }
+                
                 break;
             }
 

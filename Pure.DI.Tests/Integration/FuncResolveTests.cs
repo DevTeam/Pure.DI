@@ -691,4 +691,58 @@ public class FuncResolveTests
             "1"
         }, generatedCode);
     }
+    
+    [Fact]
+    // ReSharper disable once InconsistentNaming
+    public void ShouldSupportResolveFunctionTTWhenFuncWithArg()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly int Value;
+                    internal CompositionRoot([Tag(1)] System.Func<string, int> value) => Value = value(""Abc"");
+                }
+
+                public interface IDep<T> { }
+
+                public class Dep<T>: IDep<T> { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<TT>(1).To(_ => Other.Utils.Resolve<TT>())
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                  
+                }                             
+            }
+            
+            namespace Other
+            {
+                public class Utils
+                {
+                    public static T Resolve<T>()
+                    { 
+                        if (typeof(T) == typeof(System.Func<string, int>)) return (T)(object)new System.Func<string, int>(str => 1);
+                        return default(T);
+                    }  
+                }
+            }
+".Run(out var generatedCode);
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "1"
+        }, generatedCode);
+    }
 }
