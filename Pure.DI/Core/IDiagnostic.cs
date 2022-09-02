@@ -2,7 +2,7 @@
 
 internal interface IDiagnostic
 {
-    void Error(string id, params CodeError[] errors);
+    void Error(IEnumerable<CodeError> errors);
 
     void Error(string id, string message, params Location[] locations);
 

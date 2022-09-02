@@ -12,14 +12,15 @@ internal class DefaultDiagnostic : IDiagnostic
         _stdErr = stdErr;
     }
 
-    public void Error(string id, params CodeError[] errors)
+    public void Error(IEnumerable<CodeError> errors)
     {
-        foreach (var error in errors)
+        var curErrors = errors.ToList(); 
+        foreach (var error in curErrors)
         {
-            _stdErr.WriteErrorLine($"Error {id}: {error.Description}{GetLine(error.Locations)}");
+            _stdErr.WriteErrorLine($"Error {error.Id}: {error.Description}{GetLine(error.Locations)}");
         }
         
-        throw new HandledException(string.Join(", ", errors.Select(i => i.Description)));
+        throw new HandledException(string.Join(", ", curErrors.Select(i => i.Description)));
     }
 
     public void Error(string id, string message, params Location[] locations)

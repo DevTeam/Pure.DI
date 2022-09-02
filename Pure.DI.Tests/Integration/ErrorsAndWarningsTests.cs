@@ -62,10 +62,16 @@ public class ErrorsAndWarningsTests
 
                 public class Service: IService { public Service(IDependency dependency) {} }
 
-                public class CompositionRoot
+                public class Abc
                 {
                     public readonly IService Value;
-                    internal CompositionRoot(IService value) {}
+                    internal Abc(IService value) {}
+                }
+
+                public class CompositionRoot
+                {
+                    public readonly Abc Value;
+                    internal CompositionRoot(Abc value) {}
                 }
                 
                 internal static partial class Composer
@@ -81,7 +87,7 @@ public class ErrorsAndWarningsTests
             }".Run(out var generatedCode, new RunOptions {Statements = string.Empty});
 
         // Then
-        output.Any(i => i.Contains(Diagnostics.Error.CannotResolve)).ShouldBeTrue(generatedCode);
+        output.Any(i => i.Contains(Diagnostics.Error.CannotResolve) && i.Contains("constructor Sample.Dependency.Dependency(Sample.IDeepDependency) argument IDeepDependency deepDependency")).ShouldBeTrue(generatedCode);
     }
     
     [Fact]
@@ -144,15 +150,20 @@ public class ErrorsAndWarningsTests
                 using Pure.DI;
                 using static Pure.DI.Lifetime;
 
-                public class MyClass
+                public class MyClass1
                 {
-                    public MyClass(MyClass value) { }
+                    public MyClass(MyClass2 value) { }
+                }
+
+                public class MyClass2
+                {
+                    public MyClass(MyClass1 value) { }
                 }
 
                 public class CompositionRoot
                 {
-                    public readonly MyClass Value;
-                    internal CompositionRoot(MyClass value) { }
+                    public readonly MyClass1 Value;
+                    internal CompositionRoot(MyClass1 value) { }
                 }
 
                 internal static partial class Composer
@@ -164,10 +175,10 @@ public class ErrorsAndWarningsTests
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }                   
                 }    
-            }".Run(out var generatedCode);
+            }".Run(out var generatedCode, new RunOptions {Statements = string.Empty});
 
         // Then
-        output.Any(i => i.Contains(Diagnostics.Error.CircularDependency)).ShouldBeTrue(generatedCode);
+        output.Any(i => i.Contains(Diagnostics.Error.CircularDependency) && i.Contains("resolving constructor Sample.MyClass2.MyClass2(Sample.MyClass1) argument MyClass1 value")).ShouldBeTrue(generatedCode);
     }
 
     [Fact]

@@ -35,14 +35,14 @@ internal class AutowiringObjectBuilder : IObjectBuilder
         var stopwatch = new Stopwatch();
         stopwatch.Start();
         var ctorInfos = (
-                from ctor in
-                    dependency.Implementation.Type is INamedTypeSymbol implementationType
-                        ? implementationType.Constructors
-                        : Enumerable.Empty<IMethodSymbol>()
-                where !_buildContext.IsCancellationRequested
-                where ctor.DeclaredAccessibility is Accessibility.Internal or Accessibility.Public or Accessibility.Friend
-                let order = GetOrder(ctor) ?? int.MaxValue
-                let parameters = ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, dependency, ctor, true).ToArray()
+            from ctor in
+                dependency.Implementation.Type is INamedTypeSymbol implementationType
+                    ? implementationType.Constructors
+                    : Enumerable.Empty<IMethodSymbol>()
+            where !_buildContext.IsCancellationRequested
+            where ctor.DeclaredAccessibility is Accessibility.Internal or Accessibility.Public or Accessibility.Friend
+            let order = GetOrder(ctor) ?? int.MaxValue
+            let parameters = ResolveMethodParameters($"constructor {ctor} argument", _buildContext.TypeResolver, buildStrategy, dependency, ctor, true).ToArray()
                 let description = new StringBuilder(ctor.ToString())
                 let resolvedParams = parameters.Where(i => i.Expression.HasValue).ToArray()
                 let isResolved = parameters.Length == resolvedParams.Length
@@ -68,19 +68,18 @@ internal class AutowiringObjectBuilder : IObjectBuilder
         if (ctorInfo == default || _buildContext.IsCancellationRequested)
         {
             var errors = (
-                from ctorResolve in ctorInfos
-                from paramResolve in ctorResolve.parameters
-                let parameterDescription = paramResolve.Expression.HasValue ? string.Empty : $"{paramResolve.Target.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat)} {paramResolve.Target.Name}"
-                where !string.IsNullOrWhiteSpace(parameterDescription)
-                select new CodeError(parameterDescription, paramResolve.Target.Locations.ToArray()))
+                    from ctorResolve in ctorInfos
+                    from paramResolve in ctorResolve.parameters
+                    let parameterDescription = paramResolve.Expression.HasValue ? string.Empty : $"constructor {ctorResolve.ctor} argument {GetParameterDisplayName(paramResolve.Target)}"
+                    where !string.IsNullOrWhiteSpace(parameterDescription)
+                    select new [] {new CodeError(dependency, Diagnostics.Error.CannotResolve, parameterDescription, paramResolve.Target.Locations.ToArray())}.Concat(paramResolve.Expression.Errors)
+                )
+                .SelectMany(i => i)
+                .DefaultIfEmpty(new CodeError(dependency, Diagnostics.Error.CannotResolve, "Cannot found a constructor", dependency.Implementation.Type.Locations.ToArray()))
                 .ToArray();
             
             var reasons = string.Join("; ", errors.Select(i => i.Description));
-            _log.Trace(() => new[]
-            {
-                $"[{stopwatch.ElapsedMilliseconds}] Cannot found a constructor for {dependency}: {reasons}."
-            });
-
+            _log.Trace(() => new[] { $"[{stopwatch.ElapsedMilliseconds}] Cannot find a constructor for {dependency}: {reasons}." });
             _tracer.Save();
             return Optional<ExpressionSyntax>.CreateEmpty(errors);
         }
@@ -121,7 +120,7 @@ internal class AutowiringObjectBuilder : IObjectBuilder
             {
                 case IMethodSymbol method:
                     var arguments =
-                        from parameter in ResolveMethodParameters(_buildContext.TypeResolver, buildStrategy, dependency, method, false)
+                        from parameter in ResolveMethodParameters($"method {member} argument", _buildContext.TypeResolver, buildStrategy, dependency, method, false)
                         where parameter.Expression.HasValue
                         select SyntaxFactory.Argument(parameter.Expression.Value);
 
@@ -139,7 +138,7 @@ internal class AutowiringObjectBuilder : IObjectBuilder
                 case IFieldSymbol filed:
                     if (!filed.IsReadOnly && !filed.IsStatic && !filed.IsConst)
                     {
-                        var fieldValue = ResolveInstance(filed, dependency, filed.Type, _buildContext.TypeResolver, buildStrategy, filed.Locations, false);
+                        var fieldValue = ResolveInstance("instance field", filed, dependency, filed.Type, _buildContext.TypeResolver, buildStrategy, filed.Locations, false);
                         if (fieldValue.Expression.HasValue)
                         {
                             var assignmentExpression = SyntaxFactory.AssignmentExpression(
@@ -160,7 +159,7 @@ internal class AutowiringObjectBuilder : IObjectBuilder
                 case IPropertySymbol property:
                     if (property.SetMethod != null && !property.IsReadOnly && !property.IsStatic)
                     {
-                        var propertyValue = ResolveInstance(property, dependency, property.Type, _buildContext.TypeResolver, buildStrategy, property.Locations, false);
+                        var propertyValue = ResolveInstance("instance property", property, dependency, property.Type, _buildContext.TypeResolver, buildStrategy, property.Locations, false);
                         if (propertyValue.Expression.HasValue)
                         {
                             var assignmentExpression = SyntaxFactory.AssignmentExpression(
@@ -206,19 +205,12 @@ internal class AutowiringObjectBuilder : IObjectBuilder
 
         return objectCreationExpression;
     }
-    
-    private static string CreateDescription(ISymbol ctor, IEnumerable<ResolveResult> results)
-    {
-        var unresolvedParameters = results
-            .Select(i => i.Expression.HasValue ? string.Empty : $"\"{i.Target.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat)} {i.Target.Name}\"")
-            .Where(i => !string.IsNullOrWhiteSpace(i))
-            .ToArray();
-        var reason = string.Join(", ", unresolvedParameters);
-        var suf = unresolvedParameters.Length > 1 ? "s" : "";
-        return unresolvedParameters.Length > 0 ? $"the constructor {ctor.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat)} has unresolved parameter{suf} {reason}" : string.Empty;
-    }
+
+    private static string GetParameterDisplayName(ISymbol parameter) => 
+        $"{parameter.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat)} {parameter.Name}";
 
     private ResolveResult ResolveInstance(
+        string parameterTypeDescription,
         ISymbol target,
         Dependency targetDependency,
         ITypeSymbol defaultType,
@@ -271,7 +263,20 @@ internal class AutowiringObjectBuilder : IObjectBuilder
 
                     if (dependency.IsResolved)
                     {
-                        return new ResolveResult(target, buildStrategy.TryBuild(dependency, resolvingType), ResolveType.Resolved, DefaultType.ResolvedValue);
+                        try
+                        {
+                            return new ResolveResult(target, buildStrategy.TryBuild(dependency, resolvingType), ResolveType.Resolved, DefaultType.ResolvedValue);
+                        }
+                        catch (BuildException buildException)
+                        {
+                            if (!buildException.Dependency.Equals(targetDependency))
+                            {
+                                throw;
+                            }
+
+                            var parameterName = GetParameterDisplayName(target);
+                            throw new BuildException(targetDependency, buildException.Id, $"{buildException.Message} when resolving {parameterTypeDescription} {parameterName}", target.Locations.ToArray());
+                        }
                     }
 
                     if (probe)
@@ -310,9 +315,9 @@ internal class AutowiringObjectBuilder : IObjectBuilder
         }
     }
 
-    private IEnumerable<ResolveResult> ResolveMethodParameters(ITypeResolver typeResolver, IBuildStrategy buildStrategy, Dependency dependency, IMethodSymbol method, bool probe) =>
+    private IEnumerable<ResolveResult> ResolveMethodParameters(string parameterTypeDescription, ITypeResolver typeResolver, IBuildStrategy buildStrategy, Dependency dependency, IMethodSymbol method, bool probe) =>
         from parameter in method.Parameters
-        select ResolveInstance(parameter, dependency, parameter.Type, typeResolver, buildStrategy, parameter.Locations, probe);
+        select ResolveInstance(parameterTypeDescription, parameter, dependency, parameter.Type, typeResolver, buildStrategy, parameter.Locations, probe);
 
     private SemanticType? GetDependencyType(ISymbol type, SemanticModel semanticModel) =>
     (

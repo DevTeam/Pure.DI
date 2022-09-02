@@ -1,14 +1,17 @@
 namespace Pure.DI.Core;
 
-public class BuildException : Exception
+internal class BuildException : Exception
 {
-    public BuildException(string id, string message, params Location[] location)
+    public BuildException(Dependency dependency, string id, string message, params Location[] location)
         : base(message)
     {
+        Dependency = dependency;
         Id = id;
         Locations = location;
     }
 
+    public Dependency Dependency { get; }
+    
     public string Id { get; }
 
     public Location[] Locations { get; }

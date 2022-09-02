@@ -9,15 +9,24 @@ internal class CompilationDiagnostic : IDiagnostic
 
     public IExecutionContext? Context { get; set; }
 
-    public void Error(string id, params CodeError[] errors)
+    public void Error(IEnumerable<CodeError> errors)
     {
-        foreach (var error in errors)
+        var curErrors = errors.ToList();
+        foreach (var error in curErrors)
         {
-            Error(id, error.Description, error.Locations);
+            ErrorInternal(error.Id, error.Description, error.Locations);
         }
+        
+        throw new HandledException(string.Join(", ", curErrors.Select(i => i.Description)));
     }
 
     public void Error(string id, string message, params Location[] locations)
+    {
+        ErrorInternal(id, message, locations);
+        throw new HandledException(message);
+    }
+
+    private void ErrorInternal(string id, string message, params Location[] locations)
     {
         try
         {

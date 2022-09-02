@@ -31,7 +31,7 @@ internal class FactoryWrapperStrategy : IWrapperStrategy
         var factoryType = baseFactoryType?.Construct(resolvingType.Type);
         if (factoryType == null)
         {
-            throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, new CodeError[] { new($"cannot construct a factory of the type \"{resolvingType.Type}\"")});
+            throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, new CodeError[] { new(dependency,Diagnostics.Error.CannotResolve, $"Cannot construct a factory of the type \"{resolvingType.Type}\"")});
         }
 
         if (dependency.Implementation.Type is INamedTypeSymbol { IsGenericType: true } namedTypeSymbol)

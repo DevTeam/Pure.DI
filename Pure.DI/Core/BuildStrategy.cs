@@ -11,6 +11,7 @@ using static Tags;
 // ReSharper disable once ClassNeverInstantiated.Global
 internal class BuildStrategy : IBuildStrategy
 {
+    private const string Separator = "---";
     private readonly IDiagnostic _diagnostic;
     private readonly ITracer _tracer;
     private readonly ILog<BuildStrategy> _log;
@@ -48,20 +49,25 @@ internal class BuildStrategy : IBuildStrategy
         var objectBuildExpression = dependency.ObjectBuilder.TryBuild(this, dependency);
         if (!objectBuildExpression.HasValue)
         {
-            var path = _tracer.Paths
-                           .Where(i => i.Length > 1)
-                           .OrderBy(i => i.Length)
-                           .LastOrDefault()
-                           ?.Reverse()
-                           .Select(i => $"[{i}]")
-                           .ToArray()
-                       ?? Array.Empty<string>();
-
-            var chain = string.Join("---", path);
             var errors = objectBuildExpression.Errors;
-            if (chain.Length > 0)
+            if (errors.Any())
             {
-                errors = objectBuildExpression.Errors.Select(i => new CodeError($"{i.Description}; the chain is {chain}", i.Locations)).ToArray();
+                var path = _tracer.Paths
+                   .Where(i => i.Length > 1)
+                   .OrderBy(i => i.Length)
+                   .LastOrDefault()
+                   ?.Reverse()
+                   .ToArray() ?? Array.Empty<Dependency>();
+                
+                if (path.Any())
+                {
+                    var chain = string.Join(Separator, path);
+                    var last = path.Last();
+                    errors = objectBuildExpression.Errors
+                        .Where(error => error.Dependency.Equals(last))
+                        .Select(error => new CodeError(error.Dependency, error.Id, error.Description.Contains(Separator) ? error.Description : $"{error.Description}, {chain}", error.Locations))
+                        .ToArray();
+                }
             }
 
             return new Optional<ExpressionSyntax>(objectBuildExpression.Value, objectBuildExpression.HasValue, errors);

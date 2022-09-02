@@ -20,8 +20,8 @@ internal class Tracer : ITracer, IDisposable
             return this;
         }
 
-        var path = string.Join("---", _path.Reverse().Select(i => i.Equals(dependency) ? $"[{i}]" : i.ToString()));
-        throw new BuildException(Diagnostics.Error.CircularDependency, $"circular dependency detected {path}---[{dependency}].", dependency.Implementation.Type.Locations.ToArray());
+        var path = string.Join("---", _path.Reverse().Select(i => i.Equals(dependency) ? $"[{i}]" : $"{i}"));
+        throw new BuildException(_path.Peek(), Diagnostics.Error.CircularDependency, $"Circular dependency {path}---[{dependency}] detected", dependency.Implementation.Type.Locations.ToArray());
     }
 
     public void Save()
