@@ -67,14 +67,22 @@ internal class AutowiringObjectBuilder : IObjectBuilder
         var ctorInfo = ctorInfos.FirstOrDefault(i => i.isResolved);
         if (ctorInfo == default || _buildContext.IsCancellationRequested)
         {
-            var reasons = string.Join("; ", ctorInfos.Select(i => CreateDescription(i.ctor, i.parameters)));
+            var errors = (
+                from ctorResolve in ctorInfos
+                from paramResolve in ctorResolve.parameters
+                let parameterDescription = paramResolve.Expression.HasValue ? string.Empty : $"{paramResolve.Target.ToDisplayString(SymbolDisplayFormat.CSharpShortErrorMessageFormat)} {paramResolve.Target.Name}"
+                where !string.IsNullOrWhiteSpace(parameterDescription)
+                select new CodeError(parameterDescription, paramResolve.Target.Locations.ToArray()))
+                .ToArray();
+            
+            var reasons = string.Join("; ", errors.Select(i => i.Description));
             _log.Trace(() => new[]
             {
                 $"[{stopwatch.ElapsedMilliseconds}] Cannot found a constructor for {dependency}: {reasons}."
             });
 
             _tracer.Save();
-            return Optional<ExpressionSyntax>.CreateEmpty(reasons, ctorInfos.SelectMany(i => i.ctor.Locations).ToArray());
+            return Optional<ExpressionSyntax>.CreateEmpty(errors);
         }
         
         _log.Trace(() => new[]

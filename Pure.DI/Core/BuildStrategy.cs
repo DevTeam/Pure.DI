@@ -58,13 +58,13 @@ internal class BuildStrategy : IBuildStrategy
                        ?? Array.Empty<string>();
 
             var chain = string.Join("---", path);
-            var description = objectBuildExpression.Description;
+            var errors = objectBuildExpression.Errors;
             if (chain.Length > 0)
             {
-                description = $"{description}; the chain is {chain}";
+                errors = objectBuildExpression.Errors.Select(i => new CodeError($"{i.Description}; the chain is {chain}", i.Locations)).ToArray();
             }
 
-            return new Optional<ExpressionSyntax>(objectBuildExpression.Value, objectBuildExpression.HasValue, description, objectBuildExpression.Locations);
+            return new Optional<ExpressionSyntax>(objectBuildExpression.Value, objectBuildExpression.HasValue, errors);
         }
 
         // Apply lifetime

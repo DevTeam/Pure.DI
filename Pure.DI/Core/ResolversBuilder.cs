@@ -261,7 +261,7 @@ internal class ResolversBuilder : IMembersBuilder
                     yield break;
                 }
 
-                throw _cannotResolveExceptionFactory.Create(binding, resolvingTag, instance.Description, instance.Locations);
+                throw _cannotResolveExceptionFactory.Create(binding, resolvingTag, instance.Errors);
             }
 
             yield return SyntaxRepo.ReturnStatement(instance.Value);

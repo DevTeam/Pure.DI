@@ -2,6 +2,8 @@
 
 internal interface IDiagnostic
 {
+    void Error(string id, params CodeError[] errors);
+
     void Error(string id, string message, params Location[] locations);
 
     void Warning(string id, string message, params Location[] locations);

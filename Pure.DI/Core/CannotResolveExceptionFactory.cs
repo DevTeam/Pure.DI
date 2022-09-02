@@ -8,13 +8,18 @@ internal class CannotResolveExceptionFactory : ICannotResolveExceptionFactory
     public CannotResolveExceptionFactory(IDiagnostic diagnostic) =>
         _diagnostic = diagnostic;
 
-    public HandledException Create(IBindingMetadata binding, ExpressionSyntax? tag, string description, params Location[] locations)
+    public HandledException Create(IBindingMetadata binding, ExpressionSyntax? tag, CodeError[] errors)
     {
         var tagName = tag != default ? $"({tag})" : string.Empty;
-        var error = new StringBuilder($"Cannot resolve {binding.Implementation?.ToString() ?? binding.Factory?.ToString() ?? binding.ToString()}{tagName}: {description}.");
-        var errorMessage = error.ToString();
-        var newLocations = locations.Concat(new []{binding.Location}).Where(i => i!= default).Select(i => i!).Distinct().ToArray();
-        _diagnostic.Error(Diagnostics.Error.CannotResolve, errorMessage, newLocations);
-        return new HandledException(errorMessage);
+        var baseErrorMessage = $"Cannot resolve {binding.Implementation?.ToString() ?? binding.Factory?.ToString() ?? binding.ToString()}{tagName}";
+        errors = errors.Select(error =>
+        {
+            var errorMessage = new StringBuilder($"{baseErrorMessage}: {error.Description}.");
+            var newLocations = error.Locations.Concat(new[] { binding.Location }).Where(i => i != default).Select(i => i!).Distinct().ToArray();
+            return new CodeError(errorMessage.ToString(), newLocations);
+        }).ToArray();
+        
+        _diagnostic.Error(Diagnostics.Error.CannotResolve, errors);
+        return new HandledException($"{baseErrorMessage}.");
     }
 }

@@ -12,6 +12,16 @@ internal class DefaultDiagnostic : IDiagnostic
         _stdErr = stdErr;
     }
 
+    public void Error(string id, params CodeError[] errors)
+    {
+        foreach (var error in errors)
+        {
+            _stdErr.WriteErrorLine($"Error {id}: {error.Description}{GetLine(error.Locations)}");
+        }
+        
+        throw new HandledException(string.Join(", ", errors.Select(i => i.Description)));
+    }
+
     public void Error(string id, string message, params Location[] locations)
     {
         _stdErr.WriteErrorLine($"Error {id}: {message}{GetLine(locations)}");

@@ -9,6 +9,14 @@ internal class CompilationDiagnostic : IDiagnostic
 
     public IExecutionContext? Context { get; set; }
 
+    public void Error(string id, params CodeError[] errors)
+    {
+        foreach (var error in errors)
+        {
+            Error(id, error.Description, error.Locations);
+        }
+    }
+
     public void Error(string id, string message, params Location[] locations)
     {
         try

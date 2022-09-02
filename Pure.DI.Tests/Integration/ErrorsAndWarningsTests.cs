@@ -83,6 +83,53 @@ public class ErrorsAndWarningsTests
         // Then
         output.Any(i => i.Contains(Diagnostics.Error.CannotResolve)).ShouldBeTrue(generatedCode);
     }
+    
+    [Fact]
+    public void ShouldShowCompilationErrorWhenCannotResolveSeveralDependencies()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+                using static Pure.DI.Lifetime;
+
+                public interface IDeepDependency {}
+
+                public interface IDependency {}
+
+                public class Dependency: IDependency { public Dependency(IDeepDependency deepDependency1, IDeepDependency deepDependency2) {} }
+
+                public interface IService {}
+
+                public class Service: IService { public Service(IDependency dependency1, IDependency dependency2) {} }
+
+                public class CompositionRoot
+                {
+                    public readonly IService Value;
+                    internal CompositionRoot(IService value) {}
+                }
+                
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<IDependency>().To<Dependency>()
+                            .Bind<IService>().To<Service>()
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                   
+                }    
+            }".Run(out var generatedCode, new RunOptions {Statements = string.Empty});
+
+        // Then
+        output.Count(i => i.Contains(Diagnostics.Error.CannotResolve)).ShouldBe(2);
+        output.Any(i => i.Contains(Diagnostics.Error.CannotResolve) && i.Contains("deepDependency1")).ShouldBeTrue(generatedCode);
+        output.Any(i => i.Contains(Diagnostics.Error.CannotResolve) && i.Contains("deepDependency2")).ShouldBeTrue(generatedCode);
+    }
 
     [Fact]
     public void ShouldDetectCircularDependency()
