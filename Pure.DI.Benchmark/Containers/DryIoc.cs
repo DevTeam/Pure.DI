@@ -17,7 +17,7 @@ internal sealed class DryIoc : BaseAbstractContainer<Container>
             _ => throw new ArgumentOutOfRangeException(nameof(lifetime), lifetime, null)
         };
 
-        _container.Register(new ReflectionFactory(implementationType, reuse), contractType, name, null, true);
+        _container.Register(ReflectionFactory.Of(implementationType, reuse), contractType, name, null, true);
     }
 
     public override T Resolve<T>() where T : class => _container.Resolve<T>();
