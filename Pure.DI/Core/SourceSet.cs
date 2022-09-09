@@ -37,7 +37,7 @@ internal class SourceSet
                     minLangVersion = LanguageVersion.Preview;
                 }
 
-                if (parseOptions.LanguageVersion < minLangVersion)
+                if (parseOptions.LanguageVersion.MapSpecifiedToEffectiveVersion() < minLangVersion.MapSpecifiedToEffectiveVersion())
                 {
                     continue;
                 }
