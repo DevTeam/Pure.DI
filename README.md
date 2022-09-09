@@ -447,6 +447,7 @@ Benchmark results are placed here `./BenchmarkDotNet.Artifacts/results`
   - [Dependency tag](#dependency-tag)
   - [Injection of default parameters](#injection-of-default-parameters)
   - [Injection of nullable parameters](#injection-of-nullable-parameters)
+  - [Init property](#init-property)
   - [Complex generics](#complex-generics)
   - [Complex generics with constraints](#complex-generics-with-constraints)
   - [Depends On](#depends-on)
@@ -1015,6 +1016,30 @@ public class SomeService: IService
 
 
 
+### Init property
+
+
+
+``` CSharp
+public void Run()
+{
+    DI.Setup()
+        .Bind<IService>().To<MyService>()
+        .Bind<IDependency>().To<Dependency>();
+
+    var service = InitPropertyDI.Resolve<IService>();
+}
+
+public class MyService: IService
+{
+    [Order(0)] public IDependency Dependency { get; init; }
+    
+    public string State => "Some state";
+}        
+```
+
+
+
 ### Complex generics
 
 Autowiring generic types is as easy as autowiring other simple types. Just use generic parameter markers like _TT_, _TT1_, _TT2_ etc or TTI, TTI1, TTI2... for interfaces or _TTS_, _TTS1_, _TTS2_... for value types or other special markers like _TTDisposable_ , _TTDisposable1_ , etc. _TTList <>_, _TTDictionary<>_ ... or create your own generic markers like _TTMy_ in the example below. Your own generic markers must meet 2 conditions: the type name must start with _TT_ and the type must have the _[GenericTypeArgument]_ attribute.
@@ -1143,6 +1168,8 @@ public void Run()
     DI.Setup()
         .Bind<TT>().To(ctx =>
         {
+            // Put any logic here to create an instance of the TT type
+            // For example, some IoC container can be used to obtain an instance.
             if (typeof(TT) == typeof(int))
             {
                 return (TT)(object)33;

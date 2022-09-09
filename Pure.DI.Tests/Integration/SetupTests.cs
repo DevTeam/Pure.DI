@@ -1870,39 +1870,63 @@ public class SetupTests
     }
     
     [Fact]
-    public void ShouldShowCompilationErrorWhenWhenBindingContainsGenericTypeMarkerOnly()
+    public void ShouldSupportInitProperty()
     {
         // Given
 
         // When
         var output = @"
+            #pragma warning disable CS8618
             namespace Sample
             {
                 using System;
                 using Pure.DI;
-
+                
                 static partial class Composer
                 {
                     static Composer()
                     {
                         DI.Setup()
-                            .Bind<TT>().To(ctx => typeof(TT) == typeof(string) ? (TT)(object)""Abc"" : (TT)new object())
+                            .Bind<IDependency>().To<Dependency>()
+                            .Bind<MyService>().To<MyService>()
                             // Composition Root
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }
                 }
 
+                internal interface IDependency
+                {
+                    int Index { get; set; }
+                }
+
+                internal class Dependency: IDependency
+                {
+                    public int Index { get; set; }
+                }
+
+                internal class MyService
+                {
+                    [Order(0)] public IDependency Dependency { get; init; }
+                }
+
                 internal class CompositionRoot
                 {
                     public readonly string Value;
-                    internal CompositionRoot(string value) => Value = value.ToString();
+                    internal CompositionRoot(MyService myService) => Value = myService.Dependency.ToString();
                 }
-            }".Run(out var generatedCode);
+            #pragma warning restore CS8618
+            }".Run(
+                out var generatedCode,
+                new RunOptions
+                {
+                    NullableContextOptions = NullableContextOptions.Annotations,
+                    LanguageVersion = LanguageVersion.CSharp9
+                });
 
         // Then
         output.ShouldBe(new[]
         {
-            "Abc"
+            "Sample.Dependency"
         }, generatedCode);
     }
 }

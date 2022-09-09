@@ -22,6 +22,8 @@ namespace Pure.DI.UsageScenarios.Tests
             DI.Setup()
                 .Bind<TT>().To(ctx =>
                 {
+                    // Put any logic here to create an instance of the TT type
+                    // For example, some IoC container can be used to obtain an instance.
                     if (typeof(TT) == typeof(int))
                     {
                         return (TT)(object)33;

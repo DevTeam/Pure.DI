@@ -42,7 +42,7 @@ internal class AutowiringObjectBuilder : IObjectBuilder
             where !_buildContext.IsCancellationRequested
             where ctor.DeclaredAccessibility is Accessibility.Internal or Accessibility.Public or Accessibility.Friend
             let order = GetOrder(ctor) ?? int.MaxValue
-            let parameters = ResolveMethodParameters($"constructor {ctor} argument", _buildContext.TypeResolver, buildStrategy, dependency, ctor, true).ToArray()
+            let parameters = ResolveMethodParameters($"constructor {ctor} argument", _buildContext.TypeResolver, buildStrategy, dependency, ctor).ToArray()
                 let description = new StringBuilder(ctor.ToString())
                 let resolvedParams = parameters.Where(i => i.Expression.HasValue).ToArray()
                 let isResolved = parameters.Length == resolvedParams.Length
@@ -89,14 +89,6 @@ internal class AutowiringObjectBuilder : IObjectBuilder
             $"[{stopwatch.ElapsedMilliseconds}] Found a constructor for {dependency}: {ctorInfo.ctor?.ToString() ?? "null"}."
         });
 
-        var objectCreationExpression = CreateObject(
-            ctorInfo.ctor,
-            dependency,
-            SyntaxFactory.SeparatedList(
-                from parameter in ctorInfo.resolvedParams
-                where parameter.Expression.HasValue
-                select SyntaxFactory.Argument(parameter.Expression.Value)));
-
         var members = (
                 from member in dependency.Implementation.Type.GetMembers()
                 where member.MetadataName != ".ctor"
@@ -107,6 +99,8 @@ internal class AutowiringObjectBuilder : IObjectBuilder
             .Distinct(SymbolEqualityComparer.Default);
 
         List<StatementSyntax> factoryStatements = new();
+        List<InitExpression> initStatements = new();
+        List<CodeError> codeErrors = new();
         foreach (var member in members)
         {
             if (member.IsStatic || member.DeclaredAccessibility != Accessibility.Public && member.DeclaredAccessibility != Accessibility.Internal)
@@ -119,8 +113,14 @@ internal class AutowiringObjectBuilder : IObjectBuilder
             switch (member)
             {
                 case IMethodSymbol method:
+                    var parameters = ResolveMethodParameters($"method {member} argument", _buildContext.TypeResolver, buildStrategy, dependency, method).ToList();
+                    codeErrors.AddRange(
+                        from parameter in parameters
+                        where parameter.ResolveType == ResolveType.NotResolved
+                        select new CodeError(dependency, Diagnostics.Error.CannotResolve, $"property {GetParameterDisplayName(parameter.Target)}", parameter.Target.Locations.ToArray()));
+
                     var arguments =
-                        from parameter in ResolveMethodParameters($"method {member} argument", _buildContext.TypeResolver, buildStrategy, dependency, method, false)
+                        from parameter in parameters
                         where parameter.Expression.HasValue
                         select SyntaxFactory.Argument(parameter.Expression.Value);
 
@@ -135,10 +135,15 @@ internal class AutowiringObjectBuilder : IObjectBuilder
                     factoryStatements.Add(SyntaxRepo.ExpressionStatement(call));
                     break;
 
-                case IFieldSymbol filed:
-                    if (!filed.IsReadOnly && !filed.IsStatic && !filed.IsConst)
+                case IFieldSymbol field:
+                    if (!field.IsReadOnly && !field.IsStatic && !field.IsConst)
                     {
-                        var fieldValue = ResolveInstance("instance field", filed, dependency, filed.Type, _buildContext.TypeResolver, buildStrategy, filed.Locations, false);
+                        var fieldValue = ResolveInstance("instance field", field, dependency, field.Type, _buildContext.TypeResolver, buildStrategy, field.Locations);
+                        if (fieldValue.ResolveType == ResolveType.NotResolved)
+                        {
+                            codeErrors.Add(new CodeError(dependency, Diagnostics.Error.CannotResolve, $"property {GetParameterDisplayName(field)}", field.Locations.ToArray()));
+                        }
+                        
                         if (fieldValue.Expression.HasValue)
                         {
                             var assignmentExpression = SyntaxFactory.AssignmentExpression(
@@ -147,7 +152,7 @@ internal class AutowiringObjectBuilder : IObjectBuilder
                                     SyntaxKind.SimpleMemberAccessExpression,
                                     SyntaxFactory.IdentifierName(InstanceVarName),
                                     SyntaxFactory.Token(SyntaxKind.DotToken),
-                                    SyntaxFactory.IdentifierName(filed.Name)),
+                                    SyntaxFactory.IdentifierName(field.Name)),
                                 fieldValue.Expression.Value);
 
                             factoryStatements.Add(SyntaxRepo.ExpressionStatement(assignmentExpression));
@@ -159,19 +164,31 @@ internal class AutowiringObjectBuilder : IObjectBuilder
                 case IPropertySymbol property:
                     if (property.SetMethod != null && !property.IsReadOnly && !property.IsStatic)
                     {
-                        var propertyValue = ResolveInstance("instance property", property, dependency, property.Type, _buildContext.TypeResolver, buildStrategy, property.Locations, false);
+                        var propertyValue = ResolveInstance("instance property", property, dependency, property.Type, _buildContext.TypeResolver, buildStrategy, property.Locations);
+                        if (propertyValue.ResolveType == ResolveType.NotResolved)
+                        {
+                            codeErrors.Add(new CodeError(dependency, Diagnostics.Error.CannotResolve, $"property {GetParameterDisplayName(property)}", property.Locations.ToArray()));
+                        }
+                        
                         if (propertyValue.Expression.HasValue)
                         {
-                            var assignmentExpression = SyntaxFactory.AssignmentExpression(
-                                SyntaxKind.SimpleAssignmentExpression,
-                                SyntaxFactory.MemberAccessExpression(
-                                    SyntaxKind.SimpleMemberAccessExpression,
-                                    SyntaxFactory.IdentifierName(InstanceVarName),
-                                    SyntaxFactory.Token(SyntaxKind.DotToken),
-                                    SyntaxFactory.IdentifierName(property.Name)),
-                                propertyValue.Expression.Value);
+                            if (property.SetMethod.IsInitOnly)
+                            {
+                                initStatements.Add(new InitExpression(property, propertyValue.Expression.Value));
+                            }
+                            else
+                            {
+                                var assignmentExpression = SyntaxFactory.AssignmentExpression(
+                                    SyntaxKind.SimpleAssignmentExpression,
+                                    SyntaxFactory.MemberAccessExpression(
+                                        SyntaxKind.SimpleMemberAccessExpression,
+                                        SyntaxFactory.IdentifierName(InstanceVarName),
+                                        SyntaxFactory.Token(SyntaxKind.DotToken),
+                                        SyntaxFactory.IdentifierName(property.Name)),
+                                    propertyValue.Expression.Value);
 
-                            factoryStatements.Add(SyntaxRepo.ExpressionStatement(assignmentExpression));
+                                factoryStatements.Add(SyntaxRepo.ExpressionStatement(assignmentExpression));   
+                            }
                         }
                     }
 
@@ -179,28 +196,46 @@ internal class AutowiringObjectBuilder : IObjectBuilder
             }
         }
 
+        if (codeErrors.Any())
+        {
+            return Optional<ExpressionSyntax>.CreateEmpty(codeErrors.ToArray());
+        }
+        
+        var objectCreationExpression = CreateObject(
+            ctorInfo.ctor,
+            dependency,
+            SyntaxFactory.SeparatedList(
+                from parameter in ctorInfo.resolvedParams
+                where parameter.Expression.HasValue
+                select SyntaxFactory.Argument(parameter.Expression.Value)),
+            initStatements);
+
         if (factoryStatements.Any())
         {
             var memberKey = new MemberKey($"Create{_stringTools.ConvertToTitle(dependency.Binding.Implementation?.ToString() ?? string.Empty)}", dependency);
             var factoryName = _buildContext.NameService.FindName(memberKey);
-            var type = dependency.Implementation.TypeSyntax;
-            var factoryMethod = SyntaxRepo.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
-                .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
-                .AddModifiers(SyntaxKind.PrivateKeyword.WithSpace(), SyntaxKind.StaticKeyword.WithSpace())
-                .AddBodyStatements(
-                    SyntaxFactory.LocalDeclarationStatement(
-                        SyntaxFactory.VariableDeclaration(type)
-                            .AddVariables(
-                                SyntaxFactory.VariableDeclarator(InstanceVarName)
-                                    .WithSpace()
-                                    .WithInitializer(SyntaxFactory.EqualsValueClause(objectCreationExpression)))))
-                .AddBodyStatements(factoryStatements.ToArray())
-                .AddBodyStatements(
-                    SyntaxRepo.ReturnStatement(
-                        SyntaxFactory.IdentifierName(InstanceVarName)));
-
-            _buildContext.GetOrAddMember(memberKey, () => factoryMethod);
-            return SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryName));
+            var creationExpression = objectCreationExpression;
+            _buildContext.GetOrAddMember(memberKey, () =>
+            {
+                var type = dependency.Implementation.TypeSyntax;
+                return SyntaxRepo.MethodDeclaration(type, SyntaxFactory.Identifier(factoryName))
+                    .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
+                    .AddModifiers(SyntaxKind.PrivateKeyword.WithSpace(), SyntaxKind.StaticKeyword.WithSpace())
+                    .AddBodyStatements(
+                        SyntaxFactory.LocalDeclarationStatement(
+                                SyntaxFactory.VariableDeclaration(type)
+                                    .AddVariables(
+                                        SyntaxFactory.VariableDeclarator(InstanceVarName)
+                                            .WithSpace()
+                                            .WithInitializer(SyntaxFactory.EqualsValueClause(creationExpression))))
+                            .WithNewLine())
+                    .AddBodyStatements(factoryStatements.Select(i => i.WithNewLine()).ToArray())
+                    .AddBodyStatements(
+                        SyntaxRepo.ReturnStatement(
+                            SyntaxFactory.IdentifierName(InstanceVarName)).WithNewLine());    
+            });
+            
+            objectCreationExpression = SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(factoryName));
         }
 
         return objectCreationExpression;
@@ -216,8 +251,7 @@ internal class AutowiringObjectBuilder : IObjectBuilder
         ITypeSymbol defaultType,
         ITypeResolver typeResolver,
         IBuildStrategy buildStrategy,
-        ImmutableArray<Location> resolveLocations,
-        bool probe)
+        ImmutableArray<Location> resolveLocations)
     {
         var stopwatch = new Stopwatch();
         stopwatch.Start();
@@ -279,15 +313,7 @@ internal class AutowiringObjectBuilder : IObjectBuilder
                         }
                     }
 
-                    if (probe)
-                    {
-                        return new ResolveResult(target, new Optional<ExpressionSyntax>(), ResolveType.NotResolved, DefaultType.DefaultValue);
-                    }
-
-                    var dependencyType = dependency.Implementation.TypeSyntax;
-                    return new ResolveResult(target, SyntaxFactory.CastExpression(dependencyType,
-                        SyntaxFactory.InvocationExpression(SyntaxFactory.ParseName(nameof(IContext.Resolve)))
-                            .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependencyType)))), ResolveType.ResolvedUnbound, DefaultType.ResolvedValue);
+                    return new ResolveResult(target, new Optional<ExpressionSyntax>(), ResolveType.NotResolved, DefaultType.DefaultValue);
                 }
 
                 case IArrayTypeSymbol:
@@ -315,9 +341,9 @@ internal class AutowiringObjectBuilder : IObjectBuilder
         }
     }
 
-    private IEnumerable<ResolveResult> ResolveMethodParameters(string parameterTypeDescription, ITypeResolver typeResolver, IBuildStrategy buildStrategy, Dependency dependency, IMethodSymbol method, bool probe) =>
+    private IEnumerable<ResolveResult> ResolveMethodParameters(string parameterTypeDescription, ITypeResolver typeResolver, IBuildStrategy buildStrategy, Dependency dependency, IMethodSymbol method) =>
         from parameter in method.Parameters
-        select ResolveInstance(parameterTypeDescription, parameter, dependency, parameter.Type, typeResolver, buildStrategy, parameter.Locations, probe);
+        select ResolveInstance(parameterTypeDescription, parameter, dependency, parameter.Type, typeResolver, buildStrategy, parameter.Locations);
 
     private SemanticType? GetDependencyType(ISymbol type, SemanticModel semanticModel) =>
     (
@@ -329,7 +355,7 @@ internal class AutowiringObjectBuilder : IObjectBuilder
         select new SemanticType(typeSymbol, typeSemanticModel)).FirstOrDefault();
 
     // ReSharper disable once SuggestBaseTypeForParameter
-    private ExpressionSyntax CreateObject(IMethodSymbol ctor, Dependency dependency, SeparatedSyntaxList<ArgumentSyntax> arguments)
+    private ExpressionSyntax CreateObject(IMethodSymbol ctor, Dependency dependency, SeparatedSyntaxList<ArgumentSyntax> arguments, IReadOnlyCollection<InitExpression> initStatements)
     {
         var typeSyntax = dependency.Implementation.TypeSyntax;
         if (typeSyntax.IsKind(SyntaxKind.TupleType))
@@ -343,8 +369,26 @@ internal class AutowiringObjectBuilder : IObjectBuilder
             _diagnostic.Warning(Diagnostics.Warning.CtorIsObsoleted, $"The constructor {ctor} marked as obsoleted is used.", ctor.Locations.ToArray());
         }
 
-        return SyntaxRepo.ObjectCreationExpression(typeSyntax)
+        var creationExpression = SyntaxRepo.ObjectCreationExpression(typeSyntax)
             .WithArgumentList(SyntaxFactory.ArgumentList(arguments));
+
+        if (initStatements.Any())
+        {
+            creationExpression = creationExpression.WithInitializer(
+                SyntaxFactory.InitializerExpression(
+                    SyntaxKind.WithInitializerExpression,
+                    SyntaxFactory.SeparatedList<ExpressionSyntax>(
+                            initStatements.Select(i => 
+                                SyntaxFactory.AssignmentExpression(
+                                    SyntaxKind.SimpleAssignmentExpression,
+                                    SyntaxFactory.IdentifierName(i.Property.Name),
+                                    i.Expression))
+                        )
+                )
+            );
+        }
+
+        return creationExpression;
     }
 
     private IComparable? GetOrder(ISymbol method)
@@ -386,4 +430,16 @@ internal class AutowiringObjectBuilder : IObjectBuilder
         DefaultValue = 1,
         ResolvedValue = 2
     }
+
+    private readonly struct InitExpression
+    {
+        public readonly IPropertySymbol Property;
+        public readonly ExpressionSyntax Expression;
+
+        public InitExpression(IPropertySymbol property, ExpressionSyntax expression)
+        {
+            Property = property;
+            Expression = expression;
+        }
+    };
 }

@@ -1,6 +1,8 @@
 ﻿namespace Pure.DI.Tests.Integration;
 
 using Core;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 public class ErrorsAndWarningsTests
 {
@@ -499,5 +501,103 @@ public class ErrorsAndWarningsTests
 
         // Then
         output.Any(i => i.Contains(Diagnostics.Error.InvalidSetup)).ShouldBeTrue(generatedCode);
+    }
+    
+    [Fact]
+    public void ShouldShowCompilationErrorWhenWhenBindingContainsGenericTypeMarkerOnlyAsFactory()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<TT>().To(ctx => typeof(TT) == typeof(string) ? (TT)(object)""Abc"" : (TT)new object())
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string value) => Value = value.ToString();
+                }
+            }".Run(out var generatedCode);
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "Abc"
+        }, generatedCode);
+    }
+    
+    [Fact]
+    public void ShouldShowCompilationErrorWhenCannotResolveProperty()
+    {
+        // Given
+
+        // When
+        var output = @"
+            #pragma warning disable CS8618
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+                
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<IDependency>().To<Dependency>()
+                            .Bind<MyService>().To<MyService>()
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal interface IDependency
+                {
+                    int Index { get; set; }
+                }
+
+                internal class Dependency: IDependency
+                {
+                    public int Index { get; set; }
+                }
+
+                internal class MyService
+                {
+                    [Order(0)] public IDependency Dependency { get; init; }
+            
+                    [Order(1)] public string State { get; init; }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(MyService myService) => Value = myService.State + myService.Dependency.ToString();
+                }
+            #pragma warning restore CS8618
+            }".Run(
+            out var generatedCode,
+            new RunOptions
+            {
+                NullableContextOptions = NullableContextOptions.Annotations,
+                LanguageVersion = LanguageVersion.CSharp9,
+                Statements = string.Empty
+            });
+
+        // Then
+        output.Any(i => i.Contains(Diagnostics.Error.CannotResolve) && i.Contains("MyService.State State")).ShouldBeTrue(generatedCode);
     }
 }
