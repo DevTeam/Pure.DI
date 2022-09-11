@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Tests.Integration;
+﻿// ReSharper disable StringLiteralTypo
+namespace Pure.DI.Tests.Integration;
 
 public class FuncResolveTests
 {
@@ -629,7 +630,7 @@ public class FuncResolveTests
                     }  
                 }
             }
-".Run(out var generatedCode);
+        ".Run(out var generatedCode);
 
         // Then
         output.ShouldBe(new[]
@@ -683,7 +684,7 @@ public class FuncResolveTests
                     }  
                 }
             }
-".Run(out var generatedCode);
+        ".Run(out var generatedCode);
 
         // Then
         output.ShouldBe(new[]
@@ -737,7 +738,7 @@ public class FuncResolveTests
                     }  
                 }
             }
-".Run(out var generatedCode);
+        ".Run(out var generatedCode);
 
         // Then
         output.ShouldBe(new[]
@@ -794,12 +795,460 @@ public class FuncResolveTests
                     }  
                 }
             }
-".Run(out var generatedCode);
+        ".Run(out var generatedCode);
 
         // Then
         output.ShouldBe(new[]
         {
             "1"
+        }, generatedCode);
+    }
+    
+    [Fact]
+    // ReSharper disable once InconsistentNaming
+    public void ShouldSupportResolveFunctionWhenTTValueType()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly int Value;
+                    internal CompositionRoot([Tag(1)] Func<int> value) => Value = value();
+                }
+
+                public interface IDep<T> { }
+
+                public class Dep<T>: IDep<T> { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<TTS>(1).To(_ => Other.UtilsS.Resolve<TTS>())
+                            .Bind<TTC>(1).To(_ => Other.UtilsC.Resolve<TTC>())
+                            .Bind<TT>(1).To(_ => Other.Utils.Resolve<TT>())                           
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                  
+                }                             
+            }
+            
+            namespace Other
+            {
+                public class UtilsS
+                {
+                    public static T Resolve<T>() where T: struct
+                    { 
+                        if (typeof(T) == typeof(int)) return (T)(object)3;
+                        return default(T);
+                    }  
+                }
+
+                public class UtilsC
+                {
+                    public static T Resolve<T>() where T: class
+                    { 
+                        if (typeof(T) == typeof(string)) return (T)(object)""Abc"";
+                        return default(T);
+                    }  
+                }
+
+                public class Utils
+                {
+                    public static T Resolve<T>()
+                    { 
+                        if (typeof(T) == typeof(int)) return (T)(object)1;
+                        return default(T);
+                    }  
+                }
+            }
+        ".Run(out var generatedCode);
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "3"
+        }, generatedCode);
+    }
+    
+    [Fact]
+    // ReSharper disable once InconsistentNaming
+    public void ShouldSupportResolveFunctionWhenTTValueType2()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly int Value;
+                    internal CompositionRoot([Tag(1)] Func<int> value) => Value = value();
+                }
+
+                public interface IDep<T> { }
+
+                public class Dep<T>: IDep<T> { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<TT>(1).To(_ => Other.Utils.Resolve<TT>())
+                            .Bind<TTS>(1).To(_ => Other.UtilsS.Resolve<TTS>())
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                  
+                }                             
+            }
+            
+            namespace Other
+            {
+                public class UtilsS
+                {
+                    public static T Resolve<T>() where T: struct
+                    { 
+                        if (typeof(T) == typeof(int)) return (T)(object)3;
+                        return default(T);
+                    }  
+                }
+
+                public class Utils
+                {
+                    public static T Resolve<T>()
+                    { 
+                        if (typeof(T) == typeof(int)) return (T)(object)1;
+                        return default(T);
+                    }  
+                }
+            }
+        ".Run(out var generatedCode);
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "3"
+        }, generatedCode);
+    }
+    
+    [Fact]
+    // ReSharper disable once InconsistentNaming
+    public void ShouldSupportResolveFunctionWhenTTRefType()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot([Tag(1)] Func<string> value) => Value = value();
+                }
+
+                public interface IDep<T> { }
+
+                public class Dep<T>: IDep<T> { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<TTS>(1).To(_ => Other.UtilsS.Resolve<TTS>())
+                            .Bind<TTC>(1).To(_ => Other.UtilsC.Resolve<TTC>())
+                            .Bind<TT>(1).To(_ => Other.Utils.Resolve<TT>())
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                  
+                }                             
+            }
+            
+            namespace Other
+            {
+                public class UtilsS
+                {
+                    public static T Resolve<T>() where T: struct
+                    { 
+                        if (typeof(T) == typeof(int)) return (T)(object)3;
+                        return default(T);
+                    }  
+                }
+
+                public class UtilsC
+                {
+                    public static T Resolve<T>() where T: class
+                    { 
+                        if (typeof(T) == typeof(string)) return (T)(object)""Abc"";
+                        return default(T);
+                    }  
+                }
+
+                public class Utils
+                {
+                    public static T Resolve<T>()
+                    { 
+                        if (typeof(T) == typeof(int)) return (T)(object)1;
+                        return default(T);
+                    }  
+                }
+            }
+        ".Run(out var generatedCode);
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "Abc"
+        }, generatedCode);
+    }
+    
+    [Fact]
+    // ReSharper disable once InconsistentNaming
+    public void ShouldSupportResolveFunctionWhenTTAnyType()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly int Value;
+                    internal CompositionRoot([Tag(1)] Func<int> value) => Value = value();
+                }
+
+                public interface IDep<T> { }
+
+                public class Dep<T>: IDep<T> { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<TTC>(1).To(_ => Other.UtilsC.Resolve<TTC>())
+                            .Bind<TT>(1).To(_ => Other.Utils.Resolve<TT>())
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                  
+                }                             
+            }
+            
+            namespace Other
+            {
+                public class UtilsC
+                {
+                    public static T Resolve<T>() where T: class
+                    { 
+                        if (typeof(T) == typeof(string)) return (T)(object)""Abc"";
+                        return default(T);
+                    }  
+                }
+
+                public class Utils
+                {
+                    public static T Resolve<T>()
+                    { 
+                        if (typeof(T) == typeof(int)) return (T)(object)1;
+                        return default(T);
+                    }  
+                }
+            }
+        ".Run(out var generatedCode);
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "1"
+        }, generatedCode);
+    }
+    
+    [Fact]
+    // ReSharper disable once InconsistentNaming
+    public void ShouldSupportResolveFunctionWhenTTConstrainedInterface()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly IDisposable Value;
+                    internal CompositionRoot([Tag(1)] Func<IDisposable> value) => Value = value();
+                }
+
+                public interface IDep<T> { }
+
+                public class Dep<T>: IDep<T> { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<TT>(1).To(_ => Other.Utils.Resolve<TT>())
+                            .Bind<TTS>(1).To(_ => Other.UtilsS.Resolve<TTS>())
+                            .Bind<TTC>(1).To(_ => Other.UtilsC.Resolve<TTC>())
+                            .Bind<TTDisposable>(1).To(_ => Other.UtilsDisposable.Resolve<TTDisposable>())
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                  
+                }                             
+            }
+            
+            namespace Other
+            {
+                public class Disp: System.IDisposable { public void Dispose() {}}
+
+                public class UtilsDisposable
+                {
+                    public static T Resolve<T>() where T: System.IDisposable
+                    { 
+                        if (typeof(T) == typeof(System.IDisposable)) return (T)(object)new Disp();
+                        return default(T);
+                    }  
+                }
+
+                public class UtilsS
+                {
+                    public static T Resolve<T>() where T: struct
+                    { 
+                        if (typeof(T) == typeof(int)) return (T)(object)3;
+                        return default(T);
+                    }  
+                }
+
+                public class UtilsC
+                {
+                    public static T Resolve<T>() where T: class
+                    { 
+                        if (typeof(T) == typeof(string)) return (T)(object)""Abc"";
+                        return default(T);
+                    }  
+                }
+
+                public class Utils
+                {
+                    public static T Resolve<T>()
+                    { 
+                        if (typeof(T) == typeof(int)) return (T)(object)1;
+                        return default(T);
+                    }  
+                }
+            }
+        ".Run(out var generatedCode);
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "Other.Disp"
+        }, generatedCode);
+    }
+    
+    [Fact]
+    // ReSharper disable once InconsistentNaming
+    public void ShouldSupportResolveFunctionWhenTTConstrainedType()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly Other.Disp Value;
+                    internal CompositionRoot([Tag(1)] Func<Other.Disp> value) => Value = value();
+                }
+
+                public interface IDep<T> { }
+
+                public class Dep<T>: IDep<T> { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<TTS>(1).To(_ => Other.UtilsS.Resolve<TTS>())
+                            .Bind<TTC>(1).To(_ => Other.UtilsC.Resolve<TTC>())
+                            .Bind<TTDisposable>(1).To(_ => Other.UtilsDisposable.Resolve<TTDisposable>())
+                            .Bind<TT>(1).To(_ => Other.Utils.Resolve<TT>())
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                  
+                }                             
+            }
+            
+            namespace Other
+            {
+                public class Disp: System.IDisposable { public void Dispose() {}}
+
+                public class UtilsDisposable
+                {
+                    public static T Resolve<T>() where T: System.IDisposable
+                    { 
+                        if (typeof(T) == typeof(System.IDisposable)) return (T)(object)new Disp();
+                        return default(T);
+                    }  
+                }
+
+                public class UtilsS
+                {
+                    public static T Resolve<T>() where T: struct
+                    { 
+                        if (typeof(T) == typeof(int)) return (T)(object)3;
+                        return default(T);
+                    }  
+                }
+
+                public class UtilsC
+                {
+                    public static T Resolve<T>() where T: class
+                    { 
+                        if (typeof(T) == typeof(string)) return (T)(object)""Abc"";
+                        return default(T);
+                    }  
+                }
+
+                public class Utils
+                {
+                    public static T Resolve<T>()
+                    { 
+                        if (typeof(T) == typeof(int)) return (T)(object)1;
+                        return default(T);
+                    }  
+                }
+            }
+        ".Run(out var generatedCode);
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "Other.Disp"
         }, generatedCode);
     }
 }

@@ -342,7 +342,7 @@ For instance, to use the default project namespace, you could specify the follow
 
 ### Troubleshooting
 
-See files emitted by the Pure.DU by adding these properties to your (*.csproj) project file:
+See files emitted by the Pure.DI by adding these properties to your (*.csproj) project file:
 
 ```xml
 <PropertyGroup>
@@ -1166,13 +1166,14 @@ Sometimes it is necessary to add custom dependency resolution logic for types th
 public void Run()
 {
     DI.Setup()
+        // For any types
         .Bind<TT>().To(ctx =>
         {
-            // Put any logic here to create an instance of the TT type
+            // Put any logic here to create an instance of any type
             // For example, some IoC container can be used to obtain an instance.
             if (typeof(TT) == typeof(int))
             {
-                return (TT)(object)33;
+                return (TT)(object)99;
             }
             
             if (typeof(TT) == typeof(string))
@@ -1182,14 +1183,37 @@ public void Run()
 
             throw new Exception("Unknown type.");
         })
+        .Bind<TTS>().To(ctx =>
+        {
+            // This factory will be chosen for "int" value resolution
+            // because TTS (as well as TTS1, TTS2 ...) is a value type marker that is more suitable for "int" value type resolution.
+            if (typeof(TTS) == typeof(int))
+            {
+                return (TTS)(object)33;
+            }
+            
+            throw new Exception("Unknown type.");
+        })
+        .Bind<TTDisposable>().To(ctx =>
+        {
+            // This factory will be chosen for IDisposable resolution
+            // because TTDisposable (as well as TTDisposable1, TTDisposable2 ...) is a IDisposable type marker that is more suitable for IDisposable type resolution.
+            if (typeof(TTDisposable) == typeof(IDisposable))
+            {
+                return (TTDisposable)new Service(new Dependency());
+            }
+            
+            throw new Exception("Unknown type.");
+        })
         .Bind<Consumer>().To<Consumer>();
     
     var instance = DefaultFactoryDI.Resolve<Consumer>();
     instance.Value.ShouldBe(33);
     instance.Text.ShouldBe("Abc");
+    instance.Disposable.ShouldBeOfType<Service>();
 }
 
-public record Consumer(int Value, string Text);
+public record Consumer(int Value, string Text, IDisposable Disposable);
 ```
 
 

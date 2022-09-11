@@ -342,7 +342,7 @@ For instance, to use the default project namespace, you could specify the follow
 
 ### Troubleshooting
 
-See files emitted by the Pure.DU by adding these properties to your (*.csproj) project file:
+See files emitted by the Pure.DI by adding these properties to your (*.csproj) project file:
 
 ```xml
 <PropertyGroup>

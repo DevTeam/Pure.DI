@@ -19,8 +19,8 @@ internal class TypeResolver : ITypeResolver
     private readonly Dictionary<Key, Binding<SimpleLambdaExpressionSyntax>> _factories = new();
     private readonly HashSet<SemanticType> _implementations = new(SemanticTypeEqualityComparer.Default);
     private readonly HashSet<SemanticType> _specialTypes = new(SemanticTypeEqualityComparer.Default);
-    private Binding<SimpleLambdaExpressionSyntax>? _defaultFactory;
-
+    private readonly List<DefaultFactory> _defaultFactories = new();
+    
     public TypeResolver(
         ResolverMetadata metadata,
         IDiagnostic diagnostic,
@@ -42,6 +42,8 @@ internal class TypeResolver : ITypeResolver
         {
             AddBinding(binding, diagnostic);
         }
+        
+        _defaultFactories.Sort();
     }
 
     private void AddBinding(IBindingMetadata binding, IDiagnostic? diagnostic = default)
@@ -93,7 +95,10 @@ internal class TypeResolver : ITypeResolver
                     }
                     else
                     {
-                        _defaultFactory = factoryBinding;
+                        if (!TryFindDefaultFactory(type.Type, true, out _))
+                        {
+                            _defaultFactories.Add(new DefaultFactory(type.Type, factoryBinding));
+                        }
                     }
                 }
 
@@ -206,17 +211,10 @@ internal class TypeResolver : ITypeResolver
                     AddBinding(newBinding);
                     return new Dependency(newBinding, dependency, tag, _constructorBuilder(), typesMap);
                 }
-                
-                if (_defaultFactory.HasValue)
-                {
-                    var defaultBinding = _defaultFactory.Value;
-                    var typesMap = _typesMapFactory();
-                    foreach (var defaultDependency in defaultBinding.Metadata.Dependencies)
-                    {
-                        typesMap.Setup(defaultDependency, dependency);
-                    }
 
-                    return new Dependency(defaultBinding.Metadata, dependency, tag, _factoryBuilder(), typesMap);
+                if (TryFindDefaultFactory(dependency.Type, false, out var defaultFactory))
+                {
+                    return CreateDefaultFactoryDependency(dependency, tag, defaultFactory);
                 }
                 
                 break;
@@ -279,6 +277,31 @@ internal class TypeResolver : ITypeResolver
         }
     }
 
+    private bool TryFindDefaultFactory(ITypeSymbol type, bool add, out Binding<SimpleLambdaExpressionSyntax> factory)
+    {
+        foreach (var defaultFactory in _defaultFactories)
+        {
+            if (defaultFactory.TryGetFactory(type, add, out factory))
+            {
+                return true;
+            }
+        }
+
+        factory = default;
+        return false;
+    }
+    
+    private Dependency CreateDefaultFactoryDependency(SemanticType dependency, ExpressionSyntax? tag, Binding<SimpleLambdaExpressionSyntax> defaultBinding)
+    {
+        var typesMap = _typesMapFactory();
+        foreach (var defaultDependency in defaultBinding.Metadata.Dependencies)
+        {
+            typesMap.Setup(defaultDependency, dependency);
+        }
+
+        return new Dependency(defaultBinding.Metadata, dependency, tag, _factoryBuilder(), typesMap);
+    }
+    
     private readonly struct Binding<T>
     {
         public readonly IBindingMetadata Metadata;
@@ -311,6 +334,66 @@ internal class TypeResolver : ITypeResolver
         }
 
         return _specialTypes;
+    }
+    
+    private class DefaultFactory: IComparable<DefaultFactory>
+    {
+        private readonly ITypeSymbol _type;
+        private readonly Binding<SimpleLambdaExpressionSyntax> _factory;
+
+        public DefaultFactory(ITypeSymbol type, Binding<SimpleLambdaExpressionSyntax> factory)
+        {
+            _type = type;
+            _factory = factory;
+        }
+
+        public bool TryGetFactory(ITypeSymbol type, bool add, out Binding<SimpleLambdaExpressionSyntax> factory)
+        {
+            if (add)
+            {
+                if (
+                    _type.IsValueType != type.IsValueType 
+                    || _type.IsReferenceType != type.IsReferenceType
+                    || type.IsAbstract)
+                {
+                    factory = default;
+                    return false;
+                }
+                
+                if (_type.AllInterfaces.Except(type.AllInterfaces).Any())
+                {
+                    factory = default;
+                    return false; 
+                }
+            }
+            else
+            {
+                if (
+                    _type.IsValueType != type.IsValueType 
+                    && _type.IsReferenceType != type.IsReferenceType
+                    && !_type.IsAbstract)
+                {
+                    factory = default;
+                    return false;
+                }
+                
+                if (_type.AllInterfaces.Any() && !_type.AllInterfaces.Contains(type))
+                {
+                    factory = default;
+                    return false; 
+                }
+            }
+
+            factory = _factory;
+            return true;
+        }
+
+        public int CompareTo(DefaultFactory other)
+        {
+            var otherWeight = other._type.AllInterfaces.Length - (other._type.IsAbstract ? 1000 : 0);
+            var weight = _type.AllInterfaces.Length - (_type.IsAbstract ? 1000 : 0);
+            return otherWeight - weight;
+        }
     }
 
     private readonly struct Key
