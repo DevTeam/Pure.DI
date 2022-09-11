@@ -120,6 +120,24 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
         return newNode;
     }
 
+    public override SyntaxNode? VisitBinaryExpression(BinaryExpressionSyntax node)
+    {
+        var newNode = base.VisitBinaryExpression(node);
+        if (newNode is BinaryExpressionSyntax binaryExpressionSyntax
+            && binaryExpressionSyntax.OperatorToken.Kind() == SyntaxKind.AsKeyword
+            && binaryExpressionSyntax.Right is IdentifierNameSyntax right)
+        {
+            var replacedType = ReplaceType(SyntaxFactory.ParseTypeName(right.Identifier.Text));
+            newNode = SyntaxFactory.BinaryExpression(
+                binaryExpressionSyntax.Kind(),
+                binaryExpressionSyntax.Left.AddSpace(),
+                binaryExpressionSyntax.OperatorToken,
+                replacedType);
+        }
+        
+        return newNode;
+    }
+
     public override SyntaxNode? VisitTypeOfExpression(TypeOfExpressionSyntax node)
     {
         var newNode = base.VisitTypeOfExpression(node);

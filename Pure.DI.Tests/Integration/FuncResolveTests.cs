@@ -745,4 +745,61 @@ public class FuncResolveTests
             "1"
         }, generatedCode);
     }
+    
+    [Fact]
+    // ReSharper disable once InconsistentNaming
+    public void ShouldSupportResolveFunctionTTWhenFuncAndAsOperator()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot([Tag(1)] Func<string> value) => Value = value();
+                }
+
+                public interface IDep<T> { }
+
+                public class Dep<T>: IDep<T> { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<TTC>(1).To(_ => { 
+                                var abc = ""Abc"" as string;
+                                return Other.Utils.Resolve<TTC>() as TTC as TTC as TTC;
+                            })
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                  
+                }                             
+            }
+            
+            namespace Other
+            {
+                public class Utils
+                {
+                    public static T Resolve<T>()
+                    { 
+                        if (typeof(T) == typeof(string)) return (T)(object)""1"";
+                        return default(T);
+                    }  
+                }
+            }
+".Run(out var generatedCode);
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "1"
+        }, generatedCode);
+    }
 }

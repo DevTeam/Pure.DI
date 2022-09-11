@@ -33,6 +33,9 @@ internal static class SyntaxRepo
 
     public static TSyntax WithSpace<TSyntax>(this TSyntax node) where TSyntax : SyntaxNode => 
         node.WithLeadingTrivia(node.GetLeadingTrivia().Concat(new []{SyntaxFactory.ElasticSpace}));
+    
+    public static TSyntax AddSpace<TSyntax>(this TSyntax node) where TSyntax : SyntaxNode => 
+        node.WithTrailingTrivia(node.GetTrailingTrivia().Concat(new []{SyntaxFactory.ElasticSpace}));
 
     public static TSyntax WithNewLine<TSyntax>(this TSyntax node) where TSyntax : SyntaxNode =>
         node.WithLeadingTrivia(node.GetLeadingTrivia().Concat(new []{SyntaxFactory.CarriageReturn, SyntaxFactory.LineFeed}));
