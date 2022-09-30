@@ -12,6 +12,7 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
     private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
     private readonly ICache<FactoryKey, SyntaxNode?> _nodeCache;
     private readonly ICache<string, ITypeSymbol?> _typeCache;
+    private readonly IArgumentsSupport _argumentsSupport;
     private Dependency _dependency;
     private IBuildStrategy? _buildStrategy;
     private SyntaxToken _contextIdentifier;
@@ -21,13 +22,15 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
         IBuildContext buildContext,
         ICannotResolveExceptionFactory cannotResolveExceptionFactory,
         [Tag(Tags.ContainerScope)] ICache<FactoryKey, SyntaxNode?> nodeCache,
-        [Tag(Tags.ContainerScope)] ICache<string, ITypeSymbol?> typeCache)
+        [Tag(Tags.ContainerScope)] ICache<string, ITypeSymbol?> typeCache,
+        IArgumentsSupport argumentsSupport)
         : base(true)
     {
         _buildContext = buildContext;
         _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
         _nodeCache = nodeCache;
         _typeCache = typeCache;
+        _argumentsSupport = argumentsSupport;
     }
 
     public FactoryRewriter Initialize(
@@ -232,7 +235,7 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
         return false;
     }
 
-    private static SyntaxNode ReplaceLambdaByResolveCall(SemanticType dependencyType, ExpressionSyntax? tag)
+    private SyntaxNode ReplaceLambdaByResolveCall(SemanticType dependencyType, ExpressionSyntax? tag)
     {
         var result = SyntaxFactory.InvocationExpression(
             SyntaxFactory.GenericName(nameof(IContext.Resolve))
@@ -243,7 +246,7 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
             result = result.AddArgumentListArguments(SyntaxFactory.Argument(tag));
         }
 
-        return result;
+        return result.AddArgumentListArguments(_argumentsSupport.GetArguments().ToArray());
     }
 
     private SyntaxNode ReplaceLambdaByCreateExpression(Dependency dependency, SemanticType dependencyType)

@@ -21,6 +21,19 @@ internal static class SyntaxRepo
     private static readonly SyntaxToken FuncTypeToken = SyntaxFactory.Identifier("System.Func");
     public static readonly TypeSyntax FuncOfObjectTypeSyntax = SyntaxFactory.GenericName(FuncTypeToken).AddTypeArgumentListArguments(ObjectTypeSyntax);
     public static readonly TypeParameterSyntax TTypeParameterSyntax = SyntaxFactory.TypeParameter("T");
+
+    public static ExpressionSyntax MemberAccess(params string[] membersPath)
+    {
+        if (membersPath.Length == 0) throw new ArgumentException(nameof(membersPath));
+        return membersPath.Skip(1)
+            .Aggregate(
+                (ExpressionSyntax)SyntaxFactory.IdentifierName(membersPath[0]),
+                (acc, path) => 
+                    SyntaxFactory.MemberAccessExpression(
+                        SyntaxKind.SimpleMemberAccessExpression,
+                        acc,
+                        SyntaxFactory.IdentifierName(path)));
+    }
     
     public static SyntaxToken WithSpace(this SyntaxKind syntaxKind) =>
         SyntaxFactory.Token(SyntaxFactory.TriviaList(), syntaxKind, SyntaxFactory.TriviaList(SyntaxFactory.ElasticSpace));
@@ -99,7 +112,7 @@ internal static class SyntaxRepo
         GenericStaticResolveMethodSyntax.AddParameterListParameters(SyntaxRepo.Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax));
 
     private static readonly MethodDeclarationSyntax ObjectResolveMethodSyntax =
-        SyntaxRepo.MethodDeclaration(ObjectTypeSyntax, nameof(IContext.Resolve))
+        MethodDeclaration(ObjectTypeSyntax, nameof(IContext.Resolve))
             .AddModifiers(SyntaxKind.PublicKeyword.WithSpace())
             .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(AggressiveInliningAttr))
             .AddParameterListParameters(Parameter(SyntaxFactory.Identifier("type")).WithType(TypeTypeSyntax));

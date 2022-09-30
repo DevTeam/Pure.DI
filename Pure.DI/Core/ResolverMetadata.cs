@@ -13,6 +13,7 @@ internal record ResolverMetadata(SyntaxNode SetupNode, string ComposerTypeName, 
     };
     public readonly ICollection<AttributeMetadata> Attributes = new List<AttributeMetadata>();
     public readonly IDictionary<Setting, string> Settings = new Dictionary<Setting, string>();
+    public readonly ICollection<ArgumentMetadata> Arguments = new List<ArgumentMetadata>();
 
     public void Merge(ResolverMetadata dependency)
     {
@@ -34,6 +35,11 @@ internal record ResolverMetadata(SyntaxNode SetupNode, string ComposerTypeName, 
         foreach (var setting in dependency.Settings)
         {
             Settings[setting.Key] = setting.Value;
+        }
+        
+        foreach (var argument in dependency.Arguments)
+        {
+            Arguments.Add(argument);
         }
     }
 }

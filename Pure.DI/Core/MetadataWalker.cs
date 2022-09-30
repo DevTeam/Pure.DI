@@ -15,6 +15,8 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
     private readonly ITargetClassNameProvider _targetClassNameProvider;
     private readonly ISyntaxFilter _syntaxFilter;
     private readonly IDiagnostic _diagnostic;
+    private readonly INameService _nameService;
+    private readonly IStringTools _stringTools;
     private readonly List<ResolverMetadata> _metadata = new();
     private ResolverMetadata? _resolver;
     private BindingMetadata _binding = new();
@@ -25,12 +27,16 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
         IOwnerProvider ownerProvider,
         ITargetClassNameProvider targetClassNameProvider,
         [Tag(Tags.MetadataSyntax)] ISyntaxFilter syntaxFilter,
-        IDiagnostic diagnostic)
+        IDiagnostic diagnostic,
+        [Tag(Tags.Default)] INameService nameService,
+        IStringTools stringTools)
     {
         _ownerProvider = ownerProvider;
         _targetClassNameProvider = targetClassNameProvider;
         _syntaxFilter = syntaxFilter;
         _diagnostic = diagnostic;
+        _nameService = nameService;
+        _stringTools = stringTools;
     }
 
     public IEnumerable<ResolverMetadata> Metadata => _metadata;
@@ -84,7 +90,6 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
                 }
 
                 _binding = new BindingMetadata();
-
                 if (node.HasLeadingTrivia)
                 {
                     foreach (
@@ -213,25 +218,55 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
                         Lifetime = _defaultLifetime
                     };
                 }
-
-                // TagAttribute<>(...)
+                
                 if (invocationOperation.TargetMethod.Parameters.Length == 1
                     && new SemanticType(invocationOperation.TargetMethod.ContainingType, SemanticModel).Equals(typeof(IConfiguration))
                     && new SemanticType(invocationOperation.TargetMethod.ReturnType, SemanticModel).Equals(typeof(IConfiguration))
-                    && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol attributeType
-                    && TryGetValue(invocationOperation.Arguments[0].Value, SemanticModel, out var argumentPosition, 0))
+                    && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol type)
                 {
-                    AttributeKind? attributeKind = invocationOperation.TargetMethod.Name switch
+                    var argument0 = invocationOperation.Arguments[0].Value;
+                    int argumentPosition;
+                    switch (invocationOperation.TargetMethod.Name)
                     {
-                        nameof(IConfiguration.TagAttribute) => AttributeKind.Tag,
-                        nameof(IConfiguration.TypeAttribute) => AttributeKind.Type,
-                        nameof(IConfiguration.OrderAttribute) => AttributeKind.Order,
-                        _ => null
-                    };
+                        // TagAttribute<>(...)
+                        case nameof(IConfiguration.TagAttribute):
+                            if (TryGetValue(argument0, SemanticModel, out argumentPosition, 0))
+                            {
+                                _resolver?.Attributes.Add(new AttributeMetadata(AttributeKind.Tag, type, argumentPosition));
+                            }
 
-                    if (attributeKind != null)
-                    {
-                        _resolver?.Attributes.Add(new AttributeMetadata((AttributeKind)attributeKind, attributeType, argumentPosition));
+                            break;
+
+                        // TypeAttribute<>(...)
+                        case nameof(IConfiguration.TypeAttribute):
+                            if (TryGetValue(argument0, SemanticModel, out argumentPosition, 0))
+                            {
+                                _resolver?.Attributes.Add(new AttributeMetadata(AttributeKind.Type, type, argumentPosition));
+                            }
+
+                            break;
+
+                        // OrderAttribute<>(...)
+                        case nameof(IConfiguration.OrderAttribute):
+                            if (TryGetValue(argument0, SemanticModel, out argumentPosition, 0))
+                            {
+                                _resolver?.Attributes.Add(new AttributeMetadata(AttributeKind.Order, type, argumentPosition));
+                            }
+
+                            break;
+
+                        // Arg<>(...)
+                        case nameof(IConfiguration.Arg):
+                            if (invocationOperation.Arguments[0].Value is IArrayCreationOperation arrayCreationOperationArg)
+                            {
+                                var tags = (arrayCreationOperationArg.Initializer?.ElementValues.OfType<IConversionOperation>().Select(i => i.Syntax).OfType<ExpressionSyntax>() ?? Enumerable.Empty<ExpressionSyntax>()).ToArray();
+                                var semanticType = new SemanticType(type, SemanticModel);
+                                var argKey = new MemberKey(_stringTools.ConvertToTitle(semanticType.Name), GetType());
+                                var name = _nameService.FindName(argKey);
+                                _resolver?.Arguments.Add(new ArgumentMetadata(semanticType, name, tags));
+                            }
+
+                            break;
                     }
                 }
 

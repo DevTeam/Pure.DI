@@ -10,5 +10,7 @@ internal enum MemberNameKind
 
     FactoriesByTagField,
 
-    ResolverClass
+    ResolverClass,
+
+    ResolveContextClass
 }

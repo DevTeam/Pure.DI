@@ -5,7 +5,7 @@ using NS35EBD81B;
 // ReSharper disable once ClassNeverInstantiated.Global
 internal class SingletonLifetimeStrategy : ILifetimeStrategy
 {
-    private const string ValueName = "Shared";
+    private const string SharedValueName = "Shared";
     private readonly IBuildContext _buildContext;
     private readonly IDisposeStatementsBuilder _disposeStatementsBuilder;
     private readonly IWrapperStrategy _wrapperStrategy;
@@ -45,7 +45,7 @@ internal class SingletonLifetimeStrategy : ILifetimeStrategy
                     SyntaxFactory.FieldDeclaration(
                             SyntaxFactory.VariableDeclaration(resolvedDependency.Implementation)
                                 .AddVariables(
-                                    SyntaxFactory.VariableDeclarator(ValueName)
+                                    SyntaxFactory.VariableDeclarator(SharedValueName)
                                         .WithSpace()
                                         .WithInitializer(SyntaxFactory.EqualsValueClause(objectBuildExpression))
                                 )
@@ -84,7 +84,7 @@ internal class SingletonLifetimeStrategy : ILifetimeStrategy
             var instance = SyntaxFactory.MemberAccessExpression(
                 SyntaxKind.SimpleMemberAccessExpression,
                 SyntaxFactory.IdentifierName(singletonClassName),
-                SyntaxFactory.IdentifierName(ValueName));
+                SyntaxFactory.IdentifierName(SharedValueName));
 
             var hasInstance = SyntaxFactory.IdentifierName(hasSingletonFieldName);
             _buildContext.AddFinalDisposeStatements(_disposeStatementsBuilder.Build(instance, hasInstance));
@@ -92,7 +92,7 @@ internal class SingletonLifetimeStrategy : ILifetimeStrategy
             return singletonClass;
         });
 
-        var instanceExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ParseName(singletonClass.Identifier.Text), SyntaxFactory.Token(SyntaxKind.DotToken), SyntaxFactory.IdentifierName(ValueName));
+        var instanceExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ParseName(singletonClass.Identifier.Text), SyntaxFactory.Token(SyntaxKind.DotToken), SyntaxFactory.IdentifierName(SharedValueName));
         return _wrapperStrategy.Build(resolvingType, dependency, instanceExpression);
     }
 }

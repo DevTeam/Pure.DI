@@ -29,7 +29,8 @@ internal class TypeResolver : ITypeResolver
         [Tag(Tags.AutowiringBuilder)] Func<IObjectBuilder> constructorBuilder,
         [Tag(Tags.FactoryBuilder)] Func<IObjectBuilder> factoryBuilder,
         [Tag(Tags.ArrayBuilder)] Func<IObjectBuilder> arrayBuilder,
-        [Tag(Tags.EnumerableBuilder)] Func<IObjectBuilder> enumerableBuilder)
+        [Tag(Tags.EnumerableBuilder)] Func<IObjectBuilder> enumerableBuilder,
+        IArgumentsSupport argumentsSupport)
     {
         _diagnostic = diagnostic;
         _buildContext = buildContext;
@@ -41,6 +42,23 @@ internal class TypeResolver : ITypeResolver
         foreach (var binding in metadata.Bindings)
         {
             AddBinding(binding, diagnostic);
+        }
+
+        foreach (var arg in argumentsSupport.GetArgumentsMetadata())
+        {
+            var argBinding = new BindingMetadata(arg)
+            {
+                Implementation = arg.Type,
+                Factory = argumentsSupport.CreateArgumentFactory(arg)
+            };
+
+            argBinding.AddDependency(arg.Type);
+            foreach (var tag in arg.Tags)
+            {
+                argBinding.AddTags(tag);
+            } 
+            
+            AddBinding(argBinding, diagnostic);
         }
         
         _defaultFactories.Sort();

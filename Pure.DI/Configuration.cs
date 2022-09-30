@@ -43,6 +43,8 @@ internal class Configuration : IoC.IConfiguration
             .Bind<Func<SemanticModel, IMetadataWalker>>().To(ctx => model => ctx.Container.Inject<MetadataWalker>().Initialize(model))
             .Bind<IMembersBuilder>().Tag(Resolvers).To<ResolversBuilder>()
             .Bind<IMembersBuilder>().Tag(MicrosoftDependencyInjection).To<MicrosoftDependencyInjectionBuilder>()
+            .Bind<IArgumentsSupport>().To<ResolveContextBuilder>()
+            .Bind<IMembersBuilder>().Bind<IStatementsFinalizer>().Tag(ResolveContext).To<ResolveContextBuilder>()
             .Bind<IBindingsProbe>().As(ContainerSingleton).To<BindingsProbe>()
             .Bind<IBindingResultStrategy>().As(ContainerSingleton).Tag(AsIsResult).To<AsIsBindingResultStrategy>()
             .Bind<IBindingResultStrategy>().As(ContainerSingleton).Tag(GenericResult).To<GenericBindingResultStrategy>()

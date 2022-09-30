@@ -18,6 +18,7 @@ internal class ClassBuilder : IClassBuilder
     private readonly IMembersBuilder[] _membersBuilder;
     private readonly IDiagnostic _diagnostic;
     private readonly IBindingsProbe _bindingsProbe;
+    private readonly IArgumentsSupport _argumentsSupport;
     private readonly IBuildContext _buildContext;
     private readonly IMemberNameService _memberNameService;
     private readonly ResolverMetadata _metadata;
@@ -28,7 +29,8 @@ internal class ClassBuilder : IClassBuilder
         ResolverMetadata metadata,
         IEnumerable<IMembersBuilder> membersBuilder,
         IDiagnostic diagnostic,
-        IBindingsProbe bindingsProbe)
+        IBindingsProbe bindingsProbe,
+        IArgumentsSupport argumentsSupport)
     {
         _buildContext = buildContext;
         _memberNameService = memberNameService;
@@ -36,6 +38,7 @@ internal class ClassBuilder : IClassBuilder
         _membersBuilder = membersBuilder.OrderBy(i => i.Order).ToArray();
         _diagnostic = diagnostic;
         _bindingsProbe = bindingsProbe;
+        _argumentsSupport = argumentsSupport;
     }
 
     public CompilationUnitSyntax Build(SemanticModel semanticModel)
@@ -80,6 +83,7 @@ internal class ClassBuilder : IClassBuilder
         var registerDisposableEventTypeSyntax = SyntaxFactory.ParseTypeName(typeof(RegisterDisposableEvent).FullName.ReplaceNamespace());
         var iContextTypeSyntax = SyntaxFactory.ParseTypeName(typeof(IContext).FullName.ReplaceNamespace());
         var contextTypeSyntax = SyntaxFactory.ParseTypeName(_memberNameService.GetName(MemberNameKind.ContextClass));
+        var members = _membersBuilder.SelectMany(i => i.BuildMembers(semanticModel)).Select(i => i.WithNewLine().WithNewLine()).ToArray();
         var resolverClass = SyntaxRepo.ClassDeclaration(_metadata.ComposerTypeName)
             .WithKeyword(SyntaxKind.ClassKeyword.WithSpace())
             .AddModifiers(classModifiers.ToArray())
@@ -97,7 +101,7 @@ internal class ClassBuilder : IClassBuilder
                     .WithCommentBefore("// Shared context to use in factories")
                     .WithNewLine()
                     .WithNewLine())
-            .AddMembers(_membersBuilder.SelectMany(i => i.BuildMembers(semanticModel)).Select(i => i.WithNewLine().WithNewLine()).ToArray())
+            .AddMembers(members)
             .AddMembers(SyntaxRepo.FinalDisposeMethodSyntax.AddBodyStatements(_buildContext.FinalDisposeStatements.ToArray()).WithNewLine())
             .AddMembers(
                 SyntaxRepo.EventFieldDeclaration(
@@ -142,7 +146,8 @@ internal class ClassBuilder : IClassBuilder
                                                 SyntaxFactory.ParseName(_metadata.ComposerTypeName),
                                                 SyntaxFactory.Token(SyntaxKind.DotToken),
                                                 SyntaxFactory.GenericName(nameof(IContext.Resolve))
-                                                    .AddTypeArgumentListArguments(SyntaxRepo.TTypeSyntax))))))
+                                                    .AddTypeArgumentListArguments(SyntaxRepo.TTypeSyntax)))
+                                            .AddArgumentListArguments(_argumentsSupport.GetArguments().ToArray()))))
                     .AddMembers(
                         SyntaxRepo.TResolveMethodSyntax
                             .AddParameterListParameters(SyntaxRepo.Parameter(SyntaxFactory.Identifier("tag")).WithType(SyntaxRepo.ObjectTypeSyntax))
@@ -156,7 +161,8 @@ internal class ClassBuilder : IClassBuilder
                                                     SyntaxFactory.Token(SyntaxKind.DotToken),
                                                     SyntaxFactory.GenericName(nameof(IContext.Resolve))
                                                         .AddTypeArgumentListArguments(SyntaxRepo.TTypeSyntax)))
-                                            .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag"))))))
+                                            .AddArgumentListArguments(SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")))
+                                            .AddArgumentListArguments(_argumentsSupport.GetArguments().ToArray()))))
                     .WithNewLine())
             .WithNewLine()
             .WithPragmaWarningDisable(0067, 8600, 8602, 8603, 8604, 8618, 8625);

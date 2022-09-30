@@ -15,6 +15,7 @@ internal enum Tags
     GenericStaticWithTag,
     Resolvers,
     MicrosoftDependencyInjection,
+    ResolveContext,
     Factory,
     FactoryMethod,
     GenericResolvers,

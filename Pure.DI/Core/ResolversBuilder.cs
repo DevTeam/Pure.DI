@@ -16,7 +16,8 @@ internal class ResolversBuilder : IMembersBuilder
     private readonly ITypeResolver _typeResolver;
     private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
     private readonly ITracer _tracer;
-    private readonly IStatementsFinalizer _statementsFinalizer;
+    private readonly IStatementsFinalizer[] _statementsFinalizers;
+    private readonly IArgumentsSupport _argumentsSupport;
 
     public ResolversBuilder(
         ResolverMetadata metadata,
@@ -28,7 +29,8 @@ internal class ResolversBuilder : IMembersBuilder
         ITypeResolver typeResolver,
         ICannotResolveExceptionFactory cannotResolveExceptionFactory,
         ITracer tracer,
-        IStatementsFinalizer statementsFinalizer)
+        IStatementsFinalizer[] statementsFinalizers,
+        IArgumentsSupport argumentsSupport)
     {
         _metadata = metadata;
         _resolveMethodBuilders = resolveMethodBuilders;
@@ -39,7 +41,8 @@ internal class ResolversBuilder : IMembersBuilder
         _typeResolver = typeResolver;
         _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
         _tracer = tracer;
-        _statementsFinalizer = statementsFinalizer;
+        _statementsFinalizers = statementsFinalizers;
+        _argumentsSupport = argumentsSupport;
     }
 
     public int Order => 0;
@@ -71,13 +74,29 @@ internal class ResolversBuilder : IMembersBuilder
             .Select(i => i.Build())
             .Where(_ => !_buildContext.IsCancellationRequested)
             .Select(i => i.TargetMethod.AddBodyStatements(i.PostStatements))
-            .Select(i => i.WithBody(_statementsFinalizer.AddFinalizationStatements(i.Body)))
+            .Select(i => i.WithBody(FinalizeBody(i.Body)))
+            .Select(i => i.AddParameterListParameters(_argumentsSupport.GetParameters().ToArray()))
             .Concat(_buildContext.AdditionalMembers);
 
         foreach (var member in methods)
         {
             yield return member;
         }
+    }
+
+    private BlockSyntax? FinalizeBody(BlockSyntax? body)
+    {
+        if (body == default)
+        {
+            return body;
+        }
+
+        foreach (var statementsFinalizer in _statementsFinalizers)
+        {
+            body = statementsFinalizer.AddFinalizationStatements(body);
+        }
+
+        return body;
     }
 
     private IEnumerable<MemberDeclarationSyntax> CreateDependencyTable(IEnumerable<(IBindingMetadata binding, SemanticType dependency, ExpressionSyntax? tag)> items)

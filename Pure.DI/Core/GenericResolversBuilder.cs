@@ -10,6 +10,8 @@ internal class GenericResolversBuilder : IMembersBuilder
     private readonly IBuildStrategy _buildStrategy;
     private readonly IStatementsFinalizer _statementsFinalizer;
     private readonly IStaticResolverNameProvider _staticResolverNameProvider;
+    private readonly IStatementsFinalizer[] _statementsFinalizers;
+    private readonly IArgumentsSupport _argumentsSupport;
 
     public GenericResolversBuilder(
         ResolverMetadata metadata,
@@ -17,7 +19,9 @@ internal class GenericResolversBuilder : IMembersBuilder
         ITypeResolver typeResolver,
         IBuildStrategy buildStrategy,
         IStatementsFinalizer statementsFinalizer,
-        IStaticResolverNameProvider staticResolverNameProvider)
+        IStaticResolverNameProvider staticResolverNameProvider,
+        IStatementsFinalizer[] statementsFinalizers,
+        IArgumentsSupport argumentsSupport)
     {
         _metadata = metadata;
         _buildContext = buildContext;
@@ -25,6 +29,8 @@ internal class GenericResolversBuilder : IMembersBuilder
         _buildStrategy = buildStrategy;
         _statementsFinalizer = statementsFinalizer;
         _staticResolverNameProvider = staticResolverNameProvider;
+        _statementsFinalizers = statementsFinalizers;
+        _argumentsSupport = argumentsSupport;
     }
 
     public int Order => 2;
@@ -92,14 +98,33 @@ internal class GenericResolversBuilder : IMembersBuilder
                 tagType = SyntaxFactory.NullableType(SyntaxRepo.ObjectTypeSyntax);
             }
 
-            yield return method
+            method = method
                 .AddParameterListParameters(SyntaxRepo.Parameter(SyntaxFactory.Identifier("tag")).WithType(tagType))
                 .AddBodyStatements(
                     SyntaxRepo.ThrowStatement(
                         SyntaxRepo.ObjectCreationExpression(
                                 SyntaxFactory.ParseTypeName("System.ArgumentOutOfRangeException"))
                             .AddArgumentListArguments(SyntaxFactory.Argument("tag".ToLiteralExpression()!))));
+
+            yield return method
+                .WithBody(FinalizeBody(method.Body))
+                .AddParameterListParameters(_argumentsSupport.GetParameters().ToArray());
         }
+    }
+    
+    private BlockSyntax? FinalizeBody(BlockSyntax? body)
+    {
+        if (body == default)
+        {
+            return body;
+        }
+
+        foreach (var statementsFinalizer in _statementsFinalizers)
+        {
+            body = statementsFinalizer.AddFinalizationStatements(body);
+        }
+
+        return body;
     }
 
     private static ExpressionSyntax CreateCheckTagExpression(ExpressionSyntax? tag)

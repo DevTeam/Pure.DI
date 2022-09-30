@@ -17,20 +17,22 @@ internal class StatementsFinalizer : IStatementsFinalizer, IMembersBuilder
 
     public IEnumerable<MemberDeclarationSyntax> BuildMembers(SemanticModel semanticModel)
     {
-        if (IsActive)
+        if (!IsActive)
         {
-            yield return _buildContext.GetOrAddMember(DeepnessMemberKey, () =>
-                SyntaxFactory.FieldDeclaration(
-                        SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName("int"))
-                            .AddVariables(
-                                SyntaxFactory.VariableDeclarator(DeepnessFieldName).WithSpace()
-                            )
-                    )
-                    .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.ThreadStaticAttr))
-                    .AddModifiers(
-                        SyntaxKind.PrivateKeyword.WithSpace(),
-                        SyntaxKind.StaticKeyword.WithSpace()));
+            yield break;
         }
+        
+        yield return _buildContext.GetOrAddMember(DeepnessMemberKey, () =>
+            SyntaxFactory.FieldDeclaration(
+                    SyntaxFactory.VariableDeclaration(SyntaxFactory.IdentifierName("int"))
+                        .AddVariables(
+                            SyntaxFactory.VariableDeclarator(DeepnessFieldName).WithSpace()
+                        )
+                )
+                .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.ThreadStaticAttr))
+                .AddModifiers(
+                    SyntaxKind.PrivateKeyword.WithSpace(),
+                    SyntaxKind.StaticKeyword.WithSpace()));
     }
 
     public BlockSyntax? AddFinalizationStatements(BlockSyntax? block)
@@ -49,7 +51,7 @@ internal class StatementsFinalizer : IStatementsFinalizer, IMembersBuilder
             SyntaxFactory.IdentifierName("System.Threading.Interlocked.Decrement"),
             SyntaxFactory.ArgumentList().AddArguments(refToDeepness));
 
-        var releaseBlock = SyntaxFactory.Block()
+        var finallyBlock = SyntaxFactory.Block()
             .AddStatements(
                 SyntaxFactory.IfStatement(
                     SyntaxFactory.BinaryExpression(SyntaxKind.EqualsExpression, decrementStatement, SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0))),
@@ -59,7 +61,7 @@ internal class StatementsFinalizer : IStatementsFinalizer, IMembersBuilder
         var tryStatement = SyntaxFactory.TryStatement(
             block,
             SyntaxFactory.List<CatchClauseSyntax>(),
-            SyntaxFactory.FinallyClause(releaseBlock));
+            SyntaxFactory.FinallyClause(finallyBlock));
 
         return
             SyntaxFactory.Block()

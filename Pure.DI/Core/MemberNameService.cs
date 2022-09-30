@@ -17,6 +17,7 @@ internal class MemberNameService : IMemberNameService
             MemberNameKind.FactoriesField => "Resolvers",
             MemberNameKind.FactoriesByTagField => "ResolversByTag",
             MemberNameKind.ResolverClass => "Resolver",
+            MemberNameKind.ResolveContextClass => "ResolveContext",
             _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null)
         };
 
