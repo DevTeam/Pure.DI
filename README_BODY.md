@@ -51,13 +51,13 @@ Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates
 
 ## Contents
 
-- [How it works](#schrdingers-catsamplesshroedingerscat-shows-how-it-works)
+- [How it works](#schrödingers-cat-shows-how-it-works)
 - [API](#simple-and-powerful-api)
 - [Requirements](#development-environment-requirements)
 - [Supported frameworks](#supported-frameworks)
 - [Samples](#samples)
-  - [ASP.NET Core Blazor](#aspnet-core-blazorsamplesblazorserverapp) 
-  - [WPF](#wpfsampleswpfappnetcore)
+  - [ASP.NET Core Blazor](#aspnet-core-blazor)
+  - [WPF](#wpf)
 - [Performance test](#performance-test)
 - [Troubleshooting](#troubleshooting)
 - [How to build this project](#how-to-build-this-project)
