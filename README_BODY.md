@@ -219,6 +219,11 @@ DI.Setup("MyComposer")
   
   // Determines tags for the specific dependency type of binding:
   .Bind<IMyInterface>("MyImpl", 99).To<MyImplementation>()
+  
+  // Determines the resolution argument:
+  .Arg<string>()
+  // .. with tags:
+  .Arg<int>("indexVal", 2)
 
   // Determines a binding implementation using a factory method,
   // it allows to create instance manually and to invoke required methods,

@@ -219,6 +219,11 @@ DI.Setup("MyComposer")
   
   // Determines tags for the specific dependency type of binding:
   .Bind<IMyInterface>("MyImpl", 99).To<MyImplementation>()
+  
+  // Determines the resolution argument:
+  .Arg<string>()
+  // .. with tags:
+  .Arg<int>("indexVal", 2)
 
   // Determines a binding implementation using a factory method,
   // it allows to create instance manually and to invoke required methods,
@@ -519,10 +524,9 @@ public void Run()
         .Bind<IService>().To<SomeService>();
 
     // Resolve an instance
-    var instance = ArgumentsDI.Resolve<IService>("some setting", 33, 99);
+    var instance = ArgumentsDI.Resolve<IService>("some settings", 33, 99);
 
-    // Check the optional dependency
-    instance.State.ShouldBe("some setting");
+    instance.State.ShouldBe("some settings 99");
     instance.Dependency.Index.ShouldBe(33);
 }
 
@@ -540,10 +544,10 @@ public class SomeService: IService
 {
     // There is no registered dependency for parameter "state" of type "string",
     // but parameter "state" has a nullable annotation
-    public SomeService(IDependency dependency, string state)
+    public SomeService(IDependency dependency, string state, int notTagged)
     {
         Dependency = dependency;
-        State = state;
+        State = $"{state} {notTagged}";
     }
 
     public IDependency Dependency { get; }

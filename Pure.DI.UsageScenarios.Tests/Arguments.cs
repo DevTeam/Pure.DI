@@ -29,10 +29,9 @@ namespace Pure.DI.UsageScenarios.Tests
                 .Bind<IService>().To<SomeService>();
 
             // Resolve an instance
-            var instance = ArgumentsDI.Resolve<IService>("some setting", 33, 99);
+            var instance = ArgumentsDI.Resolve<IService>("some settings", 33, 99);
 
-            // Check the optional dependency
-            instance.State.ShouldBe("some setting");
+            instance.State.ShouldBe("some settings 99");
             instance.Dependency.Index.ShouldBe(33);
         }
         
@@ -50,10 +49,10 @@ namespace Pure.DI.UsageScenarios.Tests
         {
             // There is no registered dependency for parameter "state" of type "string",
             // but parameter "state" has a nullable annotation
-            public SomeService(IDependency dependency, string state)
+            public SomeService(IDependency dependency, string state, int notTagged)
             {
                 Dependency = dependency;
-                State = state;
+                State = $"{state} {notTagged}";
             }
 
             public IDependency Dependency { get; }
