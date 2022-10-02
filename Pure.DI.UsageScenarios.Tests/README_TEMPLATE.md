@@ -77,7 +77,7 @@ new Service(new Dependency())
 
 ### Resolution arguments
 
-
+Arguments are not available with delayed resolution (in cases like Func outside constructors, IServiceCollection, etc.), they can only be used in the static composition object graph.
 
 ``` CSharp
 public void Run()
@@ -93,14 +93,14 @@ public void Run()
     var instance = ArgumentsDI.Resolve<IService>("some settings", 33, 99);
 
     instance.State.ShouldBe("some settings 99");
-    instance.Dependency.Index.ShouldBe(33);
+    instance.Dependency.Index.ShouldBe(33 + 99);
 }
 
 public class Dependency : IDependency
 {
     public Dependency([Tag("indexVal")] int index, int notTagged)
     {
-        Index = index;
+        Index = index + notTagged;
     }
     
     public int Index { get; set; }

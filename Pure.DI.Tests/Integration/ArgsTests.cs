@@ -6,8 +6,7 @@ public class ArgsTests
     public void ShouldSupportArg()
     {
         // Given
-        const string? statements = "System.Console.WriteLine(Composer.Resolve<CompositionRoot>(22, 33, \"Abc\").Value);";
-
+        
         // When
         var output = @"
             using System;
@@ -87,7 +86,7 @@ public class ArgsTests
             out var generatedCode,
             new RunOptions
             {
-                Statements = statements,
+                Statements = "System.Console.WriteLine(Composer.Resolve<CompositionRoot>(22, 33, \"Abc\").Value);",
                 AdditionalCode =
                 {
                     "namespace Sample { interface ICat { State State { get; } } }"
@@ -96,5 +95,84 @@ public class ArgsTests
 
         // Then
         (output.Contains("[Dead cat Abc]") || output.Contains("[Alive cat Abc]")).ShouldBeTrue(generatedCode);
+    }
+    
+    [Fact]
+    public void ShouldSupportFuncInCtor()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Arg<string>()
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(Func<string> value) => Value = value();
+                }
+            }".Run(
+            out var generatedCode,
+            new RunOptions
+            {
+                Statements = "System.Console.WriteLine(Composer.Resolve<CompositionRoot>(\"Abc\").Value);"
+            });
+
+        // Then
+        output.ShouldBe(new[] { "Abc" }, generatedCode);
+    }
+    
+    [Fact]
+    public void ShouldThrowInvalidOperationExceptionWhenDeferredResolveViaFunc()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Arg<string>()
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    private Func<string> _value;
+                    public string Value => _value();
+                    internal CompositionRoot(Func<string> value) => _value = value;
+                }
+            }".Run(
+            out var generatedCode,
+            new RunOptions
+            {
+                Statements = "System.Console.WriteLine(Composer.Resolve<CompositionRoot>(\"Abc\").Value);"
+            });
+
+        // Then
+        output.Any(i => i.Contains("System.InvalidOperationException")).ShouldBeTrue(generatedCode);
     }
 }

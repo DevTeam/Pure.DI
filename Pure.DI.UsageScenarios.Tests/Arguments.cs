@@ -18,6 +18,7 @@ namespace Pure.DI.UsageScenarios.Tests
         // $tag=1 Basics
         // $priority=01
         // $description=Resolution arguments
+        // $header=Arguments are not available with delayed resolution (in cases like Func outside constructors, IServiceCollection, etc.), they can only be used in the static composition object graph.
         // {
         public void Run()
         {
@@ -32,14 +33,14 @@ namespace Pure.DI.UsageScenarios.Tests
             var instance = ArgumentsDI.Resolve<IService>("some settings", 33, 99);
 
             instance.State.ShouldBe("some settings 99");
-            instance.Dependency.Index.ShouldBe(33);
+            instance.Dependency.Index.ShouldBe(33 + 99);
         }
         
         public class Dependency : IDependency
         {
             public Dependency([Tag("indexVal")] int index, int notTagged)
             {
-                Index = index;
+                Index = index + notTagged;
             }
             
             public int Index { get; set; }

@@ -5,7 +5,8 @@ using NS35EBD81B;
 
 internal class ResolveContextBuilder: IMembersBuilder, IStatementsFinalizer, IArgumentsSupport
 {
-    private const string CurrentFieldName = "Current";
+    private const string CurrentFieldName = "_current";
+    private const string CurrentPropertyName = "Current";
     private readonly IBuildContext _buildContext;
     private readonly MemberKey _resolveContextClassKey;
 
@@ -70,7 +71,28 @@ internal class ResolveContextBuilder: IMembersBuilder, IStatementsFinalizer, IAr
             .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.ThreadStaticAttr).AddSpace())
             .WithNewLine();
 
-        // _prev = Current;
+        var checkCurrentFieldStatement = SyntaxFactory.IfStatement(
+            SyntaxFactory.BinaryExpression(
+                SyntaxKind.EqualsExpression,
+                SyntaxFactory.IdentifierName(CurrentFieldName),
+                SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression)),
+            SyntaxRepo.ThrowStatement(SyntaxRepo.ObjectCreationExpression(
+                    SyntaxFactory.ParseTypeName("System.InvalidOperationException"))
+                .AddArgumentListArguments(SyntaxFactory.Argument("Arguments are not available with delayed resolution (in cases like Func outside constructors, IServiceCollection, etc.), they can only be used in the static composition object graph.".ToLiteralExpression()!))));
+        
+        var returnCurrentFieldStatement = SyntaxFactory.ReturnStatement(SyntaxFactory.IdentifierName(CurrentFieldName).WithSpace()).WithNewLine();
+        var contextType = SyntaxFactory.ParseTypeName(resolveContextClassName);
+        var currentProperty = SyntaxFactory.PropertyDeclaration(contextType.AddSpace(), CurrentPropertyName)
+            .AddModifiers(SyntaxKind.PublicKeyword.WithSpace())
+            .AddModifiers(SyntaxKind.StaticKeyword.WithSpace())
+            .AddAccessorListAccessors(
+                SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration).WithNewLine()
+                    .AddBodyStatements(checkCurrentFieldStatement, returnCurrentFieldStatement).WithNewLine(),
+                SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration).WithNewLine()
+                    .AddBodyStatements(SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, SyntaxFactory.IdentifierName(CurrentFieldName), SyntaxFactory.IdentifierName("value")))))
+            .WithNewLine();
+
+        // _prev = _current;
         var prevAssignmentExpression = SyntaxFactory.ExpressionStatement(
             SyntaxFactory.AssignmentExpression(
                 SyntaxKind.SimpleAssignmentExpression,
@@ -78,7 +100,7 @@ internal class ResolveContextBuilder: IMembersBuilder, IStatementsFinalizer, IAr
                 SyntaxFactory.IdentifierName(CurrentFieldName)))
             .WithNewLine();
         
-        // Current = this;
+        // _current = this;
         var thisAssignmentExpression = SyntaxFactory.ExpressionStatement(
             SyntaxFactory.AssignmentExpression(
                 SyntaxKind.SimpleAssignmentExpression,
@@ -86,7 +108,7 @@ internal class ResolveContextBuilder: IMembersBuilder, IStatementsFinalizer, IAr
                 SyntaxFactory.ThisExpression()))
             .WithNewLine();
         
-        // Current = _prev;
+        // _current = _prev;
         var currentDisposeAssignmentExpression = SyntaxFactory.ExpressionStatement(
                 SyntaxFactory.AssignmentExpression(
                     SyntaxKind.SimpleAssignmentExpression,
@@ -121,7 +143,7 @@ internal class ResolveContextBuilder: IMembersBuilder, IStatementsFinalizer, IAr
                 .AddModifiers(SyntaxKind.PrivateKeyword.WithSpace())
                 .AddModifiers(SyntaxKind.SealedKeyword.WithSpace())
                 .AddBaseListTypes(SyntaxFactory.SimpleBaseType(SyntaxRepo.DisposableTypeSyntax))
-                .AddMembers(prevVar, currentVar, ctor, dispose)
+                .AddMembers(prevVar, currentVar, currentProperty, ctor, dispose)
                 .AddMembers(fields.Cast<MemberDeclarationSyntax>().ToArray())
                 .WithNewLine()
                 .WithPragmaWarningDisable(0169);
@@ -196,6 +218,6 @@ internal class ResolveContextBuilder: IMembersBuilder, IStatementsFinalizer, IAr
     private ExpressionSyntax GetArgumentAccessExpression(ArgumentMetadata arg)
     {
         var resolveContextClassName = _buildContext.NameService.FindName(_resolveContextClassKey);
-        return SyntaxRepo.MemberAccess(resolveContextClassName, CurrentFieldName, $"{arg.Name}Arg");
+        return SyntaxRepo.MemberAccess(resolveContextClassName, CurrentPropertyName, $"{arg.Name}Arg");
     }
 }

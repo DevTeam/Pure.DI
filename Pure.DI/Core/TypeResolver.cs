@@ -39,11 +39,7 @@ internal class TypeResolver : ITypeResolver
         _factoryBuilder = factoryBuilder;
         _arrayBuilder = arrayBuilder;
         _enumerableBuilder = enumerableBuilder;
-        foreach (var binding in metadata.Bindings)
-        {
-            AddBinding(binding, diagnostic);
-        }
-
+        
         foreach (var arg in argumentsSupport.GetArgumentsMetadata())
         {
             var argBinding = new BindingMetadata(arg)
@@ -60,7 +56,12 @@ internal class TypeResolver : ITypeResolver
             
             AddBinding(argBinding, diagnostic);
         }
-        
+
+        foreach (var binding in metadata.Bindings)
+        {
+            AddBinding(binding, diagnostic);
+        }
+
         _defaultFactories.Sort();
     }
 
