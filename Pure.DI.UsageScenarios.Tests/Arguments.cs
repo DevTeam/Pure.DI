@@ -3,6 +3,7 @@
 // ReSharper disable EmptyConstructor
 // ReSharper disable UnusedVariable
 // ReSharper disable ArrangeNamespaceBody
+// ReSharper disable MemberHidesStaticFromOuterClass
 namespace Pure.DI.UsageScenarios.Tests
 {
     using Shouldly;

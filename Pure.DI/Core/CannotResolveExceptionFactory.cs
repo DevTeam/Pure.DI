@@ -8,7 +8,7 @@ internal class CannotResolveExceptionFactory : ICannotResolveExceptionFactory
     public CannotResolveExceptionFactory(IDiagnostic diagnostic) =>
         _diagnostic = diagnostic;
 
-    public HandledException Create(IBindingMetadata binding, ExpressionSyntax? tag, CodeError[] errors)
+    public HandledException Create(IBindingMetadata binding, IEnumerable<CodeError> errors)
     {
         _diagnostic.Error(
             errors.Select(error =>

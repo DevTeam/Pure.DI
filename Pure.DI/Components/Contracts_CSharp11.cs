@@ -6,6 +6,7 @@
 // ReSharper disable StructCanBeMadeReadOnly
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable ArrangeNamespaceBody
+// ReSharper disable UnusedTypeParameter
 #pragma warning disable 0436
 #pragma warning disable 8625
 namespace NS35EBD81B

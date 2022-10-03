@@ -4,6 +4,7 @@
 // ReSharper disable UnusedVariable
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeNamespaceBody
+// ReSharper disable SuspiciousTypeConversion.Global
 namespace Pure.DI.UsageScenarios.Tests
 {
     using Xunit;

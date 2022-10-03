@@ -1,7 +1,5 @@
 ﻿namespace Pure.DI.Core;
 
-using NS35EBD81B;
-
 // ReSharper disable once ClassNeverInstantiated.Global
 internal class AutowiringObjectBuilder : IObjectBuilder
 {
@@ -295,6 +293,7 @@ internal class AutowiringObjectBuilder : IObjectBuilder
                         _buildContext.AddBinding(new BindingMetadata(dependency.Binding, constructedType, null));
                     }
 
+                    // ReSharper disable once InvertIf
                     if (dependency.IsResolved)
                     {
                         try
@@ -441,5 +440,5 @@ internal class AutowiringObjectBuilder : IObjectBuilder
             Property = property;
             Expression = expression;
         }
-    };
+    }
 }

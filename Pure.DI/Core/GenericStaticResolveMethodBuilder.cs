@@ -8,18 +8,15 @@ internal class GenericStaticResolveMethodBuilder : IResolveMethodBuilder
     private readonly IMemberNameService _memberNameService;
     private readonly IBuildContext _buildContext;
     private readonly ISyntaxRegistry _syntaxRegistry;
-    private readonly IArgumentsSupport _argumentsSupport;
 
     public GenericStaticResolveMethodBuilder(
         IMemberNameService memberNameService,
         IBuildContext buildContext,
-        ISyntaxRegistry syntaxRegistry,
-        IArgumentsSupport argumentsSupport)
+        ISyntaxRegistry syntaxRegistry)
     {
         _memberNameService = memberNameService;
         _buildContext = buildContext;
         _syntaxRegistry = syntaxRegistry;
-        _argumentsSupport = argumentsSupport;
     }
 
     public ResolveMethod Build()

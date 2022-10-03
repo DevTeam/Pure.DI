@@ -375,7 +375,7 @@ public class ErrorsAndWarningsTests
     }
     
     [Fact]
-    public void ShouldNotRaiseNotInheritedWhenvalidImplementationWithGenericTypeMarker()
+    public void ShouldNotRaiseNotInheritedWhenInvalidImplementationWithGenericTypeMarker()
     {
         // Given
 

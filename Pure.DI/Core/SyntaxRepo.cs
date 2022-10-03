@@ -100,7 +100,7 @@ internal static class SyntaxRepo
                         SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(256 + 512))))));
 
     public static readonly MethodDeclarationSyntax TResolveMethodSyntax =
-        SyntaxRepo.MethodDeclaration(TTypeSyntax, nameof(IContext.Resolve))
+        MethodDeclaration(TTypeSyntax, nameof(IContext.Resolve))
             .AddModifiers(SyntaxKind.PublicKeyword.WithSpace())
             .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(AggressiveInliningAttr))
             .AddTypeParameterListParameters(TTypeParameterSyntax);
@@ -109,7 +109,7 @@ internal static class SyntaxRepo
         TResolveMethodSyntax.AddModifiers(SyntaxKind.StaticKeyword.WithSpace());
 
     public static readonly MethodDeclarationSyntax GenericStaticResolveWithTagMethodSyntax =
-        GenericStaticResolveMethodSyntax.AddParameterListParameters(SyntaxRepo.Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax));
+        GenericStaticResolveMethodSyntax.AddParameterListParameters(Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax));
 
     private static readonly MethodDeclarationSyntax ObjectResolveMethodSyntax =
         MethodDeclaration(ObjectTypeSyntax, nameof(IContext.Resolve))
@@ -134,7 +134,7 @@ internal static class SyntaxRepo
         {
             SyntaxKind.YieldReturnStatement => SyntaxKind.ReturnKeyword,
             SyntaxKind.YieldBreakStatement => SyntaxKind.BreakKeyword,
-            _ => throw new ArgumentOutOfRangeException(),
+            _ => throw new ArgumentOutOfRangeException()
         };
 
     private static TypeParameterConstraintClauseSyntax TypeParameterConstraintClause(IdentifierNameSyntax name)

@@ -4,6 +4,7 @@ using JetBrains.TeamCity.ServiceMessages.Write.Special;
 using NuGet.Versioning;
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable StringLiteralTypo
 
 class Build
 {

@@ -10,6 +10,7 @@
 // ReSharper disable UnusedMember.Global
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 // ReSharper disable ArrangeNamespaceBody
+// ReSharper disable UnusedTypeParameter
 namespace Pure.DI.UsageScenarios.Tests
 {
     using System;

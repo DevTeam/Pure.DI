@@ -4,6 +4,7 @@ using NuGet.Versioning;
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMethodReturnValue.Global
+// ReSharper disable StringLiteralTypo
 
 class DeployTemplate
 {

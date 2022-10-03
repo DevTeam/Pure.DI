@@ -450,7 +450,6 @@ namespace NS35EBD81B
         /// <summary>
         /// Adds a resolution argument  
         /// </summary>
-        /// <param name="name">The optional argument name.</param>
         /// <param name="tags">The optional argument specifying the tags for the specific dependency type of binding.</param>
         /// <returns>DI configuration.</returns>
         IConfiguration Arg<T>(params object[] tags);

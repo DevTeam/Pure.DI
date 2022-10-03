@@ -1,4 +1,7 @@
-﻿namespace Sample
+﻿// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedMemberInSuper.Global
+// ReSharper disable ArrangeNamespaceBody
+namespace Sample
 {
     using System;
     using Pure.DI;

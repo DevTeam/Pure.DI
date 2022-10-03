@@ -41,6 +41,7 @@ internal class BuildStrategy : IBuildStrategy
     public Optional<ExpressionSyntax> TryBuild(Dependency dependency, SemanticType resolvingType) =>
         _cache.GetOrAdd(new BuildStrategyKey(_buildContext.Id, dependency), _ => TryBuildInternal(dependency, resolvingType));
 
+    [SuppressMessage("ReSharper", "InvertIf")]
     public Optional<ExpressionSyntax> TryBuildInternal(Dependency dependency, SemanticType resolvingType)
     {
         using var traceToken = _tracer.RegisterResolving(dependency);

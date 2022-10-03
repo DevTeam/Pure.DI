@@ -119,6 +119,7 @@ internal class GenericResolversBuilder : IMembersBuilder
             return body;
         }
 
+        // ReSharper disable once LoopCanBeConvertedToQuery
         foreach (var statementsFinalizer in _statementsFinalizers)
         {
             body = statementsFinalizer.AddFinalizationStatements(body);

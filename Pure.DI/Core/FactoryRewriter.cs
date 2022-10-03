@@ -174,7 +174,7 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
         {
             var semanticModel = node.GetSemanticModel(_dependency.Implementation);
             var argType = node.TypeArgumentList.Arguments[0];
-            var type = _typeCache.GetOrAdd(argType.ToString(), i => semanticModel.GetTypeInfo(argType).Type);
+            var type = _typeCache.GetOrAdd(argType.ToString(), _ => semanticModel.GetTypeInfo(argType).Type);
             if (type != default)
             {
                 var tag = invocation.ArgumentList.Arguments.Count == 1 ? invocation.ArgumentList.Arguments[0].Expression : _defaultTag;
@@ -254,7 +254,7 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
         var expression = _buildStrategy!.TryBuild(dependency, dependencyType);
         if (!expression.HasValue)
         {
-            throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, expression.Errors);
+            throw _cannotResolveExceptionFactory.Create(dependency.Binding, expression.Errors);
         }
 
         return SyntaxFactory.ParenthesizedExpression(expression.Value);

@@ -31,7 +31,7 @@ internal class FactoryWrapperStrategy : IWrapperStrategy
         var factoryType = baseFactoryType?.Construct(resolvingType.Type);
         if (factoryType == null)
         {
-            throw _cannotResolveExceptionFactory.Create(dependency.Binding, dependency.Tag, new CodeError[] { new(dependency,Diagnostics.Error.CannotResolve, $"Cannot construct a factory of the type \"{resolvingType.Type}\"")});
+            throw _cannotResolveExceptionFactory.Create(dependency.Binding, new CodeError[] { new(dependency,Diagnostics.Error.CannotResolve, $"Cannot construct a factory of the type \"{resolvingType.Type}\"")});
         }
 
         if (dependency.Implementation.Type is INamedTypeSymbol { IsGenericType: true } namedTypeSymbol)
@@ -59,7 +59,7 @@ internal class FactoryWrapperStrategy : IWrapperStrategy
         var instance = _buildStrategy().TryBuild(factoryDependency, factoryDependency.Implementation);
         if (!instance.HasValue)
         {
-            throw _cannotResolveExceptionFactory.Create(factoryDependency.Binding, factoryDependency.Tag, instance.Errors);
+            throw _cannotResolveExceptionFactory.Create(factoryDependency.Binding, instance.Errors);
         }
 
         var methodKey = new MemberKey($"FactoryWrapperResolve_{_stringTools.ConvertToTitle(dependency.Implementation.ToString())}", dependency);

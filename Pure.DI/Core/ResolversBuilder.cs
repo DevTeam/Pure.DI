@@ -91,6 +91,7 @@ internal class ResolversBuilder : IMembersBuilder
             return body;
         }
 
+        // ReSharper disable once LoopCanBeConvertedToQuery
         foreach (var statementsFinalizer in _statementsFinalizers)
         {
             body = statementsFinalizer.AddFinalizationStatements(body);
@@ -280,7 +281,7 @@ internal class ResolversBuilder : IMembersBuilder
                     yield break;
                 }
 
-                throw _cannotResolveExceptionFactory.Create(binding, resolvingTag, instance.Errors);
+                throw _cannotResolveExceptionFactory.Create(binding, instance.Errors);
             }
 
             yield return SyntaxRepo.ReturnStatement(instance.Value);

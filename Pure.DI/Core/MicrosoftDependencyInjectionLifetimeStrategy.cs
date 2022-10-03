@@ -41,7 +41,7 @@ internal class MicrosoftDependencyInjectionLifetimeStrategy : ILifetimeStrategy
         var serviceProvider = _buildStrategy().TryBuild(serviceProviderDependency, instanceType);
         if (!serviceProvider.HasValue)
         {
-            throw _cannotResolveExceptionFactory.Create(serviceProviderDependency.Binding, serviceProviderDependency.Tag, serviceProvider.Errors);
+            throw _cannotResolveExceptionFactory.Create(serviceProviderDependency.Binding, serviceProvider.Errors);
         }
 
         var instanceExpression = SyntaxFactory.MemberAccessExpression(

@@ -208,15 +208,19 @@ public static class TestExtensions
         
         output.AddRange(errors);
 
-        if (options?.CheckCompilationErrors ?? true)
+        if (!(options?.CheckCompilationErrors ?? true))
         {
-            var hasError = errors.Any();
-            if (hasError)
-            {
-                errors.Insert(0, $"Language Version: {compilation.LanguageVersion}, available: {string.Join(", ", Enum.GetNames<LanguageVersion>())}");
-                Assert.False(hasError, string.Join(Environment.NewLine + Environment.NewLine, errors));
-            }
+            return compilation;
         }
+        
+        var hasError = errors.Any();
+        if (!hasError)
+        {
+            return compilation;
+        }
+
+        errors.Insert(0, $"Language Version: {compilation.LanguageVersion}, available: {string.Join(", ", Enum.GetNames<LanguageVersion>())}");
+        Assert.False(hasError, string.Join(Environment.NewLine + Environment.NewLine, errors));
 
         return compilation;
     }
