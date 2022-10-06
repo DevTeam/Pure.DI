@@ -48,9 +48,9 @@ class Benchmark
         {
             var reportFileName = Path.Combine(resultsPath, $"Pure.DI.Benchmark.Benchmarks.{reportName}-report");
             var reportFileNameHtml = reportFileName + ".html";
-            if (!File.Exists(reportName))
+            if (!File.Exists(reportFileNameHtml))
             {
-                Warning($"{reportName} is missing.");
+                Warning($"The {reportFileNameHtml} file is missing.");
                 continue;
             }
 
