@@ -12,8 +12,8 @@ namespace Pure.DI.UsageScenarios.Tests
         public void Run()
         {
             // $visible=true
-            // $tag=3 BCL types
-            // $priority=01
+            // $tag=1 Basics
+            // $priority=02
             // $description=Roots
             // $header=To specify composition roots explicitly use the `Root<T>()` call.
             // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
@@ -28,7 +28,7 @@ namespace Pure.DI.UsageScenarios.Tests
                 // Explicitly specifies to provide the composition root of type IEnumerable<IService>
                 .Root<IEnumerable<IService>>()
                 // Explicitly specifies to provide the composition root of type IService<int>
-                .Root<IEnumerable<IService<int>>>();
+                .Root<IService<int>>();
             
             var instances = RootsDI.Resolve<IEnumerable<IService>>();
             var instances2 = RootsDI.ResolveIEnumerableIService();
