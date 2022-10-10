@@ -43,7 +43,7 @@ internal class ResolveContextBuilder: IMembersBuilder, IStatementsFinalizer, IAr
         }
 
         var fields = 
-            from arg in GetArgumentsMetadata()
+            from arg in _buildContext.Metadata.Arguments
             let variableDeclaration = SyntaxFactory
                 .VariableDeclaration(arg.Type.TypeSyntax)
                 .AddSpace()
@@ -116,7 +116,7 @@ internal class ResolveContextBuilder: IMembersBuilder, IStatementsFinalizer, IAr
                     SyntaxFactory.IdentifierName("_prev")))
             .WithNewLine();
         
-        var assignmentStatements = GetArgumentsMetadata()
+        var assignmentStatements = _buildContext.Metadata.Arguments
             .Select(arg => (StatementSyntax)SyntaxFactory.ExpressionStatement(SyntaxFactory.AssignmentExpression(
                 SyntaxKind.SimpleAssignmentExpression,
                 SyntaxFactory.IdentifierName($"{arg.Name}Arg"),
@@ -162,7 +162,7 @@ internal class ResolveContextBuilder: IMembersBuilder, IStatementsFinalizer, IAr
         // new ResolveContext()
         var createContextExpression =
             SyntaxFactory.ObjectCreationExpression(contextType.WithSpace())
-                .AddArgumentListArguments(GetArgumentsMetadata()
+                .AddArgumentListArguments(_buildContext.Metadata.Arguments
                     .Select(argument => SyntaxFactory.Argument(SyntaxFactory.IdentifierName($"{argument.Name}"))).ToArray());
 
         // ResolveContext resolveContext = new ResolveContext();
@@ -196,16 +196,12 @@ internal class ResolveContextBuilder: IMembersBuilder, IStatementsFinalizer, IAr
                 .AddStatements(tryStatement);
     }
     
-    public IEnumerable<ArgumentMetadata> GetArgumentsMetadata() => 
-        _buildContext.Metadata.Arguments
-            .Select((arg, index) => new ArgumentMetadata(arg.Type, $"val{arg.Name}_{index}", arg.Tags));
-
     public IEnumerable<ParameterSyntax> GetParameters() =>
-        from arg in GetArgumentsMetadata()
+        from arg in _buildContext.Metadata.Arguments
         select SyntaxRepo.Parameter(SyntaxFactory.Identifier(arg.Name)).WithType(arg.Type);
     
     public IEnumerable<ArgumentSyntax> GetArguments() => 
-        GetArgumentsMetadata()
+        _buildContext.Metadata.Arguments
             .Select(argument => SyntaxFactory.Argument(GetArgumentAccessExpression(argument)));
 
     public SimpleLambdaExpressionSyntax CreateArgumentFactory(ArgumentMetadata arg) =>

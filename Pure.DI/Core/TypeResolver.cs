@@ -29,8 +29,7 @@ internal class TypeResolver : ITypeResolver
         [Tag(Tags.AutowiringBuilder)] Func<IObjectBuilder> constructorBuilder,
         [Tag(Tags.FactoryBuilder)] Func<IObjectBuilder> factoryBuilder,
         [Tag(Tags.ArrayBuilder)] Func<IObjectBuilder> arrayBuilder,
-        [Tag(Tags.EnumerableBuilder)] Func<IObjectBuilder> enumerableBuilder,
-        IArgumentsSupport argumentsSupport)
+        [Tag(Tags.EnumerableBuilder)] Func<IObjectBuilder> enumerableBuilder)
     {
         _diagnostic = diagnostic;
         _buildContext = buildContext;
@@ -39,25 +38,7 @@ internal class TypeResolver : ITypeResolver
         _factoryBuilder = factoryBuilder;
         _arrayBuilder = arrayBuilder;
         _enumerableBuilder = enumerableBuilder;
-        
-        foreach (var arg in argumentsSupport.GetArgumentsMetadata())
-        {
-            var argBinding = new BindingMetadata(arg)
-            {
-                Implementation = arg.Type,
-                Factory = argumentsSupport.CreateArgumentFactory(arg)
-            };
-
-            argBinding.AddDependency(arg.Type);
-            foreach (var tag in arg.Tags)
-            {
-                argBinding.AddTags(tag);
-            } 
-            
-            AddBinding(argBinding, diagnostic);
-        }
-
-        foreach (var binding in metadata.Bindings)
+        foreach (var binding in metadata.Bindings.Where(i => i.BindingType is BindingType.Default or BindingType.Arg))
         {
             AddBinding(binding, diagnostic);
         }
@@ -223,7 +204,7 @@ internal class TypeResolver : ITypeResolver
                     {
                         Implementation = dependency,
                         Lifetime = Lifetime.Transient,
-                        FromProbe = true
+                        BindingType = BindingType.Probe
                     };
 
                     newBinding.AddDependency(dependency);
@@ -254,10 +235,13 @@ internal class TypeResolver : ITypeResolver
                 return new Dependency(new BindingMetadata(dependency), dependency, null, _arrayBuilder(), _typesMapFactory());
         }
 
-        return new Dependency(new BindingMetadata(dependency)
-        {
-            FromProbe = true
-        }, dependency, null, _constructorBuilder(), _typesMapFactory(), false);
+        return new Dependency(
+            new BindingMetadata(dependency) { BindingType = BindingType.Probe },
+            dependency,
+            null,
+            _constructorBuilder(),
+            _typesMapFactory(),
+            false);
     }
 
     public IEnumerable<Dependency> Resolve(SemanticType dependency)

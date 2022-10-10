@@ -21,10 +21,11 @@ namespace Pure.DI.UsageScenarios.Tests
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>()
-                .Bind<CompositionRoot<ThreadLocal<IService>>>().To<CompositionRoot<ThreadLocal<IService>>>();
+                // Explicitly specifies to provide the composition root of type ThreadLocal<IService>
+                .Root<ThreadLocal<IService>>();
 
             // Resolve the instance of ThreadLocal<IService>
-            var threadLocal = ThreadLocalDI.Resolve<CompositionRoot<ThreadLocal<IService>>>().Root;
+            var threadLocal = ThreadLocalDI.Resolve<ThreadLocal<IService>>();
 
             // Get the instance via ThreadLocal
             var instance = threadLocal.Value;

@@ -27,7 +27,6 @@ internal class BindingMetadata : IBindingMetadata
         Implementation = binding.Implementation;
         Factory = binding.Factory;
         Location = binding.Location;
-        AddTags(binding.Tags.ToArray());
         foreach (var bindingDependency in binding.Dependencies)
         {
             AddDependencyTags(bindingDependency, binding.GetTags(bindingDependency).ToArray());
@@ -46,13 +45,11 @@ internal class BindingMetadata : IBindingMetadata
 
     public bool AnyTag { get; set; }
 
-    public bool FromProbe { get; set; }
+    public BindingType BindingType { get; set; }
 
     public IEnumerable<SemanticType> Dependencies => _dependencies;
 
     public void AddDependency(SemanticType dependency) => _dependencies.Add(dependency);
-
-    public IEnumerable<ExpressionSyntax> Tags => _tags;
 
     public IEnumerable<ExpressionSyntax> GetTags(SemanticType dependencyType)
     {
@@ -75,7 +72,7 @@ internal class BindingMetadata : IBindingMetadata
             _tags.Add(tag);
         }
     }
-
+    
     public void AddDependencyTags(SemanticType dependency, params ExpressionSyntax[] tags)
     {
         if (!_dependencyTags.TryGetValue(dependency, out var curTags))

@@ -260,7 +260,14 @@ namespace NS35EBD81B
                 return this;
             }
             
+            /// <inheritdoc />
             public IConfiguration Arg<T>(params object[] tags)
+            {
+                return this;
+            }
+
+            /// <inheritdoc />
+            public IConfiguration Root<T>(params object[] tags)
             {
                 return this;
             }
@@ -450,9 +457,18 @@ namespace NS35EBD81B
         /// <summary>
         /// Adds a resolution argument  
         /// </summary>
-        /// <param name="tags">The optional argument specifying the tags for the specific dependency type of binding.</param>
+        /// <param name="tags">The optional argument specifying the tags for the argument.</param>
+        /// <typeparam name="T">The argument type.</typeparam>
         /// <returns>DI configuration.</returns>
         IConfiguration Arg<T>(params object[] tags);
+        
+        /// <summary>
+        /// Explicitly specifies to provide the composition root
+        /// </summary>
+        /// <param name="tags">The optional argument specifying the tags for the composition root.</param>
+        /// <typeparam name="T">The composition root type.</typeparam>
+        /// <returns>DI configuration.</returns>
+        IConfiguration Root<T>(params object[] tags);
     }
 
     /// <summary>

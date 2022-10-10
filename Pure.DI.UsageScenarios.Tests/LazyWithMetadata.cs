@@ -23,10 +23,10 @@ namespace Pure.DI.UsageScenarios.Tests
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>()
                 .Bind<IService<TT>>().To<Service<TT>>()
-                .Bind<CompositionRoot<Lazy<IService, IService<int>>>>().To<CompositionRoot<Lazy<IService, IService<int>>>>();
+                .Root<Lazy<IService, IService<int>>>();
 
             // Resolve the instance of Lazy<IService> with some metadata, for instance of type IService<int>
-            var lazy = LazyWithMetadataDI.Resolve<CompositionRoot<Lazy<IService, IService<int>>>>().Root;
+            var lazy = LazyWithMetadataDI.Resolve<Lazy<IService, IService<int>>>();
 
             // Get the instance via Lazy
             var instance = lazy.Value;

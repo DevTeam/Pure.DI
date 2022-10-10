@@ -26,15 +26,16 @@ namespace Pure.DI.UsageScenarios.Tests
                 .Bind<IService>(2).Tags("abc").To<Service>()
                 // Bind to the implementation #3
                 .Bind<IService>().As(Singleton).Tags(3).To<Service>()
-                .Bind<CompositionRoot<ICollection<IService>>>().To<CompositionRoot<ICollection<IService>>>();
+                // Explicitly specifies to provide the composition root of type ICollection<IService>
+                .Root<ICollection<IService>>();
 
             // Resolve all appropriate instances
-            var composition = CollectionsDI.ResolveCompositionRootICollectionIService();
+            var collection = CollectionsDI.Resolve<ICollection<IService>>();
 
             // Check the number of resolved instances
-            composition.Root.Count.ShouldBe(3);
+            collection.Count.ShouldBe(3);
             // }
-            foreach (var instance in composition.Root)
+            foreach (var instance in collection)
             {
                 // Check each instance
                 instance.ShouldBeOfType<Service>();

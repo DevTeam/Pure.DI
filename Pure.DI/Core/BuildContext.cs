@@ -9,19 +9,17 @@ internal class BuildContext : IBuildContext
     private readonly HashSet<IBindingMetadata> _additionalBindings = new();
     private readonly HashSet<StatementSyntax> _finalizationStatements = new();
     private readonly HashSet<StatementSyntax> _finalDisposeStatements = new();
-    private readonly Func<INameService> _nameServiceFactory;
     private readonly Func<ITypeResolver> _typeResolverFactory;
     private Compilation? _compilation;
     private CancellationToken? _cancellationToken;
     private ResolverMetadata? _metadata;
-    private INameService? _nameService;
     private ITypeResolver? _typeResolver;
 
     public BuildContext(
-        [Tag(Tags.Default)] Func<INameService> nameServiceFactory,
+        [Tag(Tags.Default)] INameService nameService,
         [Tag(Tags.Default)] Func<ITypeResolver> typeResolverFactory)
     {
-        _nameServiceFactory = nameServiceFactory;
+        NameService = nameService;
         _typeResolverFactory = typeResolverFactory;
     }
 
@@ -33,7 +31,7 @@ internal class BuildContext : IBuildContext
 
     public ResolverMetadata Metadata => _metadata ?? throw new InvalidOperationException("Not initialized.");
 
-    public INameService NameService => _nameService ?? throw new InvalidOperationException("Not ready.");
+    public INameService NameService { get; }
 
     public ITypeResolver TypeResolver => _typeResolver ?? throw new InvalidOperationException("Not ready.");
 
@@ -52,7 +50,6 @@ internal class BuildContext : IBuildContext
         _cancellationToken = cancellationToken;
         _metadata = metadata;
         _additionalBindings.Clear();
-        _nameService = _nameServiceFactory();
         _typeResolver = _typeResolverFactory();
         _additionalMembers.Clear();
         _finalizationStatements.Clear();

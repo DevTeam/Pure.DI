@@ -4,14 +4,7 @@ namespace Pure.DI.UsageScenarios.Tests
 {
     using System;
     using System.Collections.Generic;
-
-    public class CompositionRoot<T>
-    {
-        public CompositionRoot(T root) => Root = root;
-
-        public T Root { get; }
-    }
-
+    
     public interface IDependency
     {
         int Index { get; set; }

@@ -26,10 +26,11 @@ namespace Pure.DI.UsageScenarios.Tests
                 .Bind<IService>().Tags(2, "abc").As(Singleton).To<Service>()
                 // Bind to the implementation #3
                 .Bind<IService>().Tags(3).To<Service>()
-                .Bind<CompositionRoot<ISet<IService>>>().To<CompositionRoot<ISet<IService>>>();
+                // Explicitly specifies to provide the composition root of type ISet<IService>
+                .Root<ISet<IService>>();
 
             // Resolve all appropriate instances
-            var instances = SetsDI.Resolve<CompositionRoot<ISet<IService>>>().Root;
+            var instances = SetsDI.Resolve<ISet<IService>>();
 
             // Check the number of resolved instances
             instances.Count.ShouldBe(3);

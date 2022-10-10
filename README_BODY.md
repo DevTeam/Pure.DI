@@ -224,6 +224,11 @@ DI.Setup("MyComposer")
   .Arg<string>()
   // .. with tags:
   .Arg<int>("indexVal", 2)
+  
+  // Specifies to provide a composition root:
+  .Root<string>()
+  // .. with tags:
+  .Root<int>("my tag")
 
   // Determines a binding implementation using a factory method,
   // it allows to create instance manually and to invoke required methods,

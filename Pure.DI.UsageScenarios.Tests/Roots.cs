@@ -6,7 +6,7 @@ namespace Pure.DI.UsageScenarios.Tests
     using System.Linq;
     using Xunit;
 
-    public class Enumerables
+    public class Roots
     {
         [Fact]
         public void Run()
@@ -14,29 +14,33 @@ namespace Pure.DI.UsageScenarios.Tests
             // $visible=true
             // $tag=3 BCL types
             // $priority=01
-            // $description=Enumerables
-            // $header=To resolve all possible instances of any tags of the specific type as an _enumerable_ just use the injection _IEnumerable<T>_.
+            // $description=Roots
+            // $header=To specify composition roots explicitly use the `Root<T>()` call.
             // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
             // {
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
+                .Bind<IService<TT>>().To<Service<TT>>()
                 // Bind to the implementation #1
                 .Bind<IService>().Tags(1).To<Service>()
                 // Bind to the implementation #2
                 .Bind<IService>().Tags(2, "abc").To<Service>()
-                // Bind to the implementation #3
-                .Bind<IService>().Tags(3).To<Service>()
                 // Explicitly specifies to provide the composition root of type IEnumerable<IService>
-                .Root<IEnumerable<IService>>();
-
-            // Resolve all appropriate instances
-            var instances = EnumerablesDI.Resolve<IEnumerable<IService>>().ToList();
+                .Root<IEnumerable<IService>>()
+                // Explicitly specifies to provide the composition root of type IService<int>
+                .Root<IEnumerable<IService<int>>>();
+            
+            var instances = RootsDI.Resolve<IEnumerable<IService>>();
+            var instances2 = RootsDI.ResolveIEnumerableIService();
+            var service = RootsDI.Resolve<IService<int>>();
+            var service2 = RootsDI.ResolveServiceInt();
 
             // Check the number of resolved instances
-            instances.Count.ShouldBe(3);
+            instances.Count().ShouldBe(2);
+            instances2.Count().ShouldBe(2);
             // }
-            // Check each instance
-            instances.ForEach(instance => instance.ShouldBeOfType<Service>());
+            instances.ShouldNotBe(instances2);
+            service.ShouldNotBe(service2);
         }
     }
 }

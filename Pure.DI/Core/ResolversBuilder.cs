@@ -270,7 +270,7 @@ internal class ResolversBuilder : IMembersBuilder
             var instance = buildStrategy.TryBuild(dependency, resolvingType);
             if (!instance.HasValue)
             {
-                if (binding.FromProbe)
+                if (binding.BindingType == BindingType.Probe)
                 {
                     yield break;
                 }

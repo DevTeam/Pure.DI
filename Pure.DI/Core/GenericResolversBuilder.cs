@@ -43,7 +43,7 @@ internal class GenericResolversBuilder : IMembersBuilder
     {
         var methods =
             from binding in _metadata.Bindings.Concat(_buildContext.AdditionalBindings).ToArray()
-            where !binding.FromProbe
+            where binding.BindingType != BindingType.Probe
             from dependency in binding.Dependencies
             where !dependency.IsComposedGenericTypeMarker
             let minAccessibility = GetAccessibility(dependency.Type).Min()

@@ -2,8 +2,6 @@
 
 internal interface IArgumentsSupport
 {
-    IEnumerable<ArgumentMetadata> GetArgumentsMetadata();
-
     IEnumerable<ParameterSyntax> GetParameters();
 
     IEnumerable<ArgumentSyntax> GetArguments();

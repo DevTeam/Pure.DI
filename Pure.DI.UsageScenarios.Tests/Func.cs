@@ -22,10 +22,11 @@ namespace Pure.DI.UsageScenarios.Tests
             DI.Setup()
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>()
-                .Bind<CompositionRoot<Func<IService>>>().To<CompositionRoot<Func<IService>>>();
+                // Explicitly specifies to provide the composition root of type Func<IService>
+                .Root<Func<IService>>();
 
             // Resolve function to create instances
-            var factory = FuncDI.Resolve<CompositionRoot<Func<IService>>>().Root;
+            var factory = FuncDI.Resolve<Func<IService>>();
 
             // Resolve few instances
             var instance1 = factory();

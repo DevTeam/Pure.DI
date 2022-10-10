@@ -23,10 +23,10 @@ namespace Pure.DI.UsageScenarios.Tests
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>()
                 .Bind<INamedService>().To(ctx => new NamedService(ctx.Resolve<IDependency>(), "some name"))
-                .Bind<CompositionRoot<(IService, INamedService)>>().To<CompositionRoot<(IService, INamedService)>>();
+                .Root<(IService service, INamedService namedService)>();
 
             // Resolve an instance of type Tuple<IService, INamedService>
-            var (service, namedService) = TuplesDI.Resolve<CompositionRoot<(IService, INamedService)>>().Root;
+            var (service, namedService) = TuplesDI.Resolve<(IService service, INamedService namedService)>();
             // }
             // Check items
             service.ShouldBeOfType<Service>();

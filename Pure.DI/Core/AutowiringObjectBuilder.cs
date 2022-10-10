@@ -298,7 +298,13 @@ internal class AutowiringObjectBuilder : IObjectBuilder
                     {
                         try
                         {
-                            return new ResolveResult(target, buildStrategy.TryBuild(dependency, resolvingType), ResolveType.Resolved, DefaultType.ResolvedValue);
+                            var resolveExpression = buildStrategy.TryBuild(dependency, resolvingType);
+                            if (resolveExpression.HasValue && targetDependency.Implementation.Type.IsTupleType)
+                            {
+                                resolveExpression = SyntaxFactory.CastExpression(resolvingType, resolveExpression.Value);
+                            }
+
+                            return new ResolveResult(target, resolveExpression, ResolveType.Resolved, DefaultType.ResolvedValue);
                         }
                         catch (BuildException buildException)
                         {

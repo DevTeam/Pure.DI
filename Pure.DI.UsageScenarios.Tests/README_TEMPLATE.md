@@ -38,6 +38,7 @@
   - [Func](#func)
   - [Lazy](#lazy)
   - [Lazy with metadata](#lazy-with-metadata)
+  - [Roots](#roots)
   - [Sets](#sets)
   - [Thread Local](#thread-local)
   - [Tuples](#tuples)
@@ -1158,11 +1159,11 @@ DI.Setup()
     .Bind<IService>(99).Tags(2, "abc").To<Service>()
     // Bind to the implementation #3
     .Bind<IService>().Tags(3).To<Service>()
-    .Bind<CompositionRoot<IService[]>>()
-        .To<CompositionRoot<IService[]>>();
+    // Explicitly specifies to provide the composition root of type IService[]
+    .Root<IService[]>();
 
 // Resolve all appropriate instances
-var composition = ArraysDI.Resolve<CompositionRoot<IService[]>>();
+var array = ArraysDI.Resolve<IService[]>();
 ```
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
@@ -1180,13 +1181,14 @@ DI.Setup()
     .Bind<IService>(2).Tags("abc").To<Service>()
     // Bind to the implementation #3
     .Bind<IService>().As(Singleton).Tags(3).To<Service>()
-    .Bind<CompositionRoot<ICollection<IService>>>().To<CompositionRoot<ICollection<IService>>>();
+    // Explicitly specifies to provide the composition root of type ICollection<IService>
+    .Root<ICollection<IService>>();
 
 // Resolve all appropriate instances
-var composition = CollectionsDI.ResolveCompositionRootICollectionIService();
+var collection = CollectionsDI.Resolve<ICollection<IService>>();
 
 // Check the number of resolved instances
-composition.Root.Count.ShouldBe(3);
+collection.Count.ShouldBe(3);
 ```
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
@@ -1204,10 +1206,11 @@ DI.Setup()
     .Bind<IService>().Tags(2, "abc").To<Service>()
     // Bind to the implementation #3
     .Bind<IService>().Tags(3).To<Service>()
-    .Bind<CompositionRoot<IEnumerable<IService>>>().To<CompositionRoot<IEnumerable<IService>>>();
+    // Explicitly specifies to provide the composition root of type IEnumerable<IService>
+    .Root<IEnumerable<IService>>();
 
 // Resolve all appropriate instances
-var instances = EnumerablesDI.Resolve<CompositionRoot<IEnumerable<IService>>>().Root.ToList();
+var instances = EnumerablesDI.Resolve<IEnumerable<IService>>().ToList();
 
 // Check the number of resolved instances
 instances.Count.ShouldBe(3);
@@ -1223,10 +1226,11 @@ _Func<>_ with the required type specified helps when a logic needs to inject som
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>()
-    .Bind<CompositionRoot<Func<IService>>>().To<CompositionRoot<Func<IService>>>();
+    // Explicitly specifies to provide the composition root of type Func<IService>
+    .Root<Func<IService>>();
 
 // Resolve function to create instances
-var factory = FuncDI.Resolve<CompositionRoot<Func<IService>>>().Root;
+var factory = FuncDI.Resolve<Func<IService>>();
 
 // Resolve few instances
 var instance1 = factory();
@@ -1243,10 +1247,11 @@ _Lazy_ dependency helps when a logic needs to inject _Lazy<T>_ to get instance o
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>()
-    .Bind<CompositionRoot<Lazy<IService>>>().To<CompositionRoot<Lazy<IService>>>();
+    // Explicitly specifies to provide the composition root of type Lazy<IService>
+    .Root<Lazy<IService>>();
 
 // Resolve the instance of Lazy<IService>
-var lazy = LazyDI.Resolve<CompositionRoot<Lazy<IService>>>().Root;
+var lazy = LazyDI.Resolve<Lazy<IService>>();
 
 // Get the instance via Lazy
 var instance = lazy.Value;
@@ -1263,13 +1268,42 @@ DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>()
     .Bind<IService<TT>>().To<Service<TT>>()
-    .Bind<CompositionRoot<Lazy<IService, IService<int>>>>().To<CompositionRoot<Lazy<IService, IService<int>>>>();
+    .Root<Lazy<IService, IService<int>>>();
 
 // Resolve the instance of Lazy<IService> with some metadata, for instance of type IService<int>
-var lazy = LazyWithMetadataDI.Resolve<CompositionRoot<Lazy<IService, IService<int>>>>().Root;
+var lazy = LazyWithMetadataDI.Resolve<Lazy<IService, IService<int>>>();
 
 // Get the instance via Lazy
 var instance = lazy.Value;
+```
+
+This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+
+### Roots
+
+To specify composition roots explicitly use the `Root<T>()` call.
+
+``` CSharp
+DI.Setup()
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService<TT>>().To<Service<TT>>()
+    // Bind to the implementation #1
+    .Bind<IService>().Tags(1).To<Service>()
+    // Bind to the implementation #2
+    .Bind<IService>().Tags(2, "abc").To<Service>()
+    // Explicitly specifies to provide the composition root of type IEnumerable<IService>
+    .Root<IEnumerable<IService>>()
+    // Explicitly specifies to provide the composition root of type IService<int>
+    .Root<IEnumerable<IService<int>>>();
+
+var instances = RootsDI.Resolve<IEnumerable<IService>>();
+var instances2 = RootsDI.ResolveIEnumerableIService();
+var service = RootsDI.Resolve<IService<int>>();
+var service2 = RootsDI.ResolveServiceInt();
+
+// Check the number of resolved instances
+instances.Count().ShouldBe(2);
+instances2.Count().ShouldBe(2);
 ```
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
@@ -1287,10 +1321,11 @@ DI.Setup()
     .Bind<IService>().Tags(2, "abc").As(Singleton).To<Service>()
     // Bind to the implementation #3
     .Bind<IService>().Tags(3).To<Service>()
-    .Bind<CompositionRoot<ISet<IService>>>().To<CompositionRoot<ISet<IService>>>();
+    // Explicitly specifies to provide the composition root of type ISet<IService>
+    .Root<ISet<IService>>();
 
 // Resolve all appropriate instances
-var instances = SetsDI.Resolve<CompositionRoot<ISet<IService>>>().Root;
+var instances = SetsDI.Resolve<ISet<IService>>();
 
 // Check the number of resolved instances
 instances.Count.ShouldBe(3);
@@ -1306,10 +1341,11 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>()
-    .Bind<CompositionRoot<ThreadLocal<IService>>>().To<CompositionRoot<ThreadLocal<IService>>>();
+    // Explicitly specifies to provide the composition root of type ThreadLocal<IService>
+    .Root<ThreadLocal<IService>>();
 
 // Resolve the instance of ThreadLocal<IService>
-var threadLocal = ThreadLocalDI.Resolve<CompositionRoot<ThreadLocal<IService>>>().Root;
+var threadLocal = ThreadLocalDI.Resolve<ThreadLocal<IService>>();
 
 // Get the instance via ThreadLocal
 var instance = threadLocal.Value;
@@ -1326,10 +1362,10 @@ DI.Setup()
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>()
     .Bind<INamedService>().To(ctx => new NamedService(ctx.Resolve<IDependency>(), "some name"))
-    .Bind<CompositionRoot<(IService, INamedService)>>().To<CompositionRoot<(IService, INamedService)>>();
+    .Root<(IService service, INamedService namedService)>();
 
 // Resolve an instance of type Tuple<IService, INamedService>
-var (service, namedService) = TuplesDI.Resolve<CompositionRoot<(IService, INamedService)>>().Root;
+var (service, namedService) = TuplesDI.Resolve<(IService service, INamedService namedService)>();
 ```
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
@@ -1391,11 +1427,9 @@ DI.Setup()
     // Bind to the implementation #3
     .Bind<IService>().Tags(3).To<Service>()
     // Bind array
-    .Bind<IService[]>().To(ctx => new[] {ctx.Resolve<IService>(1), ctx.Resolve<IService>("abc")})
-    .Bind<CompositionRoot<IService[]>>()
-        .To<CompositionRoot<IService[]>>();
+    .Bind<IService[]>().To(ctx => new[] {ctx.Resolve<IService>(1), ctx.Resolve<IService>("abc")});
 
-var composition = ArrayBindingOverrideDI.Resolve<CompositionRoot<IService[]>>();
+var array = ArrayBindingOverrideDI.Resolve<IService[]>();
 ```
 
 

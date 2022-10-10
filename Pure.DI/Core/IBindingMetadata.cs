@@ -16,11 +16,9 @@ internal interface IBindingMetadata
 
     bool AnyTag { get; }
 
-    bool FromProbe { get; }
+    BindingType BindingType { get; }
 
     IEnumerable<SemanticType> Dependencies { get; }
-
-    IEnumerable<ExpressionSyntax> Tags { get; }
 
     IEnumerable<ExpressionSyntax> GetTags(SemanticType dependencyType);
 }

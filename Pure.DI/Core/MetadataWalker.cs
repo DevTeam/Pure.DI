@@ -17,6 +17,7 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
     private readonly IDiagnostic _diagnostic;
     private readonly INameService _nameService;
     private readonly IStringTools _stringTools;
+    private readonly IArgumentsSupport _argumentsSupport;
     private readonly List<ResolverMetadata> _metadata = new();
     private ResolverMetadata? _resolver;
     private BindingMetadata _binding = new();
@@ -29,7 +30,8 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
         [Tag(Tags.MetadataSyntax)] ISyntaxFilter syntaxFilter,
         IDiagnostic diagnostic,
         [Tag(Tags.Default)] INameService nameService,
-        IStringTools stringTools)
+        IStringTools stringTools,
+        IArgumentsSupport argumentsSupport)
     {
         _ownerProvider = ownerProvider;
         _targetClassNameProvider = targetClassNameProvider;
@@ -37,6 +39,7 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
         _diagnostic = diagnostic;
         _nameService = nameService;
         _stringTools = stringTools;
+        _argumentsSupport = argumentsSupport;
     }
 
     public IEnumerable<ResolverMetadata> Metadata => _metadata;
@@ -164,15 +167,12 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
                 {
                     _binding.Implementation = new SemanticType(invocationOperation.TargetMethod.TypeArguments[0], SemanticModel);
                     _binding.Location = node.GetLocation();
-                    if (Check(node))
+                    if (CheckTo(node))
                     {
                         _resolver?.Bindings.Add(_binding);
                     }
 
-                    _binding = new BindingMetadata
-                    {
-                        Lifetime = _defaultLifetime
-                    };
+                    _binding = new BindingMetadata { Lifetime = _defaultLifetime };
                 }
 
                 return;
@@ -208,7 +208,7 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
                         _binding.Factory = lambda;
                     }
 
-                    if (Check(node))
+                    if (CheckTo(node))
                     {
                         _resolver?.Bindings.Add(_binding);
                     }
@@ -221,49 +221,85 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
                 
                 if (invocationOperation.TargetMethod.Parameters.Length == 1
                     && new SemanticType(invocationOperation.TargetMethod.ContainingType, SemanticModel).Equals(typeof(IConfiguration))
-                    && new SemanticType(invocationOperation.TargetMethod.ReturnType, SemanticModel).Equals(typeof(IConfiguration))
-                    && invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol type)
+                    && new SemanticType(invocationOperation.TargetMethod.ReturnType, SemanticModel).Equals(typeof(IConfiguration)))
                 {
+                    // || invocationOperation.TargetMethod.TypeArguments[0] is IArrayTypeSymbol
                     var argument0 = invocationOperation.Arguments[0].Value;
                     int argumentPosition;
                     switch (invocationOperation.TargetMethod.Name)
                     {
                         // TagAttribute<>(...)
                         case nameof(IConfiguration.TagAttribute):
-                            if (TryGetValue(argument0, SemanticModel, out argumentPosition, 0))
+                            if (invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol tagType &&
+                                TryGetValue(argument0, SemanticModel, out argumentPosition, 0))
                             {
-                                _resolver?.Attributes.Add(new AttributeMetadata(AttributeKind.Tag, type, argumentPosition));
+                                _resolver?.Attributes.Add(new AttributeMetadata(AttributeKind.Tag, tagType, argumentPosition));
                             }
 
                             break;
 
                         // TypeAttribute<>(...)
                         case nameof(IConfiguration.TypeAttribute):
-                            if (TryGetValue(argument0, SemanticModel, out argumentPosition, 0))
+                            if (invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol typeType &&
+                                TryGetValue(argument0, SemanticModel, out argumentPosition, 0))
                             {
-                                _resolver?.Attributes.Add(new AttributeMetadata(AttributeKind.Type, type, argumentPosition));
+                                _resolver?.Attributes.Add(new AttributeMetadata(AttributeKind.Type, typeType, argumentPosition));
                             }
 
                             break;
 
                         // OrderAttribute<>(...)
                         case nameof(IConfiguration.OrderAttribute):
-                            if (TryGetValue(argument0, SemanticModel, out argumentPosition, 0))
+                            if (invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol orderType &&
+                                TryGetValue(argument0, SemanticModel, out argumentPosition, 0))
                             {
-                                _resolver?.Attributes.Add(new AttributeMetadata(AttributeKind.Order, type, argumentPosition));
+                                _resolver?.Attributes.Add(new AttributeMetadata(AttributeKind.Order, orderType, argumentPosition));
                             }
 
                             break;
 
                         // Arg<>(...)
                         case nameof(IConfiguration.Arg):
-                            if (invocationOperation.Arguments[0].Value is IArrayCreationOperation arrayCreationOperationArg)
+                            if (invocationOperation.TargetMethod.TypeArguments[0] is INamedTypeSymbol argType &&
+                                invocationOperation.Arguments[0].Value is IArrayCreationOperation arrayCreationOperationArg)
                             {
                                 var tags = (arrayCreationOperationArg.Initializer?.ElementValues.OfType<IConversionOperation>().Select(i => i.Syntax).OfType<ExpressionSyntax>() ?? Enumerable.Empty<ExpressionSyntax>()).ToArray();
-                                var semanticType = new SemanticType(type, SemanticModel);
-                                var argKey = new MemberKey(_stringTools.ConvertToTitle(semanticType.Name), GetType());
+                                var semanticType = new SemanticType(argType, SemanticModel);
+                                var baseName = _stringTools.ConvertToTitle(semanticType.Name);
+                                var argKey = new MemberKey($"val{baseName}", invocationOperation);
                                 var name = _nameService.FindName(argKey);
-                                _resolver?.Arguments.Add(new ArgumentMetadata(semanticType, name, tags));
+                                var arg = new ArgumentMetadata(semanticType, name, tags);
+                                _binding.Implementation = semanticType;
+                                _binding.BindingType = BindingType.Arg;
+                                _binding.Lifetime = Lifetime.Transient;
+                                _binding.Factory = _argumentsSupport.CreateArgumentFactory(arg);
+                                _binding.AddDependency(semanticType);
+                                foreach (var tag in tags)
+                                {
+                                    _binding.AddTags(tag);
+                                }
+                                
+                                _resolver?.Bindings.Add(_binding);
+                                _resolver?.Arguments.Add(arg);
+                                _binding = new BindingMetadata { Lifetime = _defaultLifetime };
+                            }
+
+                            break;
+                        
+                        // Root<>(...)
+                        case nameof(IConfiguration.Root):
+                            if (invocationOperation.Arguments[0].Value is IArrayCreationOperation arrayCreationOperationRoot)
+                            {
+                                var dependencyType = invocationOperation.TargetMethod.TypeArguments[0];
+                                _binding.AddDependency(new SemanticType(dependencyType, SemanticModel));
+                                _binding.AddTags((arrayCreationOperationRoot.Initializer?.ElementValues.OfType<IConversionOperation>().Select(i => i.Syntax).OfType<ExpressionSyntax>() ?? Enumerable.Empty<ExpressionSyntax>()).ToArray());
+                                _binding.Implementation = new SemanticType(dependencyType, SemanticModel);
+                                _binding.BindingType = BindingType.Root;
+                                _binding.Lifetime = Lifetime.Transient;
+                                _binding.Location = node.GetLocation();
+
+                                _resolver?.Bindings.Add(_binding);
+                                _binding = new BindingMetadata { Lifetime = _defaultLifetime };
                             }
 
                             break;
@@ -334,7 +370,7 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
     }
 
     // ReSharper disable once SuggestBaseTypeForParameter
-    private bool Check(InvocationExpressionSyntax invocation)
+    private bool CheckTo(InvocationExpressionSyntax invocation)
     {
         if (_binding.Implementation == default)
         {

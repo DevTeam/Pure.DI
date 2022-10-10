@@ -23,16 +23,14 @@ namespace Pure.DI.UsageScenarios.Tests
                 // Bind to the implementation #3
                 .Bind<IService>().Tags(3).To<Service>()
                 // Bind array
-                .Bind<IService[]>().To(ctx => new[] {ctx.Resolve<IService>(1), ctx.Resolve<IService>("abc")})
-                .Bind<CompositionRoot<IService[]>>()
-                    .To<CompositionRoot<IService[]>>();
+                .Bind<IService[]>().To(ctx => new[] {ctx.Resolve<IService>(1), ctx.Resolve<IService>("abc")});
 
-            var composition = ArrayBindingOverrideDI.Resolve<CompositionRoot<IService[]>>();
+            var array = ArrayBindingOverrideDI.Resolve<IService[]>();
             // }
             // Check the number of resolved instances
-            composition.Root.Length.ShouldBe(2);
+            array.Length.ShouldBe(2);
 
-            foreach (var instance in composition.Root)
+            foreach (var instance in array)
             {
                 // Check the instance
                 instance.ShouldBeOfType<Service>();
