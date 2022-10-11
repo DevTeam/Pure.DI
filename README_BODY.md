@@ -19,7 +19,7 @@ Pure.DI is __NOT__ a framework or library, but a code generator that generates s
 - [X] High performance, including C# and JIT compilers optimizations.
   >All generated code runs as fast as your own, in pure DI style, including compile-time and run-time optimizations. As mentioned above, graph analysis doing at compile-time, but at run-time, there are just a bunch of nested constructors, and that's it.
 - [X] Works everywhere.
-  >Since a pure DI approach does not use any dependencies or the [.NET reflection](https://docs.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/reflection) at runtime, it does not prevent your code from working as expected on any platform: Full .NET Framework 2.0+, .NET Core, .NET, UWP/XBOX, .NET IoT, Xamarin, etc.
+  >Since a pure DI approach does not use any dependencies or the [.NET reflection](https://docs.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/reflection) at runtime, it does not prevent your code from working as expected on any platform: Full .NET Framework 2.0+, .NET Core, .NET, UWP/XBOX, .NET IoT, Xamarin, Native AOT, etc.
 - [X] Ease of use.
   >The _Pure.DI_ API is very similar to the API of most IoC/DI libraries. And it was a deliberate decision: the main reason is that programmers do not need to learn a new API.
 - [X] Ultra-fine tuning of generic types.
@@ -274,6 +274,7 @@ You can [add a lifetime](#custom-singleton-lifetime) yourself.
 
 - [.NET and .NET Core](https://docs.microsoft.com/en-us/dotnet/core/) 1.0+
 - [.NET Standard](https://docs.microsoft.com/en-us/dotnet/standard/net-standard) 1.0+
+- [Native AOT](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/)
 - [.NET Framework](https://docs.microsoft.com/en-us/dotnet/framework/) 2.0+
 - [UWP/XBOX](https://docs.microsoft.com/en-us/windows/uwp/index)
 - [.NET IoT](https://dotnet.microsoft.com/apps/iot)
