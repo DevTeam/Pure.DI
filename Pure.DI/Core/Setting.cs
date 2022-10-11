@@ -8,5 +8,7 @@ internal enum Setting
 
     Verbosity,
 
-    Trace
+    Trace,
+    
+    Accessibility
 }

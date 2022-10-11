@@ -6,9 +6,13 @@ using NS35EBD81B;
 internal class GenericStaticWithTagResolveMethodBuilder : IResolveMethodBuilder
 {
     private readonly IMemberNameService _memberNameService;
+    private readonly ISettings _settings;
 
-    public GenericStaticWithTagResolveMethodBuilder(IMemberNameService memberNameService) =>
+    public GenericStaticWithTagResolveMethodBuilder(IMemberNameService memberNameService, ISettings settings)
+    {
         _memberNameService = memberNameService;
+        _settings = settings;
+    }
 
     public ResolveMethod Build()
     {
@@ -29,7 +33,7 @@ internal class GenericStaticWithTagResolveMethodBuilder : IResolveMethodBuilder
             );
 
         return new ResolveMethod(
-            SyntaxRepo.GenericStaticResolveWithTagMethodSyntax.AddBodyStatements(
+            SyntaxRepo.CreateGenericStaticResolveWithTagMethodSyntax(_settings.AccessibilityToken).AddBodyStatements(
                 SyntaxRepo.ReturnStatement(SyntaxFactory.CastExpression(SyntaxRepo.TTypeSyntax, resolve))));
     }
 }

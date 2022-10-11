@@ -7,13 +7,16 @@ internal class Settings : ISettings
 {
     private readonly IBuildContext _buildContext;
     private readonly IFileSystem _fileSystem;
+    private readonly IAccessibilityToSyntaxKindConverter _accessibilityToSyntaxKindConverter;
 
     public Settings(
         IBuildContext buildContext,
-        IFileSystem fileSystem)
+        IFileSystem fileSystem,
+        IAccessibilityToSyntaxKindConverter accessibilityToSyntaxKindConverter)
     {
         _buildContext = buildContext;
         _fileSystem = fileSystem;
+        _accessibilityToSyntaxKindConverter = accessibilityToSyntaxKindConverter;
     }
 
     public bool Debug => GetBool(Setting.Debug);
@@ -49,6 +52,13 @@ internal class Settings : ISettings
         logFilePath = string.Empty;
         return false;
     }
+
+    public Accessibility Accessibility =>
+        TryGet(Setting.Accessibility, out var accessibilityValue) && Enum.TryParse(accessibilityValue, true, out Accessibility accessibility)
+            ? accessibility
+            : Accessibility.Public;
+
+    public SyntaxKind AccessibilityToken => _accessibilityToSyntaxKindConverter.Convert(Accessibility);
 
     private bool TryGet(Setting setting, out string value)
     {

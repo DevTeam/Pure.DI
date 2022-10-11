@@ -81,6 +81,7 @@ internal class Configuration : IoC.IConfiguration
             .Bind<IMembersBuilder>().Tag(GenericResolvers).To<GenericResolversBuilder>()
             .Bind<IStringTools>().As(Singleton).To<StringTools>()
             .Bind<IStatementsFinalizer>().Bind<IMembersBuilder>().To<StatementsFinalizer>()
-            .Bind<IStaticResolverNameProvider>().To<StaticResolverNameProvider>();
+            .Bind<IStaticResolverNameProvider>().To<StaticResolverNameProvider>()
+            .Bind<IAccessibilityToSyntaxKindConverter>().As(Singleton).To<AccessibilityToSyntaxKindConverter>();
     }
 }

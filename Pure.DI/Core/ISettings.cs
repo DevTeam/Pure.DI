@@ -11,4 +11,8 @@ internal interface ISettings
     Verbosity Verbosity { get; }
 
     bool TryGetLogFile(out string logFilePath);
+
+    Accessibility Accessibility { get; }
+
+    SyntaxKind AccessibilityToken { get; }
 }

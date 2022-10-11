@@ -99,29 +99,29 @@ internal static class SyntaxRepo
                         SyntaxFactory.ParseTypeName(typeof(MethodImplOptions).FullName),
                         SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(256 + 512))))));
 
-    public static readonly MethodDeclarationSyntax TResolveMethodSyntax =
+    public static MethodDeclarationSyntax CreateTResolveMethodSyntax(SyntaxKind accessibilityToken) =>
         MethodDeclaration(TTypeSyntax, nameof(IContext.Resolve))
-            .AddModifiers(SyntaxKind.PublicKeyword.WithSpace())
+            .AddModifiers(accessibilityToken.WithSpace())
             .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(AggressiveInliningAttr))
             .AddTypeParameterListParameters(TTypeParameterSyntax);
 
-    public static readonly MethodDeclarationSyntax GenericStaticResolveMethodSyntax =
-        TResolveMethodSyntax.AddModifiers(SyntaxKind.StaticKeyword.WithSpace());
+    public static MethodDeclarationSyntax CreateGenericStaticResolveMethodSyntax(SyntaxKind accessibilityToken) =>
+        CreateTResolveMethodSyntax(accessibilityToken).AddModifiers(SyntaxKind.StaticKeyword.WithSpace());
 
-    public static readonly MethodDeclarationSyntax GenericStaticResolveWithTagMethodSyntax =
-        GenericStaticResolveMethodSyntax.AddParameterListParameters(Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax));
+    public static MethodDeclarationSyntax CreateGenericStaticResolveWithTagMethodSyntax(SyntaxKind tokens) =>
+        CreateGenericStaticResolveMethodSyntax(tokens).AddParameterListParameters(Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax));
 
-    private static readonly MethodDeclarationSyntax ObjectResolveMethodSyntax =
+    private static MethodDeclarationSyntax CreateObjectResolveMethodSyntax(SyntaxKind accessibilityToken) =>
         MethodDeclaration(ObjectTypeSyntax, nameof(IContext.Resolve))
-            .AddModifiers(SyntaxKind.PublicKeyword.WithSpace())
+            .AddModifiers(accessibilityToken.WithSpace())
             .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(AggressiveInliningAttr))
             .AddParameterListParameters(Parameter(SyntaxFactory.Identifier("type")).WithType(TypeTypeSyntax));
 
-    public static readonly MethodDeclarationSyntax StaticResolveMethodSyntax =
-        ObjectResolveMethodSyntax.AddModifiers(SyntaxKind.StaticKeyword.WithSpace());
+    public static MethodDeclarationSyntax CreateStaticResolveMethodSyntax(SyntaxKind accessibilityToken) =>
+        CreateObjectResolveMethodSyntax(accessibilityToken).AddModifiers(SyntaxKind.StaticKeyword.WithSpace());
 
-    public static readonly MethodDeclarationSyntax StaticResolveWithTagMethodSyntax =
-        StaticResolveMethodSyntax.AddParameterListParameters(Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax));
+    public static MethodDeclarationSyntax CreateStaticResolveWithTagMethodSyntax(SyntaxKind accessibilityToken) =>
+        CreateStaticResolveMethodSyntax(accessibilityToken).AddParameterListParameters(Parameter(SyntaxFactory.Identifier("tag")).WithType(ObjectTypeSyntax));
     
 #pragma warning disable RS0027
     public static YieldStatementSyntax YieldStatement(SyntaxKind kind, ExpressionSyntax? expression = default)

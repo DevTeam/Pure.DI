@@ -6,9 +6,13 @@ using NS35EBD81B;
 internal class StaticWithTagResolveMethodBuilder : IResolveMethodBuilder
 {
     private readonly ISyntaxRegistry _syntaxRegistry;
+    private readonly ISettings _settings;
 
-    public StaticWithTagResolveMethodBuilder(ISyntaxRegistry syntaxRegistry) =>
+    public StaticWithTagResolveMethodBuilder(ISyntaxRegistry syntaxRegistry, ISettings settings)
+    {
         _syntaxRegistry = syntaxRegistry;
+        _settings = settings;
+    }
 
     public ResolveMethod Build()
     {
@@ -30,6 +34,6 @@ internal class StaticWithTagResolveMethodBuilder : IResolveMethodBuilder
             .AddStatements(_syntaxRegistry.FindMethod(nameof(ResolversByTagTable), nameof(ResolversByTagTable.Resolve)).Body!.Statements.ToArray());
 
         return new ResolveMethod(
-            SyntaxRepo.StaticResolveWithTagMethodSyntax.AddBodyStatements(methodBlock.Statements.ToArray()));
+            SyntaxRepo.CreateStaticResolveWithTagMethodSyntax(_settings.AccessibilityToken).AddBodyStatements(methodBlock.Statements.ToArray()));
     }
 }

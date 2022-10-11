@@ -24,6 +24,7 @@
   - [Complex generics](#complex-generics)
   - [Complex generics with constraints](#complex-generics-with-constraints)
   - [Depends On](#depends-on)
+  - [Methods Accessibility](#methods-accessibility)
   - [Default factory](#default-factory)
   - [Unbound instance resolving](#unbound-instance-resolving)
 - Lifetimes
@@ -808,6 +809,33 @@ var instance = MyDependentComposer.Resolve<IService>();
 ```
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+
+### Methods Accessibility
+
+It is possible can change an accessibility of level all resolving generated methods by special hint in the comment before the _Setup()_ method as in the following sample:
+
+``` CSharp
+public void Run()
+{
+    // Accessibility = private
+    DI.Setup()
+        .Bind<IDependency>().To<Dependency>()
+        .Bind<IService>().To<Service>();
+
+    var instance = MethodsAccessibilityDI.Service;
+    instance.ShouldBeOfType<Service>();
+}
+
+internal static partial class MethodsAccessibilityDI
+{
+    public static IService Service => ResolveIService();
+}
+```
+
+Accessibility levels:
+- public (by default)
+- internal
+- private
 
 ### Default factory
 

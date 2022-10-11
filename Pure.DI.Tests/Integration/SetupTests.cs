@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Tests.Integration;
+﻿// ReSharper disable StringLiteralTypo
+namespace Pure.DI.Tests.Integration;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -1928,5 +1929,46 @@ public class SetupTests
         {
             "Sample.Dependency"
         }, generatedCode);
+    }
+    
+    [Theory]
+    [InlineData("public")]
+    [InlineData("internaL")]
+    [InlineData("protected")]
+    [InlineData("Private")]
+    [InlineData("ProtectedAndInternal")]
+    [InlineData("ProtectedOrInternal")]
+    public void ShouldChangeAccessibility(string accessibility)
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        // Accessibility=accessibilityValue
+                        DI.Setup()
+                            .Bind<string>().To(_ => ""abc"")
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string value) => Value = value;        
+                }
+            }"
+            .Replace("accessibilityValue", accessibility)
+            // Then
+            .Run(out var generatedCode, new RunOptions {Statements = string.Empty});
     }
 }

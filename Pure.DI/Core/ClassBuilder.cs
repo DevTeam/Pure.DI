@@ -30,7 +30,8 @@ internal class ClassBuilder : IClassBuilder
         IEnumerable<IMembersBuilder> membersBuilder,
         IDiagnostic diagnostic,
         IBindingsProbe bindingsProbe,
-        IArgumentsSupport argumentsSupport)
+        IArgumentsSupport argumentsSupport,
+        ISettings settings)
     {
         _buildContext = buildContext;
         _memberNameService = memberNameService;
@@ -136,7 +137,7 @@ internal class ClassBuilder : IClassBuilder
                     .AddModifiers(SyntaxKind.SealedKeyword.WithSpace())
                     .AddBaseListTypes(SyntaxFactory.SimpleBaseType(iContextTypeSyntax))
                     .AddMembers(
-                        SyntaxRepo.TResolveMethodSyntax
+                        SyntaxRepo.CreateTResolveMethodSyntax(SyntaxKind.PublicKeyword)
                             .AddBodyStatements(
                                 SyntaxRepo.ReturnStatement()
                                     .WithExpression(
@@ -149,7 +150,7 @@ internal class ClassBuilder : IClassBuilder
                                                     .AddTypeArgumentListArguments(SyntaxRepo.TTypeSyntax)))
                                             .AddArgumentListArguments(_argumentsSupport.GetArguments().ToArray()))))
                     .AddMembers(
-                        SyntaxRepo.TResolveMethodSyntax
+                        SyntaxRepo.CreateTResolveMethodSyntax(SyntaxKind.PublicKeyword)
                             .AddParameterListParameters(SyntaxRepo.Parameter(SyntaxFactory.Identifier("tag")).WithType(SyntaxRepo.ObjectTypeSyntax))
                             .AddBodyStatements(
                                 SyntaxRepo.ReturnStatement()

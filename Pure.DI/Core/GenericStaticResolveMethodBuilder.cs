@@ -8,15 +8,18 @@ internal class GenericStaticResolveMethodBuilder : IResolveMethodBuilder
     private readonly IMemberNameService _memberNameService;
     private readonly IBuildContext _buildContext;
     private readonly ISyntaxRegistry _syntaxRegistry;
+    private readonly ISettings _settings;
 
     public GenericStaticResolveMethodBuilder(
         IMemberNameService memberNameService,
         IBuildContext buildContext,
-        ISyntaxRegistry syntaxRegistry)
+        ISyntaxRegistry syntaxRegistry,
+        ISettings settings)
     {
         _memberNameService = memberNameService;
         _buildContext = buildContext;
         _syntaxRegistry = syntaxRegistry;
+        _settings = settings;
     }
 
     public ResolveMethod Build()
@@ -54,7 +57,7 @@ internal class GenericStaticResolveMethodBuilder : IResolveMethodBuilder
             .AddArgumentListArguments();
 
         return new ResolveMethod(
-            SyntaxRepo.GenericStaticResolveMethodSyntax.AddBodyStatements(
+            SyntaxRepo.CreateGenericStaticResolveMethodSyntax(_settings.AccessibilityToken).AddBodyStatements(
                 SyntaxRepo.ReturnStatement(SyntaxFactory.CastExpression(SyntaxRepo.TTypeSyntax, resolve))));
     }
 }

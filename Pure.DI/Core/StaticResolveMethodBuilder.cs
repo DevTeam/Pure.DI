@@ -6,10 +6,16 @@ using NS35EBD81B;
 internal class StaticResolveMethodBuilder : IResolveMethodBuilder
 {
     private readonly ISyntaxRegistry _syntaxRegistry;
+    private readonly ISettings _settings;
 
-    public StaticResolveMethodBuilder(ISyntaxRegistry syntaxRegistry) =>
+    public StaticResolveMethodBuilder(
+        ISyntaxRegistry syntaxRegistry,
+        ISettings settings)
+    {
         _syntaxRegistry = syntaxRegistry;
+        _settings = settings;
+    }
 
     public ResolveMethod Build() =>
-        new(SyntaxRepo.StaticResolveMethodSyntax.AddBodyStatements(_syntaxRegistry.FindMethod(nameof(ResolversTable), nameof(ResolversTable.Resolve)).Body!.Statements.ToArray()));
+        new(SyntaxRepo.CreateStaticResolveMethodSyntax(_settings.AccessibilityToken).AddBodyStatements(_syntaxRegistry.FindMethod(nameof(ResolversTable), nameof(ResolversTable.Resolve)).Body!.Statements.ToArray()));
 }

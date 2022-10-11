@@ -12,6 +12,8 @@ internal class GenericResolversBuilder : IMembersBuilder
     private readonly IStaticResolverNameProvider _staticResolverNameProvider;
     private readonly IStatementsFinalizer[] _statementsFinalizers;
     private readonly IArgumentsSupport _argumentsSupport;
+    private readonly ISettings _settings;
+    private readonly IAccessibilityToSyntaxKindConverter _accessibilityToSyntaxKindConverter;
 
     public GenericResolversBuilder(
         ResolverMetadata metadata,
@@ -21,7 +23,9 @@ internal class GenericResolversBuilder : IMembersBuilder
         IStatementsFinalizer statementsFinalizer,
         IStaticResolverNameProvider staticResolverNameProvider,
         IStatementsFinalizer[] statementsFinalizers,
-        IArgumentsSupport argumentsSupport)
+        IArgumentsSupport argumentsSupport,
+        ISettings settings,
+        IAccessibilityToSyntaxKindConverter accessibilityToSyntaxKindConverter)
     {
         _metadata = metadata;
         _buildContext = buildContext;
@@ -31,6 +35,8 @@ internal class GenericResolversBuilder : IMembersBuilder
         _staticResolverNameProvider = staticResolverNameProvider;
         _statementsFinalizers = statementsFinalizers;
         _argumentsSupport = argumentsSupport;
+        _settings = settings;
+        _accessibilityToSyntaxKindConverter = accessibilityToSyntaxKindConverter;
     }
 
     public int Order => 2;
@@ -39,6 +45,12 @@ internal class GenericResolversBuilder : IMembersBuilder
         BuildMethods()
             .Select(method => method.WithBody(_statementsFinalizer.AddFinalizationStatements(method.Body)));
 
+    private SyntaxKind GetAccessibilitySyntaxKind(SemanticType dependency)
+    {
+        var minAccessibility = GetAccessibility(dependency.Type).Concat(new [] {_settings.Accessibility}).Min();
+        return _accessibilityToSyntaxKindConverter.Convert(minAccessibility);
+    }
+
     private IEnumerable<MethodDeclarationSyntax> BuildMethods()
     {
         var methods =
@@ -46,12 +58,9 @@ internal class GenericResolversBuilder : IMembersBuilder
             where binding.BindingType != BindingType.Probe
             from dependency in binding.Dependencies
             where !dependency.IsComposedGenericTypeMarker
-            let minAccessibility = GetAccessibility(dependency.Type).Min()
-            where minAccessibility >= Accessibility.Internal
-            let accessibility = minAccessibility == Accessibility.Public ? SyntaxKind.PublicKeyword : SyntaxKind.InternalKeyword
             let methodName = _staticResolverNameProvider.GetName(dependency)
             let method = SyntaxRepo.MethodDeclaration(dependency.TypeSyntax, methodName)
-                .AddModifiers(accessibility.WithSpace(), SyntaxKind.StaticKeyword.WithSpace())
+                .AddModifiers(GetAccessibilitySyntaxKind(dependency).WithSpace(), SyntaxKind.StaticKeyword.WithSpace())
                 .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
             let tags = binding.GetTags(dependency).ToArray()
             from tag in tags.DefaultIfEmpty(default)
@@ -135,7 +144,7 @@ internal class GenericResolversBuilder : IMembersBuilder
                 SyntaxFactory.Argument(tag ?? SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax)),
                 SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")));
     }
-
+    
     private static IEnumerable<Accessibility> GetAccessibility(ISymbol symbol)
     {
         yield return symbol.DeclaredAccessibility == Accessibility.NotApplicable ? Accessibility.Internal : symbol.DeclaredAccessibility;
