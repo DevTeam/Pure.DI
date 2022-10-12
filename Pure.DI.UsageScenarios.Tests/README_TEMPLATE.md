@@ -1131,21 +1131,30 @@ public void Run()
 {
     DI.Setup()
         // Registers the custom lifetime for all implementations with a class name ending by word "Singleton"
-        .Bind<IFactory>().As(Singleton).To<CustomSingletonLifetime>()
+        .Bind<IFactory>().Bind<ISingletonsContainer>().As(Singleton).To<CustomSingletonLifetime>()
         .Bind<IDependency>().To<DependencySingleton>()
         .Bind<IService>().To<Service>();
-    
-    var instance1 = CustomSingletonDI.Resolve<IService>();
-    var instance2 = CustomSingletonDI.Resolve<IService>();
 
-    // Check that dependencies are singletons
-    instance1.Dependency.ShouldBe(instance2.Dependency);
-    instance1.ShouldNotBe(instance2);
+    IService instance1;
+    using (CustomSingletonDI.Resolve<ISingletonsContainer>())
+    {
+        instance1 = CustomSingletonDI.Resolve<IService>();
+        var instance2 = CustomSingletonDI.Resolve<IService>();
+
+        // Check that dependencies are singletons
+        instance1.Dependency.ShouldBe(instance2.Dependency);
+        instance1.ShouldNotBe(instance2);
+    }
+
+    instance1.Dependency.ShouldBeOfType<DependencySingleton>();
+    ((DependencySingleton)instance1.Dependency).IsDisposed.ShouldBeTrue();
 }
+
+public interface ISingletonsContainer: IDisposable { }
 
 // A pattern of the class name ending by word "Singleton"
 [Include(".*Singleton$")]
-public class CustomSingletonLifetime: IFactory
+public class CustomSingletonLifetime: IFactory, ISingletonsContainer
 {
     // Stores singleton instances by key
     private readonly ConcurrentDictionary<Key, object> _instances = new();
@@ -1154,6 +1163,16 @@ public class CustomSingletonLifetime: IFactory
     public T Create<T>(Func<T> factory, Type implementationType, object tag) =>
         (T)_instances.GetOrAdd(new Key(implementationType, tag), _ => factory()!);
 
+    public void Dispose()
+    {
+        foreach (var disposable in _instances.Values.OfType<IDisposable>())
+        {
+            disposable.Dispose();
+        }
+        
+        _instances.Clear();
+    }
+
     // Represents an instance key
     [SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Local")]
     private record Key(Type Type, object? Tag);
@@ -1161,7 +1180,15 @@ public class CustomSingletonLifetime: IFactory
 
 public interface IDependency { }
 
-public class DependencySingleton : IDependency { }
+public class DependencySingleton : IDependency, IDisposable
+{
+    public bool IsDisposed { get; private set; }
+
+    public void Dispose()
+    {
+        IsDisposed = true;
+    }
+}
 
 public interface IService { IDependency Dependency { get; } }
 

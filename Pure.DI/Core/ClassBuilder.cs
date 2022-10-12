@@ -126,7 +126,7 @@ internal class ClassBuilder : IClassBuilder
                                 SyntaxFactory.Argument(
                                     SyntaxRepo.ObjectCreationExpression(registerDisposableEventTypeSyntax)
                                         .AddArgumentListArguments(
-                                            SyntaxFactory.Argument(SyntaxFactory.IdentifierName("disposable")),
+                                            SyntaxFactory.Argument(SyntaxFactory.CastExpression(SyntaxRepo.DisposableTypeSyntax, SyntaxFactory.IdentifierName("disposable"))),
                                             SyntaxFactory.Argument(SyntaxFactory.IdentifierName("lifetime")))))),
                     SyntaxRepo.ReturnStatement(SyntaxFactory.IdentifierName("disposable"))
                 ).WithNewLine().WithNewLine())

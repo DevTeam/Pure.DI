@@ -158,8 +158,7 @@ internal static class SyntaxRepo
                 Parameter(SyntaxFactory.Identifier("lifetime")).WithType(SyntaxFactory.ParseTypeName(typeof(Lifetime).FullName.ReplaceNamespace())))
             .AddModifiers(SyntaxKind.PrivateKeyword.WithSpace(), SyntaxKind.StaticKeyword.WithSpace())
             .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(AggressiveInliningAttr))
-            .AddTypeParameterListParameters(TTypeParameterSyntax)
-            .AddConstraintClauses(TypeParameterConstraintClause(SyntaxFactory.IdentifierName("T")).AddConstraints(SyntaxFactory.TypeConstraint(DisposableTypeSyntax)));
+            .AddTypeParameterListParameters(TTypeParameterSyntax);
 
     public static T WithCommentBefore<T>(this T node, params string[] comments) where T : SyntaxNode =>
         node.WithLeadingTrivia(node.GetLeadingTrivia().Concat(new []{SyntaxFactory.CarriageReturn, SyntaxFactory.LineFeed}).Concat(SplitLines(comments).Select(SyntaxFactory.Comment)).Concat(new []{SyntaxFactory.CarriageReturn, SyntaxFactory.LineFeed}));
