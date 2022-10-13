@@ -317,6 +317,10 @@ This sample demonstrates how to apply DI for a WPF application. The crucial clas
 
 ![Enum](http://teamcity.jetbrains.com/guestAuth/app/rest/builds/buildType:OpenSourceProjects_DevTeam_PureDi_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.Enum-report.jpg)
 
+### Microsoft IServiceCollection with graph of 20 transient instances and 1 singleton instance
+
+![ServiceCollection](http://teamcity.jetbrains.com/guestAuth/app/rest/builds/buildType:OpenSourceProjects_DevTeam_PureDi_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.ServiceCollection-report.jpg)
+
 _[BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) was used to measure and analyze these results._
 
 ### Global Options

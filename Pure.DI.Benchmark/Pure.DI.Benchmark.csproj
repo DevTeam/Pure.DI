@@ -21,6 +21,7 @@
         <PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.13.2" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
         <PackageReference Include="IoC.Container" Version="1.3.7" />
+        <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2" />
         <PackageReference Include="SimpleInjector" Version="5.4.0" />
         <PackageReference Include="Unity" Version="5.11.10" />
         <PackageReference Include="DryIoc.dll" Version="5.2.2" />

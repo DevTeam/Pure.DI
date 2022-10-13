@@ -102,6 +102,7 @@ internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
                     $"mvcBuilderType: {mvcBuilderType}", $"mvcServiceCollectionExtensionsType: {mvcServiceCollectionExtensionsType}", $"controllerFeatureType: {controllerFeatureType}", $"controllerActivatorType: {controllerActivatorType}", $"serviceBasedControllerActivatorType: {serviceBasedControllerActivatorType}", $"serviceCollectionDescriptorExtensionsType: {serviceCollectionDescriptorExtensionsType}"
                 });
 
+                var aspNetSupport = false;
                 if (mvcBuilderType != null
                     && mvcServiceCollectionExtensionsType != null
                     && controllerFeatureType != null
@@ -109,6 +110,7 @@ internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
                     && serviceBasedControllerActivatorType != null
                     && serviceCollectionDescriptorExtensionsType != null)
                 {
+                    aspNetSupport = true;
                     var mvcBuilder = new SemanticType(mvcBuilderType, semanticModel);
                     var mvcServiceCollectionExtensions = new SemanticType(mvcServiceCollectionExtensionsType, semanticModel);
                     var controllerFeature = new SemanticType(controllerFeatureType, semanticModel);
@@ -233,45 +235,52 @@ internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
                         continue;
                     }
 
-                    var serviceProviderInstance = new SemanticType(semanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance).FullName.ReplaceNamespace())!, semanticModel);
-                    var serviceProviderValue = SyntaxFactory.MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        serviceProviderInstance,
-                        SyntaxFactory.IdentifierName(nameof(ServiceProviderInstance.ServiceProvider)));
-
-                    var tryBlock = SyntaxFactory.Block()
-                        .AddStatements()
-                        .AddStatements(SyntaxRepo.ExpressionStatement(
-                            SyntaxFactory.AssignmentExpression(
-                                SyntaxKind.SimpleAssignmentExpression, serviceProviderValue, SyntaxFactory.IdentifierName("serviceProvider"))))
-                        .AddStatements(SyntaxRepo.ReturnStatement(objectExpression.Value));
-
-                    var finallyBlock = SyntaxFactory.Block()
-                        .AddStatements(SyntaxRepo.ExpressionStatement(
-                            SyntaxFactory.AssignmentExpression(
-                                SyntaxKind.SimpleAssignmentExpression, serviceProviderValue, SyntaxFactory.IdentifierName("prevServiceProvider"))));
-
-                    var lambdaBlock =
-                        SyntaxFactory.Block()
-                            .AddStatements(
-                                SyntaxFactory.LocalDeclarationStatement(
-                                    SyntaxFactory.VariableDeclaration(serviceProvider)
-                                        .AddVariables(
-                                            SyntaxFactory.VariableDeclarator("prevServiceProvider")
-                                                .WithSpace()
-                                                .WithInitializer(SyntaxFactory.EqualsValueClause(serviceProviderValue))
-                                        )
+                    SimpleLambdaExpressionSyntax resolveLambda;
+                    if (aspNetSupport)
+                    {
+                        var serviceProviderInstance = new SemanticType(semanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance).FullName.ReplaceNamespace())!, semanticModel);
+                        var serviceProviderValue = SyntaxFactory.MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            serviceProviderInstance,
+                            SyntaxFactory.IdentifierName(nameof(ServiceProviderInstance.ServiceProvider)));
+    
+                        var tryBlock = SyntaxFactory.Block()
+                            .AddStatements()
+                            .AddStatements(SyntaxRepo.ExpressionStatement(
+                                SyntaxFactory.AssignmentExpression(
+                                    SyntaxKind.SimpleAssignmentExpression, serviceProviderValue, SyntaxFactory.IdentifierName("serviceProvider"))))
+                            .AddStatements(SyntaxRepo.ReturnStatement(objectExpression.Value));
+    
+                        var finallyBlock = SyntaxFactory.Block()
+                            .AddStatements(SyntaxRepo.ExpressionStatement(
+                                SyntaxFactory.AssignmentExpression(
+                                    SyntaxKind.SimpleAssignmentExpression, serviceProviderValue, SyntaxFactory.IdentifierName("prevServiceProvider"))));
+    
+                        var lambdaBlock =
+                            SyntaxFactory.Block()
+                                .AddStatements(
+                                    SyntaxFactory.LocalDeclarationStatement(
+                                        SyntaxFactory.VariableDeclaration(serviceProvider)
+                                            .AddVariables(
+                                                SyntaxFactory.VariableDeclarator("prevServiceProvider")
+                                                    .WithSpace()
+                                                    .WithInitializer(SyntaxFactory.EqualsValueClause(serviceProviderValue))
+                                            )
+                                    )
                                 )
-                            )
-                            .AddStatements(
-                                SyntaxFactory.TryStatement(
-                                    tryBlock,
-                                    SyntaxFactory.List<CatchClauseSyntax>(),
-                                    SyntaxFactory.FinallyClause(finallyBlock)));
-
-                    lambdaBlock = _statementsFinalizer.AddFinalizationStatements(lambdaBlock)!;
-
-                    var resolveLambda = SyntaxFactory.SimpleLambdaExpression(SyntaxRepo.Parameter(SyntaxFactory.Identifier("serviceProvider")), lambdaBlock);
+                                .AddStatements(
+                                    SyntaxFactory.TryStatement(
+                                        tryBlock,
+                                        SyntaxFactory.List<CatchClauseSyntax>(),
+                                        SyntaxFactory.FinallyClause(finallyBlock)));
+    
+                        lambdaBlock = _statementsFinalizer.AddFinalizationStatements(lambdaBlock)!;
+                        resolveLambda = SyntaxFactory.SimpleLambdaExpression(SyntaxRepo.Parameter(SyntaxFactory.Identifier("serviceProvider")), lambdaBlock);
+                    }
+                    else
+                    {
+                        resolveLambda = SyntaxFactory.SimpleLambdaExpression(SyntaxRepo.Parameter(SyntaxFactory.Identifier("_")), objectExpression.Value);   
+                    }
 
                     var bind =
                         SyntaxFactory.InvocationExpression(

@@ -17,7 +17,8 @@ class Benchmark
         "Transient",
         "Func",
         "Array",
-        "Enum"
+        "Enum",
+        "ServiceCollection"
     };
 
     public Benchmark(

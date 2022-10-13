@@ -14,7 +14,7 @@ public class Program
             var benchmarkType = (
                 from type in typeof(Program).Assembly.GetTypes()
                 where type.Name.ToLowerInvariant() == name
-                where typeof(BenchmarkBase).IsAssignableFrom(type)
+                where typeof(IBenchmark).IsAssignableFrom(type)
                 select type).FirstOrDefault();
 
             if (benchmarkType == null)
