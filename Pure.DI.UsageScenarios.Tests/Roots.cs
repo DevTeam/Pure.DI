@@ -15,7 +15,11 @@ namespace Pure.DI.UsageScenarios.Tests
             // $tag=1 Basics
             // $priority=02
             // $description=Roots
-            // $header=To specify composition roots explicitly use the `Root<T>()` call.
+            // $header=Specifying of root explicitly is needed when we would like to use it as a composition root for the following cases:
+            // $header=- the type could not be fully defined in the compile time, for instance, it was not used as a some dependency
+            // $header=- when we would like to use some enumeration, array or other collection as a composition root
+            // $header=- it is generic type and is is opened (so it uses generic parameter markers)
+            // $header=To specify a composition root explicitly use the `Root<T>()` call as in the sample above: 
             // $footer=This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
             // {
             DI.Setup()

@@ -51,7 +51,7 @@ Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates
 
 ## Contents
 
-- [How it works](#schrödingers-cat-shows-how-it-works)
+- [How it works](#schrödingers-cat-shows-how-it-works-)
 - [API](#simple-and-powerful-api)
 - [Requirements](#development-environment-requirements)
 - [Supported frameworks](#supported-frameworks)
@@ -64,7 +64,7 @@ Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates
 - [Other resources](#other-resources)
 - [Usage scenarios](#usage-scenarios)
 
-## [Schrödinger's cat](Samples/ShroedingersCat) shows how it works
+## Schrödinger's cat shows how it works [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Samples/ShroedingersCat)
 
 ### The reality is that
 
@@ -220,16 +220,6 @@ DI.Setup("MyComposer")
   // Determines tags for the specific dependency type of binding:
   .Bind<IMyInterface>("MyImpl", 99).To<MyImplementation>()
   
-  // Determines the resolution argument:
-  .Arg<string>()
-  // .. with tags:
-  .Arg<int>("indexVal", 2)
-  
-  // Specifies to provide a composition root:
-  .Root<string>()
-  // .. with tags:
-  .Root<int>("my tag")
-
   // Determines a binding implementation using a factory method,
   // it allows to create instance manually and to invoke required methods,
   // to initialize properties and etc.: 
@@ -241,6 +231,16 @@ DI.Setup("MyComposer")
 
   // Overrides a default lifetime (Transient by default):
   .Default(Lifetime.Singleton)
+  
+  // Determines resolution arguments that will be added to all resolving methods:
+  .Arg<string>()
+  // .. with tags:
+  .Arg<int>("indexVal", 2)
+  
+  // To specify a composition root explicitly:
+  .Root<string>()
+  // .. with tags:
+  .Root<int>("my tag")
 
   // Determines a custom attribute overriding an injection type:
   .TypeAttribute<MyTypeAttribute>()
@@ -317,7 +317,7 @@ This sample demonstrates how to apply DI for a WPF application. The crucial clas
 
 ![Enum](http://teamcity.jetbrains.com/guestAuth/app/rest/builds/buildType:OpenSourceProjects_DevTeam_PureDi_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.Enum-report.jpg)
 
-### Microsoft IServiceCollection with graph of 20 transient instances and 1 singleton instance
+### Microsoft IServiceCollection with graph of 20 transient instances and 1 singleton instance [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.Benchmark/Benchmarks/ServiceCollection.cs)
 
 ![ServiceCollection](http://teamcity.jetbrains.com/guestAuth/app/rest/builds/buildType:OpenSourceProjects_DevTeam_PureDi_BenchmarkBuildType,pinned:true,status:SUCCESS/artifacts/content/Pure.DI.Benchmark.Benchmarks.ServiceCollection-report.jpg)
 

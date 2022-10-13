@@ -19,6 +19,8 @@
         int? offset = null;
         foreach(var line in File.ReadAllLines(file))
         {
+            var source = file.Replace(System.IO.Path.GetFullPath(solutionPath), "").Replace("\\", "/");
+            source = source.Substring(1, source.Length - 1);
             if (vars.Count == 0)
             {
                 vars["visible"] = "false";
@@ -28,6 +30,7 @@
                 vars["header"] = string.Empty;
                 vars["footer"] = string.Empty;
                 vars["file"] = file;
+                vars["source"] = source;
                 infos.Add(vars);
             }
 
@@ -118,6 +121,8 @@
     foreach(var info in infos.OrderBy(i => i["tag"] + i["priority"]).Where(info => info["visible"] == "true"))
     {
 #>### <#=info["description"]#>
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](<#=info["source"]#>)
 
 <#=info["header"]#>
 

@@ -56,6 +56,8 @@
 
 ### Composition Root
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/CompositionRoot.cs)
+
 This sample demonstrates the most efficient way of getting a composition root object, free from any impact on memory consumption and performance.
 
 ``` CSharp
@@ -79,7 +81,10 @@ new Service(new Dependency())
 
 ### Resolution arguments
 
-Arguments are not available with delayed resolution (in cases like Func outside constructors, IServiceCollection, etc.), they can only be used in the static composition object graph.
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/Arguments.cs)
+
+The sample below demonstrates how to specify resolution arguments that will be added to all resolving methods.
+:warning: It is important to know that these arguments are not available with delayed resolution (in cases like Func outside constructors, IServiceCollection, etc.), they can only be used in the static composition object graph.
 
 ``` CSharp
 public void Run()
@@ -128,6 +133,8 @@ public class SomeService: IService
 
 ### Constants
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/Constants.cs)
+
 It's obvious here.
 
 ``` CSharp
@@ -150,6 +157,8 @@ var val = 10;
 ```
 
 ### Generics
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/Generics.cs)
 
 Auto-wring of generic types via binding of open generic types or generic type markers are working the same way.
 
@@ -176,6 +185,8 @@ new Consumer(new Service<int>(Dependency()));
 
 ### Manual binding
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/ManualBinding.cs)
+
 We can specify a constructor manually with all its arguments and even call some methods before an instance will be returned to consumers. Would also like to point out that invocations like *__ctx.Resolve<>()__* will be replaced by a related expression to create a required composition for the performance boost where possible, except when it might cause a circular dependency.
 
 ``` CSharp
@@ -198,6 +209,8 @@ new Service(new Dependency()), "some state");
 ... and no any additional method calls. This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Service collection
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/ServiceCollections.cs)
 
 In the cases when a project references the Microsoft Dependency Injection library, an extension method for ```IServiceCollection``` is generating automatically with a name like _Add..._ plus the name of a generated class, here it is ```AddMyComposer()``` for class ```public class MyComposer { }```.
 
@@ -243,6 +256,8 @@ public class ServiceConsumer
 
 ### Tags
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/Tags.cs)
+
 Tags are useful while binding to several implementations of the same abstract types.
 
 ``` CSharp
@@ -285,6 +300,8 @@ internal class Consumer
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Aspect-oriented DI
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/AspectOriented.cs)
 
 
 
@@ -346,7 +363,13 @@ public class Clock : IClock
 
 ### Roots
 
-To specify composition roots explicitly use the `Root<T>()` call.
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/Roots.cs)
+
+Specifying of root explicitly is needed when we would like to use it as a composition root for the following cases:
+- the type could not be fully defined in the compile time, for instance, it was not used as a some dependency
+- when we would like to use some enumeration, array or other collection as a composition root
+- it is generic type and is is opened (so it uses generic parameter markers)
+To specify a composition root explicitly use the `Root<T>()` call as in the sample above:
 
 ``` CSharp
 DI.Setup()
@@ -375,6 +398,8 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Service provider
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/ServiceProvider.cs)
+
 It is easy to get an instance of the _IServiceProvider_ type at any time without any additional effort.
 
 ``` CSharp
@@ -393,6 +418,8 @@ var instance = serviceProvider.GetService(typeof(IService));
 
 ### Several contracts
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/SeveralContracts.cs)
+
 It is possible to bind several types to a single implementation.
 
 ``` CSharp
@@ -408,6 +435,8 @@ var instance2 = SeveralContractsDI.Resolve<IAnotherService>();
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Aspect-oriented DI with custom attributes
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/AspectOrientedWithCustomAttributes.cs)
 
 There is already a set of predefined attributes to support aspect-oriented autowiring such as _TypeAttribute_. But in addition, you can use your own attributes, see the sample below.
 
@@ -514,6 +543,8 @@ public class Clock : IClock
 
 ### Instance initialization
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/InstanceInitialization.cs)
+
 Sometimes instances required some actions before you give them to use - some methods of initialization or fields which should be defined. You can solve these things easily. :warning: But this approach is not recommended because it is a cause of hidden dependencies.
 
 ``` CSharp
@@ -542,6 +573,8 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Records
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/Records.cs)
+
 
 
 ``` CSharp
@@ -561,6 +594,8 @@ public record RecordService(IDependency Dependency, string State = "") : IServic
 
 
 ### Record structs
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/RecordStructs.cs)
 
 
 
@@ -582,6 +617,8 @@ public readonly record struct RecordStructService(IDependency Dependency, string
 
 ### Dependency tag
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/DependencyTag.cs)
+
 Use a _tag_ to bind several dependencies for the same types.
 
 ``` CSharp
@@ -597,6 +634,8 @@ var instance = DependencyTagDI.Resolve<IService>();
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Injection of default parameters
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/DefaultParamsInjection.cs)
 
 
 
@@ -634,6 +673,8 @@ public class SomeService: IService
 
 ### Injection of nullable parameters
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/NullableParamsInjection.cs)
+
 
 
 ``` CSharp
@@ -670,6 +711,8 @@ public class SomeService: IService
 
 ### Init property
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/InitProperty.cs)
+
 
 
 ``` CSharp
@@ -693,6 +736,8 @@ public class MyService: IService
 
 
 ### Complex generics
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/ComplexGenerics.cs)
 
 Autowiring generic types is as easy as autowiring other simple types. Just use generic parameter markers like _TT_, _TT1_, _TT2_ etc or TTI, TTI1, TTI2... for interfaces or _TTS_, _TTS1_, _TTS2_... for value types or other special markers like _TTDisposable_ , _TTDisposable1_ , etc. _TTList <>_, _TTDictionary<>_ ... or create your own generic markers like _TTMy_ in the example below. Your own generic markers must meet 2 conditions: the type name must start with _TT_ and the type must have the _[GenericTypeArgument]_ attribute.
 
@@ -749,6 +794,8 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Complex generics with constraints
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/ComplexGenericsWithConstraints.cs)
+
 
 
 ``` CSharp
@@ -788,6 +835,8 @@ var instance = ComplexGenericsWithConstraintsDI.Resolve<Program>();
 
 ### Depends On
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/DependsOn.cs)
+
 Sometimes it becomes necessary to reuse a set of bindings in several composers. To do this, you can use the `DependsOn` function passing the name of the composer, where to get the set for reuse. It is important to note that this method works for composers within the same project.
 
 ``` CSharp
@@ -811,6 +860,8 @@ var instance = MyDependentComposer.Resolve<IService>();
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Methods Accessibility
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/MethodsAccessibility.cs)
 
 It is possible can change an accessibility of level all resolving generated methods by special hint in the comment before the _Setup()_ method as in the following sample:
 
@@ -838,6 +889,8 @@ Accessibility levels:
 - private
 
 ### Default factory
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/DefaultFactory.cs)
 
 Sometimes it is necessary to add custom dependency resolution logic for types that do not have any bindings defined. In this case, you can only use factory binding for the generic type marker and implement your own dependency resolution logic, as in the example below:
 
@@ -899,6 +952,8 @@ public record Consumer(int Value, string Text, IDisposable Disposable);
 
 ### Unbound instance resolving
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/UnboundInstanceResolving.cs)
+
 Autowiring automatically injects dependencies based on implementations even if it does not have an appropriate binding. :warning: This approach is not recommended. When you follow the dependency inversion principle you want to make sure that you do not depend on anything concrete.
 
 ``` CSharp
@@ -923,6 +978,8 @@ public class Service : IService
 
 
 ### Default lifetime
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/DefaultLifetime.cs)
 
 
 
@@ -972,6 +1029,8 @@ public class Service : IService
 
 
 ### Per resolve lifetime
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/PerResolveLifetime.cs)
 
 
 
@@ -1026,6 +1085,8 @@ public class Service : IService
 
 
 ### Singleton lifetime
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/SingletonLifetime.cs)
 
 [Singleton](https://en.wikipedia.org/wiki/Singleton_pattern) is a design pattern that supposes for having only one instance of some class during the whole application lifetime. The main complaint about Singleton is that it contradicts the Dependency Injection principle and thus hinders testability. It essentially acts as a global constant, and it is hard to substitute it with a test when needed. The _Singleton lifetime_ is indispensable in this case.
 
@@ -1091,6 +1152,8 @@ public class Service : IService
 
 ### Transient lifetime
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/TransientLifetime.cs)
+
 
 
 ``` CSharp
@@ -1151,6 +1214,8 @@ public class Service : IService
 
 
 ### Custom singleton lifetime
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/CustomSingleton.cs)
 
 *__IFactory__* is a powerful tool that allows controlling most the aspects while resolving dependencies.
 
@@ -1232,6 +1297,8 @@ public class Service : IService
 
 ### Arrays
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/Arrays.cs)
+
 To resolve all possible instances of any tags of the specific type as an _array_ just use the injection of _T[]_.
 
 ``` CSharp
@@ -1253,6 +1320,8 @@ var array = ArraysDI.Resolve<IService[]>();
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Collections
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/Collections.cs)
 
 To resolve all possible instances of any tags of the specific type as a _collection_ just use the injection _ICollection<T>_
 
@@ -1279,6 +1348,8 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Enumerables
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/Enumerables.cs)
+
 To resolve all possible instances of any tags of the specific type as an _enumerable_ just use the injection _IEnumerable<T>_.
 
 ``` CSharp
@@ -1304,6 +1375,8 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Func
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/Func.cs)
+
 _Func<>_ with the required type specified helps when a logic needs to inject some type of instances on-demand. Also, it is possible to solve circular dependency issues, but it is not the best way - better to reconsider the dependencies between classes.
 
 ``` CSharp
@@ -1325,6 +1398,8 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Lazy
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/Lazy.cs)
+
 _Lazy_ dependency helps when a logic needs to inject _Lazy<T>_ to get instance once on-demand.
 
 ``` CSharp
@@ -1345,6 +1420,8 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Lazy with metadata
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/LazyWithMetadata.cs)
+
 _Lazy_ dependency helps when a logic needs to inject _Lazy<T, TMetadata>_ to get instance once on-demand and the metadata associated with the referenced object.
 
 ``` CSharp
@@ -1364,6 +1441,8 @@ var instance = lazy.Value;
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Sets
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/Sets.cs)
 
 To resolve all possible instances of any tags of the specific type as a _ISet<>_ just use the injection _ISet<T>_.
 
@@ -1390,6 +1469,8 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Thread Local
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/ThreadLocal.cs)
+
 
 
 ``` CSharp
@@ -1410,6 +1491,8 @@ This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Model
 
 ### Tuples
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/Tuples.cs)
+
 [Tuple](https://docs.microsoft.com/en-us/dotnet/api/system.tuple) has a set of elements that should be resolved at the same time.
 
 ``` CSharp
@@ -1426,6 +1509,8 @@ var (service, namedService) = TuplesDI.Resolve<(IService service, INamedService 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
 ### Multi statement func
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/MultiStatementFunc.cs)
 
 
 
@@ -1470,6 +1555,8 @@ public class Consumer
 
 ### Array binding override
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/ArrayBindingOverride.cs)
+
 
 
 ``` CSharp
@@ -1490,6 +1577,8 @@ var array = ArrayBindingOverrideDI.Resolve<IService[]>();
 
 
 ### Decorator
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/Decorator.cs)
 
 
 
@@ -1524,6 +1613,8 @@ public class DecoratorService : IService
 
 
 ### Intercept specific types
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/Intercept.cs)
 
 
 
@@ -1591,6 +1682,8 @@ public class Service : IService
 
 
 ### Intercept advanced
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/InterceptAdvanced.cs)
 
 This approach represents a fastest way of working with interceptors.
 
@@ -1670,6 +1763,8 @@ public class Service : IService
 
 ### Intercept a set of types
 
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/InterceptMany.cs)
+
 
 
 ``` CSharp
@@ -1731,6 +1826,8 @@ public class Service : IService
 
 
 ### ASPNET
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/AspNetMvc.cs)
 
 
 
@@ -1807,6 +1904,8 @@ public class Startup
 
 
 ### OS specific implementations
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/OSSpecificImplementations.cs)
 
 
 
