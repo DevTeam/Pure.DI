@@ -8,13 +8,13 @@ namespace Pure.DI.UsageScenarios.Tests
 {
     using Xunit;
     
-    public class UnboundInstanceResolving
+    public class UnboundInstancesResolving
     {
         [Fact]
         // $visible=true
         // $tag=1 Basics
         // $priority=99
-        // $description=Unbound instance resolving
+        // $description=Unbound instances resolving
         // $header=Autowiring automatically injects dependencies based on implementations even if it does not have an appropriate binding. :warning: This approach is not recommended. When you follow the dependency inversion principle you want to make sure that you do not depend on anything concrete.
         // {
         public void Run()
@@ -22,7 +22,7 @@ namespace Pure.DI.UsageScenarios.Tests
             DI.Setup()
                 .Bind<IService>().To<Service>();
             
-            var instance = UnboundInstanceResolvingDI.Resolve<IService>();
+            var instance = UnboundInstancesResolvingDI.Resolve<IService>();
         }
 
         public class Dependency { }

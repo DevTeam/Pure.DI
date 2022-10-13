@@ -24,9 +24,10 @@
   - [Complex generics](#complex-generics)
   - [Complex generics with constraints](#complex-generics-with-constraints)
   - [Depends On](#depends-on)
+  - [Unbound instances resolving with root specified](#unbound-instances-resolving-with-root-specified)
   - [Methods Accessibility](#methods-accessibility)
   - [Default factory](#default-factory)
-  - [Unbound instance resolving](#unbound-instance-resolving)
+  - [Unbound instances resolving](#unbound-instances-resolving)
 - Lifetimes
   - [Default lifetime](#default-lifetime)
   - [Per resolve lifetime](#per-resolve-lifetime)
@@ -859,6 +860,31 @@ var instance = MyDependentComposer.Resolve<IService>();
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
 
+### Unbound instances resolving with root specified
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/UnboundInstancesResolvingWithRoot.cs)
+
+
+
+``` CSharp
+public void Run()
+{
+    DI.Setup()
+        .Root<Service>();
+
+    var instance = UnboundInstancesResolvingWithRootDI.Resolve<Service>();
+}
+
+public class Dependency { }
+
+public class Service
+{
+    public Service(Dependency dependency) { }
+}
+```
+
+
+
 ### Methods Accessibility
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/MethodsAccessibility.cs)
@@ -950,9 +976,9 @@ public record Consumer(int Value, string Text, IDisposable Disposable);
 
 
 
-### Unbound instance resolving
+### Unbound instances resolving
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/UnboundInstanceResolving.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/UnboundInstancesResolving.cs)
 
 Autowiring automatically injects dependencies based on implementations even if it does not have an appropriate binding. :warning: This approach is not recommended. When you follow the dependency inversion principle you want to make sure that you do not depend on anything concrete.
 
@@ -962,7 +988,7 @@ public void Run()
     DI.Setup()
         .Bind<IService>().To<Service>();
     
-    var instance = UnboundInstanceResolvingDI.Resolve<IService>();
+    var instance = UnboundInstancesResolvingDI.Resolve<IService>();
 }
 
 public class Dependency { }
