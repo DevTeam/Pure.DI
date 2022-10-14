@@ -15,9 +15,9 @@ using Model;
 public class ServiceCollection
 {
     private IServiceProvider _microsoftServiceProvider;
-    private IServiceProvider _microsoftServiceProviderCrafted;
-    private IServiceProvider _pureDIWithoutServiceCollectionServiceProvider;
-    private IServiceProvider _pureDIServiceProvider;
+    private IServiceProvider _crafted;
+    private IServiceProvider _pureDIWithServiceCollection;
+    private IServiceProvider _pureDI;
 
     [GlobalSetup]
     public void Setup()
@@ -29,7 +29,7 @@ public class ServiceCollection
             .AddTransient<IService3, Service3>()
             .BuildServiceProvider();
         
-        _microsoftServiceProviderCrafted = new Microsoft.Extensions.DependencyInjection.ServiceCollection()
+        _crafted = new Microsoft.Extensions.DependencyInjection.ServiceCollection()
             .AddTransient<ICompositionRoot>(_ => 
                 new CompositionRoot(
                     Service1Singleton.Shared,
@@ -54,29 +54,29 @@ public class ServiceCollection
                     new Service3()))
             .BuildServiceProvider();
 
-        _pureDIWithoutServiceCollectionServiceProvider = new Microsoft.Extensions.DependencyInjection.ServiceCollection()
+        _pureDIWithServiceCollection = new Microsoft.Extensions.DependencyInjection.ServiceCollection()
             .AddServiceCollectionDI()
             .BuildServiceProvider();
         
-        _pureDIServiceProvider = ServiceCollectionDI.Resolve<IServiceProvider>();
+        _pureDI = ServiceCollectionDI.Resolve<IServiceProvider>();
 
         Ioc.Default.ConfigureServices(_microsoftServiceProvider);
     }
     
-    [Benchmark(Baseline = true, Description = "Service Provider")]
+    [Benchmark(Baseline = true, Description = "MS Service Provider")]
     public ICompositionRoot ServiceProvider() => _microsoftServiceProvider.GetRequiredService<ICompositionRoot>();
     
-    [Benchmark(Description = "Crafted Service Provider")]
-    public ICompositionRoot CraftedServiceProvider() => _microsoftServiceProviderCrafted.GetRequiredService<ICompositionRoot>();
+    [Benchmark(Description = "Crafted")]
+    public ICompositionRoot CraftedServiceProvider() => _crafted.GetRequiredService<ICompositionRoot>();
     
-    [Benchmark(Description = "Service Provider with Community Toolkit")]
+    [Benchmark(Description = "Community Toolkit")]
     public ICompositionRoot CommunityToolkit() => Ioc.Default.GetRequiredService<ICompositionRoot>();
 
-    [Benchmark(Description = "Service Provider with Pure.DI")]
-    public ICompositionRoot PureDI() => _pureDIServiceProvider.GetRequiredService<ICompositionRoot>();
+    [Benchmark(Description = "Pure.DI")]
+    public ICompositionRoot PureDI() => _pureDI.GetRequiredService<ICompositionRoot>();
     
-    [Benchmark(Description = "Service Provider without ServiceCollection in Pure.DI")]
-    public ICompositionRoot PureDIWithoutServiceCollection() => _pureDIWithoutServiceCollectionServiceProvider.GetRequiredService<ICompositionRoot>();
+    [Benchmark(Description = "Pure.DI with ServiceCollection")]
+    public ICompositionRoot PureDIWithServiceCollection() => _pureDIWithServiceCollection.GetRequiredService<ICompositionRoot>();
 
     private static void SetupDI() => DI.Setup("ServiceCollectionDI")
         .Bind<ICompositionRoot>().To<CompositionRoot>()
