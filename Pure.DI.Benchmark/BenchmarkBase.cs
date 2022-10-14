@@ -14,7 +14,7 @@ using Container = IoC.Container;
 using ICompositionRoot = Model.ICompositionRoot;
 using IContainer = Autofac.IContainer;
 
-public abstract class BenchmarkBase: IBenchmark
+public abstract class BenchmarkBase
 {
     private Container _iocContainer;
     private Func<ICompositionRoot> _iocRootResolver;

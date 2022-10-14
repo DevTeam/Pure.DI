@@ -12,7 +12,7 @@ using Microsoft.Toolkit.Mvvm.DependencyInjection;
 using Model;
 
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
-public class ServiceCollection: IBenchmark
+public class ServiceCollection
 {
     private IServiceProvider _microsoftServiceProvider;
     private IServiceProvider _microsoftServiceProviderCrafted;
@@ -64,19 +64,19 @@ public class ServiceCollection: IBenchmark
     }
     
     [Benchmark(Baseline = true, Description = "Service Provider")]
-    public ICompositionRoot ServiceProviderResolve() => _microsoftServiceProvider.GetRequiredService<ICompositionRoot>();
+    public ICompositionRoot ServiceProvider() => _microsoftServiceProvider.GetRequiredService<ICompositionRoot>();
     
     [Benchmark(Description = "Crafted Service Provider")]
-    public ICompositionRoot CraftedServiceProviderResolve() => _microsoftServiceProviderCrafted.GetRequiredService<ICompositionRoot>();
+    public ICompositionRoot CraftedServiceProvider() => _microsoftServiceProviderCrafted.GetRequiredService<ICompositionRoot>();
     
     [Benchmark(Description = "Service Provider with Community Toolkit")]
-    public ICompositionRoot CommunityToolkitResolve() => Ioc.Default.GetRequiredService<ICompositionRoot>();
+    public ICompositionRoot CommunityToolkit() => Ioc.Default.GetRequiredService<ICompositionRoot>();
 
     [Benchmark(Description = "Service Provider with Pure.DI")]
-    public ICompositionRoot PureDIResolve() => _pureDIServiceProvider.GetRequiredService<ICompositionRoot>();
+    public ICompositionRoot PureDI() => _pureDIServiceProvider.GetRequiredService<ICompositionRoot>();
     
     [Benchmark(Description = "Service Provider without ServiceCollection in Pure.DI")]
-    public ICompositionRoot PureDIWithoutServiceCollectionResolve() => _pureDIWithoutServiceCollectionServiceProvider.GetRequiredService<ICompositionRoot>();
+    public ICompositionRoot PureDIWithoutServiceCollection() => _pureDIWithoutServiceCollectionServiceProvider.GetRequiredService<ICompositionRoot>();
 
     private static void SetupDI() => DI.Setup("ServiceCollectionDI")
         .Bind<ICompositionRoot>().To<CompositionRoot>()
