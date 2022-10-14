@@ -19,6 +19,10 @@ internal enum Tags
     Factory,
     FactoryMethod,
     GenericResolvers,
+    SharedContext,
+    EventField,
+    Dispose,
+    ContextClass,
     ContainerScope,
     GlobalScope,
     MetadataSyntax

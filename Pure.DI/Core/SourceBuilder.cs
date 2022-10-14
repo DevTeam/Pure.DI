@@ -15,6 +15,8 @@ internal class SourceBuilder : ISourceBuilder
     private readonly IDiagnostic _diagnostic;
     private readonly ILog<SourceBuilder> _log;
     private readonly Func<IClassBuilder> _resolverBuilderFactory;
+    private readonly IMetadataFactory _metadataFactory;
+    private readonly IApiGuard _apiGuard;
 
     public SourceBuilder(
         ILog<SourceBuilder> log,
@@ -23,7 +25,9 @@ internal class SourceBuilder : ISourceBuilder
         ISettings settings,
         IFileSystem fileSystem,
         IDiagnostic diagnostic,
-        Func<IClassBuilder> resolverBuilderFactory)
+        Func<IClassBuilder> resolverBuilderFactory,
+        IMetadataFactory metadataFactory,
+        IApiGuard apiGuard)
     {
         _context = context;
         _metadataBuilder = metadataBuilder;
@@ -32,11 +36,13 @@ internal class SourceBuilder : ISourceBuilder
         _diagnostic = diagnostic;
         _log = log;
         _resolverBuilderFactory = resolverBuilderFactory;
+        _metadataFactory = metadataFactory;
+        _apiGuard = apiGuard;
     }
 
     public void Build(IExecutionContext executionContext)
     {
-        var isApiAvailable = IsApiAvailable(executionContext.Compilation);
+        var isApiAvailable = _apiGuard.IsAvailable(executionContext.Compilation);
         Defaults.DefaultNamespace = 
             executionContext.TryGetOption("build_property.PureDINamespace", out var newNamespace)
                 ? newNamespace
@@ -83,7 +89,7 @@ internal class SourceBuilder : ISourceBuilder
             {
                 stopwatch.Start();
                 var semanticModel = context.Compilation.GetSemanticModel(rawMetadata.SetupNode.SyntaxTree);
-                var metadata = CreateMetadata(rawMetadata, allMetadata);
+                var metadata = _metadataFactory.Create(rawMetadata, allMetadata);
                 _context.Initialize(curId++, context.Compilation, context.CancellationToken, metadata);
                 if (_settings.Debug)
                 {
@@ -164,60 +170,5 @@ internal class SourceBuilder : ISourceBuilder
             {
             }
         }
-    }
-
-    private static ResolverMetadata CreateMetadata(ResolverMetadata metadata, IReadOnlyCollection<ResolverMetadata> allMetadata)
-    {
-        var newMetadata = new ResolverMetadata(metadata.SetupNode, metadata.ComposerTypeName, metadata.Owner);
-        var dependencies = GetDependencies(metadata, new HashSet<ResolverMetadata>(), allMetadata);
-        foreach (var dependency in dependencies)
-        {
-            newMetadata.Merge(dependency);
-        }
-
-        newMetadata.Merge(metadata);
-        return newMetadata;
-    }
-
-    private static IEnumerable<ResolverMetadata> GetDependencies(ResolverMetadata metadata, ISet<ResolverMetadata> processed, IReadOnlyCollection<ResolverMetadata> allMetadata)
-    {
-        var dependencies =
-            from dependencyName in metadata.DependsOn
-            from dependency in allMetadata
-            where dependencyName.Equals(dependency.ComposerTypeName, StringComparison.InvariantCultureIgnoreCase)
-            select dependency;
-
-        foreach (var dependency in dependencies)
-        {
-            if (!processed.Add(dependency))
-            {
-                continue;
-            }
-
-            yield return dependency;
-
-            foreach (var nested in GetDependencies(dependency, processed, allMetadata))
-            {
-                yield return nested;
-            }
-        }
-    }
-    
-    private static bool IsApiAvailable(Compilation compilation)
-    {
-        var diType = compilation.GetTypesByMetadataName(typeof(DI).FullName.ReplaceNamespace()).FirstOrDefault();
-        if (diType == null)
-        {
-            return false;
-        }
-
-        var type = (
-            from tree in compilation.SyntaxTrees
-            let semanticModel = compilation.GetSemanticModel(tree)
-            from typeDeclaration in tree.GetRoot().DescendantNodes().OfType<TypeDeclarationSyntax>()
-            let symbol = ModelExtensions.GetDeclaredSymbol(semanticModel, typeDeclaration)
-            select symbol).FirstOrDefault();
-
-        return type != null && compilation.IsSymbolAccessibleWithin(diType, type);
     }
 }

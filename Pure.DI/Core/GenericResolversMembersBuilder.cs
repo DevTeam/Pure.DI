@@ -2,7 +2,7 @@
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 namespace Pure.DI.Core;
 
-internal class GenericResolversBuilder : IMembersBuilder
+internal class GenericResolversMembersBuilder : IMembersBuilder
 {
     private readonly ResolverMetadata _metadata;
     private readonly IBuildContext _buildContext;
@@ -12,10 +12,9 @@ internal class GenericResolversBuilder : IMembersBuilder
     private readonly IStaticResolverNameProvider _staticResolverNameProvider;
     private readonly IStatementsFinalizer[] _statementsFinalizers;
     private readonly IArgumentsSupport _argumentsSupport;
-    private readonly ISettings _settings;
-    private readonly IAccessibilityToSyntaxKindConverter _accessibilityToSyntaxKindConverter;
+    private readonly IDependencyAccessibility _dependencyAccessibility;
 
-    public GenericResolversBuilder(
+    public GenericResolversMembersBuilder(
         ResolverMetadata metadata,
         IBuildContext buildContext,
         ITypeResolver typeResolver,
@@ -24,8 +23,7 @@ internal class GenericResolversBuilder : IMembersBuilder
         IStaticResolverNameProvider staticResolverNameProvider,
         IStatementsFinalizer[] statementsFinalizers,
         IArgumentsSupport argumentsSupport,
-        ISettings settings,
-        IAccessibilityToSyntaxKindConverter accessibilityToSyntaxKindConverter)
+        IDependencyAccessibility dependencyAccessibility)
     {
         _metadata = metadata;
         _buildContext = buildContext;
@@ -35,8 +33,7 @@ internal class GenericResolversBuilder : IMembersBuilder
         _staticResolverNameProvider = staticResolverNameProvider;
         _statementsFinalizers = statementsFinalizers;
         _argumentsSupport = argumentsSupport;
-        _settings = settings;
-        _accessibilityToSyntaxKindConverter = accessibilityToSyntaxKindConverter;
+        _dependencyAccessibility = dependencyAccessibility;
     }
 
     public int Order => 2;
@@ -44,13 +41,7 @@ internal class GenericResolversBuilder : IMembersBuilder
     public IEnumerable<MemberDeclarationSyntax> BuildMembers(SemanticModel semanticModel) =>
         BuildMethods()
             .Select(method => method.WithBody(_statementsFinalizer.AddFinalizationStatements(method.Body)));
-
-    private SyntaxKind GetAccessibilitySyntaxKind(SemanticType dependency)
-    {
-        var minAccessibility = GetAccessibility(dependency.Type).Concat(new [] {_settings.Accessibility}).Min();
-        return _accessibilityToSyntaxKindConverter.Convert(minAccessibility);
-    }
-
+    
     private IEnumerable<MethodDeclarationSyntax> BuildMethods()
     {
         var methods =
@@ -60,7 +51,7 @@ internal class GenericResolversBuilder : IMembersBuilder
             where !dependency.IsComposedGenericTypeMarker
             let methodName = _staticResolverNameProvider.GetName(dependency)
             let method = SyntaxRepo.MethodDeclaration(dependency.TypeSyntax, methodName)
-                .AddModifiers(GetAccessibilitySyntaxKind(dependency).WithSpace(), SyntaxKind.StaticKeyword.WithSpace())
+                .AddModifiers(_dependencyAccessibility.GetSyntaxKind(dependency).WithSpace(), SyntaxKind.StaticKeyword.WithSpace())
                 .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.AggressiveInliningAttr))
             let tags = binding.GetTags(dependency).ToArray()
             from tag in tags.DefaultIfEmpty(default)
@@ -143,53 +134,5 @@ internal class GenericResolversBuilder : IMembersBuilder
             .AddArgumentListArguments(
                 SyntaxFactory.Argument(tag ?? SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax)),
                 SyntaxFactory.Argument(SyntaxFactory.IdentifierName("tag")));
-    }
-    
-    private static IEnumerable<Accessibility> GetAccessibility(ISymbol symbol)
-    {
-        yield return symbol.DeclaredAccessibility == Accessibility.NotApplicable ? Accessibility.Internal : symbol.DeclaredAccessibility;
-        switch (symbol)
-        {
-            case INamedTypeSymbol { IsGenericType: true } namedTypeSymbol:
-            {
-                var accessibilitySet =
-                    from typeArg in namedTypeSymbol.TypeArguments
-                    from accessibility in GetAccessibility(typeArg)
-                    select accessibility;
-
-                foreach (var accessibility in accessibilitySet)
-                {
-                    yield return accessibility;
-                }
-
-                break;
-            }
-
-            case IArrayTypeSymbol arrayTypeSymbol:
-                yield return arrayTypeSymbol.ElementType.DeclaredAccessibility;
-                break;
-        }
-    }
-
-    private class MethodComparer : IEqualityComparer<MethodDeclarationSyntax>
-    {
-        public static readonly IEqualityComparer<MethodDeclarationSyntax> Shared = new MethodComparer();
-
-        private MethodComparer() { }
-
-        public bool Equals(MethodDeclarationSyntax x, MethodDeclarationSyntax y) => x.Identifier.Text == y.Identifier.Text;
-
-        public int GetHashCode(MethodDeclarationSyntax obj) => obj.Identifier.Text.GetHashCode();
-    }
-
-    private class BindingComparer : IEqualityComparer<IBindingMetadata>
-    {
-        public static readonly IEqualityComparer<IBindingMetadata> Shared = new BindingComparer();
-
-        private BindingComparer() { }
-
-        public bool Equals(IBindingMetadata x, IBindingMetadata y) => x.Id == y.Id;
-
-        public int GetHashCode(IBindingMetadata obj) => obj.Id.GetHashCode();
     }
 }

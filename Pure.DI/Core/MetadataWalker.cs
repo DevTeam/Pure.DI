@@ -268,7 +268,7 @@ internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
                                 var baseName = _stringTools.ConvertToTitle(semanticType.Name);
                                 var argKey = new MemberKey($"val{baseName}", invocationOperation);
                                 var name = _nameService.FindName(argKey);
-                                var arg = new ArgumentMetadata(semanticType, name, tags);
+                                var arg = new ArgumentMetadata(semanticType, name);
                                 _binding.Implementation = semanticType;
                                 _binding.BindingType = BindingType.Arg;
                                 _binding.Lifetime = Lifetime.Transient;

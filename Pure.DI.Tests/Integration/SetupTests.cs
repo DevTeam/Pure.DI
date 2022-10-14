@@ -1943,7 +1943,7 @@ public class SetupTests
         // Given
 
         // When
-        var output = @"
+        @"
             namespace Sample
             {
                 using System;
@@ -1969,6 +1969,6 @@ public class SetupTests
             }"
             .Replace("accessibilityValue", accessibility)
             // Then
-            .Run(out var generatedCode, new RunOptions {Statements = string.Empty});
+            .Run(out _, new RunOptions {Statements = string.Empty});
     }
 }

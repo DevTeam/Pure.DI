@@ -11,8 +11,7 @@ internal class IncludeTypeFilter : IIncludeTypeFilter
         && !Match<ExcludeAttribute>(factoryType, dependency, false);
 
     private static bool Match<TAttribute>(SemanticType factoryType, Dependency dependency, bool defaultValue)
-        where TAttribute : Attribute
-        => (
+        where TAttribute : Attribute => (
                 from attrData in factoryType.Type.GetAttributes(typeof(TAttribute), factoryType.SemanticModel)
                 let args = attrData.ConstructorArguments
                 where args.Length == 1

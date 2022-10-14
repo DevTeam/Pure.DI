@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ArrangeNamespaceBody
+// ReSharper disable PossibleMultipleEnumeration
 namespace Pure.DI.UsageScenarios.Tests
 {
     using Shouldly;

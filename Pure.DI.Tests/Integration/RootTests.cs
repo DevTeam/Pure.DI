@@ -115,7 +115,7 @@ public class RootTests
                 out var generatedCode,
                 new RunOptions
                 {
-                    Statements = $"System.Console.WriteLine(string.Join(\".\", Composer.Resolve<string[]>()));"
+                    Statements = "System.Console.WriteLine(string.Join(\".\", Composer.Resolve<string[]>()));"
                 });
 
         // Then

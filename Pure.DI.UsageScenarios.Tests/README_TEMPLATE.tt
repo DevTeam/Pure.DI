@@ -19,7 +19,7 @@
         int? offset = null;
         foreach(var line in File.ReadAllLines(file))
         {
-            var source = file.Replace(System.IO.Path.GetFullPath(solutionPath), "").Replace("\\", "/");
+            var source = file.Replace(Path.GetFullPath(solutionPath), "").Replace("\\", "/");
             source = source.Substring(1, source.Length - 1);
             if (vars.Count == 0)
             {

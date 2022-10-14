@@ -8,8 +8,7 @@ internal readonly struct MemberKey
 
     public MemberKey(string prefix, Dependency dependency)
         : this(prefix, dependency.Binding.Id)
-    {
-    }
+    { }
 
     public MemberKey(string prefix, object uniqId)
     {

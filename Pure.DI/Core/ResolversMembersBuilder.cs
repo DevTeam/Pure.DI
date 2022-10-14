@@ -5,27 +5,27 @@ using NS35EBD81B;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
-internal class ResolversBuilder : IMembersBuilder
+internal class ResolversMembersBuilder : IMembersBuilder
 {
     private readonly ResolverMetadata _metadata;
     private readonly IResolveMethodBuilder[] _resolveMethodBuilders;
     private readonly IBuildContext _buildContext;
     private readonly IMemberNameService _memberNameService;
     private readonly IBuildStrategy _buildStrategy;
-    private readonly ILog<ResolversBuilder> _log;
+    private readonly ILog<ResolversMembersBuilder> _log;
     private readonly ITypeResolver _typeResolver;
     private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
     private readonly ITracer _tracer;
     private readonly IStatementsFinalizer[] _statementsFinalizers;
     private readonly IArgumentsSupport _argumentsSupport;
 
-    public ResolversBuilder(
+    public ResolversMembersBuilder(
         ResolverMetadata metadata,
         IResolveMethodBuilder[] resolveMethodBuilders,
         IBuildContext buildContext,
         IMemberNameService memberNameService,
         IBuildStrategy buildStrategy,
-        ILog<ResolversBuilder> log,
+        ILog<ResolversMembersBuilder> log,
         ITypeResolver typeResolver,
         ICannotResolveExceptionFactory cannotResolveExceptionFactory,
         ITracer tracer,

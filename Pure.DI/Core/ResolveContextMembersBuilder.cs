@@ -3,18 +3,18 @@ namespace Pure.DI.Core;
 
 using NS35EBD81B;
 
-internal class ResolveContextBuilder: IMembersBuilder, IStatementsFinalizer, IArgumentsSupport
+internal class ResolveContextMembersBuilder: IMembersBuilder, IStatementsFinalizer, IArgumentsSupport
 {
     private const string CurrentFieldName = "_current";
     private const string CurrentPropertyName = "Current";
     private readonly IBuildContext _buildContext;
     private readonly MemberKey _resolveContextClassKey;
 
-    public ResolveContextBuilder(IBuildContext buildContext, IMemberNameService memberNameService)
+    public ResolveContextMembersBuilder(IBuildContext buildContext, IMemberNameService memberNameService)
     {
         _buildContext = buildContext;
         var resolveContextClassName = memberNameService.GetName(MemberNameKind.ResolveContextClass);
-        _resolveContextClassKey = new MemberKey(resolveContextClassName, typeof(ResolveContextBuilder));
+        _resolveContextClassKey = new MemberKey(resolveContextClassName, typeof(ResolveContextMembersBuilder));
     }
 
     public int Order => 0;

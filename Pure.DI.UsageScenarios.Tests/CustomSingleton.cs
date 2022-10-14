@@ -2,6 +2,7 @@
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ArrangeNamespaceBody
+#pragma warning disable CA1816
 namespace Pure.DI.UsageScenarios.Tests
 {
     using Shouldly;
@@ -75,7 +76,7 @@ namespace Pure.DI.UsageScenarios.Tests
         public class DependencySingleton : IDependency, IDisposable
         {
             public bool IsDisposed { get; private set; }
-
+            
             public void Dispose()
             {
                 IsDisposed = true;
@@ -93,3 +94,4 @@ namespace Pure.DI.UsageScenarios.Tests
         // }
     }
 }
+#pragma warning restore CA1816

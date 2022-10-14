@@ -1302,7 +1302,7 @@ public interface IDependency { }
 public class DependencySingleton : IDependency, IDisposable
 {
     public bool IsDisposed { get; private set; }
-
+    
     public void Dispose()
     {
         IsDisposed = true;

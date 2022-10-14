@@ -3,24 +3,24 @@
 using NS35EBD81B;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class MicrosoftDependencyInjectionBuilder : IMembersBuilder
+internal class MicrosoftDependencyInjectionMembersBuilder : IMembersBuilder
 {
     private readonly ResolverMetadata _metadata;
     private readonly IBuildContext _buildContext;
     private readonly ITypeResolver _typeResolver;
     private readonly IBuildStrategy _buildStrategy;
     private readonly IDiagnostic _diagnostic;
-    private readonly Log<MicrosoftDependencyInjectionBuilder> _log;
+    private readonly Log<MicrosoftDependencyInjectionMembersBuilder> _log;
     private readonly ITracer _tracer;
     private readonly IStatementsFinalizer _statementsFinalizer;
 
-    public MicrosoftDependencyInjectionBuilder(
+    public MicrosoftDependencyInjectionMembersBuilder(
         ResolverMetadata metadata,
         IBuildContext buildContext,
         ITypeResolver typeResolver,
         IBuildStrategy buildStrategy,
         IDiagnostic diagnostic,
-        Log<MicrosoftDependencyInjectionBuilder> log,
+        Log<MicrosoftDependencyInjectionMembersBuilder> log,
         ITracer tracer,
         IStatementsFinalizer statementsFinalizer)
     {
