@@ -51,7 +51,7 @@ internal class FactoryWrapperStrategy : IWrapperStrategy
 
     private ExpressionSyntax Wrap(ExpressionSyntax objectBuildExpression, Dependency factoryDependency, Dependency dependency)
     {
-        if (!_includeTypeFilter.IsAccepted(factoryDependency.Implementation, dependency.Implementation))
+        if (!_includeTypeFilter.IsAccepted(factoryDependency.Implementation, dependency))
         {
             return objectBuildExpression;
         }

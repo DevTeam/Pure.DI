@@ -54,7 +54,7 @@ internal class FactoryMethodWrapperStrategy : IWrapperStrategy
             return objectBuildExpression;
         }
 
-        if (!_includeTypeFilter.IsAccepted(factoryTypeDescription.Implementation, dependency.Implementation))
+        if (!_includeTypeFilter.IsAccepted(factoryTypeDescription.Implementation, dependency))
         {
             return objectBuildExpression;
         }

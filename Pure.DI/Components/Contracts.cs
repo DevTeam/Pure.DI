@@ -126,6 +126,12 @@ namespace NS35EBD81B
         }
     }
 
+    internal enum IncludeExcludeTarget
+    {
+        ImplementationTypeNameRegularExpression,
+        Lifetime
+    }
+
     /// <summary>
     /// Represents an attribute of including regular expression filter for implementation types processing by <c>IFactory</c>. Is used together with <see cref="IFactory"/>.
     /// <example>
@@ -141,17 +147,39 @@ namespace NS35EBD81B
     internal class IncludeAttribute : Attribute
     {
         /// <summary>
+        /// The include target.
+        /// </summary>
+        public readonly IncludeExcludeTarget Target;
+
+        /// <summary>
         /// The regular expression to include full implementation type names.
         /// </summary>
         public readonly string ImplementationTypeNameRegularExpression;
-
+        
+        /// <summary>
+        /// The <see cref="NS35EBD81B.Lifetime"/> to include.
+        /// </summary>
+        public readonly Lifetime Lifetime;
+        
         /// <summary>
         /// Creates an attribute instance.
         /// </summary>
         /// <param name="implementationTypeNameRegularExpression">The regular expression to include full implementation type names.</param>
         public IncludeAttribute(string implementationTypeNameRegularExpression)
         {
+            Target = IncludeExcludeTarget.ImplementationTypeNameRegularExpression;
             ImplementationTypeNameRegularExpression = implementationTypeNameRegularExpression;
+        }
+
+        /// <summary>
+        /// Creates an attribute instance.
+        /// </summary>
+        /// <param name="lifetime">The <see cref="NS35EBD81B.Lifetime"/> to include.</param>
+        public IncludeAttribute(Lifetime lifetime)
+        {
+            Target = IncludeExcludeTarget.Lifetime;
+            Lifetime = lifetime;
+            ImplementationTypeNameRegularExpression = string.Empty;
         }
     }
     
@@ -170,9 +198,19 @@ namespace NS35EBD81B
     internal class ExcludeAttribute : Attribute
     {
         /// <summary>
+        /// The exclude target.
+        /// </summary>
+        public readonly IncludeExcludeTarget Target;
+        
+        /// <summary>
         /// The regular expression to exclude full implementation type names.
         /// </summary>
         public readonly string ImplementationTypeNameRegularExpression;
+        
+        /// <summary>
+        /// The <see cref="NS35EBD81B.Lifetime"/> to exclude.
+        /// </summary>
+        public readonly Lifetime Lifetime;
 
         /// <summary>
         /// Creates an attribute instance.
@@ -180,7 +218,19 @@ namespace NS35EBD81B
         /// <param name="implementationTypeNameRegularExpression">The regular expression to exclude full implementation type names.</param>
         public ExcludeAttribute(string implementationTypeNameRegularExpression)
         {
+            Target = IncludeExcludeTarget.ImplementationTypeNameRegularExpression;
             ImplementationTypeNameRegularExpression = implementationTypeNameRegularExpression;
+        }
+        
+        /// <summary>
+        /// Creates an attribute instance.
+        /// </summary>
+        /// <param name="lifetime">The <see cref="NS35EBD81B.Lifetime"/> to include.</param>
+        public ExcludeAttribute(Lifetime lifetime)
+        {
+            Target = IncludeExcludeTarget.Lifetime;
+            Lifetime = lifetime;
+            ImplementationTypeNameRegularExpression = string.Empty;
         }
     }
     

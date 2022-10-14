@@ -131,7 +131,7 @@ public class FactoryTests
     }
 
     [Fact]
-    public void ShouldSupportFactoryWhenFilter()
+    public void ShouldSupportFactoryWhenImplementationTypeNameFilter()
     {
         // Given
 
@@ -148,7 +148,7 @@ public class FactoryTests
                     internal CompositionRoot(string value) => Value = value;
                 }
 
-                [Include(""string"")]
+                [Include(""string$"")]
                 internal class MyLifetime<T>: IFactory<T>
                 {
                     public T Create(Func<T> factory, Type implementationType, object tag, Lifetime lifetime)
@@ -164,6 +164,52 @@ public class FactoryTests
                         DI.Setup()
                             .Bind<IFactory<TT>>().To<MyLifetime<TT>>()
                             .Bind<string>().To(_ => ""xyz"")
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                    
+                }    
+            }".Run(out var generatedCode);
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "xyz_abc"
+        }, generatedCode);
+    }
+    
+    [Fact]
+    public void ShouldSupportFactoryWhenLifetimeFilter()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string value) => Value = value;
+                }
+
+                [Include(Lifetime.Singleton)]
+                internal class MyLifetime<T>: IFactory<T>
+                {
+                    public T Create(Func<T> factory, Type implementationType, object tag, Lifetime lifetime)
+                    {
+                        return (T)(object)(factory().ToString() + ""_abc"");
+                    }
+                }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<IFactory<TT>>().To<MyLifetime<TT>>()
+                            .Bind<string>().As(Lifetime.Singleton).To(_ => ""xyz"")
                             .Bind<CompositionRoot>().To<CompositionRoot>();
                     }                    
                 }    
