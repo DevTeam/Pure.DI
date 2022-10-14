@@ -45,7 +45,7 @@ namespace Pure.DI.UsageScenarios.Tests
         
         // Filters for Service and for Dependency classes
         [Include("(Service|Dependency)$")]
-        public class MyInterceptor<T>: IFactory<T>, IInterceptor
+        internal class MyInterceptor<T>: IFactory<T>, IInterceptor
             where T: class
         {
             private readonly Func<T, T> _proxyFactory;
@@ -55,7 +55,7 @@ namespace Pure.DI.UsageScenarios.Tests
 
             public int InvocationCounter { get; private set; }
 
-            public T Create(Func<T> factory, Type implementationType, object tag) =>
+            public T Create(Func<T> factory, Type implementationType, object tag, Lifetime lifetime) =>
                 // Creates a proxy for an instance
                 _proxyFactory(factory());
 

@@ -42,7 +42,7 @@ namespace Pure.DI.UsageScenarios.Tests
             ((MyInterceptor<IDependency>)InterceptDI.Resolve<IFactory<IDependency>>()).InvocationCounter.ShouldBe(3);
         }
         
-        public class MyInterceptor<T>: IFactory<T>, IInterceptor
+        internal class MyInterceptor<T>: IFactory<T>, IInterceptor
             where T: class
         {
             private readonly IProxyGenerator _proxyGenerator;
@@ -52,7 +52,7 @@ namespace Pure.DI.UsageScenarios.Tests
 
             public int InvocationCounter { get; private set; }
 
-            public T Create(Func<T> factory, Type implementationType, object tag) =>
+            public T Create(Func<T> factory, Type implementationType, object tag, Lifetime lifetime) =>
                 _proxyGenerator.CreateInterfaceProxyWithTarget(factory(), this);
 
             void IInterceptor.Intercept(IInvocation invocation)

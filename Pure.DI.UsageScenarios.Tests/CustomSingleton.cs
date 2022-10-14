@@ -46,13 +46,13 @@ namespace Pure.DI.UsageScenarios.Tests
 
         // A pattern of the class name ending by word "Singleton"
         [Include(".*Singleton$")]
-        public class CustomSingletonLifetime: IFactory, ISingletonsContainer
+        internal class CustomSingletonLifetime: IFactory, ISingletonsContainer
         {
             // Stores singleton instances by key
             private readonly ConcurrentDictionary<Key, object> _instances = new();
 
             // Gets an existing instance or creates a new
-            public T Create<T>(Func<T> factory, Type implementationType, object tag) =>
+            public T Create<T>(Func<T> factory, Type implementationType, object tag, Lifetime lifetime) =>
                 (T)_instances.GetOrAdd(new Key(implementationType, tag), _ => factory()!);
 
             public void Dispose()

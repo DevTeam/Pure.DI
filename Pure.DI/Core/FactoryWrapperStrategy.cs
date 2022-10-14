@@ -73,6 +73,7 @@ internal class FactoryWrapperStrategy : IWrapperStrategy
             .AddArgumentListArguments(
                 SyntaxFactory.Argument(SyntaxFactory.IdentifierName(createMethodSyntax.Identifier)),
                 SyntaxFactory.Argument(SyntaxFactory.TypeOfExpression(dependency.Implementation)),
-                SyntaxFactory.Argument(dependency.Tag ?? SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax)));
+                SyntaxFactory.Argument(dependency.Tag ?? SyntaxFactory.DefaultExpression(SyntaxRepo.ObjectTypeSyntax)),
+                SyntaxFactory.Argument(SyntaxRepo.MemberAccess(SyntaxFactory.IdentifierName(nameof(Lifetime)), SyntaxFactory.IdentifierName(dependency.Binding.Lifetime.ToString()))));
     }
 }

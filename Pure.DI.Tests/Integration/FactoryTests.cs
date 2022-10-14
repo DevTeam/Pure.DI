@@ -27,11 +27,11 @@ public class FactoryTests
                     internal CompositionRoot(MyClass value) => Value = value;
                 }
 
-                public class DisposingLifetime<T>: IFactory<T>, IDisposable
+                internal class DisposingLifetime<T>: IFactory<T>, IDisposable
                 {
                     private readonly HashSet<IDisposable> _disposables = new ();
 
-                    public T Create(Func<T> factory, Type implementationType, object tag)
+                    public T Create(Func<T> factory, Type implementationType, object tag, Lifetime lifetime)
                     {
                         var instance = factory();
                         if (instance is IDisposable disposable)
@@ -103,9 +103,9 @@ public class FactoryTests
                     internal CompositionRoot(string value) => Value = value;
                 }
 
-                public class MyLifetime: IFactory<string>
+                internal class MyLifetime: IFactory<string>
                 {
-                    public string Create(Func<string> factory, Type implementationType, object tag)
+                    public string Create(Func<string> factory, Type implementationType, object tag, Lifetime lifetime)
                     {
                         return factory() + ""_abc"";
                     }
@@ -149,9 +149,9 @@ public class FactoryTests
                 }
 
                 [Include(""string"")]
-                public class MyLifetime<T>: IFactory<T>
+                internal class MyLifetime<T>: IFactory<T>
                 {
-                    public T Create(Func<T> factory, Type implementationType, object tag)
+                    public T Create(Func<T> factory, Type implementationType, object tag, Lifetime lifetime)
                     {
                         return (T)(object)(factory().ToString() + ""_abc"");
                     }
@@ -194,9 +194,9 @@ public class FactoryTests
                     internal CompositionRoot([Tag(1)] string value1, string value2) => Value = value1 + value2;
                 }
 
-                public class MyLifetime: IFactory<string>
+                internal class MyLifetime: IFactory<string>
                 {
-                    public string Create(Func<string> factory, Type implementationType, object tag)
+                    public string Create(Func<string> factory, Type implementationType, object tag, Lifetime lifetime)
                     {
                         return factory() + ""_abc"";
                     }
@@ -241,9 +241,9 @@ public class FactoryTests
                 }
 
                 [Include(""string"")]
-                public class MyFactory: IFactory
+                internal class MyFactory: IFactory
                 {
-                    public T Create<T>(Func<T> factory, Type implementationType, object tag)
+                    public T Create<T>(Func<T> factory, Type implementationType, object tag, Lifetime lifetime)
                     {
                         return (T)(object)(factory() as string + ""_abc"");
                     }
@@ -305,10 +305,10 @@ public class FactoryTests
                     }
 
                     [Exclude(""MyClass2"")]
-                    public class MyFactory<T>: IFactory<T>
+                    internal class MyFactory<T>: IFactory<T>
                     {
                         public MyFactory(IMyInterface2 val2) { }
-                        public T Create(Func<T> factory, Type implementationType, object tag)
+                        public T Create(Func<T> factory, Type implementationType, object tag, Lifetime lifetime)
                         {
                             System.Console.WriteLine(implementationType.Name + "": "" + typeof(T).Name + ""("" +tag+ "")"");
                             return factory();
@@ -346,9 +346,9 @@ public class FactoryTests
                     internal CompositionRoot(IMyInterface1 value1, [Tag(2)] IMyInterface2 value2) { Value = value1; }
                 }
 
-                public class MyFactory: IFactory
+                internal class MyFactory: IFactory
                 {
-                    public T Create<T>(Func<T> factory, Type implementationType, object tag)
+                    public T Create<T>(Func<T> factory, Type implementationType, object tag, Lifetime lifetime)
                     {
                         System.Console.WriteLine(implementationType.Name + "": "" + typeof(T).Name + ""("" +tag+ "")"");
                         return factory();
@@ -400,9 +400,9 @@ public class FactoryTests
                     internal CompositionRoot(IMyInterface1 value1, [Tag(2)] IMyInterface2 value2) => Value = value1;
                 }
 
-                public class MyFactory: IFactory
+                internal class MyFactory: IFactory
                 {
-                    public T Create<T>(Func<T> factory, Type implementationType, object tag)
+                    public T Create<T>(Func<T> factory, Type implementationType, object tag, Lifetime lifetime)
                     {
                         System.Console.WriteLine($""{implementationType.Name}: {typeof(T).Name}({tag})"");
                         return factory();

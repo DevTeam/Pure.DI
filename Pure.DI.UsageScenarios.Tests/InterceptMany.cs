@@ -39,7 +39,7 @@ namespace Pure.DI.UsageScenarios.Tests
         }
 
         [Exclude(nameof(ProxyGenerator))]
-        public class MyInterceptor: IFactory, IInterceptor
+        internal class MyInterceptor: IFactory, IInterceptor
         {
             private readonly IProxyGenerator _proxyGenerator;
 
@@ -48,7 +48,7 @@ namespace Pure.DI.UsageScenarios.Tests
             
             public int InvocationCounter { get; private set; }
 
-            public T Create<T>(Func<T> factory, Type implementationType, object tag) => 
+            public T Create<T>(Func<T> factory, Type implementationType, object tag, Lifetime lifetime) => 
                 (T)_proxyGenerator.CreateInterfaceProxyWithTarget(typeof(T), factory(), this);
 
             void IInterceptor.Intercept(IInvocation invocation)

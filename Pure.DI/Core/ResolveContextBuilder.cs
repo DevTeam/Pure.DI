@@ -214,6 +214,6 @@ internal class ResolveContextBuilder: IMembersBuilder, IStatementsFinalizer, IAr
     private ExpressionSyntax GetArgumentAccessExpression(ArgumentMetadata arg)
     {
         var resolveContextClassName = _buildContext.NameService.FindName(_resolveContextClassKey);
-        return SyntaxRepo.MemberAccess(resolveContextClassName, CurrentPropertyName, $"{arg.Name}Arg");
+        return SyntaxRepo.MemberAccess(SyntaxFactory.IdentifierName(resolveContextClassName), SyntaxFactory.IdentifierName(CurrentPropertyName), SyntaxFactory.IdentifierName($"{arg.Name}Arg"));
     }
 }

@@ -22,17 +22,17 @@ internal static class SyntaxRepo
     public static readonly TypeSyntax FuncOfObjectTypeSyntax = SyntaxFactory.GenericName(FuncTypeToken).AddTypeArgumentListArguments(ObjectTypeSyntax);
     public static readonly TypeParameterSyntax TTypeParameterSyntax = SyntaxFactory.TypeParameter("T");
 
-    public static ExpressionSyntax MemberAccess(params string[] membersPath)
+    public static ExpressionSyntax MemberAccess(params IdentifierNameSyntax[] identifierNames)
     {
-        if (membersPath.Length == 0) throw new ArgumentException(nameof(membersPath));
-        return membersPath.Skip(1)
+        if (identifierNames.Length == 0) throw new ArgumentException(nameof(identifierNames));
+        return identifierNames.Skip(1)
             .Aggregate(
-                (ExpressionSyntax)SyntaxFactory.IdentifierName(membersPath[0]),
+                (ExpressionSyntax)identifierNames[0],
                 (acc, path) => 
                     SyntaxFactory.MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
                         acc,
-                        SyntaxFactory.IdentifierName(path)));
+                        path));
     }
     
     public static SyntaxToken WithSpace(this SyntaxKind syntaxKind) =>

@@ -1717,13 +1717,13 @@ public interface ISingletonsContainer: IDisposable { }
 
 // A pattern of the class name ending by word "Singleton"
 [Include(".*Singleton$")]
-public class CustomSingletonLifetime: IFactory, ISingletonsContainer
+internal class CustomSingletonLifetime: IFactory, ISingletonsContainer
 {
     // Stores singleton instances by key
     private readonly ConcurrentDictionary<Key, object> _instances = new();
 
     // Gets an existing instance or creates a new
-    public T Create<T>(Func<T> factory, Type implementationType, object tag) =>
+    public T Create<T>(Func<T> factory, Type implementationType, object tag, Lifetime lifetime) =>
         (T)_instances.GetOrAdd(new Key(implementationType, tag), _ => factory()!);
 
     public void Dispose()
@@ -2113,7 +2113,7 @@ public void Run()
     ((MyInterceptor<IDependency>)InterceptDI.Resolve<IFactory<IDependency>>()).InvocationCounter.ShouldBe(3);
 }
 
-public class MyInterceptor<T>: IFactory<T>, IInterceptor
+internal class MyInterceptor<T>: IFactory<T>, IInterceptor
     where T: class
 {
     private readonly IProxyGenerator _proxyGenerator;
@@ -2123,7 +2123,7 @@ public class MyInterceptor<T>: IFactory<T>, IInterceptor
 
     public int InvocationCounter { get; private set; }
 
-    public T Create(Func<T> factory, Type implementationType, object tag) =>
+    public T Create(Func<T> factory, Type implementationType, object tag, Lifetime lifetime) =>
         _proxyGenerator.CreateInterfaceProxyWithTarget(factory(), this);
 
     void IInterceptor.Intercept(IInvocation invocation)
@@ -2182,7 +2182,7 @@ public void Run()
 
 // Filters for Service and for Dependency classes
 [Include("(Service|Dependency)$")]
-public class MyInterceptor<T>: IFactory<T>, IInterceptor
+internal class MyInterceptor<T>: IFactory<T>, IInterceptor
     where T: class
 {
     private readonly Func<T, T> _proxyFactory;
@@ -2192,7 +2192,7 @@ public class MyInterceptor<T>: IFactory<T>, IInterceptor
 
     public int InvocationCounter { get; private set; }
 
-    public T Create(Func<T> factory, Type implementationType, object tag) =>
+    public T Create(Func<T> factory, Type implementationType, object tag, Lifetime lifetime) =>
         // Creates a proxy for an instance
         _proxyFactory(factory());
 
@@ -2258,7 +2258,7 @@ public void Run()
 }
 
 [Exclude(nameof(ProxyGenerator))]
-public class MyInterceptor: IFactory, IInterceptor
+internal class MyInterceptor: IFactory, IInterceptor
 {
     private readonly IProxyGenerator _proxyGenerator;
 
@@ -2267,7 +2267,7 @@ public class MyInterceptor: IFactory, IInterceptor
     
     public int InvocationCounter { get; private set; }
 
-    public T Create<T>(Func<T> factory, Type implementationType, object tag) => 
+    public T Create<T>(Func<T> factory, Type implementationType, object tag, Lifetime lifetime) => 
         (T)_proxyGenerator.CreateInterfaceProxyWithTarget(typeof(T), factory(), this);
 
     void IInterceptor.Intercept(IInvocation invocation)

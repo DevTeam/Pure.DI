@@ -637,9 +637,10 @@ namespace NS35EBD81B
         /// <param name="factory">The method resolving an instance of dependency.</param>
         /// <param name="implementationType">The implementation type.</param>
         /// <param name="tag">The dependency tag.</param>
+        /// <param name="lifetime">The dependency <see cref="Lifetime"/>.</param>
         /// <typeparam name="T">The dependency type.</typeparam>
         /// <returns>A resolved instance.</returns>
-        T Create(Func<T> factory, Type implementationType, object tag);
+        T Create(Func<T> factory, Type implementationType, object tag, Lifetime lifetime);
     }
 
     /// <summary>
@@ -653,9 +654,10 @@ namespace NS35EBD81B
         /// <param name="factory">The method resolving an instance of dependency.</param>
         /// <param name="implementationType">The implementation type.</param>
         /// <param name="tag">The dependency tag.</param>
+        /// <param name="lifetime">The dependency <see cref="Lifetime"/>.</param>
         /// <typeparam name="T">The dependency type.</typeparam>
         /// <returns>A resolved instance.</returns>
-        T Create<T>(Func<T> factory, Type implementationType, object tag);
+        T Create<T>(Func<T> factory, Type implementationType, object tag, Lifetime lifetime);
     }
 
     /// <summary>
