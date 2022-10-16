@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal interface IStatementsFinalizer
+internal interface IStatementsBlockWrapper
 {
     BlockSyntax? AddFinalizationStatements(BlockSyntax? block);
 }

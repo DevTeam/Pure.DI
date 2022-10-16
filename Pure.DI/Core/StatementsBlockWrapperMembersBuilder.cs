@@ -1,17 +1,17 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class StatementsFinalizerMembersBuilder : IStatementsFinalizer, IMembersBuilder
+internal class StatementsBlockWrapperMembersBuilder : IStatementsBlockWrapper, IMembersBuilder
 {
     private readonly IBuildContext _buildContext;
 
-    public StatementsFinalizerMembersBuilder(IBuildContext buildContext) => _buildContext = buildContext;
+    public StatementsBlockWrapperMembersBuilder(IBuildContext buildContext) => _buildContext = buildContext;
 
     public int Order => int.MaxValue;
 
     private bool IsActive => _buildContext.FinalizationStatements.Any();
 
-    private static MemberKey DeepnessMemberKey => new("_deepness", typeof(StatementsFinalizerMembersBuilder));
+    private static MemberKey DeepnessMemberKey => new("_deepness", typeof(StatementsBlockWrapperMembersBuilder));
 
     private string DeepnessFieldName => _buildContext.NameService.FindName(DeepnessMemberKey);
 

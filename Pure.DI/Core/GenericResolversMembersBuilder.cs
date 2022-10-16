@@ -8,9 +8,9 @@ internal class GenericResolversMembersBuilder : IMembersBuilder
     private readonly IBuildContext _buildContext;
     private readonly ITypeResolver _typeResolver;
     private readonly IBuildStrategy _buildStrategy;
-    private readonly IStatementsFinalizer _statementsFinalizer;
+    private readonly IStatementsBlockWrapper _statementsBlockWrapper;
     private readonly IStaticResolverNameProvider _staticResolverNameProvider;
-    private readonly IStatementsFinalizer[] _statementsFinalizers;
+    private readonly IStatementsBlockWrapper[] _statementsBlockWrappers;
     private readonly IArgumentsSupport _argumentsSupport;
     private readonly IDependencyAccessibility _dependencyAccessibility;
 
@@ -19,9 +19,9 @@ internal class GenericResolversMembersBuilder : IMembersBuilder
         IBuildContext buildContext,
         ITypeResolver typeResolver,
         IBuildStrategy buildStrategy,
-        IStatementsFinalizer statementsFinalizer,
+        IStatementsBlockWrapper statementsBlockWrapper,
         IStaticResolverNameProvider staticResolverNameProvider,
-        IStatementsFinalizer[] statementsFinalizers,
+        IStatementsBlockWrapper[] statementsBlockWrappers,
         IArgumentsSupport argumentsSupport,
         IDependencyAccessibility dependencyAccessibility)
     {
@@ -29,9 +29,9 @@ internal class GenericResolversMembersBuilder : IMembersBuilder
         _buildContext = buildContext;
         _typeResolver = typeResolver;
         _buildStrategy = buildStrategy;
-        _statementsFinalizer = statementsFinalizer;
+        _statementsBlockWrapper = statementsBlockWrapper;
         _staticResolverNameProvider = staticResolverNameProvider;
-        _statementsFinalizers = statementsFinalizers;
+        _statementsBlockWrappers = statementsBlockWrappers;
         _argumentsSupport = argumentsSupport;
         _dependencyAccessibility = dependencyAccessibility;
     }
@@ -40,7 +40,7 @@ internal class GenericResolversMembersBuilder : IMembersBuilder
 
     public IEnumerable<MemberDeclarationSyntax> BuildMembers(SemanticModel semanticModel) =>
         BuildMethods()
-            .Select(method => method.WithBody(_statementsFinalizer.AddFinalizationStatements(method.Body)));
+            .Select(method => method.WithBody(_statementsBlockWrapper.AddFinalizationStatements(method.Body)));
     
     private IEnumerable<MethodDeclarationSyntax> BuildMethods()
     {
@@ -120,7 +120,7 @@ internal class GenericResolversMembersBuilder : IMembersBuilder
         }
 
         // ReSharper disable once LoopCanBeConvertedToQuery
-        foreach (var statementsFinalizer in _statementsFinalizers)
+        foreach (var statementsFinalizer in _statementsBlockWrappers)
         {
             body = statementsFinalizer.AddFinalizationStatements(body);
         }

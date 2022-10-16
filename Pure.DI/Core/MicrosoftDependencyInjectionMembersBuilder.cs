@@ -12,7 +12,9 @@ internal class MicrosoftDependencyInjectionMembersBuilder : IMembersBuilder
     private readonly IDiagnostic _diagnostic;
     private readonly Log<MicrosoftDependencyInjectionMembersBuilder> _log;
     private readonly ITracer _tracer;
-    private readonly IStatementsFinalizer _statementsFinalizer;
+    private readonly IStatementsBlockWrapper _statementsBlockWrapper;
+    private readonly IArgumentsSupport _argumentsSupport;
+    private readonly IStatementsBlockWrapper[] _statementsBlockWrappers;
 
     public MicrosoftDependencyInjectionMembersBuilder(
         ResolverMetadata metadata,
@@ -22,7 +24,9 @@ internal class MicrosoftDependencyInjectionMembersBuilder : IMembersBuilder
         IDiagnostic diagnostic,
         Log<MicrosoftDependencyInjectionMembersBuilder> log,
         ITracer tracer,
-        IStatementsFinalizer statementsFinalizer)
+        IStatementsBlockWrapper statementsBlockWrapper,
+        IArgumentsSupport argumentsSupport,
+        IStatementsBlockWrapper[] statementsBlockWrappers)
     {
         _metadata = metadata;
         _buildContext = buildContext;
@@ -31,7 +35,9 @@ internal class MicrosoftDependencyInjectionMembersBuilder : IMembersBuilder
         _diagnostic = diagnostic;
         _log = log;
         _tracer = tracer;
-        _statementsFinalizer = statementsFinalizer;
+        _statementsBlockWrapper = statementsBlockWrapper;
+        _argumentsSupport = argumentsSupport;
+        _statementsBlockWrappers = statementsBlockWrappers;
     }
 
     public int Order => 1;
@@ -88,7 +94,8 @@ internal class MicrosoftDependencyInjectionMembersBuilder : IMembersBuilder
 
                 var method = SyntaxRepo.MethodDeclaration(serviceCollection, $"Add{_metadata.ComposerTypeName}")
                     .AddModifiers(SyntaxKind.InternalKeyword.WithSpace(), SyntaxKind.StaticKeyword.WithSpace())
-                    .AddParameterListParameters(thisParameter);
+                    .AddParameterListParameters(thisParameter)
+                    .AddParameterListParameters(_argumentsSupport.GetParameters().ToArray());
 
                 var mvcBuilderType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.IMvcBuilder");
                 var mvcServiceCollectionExtensionsType = semanticModel.Compilation.GetTypeByMetadataName("Microsoft.Extensions.DependencyInjection.MvcServiceCollectionExtensions");
@@ -235,7 +242,7 @@ internal class MicrosoftDependencyInjectionMembersBuilder : IMembersBuilder
                         continue;
                     }
 
-                    SimpleLambdaExpressionSyntax resolveLambda;
+                    BlockSyntax lambdaBlock;
                     if (aspNetSupport)
                     {
                         var serviceProviderInstance = new SemanticType(semanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance).FullName.ReplaceNamespace())!, semanticModel);
@@ -256,7 +263,7 @@ internal class MicrosoftDependencyInjectionMembersBuilder : IMembersBuilder
                                 SyntaxFactory.AssignmentExpression(
                                     SyntaxKind.SimpleAssignmentExpression, serviceProviderValue, SyntaxFactory.IdentifierName("prevServiceProvider"))));
     
-                        var lambdaBlock =
+                        lambdaBlock =
                             SyntaxFactory.Block()
                                 .AddStatements(
                                     SyntaxFactory.LocalDeclarationStatement(
@@ -274,13 +281,24 @@ internal class MicrosoftDependencyInjectionMembersBuilder : IMembersBuilder
                                         SyntaxFactory.List<CatchClauseSyntax>(),
                                         SyntaxFactory.FinallyClause(finallyBlock)));
     
-                        lambdaBlock = _statementsFinalizer.AddFinalizationStatements(lambdaBlock)!;
-                        resolveLambda = SyntaxFactory.SimpleLambdaExpression(SyntaxRepo.Parameter(SyntaxFactory.Identifier("serviceProvider")), lambdaBlock);
+                        lambdaBlock = _statementsBlockWrapper.AddFinalizationStatements(lambdaBlock)!;
                     }
                     else
                     {
-                        resolveLambda = SyntaxFactory.SimpleLambdaExpression(SyntaxRepo.Parameter(SyntaxFactory.Identifier("_")), objectExpression.Value);   
+                        lambdaBlock = SyntaxFactory.Block()
+                            .AddStatements(
+                                SyntaxFactory.ReturnStatement(
+                                    objectExpression.Value
+                                        .WithSpace()));
                     }
+                    
+                    // ReSharper disable once LoopCanBeConvertedToQuery
+                    foreach (var statementsFinalizer in _statementsBlockWrappers)
+                    {
+                        lambdaBlock = statementsFinalizer.AddFinalizationStatements(lambdaBlock)!;
+                    }
+                        
+                    var resolveLambda = SyntaxFactory.SimpleLambdaExpression(SyntaxRepo.Parameter(SyntaxFactory.Identifier("serviceProvider")), lambdaBlock);
 
                     var bind =
                         SyntaxFactory.InvocationExpression(

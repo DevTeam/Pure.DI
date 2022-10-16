@@ -16,7 +16,7 @@ internal class ResolversMembersBuilder : IMembersBuilder
     private readonly ITypeResolver _typeResolver;
     private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
     private readonly ITracer _tracer;
-    private readonly IStatementsFinalizer[] _statementsFinalizers;
+    private readonly IStatementsBlockWrapper[] _statementsBlockWrappers;
     private readonly IArgumentsSupport _argumentsSupport;
 
     public ResolversMembersBuilder(
@@ -29,7 +29,7 @@ internal class ResolversMembersBuilder : IMembersBuilder
         ITypeResolver typeResolver,
         ICannotResolveExceptionFactory cannotResolveExceptionFactory,
         ITracer tracer,
-        IStatementsFinalizer[] statementsFinalizers,
+        IStatementsBlockWrapper[] statementsBlockWrappers,
         IArgumentsSupport argumentsSupport)
     {
         _metadata = metadata;
@@ -41,7 +41,7 @@ internal class ResolversMembersBuilder : IMembersBuilder
         _typeResolver = typeResolver;
         _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
         _tracer = tracer;
-        _statementsFinalizers = statementsFinalizers;
+        _statementsBlockWrappers = statementsBlockWrappers;
         _argumentsSupport = argumentsSupport;
     }
 
@@ -92,7 +92,7 @@ internal class ResolversMembersBuilder : IMembersBuilder
         }
 
         // ReSharper disable once LoopCanBeConvertedToQuery
-        foreach (var statementsFinalizer in _statementsFinalizers)
+        foreach (var statementsFinalizer in _statementsBlockWrappers)
         {
             body = statementsFinalizer.AddFinalizationStatements(body);
         }

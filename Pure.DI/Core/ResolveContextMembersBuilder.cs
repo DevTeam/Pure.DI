@@ -3,7 +3,7 @@ namespace Pure.DI.Core;
 
 using NS35EBD81B;
 
-internal class ResolveContextMembersBuilder: IMembersBuilder, IStatementsFinalizer, IArgumentsSupport
+internal class ResolveContextMembersBuilder: IMembersBuilder, IStatementsBlockWrapper, IArgumentsSupport
 {
     private const string CurrentFieldName = "_current";
     private const string CurrentPropertyName = "Current";
@@ -78,7 +78,7 @@ internal class ResolveContextMembersBuilder: IMembersBuilder, IStatementsFinaliz
                 SyntaxFactory.LiteralExpression(SyntaxKind.NullLiteralExpression)),
             SyntaxRepo.ThrowStatement(SyntaxRepo.ObjectCreationExpression(
                     SyntaxFactory.ParseTypeName("System.InvalidOperationException"))
-                .AddArgumentListArguments(SyntaxFactory.Argument("Arguments are not available with delayed resolution (in cases like Func outside constructors, IServiceCollection, etc.), they can only be used in the static composition object graph.".ToLiteralExpression()!))));
+                .AddArgumentListArguments(SyntaxFactory.Argument("Arguments are not available with delayed resolution (in cases like Func outside constructors and etc.), they can only be used in the static composition object graph.".ToLiteralExpression()!))));
         
         var returnCurrentFieldStatement = SyntaxFactory.ReturnStatement(SyntaxFactory.IdentifierName(CurrentFieldName).WithSpace()).WithNewLine();
         var contextType = SyntaxFactory.ParseTypeName(resolveContextClassName);

@@ -20,7 +20,7 @@ namespace Pure.DI.UsageScenarios.Tests
         // $priority=01
         // $description=Resolution arguments
         // $header=The sample below demonstrates how to specify resolution arguments that will be added to all resolving methods.
-        // $header=:warning: It is important to know that these arguments are not available with delayed resolution (in cases like Func outside constructors, IServiceCollection, etc.), they can only be used in the static composition object graph.
+        // $header=:warning: It is important to know that these arguments are not available with delayed resolution (in cases like Func outside constructors and etc.), they can only be used in the static composition object graph.
         // {
         public void Run()
         {

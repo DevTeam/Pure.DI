@@ -468,6 +468,7 @@ Benchmark results are placed here `./BenchmarkDotNet.Artifacts/results`
   - [Complex generics](#complex-generics)
   - [Complex generics with constraints](#complex-generics-with-constraints)
   - [Depends On](#depends-on)
+  - [Service collection with arguments](#service-collection-with-arguments)
   - [Unbound instances resolving with root specified](#unbound-instances-resolving-with-root-specified)
   - [Methods Accessibility](#methods-accessibility)
   - [Default factory](#default-factory)
@@ -529,7 +530,7 @@ new Service(new Dependency())
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/Arguments.cs)
 
 The sample below demonstrates how to specify resolution arguments that will be added to all resolving methods.
-:warning: It is important to know that these arguments are not available with delayed resolution (in cases like Func outside constructors, IServiceCollection, etc.), they can only be used in the static composition object graph.
+:warning: It is important to know that these arguments are not available with delayed resolution (in cases like Func outside constructors and etc.), they can only be used in the static composition object graph.
 
 ``` CSharp
 public void Run()
@@ -1303,6 +1304,54 @@ var instance = MyDependentComposer.Resolve<IService>();
 ```
 
 This sample references types from [this file](Pure.DI.UsageScenarios.Tests/Models.cs).
+
+### Service collection with arguments
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](Pure.DI.UsageScenarios.Tests/ServiceCollectionsWithArgs.cs)
+
+
+
+``` CSharp
+[Fact]
+public void Run()
+{
+    DI.Setup("MyComposerWithArgs")
+        .Arg<string>()
+        .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+        .Bind<IService>().To<Service>();
+    
+    var serviceProvider =
+        // Creates some serviceCollection
+        new ServiceCollection()
+        // Adds some registrations with any lifetime
+        .AddScoped<ServiceConsumer>()
+        // Adds registrations produced by Pure DI above
+        .AddMyComposerWithArgs("Abc")
+        // Builds a service provider
+        .BuildServiceProvider();
+
+    var consumer = serviceProvider.GetRequiredService<ServiceConsumer>();
+    var instance = serviceProvider.GetRequiredService<IService>();
+    consumer.Service.Dependency.ShouldBe(instance.Dependency);
+    consumer.Service.ShouldNotBe(instance);
+    consumer.Setting.ShouldBe("Abc");
+}
+
+public class ServiceConsumer
+{
+    public ServiceConsumer(IService service, string setting)
+    {
+        Service = service;
+        Setting = setting;
+    }
+
+    public IService Service { get; }
+
+    public string Setting { get; }
+}
+```
+
+
 
 ### Unbound instances resolving with root specified
 
