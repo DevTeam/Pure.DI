@@ -18,7 +18,7 @@ class Benchmark
         "Func",
         "Array",
         "Enum",
-        "ServiceCollection"
+        "ServiceProvider"
     };
 
     public Benchmark(

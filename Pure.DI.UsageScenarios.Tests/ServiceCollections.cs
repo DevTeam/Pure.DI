@@ -24,8 +24,8 @@ namespace Pure.DI.UsageScenarios.Tests
             var serviceProvider =
                 // Creates some serviceCollection
                 new ServiceCollection()
-                    // Adds some registrations with any lifetime
-                    .AddScoped<ServiceConsumer>()
+                // Adds some registrations with any lifetime
+                .AddScoped<ServiceConsumer>()
                 // Adds registrations produced by Pure DI above
                 .AddMyComposer()
                 // Builds a service provider
