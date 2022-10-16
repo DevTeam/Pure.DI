@@ -16,7 +16,8 @@ DI.Setup()
     // Represents a cardboard box with any content
     .Bind<IBox<TT>>().To<CardboardBox<TT>>()
     // Composition Root
-    .Bind<Program>().To<Program>();
+    // Here it is equivalent to Bind<Program>().To<Program>()
+    .Root<Program>();
 
 public interface IBox<out T>
 {

@@ -18,6 +18,6 @@ internal static partial class $(ComposerName)
     /// It is never called, only for DI setup. For more details, please see: https://github.com/DevTeam/Pure.DI
     /// </summary>
     private static void Setup() => DI.Setup()
-        .Bind<Program>().As(Singleton).To<Program>()
+        .Root<Program>()
         .Bind<IInput>().Bind<IOutput>().As(Singleton).To<ConsoleAdapter>();
 }
