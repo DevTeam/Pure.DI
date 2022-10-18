@@ -293,9 +293,9 @@ internal class MicrosoftDependencyInjectionMembersBuilder : IMembersBuilder
                     }
                     
                     // ReSharper disable once LoopCanBeConvertedToQuery
-                    foreach (var statementsFinalizer in _statementsBlockWrappers)
+                    foreach (var statementsBlockWrapper in _statementsBlockWrappers)
                     {
-                        lambdaBlock = statementsFinalizer.AddFinalizationStatements(lambdaBlock)!;
+                        lambdaBlock = statementsBlockWrapper.AddFinalizationStatements(lambdaBlock)!;
                     }
                         
                     var resolveLambda = SyntaxFactory.SimpleLambdaExpression(SyntaxRepo.Parameter(SyntaxFactory.Identifier("serviceProvider")), lambdaBlock);

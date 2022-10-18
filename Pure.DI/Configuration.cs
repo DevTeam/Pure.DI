@@ -83,6 +83,7 @@ internal class Configuration : IoC.IConfiguration
             .Bind<IMembersBuilder>().Tag(EventField).To<EventFieldMembersBuilder>()
             .Bind<IMembersBuilder>().Tag(Dispose).To<DisposeMembersBuilder>()
             .Bind<IMembersBuilder>().Tag(ContextClass).To<ContextClassMembersBuilder>()
+            .Bind<IMembersBuilder>().Tag(RunInContext).To<RunInContextMembersBuilder>()
             .Bind<IStringTools>().As(Singleton).To<StringTools>()
             .Bind<IStatementsBlockWrapper>().Bind<IMembersBuilder>().To<StatementsBlockWrapperMembersBuilder>()
             .Bind<IStaticResolverNameProvider>().To<StaticResolverNameProvider>()

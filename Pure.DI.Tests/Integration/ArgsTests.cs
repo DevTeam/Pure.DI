@@ -73,14 +73,18 @@ public class ArgsTests
                             // Composition Root
                             .Bind<CompositionRoot>().As(Singleton).To<CompositionRoot>();
                     }
+
+                    public static T CustomResolve<T>() 
+                    {
+                        return ResolveInContext(() => (T)Resolver<T>.Resolve(), 22, 33, ""Abc"");
+                    }
                 }
 
                 // Time to open boxes!
-
                 internal class CompositionRoot
                 {
                     public readonly IBox<ICat> Value;
-                    internal CompositionRoot(IBox<ICat> box) => Value = box;
+                    internal CompositionRoot(IBox<ICat> box) => Value = box; 
                 }
             }".Run(
             out var generatedCode,

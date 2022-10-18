@@ -23,6 +23,7 @@ internal enum Tags
     EventField,
     Dispose,
     ContextClass,
+    RunInContext,
     ContainerScope,
     GlobalScope,
     MetadataSyntax

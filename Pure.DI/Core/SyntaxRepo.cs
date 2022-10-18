@@ -9,6 +9,7 @@ internal static class SyntaxRepo
 {
     private const string DisposeSingletonsMethodName = "FinalDispose";
     private const string GetResolverMethodName = "GetResolver";
+    private const string ResolveInContextMethodName = "ResolveInContext";
     public const string OnDisposableEventName = "OnDisposable";
     public const string RaiseOnDisposableMethodName = "RaiseOnDisposable";
     private static readonly TypeSyntax VoidTypeSyntax = SyntaxFactory.ParseTypeName("void");
@@ -140,13 +141,26 @@ internal static class SyntaxRepo
     public static readonly MethodDeclarationSyntax FinalDisposeMethodSyntax =
         MethodDeclaration(VoidTypeSyntax, DisposeSingletonsMethodName)
             .AddModifiers(SyntaxKind.InternalKeyword.WithSpace(), SyntaxKind.StaticKeyword.WithSpace())
+            .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(AggressiveInliningAttr))
             .AddParameterListParameters();
 
     public static readonly MethodDeclarationSyntax GetResolverMethodSyntax =
         MethodDeclaration(FuncOfObjectTypeSyntax, GetResolverMethodName)
             .AddModifiers(SyntaxKind.PrivateKeyword.WithSpace(), SyntaxKind.StaticKeyword.WithSpace())
+            .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(AggressiveInliningAttr))
             .AddParameterListParameters()
             .AddTypeParameterListParameters(TTypeParameterSyntax);
+    
+    public static readonly MethodDeclarationSyntax ResolveInContextMethodSyntax =
+        MethodDeclaration(SyntaxFactory.IdentifierName("T"), ResolveInContextMethodName)
+            .AddModifiers(SyntaxKind.PrivateKeyword.WithSpace(), SyntaxKind.StaticKeyword.WithSpace())
+            .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(AggressiveInliningAttr))
+            .AddParameterListParameters(
+                Parameter(SyntaxFactory.Identifier("resolver"))
+                    .WithType(SyntaxFactory.GenericName(FuncTypeToken).AddTypeArgumentListArguments(SyntaxFactory.IdentifierName("T"))))
+            .AddTypeParameterListParameters(TTypeParameterSyntax)
+            .AddBodyStatements(
+                SyntaxFactory.ReturnStatement(SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName("resolver").WithSpace()).AddArgumentListArguments()));
 
     public static MethodDeclarationSyntax RaiseOnDisposableMethodSyntax =>
         MethodDeclaration(TTypeSyntax, RaiseOnDisposableMethodName)
