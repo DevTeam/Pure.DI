@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal class MethodComparer : IEqualityComparer<MethodDeclarationSyntax>
+internal sealed class MethodComparer : IEqualityComparer<MethodDeclarationSyntax>
 {
     public static readonly IEqualityComparer<MethodDeclarationSyntax> Shared = new MethodComparer();
 

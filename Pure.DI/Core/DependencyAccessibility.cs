@@ -1,7 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class DependencyAccessibility : IDependencyAccessibility
+internal sealed class DependencyAccessibility : IDependencyAccessibility
 {
     private readonly IAccessibilityToSyntaxKindConverter _accessibilityToSyntaxKindConverter;
     private readonly ISettings _settings;

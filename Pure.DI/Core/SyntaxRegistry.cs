@@ -1,7 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class SyntaxRegistry : CSharpSyntaxWalker, ISyntaxRegistry
+internal sealed class SyntaxRegistry : CSharpSyntaxWalker, ISyntaxRegistry
 {
     private readonly IEnumerable<SyntaxTree> _syntaxTrees;
     private MethodDeclarationSyntax? _method;

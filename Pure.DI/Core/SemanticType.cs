@@ -6,7 +6,7 @@ namespace Pure.DI.Core;
 
 using NS35EBD81B;
 
-internal class SemanticType
+internal sealed class SemanticType
 {
     public const string GenericTypeArgumentPrefix = "TT";
     public readonly ITypeSymbol Type;

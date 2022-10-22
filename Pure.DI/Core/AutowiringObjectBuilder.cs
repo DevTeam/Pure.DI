@@ -1,7 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class AutowiringObjectBuilder : IObjectBuilder
+internal sealed class AutowiringObjectBuilder : IObjectBuilder
 {
     private const string InstanceVarName = "instance";
     private readonly ILog<AutowiringObjectBuilder> _log;

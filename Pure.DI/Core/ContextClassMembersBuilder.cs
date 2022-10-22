@@ -3,7 +3,7 @@ namespace Pure.DI.Core;
 
 using NS35EBD81B;
 
-internal class ContextClassMembersBuilder: IMembersBuilder
+internal sealed class ContextClassMembersBuilder: IMembersBuilder
 {
     private readonly IMemberNameService _memberNameService;
     private readonly ResolverMetadata _metadata;

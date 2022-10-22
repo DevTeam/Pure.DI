@@ -3,7 +3,7 @@ namespace Pure.DI.Core;
 
 using NS35EBD81B;
 
-internal class EventFieldMembersBuilder: IMembersBuilder
+internal sealed class EventFieldMembersBuilder: IMembersBuilder
 {
     public int Order => 0;
     

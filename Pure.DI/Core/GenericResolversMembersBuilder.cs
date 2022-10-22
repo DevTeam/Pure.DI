@@ -2,7 +2,7 @@
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 namespace Pure.DI.Core;
 
-internal class GenericResolversMembersBuilder : IMembersBuilder
+internal sealed class GenericResolversMembersBuilder : IMembersBuilder
 {
     private readonly ResolverMetadata _metadata;
     private readonly IBuildContext _buildContext;

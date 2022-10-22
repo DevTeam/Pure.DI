@@ -4,7 +4,7 @@ using Core;
 using IoC;
 
 [Generator]
-public class SourceGenerator : ISourceGenerator
+internal sealed class SourceGenerator : ISourceGenerator
 {
     private static readonly IContainer GeneratorContainer = ContainerExtensions.Create();
 

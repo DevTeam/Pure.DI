@@ -3,7 +3,7 @@
 using NS35EBD81B;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class TransientLifetimeStrategy : ILifetimeStrategy
+internal sealed class TransientLifetimeStrategy : ILifetimeStrategy
 {
     private readonly IRaiseOnDisposableExpressionBuilder _raiseOnDisposableExpressionBuilder;
     private readonly IWrapperStrategy _wrapperStrategy;

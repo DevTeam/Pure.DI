@@ -1,7 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class BindingsProbe : IBindingsProbe
+internal sealed class BindingsProbe : IBindingsProbe
 {
     private readonly IBuildContext _buildContext;
     private readonly IBuildStrategy _buildStrategy;

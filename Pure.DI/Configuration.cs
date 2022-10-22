@@ -8,7 +8,7 @@ using static IoC.Lifetime;
 using static Core.Tags;
 using IBuildContext = Core.IBuildContext;
 
-internal class Configuration : IoC.IConfiguration
+internal sealed class Configuration : IoC.IConfiguration
 {
     public IEnumerable<IToken> Apply(IMutableContainer container)
     {

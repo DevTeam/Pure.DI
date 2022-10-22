@@ -1,7 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class StringTools : IStringTools
+internal sealed class StringTools : IStringTools
 {
     public string ConvertToTitle(string input) =>
         input switch

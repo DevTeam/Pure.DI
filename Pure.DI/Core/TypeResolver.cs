@@ -6,7 +6,7 @@ using NS35EBD81B;
 
 [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class TypeResolver : ITypeResolver
+internal sealed class TypeResolver : ITypeResolver
 {
     private readonly IDiagnostic _diagnostic;
     private readonly IBuildContext _buildContext;

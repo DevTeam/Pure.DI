@@ -6,7 +6,7 @@ using System.IO;
 using NS35EBD81B;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class SourceBuilder : ISourceBuilder
+internal sealed class SourceBuilder : ISourceBuilder
 {
     private readonly IBuildContext _context;
     private readonly IMetadataBuilder _metadataBuilder;

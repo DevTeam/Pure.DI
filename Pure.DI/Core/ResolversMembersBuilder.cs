@@ -5,7 +5,7 @@ using NS35EBD81B;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
-internal class ResolversMembersBuilder : IMembersBuilder
+internal sealed class ResolversMembersBuilder : IMembersBuilder
 {
     private readonly ResolverMetadata _metadata;
     private readonly IResolveMethodBuilder[] _resolveMethodBuilders;

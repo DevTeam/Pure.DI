@@ -4,7 +4,7 @@ namespace Pure.DI.Core;
 using Core;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class FactoryObjectBuilder : IObjectBuilder
+internal sealed class FactoryObjectBuilder : IObjectBuilder
 {
     private readonly IBuildContext _buildContext;
     private readonly IMemberNameService _memberNameService;

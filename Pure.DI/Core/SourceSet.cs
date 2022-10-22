@@ -3,7 +3,7 @@ namespace Pure.DI.Core;
 using System.IO;
 using System.Text.RegularExpressions;
 
-internal class SourceSet
+internal sealed class SourceSet
 {
     private static readonly Regex FeaturesRegex = new(@"Pure.DI.Features.[\w]+.cs", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase);
     private static readonly Regex ComponentsRegex = new(@"Pure.DI.Components.[\w]+.cs", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase);

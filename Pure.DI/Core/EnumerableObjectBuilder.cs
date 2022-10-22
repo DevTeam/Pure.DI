@@ -2,7 +2,7 @@
 namespace Pure.DI.Core;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class EnumerableObjectBuilder : IObjectBuilder
+internal sealed class EnumerableObjectBuilder : IObjectBuilder
 {
     private readonly IBuildContext _buildContext;
     private readonly ITypeResolver _typeResolver;

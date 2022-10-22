@@ -8,7 +8,7 @@ using NamespaceType = Microsoft.CodeAnalysis.CSharp.Syntax.NamespaceDeclarationS
 using NamespaceType = BaseNamespaceDeclarationSyntax;
 #endif
 
-internal class CompilationUnitSyntaxBuilder : ICompilationUnitSyntaxBuilder
+internal sealed class CompilationUnitSyntaxBuilder : ICompilationUnitSyntaxBuilder
 {
     private readonly ResolverMetadata _metadata;
 

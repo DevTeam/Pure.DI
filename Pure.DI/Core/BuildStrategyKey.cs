@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal class BuildStrategyKey
+internal sealed class BuildStrategyKey
 {
     private readonly int _id;
     private readonly Dependency _dependency;

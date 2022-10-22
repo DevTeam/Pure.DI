@@ -2,7 +2,7 @@
 // ReSharper disable InvertIf
 namespace Pure.DI.Core;
 
-internal class TargetClassNameProvider : ITargetClassNameProvider
+internal sealed class TargetClassNameProvider : ITargetClassNameProvider
 {
     public string? TryGetName(string composerTypeName, SyntaxNode node, ClassDeclarationSyntax? ownerClass)
     {

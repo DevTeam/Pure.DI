@@ -1,7 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class SharedContextMembersBuilder: IMembersBuilder
+internal sealed class SharedContextMembersBuilder: IMembersBuilder
 {
     private readonly IMemberNameService _memberNameService;
 

@@ -1,7 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class Generator : IGenerator
+internal sealed class Generator : IGenerator
 {
     private readonly ISourceBuilder _sourceBuilder;
     private readonly IDiagnostic _diagnostic;

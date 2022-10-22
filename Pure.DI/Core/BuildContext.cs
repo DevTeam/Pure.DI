@@ -3,7 +3,7 @@
 using NS35EBD81B;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class BuildContext : IBuildContext
+internal sealed class BuildContext : IBuildContext
 {
     private readonly Dictionary<MemberKey, MemberDeclarationSyntax> _additionalMembers = new();
     private readonly HashSet<IBindingMetadata> _additionalBindings = new();

@@ -4,7 +4,7 @@ namespace Pure.DI.Core;
 
 using NS35EBD81B;
 
-internal class MicrosoftDependencyInjectionLifetimeStrategy : ILifetimeStrategy
+internal sealed class MicrosoftDependencyInjectionLifetimeStrategy : ILifetimeStrategy
 {
     private readonly IBuildContext _buildContext;
     private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;

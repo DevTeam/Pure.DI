@@ -9,7 +9,7 @@ using NS35EBD81B;
 using static Tags;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class BuildStrategy : IBuildStrategy
+internal sealed class BuildStrategy : IBuildStrategy
 {
     private const string Separator = "---";
     private readonly IDiagnostic _diagnostic;

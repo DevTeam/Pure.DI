@@ -3,7 +3,7 @@ namespace Pure.DI.Core;
 
 using NS35EBD81B;
 
-internal class BindingMetadata : IBindingMetadata
+internal sealed class BindingMetadata : IBindingMetadata
 {
     private static int _currentId;
     private readonly ISet<SemanticType> _dependencies = new HashSet<SemanticType>(SemanticTypeEqualityComparer.Default);

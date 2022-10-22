@@ -4,7 +4,7 @@ namespace Pure.DI.Core;
 using System.Text.RegularExpressions;
 using NS35EBD81B;
 
-internal class IncludeTypeFilter : IIncludeTypeFilter
+internal sealed class IncludeTypeFilter : IIncludeTypeFilter
 {
     public bool IsAccepted(SemanticType factoryType, Dependency dependency) =>
         Match<IncludeAttribute>(factoryType, dependency, true)

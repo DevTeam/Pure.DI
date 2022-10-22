@@ -5,7 +5,7 @@ namespace Pure.DI.Core;
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 [SuppressMessage("ReSharper", "RedundantTypeArgumentsOfMethod")]
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class ClassBuilder : IClassBuilder
+internal sealed class ClassBuilder : IClassBuilder
 {
     private readonly IMembersBuilder[] _membersBuilder;
     private readonly IDiagnostic _diagnostic;

@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal class BindingComparer : IEqualityComparer<IBindingMetadata>
+internal sealed class BindingComparer : IEqualityComparer<IBindingMetadata>
 {
     public static readonly IEqualityComparer<IBindingMetadata> Shared = new BindingComparer();
 

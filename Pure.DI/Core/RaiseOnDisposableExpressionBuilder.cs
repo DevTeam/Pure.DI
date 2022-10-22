@@ -3,7 +3,7 @@ namespace Pure.DI.Core;
 
 using NS35EBD81B;
 
-internal class RaiseOnDisposableExpressionBuilder : IRaiseOnDisposableExpressionBuilder
+internal sealed class RaiseOnDisposableExpressionBuilder : IRaiseOnDisposableExpressionBuilder
 {
     public ExpressionSyntax Build(SemanticType type, Lifetime lifetime, ExpressionSyntax instanceExpression)
     {

@@ -1,7 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class DisposeStatementsBuilder : IDisposeStatementsBuilder
+internal sealed class DisposeStatementsBuilder : IDisposeStatementsBuilder
 {
     public IEnumerable<StatementSyntax> Build(MemberAccessExpressionSyntax instanceExpression, ExpressionSyntax hasInstanceExpression)
     {

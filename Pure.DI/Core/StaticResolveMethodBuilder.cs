@@ -3,7 +3,7 @@
 using NS35EBD81B;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class StaticResolveMethodBuilder : IResolveMethodBuilder
+internal sealed class StaticResolveMethodBuilder : IResolveMethodBuilder
 {
     private readonly ISyntaxRegistry _syntaxRegistry;
     private readonly ISettings _settings;

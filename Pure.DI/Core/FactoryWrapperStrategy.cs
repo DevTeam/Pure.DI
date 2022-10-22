@@ -3,7 +3,7 @@
 using NS35EBD81B;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class FactoryWrapperStrategy : IWrapperStrategy
+internal sealed class FactoryWrapperStrategy : IWrapperStrategy
 {
     private readonly IBuildContext _buildContext;
     private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;

@@ -1,7 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class Log<T> : ILog<T>
+internal sealed class Log<T> : ILog<T>
 {
     private readonly ISettings _settings;
     private readonly IFileSystem _fileSystem;

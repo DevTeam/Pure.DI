@@ -1,7 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class RunInContextMembersBuilder : IMembersBuilder
+internal sealed class RunInContextMembersBuilder : IMembersBuilder
 {
     private readonly IArgumentsSupport _argumentsSupport;
     private readonly IStatementsBlockWrapper[] _statementsBlockWrappers;

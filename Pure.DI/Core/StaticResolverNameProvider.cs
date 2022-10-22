@@ -1,7 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class StaticResolverNameProvider : IStaticResolverNameProvider
+internal sealed class StaticResolverNameProvider : IStaticResolverNameProvider
 {
     private readonly IBuildContext _buildContext;
     private readonly IStringTools _stringTools;

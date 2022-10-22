@@ -1,7 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class CannotResolveExceptionFactory : ICannotResolveExceptionFactory
+internal sealed class CannotResolveExceptionFactory : ICannotResolveExceptionFactory
 {
     private readonly IDiagnostic _diagnostic;
 

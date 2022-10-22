@@ -41,7 +41,7 @@ namespace System
 
 namespace NS35EBD81B
 {
-    internal class Pair<TKey, TValue>
+    internal sealed class Pair<TKey, TValue>
     {
         public readonly TKey Key;
         public readonly TValue Value;

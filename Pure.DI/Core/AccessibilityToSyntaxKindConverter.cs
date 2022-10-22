@@ -1,7 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class AccessibilityToSyntaxKindConverter : IAccessibilityToSyntaxKindConverter
+internal sealed class AccessibilityToSyntaxKindConverter : IAccessibilityToSyntaxKindConverter
 {
     public SyntaxKind Convert(Accessibility accessibility) =>
         accessibility switch

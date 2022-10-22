@@ -3,7 +3,7 @@
 using NS35EBD81B;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class MicrosoftDependencyInjectionMembersBuilder : IMembersBuilder
+internal sealed class MicrosoftDependencyInjectionMembersBuilder : IMembersBuilder
 {
     private readonly ResolverMetadata _metadata;
     private readonly IBuildContext _buildContext;

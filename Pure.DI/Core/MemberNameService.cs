@@ -1,7 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class MemberNameService : IMemberNameService
+internal sealed class MemberNameService : IMemberNameService
 {
     private static readonly object Id = new();
     private readonly IBuildContext _buildContext;

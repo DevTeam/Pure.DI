@@ -1,7 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class NameService : INameService
+internal sealed class NameService : INameService
 {
     private readonly Dictionary<MemberKey, string> _names = new();
     private readonly Dictionary<string, int> _ids = new();

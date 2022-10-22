@@ -32,7 +32,7 @@ namespace NS35EBD81B
         [System.ThreadStatic] public static System.IServiceProvider ServiceProvider;
     }
 
-    internal class DefaultServiceProvider: System.IServiceProvider
+    internal sealed class DefaultServiceProvider: System.IServiceProvider
     {
         private readonly System.Func<System.Type, object> _resolver;
 

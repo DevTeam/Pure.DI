@@ -3,7 +3,7 @@ namespace Pure.DI.Core;
 
 using System.IO;
 
-internal class Settings : ISettings
+internal sealed class Settings : ISettings
 {
     private readonly IBuildContext _buildContext;
     private readonly IFileSystem _fileSystem;

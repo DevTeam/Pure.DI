@@ -3,7 +3,7 @@ namespace Pure.DI.Core;
 
 using NS35EBD81B;
 
-internal class MetadataBuilder : IMetadataBuilder
+internal sealed class MetadataBuilder : IMetadataBuilder
 {
     private readonly ILog<MetadataBuilder> _log;
     private readonly IDiagnostic _diagnostic;
@@ -83,7 +83,7 @@ internal class MetadataBuilder : IMetadataBuilder
         }
     }
 
-    internal class SourceBuilderState
+    internal sealed class SourceBuilderState
     {
         public readonly SourceSet SourceSet;
 
@@ -93,7 +93,7 @@ internal class MetadataBuilder : IMetadataBuilder
         }
     }
     
-    internal class SourceSetKey
+    internal sealed class SourceSetKey
     {
         private readonly ParseOptions _parseOptions;
         private readonly string _ns;

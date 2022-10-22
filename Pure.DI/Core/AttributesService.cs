@@ -1,7 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class AttributesService : IAttributesService
+internal sealed class AttributesService : IAttributesService
 {
     private readonly IBuildContext _buildContext;
 

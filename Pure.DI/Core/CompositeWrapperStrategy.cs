@@ -3,7 +3,7 @@ namespace Pure.DI.Core;
 
 using NS35EBD81B;
 
-internal class CompositeWrapperStrategy : IWrapperStrategy
+internal sealed class CompositeWrapperStrategy : IWrapperStrategy
 {
     private readonly ImmutableArray<IWrapperStrategy> _strategies;
 

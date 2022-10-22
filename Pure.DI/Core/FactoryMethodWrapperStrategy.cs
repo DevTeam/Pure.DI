@@ -3,7 +3,7 @@ namespace Pure.DI.Core;
 
 using NS35EBD81B;
 
-internal class FactoryMethodWrapperStrategy : IWrapperStrategy
+internal sealed class FactoryMethodWrapperStrategy : IWrapperStrategy
 {
     private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
     private readonly IDiagnostic _diagnostic;

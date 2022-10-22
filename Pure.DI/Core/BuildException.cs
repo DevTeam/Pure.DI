@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal class BuildException : Exception
+internal sealed class BuildException : Exception
 {
     public BuildException(Dependency dependency, string id, string message, params Location[] location)
         : base(message)

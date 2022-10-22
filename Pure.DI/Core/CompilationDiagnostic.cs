@@ -1,7 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class CompilationDiagnostic : IDiagnostic
+internal sealed class CompilationDiagnostic : IDiagnostic
 {
     private readonly ILog<CompilationDiagnostic> _log;
 

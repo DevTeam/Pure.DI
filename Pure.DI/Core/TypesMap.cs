@@ -2,7 +2,7 @@
 namespace Pure.DI.Core;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class TypesMap : ITypesMap
+internal sealed class TypesMap : ITypesMap
 {
     private readonly Dictionary<SemanticType, SemanticType> _map = new(SemanticTypeEqualityComparer.Default);
 

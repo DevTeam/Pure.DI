@@ -2,7 +2,7 @@
 namespace Pure.DI.Core;
 using NS35EBD81B;
 
-internal class ApiGuard : IApiGuard
+internal sealed class ApiGuard : IApiGuard
 {
     public bool IsAvailable(Compilation compilation)
     {

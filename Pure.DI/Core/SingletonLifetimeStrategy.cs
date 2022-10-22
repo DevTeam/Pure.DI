@@ -3,7 +3,7 @@
 using NS35EBD81B;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class SingletonLifetimeStrategy : ILifetimeStrategy
+internal sealed class SingletonLifetimeStrategy : ILifetimeStrategy
 {
     private const string SharedValueName = "Shared";
     private readonly IBuildContext _buildContext;

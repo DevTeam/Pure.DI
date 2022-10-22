@@ -6,7 +6,7 @@ namespace Pure.DI.Core;
 
 using NS35EBD81B;
 
-internal class FactoryRewriter : CSharpSyntaxRewriter
+internal sealed class FactoryRewriter : CSharpSyntaxRewriter
 {
     private readonly IBuildContext _buildContext;
     private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
@@ -318,7 +318,7 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
             _ => true
         };
 
-    internal class FactoryKey
+    internal sealed class FactoryKey
     {
         private readonly Dependency _dependency;
         private readonly SyntaxNode _node;

@@ -3,7 +3,7 @@ namespace Pure.DI.Core;
 
 using NS35EBD81B;
 
-internal class ResolveContextMembersBuilder: IMembersBuilder, IStatementsBlockWrapper, IArgumentsSupport
+internal sealed class ResolveContextMembersBuilder: IMembersBuilder, IStatementsBlockWrapper, IArgumentsSupport
 {
     private const string CurrentFieldName = "_current";
     private const string CurrentPropertyName = "Current";

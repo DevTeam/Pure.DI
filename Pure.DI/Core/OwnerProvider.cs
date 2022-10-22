@@ -2,7 +2,7 @@
 // ReSharper disable InvertIf
 namespace Pure.DI.Core;
 
-internal class OwnerProvider : IOwnerProvider
+internal sealed class OwnerProvider : IOwnerProvider
 {
     public ClassDeclarationSyntax? TryGetOwner(SyntaxNode node)
     {

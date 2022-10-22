@@ -1,7 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class DefaultDiagnostic : IDiagnostic
+internal sealed class DefaultDiagnostic : IDiagnostic
 {
     private readonly IStdOut _stdOut;
     private readonly IStdErr _stdErr;

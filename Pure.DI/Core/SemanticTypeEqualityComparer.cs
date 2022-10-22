@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal class SemanticTypeEqualityComparer : IEqualityComparer<SemanticType>
+internal sealed class SemanticTypeEqualityComparer : IEqualityComparer<SemanticType>
 {
     public static readonly IEqualityComparer<SemanticType> Default = new SemanticTypeEqualityComparer();
 

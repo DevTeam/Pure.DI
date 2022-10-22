@@ -3,7 +3,7 @@
 using NS35EBD81B;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class GenericStaticResolveMethodBuilder : IResolveMethodBuilder
+internal sealed class GenericStaticResolveMethodBuilder : IResolveMethodBuilder
 {
     private readonly IMemberNameService _memberNameService;
     private readonly IBuildContext _buildContext;

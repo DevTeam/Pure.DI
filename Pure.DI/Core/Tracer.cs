@@ -1,7 +1,7 @@
 ﻿namespace Pure.DI.Core;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class Tracer : ITracer, IDisposable
+internal sealed class Tracer : ITracer, IDisposable
 {
     private readonly ILog<Tracer> _log;
     private readonly Stack<Dependency> _path = new();

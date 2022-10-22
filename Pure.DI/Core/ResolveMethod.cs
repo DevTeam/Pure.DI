@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core;
 
-internal class ResolveMethod
+internal sealed class ResolveMethod
 {
     public readonly MethodDeclarationSyntax TargetMethod;
     public readonly StatementSyntax[] PostStatements;

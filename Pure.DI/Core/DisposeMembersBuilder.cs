@@ -3,7 +3,7 @@ namespace Pure.DI.Core;
 
 using NS35EBD81B;
 
-internal class DisposeMembersBuilder: IMembersBuilder
+internal sealed class DisposeMembersBuilder: IMembersBuilder
 {
     private readonly IBuildContext _buildContext;
 

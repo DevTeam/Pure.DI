@@ -3,7 +3,7 @@ namespace Pure.DI.Core;
 
 using System.IO;
 
-internal class FileSystem : IFileSystem
+internal sealed class FileSystem : IFileSystem
 {
     private readonly object _lockObject = new();
 

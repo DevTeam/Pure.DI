@@ -1,7 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class StatementsBlockWrapperMembersBuilder : IStatementsBlockWrapper, IMembersBuilder
+internal sealed class StatementsBlockWrapperMembersBuilder : IStatementsBlockWrapper, IMembersBuilder
 {
     private readonly IBuildContext _buildContext;
 

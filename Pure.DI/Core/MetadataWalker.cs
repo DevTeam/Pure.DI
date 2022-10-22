@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.Operations;
 using NS35EBD81B;
 
-internal class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
+internal sealed class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
 {
     private static readonly Regex CommentRegex = new(@"//\s*(\w+)\s*=\s*(.+)\s*", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
     private readonly IOwnerProvider _ownerProvider;

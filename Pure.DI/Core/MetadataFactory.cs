@@ -1,7 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class MetadataFactory : IMetadataFactory
+internal sealed class MetadataFactory : IMetadataFactory
 {
     public ResolverMetadata Create(ResolverMetadata metadata, IReadOnlyCollection<ResolverMetadata> allMetadata)
     {
