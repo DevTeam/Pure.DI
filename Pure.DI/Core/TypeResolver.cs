@@ -38,7 +38,7 @@ internal sealed class TypeResolver : ITypeResolver
         _factoryBuilder = factoryBuilder;
         _arrayBuilder = arrayBuilder;
         _enumerableBuilder = enumerableBuilder;
-        foreach (var binding in metadata.Bindings.Where(i => i.BindingType is BindingType.Default or BindingType.Arg))
+        foreach (var binding in metadata.Bindings.Where(i => i.BindingType is BindingType.Binding or BindingType.Arg))
         {
             AddBinding(binding, diagnostic);
         }

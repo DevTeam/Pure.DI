@@ -2,7 +2,7 @@
 
 internal enum BindingType
 {
-    Default,
+    Binding,
     Arg,
     Probe,
     Root

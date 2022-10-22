@@ -92,9 +92,33 @@ internal sealed class BindingMetadata : IBindingMetadata
         }
     }
 
+    [SuppressMessage("ReSharper", "SwitchStatementHandlesSomeKnownEnumValuesWithDefault")]
     public override string ToString()
     {
         StringBuilder sb = new();
+        switch (BindingType)
+        {
+            case BindingType.Arg:
+                AppendMethod(sb, nameof(IConfiguration.Arg));
+                break;
+
+            case BindingType.Root:
+                AppendMethod(sb, nameof(IConfiguration.Root));
+                break;
+            
+            default:
+                AppendMethod(sb, nameof(IConfiguration.Bind));
+                AppendLifetime(sb);
+                AppendTags(sb);
+                AppendTo(sb);
+                break;
+        }
+        
+        return sb.ToString();
+    }
+
+    private void AppendMethod(StringBuilder sb, string method)
+    {
         foreach (var dependency in _dependencies)
         {
             var tags = string.Empty;
@@ -103,20 +127,28 @@ internal sealed class BindingMetadata : IBindingMetadata
                 tags = string.Join(", ", dependencyTags);
             }
 
-            sb.Append($"{nameof(IBinding.Bind)}<{dependency}>({tags}).");
+            sb.Append($"{method}<{dependency}>({tags}).");
         }
+    }
 
-        if (Lifetime != Lifetime.Transient)
-        {
-            sb.Append($"{nameof(IBinding.As)}({Lifetime}).");
-        }
+    private void AppendTo(StringBuilder sb)
+    {
+        sb.Append(Factory != null ? $"{nameof(IBinding.To)}({Factory.ToString()})" : $"{nameof(IBinding.To)}<{Implementation}>()");
+    }
 
+    private void AppendTags(StringBuilder sb)
+    {
         foreach (var tag in _tags)
         {
             sb.Append($"{nameof(IBinding.Tags)}<{tag.ToString()}>().");
         }
+    }
 
-        sb.Append(Factory != null ? $"{nameof(IBinding.To)}({Factory.ToString()})" : $"{nameof(IBinding.To)}<{Implementation}>()");
-        return sb.ToString();
+    private void AppendLifetime(StringBuilder sb)
+    {
+        if (Lifetime != Lifetime.Transient)
+        {
+            sb.Append($"{nameof(IBinding.As)}({Lifetime}).");
+        }
     }
 }
