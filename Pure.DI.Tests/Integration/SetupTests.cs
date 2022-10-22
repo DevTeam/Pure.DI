@@ -1383,7 +1383,8 @@ public class SetupTests
         // Then
         output.ShouldBe(new[]
         {
-            "xyz"
+            "xyz",
+            "Warning DIW002: Bind<string>().To(_ => \"abc\") exists and will be overridden by a new one Bind<string>().To(_ => \"xyz\") for string."
         }, generatedCode);
     }
 
@@ -1742,7 +1743,8 @@ public class SetupTests
         // ReSharper disable once StringLiteralTypo
         output.ShouldBe(new[]
         {
-            "xyzabc"
+            "xyzabc",
+            "Warning DIW002: Bind<string>(1, \"A\").To(_ => \"abc\") exists and will be overridden by a new one Bind<string>(1, \"B\").To(_ => \"xyz\") for string(1).",
         }, generatedCode);
     }
 

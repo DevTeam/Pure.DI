@@ -20,13 +20,13 @@ internal sealed class CompilationDiagnostic : IDiagnostic
         throw new HandledException(string.Join(", ", curErrors.Select(i => i.Description)));
     }
 
-    public void Error(string id, string message, params Location[] locations)
+    public void Error(string id, string message, params Location?[] locations)
     {
         ErrorInternal(id, message, locations);
         throw new HandledException(message);
     }
 
-    private void ErrorInternal(string id, string message, params Location[] locations)
+    private void ErrorInternal(string id, string message, params Location?[] locations)
     {
         try
         {
@@ -63,7 +63,7 @@ internal sealed class CompilationDiagnostic : IDiagnostic
         }
     }
 
-    public void Warning(string id, string message, params Location[] locations)
+    public void Warning(string id, string message, params Location?[] locations)
     {
         try
         {
@@ -89,7 +89,7 @@ internal sealed class CompilationDiagnostic : IDiagnostic
         });
     }
 
-    public void Information(string id, string message, params Location[] locations)
+    public void Information(string id, string message, params Location?[] locations)
     {
         try
         {
@@ -115,12 +115,12 @@ internal sealed class CompilationDiagnostic : IDiagnostic
         });
     }
 
-    private static Location? GetMainLocation(params Location[] locations) =>
-        locations.FirstOrDefault(i => i.IsInSource);
+    private static Location? GetMainLocation(params Location?[] locations) =>
+        locations.FirstOrDefault(i => i != default && i.IsInSource);
 
-    private static IEnumerable<Location> GetAdditionalLocations(params Location[] locations)
+    private static IEnumerable<Location> GetAdditionalLocations(params Location?[] locations)
     {
         var main = GetMainLocation(locations);
-        return main != default ? locations.Except(new []{main}) : ImmutableArray<Location>.Empty;
+        return main != default ? locations.Where(i => i != default).Except(new []{ main }).Cast<Location>() : ImmutableArray<Location>.Empty;
     }
 }

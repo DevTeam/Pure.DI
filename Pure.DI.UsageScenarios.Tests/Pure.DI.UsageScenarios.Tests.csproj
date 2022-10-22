@@ -5,6 +5,7 @@
         <SignAssembly>True</SignAssembly>
         <AssemblyOriginatorKeyFile>..\DevTeam.snk</AssemblyOriginatorKeyFile>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <!--<NoWarn>DIW002</NoWarn>-->
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>

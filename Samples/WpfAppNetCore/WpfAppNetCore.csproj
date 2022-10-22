@@ -5,6 +5,7 @@
         <TargetFramework>net6.0-windows</TargetFramework>
         <UseWPF>true</UseWPF>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <NoWarn>DIW002</NoWarn>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>

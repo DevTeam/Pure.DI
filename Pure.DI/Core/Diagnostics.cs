@@ -17,11 +17,11 @@ internal static class Diagnostics
     internal static class Warning
     {
         public const string CtorIsObsoleted = "DIW001";
+        public const string BindingAlreadyExists = "DIW002";
     }
 
     internal static class Information
     {
         public const string Generated = "DII001";
-        public const string BindingAlreadyExists = "DII002";
     }
 }

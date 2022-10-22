@@ -9,6 +9,7 @@ internal sealed class BindingMetadata : IBindingMetadata
     private readonly ISet<SemanticType> _dependencies = new HashSet<SemanticType>(SemanticTypeEqualityComparer.Default);
     private readonly IDictionary<SemanticType, ISet<ExpressionSyntax>> _dependencyTags = new Dictionary<SemanticType, ISet<ExpressionSyntax>>(SemanticTypeEqualityComparer.Default);
     private readonly ISet<ExpressionSyntax> _tags = new HashSet<ExpressionSyntax>();
+    private ImmutableArray<Location> _locations = ImmutableArray<Location>.Empty;
 
     public BindingMetadata(object? id = null)
     {
@@ -26,7 +27,7 @@ internal sealed class BindingMetadata : IBindingMetadata
         _dependencies.Add(dependency);
         Implementation = binding.Implementation;
         Factory = binding.Factory;
-        Location = binding.Location;
+        Locations = binding.Locations;
         foreach (var bindingDependency in binding.Dependencies)
         {
             AddDependencyTags(bindingDependency, binding.GetTags(bindingDependency).ToArray());
@@ -35,7 +36,11 @@ internal sealed class BindingMetadata : IBindingMetadata
 
     public object Id { get; }
 
-    public Location? Location { get; set; }
+    public ImmutableArray<Location> Locations
+    {
+        get => _locations;
+        set => _locations = value.IsDefaultOrEmpty ? ImmutableArray<Location>.Empty : value;
+    }
 
     public SemanticType? Implementation { get; set; }
 

@@ -63,7 +63,7 @@ internal sealed class TypeResolver : ITypeResolver
                 _diagnostic.Error(
                     Diagnostics.Error.InvalidSetup,
                     $"The type {type} is a generic type marker. It cannot be used in non-factory bindings directly outside of generic types.",
-                    new []{ binding.Location }.Where(i => i != default).Select(i => i!).ToArray());
+                    binding.Locations.ToArray());
                 continue;
             }
             
@@ -81,7 +81,7 @@ internal sealed class TypeResolver : ITypeResolver
                 var key = new Key(unboundType, tag, binding.AnyTag);
                 if (diagnostic != default && _map.TryGetValue(key, out var prev))
                 {
-                    diagnostic.Information(Diagnostics.Information.BindingAlreadyExists, $"{prev.Metadata} exists and will be overridden by a new one {binding}.");
+                    diagnostic.Warning(Diagnostics.Warning.BindingAlreadyExists, $"{prev.Metadata} exists and will be overridden by a new one {binding} for {key}.", binding.Locations.Concat(prev.Metadata.Locations).ToArray());
                 }
 
                 _map[key] = new Binding<SemanticType>(binding, binding.Implementation);
@@ -153,7 +153,7 @@ internal sealed class TypeResolver : ITypeResolver
                                 {
                                     Implementation = constructedImplementation,
                                     Lifetime = implementationEntry.Metadata.Lifetime,
-                                    Location = implementationEntry.Metadata.Location
+                                    Locations = implementationEntry.Metadata.Locations
                                 };
 
                                 if (tag != null)
@@ -426,8 +426,13 @@ internal sealed class TypeResolver : ITypeResolver
 
         public override string ToString()
         {
-            var tag = _anyTag ? "Any" : Tag?.ToString();
-            return $"{Dependency}({tag})";
+            var tag = _anyTag ? "any tag" : Tag?.ToString();
+            if (!string.IsNullOrWhiteSpace(tag))
+            {
+                tag = $"({tag})";
+            }
+
+            return $"{Dependency}{tag}";
         }
     }
 }

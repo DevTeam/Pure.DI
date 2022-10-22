@@ -13,7 +13,7 @@ internal sealed class CannotResolveExceptionFactory : ICannotResolveExceptionFac
         _diagnostic.Error(
             errors.Select(error =>
                 {
-                    var newLocations = error.Locations.Concat(new[] { binding.Location }).Where(i => i != default).Select(i => i!).Distinct().ToArray();
+                    var newLocations = error.Locations.Concat(binding.Locations).Where(i => i != default).Select(i => i!).Distinct().ToArray();
                     return new CodeError(error.Dependency, error.Id, $"Cannot resolve {error.Dependency} {error.Description}", newLocations);
                 })
             );

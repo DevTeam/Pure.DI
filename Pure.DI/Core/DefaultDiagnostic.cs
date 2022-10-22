@@ -23,23 +23,23 @@ internal sealed class DefaultDiagnostic : IDiagnostic
         throw new HandledException(string.Join(", ", curErrors.Select(i => i.Description)));
     }
 
-    public void Error(string id, string message, params Location[] locations)
+    public void Error(string id, string message, params Location?[] locations)
     {
         _stdErr.WriteErrorLine($"Error {id}: {message}{GetLine(locations)}");
         throw new HandledException(message);
     }
 
-    public void Warning(string id, string message, params Location[] locations) =>
+    public void Warning(string id, string message, params Location?[] locations) =>
         _stdOut.WriteLine($"Warning {id}: {message}{GetLine(locations)}");
 
-    public void Information(string id, string message, params Location[] locations)
+    public void Information(string id, string message, params Location?[] locations)
     { }
 
-    private static string GetLine(params Location[] locations) => 
+    private static string GetLine(params Location?[] locations) => 
         string.Join(Environment.NewLine, GetLines(locations));
 
-    private static IEnumerable<string> GetLines(params Location[] locations) =>
-        from location in locations.Where(i => i.IsInSource)
+    private static IEnumerable<string> GetLines(params Location?[] locations) =>
+        from location in locations.Where(i => i != default && i.IsInSource)
         let line = location.SourceTree?.ToString().Substring(location.SourceSpan.Start, location.SourceSpan.Length)
         where string.IsNullOrWhiteSpace(line)
         select $" at line {location.GetMappedLineSpan().StartLinePosition.Line + 1}: {line}";

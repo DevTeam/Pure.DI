@@ -166,7 +166,6 @@ internal sealed class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
                     && new SemanticType(invocationOperation.TargetMethod.ReturnType, SemanticModel).Equals(typeof(IConfiguration)))
                 {
                     _binding.Implementation = new SemanticType(invocationOperation.TargetMethod.TypeArguments[0], SemanticModel);
-                    _binding.Location = node.GetLocation();
                     if (CheckTo(node))
                     {
                         _resolver?.Bindings.Add(_binding);
@@ -191,6 +190,7 @@ internal sealed class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
                 {
                     var dependencyType = invocationOperation.TargetMethod.TypeArguments[0];
                     var dependency = new SemanticType(dependencyType, SemanticModel);
+                    _binding.Locations = ImmutableArray.Create(node.GetLocation());
                     _binding.AddDependencyTags(dependency, (arrayCreationOperation.Initializer?.ElementValues.OfType<IConversionOperation>().Select(i => i.Syntax).OfType<ExpressionSyntax>() ?? Enumerable.Empty<ExpressionSyntax>()).ToArray());
                     _binding.AddDependency(new SemanticType(dependencyType, SemanticModel));
                 }
@@ -272,6 +272,7 @@ internal sealed class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
                                 _binding.Implementation = semanticType;
                                 _binding.BindingType = BindingType.Arg;
                                 _binding.Lifetime = Lifetime.Transient;
+                                _binding.Locations = ImmutableArray.Create(node.GetLocation());
                                 _binding.Factory = _argumentsSupport.CreateArgumentFactory(arg);
                                 _binding.AddDependency(semanticType);
                                 foreach (var tag in tags)
@@ -296,8 +297,7 @@ internal sealed class MetadataWalker : CSharpSyntaxWalker, IMetadataWalker
                                 _binding.Implementation = new SemanticType(dependencyType, SemanticModel);
                                 _binding.BindingType = BindingType.Root;
                                 _binding.Lifetime = Lifetime.Transient;
-                                _binding.Location = node.GetLocation();
-
+                                _binding.Locations = ImmutableArray.Create(node.GetLocation());
                                 _resolver?.Bindings.Add(_binding);
                                 _binding = new BindingMetadata { Lifetime = _defaultLifetime };
                             }

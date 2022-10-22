@@ -6,7 +6,7 @@ internal interface IBindingMetadata
 {
     object Id { get; }
 
-    Location? Location { get; }
+    ImmutableArray<Location> Locations { get; }
 
     SemanticType? Implementation { get; }
 
