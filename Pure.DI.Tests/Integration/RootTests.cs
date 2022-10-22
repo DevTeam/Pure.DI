@@ -217,4 +217,43 @@ public class RootTests
             "(Sample.MyClass`1[System.String], 99)"
         }, generatedCode);
     }
+    
+    [Fact]
+    public void ShouldNotReplaceBindingByRoot()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;               
+
+                public class CompositionRoot
+                {
+                    public readonly bool Value;
+                    internal CompositionRoot(Foo value1, Foo value2) => Value = value1 == value2;        
+                }
+
+                public class Foo { }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Bind<Foo>().As(Pure.DI.Lifetime.Singleton).To<Foo>()
+                            .Bind<CompositionRoot>().To<CompositionRoot>()
+                            .Root<Foo>();
+                    }                    
+                }    
+            }".Run(out var generatedCode);
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "True"
+        },generatedCode);
+    }
 }
