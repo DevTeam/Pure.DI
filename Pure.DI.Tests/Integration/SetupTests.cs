@@ -1744,7 +1744,7 @@ public class SetupTests
         output.ShouldBe(new[]
         {
             "xyzabc",
-            "Warning DIW002: Bind<string>(1, \"A\").To(_ => \"abc\") exists and will be overridden by a new one Bind<string>(1, \"B\").To(_ => \"xyz\") for string(1).",
+            "Warning DIW002: Bind<string>(1, \"A\").To(_ => \"abc\") exists and will be overridden by a new one Bind<string>(1, \"B\").To(_ => \"xyz\") for string(1)."
         }, generatedCode);
     }
 

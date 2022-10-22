@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable InvocationIsSkipped
 namespace Pure.DI.Core;
 
 internal sealed class Log<T> : ILog<T>

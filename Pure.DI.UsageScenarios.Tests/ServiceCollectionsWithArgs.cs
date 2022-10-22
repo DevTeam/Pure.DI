@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ArrangeNamespaceBody
+// ReSharper disable RedundantUsingDirective
 namespace Pure.DI.UsageScenarios.Tests
 {
     using System;

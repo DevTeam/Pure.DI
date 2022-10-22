@@ -30,9 +30,4 @@ internal sealed class RunInContextMembersBuilder : IMembersBuilder
                 .AddParameterListParameters(_argumentsSupport.GetParameters().ToArray())
                 .WithBody(body);
     }
-    
-    public static T ResolveInContext<T>(Func<T> run)
-    {
-        return run();
-    }
 }
