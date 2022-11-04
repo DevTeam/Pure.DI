@@ -148,7 +148,7 @@ public class FactoryTests
                     internal CompositionRoot(string value) => Value = value;
                 }
 
-                [Include(""string$"")]
+                [Include(""^string$"")]
                 internal class MyLifetime<T>: IFactory<T>
                 {
                     public T Create(Func<T> factory, Type implementationType, object tag, Lifetime lifetime)
@@ -269,7 +269,7 @@ public class FactoryTests
     }
 
     [Fact]
-    public void ShouldSupportMethodFactory()
+    public void ShouldSupportMethodFactoryWhenFilter()
     {
         // Given
 
@@ -476,6 +476,62 @@ public class FactoryTests
         output.ShouldBe(new[]
         {
             "CompositionRoot: CompositionRoot()", "IMyInterface1: IMyInterface1()", "IMyInterface2: IMyInterface2(2)", "Sample.MyClass"
+        }, generatedCode);
+    }
+    
+    [Fact]
+    public void ShouldSupportMethodFactoryPassingViaArg()
+    {
+        // Given
+
+        // When
+        var output = @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+
+                public class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string value) => Value = value;
+                }
+
+                internal class MyFactory: IFactory
+                {
+                    public T Create<T>(Func<T> factory, Type implementationType, object tag, Lifetime lifetime)
+                    {
+                        if (implementationType == typeof(string))
+                        {
+                            return (T)(object)(factory() as string + ""_abc"");
+                        }
+
+                        return factory();
+                    }
+                }
+
+                internal static partial class Composer
+                {
+                    static Composer()
+                    {
+                        DI.Setup()
+                            .Arg<IFactory>()
+                            .Bind<string>().To(_ => ""xyz"")
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }                    
+                }    
+            }"
+            .Run(
+                out var generatedCode,
+                new RunOptions
+                {
+                    Statements = "System.Console.WriteLine(Composer.Resolve<CompositionRoot>(new MyFactory()).Value);"
+                });
+
+        // Then
+        output.ShouldBe(new[]
+        {
+            "xyz_abc"
         }, generatedCode);
     }
 }

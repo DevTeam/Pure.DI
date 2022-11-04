@@ -8,53 +8,61 @@ namespace Pure.DI.UsageScenarios.Tests
     using Shouldly;
     using System;
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using Xunit;
     using static Lifetime;
 
-    public class CustomSingleton
+    public class CustomContainer
     {
         [Fact]
         // $visible=true
         // $tag=2 Lifetimes
         // $priority=99
-        // $description=Custom singleton lifetime
-        // $header=*__IFactory__* is a powerful tool that allows controlling most the aspects while resolving dependencies.
+        // $description=Custom Container
+        // $header=*__Factory__* is a powerful tool that allows you to control most aspects of dependency resolution, including the implementation of classic container-style dependency injection.
         // {
         public void Run()
         {
             DI.Setup()
-                // Registers the custom lifetime for all implementations with a class name ending by word "Singleton"
-                .Bind<IFactory>().Bind<ISingletonsContainer>().As(Singleton).To<CustomSingletonLifetime>()
-                .Bind<IDependency>().To<DependencySingleton>()
+                // Specifies that we should pass in a container instance each time we call the `Resolve()` method.
+                .Arg<IFactory>()
+                .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>();
 
             IService instance1;
-            using (CustomSingletonDI.Resolve<ISingletonsContainer>())
+            // Creates a container and passes in a list of types that must be singletons.
+            using (var container = new Container(typeof(IDependency)))
             {
-                instance1 = CustomSingletonDI.Resolve<IService>();
-                var instance2 = CustomSingletonDI.Resolve<IService>();
+                instance1 = CustomContainerDI.Resolve<IService>(container);
+                var instance2 = CustomContainerDI.Resolve<IService>(container);
 
                 // Check that dependencies are singletons
                 instance1.Dependency.ShouldBe(instance2.Dependency);
                 instance1.ShouldNotBe(instance2);
             }
-
-            instance1.Dependency.ShouldBeOfType<DependencySingleton>();
-            ((DependencySingleton)instance1.Dependency).IsDisposed.ShouldBeTrue();
+            
+            instance1.Dependency.ShouldBeOfType<Dependency>();
+            // Checks that container disposed disposable instances.
+            ((Dependency)instance1.Dependency).IsDisposed.ShouldBeTrue();
         }
         
-        public interface ISingletonsContainer: IDisposable { }
-
-        // A pattern of the class name ending by word "Singleton"
-        [Include(".*Singleton$")]
-        internal class CustomSingletonLifetime: IFactory, ISingletonsContainer
+        internal class Container: IFactory, IDisposable
         {
+            private readonly HashSet<Type> _singletonTypes;
+
             // Stores singleton instances by key
             private readonly ConcurrentDictionary<Key, object> _instances = new();
 
+            public Container(params Type[] singletonTypes) => 
+                _singletonTypes = new HashSet<Type>(singletonTypes);
+
             // Gets an existing instance or creates a new
             public T Create<T>(Func<T> factory, Type implementationType, object tag, Lifetime lifetime) =>
-                (T)_instances.GetOrAdd(new Key(implementationType, tag), _ => factory()!);
+                _singletonTypes.Contains(typeof(T))
+                    // Resolves a singleton manually
+                    ? (T)_instances.GetOrAdd(new Key(implementationType, tag), _ => factory()!)
+                    // Resolves the instance using the default way
+                    : factory();
 
             public void Dispose()
             {
@@ -73,7 +81,7 @@ namespace Pure.DI.UsageScenarios.Tests
         
         public interface IDependency { }
 
-        public class DependencySingleton : IDependency, IDisposable
+        public class Dependency : IDependency, IDisposable
         {
             public bool IsDisposed { get; private set; }
             
