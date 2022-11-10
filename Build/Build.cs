@@ -50,26 +50,24 @@ class Build
 
         var props = new[]
         {
-            ("configuration", _settings.Configuration),
             ("version", packageVersion.ToString()!),
             ("AnalyzerRoslynVersion", analyzerRoslynVersion.ToString()),
             ("AnalyzerRoslynPackageVersion", analyzerRoslynPackageVersion.ToString())
         };
 
-        var build = new DotNetBuild()
-            .WithProps(props);
-
-        Assertion.Succeed(_buildRunner.Run(build));
-
         var test = new DotNetTest()
             .WithProps(props)
-            .WithNoBuild(true);
-        
-        Assertion.Succeed(_buildRunner.Run(test));
+            .WithConfiguration(_settings.Configuration);
+
+        var testResult = _buildRunner.Run(test);
+        WriteLine(testResult.ToString(), Color.Highlighted);
+        Assertion.Succeed(testResult);
 
         var pack = new DotNetPack()
             .WithProps(props)
             .WithNoBuild(true)
+            .WithNoRestore(true)
+            .WithConfiguration(_settings.Configuration)
             .WithProject(Path.Combine("Pure.DI", "Pure.DI.csproj"));
         
         Assertion.Succeed(_buildRunner.Run(pack));
