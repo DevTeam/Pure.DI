@@ -78,7 +78,7 @@ internal sealed class ClassBuilder : IClassBuilder
                     .Select(i => i.WithNewLine().WithNewLine())
                     .ToArray())
             .WithNewLine()
-            .WithPragmaWarningDisable(0067, 8600, 8602, 8603, 8604, 8618, 8625);
+            .WithPragmaWarningDisable(0067, 8600, 8602, 8603, 8604, 8618, 8625, 8669);
 
         var rootNode = _compilationUnitSyntaxBuilder.CreateRootNode(resolverClass);
         var sampleDependency = _metadata.Bindings.LastOrDefault()?.Dependencies.FirstOrDefault()?.ToString() ?? "T";

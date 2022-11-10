@@ -45,7 +45,7 @@ internal sealed class SourceSet
             
             using var reader = new StreamReader(assembly.GetManifestResourceStream(resourceName) ?? throw new InvalidOperationException($"Cannot read {resourceName}."));
             var code = reader.ReadToEnd().ReplaceNamespace();
-            yield return new Source(Defaults.DefaultNamespace + "." + resourceName, SourceText.From(code, Encoding.UTF8));
+            yield return new Source($"{Defaults.DefaultNamespace}.{resourceName}".Replace(".cs", ".generated.cs"), SourceText.From(code, Encoding.UTF8));
         }
     }
 }
