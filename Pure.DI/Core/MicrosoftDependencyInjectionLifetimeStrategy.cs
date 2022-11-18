@@ -10,17 +10,20 @@ internal sealed class MicrosoftDependencyInjectionLifetimeStrategy : ILifetimeSt
     private readonly ICannotResolveExceptionFactory _cannotResolveExceptionFactory;
     private readonly Func<IBuildStrategy> _buildStrategy;
     private readonly IWrapperStrategy _wrapperStrategy;
+    private readonly ISettings _settings;
 
     public MicrosoftDependencyInjectionLifetimeStrategy(
         IBuildContext buildContext,
         ICannotResolveExceptionFactory cannotResolveExceptionFactory,
         Func<IBuildStrategy> buildStrategy,
-        IWrapperStrategy wrapperStrategy)
+        IWrapperStrategy wrapperStrategy,
+        ISettings settings)
     {
         _buildContext = buildContext;
         _cannotResolveExceptionFactory = cannotResolveExceptionFactory;
         _buildStrategy = buildStrategy;
         _wrapperStrategy = wrapperStrategy;
+        _settings = settings;
     }
 
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
@@ -34,6 +37,11 @@ internal sealed class MicrosoftDependencyInjectionLifetimeStrategy : ILifetimeSt
 
     public ExpressionSyntax Build(SemanticType resolvingType, Dependency dependency, ExpressionSyntax objectBuildExpression)
     {
+        if (!_settings.MEDI)
+        {
+            return objectBuildExpression;
+        }
+        
         var type = dependency.Binding.Dependencies.FirstOrDefault() ?? dependency.Implementation;
         var serviceProviderInstance = new SemanticType(dependency.Implementation.SemanticModel.Compilation.GetTypeByMetadataName(typeof(ServiceProviderInstance<>).FullName.ReplaceNamespace())!, dependency.Implementation.SemanticModel);
         var instanceType = serviceProviderInstance.Construct(type);

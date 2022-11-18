@@ -1973,4 +1973,78 @@ public class SetupTests
             // Then
             .Run(out _, new RunOptions {Statements = string.Empty});
     }
+    
+    [Fact]
+    public void ShouldSupportMEDIWhenMEDIIsTrue()
+    {
+        // Given
+
+        // When
+        @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+                using Microsoft.Extensions.DependencyInjection;
+                
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        // MEDI=true
+                        DI.Setup()
+                            .Bind<string>().To(_ => ""abc"")
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string value) => Value = value;        
+                }
+            }"
+            // Then
+            .Run(out var generatedCode, new RunOptions {Statements = "new Microsoft.Extensions.DependencyInjection.ServiceCollection().AddComposer();"});
+        
+        generatedCode.Contains("AddComposer(").ShouldBeTrue();
+    }
+    
+    [Fact]
+    public void ShouldNotSupportMEDIWhenMEDIIsFalse()
+    {
+        // Given
+
+        // When
+        @"
+            namespace Sample
+            {
+                using System;
+                using Pure.DI;
+                using Microsoft.Extensions.DependencyInjection;
+                
+                static partial class Composer
+                {
+                    static Composer()
+                    {
+                        // MEDI=false
+                        DI.Setup()
+                            .Bind<string>().To(_ => ""abc"")
+                            // Composition Root
+                            .Bind<CompositionRoot>().To<CompositionRoot>();
+                    }
+                }
+
+                internal class CompositionRoot
+                {
+                    public readonly string Value;
+                    internal CompositionRoot(string value) => Value = value;        
+                }
+            }"
+            // Then
+            .Run(out var generatedCode);
+        
+        generatedCode.Contains("AddComposer(").ShouldBeFalse();
+    }
 }

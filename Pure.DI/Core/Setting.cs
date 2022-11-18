@@ -10,5 +10,7 @@ internal enum Setting
 
     Trace,
     
-    Accessibility
+    Accessibility,
+    
+    MEDI
 }

@@ -15,6 +15,7 @@ internal sealed class MicrosoftDependencyInjectionMembersBuilder : IMembersBuild
     private readonly IStatementsBlockWrapper _statementsBlockWrapper;
     private readonly IArgumentsSupport _argumentsSupport;
     private readonly IStatementsBlockWrapper[] _statementsBlockWrappers;
+    private readonly ISettings _settings;
 
     public MicrosoftDependencyInjectionMembersBuilder(
         ResolverMetadata metadata,
@@ -26,7 +27,8 @@ internal sealed class MicrosoftDependencyInjectionMembersBuilder : IMembersBuild
         ITracer tracer,
         IStatementsBlockWrapper statementsBlockWrapper,
         IArgumentsSupport argumentsSupport,
-        IStatementsBlockWrapper[] statementsBlockWrappers)
+        IStatementsBlockWrapper[] statementsBlockWrappers,
+        ISettings settings)
     {
         _metadata = metadata;
         _buildContext = buildContext;
@@ -38,12 +40,18 @@ internal sealed class MicrosoftDependencyInjectionMembersBuilder : IMembersBuild
         _statementsBlockWrapper = statementsBlockWrapper;
         _argumentsSupport = argumentsSupport;
         _statementsBlockWrappers = statementsBlockWrappers;
+        _settings = settings;
     }
 
     public int Order => 1;
 
     public IEnumerable<MemberDeclarationSyntax> BuildMembers(SemanticModel semanticModel)
     {
+        if (!_settings.MEDI)
+        {
+            yield break;
+        }
+
         _log.Trace(() => new[]
         {
             "Start"

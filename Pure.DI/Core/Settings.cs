@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable IdentifierTypo
 namespace Pure.DI.Core;
 
 using System.IO;
@@ -59,6 +60,8 @@ internal sealed class Settings : ISettings
             : Accessibility.Public;
 
     public SyntaxKind AccessibilityToken => _accessibilityToSyntaxKindConverter.Convert(Accessibility);
+
+    public bool MEDI => GetBool(Setting.MEDI, true);
 
     private bool TryGet(Setting setting, out string value)
     {
