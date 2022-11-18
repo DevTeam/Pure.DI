@@ -65,8 +65,6 @@ class Build
 
         var pack = new DotNetPack()
             .WithProps(props)
-            .WithNoBuild(true)
-            .WithNoRestore(true)
             .WithConfiguration(_settings.Configuration)
             .WithProject(Path.Combine("Pure.DI", "Pure.DI.csproj"));
         

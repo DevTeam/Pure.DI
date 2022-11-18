@@ -945,15 +945,15 @@ It is possible can change an accessibility of level all resolving generated meth
 public void Run()
 {
     // Accessibility = private
-    DI.Setup()
+    DI.Setup("MyTestComposer")
         .Bind<IDependency>().To<Dependency>()
         .Bind<IService>().To<Service>();
 
-    var instance = MethodsAccessibilityDI.Service;
+    var instance = MyTestComposer.Service;
     instance.ShouldBeOfType<Service>();
 }
 
-internal static partial class MethodsAccessibilityDI
+internal static partial class MyTestComposer
 {
     public static IService Service => ResolveIService();
 }

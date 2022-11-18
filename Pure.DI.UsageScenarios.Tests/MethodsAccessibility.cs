@@ -20,11 +20,11 @@ namespace Pure.DI.UsageScenarios.Tests
         public void Run()
         {
             // Accessibility = private
-            DI.Setup()
+            DI.Setup("MyTestComposer")
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>();
 
-            var instance = MethodsAccessibilityDI.Service;
+            var instance = MyTestComposer.Service;
             instance.ShouldBeOfType<Service>();
         }
         // }
@@ -32,7 +32,7 @@ namespace Pure.DI.UsageScenarios.Tests
     
         // {
 
-        internal static partial class MethodsAccessibilityDI
+        internal static partial class MyTestComposer
         {
             public static IService Service => ResolveIService();
         }

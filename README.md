@@ -358,13 +358,13 @@ For instance, to use the default project namespace, you could specify the follow
 
 ### Advanced options of the `Setup` method
 
-#### Methods Accessibility
+#### Composer Methods Accessibility
 
 To change methods accessibility please see [this example](#methods-accessibility).
 
 #### Suppress generation of ServiceCollection extensions
 
-To suppress the generation of `IServiceCollection` extensions, simply add a comment like `// MEDI = false` before calling `DI.Setup()`, like so:
+To suppress the generation of `IServiceCollection` extensions, just add a comment like `// MEDI = false` before calling `DI.Setup()`, like so:
 
 ``` CSharp
 public void Run()
@@ -1413,15 +1413,15 @@ It is possible can change an accessibility of level all resolving generated meth
 public void Run()
 {
     // Accessibility = private
-    DI.Setup()
+    DI.Setup("MyTestComposer")
         .Bind<IDependency>().To<Dependency>()
         .Bind<IService>().To<Service>();
 
-    var instance = MethodsAccessibilityDI.Service;
+    var instance = MyTestComposer.Service;
     instance.ShouldBeOfType<Service>();
 }
 
-internal static partial class MethodsAccessibilityDI
+internal static partial class MyTestComposer
 {
     public static IService Service => ResolveIService();
 }
