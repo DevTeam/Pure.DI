@@ -18,6 +18,7 @@ namespace NS35EBD81B
     /// Represents a dependency type attribute overriding an injection type. 
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Field)]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TypeAttribute<T> : Attribute
     { }
 }

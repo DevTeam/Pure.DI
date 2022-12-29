@@ -2,8 +2,8 @@
   "version": 1,
   "isRoot": true,
   "tools": {
-    "teamcity.csi": {
-      "version": "1.0.4",
+    "dotnet-csi": {
+      "version": "1.0.0",
       "commands": [
         "dotnet-csi"
       ]

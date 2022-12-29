@@ -37,12 +37,14 @@ var baseTypes = new Dictionary<string, string> {
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT<#=i == 0 ? "" : i.ToString()#> { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC<#=i == 0 ? "" : i.ToString()#> { }
 
     /// <summary>
@@ -55,6 +57,7 @@ var baseTypes = new Dictionary<string, string> {
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS<#=i == 0 ? "" : i.ToString()#> { }
 
 <#

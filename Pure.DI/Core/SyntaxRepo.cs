@@ -90,6 +90,9 @@ internal static class SyntaxRepo
 
     public static readonly AttributeSyntax ThreadStaticAttr = SyntaxFactory.Attribute(
         SyntaxFactory.IdentifierName($"System.{nameof(ThreadStaticAttribute)}"));
+    
+    public static readonly AttributeSyntax ExcludeFromCodeCoverageAttr = SyntaxFactory.Attribute(
+        SyntaxFactory.IdentifierName($"System.Diagnostics.CodeAnalysis.{nameof(ExcludeFromCodeCoverageAttribute)}"));
 
     public static readonly AttributeSyntax AggressiveInliningAttr = SyntaxFactory.Attribute(
         SyntaxFactory.IdentifierName(typeof(MethodImplAttribute).FullName),

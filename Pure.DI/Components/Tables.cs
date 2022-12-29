@@ -42,6 +42,7 @@ namespace System
 
 namespace NS35EBD81B
 {
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal sealed class Pair<TKey, TValue>
     {
         public readonly TKey Key;
@@ -60,11 +61,13 @@ namespace NS35EBD81B
         }
     }
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal static class Tables
     {
         internal const string CannotResolveMessage = "Cannot resolve an instance ";
     } 
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class Table<TKey, TValue>
     {
         private static readonly Pair<TKey, TValue> EmptyPair = new Pair<TKey, TValue>(default(TKey), default(TValue));
@@ -116,6 +119,7 @@ namespace NS35EBD81B
         }
     }
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal sealed class ResolversTable : Table<System.Type, System.Func<object>>
     {
         public readonly Pair<System.Type, System.Func<object>>[] ResolversBuckets;
@@ -166,6 +170,7 @@ namespace NS35EBD81B
         }
     }
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal sealed class ResolversByTagTable : Table<TagKey, System.Func<object>>
     {
         public readonly Pair<TagKey, System.Func<object>>[] ResolversByTagBuckets;
@@ -216,6 +221,7 @@ namespace NS35EBD81B
         }
     }
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TagKey
     {
         public readonly System.Type Type;

@@ -27,11 +27,13 @@ namespace System
 #pragma warning disable 0436
 namespace NS35EBD81B
 {
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct ServiceProviderInstance
     {
         [System.ThreadStatic] public static System.IServiceProvider ServiceProvider;
     }
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal sealed class DefaultServiceProvider: System.IServiceProvider
     {
         private readonly System.Func<System.Type, object> _resolver;
@@ -59,6 +61,7 @@ namespace NS35EBD81B
         }
     }
 
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct ServiceProviderInstance<T>
     {
         public T Value

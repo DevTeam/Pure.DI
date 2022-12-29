@@ -6,6 +6,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CoreHtmlToImage" Version="1.0.6" />
-    <PackageReference Include="TeamCity.CSharpInteractive" Version="1.0.4" />
+    <PackageReference Include="CSharpInteractive" Version="1.0.0" />
   </ItemGroup>
 </Project>

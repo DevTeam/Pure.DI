@@ -14,12 +14,14 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC { }
 
     /// <summary>
@@ -32,6 +34,7 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS { }
 
 
@@ -150,12 +153,14 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT1 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC1 { }
 
     /// <summary>
@@ -168,6 +173,7 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS1 { }
 
 
@@ -286,12 +292,14 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT2 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC2 { }
 
     /// <summary>
@@ -304,6 +312,7 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS2 { }
 
 
@@ -422,12 +431,14 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT3 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC3 { }
 
     /// <summary>
@@ -440,6 +451,7 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS3 { }
 
 
@@ -558,12 +570,14 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT4 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC4 { }
 
     /// <summary>
@@ -576,6 +590,7 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS4 { }
 
 
@@ -694,12 +709,14 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT5 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC5 { }
 
     /// <summary>
@@ -712,6 +729,7 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS5 { }
 
 
@@ -830,12 +848,14 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT6 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC6 { }
 
     /// <summary>
@@ -848,6 +868,7 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS6 { }
 
 
@@ -966,12 +987,14 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT7 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC7 { }
 
     /// <summary>
@@ -984,6 +1007,7 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS7 { }
 
 
@@ -1102,12 +1126,14 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT8 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC8 { }
 
     /// <summary>
@@ -1120,6 +1146,7 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS8 { }
 
 
@@ -1238,12 +1265,14 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT9 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC9 { }
 
     /// <summary>
@@ -1256,18 +1285,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS9 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT10 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC10 { }
 
     /// <summary>
@@ -1280,18 +1312,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS10 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT11 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC11 { }
 
     /// <summary>
@@ -1304,18 +1339,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS11 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT12 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC12 { }
 
     /// <summary>
@@ -1328,18 +1366,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS12 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT13 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC13 { }
 
     /// <summary>
@@ -1352,18 +1393,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS13 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT14 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC14 { }
 
     /// <summary>
@@ -1376,18 +1420,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS14 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT15 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC15 { }
 
     /// <summary>
@@ -1400,18 +1447,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS15 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT16 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC16 { }
 
     /// <summary>
@@ -1424,18 +1474,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS16 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT17 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC17 { }
 
     /// <summary>
@@ -1448,18 +1501,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS17 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT18 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC18 { }
 
     /// <summary>
@@ -1472,18 +1528,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS18 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT19 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC19 { }
 
     /// <summary>
@@ -1496,18 +1555,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS19 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT20 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC20 { }
 
     /// <summary>
@@ -1520,18 +1582,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS20 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT21 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC21 { }
 
     /// <summary>
@@ -1544,18 +1609,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS21 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT22 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC22 { }
 
     /// <summary>
@@ -1568,18 +1636,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS22 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT23 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC23 { }
 
     /// <summary>
@@ -1592,18 +1663,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS23 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT24 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC24 { }
 
     /// <summary>
@@ -1616,18 +1690,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS24 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT25 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC25 { }
 
     /// <summary>
@@ -1640,18 +1717,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS25 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT26 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC26 { }
 
     /// <summary>
@@ -1664,18 +1744,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS26 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT27 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC27 { }
 
     /// <summary>
@@ -1688,18 +1771,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS27 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT28 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC28 { }
 
     /// <summary>
@@ -1712,18 +1798,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS28 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT29 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC29 { }
 
     /// <summary>
@@ -1736,18 +1825,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS29 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT30 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC30 { }
 
     /// <summary>
@@ -1760,18 +1852,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS30 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT31 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC31 { }
 
     /// <summary>
@@ -1784,18 +1879,21 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS31 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT32 { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC32 { }
 
     /// <summary>
@@ -1808,6 +1906,7 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS32 { }
 
 }

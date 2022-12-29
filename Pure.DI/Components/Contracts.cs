@@ -10,10 +10,22 @@
 // ReSharper disable ArrangeNamespaceBody
 #pragma warning disable 0436
 #pragma warning disable 8625
+
+#if NET20 || NET35
+namespace System.Diagnostics.CodeAnalysis
+{
+    // ReSharper disable UnusedType.Global
+    [System.AttributeUsage(System.AttributeTargets.Assembly | System.AttributeTargets.Class | System.AttributeTargets.Constructor | System.AttributeTargets.Event | System.AttributeTargets.Method | System.AttributeTargets.Property | System.AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
+    public sealed class ExcludeFromCodeCoverageAttribute : Attribute
+    {
+    }
+}
+#endif
+
 namespace NS35EBD81B
 {
     using System;
-
+    
     /// <summary>
     /// Binding lifetimes.
     /// </summary>
@@ -59,12 +71,14 @@ namespace NS35EBD81B
     /// Represents the generic type arguments marker. It allows creating custom generic type arguments marker like <see cref="TTS"/>, <see cref="TTDictionary{TKey,TValue}"/> and etc. 
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Struct)]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal sealed class GenericTypeArgumentAttribute : Attribute { }
     
     /// <summary>
     /// Represents an order attribute overriding an injection order.
     /// </summary>
     [AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field)]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class OrderAttribute : Attribute
     {
         // ReSharper disable once MemberCanBePrivate.Global
@@ -87,6 +101,7 @@ namespace NS35EBD81B
     /// Represents a tag attribute overriding an injection tag.
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Field)]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TagAttribute : Attribute
     {
         // ReSharper disable once MemberCanBePrivate.Global
@@ -109,6 +124,7 @@ namespace NS35EBD81B
     /// Represents a dependency type attribute overriding an injection type. 
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Field)]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TypeAttribute : Attribute
     {
         // ReSharper disable once MemberCanBePrivate.Global
@@ -145,6 +161,7 @@ namespace NS35EBD81B
     /// </example>
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class IncludeAttribute : Attribute
     {
         /// <summary>
@@ -196,6 +213,7 @@ namespace NS35EBD81B
     /// </example>
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class ExcludeAttribute : Attribute
     {
         /// <summary>
@@ -251,6 +269,7 @@ namespace NS35EBD81B
     /// </code>
     /// </example>
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal static class DI
     {
         /// <summary>
@@ -719,6 +738,7 @@ namespace NS35EBD81B
     /// </code>
     /// </example>.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct RegisterDisposableEvent
     {
         /// <summary>

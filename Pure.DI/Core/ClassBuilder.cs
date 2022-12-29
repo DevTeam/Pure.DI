@@ -71,6 +71,7 @@ internal sealed class ClassBuilder : IClassBuilder
         var resolverClass = SyntaxRepo.ClassDeclaration(_metadata.ComposerTypeName)
             .WithKeyword(SyntaxKind.ClassKeyword.WithSpace())
             .AddModifiers(classModifiers.ToArray())
+            .AddAttributeLists(SyntaxFactory.AttributeList().AddAttributes(SyntaxRepo.ExcludeFromCodeCoverageAttr))
             .AddMembers(
                 _membersBuilder
                     .OrderBy(i => i.Order)
