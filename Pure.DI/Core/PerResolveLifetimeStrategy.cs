@@ -9,17 +9,20 @@ internal sealed class PerResolveLifetimeStrategy : ILifetimeStrategy
     private readonly IRaiseOnDisposableExpressionBuilder _raiseOnDisposableExpressionBuilder;
     private readonly IWrapperStrategy _wrapperStrategy;
     private readonly IStringTools _stringTools;
+    private readonly ISettings _settings;
 
     public PerResolveLifetimeStrategy(
         IBuildContext buildContext,
         IRaiseOnDisposableExpressionBuilder raiseOnDisposableExpressionBuilder,
         IWrapperStrategy wrapperStrategy,
-        IStringTools stringTools)
+        IStringTools stringTools,
+        ISettings settings)
     {
         _buildContext = buildContext;
         _raiseOnDisposableExpressionBuilder = raiseOnDisposableExpressionBuilder;
         _wrapperStrategy = wrapperStrategy;
         _stringTools = stringTools;
+        _settings = settings;
     }
 
     public Lifetime? Lifetime => NS35EBD81B.Lifetime.PerResolve;
@@ -35,7 +38,7 @@ internal sealed class PerResolveLifetimeStrategy : ILifetimeStrategy
                 ? resolvedType.TypeSyntax
                 : SyntaxRepo.ObjectTypeSyntax;
 
-            if ((_buildContext.Compilation.Options.NullableContextOptions & NullableContextOptions.Enable) == NullableContextOptions.Enable)
+            if (_settings.Nullability)
             {
                 fieldType = SyntaxFactory.NullableType(fieldType);
             }

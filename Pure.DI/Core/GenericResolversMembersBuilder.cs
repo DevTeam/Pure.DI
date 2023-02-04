@@ -13,6 +13,7 @@ internal sealed class GenericResolversMembersBuilder : IMembersBuilder
     private readonly IStatementsBlockWrapper[] _statementsBlockWrappers;
     private readonly IArgumentsSupport _argumentsSupport;
     private readonly IDependencyAccessibility _dependencyAccessibility;
+    private readonly ISettings _settings;
 
     public GenericResolversMembersBuilder(
         ResolverMetadata metadata,
@@ -23,7 +24,8 @@ internal sealed class GenericResolversMembersBuilder : IMembersBuilder
         IStaticResolverNameProvider staticResolverNameProvider,
         IStatementsBlockWrapper[] statementsBlockWrappers,
         IArgumentsSupport argumentsSupport,
-        IDependencyAccessibility dependencyAccessibility)
+        IDependencyAccessibility dependencyAccessibility,
+        ISettings settings)
     {
         _metadata = metadata;
         _buildContext = buildContext;
@@ -34,6 +36,7 @@ internal sealed class GenericResolversMembersBuilder : IMembersBuilder
         _statementsBlockWrappers = statementsBlockWrappers;
         _argumentsSupport = argumentsSupport;
         _dependencyAccessibility = dependencyAccessibility;
+        _settings = settings;
     }
 
     public int Order => 2;
@@ -93,7 +96,7 @@ internal sealed class GenericResolversMembersBuilder : IMembersBuilder
             }
 
             var tagType = SyntaxRepo.ObjectTypeSyntax;
-            if ((_buildContext.Compilation.Options.NullableContextOptions & NullableContextOptions.Enable) == NullableContextOptions.Enable)
+            if (_settings.Nullability)
             {
                 tagType = SyntaxFactory.NullableType(SyntaxRepo.ObjectTypeSyntax);
             }

@@ -1,4 +1,7 @@
-﻿using System;
+﻿#pragma warning disable CA1050
+// ReSharper disable UnusedMember.Global
+
+using System;
 using Pure.DI;
 using static Pure.DI.Lifetime;
 
@@ -65,3 +68,5 @@ public partial class Program
 
     private void Run() => Console.WriteLine(_box);
 }
+
+#pragma warning restore CA1050

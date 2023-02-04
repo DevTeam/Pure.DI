@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 var version = NuGetVersion.Parse(Property.Get("version", "1.0.0-dev", true));
 var nuGetKey = Property.Get("NuGetKey", string.Empty);
-var requiredSdkRange = VersionRange.Parse(Property.Get("RequiredSdkRange", "[6.0, )"), false);
+var requiredSdkRange = VersionRange.Parse(Property.Get("RequiredSdkRange", "[7.0, )"), false);
 var configuration = Environment.OSVersion.Platform == PlatformID.Win32NT ? "Release" : "Linux";
 
 var settings = new Settings(

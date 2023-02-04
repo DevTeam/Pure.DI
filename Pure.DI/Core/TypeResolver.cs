@@ -380,7 +380,7 @@ internal sealed class TypeResolver : ITypeResolver
                     return false;
                 }
                 
-                if (_type.AllInterfaces.Any() && !_type.AllInterfaces.Contains(type))
+                if (_type.AllInterfaces.Any() && !_type.AllInterfaces.Contains(type, SymbolEqualityComparer.Default))
                 {
                     factory = default;
                     return false; 

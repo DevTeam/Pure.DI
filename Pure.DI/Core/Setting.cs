@@ -1,4 +1,6 @@
-﻿namespace Pure.DI.Core;
+﻿// ReSharper disable InconsistentNaming
+
+namespace Pure.DI.Core;
 
 internal enum Setting
 {

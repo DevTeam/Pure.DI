@@ -63,6 +63,8 @@ internal sealed class Settings : ISettings
 
     public bool MEDI => GetBool(Setting.MEDI, true);
 
+    public bool Nullability => (_buildContext.Compilation.Options.NullableContextOptions & NullableContextOptions.Enable) == NullableContextOptions.Enable;
+
     private bool TryGet(Setting setting, out string value)
     {
         var settings = _buildContext.Metadata.Settings;

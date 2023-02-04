@@ -1,4 +1,6 @@
 ﻿// ReSharper disable IdentifierTypo
+// ReSharper disable InconsistentNaming
+
 namespace Pure.DI.Core;
 
 internal interface ISettings
@@ -18,4 +20,6 @@ internal interface ISettings
     SyntaxKind AccessibilityToken { get; }
     
     bool MEDI { get; }
+    
+    bool Nullability { get; }
 }

@@ -1,6 +1,8 @@
 ﻿// ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable ArrangeNamespaceBody
+// ReSharper disable UnusedMember.Global
+
 namespace Sample
 {
     using System;

@@ -134,7 +134,7 @@ internal sealed class AutowiringObjectBuilder : IObjectBuilder
                     break;
 
                 case IFieldSymbol field:
-                    if (!field.IsReadOnly && !field.IsStatic && !field.IsConst)
+                    if (field is { IsReadOnly: false, IsStatic: false, IsConst: false })
                     {
                         var fieldValue = ResolveInstance("instance field", field, dependency, field.Type, _buildContext.TypeResolver, buildStrategy, field.Locations);
                         if (fieldValue.ResolveType == ResolveType.NotResolved)
@@ -160,7 +160,7 @@ internal sealed class AutowiringObjectBuilder : IObjectBuilder
                     break;
 
                 case IPropertySymbol property:
-                    if (property.SetMethod != null && !property.IsReadOnly && !property.IsStatic)
+                    if (property.SetMethod != null && property is { IsReadOnly: false, IsStatic: false })
                     {
                         var propertyValue = ResolveInstance("instance property", property, dependency, property.Type, _buildContext.TypeResolver, buildStrategy, property.Locations);
                         if (propertyValue.ResolveType == ResolveType.NotResolved)

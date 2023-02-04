@@ -1,4 +1,6 @@
 ﻿// ReSharper disable StringLiteralTypo
+// ReSharper disable InconsistentNaming
+
 namespace Pure.DI.Tests.Integration;
 
 using Microsoft.CodeAnalysis;
