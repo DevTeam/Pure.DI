@@ -1,0 +1,26 @@
+﻿<Project>
+
+    <PropertyGroup>
+        <LangVersion>11</LangVersion>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <IsPackable>false</IsPackable>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/DevTeam/Pure.DI.git</RepositoryUrl>
+        <Description>Pure DI for .NET without frameworks!</Description>
+        <Product>Pure DI</Product>
+        <Copyright>Copyright (C) 2023 Nikolay Pianikov</Copyright>
+        <AnalyzerRoslynVersion Condition="'$(AnalyzerRoslynVersion)'==''">4.4</AnalyzerRoslynVersion>
+        <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">4.4.0</AnalyzerRoslynPackageVersion>
+        <BaseIntermediateOutputPath>obj\roslyn$(AnalyzerRoslynVersion)</BaseIntermediateOutputPath>
+        <BaseOutputPath>bin\roslyn$(AnalyzerRoslynVersion)</BaseOutputPath>
+    </PropertyGroup>
+
+    <Target Name="Info" BeforeTargets="Build">
+        <Message Text="Roslyn Version/Package Version = $(AnalyzerRoslynVersion)($(AnalyzerRoslynPackageVersion))" Importance="high"/>
+    </Target>
+
+</Project>
+

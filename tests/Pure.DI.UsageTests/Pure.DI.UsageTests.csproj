@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    
+    <PropertyGroup>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+        <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
+        <PureDI_Severity>Hidden</PureDI_Severity>
+        <PureDI_LogFile>$(CompilerGeneratedFilesOutputPath)/di.log</PureDI_LogFile>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <CompilerVisibleProperty Include="PureDI_Severity" />
+        <CompilerVisibleProperty Include="PureDI_LogFile" />
+        <ProjectReference Include="..\..\src\Pure.DI.Core\Pure.DI.Core.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="..\..\src\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,11 @@
+**/obj/
+**/bin/
+**/*.lock.json
+**/*.TMP
+**/*.DotSettings.user
+**/*.csproj.user
+*.suo
+.vs/
+*.user
+_ReSharper.Caches/
+.idea

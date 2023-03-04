@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    
+    <PropertyGroup>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+        <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
+        <PureDINamespace>IoC</PureDINamespace>
+        <RootNamespace>Pure.DI</RootNamespace>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <CompilerVisibleProperty Include="PureDINamespace" />
+        <PackageReference Include="Pure.DI" Version="1.1.63">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <EmbeddedResource Include="Components\Api.g.cs" />
+        <EmbeddedResource Include="Features\Default.g.cs" />
+        <EmbeddedResource Include="Components\GenericTypeArguments.g.cs" />
+        <None Update="Components\GenericTypeArguments.g.tt">
+            <Generator>TextTemplatingFileGenerator</Generator>
+            <LastGenOutput>GenericTypeArguments.g.cs</LastGenOutput>
+        </None>
+    </ItemGroup>
+    
+</Project>

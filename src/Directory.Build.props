@@ -1,0 +1,25 @@
+﻿<Project>
+    <Import Project="..\Directory.Build.props"/>
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+        <InternalsVisibleTo Include="Pure.DI.Tests" />
+        <InternalsVisibleTo Include="Pure.DI.IntegrationTests" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="$(AnalyzerRoslynPackageVersion)" PrivateAssets="all" />
+        <None Update="Components\GenericTypeArguments.g.tt">
+            <LastGenOutput>GenericTypeArguments.g.cs</LastGenOutput>
+            <Generator>TextTemplatingFileGenerator</Generator>
+        </None>
+        <Compile Update="Components\GenericTypeArguments.g.cs">
+            <AutoGen>True</AutoGen>
+            <DesignTime>True</DesignTime>
+            <DependentUpon>GenericTypeArguments.g.tt</DependentUpon>
+        </Compile>
+    </ItemGroup>
+    
+</Project>
+
