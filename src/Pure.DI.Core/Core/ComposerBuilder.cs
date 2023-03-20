@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal class CodeBuilder: CodeGraphWalker<BuildContext>, IBuilder<DependencyGraph, Resolvers>
+internal class ComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<DependencyGraph, ComposerInfo>
 {
     private readonly IVarIdGenerator _idGenerator;
     private static readonly string IndentPrefix = new Indent(1).ToString();
@@ -8,19 +8,32 @@ internal class CodeBuilder: CodeGraphWalker<BuildContext>, IBuilder<DependencyGr
     private readonly Dictionary<Compilation, INamedTypeSymbol?> _disposableTypes = new();
     private readonly Dictionary<Root, ImmutableArray<Line>> _lines = new();
 
-    public CodeBuilder(IVarIdGenerator idGenerator)
-        : base(idGenerator) =>
-        _idGenerator = idGenerator;
+    public ComposerBuilder(IVarIdGenerator idGenerator)
+        : base(idGenerator) => _idGenerator = idGenerator;
 
-    public Resolvers Build(
+    public ComposerInfo Build(
         DependencyGraph dependencyGraph,
         CancellationToken cancellationToken)
     {
+        var composerTypeNameParts = dependencyGraph.Source.ComposerTypeName.Split('.', StringSplitOptions.RemoveEmptyEntries);
+        var className = composerTypeNameParts.Last();
+        var ns = string.Join('.', composerTypeNameParts.Take(composerTypeNameParts.Length - 1));
+        if (string.IsNullOrWhiteSpace(ns))
+        {
+            ns = dependencyGraph.Source.Namespace;
+        }
+        
+        var usingDirectives = dependencyGraph.Source.UsingDirectives.ToHashSet();
         var variables = new Dictionary<MdBinding, Variable>();
         VisitGraph(RootContext, dependencyGraph, variables, cancellationToken);
-        return new Resolvers(
-            variables.ToImmutableDictionary(i => i.Value.Node, i => i.Value.Name),
-            _lines.ToImmutableDictionary(),
+        var fields = variables.Select(i => new Field(i.Value.Node, i.Value.Name)).ToImmutableArray();
+        return new ComposerInfo(
+            className,
+            ns,
+            usingDirectives.OrderBy(i => i).ToImmutableArray(),
+            GetSingletons(fields),
+            GetArgs(fields),
+            _lines.Select(i => i.Key with { Lines = i.Value }).ToImmutableArray(),
             variables.Values.Count(IsDisposable)
         );
     }
@@ -139,7 +152,7 @@ internal class CodeBuilder: CodeGraphWalker<BuildContext>, IBuilder<DependencyGr
             var namesMap = new Dictionary<string, string>(); 
             foreach (var argsByContext in argsByContexts)
             {
-                var argCodeBuilder = new CodeBuilder(_idGenerator);
+                var argCodeBuilder = new ComposerBuilder(_idGenerator);
                 foreach (var arg in argsByContext)
                 {
                     var argBuildContext = new BuildContext(context.Variables, new LinesBuilder(), false);
@@ -288,4 +301,16 @@ internal class CodeBuilder: CodeGraphWalker<BuildContext>, IBuilder<DependencyGr
         return disposableType is { }
                && variable.Node.Type.AllInterfaces.Any(i => disposableType.Equals(i, SymbolEqualityComparer.Default));
     }
+    
+    private static ImmutableArray<Field> GetSingletons(in ImmutableArray<Field> fields) =>
+        fields
+            .Where(i => Equals(i.Node.Binding.Lifetime?.Lifetime, Lifetime.Singleton))
+            .OrderBy(i => i.Node.Binding.Id)
+            .ToImmutableArray();
+
+    private static ImmutableArray<Field> GetArgs(in ImmutableArray<Field> fields) =>
+        fields
+            .Where(i => i.Node.Arg is { })
+            .OrderBy(i => i.Node.Binding.Id)
+            .ToImmutableArray();
 }

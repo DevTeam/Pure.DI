@@ -28,7 +28,7 @@ internal static partial class Composer
         .Bind<IVarIdGenerator>().To<VarIdGenerator>()
         .Bind<IBuilder<DependencyGraph, string>>().To<ComposerClassBuilder>()
         .Bind<IBuilder<MdBinding, ISet<Injection>>>().To<InjectionsBuilder>()
-        .Bind<IBuilder<DependencyGraph, Resolvers>>().To<CodeBuilder>()
+        .Bind<IBuilder<DependencyGraph, ComposerInfo>>().To<ComposerBuilder>()
         .Bind<ITypeConstructor>().To<TypeConstructor>()
         .Bind<IBuilder<RewriterContext<MdFactory>, MdFactory>>().To<FactoryTypeRewriter>()
         .Bind<IValidator<MdSetup>>().To<MetadataValidator>()

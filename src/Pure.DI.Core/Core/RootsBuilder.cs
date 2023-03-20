@@ -52,7 +52,8 @@ internal class RootsBuilder: IBuilder<DependencyGraph, IReadOnlyDictionary<Injec
                             node,
                             injection,
                             isRoot,
-                            name)));    
+                            name,
+                            ImmutableArray<Line>.Empty)));    
                 }
             }
 

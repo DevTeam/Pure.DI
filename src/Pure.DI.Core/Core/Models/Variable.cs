@@ -15,17 +15,17 @@ internal record Variable(int Id, DependencyNode Node)
                 case { Lifetime: Lifetime.Singleton }:
                 {
                     var binding = Node.Binding;
-                    return $"_field{binding.Id}Singleton{Postfix}";
+                    return $"_{binding.Id}Singleton{Postfix}";
                 }
 
                 case { Lifetime: Lifetime.PerResolve }:
-                    return $"var{Id}PerResolve{Postfix}";
+                    return $"v{Id}PerResolve{Postfix}";
                 
                 case { Arg: {} arg }:
-                    return $"_field{arg.Source.ArgName}Arg{Postfix}";
+                    return $"_{arg.Source.ArgName}Arg{Postfix}";
 
                 default:
-                    return $"var{Id}Local{Postfix}";
+                    return $"v{Id}Local{Postfix}";
             }
         }
     }
