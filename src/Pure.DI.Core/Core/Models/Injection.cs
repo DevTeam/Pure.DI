@@ -2,11 +2,7 @@
 
 internal readonly record struct Injection(
     ITypeSymbol Type,
-    object? Tag,
-    ISymbol? Symbol = default,
-    MdResolver? Resolver = default,
-    MdRoot? Root = default,
-    MdContract? Contract = default)
+    object? Tag)
 {
     public override string ToString() => $"{Type}{(Tag != default ? $"({Tag})" : "")}";
 

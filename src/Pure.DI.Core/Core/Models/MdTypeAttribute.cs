@@ -7,5 +7,5 @@ internal readonly record struct MdTypeAttribute(
     ITypeSymbol AttributeType,
     int ArgumentPosition) : IMdAttribute
 {
-    public override string ToString() => $".OrderAttribute<{AttributeType}>({(ArgumentPosition != 0 ? ArgumentPosition.ToString() : string.Empty)})";
+    public override string ToString() => $".TypeAttribute<{AttributeType}>({(ArgumentPosition != 0 ? ArgumentPosition.ToString() : string.Empty)})";
 }

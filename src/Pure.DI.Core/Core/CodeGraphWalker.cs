@@ -76,7 +76,8 @@ internal class CodeGraphWalker<TContext>
                         }
                         else
                         {
-                            if (dependency.Injection.Resolver is not { } || var.Node.Lifetime == Lifetime.PerResolve)
+                            if (var.Node.Lifetime == Lifetime.PerResolve
+                                || targetVariable.Node.Factory is not { })
                             {
                                 targets.Push(var);
                             }

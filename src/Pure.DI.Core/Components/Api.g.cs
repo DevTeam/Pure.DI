@@ -45,25 +45,25 @@ namespace Pure.DI
     internal sealed class GenericTypeArgumentAttribute : Attribute { }
     
     /// <summary>
-    /// Represents an order attribute overriding an injection order.
+    /// Represents an ordinal attribute overriding an injection ordinal.
     /// </summary>
     [AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class OrderAttribute : Attribute
+    internal class OrdinalAttribute : Attribute
     {
         // ReSharper disable once MemberCanBePrivate.Global
         /// <summary>
-        /// The injection order.
+        /// The injection ordinal.
         /// </summary>
-        public readonly int Order;
+        public readonly int Ordinal;
 
         /// <summary>
         /// Creates an attribute instance.
         /// </summary>
-        /// <param name="order">The injection order.</param>
-        public OrderAttribute(int order)
+        /// <param name="ordinal">The injection ordinal.</param>
+        public OrdinalAttribute(int ordinal)
         {
-            Order = order;
+            Ordinal = ordinal;
         }
     }
 
@@ -322,7 +322,7 @@ namespace Pure.DI
         IConfiguration TagAttribute<T>(int tagArgumentPosition = 0) where T : Attribute;
 
         /// <summary>
-        /// Determines a custom attribute overriding an injection order.
+        /// Determines a custom attribute overriding an injection Ordinal.
         /// <example>
         /// <code>
         /// [AttributeUsage(
@@ -330,23 +330,23 @@ namespace Pure.DI
         ///   | AttributeTargets.Method
         ///   | AttributeTargets.Property
         ///   | AttributeTargets.Field)]
-        /// public class MyOrderAttribute : Attribute
+        /// public class MyOrdinalAttribute : Attribute
         /// {
-        ///   public readonly int Order;
-        ///   public MyOrderAttribute(int order) => Order = order;
+        ///   public readonly int Ordinal;
+        ///   public MyOrdinalAttribute(int ordinal) => Ordinal = ordinal;
         /// }
         /// static partial class Composer
         /// {
         ///   static Composer() =&gt; DI.Setup()
-        ///     .OrderAttribute&lt;MyOrderAttribute&gt;();
+        ///     .OrdinalAttribute&lt;MyOrdinalAttribute&gt;();
         /// }
         /// </code>
         /// </example> 
         /// </summary>
-        /// <param name="orderArgumentPosition">The optional position of an order parameter in the attribute constructor. 0 by default. See the predefined <see cref="OrderAttribute{T}"/> attribute.</param>
+        /// <param name="ordinalArgumentPosition">The optional position of parameter in the attribute constructor. 0 by default. See the predefined <see cref="OrdinalAttribute{T}"/> attribute.</param>
         /// <typeparam name="T">The attribute type.</typeparam>
         /// <returns>DI configuration API.</returns>
-        IConfiguration OrderAttribute<T>(int orderArgumentPosition = 0) where T : Attribute;
+        IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition = 0) where T : Attribute;
 
         /// <summary>
         /// Overrides a default <see cref="Lifetime"/>. <see cref="Lifetime.Transient"/> is default lifetime.
@@ -642,7 +642,7 @@ namespace Pure.DI
             }
 
             /// <inheritdoc />
-            public IConfiguration OrderAttribute<T>(int orderArgumentPosition = 0) where T : Attribute
+            public IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition = 0) where T : Attribute
             {
                 return this;
             }

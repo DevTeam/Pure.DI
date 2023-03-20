@@ -43,7 +43,7 @@ internal class MetadataToLinesWalker: MetadataWalkerBase, IEnumerable<string>
 
     public override void VisitTagAttribute(in MdTagAttribute tagAttribute) => _lb.AppendLine(tagAttribute.ToString());
 
-    public override void VisitOrderAttribute(in MdOrderAttribute orderAttribute) => _lb.AppendLine(orderAttribute.ToString());
+    public override void VisitOrdinalAttribute(in MdOrdinalAttribute ordinalAttribute) => _lb.AppendLine(ordinalAttribute.ToString());
 
     public override void VisitLifetime(in MdLifetime lifetime) => _lb.Append($".{lifetime.ToString()}");
     

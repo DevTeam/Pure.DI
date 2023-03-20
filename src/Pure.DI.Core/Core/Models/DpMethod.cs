@@ -2,7 +2,7 @@
 
 internal readonly record struct DpMethod(
     IMethodSymbol Method,
-    int? Order,
+    int? Ordinal,
     in ImmutableArray<DpParameter> Parameters)
 {
     public override string ToString()

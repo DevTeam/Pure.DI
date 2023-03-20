@@ -2,7 +2,7 @@
 
 internal readonly record struct DpField(
     IFieldSymbol Field,
-    int? Order,
+    int? Ordinal,
     Injection Injection)
 {
     public override string ToString() => $"{Field}<--{Injection.ToString()}";

@@ -10,7 +10,7 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
     private readonly ImmutableArray<MdDependsOn>.Builder _dependsOnBuilder = ImmutableArray.CreateBuilder<MdDependsOn>();
     private readonly ImmutableArray<MdTypeAttribute>.Builder _typeAttributesBuilder = ImmutableArray.CreateBuilder<MdTypeAttribute>();
     private readonly ImmutableArray<MdTagAttribute>.Builder _tagAttributesBuilder = ImmutableArray.CreateBuilder<MdTagAttribute>();
-    private readonly ImmutableArray<MdOrderAttribute>.Builder _orderAttributesBuilder = ImmutableArray.CreateBuilder<MdOrderAttribute>();
+    private readonly ImmutableArray<MdOrdinalAttribute>.Builder _ordinalAttributesBuilder = ImmutableArray.CreateBuilder<MdOrdinalAttribute>();
     private readonly ImmutableArray<MdContract>.Builder _contractsBuilder = ImmutableArray.CreateBuilder<MdContract>();
     private readonly ImmutableArray<MdTag>.Builder _tagsBuilder = ImmutableArray.CreateBuilder<MdTag>();
     private MdSetup? _setup;
@@ -111,8 +111,8 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
     public void VisitTagAttribute(in MdTagAttribute tagAttribute) =>
         _tagAttributesBuilder.Add(tagAttribute);
 
-    public void VisitOrderAttribute(in MdOrderAttribute orderAttribute) =>
-        _orderAttributesBuilder.Add(orderAttribute);
+    public void VisitOrdinalAttribute(in MdOrdinalAttribute ordinalAttribute) =>
+        _ordinalAttributesBuilder.Add(ordinalAttribute);
 
     public void VisitLifetime(in MdLifetime lifetime) =>
         Binding = Binding with { Lifetime = lifetime };
@@ -162,7 +162,7 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
                     DependsOn = _dependsOnBuilder.ToImmutable(),
                     TypeAttributes = _typeAttributesBuilder.ToImmutable(),
                     TagAttributes = _tagAttributesBuilder.ToImmutable(),
-                    OrderAttributes = _orderAttributesBuilder.ToImmutable()
+                    OrdinalAttributes = _ordinalAttributesBuilder.ToImmutable()
                 });
             
             _bindingsBuilder.Clear();
@@ -170,7 +170,7 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
             _dependsOnBuilder.Clear();
             _typeAttributesBuilder.Clear();
             _tagsBuilder.Clear();
-            _orderAttributesBuilder.Clear();
+            _ordinalAttributesBuilder.Clear();
             _setup = default;
         }
         

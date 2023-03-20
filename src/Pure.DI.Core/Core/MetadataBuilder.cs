@@ -121,7 +121,7 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
         var dependsOnBuilder = ImmutableArray.CreateBuilder<MdDependsOn>(2);
         var typeAttributesBuilder = ImmutableArray.CreateBuilder<MdTypeAttribute>(2);
         var tagAttributesBuilder = ImmutableArray.CreateBuilder<MdTagAttribute>(2);
-        var orderAttributesBuilder = ImmutableArray.CreateBuilder<MdOrderAttribute>(2);
+        var ordinalAttributesBuilder = ImmutableArray.CreateBuilder<MdOrdinalAttribute>(2);
         var ns = string.Empty;
         var usingDirectives = new HashSet<string>();
         var bindingId = 0;
@@ -148,7 +148,7 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
             dependsOnBuilder.AddRange(setup.DependsOn);
             typeAttributesBuilder.AddRange(setup.TypeAttributes);
             tagAttributesBuilder.AddRange(setup.TagAttributes);
-            orderAttributesBuilder.AddRange(setup.OrderAttributes);
+            ordinalAttributesBuilder.AddRange(setup.OrdinalAttributes);
             ns = setup.Namespace;
             foreach (var usingDirective in setup.UsingDirectives)
             {
@@ -170,6 +170,6 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
             resolveDependsOn ? ImmutableArray<MdDependsOn>.Empty : dependsOnBuilder.ToImmutable(),
             typeAttributesBuilder.ToImmutable(),
             tagAttributesBuilder.ToImmutable(),
-            orderAttributesBuilder.ToImmutable());
+            ordinalAttributesBuilder.ToImmutable());
     }
 }

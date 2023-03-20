@@ -14,7 +14,7 @@ internal class RootDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<Depende
                 ImmutableArray<MdContract>.Empty,
                 ImmutableArray<MdTag>.Empty);
             
-            yield return new DependencyNode(Root: new DpRoot(root, rootBinding, new Injection(root.RootType, root.Tag?.Value) { Root = root }));
+            yield return new DependencyNode(Root: new DpRoot(root, rootBinding, new Injection(root.RootType, root.Tag?.Value)));
         }
     }
 }

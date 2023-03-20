@@ -26,7 +26,7 @@ internal interface IMetadataVisitor
     
     void VisitTagAttribute(in MdTagAttribute tagAttribute);
     
-    void VisitOrderAttribute(in MdOrderAttribute orderAttribute);
+    void VisitOrdinalAttribute(in MdOrdinalAttribute ordinalAttribute);
     
     void VisitLifetime(in MdLifetime lifetime);
 

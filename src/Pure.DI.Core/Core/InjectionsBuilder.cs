@@ -43,7 +43,7 @@ internal class InjectionsBuilder: IBuilder<MdBinding, ISet<Injection>>
 
             foreach (var tag in contractTags)
             {
-                injections.Add(new Injection(contractType, tag) { Contract = contract });
+                injections.Add(new Injection(contractType, tag));
             }
         }
 

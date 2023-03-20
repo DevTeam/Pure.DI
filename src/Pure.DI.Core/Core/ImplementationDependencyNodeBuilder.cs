@@ -43,7 +43,7 @@ internal class ImplementationDependencyNodeBuilder :
                 constructors.Add(
                     new DpMethod(
                         constructor,
-                        GetAttribute(setup.OrderAttributes, constructor, default(int?)),
+                        GetAttribute(setup.OrdinalAttributes, constructor, default(int?)),
                         GetParameters(setup, constructor.Parameters, compilation, setup.TypeConstructor)));
             }
 
@@ -68,10 +68,10 @@ internal class ImplementationDependencyNodeBuilder :
                     case IMethodSymbol method:
                         if (method.MethodKind == MethodKind.Ordinary)
                         {
-                            var order = GetAttribute(setup.OrderAttributes, member, default(int?));
-                            if (order.HasValue)
+                            var ordinal = GetAttribute(setup.OrdinalAttributes, member, default(int?));
+                            if (ordinal.HasValue)
                             {
-                                methodsBuilder.Add(new DpMethod(method, order.Value, GetParameters(setup, method.Parameters, compilation, setup.TypeConstructor)));
+                                methodsBuilder.Add(new DpMethod(method, ordinal.Value, GetParameters(setup, method.Parameters, compilation, setup.TypeConstructor)));
                             }
                         }
 
@@ -80,16 +80,16 @@ internal class ImplementationDependencyNodeBuilder :
                     case IFieldSymbol field:
                         if (field is { IsReadOnly: false, IsStatic: false, IsConst: false })
                         {
-                            var order = GetAttribute(setup.OrderAttributes, member, default(int?));
-                            if (order.HasValue || field.IsRequired)
+                            var ordinal = GetAttribute(setup.OrdinalAttributes, member, default(int?));
+                            if (ordinal.HasValue || field.IsRequired)
                             {
                                 fieldsBuilder.Add(
                                     new DpField(
                                         field,
-                                        order,
+                                        ordinal,
                                         new Injection(
                                             GetAttribute(setup.TypeAttributes, field, setup.TypeConstructor?.Construct(compilation, field.Type) ?? field.Type),
-                                            GetAttribute(setup.TagAttributes, field, default(object?))) { Symbol = field } ));
+                                            GetAttribute(setup.TagAttributes, field, default(object?)))));
                             }
                         }
 
@@ -98,16 +98,16 @@ internal class ImplementationDependencyNodeBuilder :
                     case IPropertySymbol property:
                         if (property is { IsReadOnly: false, IsStatic: false, IsIndexer: false })
                         {
-                            var order = GetAttribute(setup.OrderAttributes, member, default(int?));
-                            if (order.HasValue || property.IsRequired)
+                            var ordinal = GetAttribute(setup.OrdinalAttributes, member, default(int?));
+                            if (ordinal.HasValue || property.IsRequired)
                             {
                                 propertiesBuilder.Add(
                                     new DpProperty(
                                         property,
-                                        order,
+                                        ordinal,
                                         new Injection(
                                             GetAttribute(setup.TypeAttributes, property, setup.TypeConstructor?.Construct(compilation, property.Type) ?? property.Type),
-                                            GetAttribute(setup.TagAttributes, property, default(object?))) { Symbol = property } ));
+                                            GetAttribute(setup.TagAttributes, property, default(object?)))));
                             }
                         }
 
@@ -144,7 +144,7 @@ internal class ImplementationDependencyNodeBuilder :
                     parameter,
                     new Injection(
                         GetAttribute(setup.TypeAttributes, parameter, typeConstructor?.Construct(compilation, parameter.Type) ?? parameter.Type),
-                        GetAttribute(setup.TagAttributes, parameter, default(object?))) { Symbol = parameter } ));
+                        GetAttribute(setup.TagAttributes, parameter, default(object?)))));
         }
 
         return dependenciesBuilder.MoveToImmutable();

@@ -15,7 +15,7 @@ internal record MdSetup(
     in ImmutableArray<MdDependsOn> DependsOn,
     in ImmutableArray<MdTypeAttribute> TypeAttributes,
     in ImmutableArray<MdTagAttribute> TagAttributes,
-    in ImmutableArray<MdOrderAttribute> OrderAttributes,
+    in ImmutableArray<MdOrdinalAttribute> OrdinalAttributes,
     ITypeConstructor? TypeConstructor = default)
 {
     public IEnumerable<string> ToStrings(int indent)

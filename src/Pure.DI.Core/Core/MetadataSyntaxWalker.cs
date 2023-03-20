@@ -191,7 +191,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                                         ImmutableArray<MdDependsOn>.Empty,
                                         ImmutableArray<MdTypeAttribute>.Empty,
                                         ImmutableArray<MdTagAttribute>.Empty,
-                                        ImmutableArray<MdOrderAttribute>.Empty));
+                                        ImmutableArray<MdOrdinalAttribute>.Empty));
 
                                 _namespace = string.Empty;
                                 break;
@@ -210,7 +210,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                                         ImmutableArray<MdDependsOn>.Empty,
                                         ImmutableArray<MdTypeAttribute>.Empty,
                                         ImmutableArray<MdTagAttribute>.Empty,
-                                        ImmutableArray<MdOrderAttribute>.Empty));
+                                        ImmutableArray<MdOrdinalAttribute>.Empty));
 
                                 _namespace = string.Empty;
                                 break;
@@ -339,10 +339,10 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
 
                         break;
 
-                    case nameof(IConfiguration.OrderAttribute):
-                        if (genericName.TypeArgumentList.Arguments is [{ } orderAttributeType])
+                    case nameof(IConfiguration.OrdinalAttribute):
+                        if (genericName.TypeArgumentList.Arguments is [{ } ordinalAttributeType])
                         {
-                            MetadataVisitor.VisitOrderAttribute(new MdOrderAttribute(SemanticModel, invocation, GetTypeSymbol<ITypeSymbol>(orderAttributeType), BuildConstantArgs<object>(invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0));
+                            MetadataVisitor.VisitOrdinalAttribute(new MdOrdinalAttribute(SemanticModel, invocation, GetTypeSymbol<ITypeSymbol>(ordinalAttributeType), BuildConstantArgs<object>(invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0));
                         }
 
                         break;

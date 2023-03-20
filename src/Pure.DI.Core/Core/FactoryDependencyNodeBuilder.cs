@@ -14,7 +14,7 @@ internal class FactoryDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<Depe
             var injectionsBuilder = ImmutableArray.CreateBuilder<Injection>(factory.Resolvers.Length);
             foreach (var resolver in factory.Resolvers)
             {
-                injectionsBuilder.Add(new Injection(resolver.ContractType, resolver.Tag?.Value) { Resolver = resolver });
+                injectionsBuilder.Add(new Injection(resolver.ContractType, resolver.Tag?.Value));
             }
 
             yield return new DependencyNode(Factory: new DpFactory(factory, binding, injectionsBuilder.SafeMoveToImmutable()));

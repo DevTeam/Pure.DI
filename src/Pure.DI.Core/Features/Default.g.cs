@@ -8,7 +8,7 @@ namespace Pure.DI.Features
             DI.Setup("", ComposerKind.Global)
                 .TypeAttribute<TypeAttribute>()
                 .TagAttribute<TagAttribute>()
-                .OrderAttribute<OrderAttribute>()
+                .OrdinalAttribute<OrdinalAttribute>()
                 
                 .Bind<System.Func<TT>>()
                 .AnyTag()

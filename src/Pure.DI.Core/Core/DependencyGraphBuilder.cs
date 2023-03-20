@@ -100,12 +100,12 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
                             continue;
                         }
 
-                        var injectionsWalker = new DependenciesToInjectionsWalker();
-                        injectionsWalker.VisitDependencyNode(targetNode);
                         var binding = targetNode.Binding;
                         var semanticModel = binding.SemanticModel;
                         var compilation = semanticModel.Compilation;
                         var isResolved = true;
+                        var injectionsWalker = new DependenciesToInjectionsWalker();
+                        injectionsWalker.VisitDependencyNode(targetNode);
                         var nodeInjections = injectionsWalker.ToImmutableArray();
                         foreach (var injection in nodeInjections)
                         {
@@ -264,7 +264,7 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
 
     private static IEnumerable<DependencyNode> SortNodes(IEnumerable<DependencyNode> nodes) =>
         nodes
-            .OrderBy(i => i.Implementation?.Constructor.Order ?? int.MaxValue)
+            .OrderBy(i => i.Implementation?.Constructor.Ordinal ?? int.MaxValue)
             .ThenByDescending(i => i.Implementation?.Constructor.Parameters.Count(p => !p.ParameterSymbol.IsOptional))
             .ThenByDescending(i => i.Implementation?.Constructor.Method.DeclaredAccessibility);
 

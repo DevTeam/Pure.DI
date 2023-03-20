@@ -29,9 +29,9 @@ internal class MetadataWalkerBase: IMetadataVisitor
             VisitTagAttribute(md);
         }
         
-        foreach (var md in setup.OrderAttributes)
+        foreach (var md in setup.OrdinalAttributes)
         {
-            VisitOrderAttribute(md);
+            VisitOrdinalAttribute(md);
         }
     }
     
@@ -129,7 +129,7 @@ internal class MetadataWalkerBase: IMetadataVisitor
     {
     }
 
-    public virtual void VisitOrderAttribute(in MdOrderAttribute orderAttribute)
+    public virtual void VisitOrdinalAttribute(in MdOrdinalAttribute ordinalAttribute)
     {
     }
 
