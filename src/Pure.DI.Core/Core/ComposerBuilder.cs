@@ -103,14 +103,78 @@ internal class ComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<Dependen
         DpImplementation implementation,
         CancellationToken cancellationToken)
     {
-        var args = string.Join(", ", instantiation.Arguments.Select(i => i.Name));
-        var newStatement = $"new {instantiation.Target.Node.Type}({args})";
+        base.VisitImplementation(context, dependencyGraph, root, block, instantiation, implementation, cancellationToken);
         var justReturn = context.IsRootContext && instantiation.Target == root && instantiation.Target.Node.Lifetime != Lifetime.Singleton;
-        var statement = GenerateFinalStatement(instantiation.Target, newStatement, justReturn);
-        context.Code.AppendLine(statement);
+        if (justReturn)
+        {
+            context.Code.AppendLine(GenerateFinalStatement(instantiation.Target, instantiation.Target.Name, justReturn));
+        }
 
         instantiation.Target.IsCreated = true;
-        base.VisitImplementation(context, dependencyGraph, root, block, instantiation, implementation, cancellationToken);
+    }
+
+    public override void VisitConstructor(
+        BuildContext context,
+        DependencyGraph dependencyGraph,
+        Variable root,
+        Block block,
+        Instantiation instantiation,
+        DpImplementation implementation,
+        DpMethod constructor,
+        ImmutableArray<Variable> constructorArguments,
+        CancellationToken cancellationToken)
+    {
+        base.VisitConstructor(context, dependencyGraph, root, block, instantiation, implementation, constructor, constructorArguments, cancellationToken);
+        var args = string.Join(", ", constructorArguments.Select(i => i.Name));
+        var newStatement = $"new {instantiation.Target.Node.Type}({args})";
+        var statement = GenerateFinalStatement(instantiation.Target, newStatement, false);
+        context.Code.AppendLine(statement);
+    }
+
+    public override void VisitField(
+        BuildContext context,
+        DependencyGraph dependencyGraph,
+        Variable root,
+        Block block,
+        Instantiation instantiation,
+        DpImplementation implementation,
+        DpField field,
+        Variable fieldVariable,
+        CancellationToken cancellationToken)
+    {
+        base.VisitField(context, dependencyGraph, root, block, instantiation, implementation, field, fieldVariable, cancellationToken);
+        context.Code.AppendLine($"{instantiation.Target.Name}.{field.Field.Name} = {fieldVariable.Name};");
+    }
+
+    public override void VisitProperty(
+        BuildContext context,
+        DependencyGraph dependencyGraph,
+        Variable root,
+        Block block,
+        Instantiation instantiation,
+        DpImplementation implementation,
+        DpProperty property,
+        Variable propertyVariable,
+        CancellationToken cancellationToken)
+    {
+        base.VisitProperty(context, dependencyGraph, root, block, instantiation, implementation, property, propertyVariable, cancellationToken);
+        context.Code.AppendLine($"{instantiation.Target.Name}.{property.Property.Name} = {propertyVariable.Name};");
+    }
+
+    public override void VisitMethod(
+        BuildContext context,
+        DependencyGraph dependencyGraph,
+        Variable root,
+        Block block,
+        Instantiation instantiation,
+        DpImplementation implementation,
+        DpMethod method,
+        ImmutableArray<Variable> methodArguments,
+        CancellationToken cancellationToken)
+    {
+        base.VisitMethod(context, dependencyGraph, root, block, instantiation, implementation, method, methodArguments, cancellationToken);
+        var args = string.Join(", ", methodArguments.Select(i => i.Name));
+        context.Code.AppendLine($"{instantiation.Target.Name}.{method.Method.Name}({args});");
     }
 
     public override void VisitArg(
@@ -156,7 +220,7 @@ internal class ComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<Dependen
                 foreach (var arg in argsByContext)
                 {
                     var argBuildContext = new BuildContext(context.Variables, new LinesBuilder(), false);
-                    var rootVariable = CreateVariable(argBuildContext.Variables, arg.argument.Node);
+                    var rootVariable = CreateVariable(argBuildContext.Variables, arg.argument.Node, arg.argument.Injection);
                     argCodeBuilder.VisitRootVariable(argBuildContext, dependencyGraph, context.Variables, rootVariable, cancellationToken);
                     namesMap.Add(arg.factoryInjection.VariableName, rootVariable.Name);
                     initializers.Add($"{arg.factoryInjection.InjectionId};", argBuildContext.Code.ToImmutableArray());

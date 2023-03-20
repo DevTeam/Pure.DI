@@ -308,7 +308,6 @@ internal class ComposerClassBuilder : IBuilder<DependencyGraph, string>
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine($"{Variable.DisposablesFieldName} = new {DisposableTypeName}[{composer.DisposableSingletonsCount}];");
             foreach (var arg in composer.Args)
             {
                 if (arg.Node.Type.IsValueType)
@@ -330,6 +329,11 @@ internal class ComposerClassBuilder : IBuilder<DependencyGraph, string>
             foreach (var arg in composer.Args)
             {
                 code.AppendLine($"{arg.Name} = {arg.Node.Arg?.Source.ArgName};");
+            }
+            
+            if (composer.Singletons.Any())
+            {
+                code.AppendLine($"{Variable.DisposablesFieldName} = new {DisposableTypeName}[{composer.DisposableSingletonsCount}];");
             }
         }
 

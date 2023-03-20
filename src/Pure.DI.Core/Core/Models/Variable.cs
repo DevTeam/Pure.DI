@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Models;
 
-internal record Variable(int Id, DependencyNode Node)
+internal record Variable(int Id, DependencyNode Node, Injection Injection)
 {
     internal static readonly string Postfix = Guid.NewGuid().ToString().ToUpperInvariant().Replace("-", "")[..6];
     internal static readonly string DisposeIndexFieldName = "_disposeIndex" + Postfix;

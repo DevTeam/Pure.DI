@@ -40,7 +40,7 @@ internal class CodeGraphWalker<TContext>
             variable.IsCreated = false;
         }
 
-        var rootVariable = CreateVariable(variables, root.Node);
+        var rootVariable = CreateVariable(variables, root.Node, root.Injection);
         VisitRootVariable(context, dependencyGraph, variables, rootVariable, cancellationToken);
     }
     
@@ -69,7 +69,7 @@ internal class CodeGraphWalker<TContext>
                     foreach (var dependency in dependencies)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        var var = CreateVariable(variables, dependency.Source);
+                        var var = CreateVariable(variables, dependency.Source, dependency.Injection);
                         if (var.IsBlockRoot)
                         {
                             blockRootVariables.Push(var);
@@ -154,6 +154,103 @@ internal class CodeGraphWalker<TContext>
         DpImplementation implementation,
         CancellationToken cancellationToken)
     {
+        var args = instantiation.Arguments.ToList();
+        var ctorWalker = new DependenciesToVariablesWalker(args);
+        ctorWalker.VisitConstructor(implementation.Constructor);
+        VisitConstructor(
+            context,
+            dependencyGraph,
+            root,
+            block,
+            instantiation,
+            implementation,
+            implementation.Constructor,
+            ctorWalker.ToImmutableArray(),
+            cancellationToken);
+
+        var visits = new List<(Action Run, int? Ordinal)>();
+        foreach (var field in implementation.Fields)
+        {
+            var varsWalker = new DependenciesToVariablesWalker(args);
+            varsWalker.VisitField(field);
+            var fieldVariable = varsWalker.Single();
+            void VisitFieldAction() => VisitField(context, dependencyGraph, root, block, instantiation, implementation, field, fieldVariable, cancellationToken);
+            visits.Add((VisitFieldAction, field.Ordinal));
+        }
+        
+        foreach (var property in implementation.Properties)
+        {
+            var varsWalker = new DependenciesToVariablesWalker(args);
+            varsWalker.VisitProperty(property);
+            var propertyVariable = varsWalker.Single();
+            void VisitFieldAction() => VisitProperty(context, dependencyGraph, root, block, instantiation, implementation, property, propertyVariable, cancellationToken);
+            visits.Add((VisitFieldAction, property.Ordinal));
+        }
+        
+        foreach (var method in implementation.Methods)
+        {
+            var varsWalker = new DependenciesToVariablesWalker(args);
+            varsWalker.VisitMethod(method);
+            void VisitMethodAction() => VisitMethod(context, dependencyGraph, root, block, instantiation, implementation, method, varsWalker.ToImmutableArray(), cancellationToken);
+            visits.Add((VisitMethodAction, method.Ordinal));
+        }
+
+        foreach (var visit in visits.OrderBy(i => i.Ordinal ?? int.MaxValue))
+        {
+            visit.Run();
+        }
+    }
+
+    public virtual void VisitConstructor(
+        TContext context,
+        DependencyGraph dependencyGraph,
+        Variable root,
+        Block block,
+        Instantiation instantiation,
+        DpImplementation implementation,
+        DpMethod constructor,
+        ImmutableArray<Variable> constructorArguments,
+        CancellationToken cancellationToken)
+    {
+    }
+    
+    public virtual void VisitField(
+        TContext context,
+        DependencyGraph dependencyGraph,
+        Variable root,
+        Block block,
+        Instantiation instantiation,
+        DpImplementation implementation,
+        DpField field,
+        Variable fieldVariable,
+        CancellationToken cancellationToken)
+    {
+    }
+    
+    public virtual void VisitProperty(
+        TContext context,
+        DependencyGraph dependencyGraph,
+        Variable root,
+        Block block,
+        Instantiation instantiation,
+        DpImplementation implementation,
+        DpProperty property,
+        Variable propertyVariable,
+        CancellationToken cancellationToken)
+    {
+    }
+    
+    public virtual void VisitMethod(
+        TContext context,
+        DependencyGraph dependencyGraph,
+        Variable root,
+        Block block,
+        Instantiation instantiation,
+        DpImplementation implementation,
+        DpMethod method,
+        ImmutableArray<Variable> methodArguments,
+        CancellationToken cancellationToken)
+    {
     }
 
     public virtual void VisitFactory(
@@ -178,7 +275,7 @@ internal class CodeGraphWalker<TContext>
     {
     }
     
-    protected Variable CreateVariable(IDictionary<MdBinding, Variable> variables, DependencyNode node)
+    protected Variable CreateVariable(IDictionary<MdBinding, Variable> variables, DependencyNode node, Injection injection)
     {
         switch (node)
         {
@@ -188,7 +285,7 @@ internal class CodeGraphWalker<TContext>
                     return argVar;
                 }
 
-                argVar = new Variable(0, node)
+                argVar = new Variable(0, node, injection)
                 {
                     IsDeclared = true,
                     IsCreated = true
@@ -203,7 +300,7 @@ internal class CodeGraphWalker<TContext>
                     return singletonVar;
                 }
 
-                singletonVar = new Variable(0, node)
+                singletonVar = new Variable(0, node, injection)
                 {
                     IsDeclared = true,
                     IsBlockRoot = true
@@ -218,12 +315,12 @@ internal class CodeGraphWalker<TContext>
                     return perResolveVar;
                 }
 
-                perResolveVar = new Variable(_idGenerator.NextId, node);
+                perResolveVar = new Variable(_idGenerator.NextId, node, injection);
                 variables.Add(node.Binding, perResolveVar);
                 return perResolveVar;
 
             default:
-                var transientVar = new Variable(_idGenerator.NextId, node);
+                var transientVar = new Variable(_idGenerator.NextId, node, injection);
                 return transientVar;
         }
     }
