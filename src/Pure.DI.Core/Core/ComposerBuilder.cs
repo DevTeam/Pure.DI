@@ -100,7 +100,7 @@ internal class ComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<Dependen
         Variable root,
         Block block,
         Instantiation instantiation,
-        DpImplementation implementation,
+        in DpImplementation implementation,
         CancellationToken cancellationToken)
     {
         base.VisitImplementation(context, dependencyGraph, root, block, instantiation, implementation, cancellationToken);
@@ -119,16 +119,30 @@ internal class ComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<Dependen
         Variable root,
         Block block,
         Instantiation instantiation,
-        DpImplementation implementation,
-        DpMethod constructor,
-        ImmutableArray<Variable> constructorArguments,
+        in DpImplementation implementation,
+        in DpMethod constructor,
+        in ImmutableArray<Variable> constructorArguments,
+        in ImmutableArray<(Variable InitOnlyVariable, DpProperty InitOnlyProperty)> initOnlyProperties,
         CancellationToken cancellationToken)
     {
-        base.VisitConstructor(context, dependencyGraph, root, block, instantiation, implementation, constructor, constructorArguments, cancellationToken);
+        base.VisitConstructor(context, dependencyGraph, root, block, instantiation, implementation, constructor, constructorArguments, initOnlyProperties, cancellationToken);
         var args = string.Join(", ", constructorArguments.Select(i => i.Name));
         var newStatement = $"new {instantiation.Target.Node.Type}({args})";
-        var statement = GenerateFinalStatement(instantiation.Target, newStatement, false);
+        var statement = GenerateFinalStatement(instantiation.Target, newStatement, false, initOnlyProperties.Any() ? "" : ";");
         context.Code.AppendLine(statement);
+        if (initOnlyProperties.Any())
+        {
+            context.Code.AppendLine("{");
+            using (context.Code.Indent())
+            {
+                for (var index = 0; index < initOnlyProperties.Length; index++)
+                {
+                    var property = initOnlyProperties[index];
+                    context.Code.AppendLine($"{property.InitOnlyProperty.Property.Name} = {property.InitOnlyVariable.Name}{(index < initOnlyProperties.Length - 1 ? "," : "")}");
+                }
+            }
+            context.Code.AppendLine("};");
+        }
     }
 
     public override void VisitField(
@@ -137,8 +151,8 @@ internal class ComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<Dependen
         Variable root,
         Block block,
         Instantiation instantiation,
-        DpImplementation implementation,
-        DpField field,
+        in DpImplementation implementation,
+        in DpField field,
         Variable fieldVariable,
         CancellationToken cancellationToken)
     {
@@ -152,8 +166,8 @@ internal class ComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<Dependen
         Variable root,
         Block block,
         Instantiation instantiation,
-        DpImplementation implementation,
-        DpProperty property,
+        in DpImplementation implementation,
+        in DpProperty property,
         Variable propertyVariable,
         CancellationToken cancellationToken)
     {
@@ -167,9 +181,9 @@ internal class ComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<Dependen
         Variable root,
         Block block,
         Instantiation instantiation,
-        DpImplementation implementation,
-        DpMethod method,
-        ImmutableArray<Variable> methodArguments,
+        in DpImplementation implementation,
+        in DpMethod method,
+        in ImmutableArray<Variable> methodArguments,
         CancellationToken cancellationToken)
     {
         base.VisitMethod(context, dependencyGraph, root, block, instantiation, implementation, method, methodArguments, cancellationToken);
@@ -183,7 +197,7 @@ internal class ComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<Dependen
         Variable rootVariable,
         Block block,
         Instantiation instantiation,
-        DpArg dpArg,
+        in DpArg dpArg,
         CancellationToken cancellationToken)
     {
         if (context.IsRootContext && instantiation.Target == rootVariable)
@@ -200,7 +214,7 @@ internal class ComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<Dependen
         Variable root,
         Block block,
         Instantiation instantiation,
-        DpFactory factory,
+        in DpFactory factory,
         CancellationToken cancellationToken)
     {
         var lambda = factory.Source.Factory;

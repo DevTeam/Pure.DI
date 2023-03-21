@@ -151,12 +151,21 @@ internal class CodeGraphWalker<TContext>
         Variable root,
         Block block,
         Instantiation instantiation,
-        DpImplementation implementation,
+        in DpImplementation implementation,
         CancellationToken cancellationToken)
     {
         var args = instantiation.Arguments.ToList();
         var argsWalker = new DependenciesToVariablesWalker(args);
         argsWalker.VisitConstructor(implementation.Constructor);
+        var ctorArgs = argsWalker.GetResult();
+
+        var initOnlyProperties = ImmutableArray.CreateBuilder<(Variable InitOnlyVariable, DpProperty InitOnlyProperty)>();
+        foreach (var initOnlyProperty in implementation.Properties.Where(i => i.Property.SetMethod?.IsInitOnly == true).OrderBy(i => i.Ordinal ?? int.MaxValue))
+        {
+            argsWalker.VisitProperty(initOnlyProperty);
+            initOnlyProperties.Add((argsWalker.GetResult().Single(), initOnlyProperty));
+        }
+
         VisitConstructor(
             context,
             dependencyGraph,
@@ -165,23 +174,25 @@ internal class CodeGraphWalker<TContext>
             instantiation,
             implementation,
             implementation.Constructor,
-            argsWalker.GetResult(),
+            ctorArgs,
+            initOnlyProperties.ToImmutableArray(),
             cancellationToken);
 
+        var curImplementation = implementation;
         var visits = new List<(Action Run, int? Ordinal)>();
         foreach (var field in implementation.Fields)
         {
             argsWalker.VisitField(field);
             var fieldVariable = argsWalker.GetResult().Single();
-            void VisitFieldAction() => VisitField(context, dependencyGraph, root, block, instantiation, implementation, field, fieldVariable, cancellationToken);
+            void VisitFieldAction() => VisitField(context, dependencyGraph, root, block, instantiation, curImplementation, field, fieldVariable, cancellationToken);
             visits.Add((VisitFieldAction, field.Ordinal));
         }
         
-        foreach (var property in implementation.Properties)
+        foreach (var property in implementation.Properties.Where(i => i.Property.SetMethod?.IsInitOnly != true))
         {
             argsWalker.VisitProperty(property);
             var propertyVariable = argsWalker.GetResult().Single();
-            void VisitFieldAction() => VisitProperty(context, dependencyGraph, root, block, instantiation, implementation, property, propertyVariable, cancellationToken);
+            void VisitFieldAction() => VisitProperty(context, dependencyGraph, root, block, instantiation, curImplementation, property, propertyVariable, cancellationToken);
             visits.Add((VisitFieldAction, property.Ordinal));
         }
         
@@ -189,7 +200,7 @@ internal class CodeGraphWalker<TContext>
         {
             argsWalker.VisitMethod(method);
             var methodArgs = argsWalker.GetResult();
-            void VisitMethodAction() => VisitMethod(context, dependencyGraph, root, block, instantiation, implementation, method, methodArgs, cancellationToken);
+            void VisitMethodAction() => VisitMethod(context, dependencyGraph, root, block, instantiation, curImplementation, method, methodArgs, cancellationToken);
             visits.Add((VisitMethodAction, method.Ordinal));
         }
 
@@ -205,9 +216,10 @@ internal class CodeGraphWalker<TContext>
         Variable root,
         Block block,
         Instantiation instantiation,
-        DpImplementation implementation,
-        DpMethod constructor,
-        ImmutableArray<Variable> constructorArguments,
+        in DpImplementation implementation,
+        in DpMethod constructor,
+        in ImmutableArray<Variable> constructorArguments,
+        in ImmutableArray<(Variable InitOnlyVariable, DpProperty InitOnlyProperty)> initOnlyProperties,
         CancellationToken cancellationToken)
     {
     }
@@ -218,21 +230,21 @@ internal class CodeGraphWalker<TContext>
         Variable root,
         Block block,
         Instantiation instantiation,
-        DpImplementation implementation,
-        DpField field,
+        in DpImplementation implementation,
+        in DpField field,
         Variable fieldVariable,
         CancellationToken cancellationToken)
     {
     }
-    
+
     public virtual void VisitProperty(
         TContext context,
         DependencyGraph dependencyGraph,
         Variable root,
         Block block,
         Instantiation instantiation,
-        DpImplementation implementation,
-        DpProperty property,
+        in DpImplementation implementation,
+        in DpProperty property,
         Variable propertyVariable,
         CancellationToken cancellationToken)
     {
@@ -244,9 +256,9 @@ internal class CodeGraphWalker<TContext>
         Variable root,
         Block block,
         Instantiation instantiation,
-        DpImplementation implementation,
-        DpMethod method,
-        ImmutableArray<Variable> methodArguments,
+        in DpImplementation implementation,
+        in DpMethod method,
+        in ImmutableArray<Variable> methodArguments,
         CancellationToken cancellationToken)
     {
     }
@@ -257,7 +269,7 @@ internal class CodeGraphWalker<TContext>
         Variable root,
         Block block,
         Instantiation instantiation,
-        DpFactory factory,
+        in DpFactory factory,
         CancellationToken cancellationToken)
     {
     }
@@ -268,7 +280,7 @@ internal class CodeGraphWalker<TContext>
         Variable rootVariable,
         Block block,
         Instantiation instantiation,
-        DpArg dpArg,
+        in DpArg dpArg,
         CancellationToken cancellationToken)
     {
     }
