@@ -47,6 +47,11 @@ internal class CodeComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depe
         Root root,
         CancellationToken cancellationToken)
     {
+        if (_lines.ContainsKey(root))
+        {
+            return;
+        }
+
         var newContext = new BuildContext(variables, new LinesBuilder());
         base.VisitRoot(newContext, dependencyGraph, variables, root, cancellationToken);
         _lines.Add(root, newContext.Code.Lines.ToImmutableArray());
