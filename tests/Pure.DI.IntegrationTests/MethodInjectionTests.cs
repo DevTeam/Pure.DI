@@ -115,7 +115,6 @@ namespace Sample
             Ordinal = ordinal;
         }
     }
-
     
     interface IDependency {}
 

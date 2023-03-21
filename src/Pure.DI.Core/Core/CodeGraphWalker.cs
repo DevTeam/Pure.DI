@@ -155,8 +155,8 @@ internal class CodeGraphWalker<TContext>
         CancellationToken cancellationToken)
     {
         var args = instantiation.Arguments.ToList();
-        var ctorWalker = new DependenciesToVariablesWalker(args);
-        ctorWalker.VisitConstructor(implementation.Constructor);
+        var argsWalker = new DependenciesToVariablesWalker(args);
+        argsWalker.VisitConstructor(implementation.Constructor);
         VisitConstructor(
             context,
             dependencyGraph,
@@ -165,33 +165,31 @@ internal class CodeGraphWalker<TContext>
             instantiation,
             implementation,
             implementation.Constructor,
-            ctorWalker.ToImmutableArray(),
+            argsWalker.GetResult(),
             cancellationToken);
 
         var visits = new List<(Action Run, int? Ordinal)>();
         foreach (var field in implementation.Fields)
         {
-            var varsWalker = new DependenciesToVariablesWalker(args);
-            varsWalker.VisitField(field);
-            var fieldVariable = varsWalker.Single();
+            argsWalker.VisitField(field);
+            var fieldVariable = argsWalker.GetResult().Single();
             void VisitFieldAction() => VisitField(context, dependencyGraph, root, block, instantiation, implementation, field, fieldVariable, cancellationToken);
             visits.Add((VisitFieldAction, field.Ordinal));
         }
         
         foreach (var property in implementation.Properties)
         {
-            var varsWalker = new DependenciesToVariablesWalker(args);
-            varsWalker.VisitProperty(property);
-            var propertyVariable = varsWalker.Single();
+            argsWalker.VisitProperty(property);
+            var propertyVariable = argsWalker.GetResult().Single();
             void VisitFieldAction() => VisitProperty(context, dependencyGraph, root, block, instantiation, implementation, property, propertyVariable, cancellationToken);
             visits.Add((VisitFieldAction, property.Ordinal));
         }
         
         foreach (var method in implementation.Methods)
         {
-            var varsWalker = new DependenciesToVariablesWalker(args);
-            varsWalker.VisitMethod(method);
-            void VisitMethodAction() => VisitMethod(context, dependencyGraph, root, block, instantiation, implementation, method, varsWalker.ToImmutableArray(), cancellationToken);
+            argsWalker.VisitMethod(method);
+            var methodArgs = argsWalker.GetResult();
+            void VisitMethodAction() => VisitMethod(context, dependencyGraph, root, block, instantiation, implementation, method, methodArgs, cancellationToken);
             visits.Add((VisitMethodAction, method.Ordinal));
         }
 
