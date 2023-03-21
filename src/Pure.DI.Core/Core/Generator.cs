@@ -123,7 +123,7 @@ internal class Generator : IGenerator
             log.Insert(0, $"/*{Environment.NewLine}");
             log.AppendLine($"Total duration: {stopwatch.Elapsed:c}");
             log.AppendLine("*/");
-            _contextProducer.AddSource("PureDI.log", SourceText.From(log.ToString(), Encoding.UTF8));
+            _contextProducer.AddSource("PureDI.log.g.cs", SourceText.From(log.ToString(), Encoding.UTF8));
         }
     }
 }

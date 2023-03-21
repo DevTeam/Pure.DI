@@ -358,13 +358,15 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
             .Where(i => !i.IsGlobalNamespace)
             .Select(i => i.ToString()).ToImmutableArray();
 
+    public override void VisitFileScopedNamespaceDeclaration(FileScopedNamespaceDeclarationSyntax namespaceDeclaration)
+    {
+        _namespace = namespaceDeclaration.Name.ToFullString();
+        base.VisitFileScopedNamespaceDeclaration(namespaceDeclaration);
+    }
+
     public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax namespaceDeclaration)
     {
-        if (namespaceDeclaration.Name is IdentifierNameSyntax identifierName)
-        {
-            _namespace = identifierName.Identifier.Text;
-        }
-
+        _namespace = namespaceDeclaration.Name.ToFullString();
         base.VisitNamespaceDeclaration(namespaceDeclaration);
     }
 

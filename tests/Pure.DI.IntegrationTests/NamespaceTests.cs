@@ -64,7 +64,7 @@ namespace Sample
     }
     
     [Fact]
-    public async Task ShouldUseDefaultNamespace()
+    public async Task ShouldUseDefaultNamespaceDeclaration()
     {
         // Given
 
@@ -73,7 +73,7 @@ namespace Sample
 using System;
 using Pure.DI;
 
-namespace Sample
+namespace My.Sample
 {
     interface IDependency {}
 
@@ -109,7 +109,7 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Sample.Composer();
+            var composer = new My.Sample.Composer();
             Console.WriteLine(composer.GetType());                                           
         }
     }                
@@ -118,6 +118,64 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Composer"), result.GeneratedCode);
+        result.StdOut.ShouldBe(ImmutableArray.Create("My.Sample.Composer"), result.GeneratedCode);
+    }
+    
+    [Fact]
+    public async Task ShouldUseDefaultFileScopedNamespaceDeclaration()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace My.Sample;
+
+interface IDependency {}
+
+class Dependency: IDependency {}
+
+interface IService
+{
+    IDependency Dep { get; }
+}
+
+class Service: IService 
+{
+    public Service(IDependency dep)
+    { 
+        Dep = dep;
+    }
+
+    public IDependency Dep { get; }
+}
+
+static class Setup
+{
+    private static void SetupComposer()
+    {
+        DI.Setup("Composer")
+            .Bind<IDependency>().To<Dependency>()
+            .Bind<IService>().To<Service>()    
+            .Root<IService>("Service");
+    }
+}
+
+public class Program
+{
+    public static void Main()
+    {
+        var composer = new My.Sample.Composer();
+        Console.WriteLine(composer.GetType());                                           
+    }
+}                
+
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.StdOut.ShouldBe(ImmutableArray.Create("My.Sample.Composer"), result.GeneratedCode);
     }
 }
