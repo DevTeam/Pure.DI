@@ -88,13 +88,9 @@ namespace Sample
         // Then
         result.StdOut.ShouldBe(ImmutableArray.Create("Initialize dep", "Initialize dep", "Initialize", "True", "Activate"), result.GeneratedCode);
     }
-}
-
-[Collection(nameof(NonParallelTestsCollectionDefinition))]
-public class MethodInjectionTestsWhenCustomAttribute
-{
+    
     [Fact]
-    public async Task ShouldSupportMethodInjection()
+    public async Task ShouldSupportMethodInjectionWhenCustomAttribute()
     {
         // Given
 
