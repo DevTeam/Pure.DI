@@ -9,8 +9,8 @@ internal class Generator : IGenerator
     private readonly IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>> _metadataBuilder;
     private readonly IBuilder<MdSetup, DependencyGraph> _dependencyGraphBuilder;
     private readonly IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>> _rootsBuilder;
-    private readonly IBuilder<DependencyGraph, ComposerInfo> _composerBuilder;
-    private readonly IBuilder<ComposerInfo, ComposerInfo> _classBuilder;
+    private readonly IBuilder<DependencyGraph, ComposerCode> _composerBuilder;
+    private readonly IBuilder<ComposerCode, ComposerCode> _classBuilder;
     private readonly IContextProducer _contextProducer;
     private readonly IResourceManager _resourceManager;
     private readonly IObserversProvider _observersProvider;
@@ -22,8 +22,8 @@ internal class Generator : IGenerator
         IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>> metadataBuilder,
         IBuilder<MdSetup, DependencyGraph> dependencyGraphBuilder,
         IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>> rootsBuilder,
-        IBuilder<DependencyGraph, ComposerInfo> composerBuilder,
-        [IoC.Tag(WellknownTag.ClassBuilder)] IBuilder<ComposerInfo, ComposerInfo> classBuilder,
+        [IoC.Tag(WellknownTag.CSharpComposerBuilder)] IBuilder<DependencyGraph, ComposerCode> composerBuilder,
+        [IoC.Tag(WellknownTag.CSharpClassBuilder)] IBuilder<ComposerCode, ComposerCode> classBuilder,
         IContextProducer contextProducer)
     {
         _logger = logger;

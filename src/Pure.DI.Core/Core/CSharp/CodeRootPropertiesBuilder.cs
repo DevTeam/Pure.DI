@@ -1,10 +1,10 @@
-namespace Pure.DI.Core;
+namespace Pure.DI.Core.CSharp;
 
-internal class CodeRootPropertiesBuilder: IBuilder<ComposerInfo, ComposerInfo>
+internal class CodeRootPropertiesBuilder: IBuilder<ComposerCode, ComposerCode>
 {
     private const string MethodImplOptions = "[System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]";
 
-    public ComposerInfo Build(ComposerInfo composer, CancellationToken cancellationToken)
+    public ComposerCode Build(ComposerCode composer, CancellationToken cancellationToken)
     {
         var code = composer.Code;
         var membersCounter = composer.MembersCount;

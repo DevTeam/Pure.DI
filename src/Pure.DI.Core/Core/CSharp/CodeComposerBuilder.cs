@@ -1,6 +1,6 @@
-namespace Pure.DI.Core;
+namespace Pure.DI.Core.CSharp;
 
-internal class ComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<DependencyGraph, ComposerInfo>
+internal class CodeComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<DependencyGraph, ComposerCode>
 {
     private readonly IVarIdGenerator _idGenerator;
     private static readonly string IndentPrefix = new Indent(1).ToString();
@@ -8,10 +8,10 @@ internal class ComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<Dependen
     private readonly Dictionary<Compilation, INamedTypeSymbol?> _disposableTypes = new();
     private readonly Dictionary<Root, ImmutableArray<Line>> _lines = new();
 
-    public ComposerBuilder(IVarIdGenerator idGenerator)
+    public CodeComposerBuilder(IVarIdGenerator idGenerator)
         : base(idGenerator) => _idGenerator = idGenerator;
 
-    public ComposerInfo Build(
+    public ComposerCode Build(
         DependencyGraph dependencyGraph,
         CancellationToken cancellationToken)
     {
@@ -27,7 +27,7 @@ internal class ComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<Dependen
         var variables = new Dictionary<MdBinding, Variable>();
         VisitGraph(RootContext, dependencyGraph, variables, cancellationToken);
         var fields = variables.Select(i => new Field(i.Value.Node, i.Value.Name)).ToImmutableArray();
-        return new ComposerInfo(
+        return new ComposerCode(
             className,
             ns,
             usingDirectives.OrderBy(i => i).ToImmutableArray(),
@@ -232,7 +232,7 @@ internal class ComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<Dependen
             var namesMap = new Dictionary<string, string>(); 
             foreach (var argsByContext in argsByContexts)
             {
-                var argCodeBuilder = new ComposerBuilder(_idGenerator);
+                var argCodeBuilder = new CodeComposerBuilder(_idGenerator);
                 foreach (var arg in argsByContext)
                 {
                     var argBuildContext = new BuildContext(context.Variables, new LinesBuilder(), false);

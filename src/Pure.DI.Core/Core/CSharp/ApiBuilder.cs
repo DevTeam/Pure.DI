@@ -1,6 +1,6 @@
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable HeapView.DelegateAllocation
-namespace Pure.DI.Core;
+namespace Pure.DI.Core.CSharp;
 
 internal class ApiBuilder : IBuilder<Unit, IEnumerable<Source>>
 {

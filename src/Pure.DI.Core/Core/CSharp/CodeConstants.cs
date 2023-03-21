@@ -1,4 +1,4 @@
-namespace Pure.DI.Core;
+namespace Pure.DI.Core.CSharp;
 
 internal static class CodeConstants
 {

@@ -7,6 +7,7 @@ namespace Pure.DI;
 
 using System.Text.RegularExpressions;
 using Core;
+using Core.CSharp;
 using Core.Models;
 
 // ReSharper disable once PartialTypeWithSinglePart
@@ -27,11 +28,21 @@ internal static partial class Composer
         .Bind<IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>>>().To<RootsBuilder>()
         .Bind<IVarIdGenerator>().To<VarIdGenerator>()
         .Bind<IBuilder<MdBinding, ISet<Injection>>>().To<InjectionsBuilder>()
-        .Bind<IBuilder<DependencyGraph, ComposerInfo>>().To<ComposerBuilder>()
         .Bind<ITypeConstructor>().To<TypeConstructor>()
         .Bind<IBuilder<RewriterContext<MdFactory>, MdFactory>>().To<FactoryTypeRewriter>()
         .Bind<IValidator<MdSetup>>().To<MetadataValidator>()
         .Bind<ILogger<TT>>().To<Logger<TT>>()
+        // CSharp
+        .Bind<IBuilder<DependencyGraph, ComposerCode>>(WellknownTag.CSharpComposerBuilder).To<CodeComposerBuilder>()
+        .Bind<IBuilder<ComposerCode, ComposerCode>>(WellknownTag.CSharpClassBuilder).To<CodeClassBuilder>()
+        .Bind<IBuilder<ComposerCode, ComposerCode>>(WellknownTag.CSharpDisposeMethodBuilder).To<CodeDisposeMethodBuilder>()
+        .Bind<IBuilder<ComposerCode, ComposerCode>>(WellknownTag.CSharpRootPropertiesBuilder).To<CodeRootPropertiesBuilder>()
+        .Bind<IBuilder<ComposerCode, ComposerCode>>(WellknownTag.CSharpUsingDeclarationsBuilder).To<CodeUsingDeclarationsBuilder>()
+        .Bind<IBuilder<ComposerCode, ComposerCode>>(WellknownTag.CSharpArgFieldsBuilder).To<CodeArgFieldsBuilder>()
+        .Bind<IBuilder<ComposerCode, ComposerCode>>(WellknownTag.CSharpSingletonFieldsBuilder).To<CodeSingletonFieldsBuilder>()
+        .Bind<IBuilder<ComposerCode, ComposerCode>>(WellknownTag.CSharpChildConstructorBuilder).To<CodeChildConstructorBuilder>()
+        .Bind<IBuilder<ComposerCode, ComposerCode>>(WellknownTag.CSharpPrimaryConstructorBuilder).To<CodePrimaryConstructorBuilder>()
+        .Bind<IBuilder<ComposerCode, ComposerCode>>(WellknownTag.CSharpDefaultConstructorBuilder).To<CodeDefaultConstructorBuilder>()
 
         // Singletons
         .Default(IoC.Lifetime.Singleton)
@@ -44,14 +55,5 @@ internal static partial class Composer
         .Bind<IResources>().To<Resources>()
         .Bind<IMarker>().To<Marker>()
         .Bind<IUnboundTypeConstructor>().To<UnboundTypeConstructor>()
-        .Bind<Func<string, Regex>>().To(_ => new Func<string, Regex>(value => new Regex(value, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase)))
-        .Bind<IBuilder<ComposerInfo, ComposerInfo>>(WellknownTag.ClassBuilder).To<CodeClassBuilder>()
-        .Bind<IBuilder<ComposerInfo, ComposerInfo>>(WellknownTag.DisposeMethodBuilder).To<CodeDisposeMethodBuilder>()
-        .Bind<IBuilder<ComposerInfo, ComposerInfo>>(WellknownTag.RootPropertiesBuilder).To<CodeRootPropertiesBuilder>()
-        .Bind<IBuilder<ComposerInfo, ComposerInfo>>(WellknownTag.UsingDeclarationsBuilder).To<CodeUsingDeclarationsBuilder>()
-        .Bind<IBuilder<ComposerInfo, ComposerInfo>>(WellknownTag.ArgFieldsBuilder).To<CodeArgFieldsBuilder>()
-        .Bind<IBuilder<ComposerInfo, ComposerInfo>>(WellknownTag.SingletonFieldsBuilder).To<CodeSingletonFieldsBuilder>()
-        .Bind<IBuilder<ComposerInfo, ComposerInfo>>(WellknownTag.ChildConstructorBuilder).To<CodeChildConstructorBuilder>()
-        .Bind<IBuilder<ComposerInfo, ComposerInfo>>(WellknownTag.PrimaryConstructorBuilder).To<CodePrimaryConstructorBuilder>()
-        .Bind<IBuilder<ComposerInfo, ComposerInfo>>(WellknownTag.DefaultConstructorBuilder).To<CodeDefaultConstructorBuilder>();
+        .Bind<Func<string, Regex>>().To(_ => new Func<string, Regex>(value => new Regex(value, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase)));
 }

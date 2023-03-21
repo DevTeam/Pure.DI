@@ -1,10 +1,10 @@
-namespace Pure.DI.Core;
+namespace Pure.DI.Core.CSharp;
 
-internal class CodeChildConstructorBuilder: IBuilder<ComposerInfo, ComposerInfo>
+internal class CodeChildConstructorBuilder: IBuilder<ComposerCode, ComposerCode>
 {
     private const string ParentComposerArgName = "parent";
 
-    public ComposerInfo Build(ComposerInfo composer, CancellationToken cancellationToken)
+    public ComposerCode Build(ComposerCode composer, CancellationToken cancellationToken)
     {
         var code = composer.Code;
         var membersCounter = composer.MembersCount;

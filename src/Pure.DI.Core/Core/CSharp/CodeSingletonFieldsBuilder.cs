@@ -1,8 +1,8 @@
-namespace Pure.DI.Core;
+namespace Pure.DI.Core.CSharp;
 
-internal class CodeSingletonFieldsBuilder: IBuilder<ComposerInfo, ComposerInfo>
+internal class CodeSingletonFieldsBuilder: IBuilder<ComposerCode, ComposerCode>
 {
-    public ComposerInfo Build(ComposerInfo composer, CancellationToken cancellationToken)
+    public ComposerCode Build(ComposerCode composer, CancellationToken cancellationToken)
     {
         var code = composer.Code;
         var membersCounter = composer.MembersCount;

@@ -1,8 +1,8 @@
-namespace Pure.DI.Core;
+namespace Pure.DI.Core.CSharp;
 
-internal class CodeArgFieldsBuilder: IBuilder<ComposerInfo, ComposerInfo>
+internal class CodeArgFieldsBuilder: IBuilder<ComposerCode, ComposerCode>
 {
-    public ComposerInfo Build(ComposerInfo composer, CancellationToken cancellationToken)
+    public ComposerCode Build(ComposerCode composer, CancellationToken cancellationToken)
     {
         if (!composer.Args.Any())
         {

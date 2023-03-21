@@ -1,4 +1,4 @@
-namespace Pure.DI.Core;
+namespace Pure.DI.Core.Models;
 
 internal readonly record struct Line(int Indent, string Text)
 {
