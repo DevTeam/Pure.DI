@@ -61,6 +61,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
         result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
     }
     
@@ -120,6 +121,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
         result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
     }
     
@@ -179,6 +181,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
         result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
     }
 }

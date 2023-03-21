@@ -58,6 +58,19 @@ public static class TestExtensions
         var updates = compilationCopy.SyntaxTrees.Select(i => CreateUpdate(i, compilationCopy));
         Facade.GetGenerator(contextOptions.Object, contextProducer.Object, contextDiagnostic.Object)
             .Generate(updates, CancellationToken.None);
+        
+        var logs = logEntryObserver.Values;
+        var hasErrorOrWarning = logs.Any(i => i.Severity >= DiagnosticSeverity.Warning);
+        if (hasErrorOrWarning)
+        {
+            return new Result(
+                false,
+                stdOut.ToImmutableArray(),
+                stdErr.ToImmutableArray(),
+                logs,
+                dependencyGraphObserver.Values.ToImmutableArray(),
+                string.Empty);
+        }
 
         compilation = compilation
             .AddSyntaxTrees(generatedSources.Select(i => CSharpSyntaxTree.ParseText(i.SourceText, parseOptions)).ToArray())
@@ -93,10 +106,10 @@ public static class TestExtensions
             if (!result.Success)
             {
                 return new Result(
-                    true,
+                    false,
                     stdOut.ToImmutableArray(),
                     stdErr.ToImmutableArray(),
-                    logEntryObserver.Values,
+                    logs,
                     dependencyGraphObserver.Values.ToImmutableArray(),
                     generatedCode);
             }
@@ -146,12 +159,12 @@ public static class TestExtensions
                 process.OutputDataReceived -= StdOutReceived;
                 process.ErrorDataReceived -= StdErrReceived;
             }
-
+            
             return new Result(
                 true,
                 stdOut.ToImmutableArray(),
                 stdErr.ToImmutableArray(),
-                logEntryObserver.Values,
+                logs,
                 dependencyGraphObserver.Values.ToImmutableArray(),
                 generatedCode);
         }

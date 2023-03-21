@@ -5,7 +5,6 @@ internal class LogObserver: ILogObserver
     private readonly DiagnosticSeverity _severity = DiagnosticSeverity.Warning;
     private readonly IBuilder<LogEntry, LogInfo> _logInfoBuilder;
     private readonly IContextDiagnostic _diagnostic;
-    private readonly StringBuilder _stringBuilder = new();
 
     public LogObserver(
         IContextOptions contextOptions,
@@ -22,7 +21,7 @@ internal class LogObserver: ILogObserver
         }
     }
 
-    public StringBuilder Log => _stringBuilder;
+    public StringBuilder Log { get; } = new();
 
     public void OnNext(LogEntry logEntry)
     {
@@ -39,7 +38,7 @@ internal class LogObserver: ILogObserver
 
         foreach (var line in logInfo.Lines)
         {
-            _stringBuilder.AppendLine(line);
+            Log.AppendLine(line);
         }
     }
 

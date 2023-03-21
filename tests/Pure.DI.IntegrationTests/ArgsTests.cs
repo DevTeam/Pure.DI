@@ -39,6 +39,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
         result.StdOut.ShouldBe(ImmutableArray.Create("Some Name"), result.GeneratedCode);
     }
     
@@ -102,6 +103,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
         result.StdOut.ShouldBe(ImmutableArray.Create("Some Name"), result.GeneratedCode);
     }
 
@@ -181,6 +183,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
         result.StdOut.ShouldBe(ImmutableArray.Create("Some Name 37 56"), result.GeneratedCode);
     }
 }

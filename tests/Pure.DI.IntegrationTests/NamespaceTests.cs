@@ -59,6 +59,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
         result.StdOut.ShouldBe(ImmutableArray.Create("MyNs.Abc.Composer"), result.GeneratedCode);
     }
     
@@ -116,6 +117,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
         result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Composer"), result.GeneratedCode);
     }
 }

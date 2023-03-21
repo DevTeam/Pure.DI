@@ -94,6 +94,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
         result.StdOut.ShouldBe(ImmutableArray.Create("OtherDep0", "True", "OtherDep1", "True"), result.GeneratedCode);
     }
     
@@ -186,6 +187,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
         result.StdOut.ShouldBe(ImmutableArray.Create("OtherDep1", "True", "OtherDep0", "True"), result.GeneratedCode);
     }
 }

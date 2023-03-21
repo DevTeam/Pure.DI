@@ -83,6 +83,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
         (result.StdOut.Contains("[Dead cat]") || result.StdOut.Contains("[Alive cat]")).ShouldBeTrue(result.GeneratedCode);
     }
 }

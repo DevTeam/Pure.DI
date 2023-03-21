@@ -15,6 +15,7 @@ internal class CodeComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depe
         DependencyGraph dependencyGraph,
         CancellationToken cancellationToken)
     {
+        _lines.Clear();
         var composerTypeNameParts = dependencyGraph.Source.ComposerTypeName.Split('.', StringSplitOptions.RemoveEmptyEntries);
         var className = composerTypeNameParts.Last();
         var ns = string.Join('.', composerTypeNameParts.Take(composerTypeNameParts.Length - 1));
