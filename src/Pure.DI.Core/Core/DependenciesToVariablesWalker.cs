@@ -21,7 +21,7 @@ internal class DependenciesToVariablesWalker: DependenciesWalker
         return result;
     }
 
-    public override void VisitInjection(in Injection injection)
+    public override void VisitInjection(in Injection injection, in ImmutableArray<Location> locations)
     {
         if (_variablesMap.TryGetValue(injection, out var variables))
         {
@@ -36,6 +36,6 @@ internal class DependenciesToVariablesWalker: DependenciesWalker
             _resultBuilder.Add(variable);
         }
         
-        base.VisitInjection(in injection);
+        base.VisitInjection(in injection, locations);
     }
 }

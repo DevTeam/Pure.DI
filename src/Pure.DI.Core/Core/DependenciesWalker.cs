@@ -30,7 +30,7 @@ internal class DependenciesWalker
 
     public virtual void VisitRoot(in DpRoot root)
     {
-        VisitInjection(root.Injection);
+        VisitInjection(root.Injection, ImmutableArray.Create(root.Source.Source.GetLocation()));
     }
 
     public virtual void VisitImplementation(in DpImplementation implementation)
@@ -60,7 +60,7 @@ internal class DependenciesWalker
     {
         foreach (var injection in factory.Injections)
         {
-            VisitInjection(injection);
+            VisitInjection(injection, ImmutableArray.Create(factory.Source.Source.GetLocation()));
         }
     }
     
@@ -78,12 +78,12 @@ internal class DependenciesWalker
 
     public virtual void VisitProperty(in DpProperty property)
     {
-        VisitInjection(property.Injection);
+        VisitInjection(property.Injection, property.Property.Locations);
     }
 
     public virtual void VisitField(in DpField field)
     {
-        VisitInjection(field.Injection);
+        VisitInjection(field.Injection, field.Field.Locations);
     }
 
     public virtual void VisitConstructor(in DpMethod constructor)
@@ -96,10 +96,10 @@ internal class DependenciesWalker
 
     public virtual void VisitParameter(in DpParameter parameter)
     {
-        VisitInjection(parameter.Injection);
+        VisitInjection(parameter.Injection, parameter.ParameterSymbol.Locations);
     }
 
-    public virtual void VisitInjection(in Injection injection)
+    public virtual void VisitInjection(in Injection injection, in ImmutableArray<Location> locations)
     {
     }
 }

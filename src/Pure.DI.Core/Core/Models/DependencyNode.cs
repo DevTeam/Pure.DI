@@ -19,6 +19,17 @@ internal record DependencyNode(
 
     public Lifetime Lifetime => Binding.Lifetime?.Lifetime is Lifetime lifetime ? lifetime : Lifetime.Transient;
 
+    public string KindName => 
+        Root is { } 
+            ? "root"
+            : Implementation is { }
+                ? "type"
+                : Factory is { }
+                    ? "factory"
+                    : Arg is { }
+                        ? "argument"
+                        : "dependency";
+
     public override string ToString() => string.Join(Environment.NewLine, ToStrings(0));
 
     public virtual bool Equals(DependencyNode? other) => Binding.Equals(other?.Binding);

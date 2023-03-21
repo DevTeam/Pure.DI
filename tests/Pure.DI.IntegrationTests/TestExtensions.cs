@@ -39,44 +39,39 @@ public static class TestExtensions
             .AddSyntaxTrees(generatedApiSources.Select(api => CSharpSyntaxTree.ParseText(api.SourceText, parseOptions)))
             .AddSyntaxTrees(CSharpSyntaxTree.ParseText(setupCode, parseOptions));
 
-        var tempFile = Path.GetTempFileName();
-        try
-        {
-            var globalOptions = new TestAnalyzerConfigOptions(new Dictionary<string, string>
-            {
-                { GlobalSettings.Severity, DiagnosticSeverity.Hidden.ToString() },
-                { GlobalSettings.LogFile, tempFile }
-            });
+        var globalOptions = new TestAnalyzerConfigOptions(new Dictionary<string, string>());
+        var dependencyGraphObserver = new Observer<DependencyGraph>();
+        using var dependencyGraphObserverToken = Facade.ObserversRegistry.Register(dependencyGraphObserver);
 
-            var dependencyGraph = new Observer<DependencyGraph>();
-            using var dependencyGraphToken = Facade.ObserversRegistry.Register(dependencyGraph);
+        var logEntryObserver = new Observer<LogEntry>();
+        using var logEntryObserverToken = Facade.ObserversRegistry.Register(logEntryObserver);
 
-            var generatedSources = new List<Source>();
-            var contextOptions = new Mock<IContextOptions>();
-            contextOptions.SetupGet(i => i.GlobalOptions).Returns(() => globalOptions);
-            var contextProducer = new Mock<IContextProducer>();
-            var contextDiagnostic = new Mock<IContextDiagnostic>();
-            contextProducer.Setup(i => i.AddSource(It.IsAny<string>(), It.IsAny<SourceText>()))
-                .Callback<string, SourceText>((hintName, sourceText) => { generatedSources.Add(new Source(hintName, sourceText)); });
+        var generatedSources = new List<Source>();
+        var contextOptions = new Mock<IContextOptions>();
+        contextOptions.SetupGet(i => i.GlobalOptions).Returns(() => globalOptions);
+        var contextProducer = new Mock<IContextProducer>();
+        var contextDiagnostic = new Mock<IContextDiagnostic>();
+        contextProducer.Setup(i => i.AddSource(It.IsAny<string>(), It.IsAny<SourceText>()))
+            .Callback<string, SourceText>((hintName, sourceText) => { generatedSources.Add(new Source(hintName, sourceText)); });
 
-            var compilationCopy = compilation;
-            var updates = compilationCopy.SyntaxTrees.Select(i => CreateUpdate(i, compilationCopy));
-            Facade.GetGenerator(contextOptions.Object, contextProducer.Object, contextDiagnostic.Object)
-                .Generate(updates, CancellationToken.None);
+        var compilationCopy = compilation;
+        var updates = compilationCopy.SyntaxTrees.Select(i => CreateUpdate(i, compilationCopy));
+        Facade.GetGenerator(contextOptions.Object, contextProducer.Object, contextDiagnostic.Object)
+            .Generate(updates, CancellationToken.None);
 
-            compilation = compilation
-                .AddSyntaxTrees(generatedSources.Select(i => CSharpSyntaxTree.ParseText(i.SourceText, parseOptions)).ToArray())
-                .Check(stdOut, options);
+        compilation = compilation
+            .AddSyntaxTrees(generatedSources.Select(i => CSharpSyntaxTree.ParseText(i.SourceText, parseOptions)).ToArray())
+            .Check(stdOut, options);
 
-            generatedSources.AddRange(generatedApiSources);
-            var generatedCode = string.Join(Environment.NewLine, generatedSources.Select((src, index) => $"Generated {index + 1}" + Environment.NewLine + Environment.NewLine + src.SourceText));
+        generatedSources.AddRange(generatedApiSources);
+        var generatedCode = string.Join(Environment.NewLine, generatedSources.Select((src, index) => $"Generated {index + 1}" + Environment.NewLine + Environment.NewLine + src.SourceText));
 
-            var tempFileName = Path.Combine(Environment.CurrentDirectory, Guid.NewGuid().ToString()[..4]);
-            var assemblyPath = Path.ChangeExtension(tempFileName, "exe");
-            var configPath = Path.ChangeExtension(tempFileName, "runtimeconfig.json");
-            var runtime = RuntimeInformation.FrameworkDescription.Split(" ")[1];
-            var dotnetVersion = $"{Environment.Version.Major}.{Environment.Version.Minor}";
-            var config = @"
+        var tempFileName = Path.Combine(Environment.CurrentDirectory, Guid.NewGuid().ToString()[..4]);
+        var assemblyPath = Path.ChangeExtension(tempFileName, "exe");
+        var configPath = Path.ChangeExtension(tempFileName, "runtimeconfig.json");
+        var runtime = RuntimeInformation.FrameworkDescription.Split(" ")[1];
+        var dotnetVersion = $"{Environment.Version.Major}.{Environment.Version.Minor}";
+        var config = @"
 {
   ""runtimeOptions"": {
             ""tfm"": ""netV.V"",
@@ -87,109 +82,89 @@ public static class TestExtensions
         }
 }".Replace("V.V", dotnetVersion).Replace("RUNTIME", runtime);
 
-            try
+        try
+        {
+            var result = compilation.Emit(assemblyPath);
+            if (options?.CheckCompilationErrors ?? true)
             {
-                var result = compilation.Emit(assemblyPath);
-                if (options?.CheckCompilationErrors ?? true)
-                {
-                    Assert.True(result.Success);
-                }
+                Assert.True(result.Success);
+            }
 
-                if (!result.Success)
-                {
-                    var unsLogs = ImmutableArray<string>.Empty;
-                    if (File.Exists(tempFile))
-                    {
-                        unsLogs = (await File.ReadAllLinesAsync(tempFile)).ToImmutableArray();
-                    }
-                    
-                    return new Result(
-                        true,
-                        stdOut.ToImmutableArray(),
-                        stdErr.ToImmutableArray(),
-                        unsLogs,
-                        dependencyGraph.Values.ToImmutableArray(),
-                        generatedCode);
-                }
-
-                void StdOutReceived(object sender, DataReceivedEventArgs args)
-                {
-                    if (args.Data != null)
-                    {
-                        stdOut.Add(args.Data);
-                    }
-                }
-
-                void StdErrReceived(object sender, DataReceivedEventArgs args)
-                {
-                    if (args.Data != null)
-                    {
-                        stdErr.Add(args.Data);
-                    }
-                }
-
-                await File.WriteAllTextAsync(configPath, config);
-                var process = new Process
-                {
-                    StartInfo = new ProcessStartInfo
-                    {
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                        FileName = "dotnet",
-                        Arguments = assemblyPath
-                    }
-                };
-
-                try
-                {
-                    process.OutputDataReceived += StdOutReceived;
-                    process.ErrorDataReceived += StdErrReceived;
-
-                    process.Start();
-                    process.BeginOutputReadLine();
-                    process.BeginErrorReadLine();
-                    await process.WaitForExitAsync();
-                }
-                finally
-                {
-                    process.OutputDataReceived -= StdOutReceived;
-                    process.ErrorDataReceived -= StdErrReceived;
-                }
-
-                var logs = ImmutableArray<string>.Empty;
-                if (File.Exists(tempFile))
-                {
-                    logs = (await File.ReadAllLinesAsync(tempFile)).ToImmutableArray();
-                }
-                
+            if (!result.Success)
+            {
                 return new Result(
                     true,
-                    stdOut.ToImmutableArray(), 
+                    stdOut.ToImmutableArray(),
                     stdErr.ToImmutableArray(),
-                    logs,
-                    dependencyGraph.Values.ToImmutableArray(),
+                    logEntryObserver.Values,
+                    dependencyGraphObserver.Values.ToImmutableArray(),
                     generatedCode);
+            }
+
+            void StdOutReceived(object sender, DataReceivedEventArgs args)
+            {
+                if (args.Data != null)
+                {
+                    stdOut.Add(args.Data);
+                }
+            }
+
+            void StdErrReceived(object sender, DataReceivedEventArgs args)
+            {
+                if (args.Data != null)
+                {
+                    stdErr.Add(args.Data);
+                }
+            }
+
+            await File.WriteAllTextAsync(configPath, config);
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    FileName = "dotnet",
+                    Arguments = assemblyPath
+                }
+            };
+
+            try
+            {
+                process.OutputDataReceived += StdOutReceived;
+                process.ErrorDataReceived += StdErrReceived;
+
+                process.Start();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+                await process.WaitForExitAsync();
             }
             finally
             {
-                if (File.Exists(assemblyPath))
-                {
-                    File.Delete(assemblyPath);
-                }
-
-                if (File.Exists(configPath))
-                {
-                    File.Delete(configPath);
-                }
+                process.OutputDataReceived -= StdOutReceived;
+                process.ErrorDataReceived -= StdErrReceived;
             }
+
+            return new Result(
+                true,
+                stdOut.ToImmutableArray(),
+                stdErr.ToImmutableArray(),
+                logEntryObserver.Values,
+                dependencyGraphObserver.Values.ToImmutableArray(),
+                generatedCode);
         }
         finally
         {
-            if (File.Exists(tempFile))
+            if (File.Exists(assemblyPath))
             {
-                File.Delete(tempFile);
+                File.Delete(assemblyPath);
+            }
+
+            if (File.Exists(configPath))
+            {
+                File.Delete(configPath);
             }
         }
     }

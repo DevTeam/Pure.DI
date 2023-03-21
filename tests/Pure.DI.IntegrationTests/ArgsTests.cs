@@ -6,6 +6,43 @@ using System.Collections.Immutable;
 public class ArgsTests
 {
     [Fact]
+    public async Task ShouldSupportArgRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    static class Setup
+    {
+        private static void SetupComposer()
+        {
+            DI.Setup("Composer")
+                .Arg<string>("serviceName")           
+                .Root<string>("ServiceName");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composer = new Composer("Some Name");
+            Console.WriteLine(composer.ServiceName);                               
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.StdOut.ShouldBe(ImmutableArray.Create("Some Name"), result.GeneratedCode);
+    }
+    
+    [Fact]
     public async Task ShouldSupportArg()
     {
         // Given

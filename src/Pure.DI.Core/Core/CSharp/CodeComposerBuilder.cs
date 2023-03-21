@@ -219,6 +219,11 @@ internal class CodeComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depe
         in DpFactory factory,
         CancellationToken cancellationToken)
     {
+        if (instantiation.Target.IsCreated)
+        {
+            return;
+        }
+        
         var lambda = factory.Source.Factory;
         var initializers = new Dictionary<string, ImmutableArray<string>>();
         if (instantiation.Arguments.Any())

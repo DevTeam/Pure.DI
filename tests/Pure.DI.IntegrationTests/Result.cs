@@ -8,6 +8,6 @@ internal readonly record struct Result(
     bool Success,
     ImmutableArray<string> StdOut,
     ImmutableArray<string> StdErr,
-    ImmutableArray<string> Logs,
-    ImmutableArray<DependencyGraph> DependencyGraphs,
+    IReadOnlyList<LogEntry> Logs,
+    IReadOnlyList<DependencyGraph> DependencyGraphs,
     string GeneratedCode);

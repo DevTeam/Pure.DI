@@ -59,7 +59,7 @@ internal class CodeGraphWalker<TContext>
         {
             cancellationToken.ThrowIfCancellationRequested();
             targets.Push(target);
-            var resolves = new Stack<Instantiation>();
+            var instantiations = new Stack<Instantiation>();
             while (targets.TryPop(out var targetVariable))
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -87,10 +87,10 @@ internal class CodeGraphWalker<TContext>
                     }
                 }
 
-                resolves.Push(new Instantiation(targetVariable, arguments.ToImmutableArray()));
+                instantiations.Push(new Instantiation(targetVariable, arguments.ToImmutableArray()));
             }
 
-            blocks.Push(new Block(target, resolves.ToImmutableArray()));
+            blocks.Push(new Block(target, instantiations.ToImmutableArray()));
         }
 
         while (blocks.TryPop(out var block))
@@ -105,10 +105,10 @@ internal class CodeGraphWalker<TContext>
         Block block,
         CancellationToken cancellationToken)
     {
-        foreach (var resolve in block.Resolves)
+        foreach (var instantiation in block.Instantiations)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            VisitInstantiation(context, dependencyGraph, root, block, resolve, cancellationToken);
+            VisitInstantiation(context, dependencyGraph, root, block, instantiation, cancellationToken);
         }
     }
 
@@ -120,11 +120,6 @@ internal class CodeGraphWalker<TContext>
         Instantiation instantiation,
         CancellationToken cancellationToken)
     {
-        if (instantiation.Target.IsCreated)
-        {
-            return;
-        }
-
         if (instantiation.Target.Node.Implementation is { } implementation)
         {
             VisitImplementation(context, dependencyGraph, rootVariable, block, instantiation, implementation, cancellationToken);
@@ -154,6 +149,11 @@ internal class CodeGraphWalker<TContext>
         in DpImplementation implementation,
         CancellationToken cancellationToken)
     {
+        if (instantiation.Target.IsCreated)
+        {
+            return;
+        }
+        
         var args = instantiation.Arguments.ToList();
         var argsWalker = new DependenciesToVariablesWalker(args);
         argsWalker.VisitConstructor(implementation.Constructor);

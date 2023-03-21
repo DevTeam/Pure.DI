@@ -1,6 +1,8 @@
 namespace Pure.DI.IntegrationTests;
 
+using System.Collections.Immutable;
 using System.Text;
+using Core;
 using Core.Models;
 
 [Collection(nameof(NonParallelTestsCollectionDefinition))]
@@ -404,6 +406,8 @@ Dependency(string abc<--string))
 Service(Sample.IDependency dependency<--Sample.IDependency))
   -[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[unresolved]
 """);
+
+        var a = result.Logs.Where(i => i.Id == LogId.ErrorUnresolved).ToImmutableArray();
     }
     
     [Fact]

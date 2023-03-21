@@ -10,6 +10,8 @@ internal static class LogId
     public const string ErrorUnresolved = "DIE0004";
     
     // Warning
-    public const string WarningGenerationFailure = "DIW0001";
-    public const string WarningOverriddenBinding = "DIW0002";
+    public const string WarningOverriddenBinding = "DIW0000";
+    
+    // Info
+    public const string InfoGenerationInterrupted = "DII0000";
 }

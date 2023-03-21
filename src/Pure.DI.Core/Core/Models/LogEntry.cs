@@ -5,7 +5,8 @@ public readonly record struct LogEntry(
     IEnumerable<string> Lines,
     Location? Location = default,
     string? Id = default,
-    Exception? Exception = default)
+    Exception? Exception = default,
+    string Source = "")
 {
     public override string ToString()
     {

@@ -31,7 +31,10 @@ internal static partial class Composer
         .Bind<ITypeConstructor>().To<TypeConstructor>()
         .Bind<IBuilder<RewriterContext<MdFactory>, MdFactory>>().To<FactoryTypeRewriter>()
         .Bind<IValidator<MdSetup>>().To<MetadataValidator>()
+        .Bind<IValidator<DependencyGraph>>().To<DependencyGraphValidator>()
         .Bind<ILogger<TT>>().To<Logger<TT>>()
+        .Bind<IBuilder<LogEntry, LogInfo>>().To<LogInfoBuilder>()
+        .Bind<ILogObserver>().To<LogObserver>()
         // CSharp
         .Bind<IBuilder<DependencyGraph, ComposerCode>>(WellknownTag.CSharpComposerBuilder).To<CodeComposerBuilder>()
         .Bind<IBuilder<ComposerCode, ComposerCode>>(WellknownTag.CSharpClassBuilder).To<CodeClassBuilder>()
@@ -46,7 +49,6 @@ internal static partial class Composer
 
         // Singletons
         .Default(IoC.Lifetime.Singleton)
-        .Bind<IResourceManager>().To<ResourceManager>()
         .Bind<IObserversRegistry>().Bind<IObserversProvider>().To<ObserversRegistry>()
         .Bind<IClock>().To<Clock>()
         .Bind<IFormatting>().To<Formatting>()

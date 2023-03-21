@@ -11,14 +11,10 @@ public class AbcTests
         // Given
         DI.Setup("Pure.DI.UsageTests.AbcComposer")
             .Bind<IClock>().To<Clock>()
-            .Bind<string>().To(_ => "Xyz")
-            .Root<IClock>("Clock")
-            .Arg<string>("abc", 1)
-            .Root<int>("Abc")
-            .Root<string>("Xyz");
+            .Root<IClock>("Clock");
 
         // When
-        var a = new AbcComposer("aaa").Clock;
+        var a = new AbcComposer().Clock;
 
         // Then
     }
