@@ -407,7 +407,8 @@ Service(Sample.IDependency dependency<--Sample.IDependency))
   -[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[unresolved]
 """);
 
-        var a = result.Logs.Where(i => i.Id == LogId.ErrorUnresolved).ToImmutableArray();
+        var errors = result.Logs.Where(i => i.Id == LogId.ErrorUnresolved).ToImmutableArray();
+        errors.Length.ShouldBe(2);
     }
     
     [Fact]
@@ -1181,7 +1182,8 @@ namespace Sample
         private static void Setup() => Pure.DI.DI.Setup("Composer")
             .Bind<IDependency1>().To<Dependency1>()
             .Bind<IDependency2>().To<Dependency2>()
-            .Bind<IService>().To<Service>(); 
+            .Bind<IService>().To<Service>()
+            .Root<IService>("Service"); 
     }
 
     public class Program { public static void Main() { } }               
@@ -1193,6 +1195,8 @@ namespace Sample
         var rawGraphs = GetGraphs(result);
         rawGraphs.Length.ShouldBe(1, result.GeneratedCode);
         rawGraphs[0].ConvertToString().ShouldBe("""
+Sample.IService() Service
+  +[Sample.IService() Service]<--[Sample.IService]--[Service(Sample.IDependency1 dep<--Sample.IDependency1))]
 Dependency1(Sample.IDependency2 dep<--Sample.IDependency2))
   +[Dependency1(Sample.IDependency2 dep<--Sample.IDependency2))]<--[Sample.IDependency2]--[Dependency2(Sample.IService service<--Sample.IService))]
 Dependency2(Sample.IService service<--Sample.IService))
@@ -1200,6 +1204,9 @@ Dependency2(Sample.IService service<--Sample.IService))
 Service(Sample.IDependency1 dep<--Sample.IDependency1))
   +[Service(Sample.IDependency1 dep<--Sample.IDependency1))]<--[Sample.IDependency1]--[Dependency1(Sample.IDependency2 dep<--Sample.IDependency2))]
 """);
+        
+        var errors = result.Logs.Where(i => i.Id == LogId.ErrorCyclicDependency).ToImmutableArray();
+        errors.Length.ShouldBe(1);
     }
     
     [Fact]
