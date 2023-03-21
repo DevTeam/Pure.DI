@@ -7,4 +7,6 @@ internal record ComposerInfo(
     in ImmutableArray<Field> Singletons,
     in ImmutableArray<Field> Args,
     in ImmutableArray<Root> Roots,
-    int DisposableSingletonsCount);
+    int DisposableSingletonsCount,
+    LinesBuilder Code,
+    int MembersCount);

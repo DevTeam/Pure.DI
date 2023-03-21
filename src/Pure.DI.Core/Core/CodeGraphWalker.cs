@@ -206,6 +206,7 @@ internal class CodeGraphWalker<TContext>
 
         foreach (var visit in visits.OrderBy(i => i.Ordinal ?? int.MaxValue))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             visit.Run();
         }
     }

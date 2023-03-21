@@ -26,7 +26,6 @@ internal static partial class Composer
         .Bind<IBuilder<MdSetup, IEnumerable<DependencyNode>>>(typeof(ArgDependencyNodeBuilder)).To<ArgDependencyNodeBuilder>()
         .Bind<IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>>>().To<RootsBuilder>()
         .Bind<IVarIdGenerator>().To<VarIdGenerator>()
-        .Bind<IBuilder<DependencyGraph, string>>().To<ComposerClassBuilder>()
         .Bind<IBuilder<MdBinding, ISet<Injection>>>().To<InjectionsBuilder>()
         .Bind<IBuilder<DependencyGraph, ComposerInfo>>().To<ComposerBuilder>()
         .Bind<ITypeConstructor>().To<TypeConstructor>()
@@ -45,5 +44,14 @@ internal static partial class Composer
         .Bind<IResources>().To<Resources>()
         .Bind<IMarker>().To<Marker>()
         .Bind<IUnboundTypeConstructor>().To<UnboundTypeConstructor>()
-        .Bind<Func<string, Regex>>().To(_ => new Func<string, Regex>(value => new Regex(value, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase)));
+        .Bind<Func<string, Regex>>().To(_ => new Func<string, Regex>(value => new Regex(value, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase)))
+        .Bind<IBuilder<ComposerInfo, ComposerInfo>>(WellknownTag.ClassBuilder).To<CodeClassBuilder>()
+        .Bind<IBuilder<ComposerInfo, ComposerInfo>>(WellknownTag.DisposeMethodBuilder).To<CodeDisposeMethodBuilder>()
+        .Bind<IBuilder<ComposerInfo, ComposerInfo>>(WellknownTag.RootPropertiesBuilder).To<CodeRootPropertiesBuilder>()
+        .Bind<IBuilder<ComposerInfo, ComposerInfo>>(WellknownTag.UsingDeclarationsBuilder).To<CodeUsingDeclarationsBuilder>()
+        .Bind<IBuilder<ComposerInfo, ComposerInfo>>(WellknownTag.ArgFieldsBuilder).To<CodeArgFieldsBuilder>()
+        .Bind<IBuilder<ComposerInfo, ComposerInfo>>(WellknownTag.SingletonFieldsBuilder).To<CodeSingletonFieldsBuilder>()
+        .Bind<IBuilder<ComposerInfo, ComposerInfo>>(WellknownTag.ChildConstructorBuilder).To<CodeChildConstructorBuilder>()
+        .Bind<IBuilder<ComposerInfo, ComposerInfo>>(WellknownTag.PrimaryConstructorBuilder).To<CodePrimaryConstructorBuilder>()
+        .Bind<IBuilder<ComposerInfo, ComposerInfo>>(WellknownTag.DefaultConstructorBuilder).To<CodeDefaultConstructorBuilder>();
 }

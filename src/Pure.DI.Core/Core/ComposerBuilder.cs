@@ -34,7 +34,9 @@ internal class ComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<Dependen
             GetSingletons(fields),
             GetArgs(fields),
             _lines.Select(i => i.Key with { Lines = i.Value }).ToImmutableArray(),
-            variables.Values.Count(IsDisposable)
+            variables.Values.Count(IsDisposable),
+            new LinesBuilder(),
+            0
         );
     }
 

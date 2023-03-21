@@ -8,7 +8,9 @@ internal class Generator : IGenerator
     private readonly ILogger<Generator> _logger;
     private readonly IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>> _metadataBuilder;
     private readonly IBuilder<MdSetup, DependencyGraph> _dependencyGraphBuilder;
-    private readonly IBuilder<DependencyGraph, string> _composerClassBuilder;
+    private readonly IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>> _rootsBuilder;
+    private readonly IBuilder<DependencyGraph, ComposerInfo> _composerBuilder;
+    private readonly IBuilder<ComposerInfo, ComposerInfo> _classBuilder;
     private readonly IContextProducer _contextProducer;
     private readonly IResourceManager _resourceManager;
     private readonly IObserversProvider _observersProvider;
@@ -19,7 +21,9 @@ internal class Generator : IGenerator
         IObserversProvider observersProvider,
         IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>> metadataBuilder,
         IBuilder<MdSetup, DependencyGraph> dependencyGraphBuilder,
-        IBuilder<DependencyGraph, string> composerClassBuilder,
+        IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>> rootsBuilder,
+        IBuilder<DependencyGraph, ComposerInfo> composerBuilder,
+        [IoC.Tag(WellknownTag.ClassBuilder)] IBuilder<ComposerInfo, ComposerInfo> classBuilder,
         IContextProducer contextProducer)
     {
         _logger = logger;
@@ -27,7 +31,9 @@ internal class Generator : IGenerator
         _observersProvider = observersProvider;
         _metadataBuilder = metadataBuilder;
         _dependencyGraphBuilder = dependencyGraphBuilder;
-        _composerClassBuilder = composerClassBuilder;
+        _rootsBuilder = rootsBuilder;
+        _composerBuilder = composerBuilder;
+        _classBuilder = classBuilder;
         _contextProducer = contextProducer;
     }
 
@@ -39,18 +45,32 @@ internal class Generator : IGenerator
             var setups = _metadataBuilder.Build(updates, cancellationToken);
             foreach (var setup in setups)
             {
-                var rawDependencyGraph = _dependencyGraphBuilder.Build(setup, cancellationToken);
+                var dependencyGraph = _dependencyGraphBuilder.Build(setup, cancellationToken);
                 cancellationToken.ThrowIfCancellationRequested();
                 foreach (var graphObserver in _observersProvider.GetObservers<DependencyGraph>())
                 {
-                    graphObserver.OnNext(rawDependencyGraph);
+                    graphObserver.OnNext(dependencyGraph);
                 }
                 
                 cancellationToken.ThrowIfCancellationRequested();
                 
-                var composerClassCode = _composerClassBuilder.Build(rawDependencyGraph, cancellationToken);
+                var roots = _rootsBuilder.Build(dependencyGraph, cancellationToken);
+                if (!roots.Any())
+                {
+                    return;
+                }
+        
+                var composer = _composerBuilder.Build(dependencyGraph with { Roots = roots }, cancellationToken);
+                if (!composer.Roots.Any())
+                {
+                    return;
+                }
+                
+                composer = _classBuilder.Build(composer, cancellationToken);
                 cancellationToken.ThrowIfCancellationRequested();
-                _contextProducer.AddSource($"{setup.ComposerTypeName}.g.cs", SourceText.From(composerClassCode, Encoding.UTF8));
+
+                var classCode = string.Join(Environment.NewLine, composer.Code);
+                _contextProducer.AddSource($"{setup.ComposerTypeName}.g.cs", SourceText.From(classCode, Encoding.UTF8));
             }
         }
         catch (OperationCanceledException)
