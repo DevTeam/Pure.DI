@@ -7,7 +7,6 @@ internal record struct MdBinding(
     in ImmutableArray<MdContract> Contracts,
     in ImmutableArray<MdTag> Tags,
     in MdLifetime? Lifetime = default,
-    in MdAnyTag? AnyTag = default,
     in MdImplementation? Implementation = default,
     in MdFactory? Factory = default,
     in MdArg? Arg = default)

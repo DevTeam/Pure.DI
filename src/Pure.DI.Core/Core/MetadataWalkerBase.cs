@@ -52,11 +52,6 @@ internal class MetadataWalkerBase: IMetadataVisitor
             VisitTag(tag);
         }
 
-        if (binding.AnyTag is {} anyTag)
-        {
-            VisitAnyTag(anyTag);
-        }
-        
         if (binding.Implementation is {} implementation)
         {
             VisitImplementation(implementation);
@@ -138,10 +133,6 @@ internal class MetadataWalkerBase: IMetadataVisitor
     }
     
     public virtual void VisitTag(in MdTag tag)
-    {
-    }
-
-    public virtual void VisitAnyTag(in MdAnyTag anyTag)
     {
     }
 

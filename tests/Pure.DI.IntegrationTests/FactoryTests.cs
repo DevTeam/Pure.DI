@@ -252,4 +252,66 @@ namespace Sample
         result.Success.ShouldBeTrue(result.GeneratedCode);
         result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
     }
+    
+    [Fact]
+    public async Task ShouldSupportFactoryWithParentTagInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency {}
+
+    interface IService
+    {
+        IDependency Dep { get; }
+    }
+
+    class Service: IService 
+    {
+        public Service(IDependency dep)
+        { 
+            Dep = dep;
+            Console.WriteLine("Created");           
+        }
+
+        public IDependency Dep { get; }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<IDependency>(123).To(ctx => new Dependency())
+                .Bind<IService>(123).To(ctx => {
+                    ctx.Inject<IDependency>(ctx.Tag, out var dependency);
+                    return new Service(dependency);
+                })    
+                .Root<IService>("Service", 123);
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();      
+            var service = composition.Service;                                                 
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Created"), result.GeneratedCode);
+    }
 }

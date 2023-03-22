@@ -119,9 +119,6 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
     
     public void VisitTag(in MdTag tag) => _tagsBuilder.Add(tag);
 
-    public void VisitAnyTag(in MdAnyTag anyTag) =>
-        Binding = Binding with { AnyTag = anyTag };
-
     public void VisitFinish() => FinishSetup();
 
     private void FinishBinding()

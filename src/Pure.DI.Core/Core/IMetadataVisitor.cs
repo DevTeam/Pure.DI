@@ -32,7 +32,5 @@ internal interface IMetadataVisitor
 
     void VisitTag(in MdTag tag);
 
-    void VisitAnyTag(in MdAnyTag anyTag);
-
     void VisitFinish();
 }

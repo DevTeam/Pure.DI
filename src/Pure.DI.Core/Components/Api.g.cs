@@ -429,21 +429,6 @@ namespace Pure.DI
         IBinding Tags(params object[] tags);
 
         /// <summary>
-        /// Determines a binding suitable for any tag.
-        /// <example>
-        /// <code>
-        /// static partial class Composition
-        /// {
-        ///   static Composition() =&gt; DI.Setup()
-        ///     .Bind&lt;ICat&gt;().AnyTag().To&lt;ShroedingersCat&gt;();
-        /// }
-        /// </code>
-        /// </example>
-        /// </summary>
-        /// <returns>Binding configuration API.</returns>
-        IBinding AnyTag();
-
-        /// <summary>
         /// Finish a binding configuration chain by determining a binding implementation.
         /// <example>
         /// <code>
@@ -482,49 +467,20 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// The abstraction to resolve a DI dependency via <see cref="IBinding.To{T}(System.Func{IContext,T})"/>.
+    /// The abstraction to inject a DI dependency via <see cref="IBinding.To{T}(System.Func{IContext,T})"/>.
     /// </summary>
     internal interface IContext
     {
+        object Tag { get; }
+            
         /// <summary>
-        /// Resolves a composition root.
-        /// <example>
-        /// <code>
-        /// DI.Setup()
-        ///  .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;()
-        ///  .Bind&lt;INamedService&gt;().To(
-        ///    ctx =&gt;
-        ///    {
-        ///      var service = new InitializingNamedService(ctx.Resolve&lt;IDependency&gt;());
-        ///      service.Initialize("Initialized!", ctx.Resolve&lt;IDependency&gt;());
-        ///      return service;
-        ///    });
-        /// </code>
-        /// </example>
+        /// Injects an instance of type <c>T</c>.
         /// </summary>
-        /// <typeparam name="T">The type of a root.</typeparam>
-        /// <returns>A resolved dependency.</returns>
         void Inject<T>(out T value);
 
         /// <summary>
-        /// Resolves a composition root marked with a tag. See also <see cref="IBinding.Tags"/>./>
-        /// <example>
-        /// <code>
-        /// DI.Setup()
-        ///  .Bind&lt;IDependency&gt;().Tag("MyDependency").To&lt;Dependency&gt;()
-        ///  .Bind&lt;INamedService&gt;().To(
-        ///    ctx =&gt;
-        ///    {
-        ///      var service = new InitializingNamedService(ctx.Resolve&lt;IDependency&gt;("MyDependency"));
-        ///      service.Initialize("Initialized!", ctx.Resolve&lt;IDependency&gt;());
-        ///      return service;
-        ///    });
-        /// </code>
-        /// </example>
-        /// </summary>
-        /// <param name="tag">The tag of of a composition root instance.</param>
-        /// <typeparam name="T">The type of a composition root instance.</typeparam>
-        /// <returns>A resolved dependency.</returns>
+        /// Injects an instance of type <c>T</c> marked with a tag.
+        /// <summary>
         void Inject<T>(object tag, out T value);
     }
     
@@ -678,12 +634,6 @@ namespace Pure.DI
 
             /// <inheritdoc />
             public IBinding Tags(params object[] tags)
-            {
-                return this;
-            }
-
-            /// <inheritdoc />
-            public IBinding AnyTag()
             {
                 return this;
             }

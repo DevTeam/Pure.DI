@@ -57,8 +57,6 @@ internal class MetadataToLinesWalker: MetadataWalkerBase, IEnumerable<string>
         _lb.Append(tag.ToString());
     }
 
-    public override void VisitAnyTag(in MdAnyTag anyTag) => _lb.Append(anyTag.ToString());
-
     public override void VisitFinish()
     {
     }

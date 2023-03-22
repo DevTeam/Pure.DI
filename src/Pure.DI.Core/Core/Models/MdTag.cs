@@ -7,6 +7,8 @@ internal readonly record struct MdTag(
     int Position,
     object Value)
 {
+    public static readonly object ContextTag = new ContextTagObject();
+    
     public override string ToString() =>
         Value switch
         {
@@ -14,4 +16,9 @@ internal readonly record struct MdTag(
             string => $"\"{Value}\"",
             _ => Value.ToString()
         };
+    
+    private class ContextTagObject
+    {
+        public override string ToString() => "ContextTag";
+    }
 }

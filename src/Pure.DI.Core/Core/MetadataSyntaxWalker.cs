@@ -28,8 +28,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         nameof(IConfiguration.TypeAttribute),
         nameof(IBinding.As),
         nameof(IBinding.To),
-        nameof(IBinding.Tags),
-        nameof(IBinding.AnyTag)
+        nameof(IBinding.Tags)
     );
     
     private readonly ILogger<MetadataSyntaxWalker> _logger;
@@ -219,10 +218,6 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
 
                         break;
 
-                    case nameof(IBinding.AnyTag):
-                        MetadataVisitor.VisitAnyTag(new MdAnyTag(SemanticModel, invocation));
-                        break;
-
                     case nameof(IConfiguration.DefaultLifetime):
                         if (invocation.ArgumentList.Arguments is [{ Expression: { } defaultLifetimeSyntax }])
                         {
@@ -396,12 +391,19 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                             targetValue.Expression);
 
                     case [{ RefOrOutKeyword.IsMissing: false } tag, { RefOrOutKeyword.IsMissing: false } targetValue]:
+                        var parentTag = 
+                            tag.Expression is MemberAccessExpressionSyntax memberAccessExpression
+                            && memberAccessExpression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
+                            && memberAccessExpression.Name.Identifier.Text == nameof(IContext.Tag)
+                            && memberAccessExpression.Expression is IdentifierNameSyntax identifierName
+                            && identifierName.Identifier.Text == lambdaExpression.Parameter.Identifier.Text;
+
                         return new MdResolver(
                             SemanticModel,
                             invocation,
                             position++,
                             GetTypeSymbol<ITypeSymbol>(resolverContractType),
-                            new MdTag(SemanticModel, tag, 0, GetConstantValue<object>(tag.Expression)),
+                            new MdTag(SemanticModel, tag, 0, parentTag ? MdTag.ContextTag : GetConstantValue<object>(tag.Expression)),
                             targetValue.Expression);
                 }
             }

@@ -87,7 +87,7 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
                     nodesToResolve.Add(node);
                 }
 
-                var uresolvedBindings = new HashSet<MdBinding>();
+                var targetUnresolvedBindings = new HashSet<MdBinding>();
                 while (nodesToResolve.Count > 0)
                 {
                     var targetNodes = nodesToResolve.ToImmutableArray();
@@ -178,7 +178,6 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
                                     newContracts,
                                     ImmutableArray<MdTag>.Empty, 
                                     new MdLifetime(semanticModel, setup.Source, Lifetime.Transient),
-                                    default,
                                     new MdImplementation(semanticModel, setup.Source, sourceType));
 
                                 var newSetup = setup with { Bindings = ImmutableArray.Create(newBinding) };
@@ -202,13 +201,13 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
                         }
                         else
                         {
-                            uresolvedBindings.Add(targetNode.Binding);
+                            targetUnresolvedBindings.Add(targetNode.Binding);
                             unresolvedBindings.Add(targetNode.Binding, new ValueTuple<DependencyNode, ImmutableArray<Injection>>(targetNode, nodeInjections));
                         }
                     }
                 }
 
-                foreach (var unresolvedBinding in uresolvedBindings)
+                foreach (var unresolvedBinding in targetUnresolvedBindings)
                 {
                     if (contracts.TryGetValue(unresolvedBinding, out var unresolvedContracts))
                     {

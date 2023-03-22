@@ -9,36 +9,36 @@ namespace Pure.DI.Features
                 .TypeAttribute<TypeAttribute>()
                 .TagAttribute<TagAttribute>()
                 .OrdinalAttribute<OrdinalAttribute>()
-                
                 .Bind<System.Func<TT>>()
-                .AnyTag()
-                .To(ctx => new System.Func<TT>(() =>
-                {
-                    TT value;
-                    ctx.Inject<TT>(out value);
-                    return value;
-                }))
+                    .To(ctx => new System.Func<TT>(() =>
+                    {
+                        TT value;
+                        ctx.Inject<TT>(ctx.Tag, out value);
+                        return value;
+                    }))
                 .Bind<System.Lazy<TT>>()
-                .AnyTag()
-                .To(ctx =>
-                {
-                    System.Func<TT> func;
-                    ctx.Inject<System.Func<TT>>(out func);
-                    return new System.Lazy<TT>(func, true);
-                })
+                    .To(ctx =>
+                    {
+                        System.Func<TT> func;
+                        ctx.Inject<System.Func<TT>>(ctx.Tag, out func);
+                        return new System.Lazy<TT>(func, true);
+                    })
                 .Bind<System.Lazy<TT, TT1>>()
-                .AnyTag()
-                .To(ctx =>
-                {
-                    System.Func<TT> func;
-                    ctx.Inject<System.Func<TT>>(out func);
-                    TT1 metadata;
-                    ctx.Inject<TT1>(out metadata);
-                    return new System.Lazy<TT, TT1>(func, metadata, true);
-                })
+                    .To(ctx =>
+                    {
+                        System.Func<TT> func;
+                        ctx.Inject<System.Func<TT>>(ctx.Tag, out func);
+                        TT1 metadata;
+                        ctx.Inject<TT1>(ctx.Tag, out metadata);
+                        return new System.Lazy<TT, TT1>(func, metadata, true);
+                    })
                 .Bind<System.Threading.Tasks.Task<TT>>()
-                .AnyTag()
-                .To<System.Threading.Tasks.Task<TT>>();
+                    .To(ctx =>
+                    {
+                        System.Func<TT> func;
+                        ctx.Inject<System.Func<TT>>(ctx.Tag, out func);
+                        return new System.Threading.Tasks.Task<TT>(func);
+                    });
         }
     }
 }
