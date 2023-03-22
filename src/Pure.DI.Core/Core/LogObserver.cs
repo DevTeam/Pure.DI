@@ -22,23 +22,31 @@ internal class LogObserver: ILogObserver
     }
 
     public StringBuilder Log { get; } = new();
+    
+    public StringBuilder Outcome { get; } = new();
 
     public void OnNext(LogEntry logEntry)
     {
-        if (logEntry.Severity < _severity)
+        if (logEntry.Severity >= _severity)
         {
-            return;
-        }
-        
-        var logInfo = _logInfoBuilder.Build(logEntry, CancellationToken.None);
-        if (logInfo.DiagnosticDescriptor is { } descriptor)
-        {
-            _diagnostic.ReportDiagnostic(Diagnostic.Create(descriptor, logEntry.Location));            
-        }
+            var logInfo = _logInfoBuilder.Build(logEntry, CancellationToken.None);
+            if (logInfo.DiagnosticDescriptor is { } descriptor)
+            {
+                _diagnostic.ReportDiagnostic(Diagnostic.Create(descriptor, logEntry.Location));
+            }
 
-        foreach (var line in logInfo.Lines)
+            foreach (var line in logInfo.Lines)
+            {
+                Log.AppendLine(line);
+            }
+        }
+        else
         {
-            Log.AppendLine(line);
+            if (logEntry.IsOutcome)
+            {
+                var logInfo = _logInfoBuilder.Build(logEntry, CancellationToken.None);
+                Outcome.AppendLine(logInfo.Outcome);
+            }
         }
     }
 

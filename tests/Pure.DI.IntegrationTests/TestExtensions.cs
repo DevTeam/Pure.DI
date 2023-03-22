@@ -39,7 +39,11 @@ public static class TestExtensions
             .AddSyntaxTrees(generatedApiSources.Select(api => CSharpSyntaxTree.ParseText(api.SourceText, parseOptions)))
             .AddSyntaxTrees(CSharpSyntaxTree.ParseText(setupCode, parseOptions));
 
-        var globalOptions = new TestAnalyzerConfigOptions(new Dictionary<string, string>());
+        var globalOptions = new TestAnalyzerConfigOptions(new Dictionary<string, string>
+        {
+            { GlobalSettings.Severity, DiagnosticSeverity.Info.ToString() }
+        });
+
         var dependencyGraphObserver = new Observer<DependencyGraph>();
         using var dependencyGraphObserverToken = Facade.ObserversRegistry.Register(dependencyGraphObserver);
 

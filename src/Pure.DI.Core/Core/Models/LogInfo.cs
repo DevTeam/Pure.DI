@@ -3,4 +3,5 @@ namespace Pure.DI.Core.Models;
 internal readonly record struct LogInfo(
     in LogEntry Entry,
     IEnumerable<string> Lines,
-    DiagnosticDescriptor? DiagnosticDescriptor = default);
+    DiagnosticDescriptor? DiagnosticDescriptor,
+    string Outcome);

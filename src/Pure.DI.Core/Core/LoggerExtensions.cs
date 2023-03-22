@@ -50,12 +50,11 @@ internal static class LoggerExtensions
         return Disposables.Create(() =>
         {
             stopwatch.Stop();
-            // ReSharper disable once HeapView.BoxingAllocation
-            logger.Log(
-                logEntry with
-                {
-                    Lines = ImmutableArray.Create($"{new string('<', _processLevel * 4)}{shortDescription} finished in {stopwatch.Elapsed.TotalMilliseconds:F} ms")
-                });
+            logger.Log(logEntry with
+            {
+                Lines = ImmutableArray.Create($"{new string('<', _processLevel * 4)}{shortDescription} finished in {stopwatch.Elapsed.TotalMilliseconds:F} ms"),
+                IsOutcome = true
+            });
             
             _processLevel--;
         });

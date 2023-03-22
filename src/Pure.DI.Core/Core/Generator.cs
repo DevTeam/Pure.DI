@@ -55,32 +55,52 @@ internal class Generator : IGenerator
             var setups = _metadataBuilder.Build(updates, cancellationToken);
             foreach (var setup in setups)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                var dependencyGraph = _dependencyGraphBuilder.Build(setup, cancellationToken);
-                foreach (var graphObserver in _dependencyGraphObservers)
-                {
-                    graphObserver.OnNext(dependencyGraph);
-                }
-                
-                cancellationToken.ThrowIfCancellationRequested();
-                _dependencyGraphValidator.Validate(dependencyGraph, cancellationToken);
+                using var setupToken = _logger.TraceProcess($"processing setup {setup.TypeName}");
 
-                cancellationToken.ThrowIfCancellationRequested();
-                var roots = _rootsBuilder.Build(dependencyGraph, cancellationToken);
-                if (!roots.Any())
+                DependencyGraph dependencyGraph;
+                using (_logger.TraceProcess($"building dependency graph {setup.TypeName}"))
                 {
-                    return;
+                    cancellationToken.ThrowIfCancellationRequested();
+                    dependencyGraph = _dependencyGraphBuilder.Build(setup, cancellationToken);
+                    foreach (var graphObserver in _dependencyGraphObservers)
+                    {
+                        graphObserver.OnNext(dependencyGraph);
+                    }
                 }
-        
-                cancellationToken.ThrowIfCancellationRequested();
-                var composition = _compositionBuilder.Build(dependencyGraph with { Roots = roots }, cancellationToken);
-                if (!composition.Roots.Any())
+
+                using (_logger.TraceProcess($"validating dependency graph {setup.TypeName}"))
                 {
-                    return;
+                    cancellationToken.ThrowIfCancellationRequested();
+                    _dependencyGraphValidator.Validate(dependencyGraph, cancellationToken);
                 }
-                
-                cancellationToken.ThrowIfCancellationRequested();
-                composition = _classBuilder.Build(composition, cancellationToken);
+
+                IReadOnlyDictionary<Injection, Root> roots;
+                using (_logger.TraceProcess($"search for roots {setup.TypeName}"))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    roots = _rootsBuilder.Build(dependencyGraph, cancellationToken);
+                    if (!roots.Any())
+                    {
+                        return;
+                    }
+                }
+
+                CompositionCode composition;
+                using (_logger.TraceProcess($"building composition {setup.TypeName}"))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    composition = _compositionBuilder.Build(dependencyGraph with { Roots = roots }, cancellationToken);
+                    if (!composition.Roots.Any())
+                    {
+                        return;
+                    }
+                }
+
+                using (_logger.TraceProcess($"generating composition code {setup.TypeName}"))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    composition = _classBuilder.Build(composition, cancellationToken);
+                }
 
                 cancellationToken.ThrowIfCancellationRequested();
                 var classCode = string.Join(Environment.NewLine, composition.Code);
@@ -121,7 +141,8 @@ internal class Generator : IGenerator
             stopwatch.Stop();
             var log = _logObserver.Log;
             log.Insert(0, $"/*{Environment.NewLine}");
-            log.AppendLine($"Total duration: {stopwatch.Elapsed:c}");
+            log.Append(_logObserver.Outcome);
+            log.AppendLine($"Done in {stopwatch.Elapsed.TotalMilliseconds:F} ms");
             log.AppendLine("*/");
             _contextProducer.AddSource("PureDI.log.g.cs", SourceText.From(log.ToString(), Encoding.UTF8));
         }

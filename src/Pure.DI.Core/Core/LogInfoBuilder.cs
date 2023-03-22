@@ -47,13 +47,13 @@ internal class LogInfoBuilder: IBuilder<LogEntry, LogInfo>
         if (!string.IsNullOrWhiteSpace(logEntry.Id))
         {
             descriptor = new DiagnosticDescriptor(logEntry.Id, severityCode, firstLine, severityCode, logEntry.Severity, true);
-            //_diagnostic.ReportDiagnostic(Diagnostic.Create(descriptor, logEntry.Location));
         }
 
         return new LogInfo(
             logEntry,
             Format(logEntry, sb.ToString(), linesEnumerator),
-            descriptor);
+            descriptor,
+            logEntry.IsOutcome ? firstLine : "");
     }
     
     private IEnumerable<string> Format(LogEntry logEntry, string header, IEnumerator<string> linesEnumerator)

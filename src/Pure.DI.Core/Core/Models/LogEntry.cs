@@ -6,7 +6,8 @@ public readonly record struct LogEntry(
     Location? Location = default,
     string? Id = default,
     Exception? Exception = default,
-    string Source = "")
+    string Source = "",
+    bool IsOutcome = false)
 {
     public override string ToString()
     {

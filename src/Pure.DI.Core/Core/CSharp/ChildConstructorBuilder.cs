@@ -19,11 +19,20 @@ internal class ChildConstructorBuilder: IBuilder<CompositionCode, CompositionCod
         {
             using (code.Indent())
             {
+                if (composition.DisposableSingletonsCount == 0)
+                {
+                    code.AppendLine($"{Variable.DisposablesFieldName} = new {CodeConstants.DisposableTypeName}[0];");
+                }
+
                 code.AppendLine($"lock ({ParentCompositionArgName}.{Variable.DisposablesFieldName})");
                 code.AppendLine("{");
                 using (code.Indent())
                 {
-                    code.AppendLine($"{Variable.DisposablesFieldName} = new {CodeConstants.DisposableTypeName}[{composition.DisposableSingletonsCount} - {ParentCompositionArgName}.{Variable.DisposablesFieldName}.Length];");
+                    if (composition.DisposableSingletonsCount > 0)
+                    {
+                        code.AppendLine($"{Variable.DisposablesFieldName} = new {CodeConstants.DisposableTypeName}[{composition.DisposableSingletonsCount} - {ParentCompositionArgName}.{Variable.DisposablesFieldName}.Length];");
+                    }
+                
                     foreach (var singletonField in composition.Singletons)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
