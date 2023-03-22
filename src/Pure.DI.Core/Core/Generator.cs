@@ -52,13 +52,18 @@ internal class Generator : IGenerator
         try
         {
             using var logToken = _logger.TraceProcess("generating");
-            var setups = _metadataBuilder.Build(updates, cancellationToken);
+            ImmutableArray<MdSetup> setups;
+            using (_logger.TraceProcess($"analyzing metadata"))
+            {
+                setups = _metadataBuilder.Build(updates, cancellationToken).ToImmutableArray();
+            }
+
             foreach (var setup in setups)
             {
-                using var setupToken = _logger.TraceProcess($"processing setup {setup.TypeName}");
+                using var setupToken = _logger.TraceProcess($"processing setup \"{setup.TypeName}\"");
 
                 DependencyGraph dependencyGraph;
-                using (_logger.TraceProcess($"building dependency graph {setup.TypeName}"))
+                using (_logger.TraceProcess($"building dependency graph \"{setup.TypeName}\""))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     dependencyGraph = _dependencyGraphBuilder.Build(setup, cancellationToken);
@@ -68,14 +73,14 @@ internal class Generator : IGenerator
                     }
                 }
 
-                using (_logger.TraceProcess($"validating dependency graph {setup.TypeName}"))
+                using (_logger.TraceProcess($"validating dependency graph \"{setup.TypeName}\""))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     _dependencyGraphValidator.Validate(dependencyGraph, cancellationToken);
                 }
 
                 IReadOnlyDictionary<Injection, Root> roots;
-                using (_logger.TraceProcess($"search for roots {setup.TypeName}"))
+                using (_logger.TraceProcess($"search for roots \"{setup.TypeName}\""))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     roots = _rootsBuilder.Build(dependencyGraph, cancellationToken);
@@ -86,7 +91,7 @@ internal class Generator : IGenerator
                 }
 
                 CompositionCode composition;
-                using (_logger.TraceProcess($"building composition {setup.TypeName}"))
+                using (_logger.TraceProcess($"building composition \"{setup.TypeName}\""))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     composition = _compositionBuilder.Build(dependencyGraph with { Roots = roots }, cancellationToken);
@@ -96,7 +101,7 @@ internal class Generator : IGenerator
                     }
                 }
 
-                using (_logger.TraceProcess($"generating composition code {setup.TypeName}"))
+                using (_logger.TraceProcess($"generating composition code \"{setup.TypeName}\""))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     composition = _classBuilder.Build(composition, cancellationToken);

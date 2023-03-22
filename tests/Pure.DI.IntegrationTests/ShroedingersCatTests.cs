@@ -66,6 +66,7 @@ namespace Sample
                 .Bind<ICat>().To<ShroedingersCat>()
                 // Represents a cardboard box with any content
                 .Bind<IBox<TT>>().To<CardboardBox<TT>>()
+                .Bind<IBox<TT>>("").To<CardboardBox<TT>>()
                 // Composition Root
                 .Root<Program>("Root");
         }

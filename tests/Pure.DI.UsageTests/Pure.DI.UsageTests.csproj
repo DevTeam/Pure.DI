@@ -3,7 +3,7 @@
     <PropertyGroup>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
         <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
-        <PureDISeverity>Hidden</PureDISeverity>
+        <PureDISeverity>Info</PureDISeverity>
     </PropertyGroup>
     
     <ItemGroup>

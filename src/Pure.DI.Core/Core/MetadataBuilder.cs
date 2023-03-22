@@ -28,8 +28,6 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
 
     public IEnumerable<MdSetup> Build(IEnumerable<SyntaxUpdate> updates, CancellationToken cancellationToken)
     {
-        using var logToken = _logger.TraceProcess("building metadata");
-        
         var actualUpdates = 
             updates
                 .GroupBy(i => i.Node.SyntaxTree.GetRoot())
@@ -39,7 +37,6 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
         var setups = new List<MdSetup>();
         foreach (var update in actualUpdates)
         {
-            using var visitLogToken = _logger.TraceProcess("processing update", update.Node.GetLocation());
             var setupsBuilder = _setupsBuilderFactory();
             foreach (var newSetup in setupsBuilder.Build(update, cancellationToken))
             {
@@ -56,7 +53,6 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
             yield break;
         }
 
-        using var aggregatingToken = _logger.TraceProcess("aggregating metadata");
         var setupMap = setups
             .GroupBy(i => i.TypeName)
             .Select(setupGroup =>

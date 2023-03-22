@@ -11,7 +11,8 @@ internal static class LogId
     
     // Warning
     public const string WarningOverriddenBinding = "DIW0000";
-    
+
     // Info
     public const string InfoGenerationInterrupted = "DII0000";
+    public const string InfoPerformanceImpact = "DII0001";
 }

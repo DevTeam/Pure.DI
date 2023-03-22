@@ -14,24 +14,30 @@ using System.Text.RegularExpressions;
 
 internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
 {
-    private const string DefaultNamespace = "Pure.DI.";
-
-    private static readonly string[] ApiTypes =
-    {
-        DefaultNamespace + nameof(IConfiguration),
-        DefaultNamespace + nameof(IBinding)
-    };
-
     private static readonly Regex CommentRegex = new(@"//\s*(\w+)\s*=\s*(.+)\s*", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
     private static readonly Settings EmptySettings = new();
-
+    private static readonly ImmutableHashSet<string> ApiMethods = ImmutableHashSet.Create(
+        nameof(DI.Setup),
+        nameof(IConfiguration.Arg),
+        nameof(IConfiguration.Bind),
+        nameof(IConfiguration.DependsOn),
+        nameof(IConfiguration.DefaultLifetime),
+        nameof(IConfiguration.Root),
+        nameof(IConfiguration.OrdinalAttribute),
+        nameof(IConfiguration.TagAttribute),
+        nameof(IConfiguration.TypeAttribute),
+        nameof(IBinding.As),
+        nameof(IBinding.To),
+        nameof(IBinding.Tags),
+        nameof(IBinding.AnyTag)
+    );
+    
     private readonly ILogger<MetadataSyntaxWalker> _logger;
-    private readonly Dictionary<Location, bool> _metadataMap = new();
-    private readonly HashSet<ITypeSymbol?> _api = new(SymbolEqualityComparer.Default);
     private IMetadataVisitor? _metadataVisitor;
     private CancellationToken _cancellationToken = CancellationToken.None;
     private SemanticModel? _semanticModel;
     private readonly List<InvocationExpressionSyntax> _invocations = new();
+    private readonly HashSet<string> _usingDirectives = new();
     private SyntaxNode? _next;
     private int _recursionDepth;
     private string _namespace = string.Empty;
@@ -48,17 +54,8 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         _metadataVisitor = metadataVisitor;
         _semanticModel = update.SemanticModel;
         _cancellationToken = cancellationToken;
-        var api =
-            ApiTypes.Select(i => _semanticModel.Compilation.GetTypeByMetadataName(i))
-                .Select(i => i!);
-
-        _api.Clear();
-        foreach (var apiSymbol in api)
-        {
-            _api.Add(apiSymbol);
-        }
-
         _invocations.Clear();
+        _usingDirectives.Clear();
         _next = update.Node;
         do
         {
@@ -183,7 +180,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                                         invocation,
                                         GetConstantValue<string>(publicCompositionType),
                                         _namespace,
-                                        GetUsingDirectives(invocation),
+                                        _usingDirectives.ToImmutableArray(),
                                         CompositionKind.Public,
                                         GetSettings(invocation),
                                         ImmutableArray<MdBinding>.Empty,
@@ -202,7 +199,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                                         invocation,
                                         GetConstantValue<string>(publicCompositionType),
                                         _namespace,
-                                        GetUsingDirectives(invocation),
+                                        _usingDirectives.ToImmutableArray(),
                                         GetConstantValue<CompositionKind>(kindExpression),
                                         GetSettings(invocation),
                                         ImmutableArray<MdBinding>.Empty,
@@ -352,11 +349,11 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         }
     }
 
-    private ImmutableArray<string> GetUsingDirectives(CSharpSyntaxNode invocation) =>
-        SemanticModel.LookupNamespacesAndTypes(invocation.GetLocation().SourceSpan.Start)
-            .OfType<INamespaceSymbol>()
-            .Where(i => !i.IsGlobalNamespace)
-            .Select(i => i.ToString()).ToImmutableArray();
+    public override void VisitUsingDirective(UsingDirectiveSyntax usingDirective)
+    {
+        _usingDirectives.Add(usingDirective.Name.ToFullString());
+        base.VisitUsingDirective(usingDirective);
+    }
 
     public override void VisitFileScopedNamespaceDeclaration(FileScopedNamespaceDeclarationSyntax namespaceDeclaration)
     {
@@ -487,8 +484,34 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
             return val;
         }
 
+        if (
+            node is MemberAccessExpressionSyntax memberAccessExpressionSyntax
+            && memberAccessExpressionSyntax.IsKind(SyntaxKind.SimpleMemberAccessExpression))
+        {
+            var type = memberAccessExpressionSyntax.Expression.ToString();
+            var enumValueStr = memberAccessExpressionSyntax.Name.Identifier.Text;
+            if (type.EndsWith(nameof(CompositionKind)))
+            {
+                if (Enum.TryParse<CompositionKind>(enumValueStr, out var enumValue))
+                {
+                    return (T)(object)enumValue;
+                }
+            }
+            else
+            {
+                if (type.EndsWith(nameof(Lifetime)))
+                {
+                    if (Enum.TryParse<Lifetime>(enumValueStr, out var enumValue))
+                    {
+                        return (T)(object)enumValue;
+                    }
+                }
+            }
+        }
+        
         if (SemanticModel.GetConstantValue(node, _cancellationToken) is { HasValue: true, Value: { } value })
         {
+            _logger.CompileInfo($"Consider using hardcoded value instead of {node} due to the performance impact.", node.GetLocation(), LogId.InfoPerformanceImpact);
             var type = SemanticModel.GetTypeInfo(node);
             if ((type.Type ?? type.ConvertedType) is { } typeSymbol)
             {
@@ -532,22 +555,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         return builder;
     }
 
-    [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter")]
-    private bool IsMetadata(InvocationExpressionSyntax invocation)
-    {
-        var rootInvocation = invocation.AncestorsAndSelf().Reverse().OfType<InvocationExpressionSyntax>().First();
-        var location = rootInvocation.GetLocation();
-        if (_metadataMap.TryGetValue(location, out var isMetadata))
-        {
-            return isMetadata;
-        }
-
-        isMetadata = SemanticModel.GetOperation(rootInvocation, _cancellationToken) is IInvocationOperation invocationOperation
-                     // ReSharper disable once MergeIntoPattern
-                     && invocationOperation.Type is not null
-                     && _api.Contains(invocationOperation.Type);
-
-        _metadataMap.Add(location, isMetadata);
-        return isMetadata;
-    }
+    private static bool IsMetadata(InvocationExpressionSyntax invocation) =>
+        invocation.Expression is MemberAccessExpressionSyntax memberAccess 
+        && ApiMethods.Contains(memberAccess.Name.Identifier.Text);
 }
