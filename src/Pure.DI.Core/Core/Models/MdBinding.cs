@@ -9,7 +9,8 @@ internal record struct MdBinding(
     in MdLifetime? Lifetime = default,
     in MdImplementation? Implementation = default,
     in MdFactory? Factory = default,
-    in MdArg? Arg = default)
+    in MdArg? Arg = default,
+    in MdConstruct? Construct = default)
 {
     public override string ToString()
     {

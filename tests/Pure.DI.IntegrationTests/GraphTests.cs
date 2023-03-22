@@ -1374,6 +1374,77 @@ Service2(Sample.IDependency2 dependency<--Sample.IDependency2))
   +[Service2(Sample.IDependency2 dependency<--Sample.IDependency2))]<--[Sample.IDependency2]--[Dependency2()]
 """);
     }
+    
+    [Fact]
+    public async Task ShouldSupportEnumerableInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency
+    {        
+        public Dependency() { }
+    }
+
+    interface IService
+    {                    
+    }
+
+    class Service: IService 
+    {
+        public Service(System.Collections.Generic.IEnumerable<IDependency> deps) { }                            
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<IDependency>(1).To<Dependency>()
+                .Bind<IDependency>(2).To<Dependency>()
+                .Bind<IDependency>(3).To<Dependency>()
+                .Bind<IService>().To<Service>()
+                .Root<IService>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service = composition.Service;                                                     
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
+        var graphs = GetGraphs(result);
+        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs[0].ConvertToString().ShouldBe("""
+Sample.IService() Service
+  +[Sample.IService() Service]<--[Sample.IService]--[Service(System.Collections.Generic.IEnumerable<Sample.IDependency> deps<--System.Collections.Generic.IEnumerable<Sample.IDependency>))]
+Dependency()
+Dependency()
+Dependency()
+Service(System.Collections.Generic.IEnumerable<Sample.IDependency> deps<--System.Collections.Generic.IEnumerable<Sample.IDependency>))
+  +[Service(System.Collections.Generic.IEnumerable<Sample.IDependency> deps<--System.Collections.Generic.IEnumerable<Sample.IDependency>))]<--[System.Collections.Generic.IEnumerable<Sample.IDependency>]--[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]
+System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)
+  +[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]<--[Sample.IDependency(1)]--[Dependency()]
+  +[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]<--[Sample.IDependency(2)]--[Dependency()]
+  +[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]<--[Sample.IDependency(3)]--[Dependency()]
+""");
+    }
 
     private static DependencyGraph[] GetGraphs(Result result) => 
         result.DependencyGraphs.ToArray();

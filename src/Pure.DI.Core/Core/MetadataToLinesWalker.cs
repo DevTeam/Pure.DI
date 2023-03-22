@@ -32,6 +32,8 @@ internal class MetadataToLinesWalker: MetadataWalkerBase, IEnumerable<string>
     public override void VisitImplementation(in MdImplementation implementation) => _lb.AppendLine($".{implementation.ToString()}");
 
     public override void VisitFactory(in MdFactory factory) => _lb.AppendLine($".{factory.ToString()}");
+    
+    public override void VisitConstruction(in MdConstruct construct) => _lb.AppendLine($".{construct.ToString()}");
 
     public override void VisitDefaultLifetime(in MdDefaultLifetime defaultLifetime) => _lb.Append(defaultLifetime.ToString());
 

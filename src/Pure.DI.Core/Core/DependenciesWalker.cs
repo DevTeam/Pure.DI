@@ -26,6 +26,11 @@ internal class DependenciesWalker
         {
             VisitArg(arg);
         }
+        
+        if (node.Construct is { } construction)
+        {
+            VisitConstruct(construction);
+        }
     }
 
     public virtual void VisitRoot(in DpRoot root)
@@ -37,7 +42,7 @@ internal class DependenciesWalker
     {
         if (implementation.Constructor is var constructor)
         {
-            VisitConstructor(constructor);
+            VisitConstruct(constructor);
         }
         
         foreach (var field in implementation.Fields)
@@ -55,7 +60,7 @@ internal class DependenciesWalker
             VisitMethod(method);
         }
     }
-    
+
     public virtual void VisitFactory(in DpFactory factory)
     {
         foreach (var injection in factory.Injections)
@@ -63,9 +68,17 @@ internal class DependenciesWalker
             VisitInjection(injection, ImmutableArray.Create(factory.Source.Source.GetLocation()));
         }
     }
-    
+
     public virtual void VisitArg(in DpArg arg)
     {
+    }
+
+    public virtual void VisitConstruct(DpConstruct construct)
+    {
+        foreach (var injection in construct.Injections)
+        {
+            VisitInjection(injection, ImmutableArray.Create(construct.Binding.Source.GetLocation()));
+        }
     }
 
     public virtual void VisitMethod(in DpMethod method)
@@ -86,7 +99,7 @@ internal class DependenciesWalker
         VisitInjection(field.Injection, field.Field.Locations);
     }
 
-    public virtual void VisitConstructor(in DpMethod constructor)
+    public virtual void VisitConstruct(in DpMethod constructor)
     {
         foreach (var parameter in constructor.Parameters)
         {

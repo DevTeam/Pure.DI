@@ -69,7 +69,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         {
             return;
         }
-        
+
         switch (block.Root.Node.Lifetime)
         {
             case Lifetime.Singleton:
@@ -214,6 +214,40 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         }
 
         base.VisitArg(context, dependencyGraph, rootVariable, block, instantiation, dpArg, cancellationToken);
+    }
+
+    public override void VisitEnumerableConstruct(
+        BuildContext context,
+        DependencyGraph dependencyGraph,
+        Variable rootVariable,
+        Block block,
+        in DpConstruct construct,
+        CancellationToken cancellationToken)
+    {
+        var instantiation = block.Instantiations.Last();
+        var funcNames = new List<string>();
+        foreach (var arg in instantiation.Arguments)
+        {
+            var funcName = $"func{arg.Name}";
+            funcNames.Add(funcName);
+            context.Code.AppendLine($"System.Func<{construct.Source.ElementType}> {funcName} = new System.Func<{construct.Source.ElementType}>(() =>");
+            context.Code.AppendLine("{");
+            using (context.Code.Indent())
+            {
+                VisitRootVariable(context, dependencyGraph, context.Variables, arg, cancellationToken);
+            }
+
+            context.Code.AppendLine("});");
+            context.Code.AppendLine();
+        }
+        
+        context.Code.AppendLine($"{instantiation.Target.Type} {instantiation.Target.Name} = System.Linq.Enumerable.Select(new System.Func<{construct.Source.ElementType}>[] {{ {string.Join(", ", funcNames)} }}, i => i());");
+        instantiation.Target.IsDeclared = true;
+        instantiation.Target.IsCreated = true;
+        if (context.IsRootContext && instantiation.Target == rootVariable)
+        {
+            context.Code.AppendLine(GenerateFinalStatement(instantiation.Target, instantiation.Target.Name, true));
+        }
     }
 
     public override void VisitFactory(

@@ -66,6 +66,11 @@ internal class MetadataWalkerBase: IMetadataVisitor
         {
             VisitArg(arg);
         }
+        
+        if (binding.Construct is {} construction)
+        {
+            VisitConstruction(construction);
+        }
     }
 
     public virtual void VisitContract(in MdContract contract)
@@ -103,8 +108,12 @@ internal class MetadataWalkerBase: IMetadataVisitor
             VisitTag(tag);
         }
     }
-    
+
     public virtual void VisitArg(in MdArg arg)
+    {
+    }
+
+    public virtual void VisitConstruction(in MdConstruct construct)
     {
     }
 

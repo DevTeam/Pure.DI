@@ -105,6 +105,18 @@ internal class CodeGraphWalker<TContext>
         Block block,
         CancellationToken cancellationToken)
     {
+        if (block.Root.Node.Construct is { } construct)
+        {
+            switch (construct.Source.Kind)
+            {
+                case MdConstructKind.Enumerable:
+                    VisitEnumerableConstruct(context, dependencyGraph, root, block, construct, cancellationToken);
+                    break;
+            }
+            
+            return;
+        }
+        
         foreach (var instantiation in block.Instantiations)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -135,7 +147,7 @@ internal class CodeGraphWalker<TContext>
                 if (instantiation.Target.Node.Arg is { } arg)
                 {
                     VisitArg(context, dependencyGraph, rootVariable, block, instantiation, arg, cancellationToken);
-                }   
+                }
             }
         }
     }
@@ -156,7 +168,7 @@ internal class CodeGraphWalker<TContext>
         
         var args = instantiation.Arguments.ToList();
         var argsWalker = new DependenciesToVariablesWalker(args);
-        argsWalker.VisitConstructor(implementation.Constructor);
+        argsWalker.VisitConstruct(implementation.Constructor);
         var ctorArgs = argsWalker.GetResult();
 
         var initOnlyProperties = ImmutableArray.CreateBuilder<(Variable InitOnlyVariable, DpProperty InitOnlyProperty)>();
@@ -286,6 +298,16 @@ internal class CodeGraphWalker<TContext>
     {
     }
     
+    public virtual void VisitEnumerableConstruct(
+        TContext context,
+        DependencyGraph dependencyGraph,
+        Variable rootVariable,
+        Block block,
+        in DpConstruct construct,
+        CancellationToken cancellationToken)
+    {
+    }
+    
     protected Variable CreateVariable(IDictionary<MdBinding, Variable> variables, DependencyNode node, Injection injection)
     {
         switch (node)
@@ -304,6 +326,12 @@ internal class CodeGraphWalker<TContext>
                 
                 variables.Add(node.Binding, argVar);
                 return argVar;
+            
+            case { Construct: {} }:
+                return new Variable(_idGenerator.NextId, node, injection)
+                {
+                    IsBlockRoot = true
+                };
             
             case { Lifetime: Lifetime.Singleton }:
                 if (variables.TryGetValue(node.Binding, out var singletonVar))

@@ -38,18 +38,18 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
     {
         var map = new Dictionary<Injection, DependencyNode>();
         var contracts = new Dictionary<MdBinding, ImmutableArray<Injection>>();
-        var resolvedNodes = new List<(DependencyNode, ImmutableArray<Injection>)>();
-        var unresolvedBindings = new Dictionary<MdBinding, (DependencyNode UnresolvedNode, ImmutableArray<Injection> UnresolvedInjections)>();
-        var nodeGroups = SplitNodes(_dependencyNodeBuilders.SelectMany(builder => builder.Build(setup, cancellationToken))).ToList();
+        var resolved = new List<ResolvingNode>();
+        var unresolved = new Dictionary<MdBinding, ResolvingNode>();
+        var nextGroups = SplitNodes(_dependencyNodeBuilders.SelectMany(builder => builder.Build(setup, cancellationToken))).ToList();
         var id = 0;
         do
         {
-            var curNodeGroups = nodeGroups.ToImmutableArray();
-            nodeGroups.Clear();
-            foreach (var nodeGroup in curNodeGroups)
+            var processingGroups = nextGroups.ToImmutableArray();
+            nextGroups.Clear();
+            foreach (var group in processingGroups)
             {
-                var nodesToResolve = new List<DependencyNode>();
-                foreach (var node in nodeGroup)
+                var processing = new List<DependencyNode>();
+                foreach (var node in group)
                 {
                     if (contracts.ContainsKey(node.Binding))
                     {
@@ -84,14 +84,14 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
                         map.Add(missingInjection, node);
                     }
 
-                    nodesToResolve.Add(node);
+                    processing.Add(node);
                 }
 
-                var targetUnresolvedBindings = new HashSet<MdBinding>();
-                while (nodesToResolve.Count > 0)
+                var unresolvedBindings = new HashSet<MdBinding>();
+                while (processing.Count > 0)
                 {
-                    var targetNodes = nodesToResolve.ToImmutableArray();
-                    nodesToResolve.Clear();
+                    var targetNodes = processing.ToImmutableArray();
+                    processing.Clear();
                     foreach (var targetNode in targetNodes)
                     {
                         if (_marker.IsMarkerBased(targetNode.Type))
@@ -114,50 +114,86 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
                                 continue;
                             }
 
-                            // Generic
-                            var unboundType = _unboundTypeConstructor.Construct(compilation, injection.Type);
-                            var unboundInjection = injection with { Type = unboundType };
-                            if (map.TryGetValue(unboundInjection, out sourceNode))
+                            if (injection.Type is INamedTypeSymbol { IsGenericType: true } geneticType)
                             {
-                                var typeConstructor = _typeConstructorFactory();
-                                typeConstructor.Bind(sourceNode.Type, injection.Type);
-                                var newContracts = sourceNode.Binding.Contracts.Select(contract => contract with { ContractType = typeConstructor.Construct(semanticModel.Compilation, contract.ContractType) }).ToImmutableArray();
-                                id++;
-                                var newBinding = sourceNode.Binding with
+                                // Generic
+                                var unboundType = _unboundTypeConstructor.Construct(compilation, injection.Type);
+                                var unboundInjection = injection with { Type = unboundType };
+                                if (map.TryGetValue(unboundInjection, out sourceNode))
                                 {
-                                    Id = id,
-                                    Contracts = newContracts,
-                                    Implementation = sourceNode.Binding.Implementation.HasValue 
-                                        ? sourceNode.Binding.Implementation.Value with
-                                        {
-                                            Type = typeConstructor.Construct(compilation, sourceNode.Binding.Implementation.Value.Type)
-                                        }
-                                        : default(MdImplementation?),
-                                    Factory = sourceNode.Binding.Factory.HasValue 
-                                        ? _factoryRewriterFactory().Build(
-                                            new RewriterContext<MdFactory>(typeConstructor, sourceNode.Binding.Factory.Value),
-                                            cancellationToken)
-                                        : default(MdFactory?),
-                                    Arg = sourceNode.Binding.Arg.HasValue
-                                        ? sourceNode.Binding.Arg.Value with
-                                        {
-                                            Type = typeConstructor.Construct(compilation, sourceNode.Binding.Arg.Value.Type)
-                                            // ArgName = !string.IsNullOrWhiteSpace(sourceNode.Binding.Arg.Value.ArgName) ? $"{sourceNode.Binding.Arg.Value.ArgName}{}" : string.Empty
-                                        }
-                                        : default(MdArg?)
-                                };
-                                
+                                    var typeConstructor = _typeConstructorFactory();
+                                    typeConstructor.Bind(sourceNode.Type, injection.Type);
+                                    var newContracts = sourceNode.Binding.Contracts.Select(contract => contract with { ContractType = typeConstructor.Construct(semanticModel.Compilation, contract.ContractType) }).ToImmutableArray();
+                                    id++;
+                                    var newBinding = sourceNode.Binding with
+                                    {
+                                        Id = id,
+                                        Contracts = newContracts,
+                                        Implementation = sourceNode.Binding.Implementation.HasValue
+                                            ? sourceNode.Binding.Implementation.Value with
+                                            {
+                                                Type = typeConstructor.Construct(compilation, sourceNode.Binding.Implementation.Value.Type)
+                                            }
+                                            : default(MdImplementation?),
+                                        Factory = sourceNode.Binding.Factory.HasValue
+                                            ? _factoryRewriterFactory().Build(
+                                                new RewriterContext<MdFactory>(typeConstructor, sourceNode.Binding.Factory.Value),
+                                                cancellationToken)
+                                            : default(MdFactory?),
+                                        Arg = sourceNode.Binding.Arg.HasValue
+                                            ? sourceNode.Binding.Arg.Value with
+                                            {
+                                                Type = typeConstructor.Construct(compilation, sourceNode.Binding.Arg.Value.Type)
+                                            }
+                                            : default(MdArg?)
+                                    };
 
-                                var newSetup = setup with { Bindings = ImmutableArray.Create(newBinding) };
-                                var newSourceNodes = SortNodes(_dependencyNodeBuilders.SelectMany(builder => builder.Build(newSetup, cancellationToken)));
-                                foreach (var newSourceNode in newSourceNodes)
-                                {
-                                    nodeGroups.Add(ImmutableArray.Create(newSourceNode));
+
+                                    nextGroups.AddRange(AddNewBinding(setup, newBinding, cancellationToken));
+                                    continue;
                                 }
-                                
-                                continue;
-                            }
 
+                                // Enumerable
+                                if (geneticType.TypeArguments is [{ } enumerableType]
+                                    && geneticType.ConstructUnboundGenericType().ToString() == "System.Collections.Generic.IEnumerable<>")
+                                {
+                                    var dependencyContractsBuilder = ImmutableArray.CreateBuilder<MdContract>();
+                                    foreach (var nestedBinding in setup.Bindings.Where(i => i != binding))
+                                    {
+                                        var matchedContracts = nestedBinding.Contracts.Where(i => SymbolEqualityComparer.Default.Equals(i.ContractType, enumerableType)).ToImmutableArray();
+                                        if (!matchedContracts.Any())
+                                        {
+                                            continue;
+                                        }
+
+                                        var tag = matchedContracts.First().Tags.Concat(nestedBinding.Tags).Select(i => i.Value).FirstOrDefault();
+                                        var tags = tag is { }
+                                            ? ImmutableArray.Create(new MdTag(targetNode.Binding.SemanticModel, targetNode.Binding.Source, 0, tag))
+                                            : ImmutableArray<MdTag>.Empty;
+                                        dependencyContractsBuilder.Add(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, enumerableType, tags));
+                                    }
+                                    
+                                    var newContracts = ImmutableArray.Create(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, geneticType, ImmutableArray<MdTag>.Empty));
+                                    id++;
+                                    var newBinding = new MdBinding(id, targetNode.Binding.Source, targetNode.Binding.SemanticModel, newContracts, ImmutableArray<MdTag>.Empty)
+                                    {
+                                        Id = id,
+                                        SemanticModel = targetNode.Binding.SemanticModel,
+                                        Source = targetNode.Binding.Source,
+                                        Construct = new MdConstruct(
+                                            targetNode.Binding.SemanticModel,
+                                            targetNode.Binding.Source,
+                                            injection.Type,
+                                            enumerableType,
+                                            MdConstructKind.Enumerable,
+                                            dependencyContractsBuilder.ToImmutable())
+                                    };
+                                    
+                                    nextGroups.AddRange(AddNewBinding(setup, newBinding, cancellationToken));
+                                    continue;
+                                }
+                            }
+                            
                             // Auto-binding
                             if (injection.Type is { IsAbstract: false, SpecialType: SpecialType.None })
                             {
@@ -165,8 +201,8 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
                                 var typeConstructor = _typeConstructorFactory();
                                 if (_marker.IsMarkerBased(injection.Type))
                                 {
-                                    typeConstructor.Bind(sourceNode.Type, injection.Type);
-                                    sourceType = typeConstructor.Construct(compilation, sourceNode.Type);
+                                    typeConstructor.Bind(injection.Type, injection.Type);
+                                    sourceType = typeConstructor.Construct(compilation, injection.Type);
                                 }
 
                                 var newContracts = ImmutableArray.Create(new MdContract(semanticModel, setup.Source, sourceType, ImmutableArray<MdTag>.Empty));
@@ -180,13 +216,7 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
                                     new MdLifetime(semanticModel, setup.Source, Lifetime.Transient),
                                     new MdImplementation(semanticModel, setup.Source, sourceType));
 
-                                var newSetup = setup with { Bindings = ImmutableArray.Create(newBinding) };
-                                var newSourceNodes = SortNodes(_dependencyNodeBuilders.SelectMany(builder => builder.Build(newSetup, cancellationToken)));
-                                foreach (var newSourceNode in newSourceNodes)
-                                {
-                                    nodeGroups.Add(ImmutableArray.Create(newSourceNode));
-                                }
-                                
+                                nextGroups.AddRange(AddNewBinding(setup, newBinding, cancellationToken));
                                 continue;
                             }
 
@@ -196,18 +226,18 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
 
                         if (isResolved)
                         {
-                            unresolvedBindings.Remove(targetNode.Binding);
-                            resolvedNodes.Add((targetNode, nodeInjections));
+                            unresolved.Remove(targetNode.Binding);
+                            resolved.Add(new ResolvingNode(targetNode, nodeInjections));
                         }
                         else
                         {
-                            targetUnresolvedBindings.Add(targetNode.Binding);
-                            unresolvedBindings.Add(targetNode.Binding, new ValueTuple<DependencyNode, ImmutableArray<Injection>>(targetNode, nodeInjections));
+                            unresolvedBindings.Add(targetNode.Binding);
+                            unresolved.Add(targetNode.Binding, new ResolvingNode(targetNode, nodeInjections));
                         }
                     }
                 }
 
-                foreach (var unresolvedBinding in targetUnresolvedBindings)
+                foreach (var unresolvedBinding in unresolvedBindings)
                 {
                     if (contracts.TryGetValue(unresolvedBinding, out var unresolvedContracts))
                     {
@@ -220,11 +250,11 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
                     contracts.Remove(unresolvedBinding);
                 }
             }
-        } while (nodeGroups.Any());
+        } while (nextGroups.Any());
 
         var entriesBuilder = ImmutableArray.CreateBuilder<GraphEntry<DependencyNode, Dependency>>();
         var unresolvedSource = new DependencyNode();
-        foreach (var (targetNode, targetInjections) in resolvedNodes)
+        foreach (var (targetNode, targetInjections) in resolved)
         {
             var edges = ImmutableArray.CreateBuilder<Dependency>();
             foreach (var targetInjection in targetInjections)
@@ -239,10 +269,10 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
         }
         
         // ReSharper disable once InvertIf
-        if (unresolvedBindings.Any())
+        if (unresolved.Any())
         {
             var edges = ImmutableArray.CreateBuilder<Dependency>();
-            foreach (var (unresolvedTargetNode, unresolvedInjections) in unresolvedBindings.Values)
+            foreach (var (unresolvedTargetNode, unresolvedInjections) in unresolved.Values)
             {
                 foreach (var unresolvedInjection in unresolvedInjections)
                 {
@@ -258,6 +288,21 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
             new Graph<DependencyNode, Dependency>(entriesBuilder.ToImmutable()),
             map,
             ImmutableDictionary<Injection, Root>.Empty);
+    }
+
+    private IEnumerable<IEnumerable<DependencyNode>> AddNewBinding(
+        MdSetup setup,
+        MdBinding binding,
+        CancellationToken cancellationToken)
+    {
+        var newSetup = setup with
+        {
+            Roots = ImmutableArray<MdRoot>.Empty,
+            Bindings = ImmutableArray.Create(binding)
+        };
+
+        return SortNodes(_dependencyNodeBuilders.SelectMany(builder => builder.Build(newSetup, cancellationToken)))
+            .Select(i => ImmutableArray.Create(i).AsEnumerable());
     }
 
     private static IEnumerable<DependencyNode> SortNodes(IEnumerable<DependencyNode> nodes) =>
@@ -294,4 +339,6 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
             }
         }
     }
+    
+    private readonly record struct ResolvingNode(DependencyNode Node, in ImmutableArray<Injection> Injections);
 }
