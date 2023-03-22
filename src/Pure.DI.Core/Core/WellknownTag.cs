@@ -2,7 +2,7 @@ namespace Pure.DI.Core;
 
 internal enum WellknownTag
 {
-    CSharpComposerBuilder,
+    CSharpCompositionBuilder,
     CSharpClassBuilder,
     CSharpDisposeMethodBuilder,
     CSharpRootPropertiesBuilder,

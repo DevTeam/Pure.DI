@@ -58,16 +58,16 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
 
         using var aggregatingToken = _logger.TraceProcess("aggregating metadata");
         var setupMap = setups
-            .GroupBy(i => i.ComposerTypeName)
+            .GroupBy(i => i.TypeName)
             .Select(setupGroup =>
             {
                 MergeSetups(setupGroup, out var mergedSetup, false, cancellationToken);
                 return mergedSetup;
             })
-            .ToDictionary(i => i.ComposerTypeName, i => i);
+            .ToDictionary(i => i.TypeName, i => i);
 
-        var globalSetups = setupMap.Values.Where(i => i.Kind == ComposerKind.Global).ToList();
-        foreach (var setup in setupMap.Values.Where(i => i.Kind == ComposerKind.Public))
+        var globalSetups = setupMap.Values.Where(i => i.Kind == CompositionKind.Global).ToList();
+        foreach (var setup in setupMap.Values.Where(i => i.Kind == CompositionKind.Public))
         {
             var setupsChain = globalSetups
                 .Concat(ResolveDependencies(setup, setupMap, new HashSet<string>(), cancellationToken))
@@ -88,16 +88,16 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
         foreach (var dependsOn in setup.DependsOn)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            foreach (var composerTypeName in dependsOn.ComposerTypeNames)
+            foreach (var compositionTypeName in dependsOn.CompositionTypeNames)
             {
-                if (!processed.Add(composerTypeName))
+                if (!processed.Add(compositionTypeName))
                 {
                     continue;
                 }
 
-                if (!map.TryGetValue(composerTypeName, out var dependsOnSetup))
+                if (!map.TryGetValue(compositionTypeName, out var dependsOnSetup))
                 {
-                    _logger.CompileError($"Cannot find setup \"{composerTypeName}\" for {dependsOn}.", dependsOn.Source.GetLocation(), LogId.ErrorCannotFindSetup);
+                    _logger.CompileError($"Cannot find setup \"{compositionTypeName}\" for {dependsOn}.", dependsOn.Source.GetLocation(), LogId.ErrorCannotFindSetup);
                     throw HandledException.Shared;
                 }
 
@@ -113,8 +113,8 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
     private static void MergeSetups(IEnumerable<MdSetup> setups, out MdSetup mergedSetup, bool resolveDependsOn, in CancellationToken cancellationToken)
     {
         SyntaxNode? source = default;
-        var composerTypeName = "";
-        var kind = ComposerKind.Global;
+        var compositionTypeName = "";
+        var kind = CompositionKind.Global;
         var settings = new Settings();
         var bindingsBuilder = ImmutableArray.CreateBuilder<MdBinding>(64);
         var rootsBuilder = ImmutableArray.CreateBuilder<MdRoot>(64);
@@ -128,7 +128,7 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
         foreach (var setup in setups)
         {
             source = setup.Source;
-            composerTypeName = setup.ComposerTypeName;
+            compositionTypeName = setup.TypeName;
             kind = setup.Kind;
             foreach (var setting in setup.Settings)
             {
@@ -160,7 +160,7 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
 
         mergedSetup = new MdSetup(
             source!,
-            composerTypeName,
+            compositionTypeName,
             ns,
             usingDirectives.ToImmutableArray(),
             kind,

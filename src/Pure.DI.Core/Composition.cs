@@ -11,7 +11,7 @@ using Core.CSharp;
 using Core.Models;
 
 // ReSharper disable once PartialTypeWithSinglePart
-internal static partial class Composer
+internal static partial class Composition
 {
     private static void Setup() => IoC.DI.Setup()
         // Transients
@@ -36,16 +36,16 @@ internal static partial class Composer
         .Bind<IBuilder<LogEntry, LogInfo>>().To<LogInfoBuilder>()
         .Bind<ILogObserver>().To<LogObserver>()
         // CSharp
-        .Bind<IBuilder<DependencyGraph, ComposerCode>>(WellknownTag.CSharpComposerBuilder).To<CodeComposerBuilder>()
-        .Bind<IBuilder<ComposerCode, ComposerCode>>(WellknownTag.CSharpClassBuilder).To<CodeClassBuilder>()
-        .Bind<IBuilder<ComposerCode, ComposerCode>>(WellknownTag.CSharpDisposeMethodBuilder).To<CodeDisposeMethodBuilder>()
-        .Bind<IBuilder<ComposerCode, ComposerCode>>(WellknownTag.CSharpRootPropertiesBuilder).To<CodeRootPropertiesBuilder>()
-        .Bind<IBuilder<ComposerCode, ComposerCode>>(WellknownTag.CSharpUsingDeclarationsBuilder).To<CodeUsingDeclarationsBuilder>()
-        .Bind<IBuilder<ComposerCode, ComposerCode>>(WellknownTag.CSharpArgFieldsBuilder).To<CodeArgFieldsBuilder>()
-        .Bind<IBuilder<ComposerCode, ComposerCode>>(WellknownTag.CSharpSingletonFieldsBuilder).To<CodeSingletonFieldsBuilder>()
-        .Bind<IBuilder<ComposerCode, ComposerCode>>(WellknownTag.CSharpChildConstructorBuilder).To<CodeChildConstructorBuilder>()
-        .Bind<IBuilder<ComposerCode, ComposerCode>>(WellknownTag.CSharpPrimaryConstructorBuilder).To<CodePrimaryConstructorBuilder>()
-        .Bind<IBuilder<ComposerCode, ComposerCode>>(WellknownTag.CSharpDefaultConstructorBuilder).To<CodeDefaultConstructorBuilder>()
+        .Bind<IBuilder<DependencyGraph, CompositionCode>>(WellknownTag.CSharpCompositionBuilder).To<CompositionBuilder>()
+        .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpClassBuilder).To<ClassBuilder>()
+        .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpDisposeMethodBuilder).To<DisposeMethodBuilder>()
+        .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpRootPropertiesBuilder).To<RootPropertiesBuilder>()
+        .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpUsingDeclarationsBuilder).To<UsingDeclarationsBuilder>()
+        .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpArgFieldsBuilder).To<ArgFieldsBuilder>()
+        .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpSingletonFieldsBuilder).To<SingletonFieldsBuilder>()
+        .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpChildConstructorBuilder).To<ChildConstructorBuilder>()
+        .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpPrimaryConstructorBuilder).To<PrimaryConstructorBuilder>()
+        .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpDefaultConstructorBuilder).To<DefaultConstructorBuilder>()
 
         // Singletons
         .Default(IoC.Lifetime.Singleton)

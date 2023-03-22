@@ -1,14 +1,14 @@
 namespace Pure.DI.Core.CSharp;
 
-internal class CodeRootPropertiesBuilder: IBuilder<ComposerCode, ComposerCode>
+internal class RootPropertiesBuilder: IBuilder<CompositionCode, CompositionCode>
 {
     private const string MethodImplOptions = "[System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]";
 
-    public ComposerCode Build(ComposerCode composer, CancellationToken cancellationToken)
+    public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
     {
-        var code = composer.Code;
-        var membersCounter = composer.MembersCount;
-        var roots = composer.Roots
+        var code = composition.Code;
+        var membersCounter = composition.MembersCount;
+        var roots = composition.Roots
             .OrderByDescending(i => i.IsPublic)
             .ThenBy(i => i.Node.Binding.Id)
             .ThenBy(i => i.PropertyName);
@@ -25,7 +25,7 @@ internal class CodeRootPropertiesBuilder: IBuilder<ComposerCode, ComposerCode>
             membersCounter++;
         }
 
-        return composer with { MembersCount = membersCounter };
+        return composition with { MembersCount = membersCounter };
     }
     
     private static ImmutableArray<Line> BuildProperty(ITypeSymbol type, Root root)

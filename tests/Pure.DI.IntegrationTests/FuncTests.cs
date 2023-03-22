@@ -39,9 +39,9 @@ namespace Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>()    
                 .Root<IService>("Service");
@@ -52,8 +52,8 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer();
-            var service = composer.Service;
+            var composition = new Composition();
+            var service = composition.Service;
             Console.WriteLine(service.Dep != service.Dep);                               
         }
     }                
@@ -99,9 +99,9 @@ namespace Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
                 .Bind<IService>().To<Service>()    
                 .Root<IService>("Service");
@@ -112,8 +112,8 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer();
-            var service = composer.Service;
+            var composition = new Composition();
+            var service = composition.Service;
             Console.WriteLine(service.Dep == service.Dep);                               
         }
     }                
@@ -159,9 +159,9 @@ namespace Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>()
                 .Bind<IService>().To<Service>()    
                 .Root<IService>("Service");
@@ -172,8 +172,8 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer();
-            var service = composer.Service;
+            var composition = new Composition();
+            var service = composition.Service;
             Console.WriteLine(service.Dep == service.Dep);                               
         }
     }                

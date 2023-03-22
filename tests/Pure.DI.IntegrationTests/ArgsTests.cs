@@ -19,9 +19,9 @@ namespace Sample
 {
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Arg<string>("serviceName")           
                 .Root<string>("ServiceName");
         }
@@ -31,8 +31,8 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer("Some Name");
-            Console.WriteLine(composer.ServiceName);                               
+            var composition = new Composition("Some Name");
+            Console.WriteLine(composition.ServiceName);                               
         }
     }                
 }
@@ -81,9 +81,9 @@ namespace Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
                 .Bind<IService>().To<Service>()    
                 .Arg<string>("serviceName")           
@@ -95,8 +95,8 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer("Some Name");
-            Console.WriteLine(composer.Service.Name);                               
+            var composition = new Composition("Some Name");
+            Console.WriteLine(composition.Service.Name);                               
         }
     }                
 }
@@ -159,9 +159,9 @@ namespace Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
                 .Bind<IService>().To<Service>()    
                 .Arg<string>("serviceName")           
@@ -175,8 +175,8 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer("Some Name", 37, 56);
-            Console.WriteLine(composer.Service.Name);                               
+            var composition = new Composition("Some Name", 37, 56);
+            Console.WriteLine(composition.Service.Name);                               
         }
     }                
 }

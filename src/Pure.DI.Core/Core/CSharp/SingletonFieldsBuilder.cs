@@ -1,17 +1,17 @@
 namespace Pure.DI.Core.CSharp;
 
-internal class CodeSingletonFieldsBuilder: IBuilder<ComposerCode, ComposerCode>
+internal class SingletonFieldsBuilder: IBuilder<CompositionCode, CompositionCode>
 {
-    public ComposerCode Build(ComposerCode composer, CancellationToken cancellationToken)
+    public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
     {
-        var code = composer.Code;
-        var membersCounter = composer.MembersCount;
-        if (!composer.Singletons.Any())
+        var code = composition.Code;
+        var membersCounter = composition.MembersCount;
+        if (!composition.Singletons.Any())
         {
-            return composer;
+            return composition;
         }
 
-        if (composer.DisposableSingletonsCount > 0)
+        if (composition.DisposableSingletonsCount > 0)
         {
             // DisposeIndex field
             code.AppendLine($"private int {Variable.DisposeIndexFieldName};");
@@ -23,7 +23,7 @@ internal class CodeSingletonFieldsBuilder: IBuilder<ComposerCode, ComposerCode>
         membersCounter++;
 
         // Singleton fields
-        foreach (var singletonField in composer.Singletons)
+        foreach (var singletonField in composition.Singletons)
         {
             cancellationToken.ThrowIfCancellationRequested();
             code.AppendLine($"private {singletonField.Node.Type} {singletonField.Name};");
@@ -38,6 +38,6 @@ internal class CodeSingletonFieldsBuilder: IBuilder<ComposerCode, ComposerCode>
             membersCounter++;
         }
 
-        return composer with { MembersCount = membersCounter };
+        return composition with { MembersCount = membersCounter };
     }
 }

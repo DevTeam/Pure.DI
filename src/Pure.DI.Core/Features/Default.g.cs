@@ -5,7 +5,7 @@ namespace Pure.DI.Features
     {
         private static void Setup()
         {
-            DI.Setup("", ComposerKind.Global)
+            DI.Setup("", CompositionKind.Global)
                 .TypeAttribute<TypeAttribute>()
                 .TagAttribute<TagAttribute>()
                 .OrdinalAttribute<OrdinalAttribute>()

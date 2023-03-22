@@ -6,7 +6,7 @@ using System.Collections.Immutable;
 public class NamespaceTests
 {
     [Fact]
-    public async Task ShouldSupportNamespaceInComposerName()
+    public async Task ShouldSupportNamespaceInCompositionName()
     {
         // Given
 
@@ -38,9 +38,9 @@ namespace Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("MyNs.Abc.Composer")
+            DI.Setup("MyNs.Abc.Composition")
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>()    
                 .Root<IService>("Service");
@@ -51,8 +51,8 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new MyNs.Abc.Composer();
-            Console.WriteLine(composer.GetType());                                           
+            var composition = new MyNs.Abc.Composition();
+            Console.WriteLine(composition.GetType());                                           
         }
     }                
 }
@@ -60,7 +60,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("MyNs.Abc.Composer"), result.GeneratedCode);
+        result.StdOut.ShouldBe(ImmutableArray.Create("MyNs.Abc.Composition"), result.GeneratedCode);
     }
     
     [Fact]
@@ -96,9 +96,9 @@ namespace My.Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>()    
                 .Root<IService>("Service");
@@ -109,8 +109,8 @@ namespace My.Sample
     {
         public static void Main()
         {
-            var composer = new My.Sample.Composer();
-            Console.WriteLine(composer.GetType());                                           
+            var composition = new My.Sample.Composition();
+            Console.WriteLine(composition.GetType());                                           
         }
     }                
 }
@@ -118,7 +118,7 @@ namespace My.Sample
 
         // Then
         result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("My.Sample.Composer"), result.GeneratedCode);
+        result.StdOut.ShouldBe(ImmutableArray.Create("My.Sample.Composition"), result.GeneratedCode);
     }
     
     [Fact]
@@ -154,9 +154,9 @@ class Service: IService
 
 static class Setup
 {
-    private static void SetupComposer()
+    private static void SetupComposition()
     {
-        DI.Setup("Composer")
+        DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()    
             .Root<IService>("Service");
@@ -167,8 +167,8 @@ public class Program
 {
     public static void Main()
     {
-        var composer = new My.Sample.Composer();
-        Console.WriteLine(composer.GetType());                                           
+        var composition = new My.Sample.Composition();
+        Console.WriteLine(composition.GetType());                                           
     }
 }                
 
@@ -176,6 +176,6 @@ public class Program
 
         // Then
         result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("My.Sample.Composer"), result.GeneratedCode);
+        result.StdOut.ShouldBe(ImmutableArray.Create("My.Sample.Composition"), result.GeneratedCode);
     }
 }

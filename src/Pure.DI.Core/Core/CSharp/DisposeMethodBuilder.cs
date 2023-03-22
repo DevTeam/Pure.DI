@@ -1,14 +1,14 @@
 namespace Pure.DI.Core.CSharp;
 
-internal class CodeDisposeMethodBuilder: IBuilder<ComposerCode, ComposerCode>
+internal class DisposeMethodBuilder: IBuilder<CompositionCode, CompositionCode>
 {
-    public ComposerCode Build(ComposerCode composer, CancellationToken cancellationToken)
+    public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
     {
-        var code = composer.Code;
-        var membersCounter = composer.MembersCount;
-        if (composer.Singletons.Any())
+        var code = composition.Code;
+        var membersCounter = composition.MembersCount;
+        if (composition.Singletons.Any())
         {
-            if (composer.MembersCount > 0)
+            if (composition.MembersCount > 0)
             {
                 code.AppendLine();
             }
@@ -21,7 +21,7 @@ internal class CodeDisposeMethodBuilder: IBuilder<ComposerCode, ComposerCode>
                 code.AppendLine("{");
                 using (code.Indent())
                 {
-                    if (composer.DisposableSingletonsCount > 0)
+                    if (composition.DisposableSingletonsCount > 0)
                     {
                         code.AppendLine($"while ({Variable.DisposeIndexFieldName}-- >= 0)");
                         code.AppendLine("{");
@@ -49,7 +49,7 @@ internal class CodeDisposeMethodBuilder: IBuilder<ComposerCode, ComposerCode>
                         code.AppendLine();
                     }
 
-                    foreach (var singletonField in composer.Singletons)
+                    foreach (var singletonField in composition.Singletons)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
                         code.AppendLine(
@@ -65,6 +65,6 @@ internal class CodeDisposeMethodBuilder: IBuilder<ComposerCode, ComposerCode>
             code.AppendLine("}");
         }
 
-        return composer with { MembersCount = membersCounter };
+        return composition with { MembersCount = membersCounter };
     }
 }

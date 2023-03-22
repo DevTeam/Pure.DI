@@ -11,8 +11,8 @@ internal class Generator : IGenerator
     private readonly IBuilder<MdSetup, DependencyGraph> _dependencyGraphBuilder;
     private readonly IValidator<DependencyGraph> _dependencyGraphValidator;
     private readonly IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>> _rootsBuilder;
-    private readonly IBuilder<DependencyGraph, ComposerCode> _composerBuilder;
-    private readonly IBuilder<ComposerCode, ComposerCode> _classBuilder;
+    private readonly IBuilder<DependencyGraph, CompositionCode> _compositionBuilder;
+    private readonly IBuilder<CompositionCode, CompositionCode> _classBuilder;
     private readonly IContextProducer _contextProducer;
     private readonly IObserversRegistry _observersRegistry;
     private readonly ILogObserver _logObserver;
@@ -27,8 +27,8 @@ internal class Generator : IGenerator
         IBuilder<MdSetup, DependencyGraph> dependencyGraphBuilder,
         IValidator<DependencyGraph> dependencyGraphValidator,
         IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>> rootsBuilder,
-        [IoC.Tag(WellknownTag.CSharpComposerBuilder)] IBuilder<DependencyGraph, ComposerCode> composerBuilder,
-        [IoC.Tag(WellknownTag.CSharpClassBuilder)] IBuilder<ComposerCode, ComposerCode> classBuilder,
+        [IoC.Tag(WellknownTag.CSharpCompositionBuilder)] IBuilder<DependencyGraph, CompositionCode> compositionBuilder,
+        [IoC.Tag(WellknownTag.CSharpClassBuilder)] IBuilder<CompositionCode, CompositionCode> classBuilder,
         IContextProducer contextProducer)
     {
         _logger = logger;
@@ -38,7 +38,7 @@ internal class Generator : IGenerator
         _dependencyGraphBuilder = dependencyGraphBuilder;
         _dependencyGraphValidator = dependencyGraphValidator;
         _rootsBuilder = rootsBuilder;
-        _composerBuilder = composerBuilder;
+        _compositionBuilder = compositionBuilder;
         _classBuilder = classBuilder;
         _contextProducer = contextProducer;
         _dependencyGraphObservers = observersProvider.GetObservers<DependencyGraph>().ToImmutableArray();
@@ -73,18 +73,18 @@ internal class Generator : IGenerator
                 }
         
                 cancellationToken.ThrowIfCancellationRequested();
-                var composer = _composerBuilder.Build(dependencyGraph with { Roots = roots }, cancellationToken);
-                if (!composer.Roots.Any())
+                var composition = _compositionBuilder.Build(dependencyGraph with { Roots = roots }, cancellationToken);
+                if (!composition.Roots.Any())
                 {
                     return;
                 }
                 
                 cancellationToken.ThrowIfCancellationRequested();
-                composer = _classBuilder.Build(composer, cancellationToken);
+                composition = _classBuilder.Build(composition, cancellationToken);
 
                 cancellationToken.ThrowIfCancellationRequested();
-                var classCode = string.Join(Environment.NewLine, composer.Code);
-                _contextProducer.AddSource($"{setup.ComposerTypeName}.g.cs", SourceText.From(classCode, Encoding.UTF8));
+                var classCode = string.Join(Environment.NewLine, composition.Code);
+                _contextProducer.AddSource($"{setup.TypeName}.g.cs", SourceText.From(classCode, Encoding.UTF8));
             }
         }
         catch (OperationCanceledException)

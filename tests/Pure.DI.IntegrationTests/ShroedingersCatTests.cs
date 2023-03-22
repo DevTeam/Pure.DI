@@ -51,9 +51,9 @@ namespace Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 // Models a random subatomic event that may or may not occur
                 .Bind<Random>().As(Lifetime.Singleton).To<Random>()
                 // Represents a quantum superposition of 2 states: Alive or Dead
@@ -67,16 +67,22 @@ namespace Sample
                 // Represents a cardboard box with any content
                 .Bind<IBox<TT>>().To<CardboardBox<TT>>()
                 // Composition Root
-                .Root<IBox<ICat>>("Cat");
+                .Root<Program>("Root");
         }
     }
 
     public class Program
     {
+        IBox<ICat> _box;
+
+        internal Program(IBox<ICat> box) => _box = box;
+
+        private void Run() => Console.WriteLine(_box);
+
         public static void Main()
         {
-            var cat = new Composer().Cat;
-            Console.WriteLine(cat);                    
+            using var composition = new Composition();
+            composition.Root.Run();
         }
     }                
 }

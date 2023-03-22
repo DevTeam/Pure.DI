@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Models;
 
-internal record ComposerCode(
+internal record CompositionCode(
     string ClassName,
     string Namespace,
     in ImmutableArray<string> UsingDirectives,

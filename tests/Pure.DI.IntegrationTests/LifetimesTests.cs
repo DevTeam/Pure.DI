@@ -21,9 +21,9 @@ namespace Sample
     class Service: IService {}
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IService>().As(Lifetime.Transient).To<Service>()               
                 .Root<IService>("Service");
         }
@@ -33,8 +33,8 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer();
-            Console.WriteLine(composer.Service != composer.Service);                    
+            var composition = new Composition();
+            Console.WriteLine(composition.Service != composition.Service);                    
         }
     }                
 }
@@ -61,9 +61,9 @@ namespace Sample
     class Service: IService {}
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IService>().To<Service>()               
                 .Root<IService>("Service");
         }
@@ -73,8 +73,8 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer();
-            Console.WriteLine(composer.Service != composer.Service);                    
+            var composition = new Composition();
+            Console.WriteLine(composition.Service != composition.Service);                    
         }
     }                
 }
@@ -115,9 +115,9 @@ namespace Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
                 .Bind<IService>().To<Service>()               
                 .Root<IService>("Service");
@@ -128,9 +128,9 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer();
-            Console.WriteLine(composer.Service != composer.Service);                    
-            Console.WriteLine(composer.Service.Dep == composer.Service.Dep);
+            var composition = new Composition();
+            Console.WriteLine(composition.Service != composition.Service);                    
+            Console.WriteLine(composition.Service.Dep == composition.Service.Dep);
         }
     }                
 }
@@ -177,9 +177,9 @@ namespace Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
                 .Bind<IService>().To<Service>()               
                 .Root<IService>("Service");
@@ -190,10 +190,10 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer();
-            var service1 = composer.Service;                    
-            var service2 = composer.Service;
-            var service3 = composer.Service;
+            var composition = new Composition();
+            var service1 = composition.Service;                    
+            var service2 = composition.Service;
+            var service3 = composition.Service;
         }
     }                
 }
@@ -279,9 +279,9 @@ namespace Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IDependency1>().To<Dependency1>()
                 .Bind<IDependency2>().As(Lifetime.Singleton).To<Dependency2>()
                 .Bind<IDependency3>().As(Lifetime.Singleton).To<Dependency3>()
@@ -294,9 +294,9 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer();
-            var service1 = composer.Service;
-            var service2 = composer.Service;
+            var composition = new Composition();
+            var service1 = composition.Service;
+            var service2 = composition.Service;
             Console.WriteLine(service1 != service2);                    
             Console.WriteLine(service1.Dep1 != service2.Dep1);
             Console.WriteLine(service1.Dep2 == service2.Dep2);           
@@ -402,9 +402,9 @@ namespace Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IDependency1>().To<Dependency1>()
                 .Bind<IDependency2>().As(Lifetime.Singleton).To<Dependency2>()
                 .Bind<IDependency3>().As(Lifetime.Singleton).To<Dependency3>()
@@ -417,9 +417,9 @@ namespace Sample
     {
         public static void Main()
         {
-            using var composer = new Composer();
-            var service1 = composer.Service;
-            var service2 = composer.Service;            
+            using var composition = new Composition();
+            var service1 = composition.Service;
+            var service2 = composition.Service;            
         }
     }                
 }
@@ -446,9 +446,9 @@ namespace Sample
     class Service: IService {}
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IService>().As(Lifetime.Singleton).To<Service>()               
                 .Root<IService>("Service");
         }
@@ -458,8 +458,8 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer();
-            Console.WriteLine(composer.Service == composer.Service);                    
+            var composition = new Composition();
+            Console.WriteLine(composition.Service == composition.Service);                    
         }
     }                
 }
@@ -520,9 +520,9 @@ namespace Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IDependency1>().As(Lifetime.PerResolve).To<Dependency1>()
                 .Bind<IDependency2>().To<Dependency2>()
                 .Bind<IService>().To<Service>()               
@@ -534,8 +534,8 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer();
-            var service = composer.Service;
+            var composition = new Composition();
+            var service = composition.Service;
             Console.WriteLine(service.Dep1 == service.Dep2.Dep1);
         }
     }                

@@ -64,9 +64,9 @@ namespace Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>()
                 .Arg<string>("depName", 374)    
@@ -78,8 +78,8 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer("dep");
-            var service = composer.Service;                                           
+            var composition = new Composition("dep");
+            var service = composition.Service;                                           
         }
     }                
 }
@@ -160,9 +160,9 @@ namespace Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>()
                 .Arg<string>("depName", 374)
@@ -175,8 +175,8 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer("dep");
-            var service = composer.Service;                                           
+            var composition = new Composition("dep");
+            var service = composition.Service;                                           
         }
     }                
 }

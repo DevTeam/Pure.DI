@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.CSharp;
 
-internal class CodeComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<DependencyGraph, ComposerCode>
+internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<DependencyGraph, CompositionCode>
 {
     private readonly IVarIdGenerator _idGenerator;
     private static readonly string IndentPrefix = new Indent(1).ToString();
@@ -8,17 +8,17 @@ internal class CodeComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depe
     private readonly Dictionary<Compilation, INamedTypeSymbol?> _disposableTypes = new();
     private readonly Dictionary<Root, ImmutableArray<Line>> _lines = new();
 
-    public CodeComposerBuilder(IVarIdGenerator idGenerator)
+    public CompositionBuilder(IVarIdGenerator idGenerator)
         : base(idGenerator) => _idGenerator = idGenerator;
 
-    public ComposerCode Build(
+    public CompositionCode Build(
         DependencyGraph dependencyGraph,
         CancellationToken cancellationToken)
     {
         _lines.Clear();
-        var composerTypeNameParts = dependencyGraph.Source.ComposerTypeName.Split('.', StringSplitOptions.RemoveEmptyEntries);
-        var className = composerTypeNameParts.Last();
-        var ns = string.Join('.', composerTypeNameParts.Take(composerTypeNameParts.Length - 1));
+        var compositionTypeNameParts = dependencyGraph.Source.TypeName.Split('.', StringSplitOptions.RemoveEmptyEntries);
+        var className = compositionTypeNameParts.Last();
+        var ns = string.Join('.', compositionTypeNameParts.Take(compositionTypeNameParts.Length - 1));
         if (string.IsNullOrWhiteSpace(ns))
         {
             ns = dependencyGraph.Source.Namespace;
@@ -28,7 +28,7 @@ internal class CodeComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depe
         var variables = new Dictionary<MdBinding, Variable>();
         VisitGraph(RootContext, dependencyGraph, variables, cancellationToken);
         var fields = variables.Select(i => new Field(i.Value.Node, i.Value.Name)).ToImmutableArray();
-        return new ComposerCode(
+        return new CompositionCode(
             className,
             ns,
             usingDirectives.OrderBy(i => i).ToImmutableArray(),
@@ -243,7 +243,7 @@ internal class CodeComposerBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depe
             var namesMap = new Dictionary<string, string>(); 
             foreach (var argsByContext in argsByContexts)
             {
-                var argCodeBuilder = new CodeComposerBuilder(_idGenerator);
+                var argCodeBuilder = new CompositionBuilder(_idGenerator);
                 foreach (var arg in argsByContext)
                 {
                     var argBuildContext = new BuildContext(context.Variables, new LinesBuilder(), false);

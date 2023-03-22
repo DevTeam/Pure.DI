@@ -1,19 +1,19 @@
 namespace Pure.DI.Core.CSharp;
 
-internal class CodePrimaryConstructorBuilder: IBuilder<ComposerCode, ComposerCode>
+internal class PrimaryConstructorBuilder: IBuilder<CompositionCode, CompositionCode>
 {
-    public ComposerCode Build(ComposerCode composer, CancellationToken cancellationToken)
+    public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
     {
-        if (!composer.Args.Any())
+        if (!composition.Args.Any())
         {
-            return composer;
+            return composition;
         }
 
-        var code = composer.Code;
-        var membersCounter = composer.MembersCount;
-        if (!composer.Args.Any())
+        var code = composition.Code;
+        var membersCounter = composition.MembersCount;
+        if (!composition.Args.Any())
         {
-            return composer;
+            return composition;
         }
 
         if (membersCounter > 0)
@@ -21,11 +21,11 @@ internal class CodePrimaryConstructorBuilder: IBuilder<ComposerCode, ComposerCod
             code.AppendLine();
         }
 
-        code.AppendLine($"public {composer.ClassName}({string.Join(", ", composer.Args.Select(i => $"{i.Node.Type} {i.Node.Arg?.Source.ArgName}"))})");
+        code.AppendLine($"public {composition.ClassName}({string.Join(", ", composition.Args.Select(i => $"{i.Node.Type} {i.Node.Arg?.Source.ArgName}"))})");
         code.AppendLine("{");
         using (code.Indent())
         {
-            foreach (var arg in composer.Args)
+            foreach (var arg in composition.Args)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 if (arg.Node.Type.IsValueType)
@@ -44,20 +44,20 @@ internal class CodePrimaryConstructorBuilder: IBuilder<ComposerCode, ComposerCod
                 code.AppendLine();
             }
 
-            foreach (var arg in composer.Args)
+            foreach (var arg in composition.Args)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 code.AppendLine($"{arg.Name} = {arg.Node.Arg?.Source.ArgName};");
             }
             
-            if (composer.Singletons.Any())
+            if (composition.Singletons.Any())
             {
-                code.AppendLine($"{Variable.DisposablesFieldName} = new {CodeConstants.DisposableTypeName}[{composer.DisposableSingletonsCount}];");
+                code.AppendLine($"{Variable.DisposablesFieldName} = new {CodeConstants.DisposableTypeName}[{composition.DisposableSingletonsCount}];");
             }
         }
 
         code.AppendLine("}");
         membersCounter++;
-        return composer with { MembersCount = membersCounter };
+        return composition with { MembersCount = membersCounter };
     }
 }

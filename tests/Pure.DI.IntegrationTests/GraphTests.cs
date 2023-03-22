@@ -41,9 +41,9 @@ namespace Sample
         public Dependency() {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composer")
+        private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>(); 
     }               
@@ -96,9 +96,9 @@ namespace Sample
         public Dependency() {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composer")
+        private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
             .Root<IService>("MyService"); 
@@ -160,9 +160,9 @@ namespace Sample
         public Dependency(int val) {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composer")
+        private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>(); 
     }               
@@ -215,9 +215,9 @@ namespace Sample
         public Dependency() {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composer")
+        private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To(_ => new Dependency())
             .Bind<IService>().To<Service>(); 
     }               
@@ -270,9 +270,9 @@ namespace Sample
         public Dependency() {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composer")
+        private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Arg<IDependency>("dep")
             .Bind<IService>().To<Service>(); 
     }
@@ -325,14 +325,14 @@ namespace Sample
         public Dependency() {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
         private static void Setup()
         {
-             Pure.DI.DI.Setup("Composer")
+             Pure.DI.DI.Setup("Composition")
                .Bind<IDependency>().To<Dependency>();
 
-            Pure.DI.DI.Setup("Composer")
+            Pure.DI.DI.Setup("Composition")
                 .Bind<IService>().To<Service>();
         }  
     }               
@@ -385,9 +385,9 @@ namespace Sample
         public Dependency(string abc) {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composer")
+        private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>(); 
     }
@@ -444,13 +444,13 @@ namespace Sample
         public Dependency() {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup1() => Pure.DI.DI.Setup("BaseComposer", ComposerKind.Internal)
+        private static void Setup1() => Pure.DI.DI.Setup("BaseComposition", CompositionKind.Internal)
             .Bind<IDependency>().To<Dependency>(); 
 
-        private static void Setup2() => Pure.DI.DI.Setup("Composer")
-            .DependsOn("BaseComposer")
+        private static void Setup2() => Pure.DI.DI.Setup("Composition")
+            .DependsOn("BaseComposition")
             .Bind<IService>().To<Service>();
     }
 
@@ -502,12 +502,12 @@ namespace Sample
         public Dependency() {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup1() => Pure.DI.DI.Setup("BaseComposer", ComposerKind.Global)
+        private static void Setup1() => Pure.DI.DI.Setup("BaseComposition", CompositionKind.Global)
             .Bind<IDependency>().To<Dependency>(); 
 
-        private static void Setup2() => Pure.DI.DI.Setup("Composer")
+        private static void Setup2() => Pure.DI.DI.Setup("Composition")
             .Bind<IService>().To<Service>();
     }
 
@@ -559,13 +559,13 @@ namespace Sample
         public Dependency() {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup1() => Pure.DI.DI.Setup("BaseComposer", ComposerKind.Public)
+        private static void Setup1() => Pure.DI.DI.Setup("BaseComposition", CompositionKind.Public)
             .Bind<IDependency>().To<Dependency>(); 
 
-        private static void Setup2() => Pure.DI.DI.Setup("Composer")
-            .DependsOn("BaseComposer")
+        private static void Setup2() => Pure.DI.DI.Setup("Composition")
+            .DependsOn("BaseComposition")
             .Bind<IService>().To<Service>();
     }
 
@@ -642,9 +642,9 @@ namespace Sample
         }
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composer")
+        private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IService>().To<Service>() 
 """ + bindingCode;
 
@@ -696,9 +696,9 @@ namespace Sample
         public Dependency() {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composer")
+        private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>(); 
     }
@@ -751,9 +751,9 @@ namespace Sample
         public Dependency() {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composer")
+        private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency<TT>>().To<Dependency<TT>>()
             .Bind<IService>().To<Service>(); 
     }
@@ -806,9 +806,9 @@ namespace Sample
         public Dependency(T[] arr) {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composer")
+        private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency<TT>>().To(_ => new Dependency<TT>(new TT[1]))
             .Bind<IService>().To<Service>(); 
     }
@@ -861,9 +861,9 @@ namespace Sample
         public Dependency(T[] arr, string str) {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composer")
+        private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<string>("MyStr").To(_ => "Abc")                        
             .Bind<IDependency<TT>>().To(ctx => {
                 ctx.Inject<TT[]>(out var array); 
@@ -951,9 +951,9 @@ namespace Sample
         public Dependency(Dependency2 dep) {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composer")
+        private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency<TT1, TT2>>().To<Dependency<TT1, TT2>>()
             .Bind<IService>().To<Service>(); 
     }
@@ -1004,9 +1004,9 @@ namespace Sample
         public Dependency() {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composer")
+        private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IService>().To<Service>(); 
     }
 
@@ -1063,9 +1063,9 @@ namespace Sample
         public Dependency(IDependency2 dep) {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composer")
+        private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency2>().To<Dependency2>()
             .Bind<IService>().To<Service>(); 
     }
@@ -1116,9 +1116,9 @@ namespace Sample
         public Dependency() {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composer")
+        private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IService>().To<Service>(); 
     }
 
@@ -1177,9 +1177,9 @@ namespace Sample
         public Dependency2(IService service) {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composer")
+        private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency1>().To<Dependency1>()
             .Bind<IDependency2>().To<Dependency2>()
             .Bind<IService>().To<Service>()
@@ -1261,9 +1261,9 @@ namespace Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
                 .Bind<IService>().To<Service>()    
                 .Arg<string>("serviceName")           
@@ -1277,8 +1277,8 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer("Some Name", 37, 56);
-            Console.WriteLine(composer.Service.Name);                               
+            var composition = new Composition("Some Name", 37, 56);
+            Console.WriteLine(composition.Service.Name);                               
         }
     }                
 }
@@ -1344,13 +1344,13 @@ namespace Sample
         public Dependency2() {}
     }
 
-    internal partial class Composer
+    internal partial class Composition
     {                   
-        private static void Setup1() => Pure.DI.DI.Setup("Composer1")
+        private static void Setup1() => Pure.DI.DI.Setup("Composition1")
             .Bind<IDependency1>().To<Dependency1>()
             .Bind<IService1>().To<Service1>();        
 
-        private static void Setup2() => Pure.DI.DI.Setup("Composer2")
+        private static void Setup2() => Pure.DI.DI.Setup("Composition2")
             .Bind<IDependency2>().To<Dependency2>()
             .Bind<IService2>().To<Service2>();
     }               

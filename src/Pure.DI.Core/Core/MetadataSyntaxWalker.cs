@@ -177,14 +177,14 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                     case nameof(DI.Setup):
                         switch (invocation.ArgumentList.Arguments)
                         {
-                            case [{ Expression: { } publicComposerType }]:
+                            case [{ Expression: { } publicCompositionType }]:
                                 MetadataVisitor.VisitSetup(
                                     new MdSetup(
                                         invocation,
-                                        GetConstantValue<string>(publicComposerType),
+                                        GetConstantValue<string>(publicCompositionType),
                                         _namespace,
                                         GetUsingDirectives(invocation),
-                                        ComposerKind.Public,
+                                        CompositionKind.Public,
                                         GetSettings(invocation),
                                         ImmutableArray<MdBinding>.Empty,
                                         ImmutableArray<MdRoot>.Empty,
@@ -196,14 +196,14 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                                 _namespace = string.Empty;
                                 break;
 
-                            case [{ Expression: { } publicComposerType }, { Expression: { } kindExpression }]:
+                            case [{ Expression: { } publicCompositionType }, { Expression: { } kindExpression }]:
                                 MetadataVisitor.VisitSetup(
                                     new MdSetup(
                                         invocation,
-                                        GetConstantValue<string>(publicComposerType),
+                                        GetConstantValue<string>(publicCompositionType),
                                         _namespace,
                                         GetUsingDirectives(invocation),
-                                        GetConstantValue<ComposerKind>(kindExpression),
+                                        GetConstantValue<CompositionKind>(kindExpression),
                                         GetSettings(invocation),
                                         ImmutableArray<MdBinding>.Empty,
                                         ImmutableArray<MdRoot>.Empty,
@@ -235,9 +235,9 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                         break;
 
                     case nameof(IConfiguration.DependsOn):
-                        if (BuildConstantArgs<string>(invocation.ArgumentList.Arguments) is [..] composerTypeNames)
+                        if (BuildConstantArgs<string>(invocation.ArgumentList.Arguments) is [..] compositionTypeNames)
                         {
-                            MetadataVisitor.VisitDependsOn(new MdDependsOn(SemanticModel, invocation, composerTypeNames.ToImmutableArray()));
+                            MetadataVisitor.VisitDependsOn(new MdDependsOn(SemanticModel, invocation, compositionTypeNames.ToImmutableArray()));
                         }
 
                         break;

@@ -38,9 +38,9 @@ namespace Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IDependency>().To(ctx => new Dependency())
                 .Bind<IService>().To<Service>()    
                 .Root<IService>("Service");
@@ -51,9 +51,9 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer();
-            var service1 = composer.Service;
-            var service2 = composer.Service;
+            var composition = new Composition();
+            var service1 = composition.Service;
+            var service2 = composition.Service;
             Console.WriteLine(service1.Dep != service2.Dep);                                            
         }
     }                
@@ -98,9 +98,9 @@ namespace Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IDependency>().To(ctx => 
                     { 
                         return new Dependency(); 
@@ -115,9 +115,9 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer();
-            var service1 = composer.Service;
-            var service2 = composer.Service;
+            var composition = new Composition();
+            var service1 = composition.Service;
+            var service2 = composition.Service;
             Console.WriteLine(service1.Dep != service2.Dep);                                            
         }
     }                
@@ -162,9 +162,9 @@ namespace Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.Singleton).To(ctx => new Dependency())
                 .Bind<IService>().To<Service>()    
                 .Root<IService>("Service");
@@ -175,9 +175,9 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer();
-            var service1 = composer.Service;
-            var service2 = composer.Service;
+            var composition = new Composition();
+            var service1 = composition.Service;
+            var service2 = composition.Service;
             Console.WriteLine(service1.Dep == service2.Dep);                                            
         }
     }                
@@ -222,9 +222,9 @@ namespace Sample
 
     static class Setup
     {
-        private static void SetupComposer()
+        private static void SetupComposition()
         {
-            DI.Setup("Composer")
+            DI.Setup("Composition")
                 .Bind<IDependency>().To(ctx => new Dependency())
                 .Bind<IService>().To(ctx => {
                     IDependency dependency1;
@@ -239,9 +239,9 @@ namespace Sample
     {
         public static void Main()
         {
-            var composer = new Composer();
-            var service1 = composer.Service;
-            var service2 = composer.Service;
+            var composition = new Composition();
+            var service1 = composition.Service;
+            var service2 = composition.Service;
             Console.WriteLine(service1.Dep != service2.Dep);                                            
         }
     }                

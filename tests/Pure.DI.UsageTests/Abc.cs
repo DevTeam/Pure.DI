@@ -8,12 +8,12 @@ public class AbcTests
     public void Should()
     {
         // Given
-        DI.Setup("AbcComposer")
+        DI.Setup("AbcComposition")
             .Bind<IClock>().To<Clock>()
             .Root<IClock>("Clock");
 
         // When
-        var a = new AbcComposer().Clock;
+        var a = new AbcComposition().Clock;
 
         // Then
     }

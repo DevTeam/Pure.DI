@@ -36,7 +36,7 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
 
     public DependencyGraph Build(MdSetup setup, CancellationToken cancellationToken)
     {
-        using var logToken = _logger.TraceProcess($"building dependency graph \"{setup.ComposerTypeName}\"");
+        using var logToken = _logger.TraceProcess($"building dependency graph \"{setup.TypeName}\"");
         var map = new Dictionary<Injection, DependencyNode>();
         var contracts = new Dictionary<MdBinding, ImmutableArray<Injection>>();
         var resolvedNodes = new List<(DependencyNode, ImmutableArray<Injection>)>();

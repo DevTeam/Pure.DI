@@ -5,10 +5,10 @@ namespace Pure.DI.Core.Models;
 
 internal record MdSetup(
     SyntaxNode Source,
-    string ComposerTypeName,
+    string TypeName,
     string Namespace,
     in ImmutableArray<string> UsingDirectives,
-    ComposerKind Kind,
+    CompositionKind Kind,
     ISettings Settings,
     in ImmutableArray<MdBinding> Bindings,
     in ImmutableArray<MdRoot> Roots,

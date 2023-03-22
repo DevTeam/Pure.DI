@@ -4,7 +4,7 @@ namespace Pure.DI.Core.Models;
 internal readonly record struct MdDependsOn(
     SemanticModel SemanticModel,
     SyntaxNode Source,
-    in ImmutableArray<string> ComposerTypeNames)
+    in ImmutableArray<string> CompositionTypeNames)
 {
-    public override string ToString() => $"DependsOn(\"{ComposerTypeNames}\")";
+    public override string ToString() => $"DependsOn(\"{CompositionTypeNames}\")";
 }

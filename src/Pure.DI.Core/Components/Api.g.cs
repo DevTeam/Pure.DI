@@ -12,27 +12,17 @@ namespace Pure.DI
     internal enum Lifetime
     {
         /// <summary>
-        /// Creates an instance first time and then provides the same instance each time. To dispose <see cref="IDisposable"/> instances use the method <c>Composer.FinalDispose();</c>
+        /// Creates an instance first time and then provides the same instance each time.
         /// </summary>
         Singleton,
 
         /// <summary>
-        /// The per resolve lifetime is similar to the <see cref="Lifetime.Transient"/>, but it reuses the same instance in the recursive object graph. To manage disposable instances subscribe on <c>Composer.OnDisposable</c> event, store them and dispose instances at appropriate time manually.
-        /// <example>
-        /// <code>
-        /// Composer.OnDisposable += e => disposables.Add(e.Disposable);
-        /// </code>
-        /// </example>
+        /// The per resolve lifetime is similar to the <see cref="Lifetime.Transient"/>, but it reuses the instance in the recursive object graph.
         /// </summary>
         PerResolve,
         
         /// <summary>
-        /// Creates a new instance of the requested type every time. To dispose <see cref="IDisposable"/> instances subscribe on <c>OnDisposable</c> event, store them and and dispose these instances at appropriate time manually.
-        /// <example>
-        /// <code>
-        /// Composer.OnDisposable += e => disposables.Add(e.Disposable);
-        /// </code>
-        /// </example>
+        /// Creates a new instance of the requested type every time.
         /// </summary>
         Transient
     }
@@ -224,7 +214,7 @@ namespace Pure.DI
         }
     }
 
-    internal enum ComposerKind
+    internal enum CompositionKind
     {
         Public,
         Internal,
@@ -240,9 +230,9 @@ namespace Pure.DI
         /// Starts a binding.
         /// <example>
         /// <code>
-        /// static partial class Composer
+        /// static partial class Composition
         /// {
-        ///   static Composer() =&gt; DI.Setup()
+        ///   static Composition() =&gt; DI.Setup()
         ///     .Bind&lt;IBox&lt;TT&gt;&gt;().To&gt;CardboardBox&lt;TT&gt;&gt;()
         /// }
         /// </code>
@@ -257,10 +247,10 @@ namespace Pure.DI
         /// Use some DI configuration as a base by its name.
         /// <example>
         /// <code>
-        /// static partial class Composer
+        /// static partial class Composition
         /// {
-        ///   static Composer() =&gt; DI.Setup()
-        ///     .DependsOn("MyBaseComposer");
+        ///   static Composition() =&gt; DI.Setup()
+        ///     .DependsOn("MyBaseComposition");
         /// }
         /// </code>
         /// </example>
@@ -282,9 +272,9 @@ namespace Pure.DI
         ///   public readonly Type Type;
         ///   public MyTypeAttribute(Type type) => Type = type;
         /// }
-        /// static partial class Composer
+        /// static partial class Composition
         /// {
-        ///   static Composer() =&gt; DI.Setup()
+        ///   static Composition() =&gt; DI.Setup()
         ///     .TypeAttribute&lt;MyTypeAttribute&gt;();
         /// }
         /// </code>
@@ -308,9 +298,9 @@ namespace Pure.DI
         ///   public readonly object Tag;
         ///   public MyTagAttribute(object tag) => Tag = tag;
         /// }
-        /// static partial class Composer
+        /// static partial class Composition
         /// {
-        ///   static Composer() =&gt; DI.Setup()
+        ///   static Composition() =&gt; DI.Setup()
         ///     .TagAttribute&lt;MyTagAttribute&gt;();
         /// }
         /// </code>
@@ -335,9 +325,9 @@ namespace Pure.DI
         ///   public readonly int Ordinal;
         ///   public MyOrdinalAttribute(int ordinal) => Ordinal = ordinal;
         /// }
-        /// static partial class Composer
+        /// static partial class Composition
         /// {
-        ///   static Composer() =&gt; DI.Setup()
+        ///   static Composition() =&gt; DI.Setup()
         ///     .OrdinalAttribute&lt;MyOrdinalAttribute&gt;();
         /// }
         /// </code>
@@ -352,9 +342,9 @@ namespace Pure.DI
         /// Overrides a default <see cref="Lifetime"/>. <see cref="Lifetime.Transient"/> is default lifetime.
         /// <example>
         /// <code>
-        /// static partial class Composer
+        /// static partial class Composition
         /// {
-        ///   static Composer() =&gt; DI.Setup()
+        ///   static Composition() =&gt; DI.Setup()
         ///     .Default(Lifetime.Singleton)
         ///     .Bind&lt;ICat&gt;().To&lt;ShroedingersCat&gt;();
         /// }
@@ -393,9 +383,9 @@ namespace Pure.DI
         /// Continue a binding configuration chain, determining an additional dependency type.
         /// <example>
         /// <code>
-        /// static partial class Composer
+        /// static partial class Composition
         /// {
-        ///   static Composer() =&gt; DI.Setup()
+        ///   static Composition() =&gt; DI.Setup()
         ///     .Bind&lt;ICat&gt;().To&lt;ShroedingersCat&gt;();
         /// }
         /// </code>
@@ -410,9 +400,9 @@ namespace Pure.DI
         /// Determines a binding <see cref="Lifetime"/>.
         /// <example>
         /// <code>
-        /// static partial class Composer
+        /// static partial class Composition
         /// {
-        ///   static Composer() =&gt; DI.Setup()
+        ///   static Composition() =&gt; DI.Setup()
         ///     .Bind&lt;ICat&gt;().As(Lifetime.Singleton).To&lt;ShroedingersCat&gt;();
         /// }
         /// </code>
@@ -426,9 +416,9 @@ namespace Pure.DI
         /// Determines a binding tag.
         /// <example>
         /// <code>
-        /// static partial class Composer
+        /// static partial class Composition
         /// {
-        ///   static Composer() =&gt; DI.Setup()
+        ///   static Composition() =&gt; DI.Setup()
         ///     .Bind&lt;ICat&gt;().Tag("MyCat").To&lt;ShroedingersCat&gt;();
         /// }
         /// </code>
@@ -442,9 +432,9 @@ namespace Pure.DI
         /// Determines a binding suitable for any tag.
         /// <example>
         /// <code>
-        /// static partial class Composer
+        /// static partial class Composition
         /// {
-        ///   static Composer() =&gt; DI.Setup()
+        ///   static Composition() =&gt; DI.Setup()
         ///     .Bind&lt;ICat&gt;().AnyTag().To&lt;ShroedingersCat&gt;();
         /// }
         /// </code>
@@ -457,9 +447,9 @@ namespace Pure.DI
         /// Finish a binding configuration chain by determining a binding implementation.
         /// <example>
         /// <code>
-        /// static partial class Composer
+        /// static partial class Composition
         /// {
-        ///   static Composer() =&gt; DI.Setup()
+        ///   static Composition() =&gt; DI.Setup()
         ///     .Bind&lt;ICat&gt;().To&lt;ShroedingersCat&gt;();
         /// }
         /// </code>
@@ -574,13 +564,13 @@ namespace Pure.DI
     }
     
     /// <summary>
-    /// Provides API to configure a DI composer.
+    /// Provides API to configure a DI composition.
     /// <example>
     /// <code>
-    /// static partial class Composer
+    /// static partial class Composition
     /// {
     ///   private static readonly Random Indeterminacy = new();
-    ///   static Composer() =&gt; DI.Setup()
+    ///   static Composition() =&gt; DI.Setup()
     ///     .Bind&lt;State&gt;().To(_ =&gt; (State)Indeterminacy.Next(2))
     ///     .Bind&lt;ICat&gt;().To&lt;ShroedingersCat&gt;()
     ///     .Bind&lt;IBox&lt;TT&gt;&gt;().To&gt;CardboardBox&lt;TT&gt;&gt;()
@@ -596,17 +586,17 @@ namespace Pure.DI
         /// Starts a new or continues an existing DI configuration chain.
         /// <example>
         /// <code>
-        /// static partial class Composer
+        /// static partial class Composition
         /// {
-        ///   static Composer() =&gt; DI.Setup("MyComposer");
+        ///   static Composition() =&gt; DI.Setup("MyComposition");
         /// }
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="composerTypeName">This argument specifying a custom DI composer type name to generate. By default, it is a name of an owner class if the owner class is <c>static partial class</c> otherwise, it is a name of an owner plus the "DI" postfix. /// <param name="composerTypeName">The optional argument specifying a custom DI composer type name to generate. By default, it is a name of an owner class if the owner class is <c>static partial class</c> otherwise, it is a name of an owner plus the "DI" postfix. For a top level statements application the name is <c>Composer</c> by default.</param></param>
-        /// <param name="kind">This argument specifying a composer scope. By default, it is <c>Public</c> by default.</param></param>
+        /// <param name="compositionTypeName">This argument specifying a custom DI composition type name to generate. By default, it is a name of an owner class if the owner class is <c>static partial class</c> otherwise, it is a name of an owner plus the "DI" postfix. /// <param name="compositionTypeName">The optional argument specifying a custom DI composition type name to generate. By default, it is a name of an owner class if the owner class is <c>static partial class</c> otherwise, it is a name of an owner plus the "DI" postfix. For a top level statements application the name is <c>Composition</c> by default.</param></param>
+        /// <param name="kind">This argument specifying a composition scope. By default, it is <c>Public</c> by default.</param></param>
         /// <returns>DI configuration API.</returns>
-        internal static IConfiguration Setup(string composerTypeName, ComposerKind kind = ComposerKind.Public)
+        internal static IConfiguration Setup(string compositionTypeName, CompositionKind kind = CompositionKind.Public)
         {
             return Configuration.Shared;
         }
