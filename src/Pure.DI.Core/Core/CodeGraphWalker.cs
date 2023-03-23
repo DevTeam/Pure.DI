@@ -112,6 +112,10 @@ internal class CodeGraphWalker<TContext>
                 case MdConstructKind.Enumerable:
                     VisitEnumerableConstruct(context, dependencyGraph, root, block, construct, cancellationToken);
                     break;
+                
+                case MdConstructKind.Array:
+                    VisitArrayConstruct(context, dependencyGraph, root, block, construct, cancellationToken);
+                    break;
             }
             
             return;
@@ -299,6 +303,16 @@ internal class CodeGraphWalker<TContext>
     }
     
     public virtual void VisitEnumerableConstruct(
+        TContext context,
+        DependencyGraph dependencyGraph,
+        Variable rootVariable,
+        Block block,
+        in DpConstruct construct,
+        CancellationToken cancellationToken)
+    {
+    }
+    
+    public virtual void VisitArrayConstruct(
         TContext context,
         DependencyGraph dependencyGraph,
         Variable rootVariable,

@@ -99,8 +99,7 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
                             continue;
                         }
 
-                        var binding = targetNode.Binding;
-                        var semanticModel = binding.SemanticModel;
+                        var semanticModel = targetNode.Binding.SemanticModel;
                         var compilation = semanticModel.Compilation;
                         var isResolved = true;
                         var injectionsWalker = new DependenciesToInjectionsWalker();
@@ -149,7 +148,7 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
                                     };
 
 
-                                    nextGroups.AddRange(AddNewBinding(setup, newBinding, cancellationToken));
+                                    nextGroups.AddRange(AddBinding(setup, newBinding, cancellationToken));
                                     continue;
                                 }
 
@@ -157,43 +156,22 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
                                 if (geneticType.TypeArguments is [{ } enumerableType]
                                     && geneticType.ConstructUnboundGenericType().ToString() == "System.Collections.Generic.IEnumerable<>")
                                 {
-                                    var dependencyContractsBuilder = ImmutableArray.CreateBuilder<MdContract>();
-                                    foreach (var nestedBinding in setup.Bindings.Where(i => i != binding))
-                                    {
-                                        var matchedContracts = nestedBinding.Contracts.Where(i => SymbolEqualityComparer.Default.Equals(i.ContractType, enumerableType)).ToImmutableArray();
-                                        if (!matchedContracts.Any())
-                                        {
-                                            continue;
-                                        }
-
-                                        var tag = matchedContracts.First().Tags.Concat(nestedBinding.Tags).Select(i => i.Value).FirstOrDefault();
-                                        var tags = tag is { }
-                                            ? ImmutableArray.Create(new MdTag(targetNode.Binding.SemanticModel, targetNode.Binding.Source, 0, tag))
-                                            : ImmutableArray<MdTag>.Empty;
-                                        dependencyContractsBuilder.Add(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, enumerableType, tags));
-                                    }
-                                    
-                                    var newContracts = ImmutableArray.Create(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, geneticType, ImmutableArray<MdTag>.Empty));
                                     id++;
-                                    var newBinding = new MdBinding(id, targetNode.Binding.Source, targetNode.Binding.SemanticModel, newContracts, ImmutableArray<MdTag>.Empty)
-                                    {
-                                        Id = id,
-                                        SemanticModel = targetNode.Binding.SemanticModel,
-                                        Source = targetNode.Binding.Source,
-                                        Construct = new MdConstruct(
-                                            targetNode.Binding.SemanticModel,
-                                            targetNode.Binding.Source,
-                                            injection.Type,
-                                            enumerableType,
-                                            MdConstructKind.Enumerable,
-                                            dependencyContractsBuilder.ToImmutable())
-                                    };
-                                    
-                                    nextGroups.AddRange(AddNewBinding(setup, newBinding, cancellationToken));
+                                    var enumerableBinding = CreateConstructBinding(setup, targetNode, injection, enumerableType, id, MdConstructKind.Enumerable);
+                                    nextGroups.AddRange(AddBinding(setup, enumerableBinding, cancellationToken));
                                     continue;
                                 }
                             }
                             
+                            // Array
+                            if (injection.Type is IArrayTypeSymbol arrayType)
+                            {
+                                id++;
+                                var arrayBinding = CreateConstructBinding(setup, targetNode, injection, arrayType.ElementType, id, MdConstructKind.Array);
+                                nextGroups.AddRange(AddBinding(setup, arrayBinding, cancellationToken));
+                                continue;
+                            }
+
                             // Auto-binding
                             if (injection.Type is { IsAbstract: false, SpecialType: SpecialType.None })
                             {
@@ -216,7 +194,7 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
                                     new MdLifetime(semanticModel, setup.Source, Lifetime.Transient),
                                     new MdImplementation(semanticModel, setup.Source, sourceType));
 
-                                nextGroups.AddRange(AddNewBinding(setup, newBinding, cancellationToken));
+                                nextGroups.AddRange(AddBinding(setup, newBinding, cancellationToken));
                                 continue;
                             }
 
@@ -290,7 +268,46 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
             ImmutableDictionary<Injection, Root>.Empty);
     }
 
-    private IEnumerable<IEnumerable<DependencyNode>> AddNewBinding(
+    private static MdBinding CreateConstructBinding(MdSetup setup,
+        DependencyNode node,
+        Injection injection,
+        ITypeSymbol elementType,
+        int newId,
+        MdConstructKind constructKind)
+    {
+        var dependencyContractsBuilder = ImmutableArray.CreateBuilder<MdContract>();
+        foreach (var nestedBinding in setup.Bindings.Where(i => i != node.Binding))
+        {
+            var matchedContracts = nestedBinding.Contracts.Where(i => SymbolEqualityComparer.Default.Equals(i.ContractType, elementType)).ToImmutableArray();
+            if (!matchedContracts.Any())
+            {
+                continue;
+            }
+
+            var tag = matchedContracts.First().Tags.Concat(nestedBinding.Tags).Select(i => i.Value).FirstOrDefault();
+            var tags = tag is { }
+                ? ImmutableArray.Create(new MdTag(node.Binding.SemanticModel, node.Binding.Source, 0, tag))
+                : ImmutableArray<MdTag>.Empty;
+            dependencyContractsBuilder.Add(new MdContract(node.Binding.SemanticModel, node.Binding.Source, elementType, tags));
+        }
+
+        var newContracts = ImmutableArray.Create(new MdContract(node.Binding.SemanticModel, node.Binding.Source, injection.Type, ImmutableArray<MdTag>.Empty));
+        return new MdBinding(newId, node.Binding.Source, node.Binding.SemanticModel, newContracts, ImmutableArray<MdTag>.Empty)
+        {
+            Id = newId,
+            SemanticModel = node.Binding.SemanticModel,
+            Source = node.Binding.Source,
+            Construct = new MdConstruct(
+                node.Binding.SemanticModel,
+                node.Binding.Source,
+                injection.Type,
+                elementType,
+                constructKind,
+                dependencyContractsBuilder.ToImmutable())
+        };
+    }
+
+    private IEnumerable<IEnumerable<DependencyNode>> AddBinding(
         MdSetup setup,
         MdBinding binding,
         CancellationToken cancellationToken)

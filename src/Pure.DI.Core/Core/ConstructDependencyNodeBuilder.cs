@@ -1,12 +1,12 @@
 namespace Pure.DI.Core;
 
-internal class EnumerableDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<DependencyNode>>
+internal class ConstructDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<DependencyNode>>
 {
     public IEnumerable<DependencyNode> Build(MdSetup setup, CancellationToken cancellationToken)
     {
         foreach (var binding in setup.Bindings)
         {
-            if (binding.Construct is not { Kind: MdConstructKind.Enumerable } construct)
+            if (binding.Construct is not {} construct)
             {
                 continue;
             }

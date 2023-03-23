@@ -25,7 +25,7 @@ internal static partial class Composition
         .Bind<IBuilder<MdSetup, IEnumerable<DependencyNode>>>(typeof(ImplementationDependencyNodeBuilder)).To<ImplementationDependencyNodeBuilder>()
         .Bind<IBuilder<MdSetup, IEnumerable<DependencyNode>>>(typeof(FactoryDependencyNodeBuilder)).To<FactoryDependencyNodeBuilder>()
         .Bind<IBuilder<MdSetup, IEnumerable<DependencyNode>>>(typeof(ArgDependencyNodeBuilder)).To<ArgDependencyNodeBuilder>()
-        .Bind<IBuilder<MdSetup, IEnumerable<DependencyNode>>>(typeof(EnumerableDependencyNodeBuilder)).To<EnumerableDependencyNodeBuilder>()
+        .Bind<IBuilder<MdSetup, IEnumerable<DependencyNode>>>(typeof(ConstructDependencyNodeBuilder)).To<ConstructDependencyNodeBuilder>()
         .Bind<IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>>>().To<RootsBuilder>()
         .Bind<IVarIdGenerator>().To<VarIdGenerator>()
         .Bind<IBuilder<MdBinding, ISet<Injection>>>().To<InjectionsBuilder>()

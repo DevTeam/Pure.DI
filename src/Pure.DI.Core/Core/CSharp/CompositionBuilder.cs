@@ -249,6 +249,31 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             context.Code.AppendLine(GenerateFinalStatement(instantiation.Target, instantiation.Target.Name, true));
         }
     }
+    
+    public override void VisitArrayConstruct(
+        BuildContext context,
+        DependencyGraph dependencyGraph,
+        Variable rootVariable,
+        Block block,
+        in DpConstruct construct,
+        CancellationToken cancellationToken)
+    {
+        var instantiation = block.Instantiations.Last();
+        var localContext = context with { IsRootContext = false };
+        foreach (var arg in instantiation.Arguments)
+        {
+            VisitRootVariable(localContext, dependencyGraph, context.Variables, arg, cancellationToken);
+            context.Code.AppendLine();
+        }
+        
+        context.Code.AppendLine($"{instantiation.Target.Type} {instantiation.Target.Name} = new {construct.Source.ElementType}[{instantiation.Arguments.Length}] {{ {string.Join(", ", instantiation.Arguments.Select(i => i.Name))} }};");
+        instantiation.Target.IsDeclared = true;
+        instantiation.Target.IsCreated = true;
+        if (context.IsRootContext && instantiation.Target == rootVariable)
+        {
+            context.Code.AppendLine(GenerateFinalStatement(instantiation.Target, instantiation.Target.Name, true));
+        }
+    }
 
     public override void VisitFactory(
         BuildContext context,
