@@ -1,7 +1,5 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
-using System.Collections.Immutable;
-
 [Collection(nameof(NonParallelTestsCollectionDefinition))]
 public class NamespaceTests
 {

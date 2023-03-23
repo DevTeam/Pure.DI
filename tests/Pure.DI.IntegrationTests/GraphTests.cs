@@ -1,6 +1,5 @@
 namespace Pure.DI.IntegrationTests;
 
-using System.Collections.Immutable;
 using System.Text;
 using Core;
 using Core.Models;
@@ -403,12 +402,10 @@ namespace Sample
         graphs[0].ConvertToString().ShouldBe("""
 Dependency(string abc<--string))
   -[Dependency(string abc<--string))]<--[string]--[unresolved]
-Service(Sample.IDependency dependency<--Sample.IDependency))
-  -[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[unresolved]
 """);
 
         var errors = result.Logs.Where(i => i.Id == LogId.ErrorUnresolved).ToImmutableArray();
-        errors.Length.ShouldBe(2);
+        errors.Length.ShouldBe(1);
     }
     
     [Fact]

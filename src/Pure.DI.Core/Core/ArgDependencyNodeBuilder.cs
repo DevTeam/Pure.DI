@@ -11,7 +11,7 @@ internal class ArgDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<Dependen
                 continue;
             }
 
-            yield return new DependencyNode(Arg: new DpArg(arg, binding));
+            yield return new DependencyNode(0, Arg: new DpArg(arg, binding));
         }
     }
 }

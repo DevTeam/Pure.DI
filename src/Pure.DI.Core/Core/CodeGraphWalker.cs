@@ -82,6 +82,12 @@ internal class CodeGraphWalker<TContext>
                                 targets.Push(var);
                             }
                         }
+
+                        if (targetVariable.Node.Construct is { Source.Kind: MdConstructKind.Enumerable })
+                        {
+                            // Will be created in a Func
+                            var.IsCreated = true;
+                        }
                         
                         arguments.Add(var);
                     }
@@ -105,22 +111,6 @@ internal class CodeGraphWalker<TContext>
         Block block,
         CancellationToken cancellationToken)
     {
-        if (block.Root.Node.Construct is { } construct)
-        {
-            switch (construct.Source.Kind)
-            {
-                case MdConstructKind.Enumerable:
-                    VisitEnumerableConstruct(context, dependencyGraph, root, block, construct, cancellationToken);
-                    break;
-                
-                case MdConstructKind.Array:
-                    VisitArrayConstruct(context, dependencyGraph, root, block, construct, cancellationToken);
-                    break;
-            }
-            
-            return;
-        }
-        
         foreach (var instantiation in block.Instantiations)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -131,26 +121,46 @@ internal class CodeGraphWalker<TContext>
     public virtual void VisitInstantiation(
         TContext context,
         DependencyGraph dependencyGraph,
-        Variable rootVariable,
+        Variable root,
         Block block,
         Instantiation instantiation,
         CancellationToken cancellationToken)
     {
         if (instantiation.Target.Node.Implementation is { } implementation)
         {
-            VisitImplementation(context, dependencyGraph, rootVariable, block, instantiation, implementation, cancellationToken);
+            VisitImplementation(context, dependencyGraph, root, block, instantiation, implementation, cancellationToken);
         }
         else
         {
             if (instantiation.Target.Node.Factory is { } factory)
             {
-                VisitFactory(context, dependencyGraph, rootVariable, block, instantiation, factory, cancellationToken);
+                VisitFactory(context, dependencyGraph, root, block, instantiation, factory, cancellationToken);
             }
             else
             {
                 if (instantiation.Target.Node.Arg is { } arg)
                 {
-                    VisitArg(context, dependencyGraph, rootVariable, block, instantiation, arg, cancellationToken);
+                    VisitArg(context, dependencyGraph, root, block, instantiation, arg, cancellationToken);
+                }
+                else
+                {
+                    if (instantiation.Target.Node.Construct is { } construct)
+                    {
+                        switch (construct.Source.Kind)
+                        {
+                            case MdConstructKind.Enumerable:
+                                VisitEnumerableConstruct(context, dependencyGraph, block, root, construct, instantiation, cancellationToken);
+                                break;
+                
+                            case MdConstructKind.Array:
+                                VisitArrayConstruct(context, dependencyGraph, block, root, construct, instantiation, cancellationToken);
+                                break;
+                            
+                            case MdConstructKind.ImmutableArray:
+                                VisitImmutableArrayConstruct(context, dependencyGraph, block, root, construct, instantiation, cancellationToken);
+                                break;
+                        }
+                    }
                 }
             }
         }
@@ -305,9 +315,10 @@ internal class CodeGraphWalker<TContext>
     public virtual void VisitEnumerableConstruct(
         TContext context,
         DependencyGraph dependencyGraph,
-        Variable rootVariable,
         Block block,
+        Variable root,
         in DpConstruct construct,
+        Instantiation instantiation,
         CancellationToken cancellationToken)
     {
     }
@@ -315,9 +326,21 @@ internal class CodeGraphWalker<TContext>
     public virtual void VisitArrayConstruct(
         TContext context,
         DependencyGraph dependencyGraph,
-        Variable rootVariable,
         Block block,
+        Variable root,
         in DpConstruct construct,
+        Instantiation instantiation,
+        CancellationToken cancellationToken)
+    {
+    }
+    
+    public virtual void VisitImmutableArrayConstruct(
+        TContext context,
+        DependencyGraph dependencyGraph,
+        Block block,
+        Variable root,
+        in DpConstruct construct,
+        Instantiation instantiation,
         CancellationToken cancellationToken)
     {
     }
@@ -340,13 +363,7 @@ internal class CodeGraphWalker<TContext>
                 
                 variables.Add(node.Binding, argVar);
                 return argVar;
-            
-            case { Construct: {} }:
-                return new Variable(_idGenerator.NextId, node, injection)
-                {
-                    IsBlockRoot = true
-                };
-            
+
             case { Lifetime: Lifetime.Singleton }:
                 if (variables.TryGetValue(node.Binding, out var singletonVar))
                 {

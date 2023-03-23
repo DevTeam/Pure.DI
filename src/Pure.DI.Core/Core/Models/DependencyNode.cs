@@ -1,6 +1,7 @@
 namespace Pure.DI.Core.Models;
 
 internal record DependencyNode(
+    int Variation,
     DpRoot? Root = default,
     DpImplementation? Implementation = default,
     DpFactory? Factory = default,

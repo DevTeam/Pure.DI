@@ -112,12 +112,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         CancellationToken cancellationToken)
     {
         base.VisitImplementation(context, dependencyGraph, root, block, instantiation, implementation, cancellationToken);
-        var justReturn = context.IsRootContext && instantiation.Target == root && instantiation.Target.Node.Lifetime != Lifetime.Singleton;
-        if (justReturn)
-        {
-            context.Code.AppendLine(GenerateFinalStatement(instantiation.Target, instantiation.Target.Name, justReturn));
-        }
-
+        AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
     }
 
@@ -219,12 +214,17 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
     public override void VisitEnumerableConstruct(
         BuildContext context,
         DependencyGraph dependencyGraph,
-        Variable rootVariable,
         Block block,
+        Variable root,
         in DpConstruct construct,
+        Instantiation instantiation,
         CancellationToken cancellationToken)
     {
-        var instantiation = block.Instantiations.Last();
+        if (instantiation.Target.IsCreated)
+        {
+            return;
+        }
+
         var funcNames = new List<string>();
         foreach (var arg in instantiation.Arguments)
         {
@@ -234,6 +234,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             context.Code.AppendLine("{");
             using (context.Code.Indent())
             {
+                arg.IsCreated = false;
                 VisitRootVariable(context, dependencyGraph, context.Variables, arg, cancellationToken);
             }
 
@@ -242,36 +243,54 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         }
         
         context.Code.AppendLine($"{instantiation.Target.Type} {instantiation.Target.Name} = System.Linq.Enumerable.Select(new System.Func<{construct.Source.ElementType}>[] {{ {string.Join(", ", funcNames)} }}, i => i());");
-        instantiation.Target.IsDeclared = true;
+        AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
-        if (context.IsRootContext && instantiation.Target == rootVariable)
-        {
-            context.Code.AppendLine(GenerateFinalStatement(instantiation.Target, instantiation.Target.Name, true));
-        }
     }
     
     public override void VisitArrayConstruct(
         BuildContext context,
         DependencyGraph dependencyGraph,
-        Variable rootVariable,
         Block block,
+        Variable root,
         in DpConstruct construct,
+        Instantiation instantiation,
         CancellationToken cancellationToken)
     {
-        var instantiation = block.Instantiations.Last();
-        var localContext = context with { IsRootContext = false };
-        foreach (var arg in instantiation.Arguments)
+        if (instantiation.Target.IsCreated)
         {
-            VisitRootVariable(localContext, dependencyGraph, context.Variables, arg, cancellationToken);
-            context.Code.AppendLine();
+            return;
         }
-        
+
         context.Code.AppendLine($"{instantiation.Target.Type} {instantiation.Target.Name} = new {construct.Source.ElementType}[{instantiation.Arguments.Length}] {{ {string.Join(", ", instantiation.Arguments.Select(i => i.Name))} }};");
-        instantiation.Target.IsDeclared = true;
+        AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
-        if (context.IsRootContext && instantiation.Target == rootVariable)
+    }
+    
+    public override void VisitImmutableArrayConstruct(
+        BuildContext context,
+        DependencyGraph dependencyGraph,
+        Block block,
+        Variable root,
+        in DpConstruct construct,
+        Instantiation instantiation,
+        CancellationToken cancellationToken)
+    {
+        if (instantiation.Target.IsCreated)
         {
-            context.Code.AppendLine(GenerateFinalStatement(instantiation.Target, instantiation.Target.Name, true));
+            return;
+        }
+
+        context.Code.AppendLine($"{instantiation.Target.Type} {instantiation.Target.Name} = System.Collections.Immutable.ImmutableArray.Create<{construct.Source.ElementType}>({string.Join(", ", instantiation.Arguments.Select(i => i.Name))});");
+        AddReturnStatement(context, root, instantiation);
+        instantiation.Target.IsCreated = true;
+    }
+    
+    private static void AddReturnStatement(BuildContext context, Variable root, Instantiation instantiation)
+    {
+        var justReturn = context.IsRootContext && instantiation.Target == root && instantiation.Target.Node.Lifetime != Lifetime.Singleton;
+        if (justReturn)
+        {
+            context.Code.AppendLine(GenerateFinalStatement(instantiation.Target, instantiation.Target.Name, justReturn));
         }
     }
 

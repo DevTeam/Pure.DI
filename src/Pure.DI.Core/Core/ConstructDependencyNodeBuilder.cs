@@ -18,7 +18,7 @@ internal class ConstructDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<De
                 injectionsBuilder.Add(new Injection(contract.ContractType, tag));
             }
             
-            yield return new DependencyNode(Construct: new DpConstruct(construct, binding, injectionsBuilder.ToImmutable()));
+            yield return new DependencyNode(0, Construct: new DpConstruct(construct, binding, injectionsBuilder.ToImmutable()));
         }
     }
 }

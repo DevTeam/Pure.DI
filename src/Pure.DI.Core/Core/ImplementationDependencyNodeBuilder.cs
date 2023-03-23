@@ -115,6 +115,7 @@ internal class ImplementationDependencyNodeBuilder :
                 }
             }
 
+            var variantId = 0;
             foreach (var constructor in constructors)
             {
                 var dpImplementation = new DpImplementation(
@@ -125,7 +126,7 @@ internal class ImplementationDependencyNodeBuilder :
                     propertiesBuilder.ToImmutable(),
                     fieldsBuilder.ToImmutable());
                 
-                yield return new DependencyNode(Implementation: dpImplementation);
+                yield return new DependencyNode(variantId++, Implementation: dpImplementation);
             }
         }
     }

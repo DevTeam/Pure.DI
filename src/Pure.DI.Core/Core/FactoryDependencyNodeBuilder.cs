@@ -23,7 +23,7 @@ internal class FactoryDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<Depe
                 injectionsBuilder.Add(new Injection(resolver.ContractType, tag));
             }
 
-            yield return new DependencyNode(Factory: new DpFactory(factory, binding, injectionsBuilder.SafeMoveToImmutable()));
+            yield return new DependencyNode(0, Factory: new DpFactory(factory, binding, injectionsBuilder.SafeMoveToImmutable()));
         }
     }
 }

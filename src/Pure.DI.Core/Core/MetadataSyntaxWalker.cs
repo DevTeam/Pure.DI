@@ -93,16 +93,16 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
     // ReSharper disable once CognitiveComplexity
     public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
     {
+        _cancellationToken.ThrowIfCancellationRequested();
+        if (!IsMetadata(invocation))
+        {
+            return;
+        }
+        
         _next = default;
         if (_recursionDepth >= 20)
         {
             _next = invocation;
-            return;
-        }
-
-        _cancellationToken.ThrowIfCancellationRequested();
-        if (!IsMetadata(invocation))
-        {
             return;
         }
 

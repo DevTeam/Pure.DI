@@ -9,7 +9,6 @@
 namespace Pure.DI.IntegrationTests;
 
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -28,7 +27,6 @@ public static class TestExtensions
     internal static async Task<Result> RunAsync(this string setupCode, Options? options = default)
     {
         var stdOut = new List<string>();
-        var stdErr = new List<string>();
         var runOptions = options ?? new Options();
         var parseOptions = CSharpParseOptions.Default
             .WithLanguageVersion(runOptions.LanguageVersion);
@@ -38,6 +36,7 @@ public static class TestExtensions
             .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication).WithNullableContextOptions(runOptions.NullableContextOptions))
             .AddSyntaxTrees(generatedApiSources.Select(api => CSharpSyntaxTree.ParseText(api.SourceText, parseOptions)))
             .AddSyntaxTrees(CSharpSyntaxTree.ParseText(setupCode, parseOptions));
+            //.Check(stdOut, options);
 
         var globalOptions = new TestAnalyzerConfigOptions(new Dictionary<string, string>
         {
@@ -64,14 +63,17 @@ public static class TestExtensions
             .Generate(updates, CancellationToken.None);
         
         var logs = logEntryObserver.Values;
+        var errors = logs.Where(i => i.Severity == DiagnosticSeverity.Error).ToImmutableArray();
+        var warnings = logs.Where(i => i.Severity == DiagnosticSeverity.Warning).ToImmutableArray();
         var hasErrorOrWarning = logs.Any(i => i.Severity >= DiagnosticSeverity.Warning);
         if (hasErrorOrWarning)
         {
             return new Result(
                 false,
                 stdOut.ToImmutableArray(),
-                stdErr.ToImmutableArray(),
                 logs,
+                errors,
+                warnings,
                 dependencyGraphObserver.Values.ToImmutableArray(),
                 string.Empty);
         }
@@ -112,8 +114,9 @@ public static class TestExtensions
                 return new Result(
                     false,
                     stdOut.ToImmutableArray(),
-                    stdErr.ToImmutableArray(),
                     logs,
+                    errors,
+                    warnings,
                     dependencyGraphObserver.Values.ToImmutableArray(),
                     generatedCode);
             }
@@ -125,15 +128,7 @@ public static class TestExtensions
                     stdOut.Add(args.Data);
                 }
             }
-
-            void StdErrReceived(object sender, DataReceivedEventArgs args)
-            {
-                if (args.Data != null)
-                {
-                    stdErr.Add(args.Data);
-                }
-            }
-
+            
             await File.WriteAllTextAsync(configPath, config);
             var process = new Process
             {
@@ -151,8 +146,6 @@ public static class TestExtensions
             try
             {
                 process.OutputDataReceived += StdOutReceived;
-                process.ErrorDataReceived += StdErrReceived;
-
                 process.Start();
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
@@ -161,14 +154,14 @@ public static class TestExtensions
             finally
             {
                 process.OutputDataReceived -= StdOutReceived;
-                process.ErrorDataReceived -= StdErrReceived;
             }
             
             return new Result(
                 true,
                 stdOut.ToImmutableArray(),
-                stdErr.ToImmutableArray(),
                 logs,
+                errors,
+                warnings,
                 dependencyGraphObserver.Values.ToImmutableArray(),
                 generatedCode);
         }

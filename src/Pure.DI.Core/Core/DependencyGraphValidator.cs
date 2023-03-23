@@ -12,10 +12,9 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
     public void Validate(in DependencyGraph data, in CancellationToken cancellationToken)
     {
         var graph = data.Graph;
-        var isValid = true;
+        var isValid = data.IsValid;
         foreach (var dependency in graph.Edges.Where(i => !i.IsResolved))
         {
-            isValid = false;
             var errorMessage = $"Cannot resolve injected dependency [{dependency.Injection}] of {dependency.Target.KindName} {dependency.Target}.";
             var locationsWalker = new DependencyGraphLocationsWalker(dependency.Injection);
             locationsWalker.VisitDependencyNode(dependency.Target);
