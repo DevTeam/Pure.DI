@@ -1,7 +1,8 @@
 namespace Pure.DI.Core;
 
-internal class ProcessingNode
+internal readonly struct ProcessingNode
 {
+    public readonly bool HasNode = false;
     public readonly DependencyNode Node;
     private readonly IMarker _marker;
     private readonly IBuilder<MdBinding, ISet<Injection>> _injectionsBuilder;
@@ -14,6 +15,7 @@ internal class ProcessingNode
         IMarker marker,
         IBuilder<MdBinding, ISet<Injection>> injectionsBuilder)
     {
+        HasNode = true;
         Node = node;
         _marker = marker;
         _injectionsBuilder = injectionsBuilder;

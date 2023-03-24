@@ -1,17 +1,10 @@
-// ReSharper disable ClassNeverInstantiated.Global
-// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-// ReSharper disable HeapView.ObjectAllocation.Evident
-// ReSharper disable HeapView.ObjectAllocation.Possible
-// ReSharper disable IdentifierTypo
-// ReSharper disable LoopCanBeConvertedToQuery
 namespace Pure.DI.Core;
 
-internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
+internal class DependencyGraphBuilder : IDependencyGraphBuilder
 {
     private readonly IBuilder<MdSetup, IEnumerable<DependencyNode>>[] _dependencyNodeBuilders;
     private readonly IMarker _marker;
     private readonly IUnboundTypeConstructor _unboundTypeConstructor;
-    private readonly IBuilder<MdBinding, ISet<Injection>> _injectionsBuilder;
     private readonly Func<ITypeConstructor> _typeConstructorFactory;
     private readonly Func<IBuilder<RewriterContext<MdFactory>, MdFactory>> _factoryRewriterFactory;
 
@@ -19,110 +12,55 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
         IBuilder<MdSetup, IEnumerable<DependencyNode>>[] dependencyNodeBuilders,
         IMarker marker,
         IUnboundTypeConstructor unboundTypeConstructor,
-        IBuilder<MdBinding, ISet<Injection>> injectionsBuilder,
         Func<ITypeConstructor> typeConstructorFactory,
         Func<IBuilder<RewriterContext<MdFactory>, MdFactory>> factoryRewriterFactory)
     {
         _dependencyNodeBuilders = dependencyNodeBuilders;
         _marker = marker;
         _unboundTypeConstructor = unboundTypeConstructor;
-        _injectionsBuilder = injectionsBuilder;
         _typeConstructorFactory = typeConstructorFactory;
         _factoryRewriterFactory = factoryRewriterFactory;
     }
 
-    public DependencyGraph Build(MdSetup setup, CancellationToken cancellationToken)
+    public IEnumerable<ProcessingNode> TryBuild(
+        MdSetup setup,
+        IReadOnlyCollection<ProcessingNode> nodes,
+        out DependencyGraph? dependencyGraph,
+        CancellationToken cancellationToken)
     {
-        var enumerators = 
-            _dependencyNodeBuilders
-                .SelectMany(builder => builder.Build(setup, cancellationToken))
-                .GroupBy(i => i.Binding)
-                .Select(i => Sort(i).Select(i => new ProcessingNode(i, _marker, _injectionsBuilder)).GetEnumerator())
-                .ToArray();
-
-        // Initialize enumerators
-        foreach (var enumerator in enumerators)
-        {
-            enumerator.MoveNext();
-        }
-
-        DependencyGraph? first = default;
-        bool hasNext;
-        var isFirts = true;
-        do
-        {
-            hasNext = false;
-            cancellationToken.ThrowIfCancellationRequested();
-            var nodes = new List<ProcessingNode>();
-            foreach (var enumerator in enumerators)
-            {
-                var current = enumerator.Current;
-                if (!hasNext && !isFirts)
-                {
-                    if (enumerator.MoveNext())
-                    {
-                        hasNext = true;
-                        current = enumerator.Current;
-                    }
-                }
-
-                nodes.Add(current);
-            }
-
-            hasNext |= isFirts;
-            if (hasNext)
-            {
-                var graph = Build(setup, nodes, cancellationToken);
-                if (graph.IsValid)
-                {
-                    return graph;
-                }
-
-                first ??= graph;
-            }
-            
-            isFirts = false;
-        } while (hasNext);
-
-        return first!;
-    }
-
-    private DependencyGraph Build(MdSetup setup, IEnumerable<ProcessingNode> nodes, CancellationToken cancellationToken)
-    {
-        var queue = new Queue<ProcessingNode>();
-        var map = new Dictionary<Injection, DependencyNode>();
+        dependencyGraph = default;
         var maxId = 0;
-        foreach (var node in nodes)
+        var mapBuilder = ImmutableDictionary.CreateBuilder<Injection, DependencyNode>();
+        var queue = new Queue<ProcessingNode>();
+        foreach (var processingNode in nodes)
         {
-            var id = node.Node.Binding.Id;
-            if (id > maxId)
+            var node = processingNode.Node;
+            if (node.Binding.Id > maxId)
             {
-                maxId = id;
+                maxId = node.Binding.Id;
             }
-                
-            if (node.Node.Root is not { })
+
+            if (node.Root is not { })
             {
-                foreach (var exposedInjection in node.ExposedInjections)
+                foreach (var exposedInjection in processingNode.ExposedInjections)
                 {
-                    map[exposedInjection] = node.Node;
+                    mapBuilder[exposedInjection] = node;
                 }
             }
 
-            if (!node.IsMarkerBased)
+            if (!processingNode.IsMarkerBased)
             {
-                queue.Enqueue(node);
+                queue.Enqueue(processingNode);
             }
         }
 
+        var map = mapBuilder.ToImmutableDictionary();
         var isValid = true;
         var processed = new List<ProcessingNode>();
         var notProcessed = new List<ProcessingNode>();
         while (queue.TryDequeue(out var node))
         {
             var targetNode = node.Node;
-            var semanticModel = targetNode.Binding.SemanticModel;
-            var compilation = semanticModel.Compilation;
-            var isProcessed = true;
             foreach (var injection in node.Injections)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -136,13 +74,14 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
                     case INamedTypeSymbol { IsGenericType: true } geneticType:
                     {
                         // Generic
-                        var unboundType = _unboundTypeConstructor.Construct(compilation, injection.Type);
+                        var unboundType = _unboundTypeConstructor.Construct(targetNode.Binding.SemanticModel.Compilation, injection.Type);
                         var unboundInjection = injection with { Type = unboundType };
                         if (map.TryGetValue(unboundInjection, out sourceNode))
                         {
-                            var newBinding = GreateGenericBinding(targetNode, injection, sourceNode, ++maxId, cancellationToken);
-                            var newNode = CreateNode(node, sourceNode.Variation, setup, newBinding, cancellationToken);
-                            map.Add(injection, newNode.Node);
+                            var newBinding = CreateGenericBinding(targetNode, injection, sourceNode, ++maxId, cancellationToken);
+                            var newNode = CreateNodes(setup, newBinding, node, cancellationToken)
+                                .Single(i => i.Node.Variation == sourceNode.Variation);
+                            map = map.Add(injection, newNode.Node);
                             queue.Enqueue(newNode);
                             continue;
                         }
@@ -160,95 +99,84 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
                             if (constructKind.HasValue)
                             {
                                 var enumerableBinding = CreateConstructBinding(setup, targetNode, injection, enumerableType, ++maxId, constructKind.Value);
-                                var newNode = CreateNode(node, 0, setup, enumerableBinding, cancellationToken);
-                                map.Add(injection, newNode.Node);
-                                queue.Enqueue(newNode);
-                                continue;
+                                return CreateNodes(setup, enumerableBinding, node, cancellationToken);
                             }
                         }
-                        
+
                         break;
                     }
 
-                    // Array
+                    // Array construct
                     case IArrayTypeSymbol arrayType:
                     {
                         var arrayBinding = CreateConstructBinding(setup, targetNode, injection, arrayType.ElementType, ++maxId, MdConstructKind.Array);
-                        var newNode = CreateNode(node, 0, setup, arrayBinding, cancellationToken);
-                        map.Add(injection, newNode.Node);
-                        queue.Enqueue(newNode);
-                        continue;
+                        return CreateNodes(setup, arrayBinding,node, cancellationToken);
                     }
                 }
 
                 // Auto-binding
                 if (injection.Type is { IsAbstract: false, SpecialType: SpecialType.None })
                 {
-                    var newBinding = CreateAutoBinding(setup, targetNode, injection, ++maxId);
-                    var newNode = CreateNode(node, 0, setup, newBinding, cancellationToken);
-                    map.Add(injection, newNode.Node);
-                    queue.Enqueue(newNode);
-                    continue;
+                    var autoBinding = CreateAutoBinding(setup, targetNode, injection, ++maxId);
+                    return CreateNodes(setup, autoBinding, node, cancellationToken);
                 }
 
                 // Not processed
-                isProcessed = false;
-                break;
-            }
-
-            if (isProcessed)
-            {
-                processed.Add(node);
-            }
-            else
-            {
                 notProcessed.Add(node);
                 isValid = false;
                 break;
             }
+
+            if (!isValid)
+            {
+                break;
+            }
+            
+            processed.Add(node);
         }
 
         var entriesBuilder = ImmutableArray.CreateBuilder<GraphEntry<DependencyNode, Dependency>>();
         var unresolvedSource = new DependencyNode(0);
         foreach (var node in processed)
         {
-            var edges = ImmutableArray.CreateBuilder<Dependency>();
+            var edges = ImmutableArray.CreateBuilder<Dependency>(node.Injections.Length);
             foreach (var injection in node.Injections)
             {
                 var dependency = map.TryGetValue(injection, out var sourceNode)
                     ? new Dependency(true, sourceNode, injection, node.Node)
                     : new Dependency(false, unresolvedSource, injection, node.Node);
-                
+
                 edges.Add(dependency);
             }
-            
-            entriesBuilder.Add(new GraphEntry<DependencyNode, Dependency>(node.Node, edges.ToImmutableArray()));
+
+            entriesBuilder.Add(new GraphEntry<DependencyNode, Dependency>(node.Node, edges.MoveToImmutable()));
         }
-        
-        // ReSharper disable once InvertIf
+
         if (notProcessed.Any())
         {
-            var edges = ImmutableArray.CreateBuilder<Dependency>();
             foreach (var node in notProcessed)
             {
+                var edges = ImmutableArray.CreateBuilder<Dependency>(node.Injections.Length);
                 foreach (var injection in node.Injections)
                 {
                     edges.Add(new Dependency(false, unresolvedSource, injection, node.Node));
                 }
-                
-                entriesBuilder.Add(new GraphEntry<DependencyNode, Dependency>(node.Node, edges.ToImmutableArray()));
+
+                entriesBuilder.Add(new GraphEntry<DependencyNode, Dependency>(node.Node, edges.MoveToImmutable()));
             }
         }
-        
-        return new DependencyGraph(
+
+        dependencyGraph = new DependencyGraph(
             isValid,
             setup,
             new Graph<DependencyNode, Dependency>(entriesBuilder.ToImmutable()),
-            map.ToImmutableDictionary(),
+            map,
             ImmutableDictionary<Injection, Root>.Empty);
+        
+        return ImmutableArray<ProcessingNode>.Empty;
     }
 
-    private MdBinding GreateGenericBinding(
+    private MdBinding CreateGenericBinding(
         DependencyNode targetNode,
         Injection injection,
         DependencyNode sourceNode,
@@ -353,29 +281,13 @@ internal class DependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
         };
     }
 
-    private ProcessingNode CreateNode(
-        ProcessingNode targetNode,
-        int variation,
+    private IEnumerable<ProcessingNode> CreateNodes(
         MdSetup setup,
         MdBinding binding,
+        in ProcessingNode node,
         CancellationToken cancellationToken)
     {
-        var newSetup = setup with
-        {
-            Roots = ImmutableArray<MdRoot>.Empty,
-            Bindings = ImmutableArray.Create(binding)
-        };
-
-        var newNode = _dependencyNodeBuilders
-            .SelectMany(builder => builder.Build(newSetup, cancellationToken))
-            .Single(i => i.Variation == variation);
-
-        return targetNode.CreateNew(newNode);
+        var newSetup = setup with { Roots = ImmutableArray<MdRoot>.Empty, Bindings = ImmutableArray.Create(binding) };
+        return _dependencyNodeBuilders.SelectMany(builder => builder.Build(newSetup, cancellationToken)).Select(node.CreateNew);
     }
-
-    private static IEnumerable<DependencyNode> Sort(IEnumerable<DependencyNode> nodes) =>
-        nodes
-            .OrderBy(i => i.Implementation?.Constructor.Ordinal ?? int.MaxValue)
-            .ThenByDescending(i => i.Implementation?.Constructor.Parameters.Count(p => !p.ParameterSymbol.IsOptional))
-            .ThenByDescending(i => i.Implementation?.Constructor.Method.DeclaredAccessibility);
 }
