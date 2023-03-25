@@ -4,7 +4,7 @@ internal class StaticConstructorBuilder: IBuilder<CompositionCode, CompositionCo
 {
     public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
     {
-        var actualRoots = composition.Roots.Where(i => !i.Injection.Type.IsRefLikeType).ToArray();
+        var actualRoots = composition.Roots.GetActualRoots().ToArray();
         if (!actualRoots.Any())
         {
             return composition;
@@ -38,12 +38,10 @@ internal class StaticConstructorBuilder: IBuilder<CompositionCode, CompositionCo
                     {
                         foreach (var taggedRoot in taggedRoots)
                         {
-                            var tag = taggedRoot.Injection.Tag!;
-                            var tagValue = tag is string ? $"\"{tag}\"" : tag.ToString();
-                            code.AppendLine($"if (Equals(tag, {tagValue})) return composition.{taggedRoot.PropertyName};");
+                            code.AppendLine($"if (Equals(tag, {taggedRoot.Injection.Tag.TagToString()})) return composition.{taggedRoot.PropertyName};");
                         }
 
-                        code.AppendLine($"throw new System.InvalidOperationException($\"Cannot resolve composition root \\\"{{tag}}\\\" of type {roots.Key}.\");");
+                        code.AppendLine($"throw new System.InvalidOperationException($\"{CodeExtensions.CannotResolve} \\\"{{tag}}\\\" of type {roots.Key}.\");");
                     }
 
                     code.AppendLine("};");

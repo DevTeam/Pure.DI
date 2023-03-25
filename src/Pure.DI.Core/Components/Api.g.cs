@@ -651,5 +651,73 @@ namespace Pure.DI
             }
         }
     }
+    
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal sealed class Pair<TKey, TValue>
+    {
+        public readonly TKey Key;
+        public readonly TValue Value;
+        public Pair<TKey, TValue> Next;
+
+        public Pair(TKey key, TValue value)
+        {
+            Key = key;
+            Value = value;
+        }
+    }
+    
+    internal static class Buckets<TKey, TValue>
+    {
+        private static readonly Pair<TKey, TValue> Empty = new Pair<TKey, TValue>(default(TKey), default(TValue));
+
+        public static uint GetDivisor(uint count)
+        {
+            return count < 2 ? count : count << 1;
+        }
+
+        public static Pair<TKey, TValue>[] Create(uint divisor, Pair<TKey, TValue>[] pairs)
+        {
+            Pair<TKey, TValue>[] buckets = new Pair<TKey, TValue>[divisor];
+            for (int i = 0; i < buckets.Length; i++)
+            {
+                buckets[i] = Empty;
+            }
+
+            for (int i = 0; i < pairs.Length; i++)
+            {
+                Pair<TKey, TValue> pair = pairs[i];
+                uint bucket = ((uint)pair.Key.GetHashCode()) % divisor;
+                Pair<TKey, TValue> next = buckets[bucket];
+                buckets[bucket] = pair;
+                if (!ReferenceEquals(next, Empty))
+                {
+                    pair.Next = next;
+                }
+            }
+
+            return buckets;
+        }
+    }
+
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal struct RootKey
+    {
+        public readonly System.Type Type;
+        public readonly object Tag;
+
+        public RootKey(System.Type type, object tag)
+        {
+            Type = type;
+            Tag = tag;
+        }
+        
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((Tag != null ? Tag.GetHashCode() * 397 : 0) ^ Type.GetHashCode());
+            }
+        }
+    }
 }
 #endif

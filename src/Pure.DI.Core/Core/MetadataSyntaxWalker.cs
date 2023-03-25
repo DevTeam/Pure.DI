@@ -352,13 +352,13 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
 
     public override void VisitFileScopedNamespaceDeclaration(FileScopedNamespaceDeclarationSyntax namespaceDeclaration)
     {
-        _namespace = namespaceDeclaration.Name.ToFullString();
+        _namespace = namespaceDeclaration.Name.ToString().Trim();
         base.VisitFileScopedNamespaceDeclaration(namespaceDeclaration);
     }
 
     public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax namespaceDeclaration)
     {
-        _namespace = namespaceDeclaration.Name.ToFullString();
+        _namespace = namespaceDeclaration.Name.ToString().Trim();
         base.VisitNamespaceDeclaration(namespaceDeclaration);
     }
 

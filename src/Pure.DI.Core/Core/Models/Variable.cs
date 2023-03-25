@@ -15,7 +15,7 @@ internal record Variable(int Id, DependencyNode Node, Injection Injection)
                 case { Lifetime: Lifetime.Singleton }:
                 {
                     var binding = Node.Binding;
-                    return $"_{binding.Id}Singleton{Postfix}";
+                    return $"_f{binding.Id}Singleton{Postfix}";
                 }
 
                 case { Lifetime: Lifetime.PerResolve }:

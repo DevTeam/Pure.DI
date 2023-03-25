@@ -51,6 +51,7 @@ internal static partial class Composition
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpResolverClassBuilder).To<ResolverClassBuilder>()
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpStaticConstructorBuilder).To<StaticConstructorBuilder>()
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpResolversMembersBuilder).To<ResolversMembersBuilder>()
+        .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpResolversFieldsBuilder).To<ResolversFieldsBuilder>()
 
         // Singletons
         .Default(IoC.Lifetime.Singleton)

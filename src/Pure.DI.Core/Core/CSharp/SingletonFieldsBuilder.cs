@@ -4,13 +4,13 @@ internal class SingletonFieldsBuilder: IBuilder<CompositionCode, CompositionCode
 {
     public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
     {
-        var code = composition.Code;
-        var membersCounter = composition.MembersCount;
         if (!composition.Singletons.Any())
         {
             return composition;
         }
-
+        
+        var code = composition.Code;
+        var membersCounter = composition.MembersCount;
         if (composition.DisposableSingletonsCount > 0)
         {
             // DisposeIndex field

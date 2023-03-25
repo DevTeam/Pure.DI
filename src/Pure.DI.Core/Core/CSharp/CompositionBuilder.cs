@@ -18,7 +18,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         _lines.Clear();
         var compositionTypeNameParts = dependencyGraph.Source.TypeName.Split('.', StringSplitOptions.RemoveEmptyEntries);
         var className = compositionTypeNameParts.Last();
-        var ns = string.Join('.', compositionTypeNameParts.Take(compositionTypeNameParts.Length - 1));
+        var ns = string.Join('.', compositionTypeNameParts.Take(compositionTypeNameParts.Length - 1)).Trim();
         if (string.IsNullOrWhiteSpace(ns))
         {
             ns = dependencyGraph.Source.Namespace;
