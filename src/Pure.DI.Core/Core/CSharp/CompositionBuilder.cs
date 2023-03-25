@@ -283,7 +283,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         var createArray = $"{construct.Source.ElementType}[{instantiation.Arguments.Length}] {{ {string.Join(", ", instantiation.Arguments.Select(i => i.Name))} }}";
         var createInstance = 
             construct.Source.ElementType.IsValueType
-            && construct.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp7
+            && construct.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp7_3
             && !IsJustReturn(context, root, instantiation) 
                 ? $"stackalloc {createArray}"
                 : $"new System.Span<{construct.Source.ElementType}>(new {createArray})";

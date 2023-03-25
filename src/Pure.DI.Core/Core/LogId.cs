@@ -8,7 +8,8 @@ internal static class LogId
     public const string ErrorCannotFindSetup = "DIE0002";
     public const string ErrorInvalidMetadata = "DIE0003";
     public const string ErrorUnresolved = "DIE0004";
-    
+    public const string ErrorNotSupportedLanguageVersion = "DIE0005";
+
     // Warning
     public const string WarningOverriddenBinding = "DIW0000";
 

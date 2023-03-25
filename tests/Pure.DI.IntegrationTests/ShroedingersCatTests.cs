@@ -81,12 +81,14 @@ namespace Sample
 
         public static void Main()
         {
-            using var composition = new Composition();
-            composition.Root.Run();
+            using(var composition = new Composition())
+            {
+                composition.Root.Run();
+            }
         }
     }                
 }
-""".RunAsync();
+""".RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp7, NullableContextOptions = NullableContextOptions.Disable } );
 
         // Then
         result.Success.ShouldBeTrue(result.GeneratedCode);

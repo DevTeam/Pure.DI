@@ -22,11 +22,11 @@ public class BclInjectionTests
     [InlineData("System.Collections.Immutable.IImmutableStack")]
     [InlineData("System.Collections.Immutable.ImmutableStack")]
     [InlineData("System.Span")]
-    [InlineData("System.Span", LanguageVersion.CSharp4)]
+    [InlineData("System.Span", LanguageVersion.CSharp7)]
     [InlineData("System.ReadOnlySpan")]
     [InlineData("System.Memory")]
     [InlineData("System.ReadOnlyMemory")]
-    public async Task ShouldSupportCollectionInjection(string collectionType, LanguageVersion languageVersion = LanguageVersion.CSharp11)
+    public async Task ShouldSupportCollectionInjection(string collectionType, LanguageVersion languageVersion = LanguageVersion.CSharp9)
     {
         // Given
 
@@ -105,7 +105,7 @@ namespace Sample
         }
     }                
 }
-""".Replace("###CollectionType###", collectionType).RunAsync(new Options { LanguageVersion = languageVersion });
+""".Replace("###CollectionType###", collectionType).RunAsync(new Options { LanguageVersion = languageVersion, NullableContextOptions = NullableContextOptions.Disable});
 
         // Then
         result.Success.ShouldBeTrue(result.GeneratedCode);

@@ -195,7 +195,7 @@ namespace Sample
         }
     }                
 }
-""".RunAsync();
+""".RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp10 });
 
         // Then
         result.Success.ShouldBeTrue(result.GeneratedCode);

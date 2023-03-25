@@ -44,8 +44,8 @@ namespace Sample
     class Service: IService 
     {
         private IDependency _dep1;
-        [Ordinal(1)] public IDependency _otherDep1;           
-        [CustomOrdinal(0)] public IDependency _otherDep0;
+        [Ordinal(1)] public IDependency? _otherDep1;           
+        [CustomOrdinal(0)] public IDependency? _otherDep0;
 
         public Service(IDependency dep)
         { 
@@ -53,8 +53,8 @@ namespace Sample
         }
 
         public IDependency Dep => _dep1;
-        public IDependency OtherDep0 => _otherDep0;
-        public IDependency OtherDep1 => _otherDep1;                       
+        public IDependency OtherDep0 => _otherDep0!;
+        public IDependency OtherDep1 => _otherDep1!;                       
     }
 
     static class Setup

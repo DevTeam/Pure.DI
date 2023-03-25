@@ -371,7 +371,7 @@ namespace Pure.DI
         /// <param name="tag">Optional argument indicating the tag for the root of the composition.</param>
         /// <typeparam name="T">The composition root type.</typeparam>
         /// <returns>DI configuration.</returns>
-        IConfiguration Root<T>(string name, object tag = default);
+        IConfiguration Root<T>(string name, object tag = null);
     }
 
     /// <summary>
