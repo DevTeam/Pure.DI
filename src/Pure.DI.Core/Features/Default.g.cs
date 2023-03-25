@@ -41,6 +41,18 @@ namespace Pure.DI
                 })
 
                 // Collections
+                .Bind<System.Memory<TT>>()
+                    .To(ctx =>
+                    {
+                        ctx.Inject<TT[]>(out var arr);
+                        return new System.Memory<TT>(arr);
+                    })
+                .Bind<System.ReadOnlyMemory<TT>>()
+                    .To(ctx =>
+                    {
+                        ctx.Inject<TT[]>(out var arr);
+                        return new System.ReadOnlyMemory<TT>(arr);
+                    })
                 .Bind<System.Collections.Generic.ICollection<TT>>()
                 .Bind<System.Collections.Generic.IList<TT>>()
                 .Bind<System.Collections.Generic.List<TT>>()
@@ -80,6 +92,12 @@ namespace Pure.DI
                     {
                         ctx.Inject<TT[]>(out var arr);
                         return new System.Collections.Generic.Stack<TT>(arr);
+                    })
+                .Bind<System.Collections.Immutable.ImmutableArray<TT>>()
+                    .To(ctx =>
+                    {
+                        ctx.Inject<TT[]>(out var arr);
+                        return System.Collections.Immutable.ImmutableArray.Create<TT>(arr);
                     })
                 .Bind<System.Collections.Immutable.IImmutableList<TT>>()
                 .Bind<System.Collections.Immutable.ImmutableList<TT>>()

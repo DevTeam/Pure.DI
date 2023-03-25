@@ -266,7 +266,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         instantiation.Target.IsCreated = true;
     }
     
-    public override void VisitImmutableArrayConstruct(
+    public override void VisitSpanConstruct(
         BuildContext context,
         DependencyGraph dependencyGraph,
         Block block,
@@ -279,20 +279,29 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         {
             return;
         }
-
-        context.Code.AppendLine($"{instantiation.Target.Type} {instantiation.Target.Name} = System.Collections.Immutable.ImmutableArray.Create<{construct.Source.ElementType}>({string.Join(", ", instantiation.Arguments.Select(i => i.Name))});");
+        
+        var createArray = $"{construct.Source.ElementType}[{instantiation.Arguments.Length}] {{ {string.Join(", ", instantiation.Arguments.Select(i => i.Name))} }}";
+        var createInstance = 
+            construct.Source.ElementType.IsValueType
+            && construct.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp7
+            && !IsJustReturn(context, root, instantiation) 
+                ? $"stackalloc {createArray}"
+                : $"new System.Span<{construct.Source.ElementType}>(new {createArray})";
+        context.Code.AppendLine($"{instantiation.Target.Type} {instantiation.Target.Name} = {createInstance};");
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
     }
     
     private static void AddReturnStatement(BuildContext context, Variable root, Instantiation instantiation)
     {
-        var justReturn = context.IsRootContext && instantiation.Target == root && instantiation.Target.Node.Lifetime != Lifetime.Singleton;
-        if (justReturn)
+        if (IsJustReturn(context, root, instantiation))
         {
-            context.Code.AppendLine(GenerateFinalStatement(instantiation.Target, instantiation.Target.Name, justReturn));
+            context.Code.AppendLine(GenerateFinalStatement(instantiation.Target, instantiation.Target.Name, true));
         }
     }
+
+    private static bool IsJustReturn(BuildContext context, Variable root, Instantiation instantiation) => 
+        context.IsRootContext && instantiation.Target == root && instantiation.Target.Node.Lifetime != Lifetime.Singleton;
 
     public override void VisitFactory(
         BuildContext context,

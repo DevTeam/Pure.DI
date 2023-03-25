@@ -4,5 +4,5 @@ internal enum MdConstructKind
 {
     Enumerable,
     Array,
-    ImmutableArray
+    Span
 }

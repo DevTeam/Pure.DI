@@ -18,4 +18,9 @@ internal static class CompilationExtensions
             .Where(attr => attr.AttributeClass != null && symbolComparer.Equals(attr.AttributeClass, attributeType))
             .ToArray();
     }
+
+    public static LanguageVersion GetLanguageVersion(this Compilation compilation) =>
+        compilation is CSharpCompilation sharpCompilation
+            ? sharpCompilation.LanguageVersion
+            : LanguageVersion.Default;
 }

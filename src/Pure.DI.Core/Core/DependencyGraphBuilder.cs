@@ -91,7 +91,8 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                         {
                             var constructKind = geneticType.ConstructUnboundGenericType().ToString() switch
                             {
-                                "System.Collections.Immutable.ImmutableArray<>" => MdConstructKind.ImmutableArray,
+                                "System.Span<>" => MdConstructKind.Span,
+                                "System.ReadOnlySpan<>" => MdConstructKind.Span,
                                 "System.Collections.Generic.IEnumerable<>" => MdConstructKind.Enumerable,
                                 _ => default(MdConstructKind?)
                             };

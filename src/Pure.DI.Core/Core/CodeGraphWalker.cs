@@ -156,8 +156,8 @@ internal class CodeGraphWalker<TContext>
                                 VisitArrayConstruct(context, dependencyGraph, block, root, construct, instantiation, cancellationToken);
                                 break;
                             
-                            case MdConstructKind.ImmutableArray:
-                                VisitImmutableArrayConstruct(context, dependencyGraph, block, root, construct, instantiation, cancellationToken);
+                            case MdConstructKind.Span:
+                                VisitSpanConstruct(context, dependencyGraph, block, root, construct, instantiation, cancellationToken);
                                 break;
                         }
                     }
@@ -334,7 +334,7 @@ internal class CodeGraphWalker<TContext>
     {
     }
     
-    public virtual void VisitImmutableArrayConstruct(
+    public virtual void VisitSpanConstruct(
         TContext context,
         DependencyGraph dependencyGraph,
         Block block,

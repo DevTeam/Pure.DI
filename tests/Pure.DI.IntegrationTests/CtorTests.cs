@@ -25,7 +25,7 @@ namespace Sample
 
         public T Content { get; }
 
-        public override string ToString() => $"[{ Content}]";
+        public override string ToString() => $"[{Content}]";
     }
 
     class ShroedingersCat : ICat

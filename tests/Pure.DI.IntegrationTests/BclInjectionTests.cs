@@ -21,7 +21,12 @@ public class BclInjectionTests
     [InlineData("System.Collections.Immutable.ImmutableQueue")]
     [InlineData("System.Collections.Immutable.IImmutableStack")]
     [InlineData("System.Collections.Immutable.ImmutableStack")]
-    public async Task ShouldSupportCollectionInjection(string collectionType)
+    [InlineData("System.Span")]
+    [InlineData("System.Span", LanguageVersion.CSharp4)]
+    [InlineData("System.ReadOnlySpan")]
+    [InlineData("System.Memory")]
+    [InlineData("System.ReadOnlyMemory")]
+    public async Task ShouldSupportCollectionInjection(string collectionType, LanguageVersion languageVersion = LanguageVersion.CSharp11)
     {
         // Given
 
@@ -32,11 +37,22 @@ using Pure.DI;
 
 namespace Sample
 {
+    struct Point
+    {
+        int X, Y;        
+        
+        public Point(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+    } 
+
     interface IDependency {}
 
     class Dependency: IDependency, IComparable<Dependency>, IComparable
     {        
-        public Dependency()
+        public Dependency(ReadOnlySpan<Point> points1, Span<Point> points2)
         {
             Console.WriteLine("Dependency created");
         }
@@ -66,6 +82,8 @@ namespace Sample
                 .Bind<IDependency>(1).To<Dependency>()
                 .Bind<IDependency>(2).To<Dependency>()
                 .Bind<IDependency>(3).To<Dependency>()
+                .Bind<Point>(1).To(_ => new Point(1, 2))
+                .Bind<Point>(2).To(_ => new Point(2, 3))
                 .Bind<IService>().To<Service>()
                 .Root<IService>("Service");
         }
@@ -87,7 +105,7 @@ namespace Sample
         }
     }                
 }
-""".Replace("###CollectionType###", collectionType).RunAsync();
+""".Replace("###CollectionType###", collectionType).RunAsync(new Options { LanguageVersion = languageVersion });
 
         // Then
         result.Success.ShouldBeTrue(result.GeneratedCode);
