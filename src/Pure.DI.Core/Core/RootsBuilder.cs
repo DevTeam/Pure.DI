@@ -9,58 +9,55 @@ internal class RootsBuilder: IBuilder<DependencyGraph, IReadOnlyDictionary<Injec
     public IReadOnlyDictionary<Injection, Root> Build(DependencyGraph dependencyGraph, CancellationToken cancellationToken)
     {
         var rootsPairs = new List<KeyValuePair<Injection, Root>>();
-            foreach (var curNode in dependencyGraph.Graph.Vertices)
+        foreach (var curNode in dependencyGraph.Graph.Vertices)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var node = curNode;
+            if (node.Type is INamedTypeSymbol { IsUnboundGenericType: true })
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                var node = curNode;
-                if (node.Type is INamedTypeSymbol { IsUnboundGenericType: true })
-                {
-                    continue;
-                }
+                continue;
+            }
 
-                bool isRoot;
-                var name = "";
-                if (node.Root is { } root)
+            bool isRoot;
+            var name = "";
+            if (node.Root is { } root)
+            {
+                if (dependencyGraph.Graph.TryGetEdges(node, out var rotDependencies))
                 {
-                    if (dependencyGraph.Graph.TryGetEdges(node, out var rotDependencies))
-                    {
-                        node = rotDependencies.Single().Source;
-                        isRoot = true;
-                        name = root.Source.Name;
-                    }
-                    else
-                    {
-                        continue;
-                    }
+                    node = rotDependencies.Single().Source;
+                    isRoot = true;
+                    name = root.Source.Name;
                 }
                 else
                 {
-                    isRoot = false;
-                }
-
-                var index = 0;
-                foreach (var injection in _injectionsBuilder.Build(node.Binding, cancellationToken))
-                {
-                    if (!isRoot)
-                    {
-                        name = $"Root{node.Binding.Id}_{index++}{Variable.Postfix}";
-                    }
-
-                    rootsPairs.Add(new KeyValuePair<Injection, Root>(
-                        injection,
-                        new Root(
-                            node,
-                            injection,
-                            isRoot,
-                            name,
-                            ImmutableArray<Line>.Empty)));    
+                    continue;
                 }
             }
+            else
+            {
+                isRoot = false;
+            }
 
-            return rootsPairs
-                .GroupBy(i => i.Key)
-                .ToDictionary(
-                    i => i.Key,
-                    i => i.OrderByDescending(j => j.Value.IsPublic).Select(j => j.Value).First());
+            // ReSharper disable once LoopCanBeConvertedToQuery
+            foreach (var injection in _injectionsBuilder.Build(node.Binding, cancellationToken))
+            {
+                rootsPairs.Add(new KeyValuePair<Injection, Root>(
+                    injection,
+                    new Root(
+                        0,
+                        node,
+                        injection,
+                        isRoot,
+                        name,
+                        ImmutableArray<Line>.Empty)));
+            }
+        }
+
+        var index = 1;
+        return rootsPairs
+            .GroupBy(i => i.Key)
+            .ToDictionary(
+                i => i.Key,
+                i => i.OrderByDescending(j => j.Value.IsPublic).Select(j => j.Value).First() with { Index = index++ });
     }
 }

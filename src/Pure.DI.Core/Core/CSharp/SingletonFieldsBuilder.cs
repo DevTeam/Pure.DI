@@ -19,7 +19,7 @@ internal class SingletonFieldsBuilder: IBuilder<CompositionCode, CompositionCode
         }
             
         // Disposables field
-        code.AppendLine($"private {CodeConstants.DisposableTypeName}[] {Variable.DisposablesFieldName};");
+        code.AppendLine($"private readonly {CodeConstants.DisposableTypeName}[] {Variable.DisposablesFieldName};");
         membersCounter++;
 
         // Singleton fields

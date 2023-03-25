@@ -2,8 +2,6 @@ namespace Pure.DI.Core.CSharp;
 
 internal class RootPropertiesBuilder: IBuilder<CompositionCode, CompositionCode>
 {
-    private const string MethodImplOptions = "[System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]";
-
     public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
     {
         var code = composition.Code;
@@ -35,7 +33,7 @@ internal class RootPropertiesBuilder: IBuilder<CompositionCode, CompositionCode>
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine(MethodImplOptions);
+            code.AppendLine(Syntax.MethodImplOptions);
             code.AppendLine("get");
             code.AppendLine("{");
             using (code.Indent())

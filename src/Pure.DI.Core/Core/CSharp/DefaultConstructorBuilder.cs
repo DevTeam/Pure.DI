@@ -18,9 +18,9 @@ internal class DefaultConstructorBuilder: IBuilder<CompositionCode, CompositionC
 
         code.AppendLine($"public {composition.ClassName}()");
         code.AppendLine("{");
-        if (composition.Singletons.Any())
+        using (code.Indent())
         {
-            using (code.Indent())
+            if (composition.Singletons.Any())
             {
                 code.AppendLine($"{Variable.DisposablesFieldName} = new {CodeConstants.DisposableTypeName}[{composition.DisposableSingletonsCount}];");
             }

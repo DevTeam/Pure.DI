@@ -9,21 +9,27 @@ internal class ClassBuilder : IBuilder<CompositionCode, CompositionCode>
         [IoC.Tag(WellknownTag.CSharpUsingDeclarationsBuilder)] IBuilder<CompositionCode, CompositionCode> usingDeclarationsBuilder,
         [IoC.Tag(WellknownTag.CSharpSingletonFieldsBuilder)] IBuilder<CompositionCode, CompositionCode> singletonFieldsBuilder,
         [IoC.Tag(WellknownTag.CSharpArgFieldsBuilder)] IBuilder<CompositionCode, CompositionCode> argFieldsBuilder,
+        [IoC.Tag(WellknownTag.CSharpStaticConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> staticConstructorBuilder,
         [IoC.Tag(WellknownTag.CSharpPrimaryConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> primaryConstructorBuilder,
         [IoC.Tag(WellknownTag.CSharpDefaultConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> defaultConstructorBuilder,
         [IoC.Tag(WellknownTag.CSharpChildConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> childConstructorBuilder,
         [IoC.Tag(WellknownTag.CSharpRootPropertiesBuilder)] IBuilder<CompositionCode, CompositionCode> rootPropertiesBuilder,
-        [IoC.Tag(WellknownTag.CSharpDisposeMethodBuilder)] IBuilder<CompositionCode, CompositionCode> disposeMethodBuilder)
+        [IoC.Tag(WellknownTag.CSharpDisposeMethodBuilder)] IBuilder<CompositionCode, CompositionCode> disposeMethodBuilder,
+        [IoC.Tag(WellknownTag.CSharpResolversMembersBuilder)] IBuilder<CompositionCode, CompositionCode> resolversMembersBuilder,
+        [IoC.Tag(WellknownTag.CSharpResolverClassBuilder)] IBuilder<CompositionCode, CompositionCode> indexClassBuilder)
     {
         _usingDeclarationsBuilder = usingDeclarationsBuilder;
         _codeBuilders = ImmutableArray.Create(
             singletonFieldsBuilder,
             argFieldsBuilder,
+            staticConstructorBuilder,
             primaryConstructorBuilder,
             defaultConstructorBuilder,
             childConstructorBuilder,
             rootPropertiesBuilder,
-            disposeMethodBuilder);
+            disposeMethodBuilder,
+            resolversMembersBuilder,
+            indexClassBuilder);
     }
 
     public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)

@@ -11,5 +11,8 @@ internal enum WellknownTag
     CSharpSingletonFieldsBuilder,
     CSharpChildConstructorBuilder,
     CSharpPrimaryConstructorBuilder,
-    CSharpDefaultConstructorBuilder
+    CSharpDefaultConstructorBuilder,
+    CSharpResolverClassBuilder,
+    CSharpStaticConstructorBuilder,
+    CSharpResolversMembersBuilder
 }

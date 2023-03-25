@@ -10,10 +10,14 @@ public class AbcTests
         // Given
         DI.Setup("AbcComposition")
             .Bind<IClock>().To<Clock>()
+            .Bind<IClock>("abc").To<Clock>()
             .Root<IClock>("Clock");
 
         // When
-        var a = new AbcComposition().Clock;
+        var composition = new AbcComposition();
+        var a = composition.Clock;
+        composition.Resolve<IClock>();
+        composition.Resolve<IClock>("abc");
 
         // Then
     }

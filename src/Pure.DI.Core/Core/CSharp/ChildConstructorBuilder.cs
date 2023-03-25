@@ -15,10 +15,11 @@ internal class ChildConstructorBuilder: IBuilder<CompositionCode, CompositionCod
 
         code.AppendLine($"internal {composition.ClassName}({composition.ClassName} {ParentCompositionArgName})");
         code.AppendLine("{");
-        if (composition.Singletons.Any())
+        using (code.Indent())
         {
-            using (code.Indent())
+            if (composition.Singletons.Any())
             {
+
                 if (composition.DisposableSingletonsCount == 0)
                 {
                     code.AppendLine($"{Variable.DisposablesFieldName} = new {CodeConstants.DisposableTypeName}[0];");
@@ -32,7 +33,7 @@ internal class ChildConstructorBuilder: IBuilder<CompositionCode, CompositionCod
                     {
                         code.AppendLine($"{Variable.DisposablesFieldName} = new {CodeConstants.DisposableTypeName}[{composition.DisposableSingletonsCount} - {ParentCompositionArgName}.{Variable.DisposablesFieldName}.Length];");
                     }
-                
+
                     foreach (var singletonField in composition.Singletons)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
