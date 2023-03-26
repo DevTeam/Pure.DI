@@ -666,6 +666,7 @@ namespace Pure.DI
         }
     }
     
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal static class Buckets<TKey, TValue>
     {
         private static readonly Pair<TKey, TValue> Empty = new Pair<TKey, TValue>(default(TKey), default(TValue));
