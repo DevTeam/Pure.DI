@@ -11,11 +11,18 @@ namespace Pure.DI.Core;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
+using Microsoft.CodeAnalysis.Operations;
 
 internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
 {
     private static readonly Regex CommentRegex = new(@"//\s*(\w+)\s*=\s*(.+)\s*", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
     private static readonly Settings EmptySettings = new();
+    private const string DefaultNamespace = "Pure.DI.";
+    private static readonly string[] ApiTypes =
+    {
+        DefaultNamespace + nameof(IConfiguration),
+        DefaultNamespace + nameof(IBinding)
+    };
     private static readonly ImmutableHashSet<string> ApiMethods = ImmutableHashSet.Create(
         nameof(DI.Setup),
         nameof(IConfiguration.Arg),
@@ -31,6 +38,8 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         nameof(IBinding.Tags)
     );
     
+    private readonly Dictionary<Location, bool> _metadataMap = new();
+    private readonly HashSet<ITypeSymbol?> _api = new(SymbolEqualityComparer.Default);
     private readonly ILogger<MetadataSyntaxWalker> _logger;
     private IMetadataVisitor? _metadataVisitor;
     private CancellationToken _cancellationToken = CancellationToken.None;
@@ -53,6 +62,16 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         _metadataVisitor = metadataVisitor;
         _semanticModel = update.SemanticModel;
         _cancellationToken = cancellationToken;
+        var api =
+            ApiTypes.Select(i => SemanticModel.Compilation.GetTypeByMetadataName(i))
+                .Select(i => i!);
+
+        _api.Clear();
+        foreach (var apiSymbol in api)
+        {
+            _api.Add(apiSymbol);
+        }
+        
         _invocations.Clear();
         _usingDirectives.Clear();
         _next = update.Node;
@@ -557,7 +576,28 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         return builder;
     }
 
-    private static bool IsMetadata(InvocationExpressionSyntax invocation) =>
-        invocation.Expression is MemberAccessExpressionSyntax memberAccess 
-        && ApiMethods.Contains(memberAccess.Name.Identifier.Text);
+    [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter")]
+    private bool IsMetadata(InvocationExpressionSyntax invocation)
+    {
+        if (invocation.Expression is not MemberAccessExpressionSyntax memberAccess
+            || !ApiMethods.Contains(memberAccess.Name.Identifier.Text))
+        {
+            return false;
+        }
+        
+        var rootInvocation = invocation.AncestorsAndSelf().Reverse().OfType<InvocationExpressionSyntax>().First();
+        var location = rootInvocation.GetLocation();
+        if (_metadataMap.TryGetValue(location, out var isMetadata))
+        {
+            return isMetadata;
+        }
+
+        isMetadata = SemanticModel.GetOperation(rootInvocation, _cancellationToken) is IInvocationOperation invocationOperation
+                     // ReSharper disable once MergeIntoPattern
+                     && invocationOperation.Type is not null
+                     && _api.Contains(invocationOperation.Type);
+
+        _metadataMap.Add(location, isMetadata);
+        return isMetadata;
+    }
 }

@@ -25,4 +25,8 @@
         </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="bin\roslyn4.4\Debug\netstandard2.1" />
+    </ItemGroup>
+
 </Project>
