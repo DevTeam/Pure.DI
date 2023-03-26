@@ -225,24 +225,21 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             return;
         }
 
-        var funcNames = new List<string>();
-        foreach (var arg in instantiation.Arguments)
+        var localFuncName = $"LocalFunc_{instantiation.Target.Name}";
+        context.Code.AppendLine($"{instantiation.Target.Type} {localFuncName}()");
+        context.Code.AppendLine("{");
+        using (context.Code.Indent())
         {
-            var funcName = $"func{arg.Name}";
-            funcNames.Add(funcName);
-            context.Code.AppendLine($"System.Func<{construct.Source.ElementType}> {funcName} = new System.Func<{construct.Source.ElementType}>(() =>");
-            context.Code.AppendLine("{");
-            using (context.Code.Indent())
+            foreach (var arg in instantiation.Arguments)
             {
                 arg.IsCreated = false;
-                VisitRootVariable(context, dependencyGraph, context.Variables, arg, cancellationToken);
+                VisitRootVariable(context with { IsRootContext = false }, dependencyGraph, context.Variables, arg, cancellationToken);
+                context.Code.AppendLine($"yield return {arg.Name};");
             }
-
-            context.Code.AppendLine("});");
-            context.Code.AppendLine();
         }
-        
-        context.Code.AppendLine($"{instantiation.Target.Type} {instantiation.Target.Name} = System.Linq.Enumerable.Select(new System.Func<{construct.Source.ElementType}>[] {{ {string.Join(", ", funcNames)} }}, i => i());");
+        context.Code.AppendLine("}");
+        context.Code.AppendLine();
+        context.Code.AppendLine($"{instantiation.Target.Type} {instantiation.Target.Name} = {localFuncName}();");
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
     }
