@@ -11,17 +11,17 @@ namespace Pure.DI.Core;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
+using CSharp;
 using Microsoft.CodeAnalysis.Operations;
 
 internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
 {
     private static readonly Regex CommentRegex = new(@"//\s*(\w+)\s*=\s*(.+)\s*", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
     private static readonly Settings EmptySettings = new();
-    private const string DefaultNamespace = "Pure.DI.";
     private static readonly string[] ApiTypes =
     {
-        DefaultNamespace + nameof(IConfiguration),
-        DefaultNamespace + nameof(IBinding)
+        CodeExtensions.ApiNamespace + nameof(IConfiguration),
+        CodeExtensions.ApiNamespace + nameof(IBinding)
     };
     private static readonly ImmutableHashSet<string> ApiMethods = ImmutableHashSet.Create(
         nameof(DI.Setup),

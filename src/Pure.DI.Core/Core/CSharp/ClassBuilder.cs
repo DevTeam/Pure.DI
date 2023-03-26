@@ -13,11 +13,11 @@ internal class ClassBuilder : IBuilder<CompositionCode, CompositionCode>
         [IoC.Tag(WellknownTag.CSharpDefaultConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> defaultConstructorBuilder,
         [IoC.Tag(WellknownTag.CSharpChildConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> childConstructorBuilder,
         [IoC.Tag(WellknownTag.CSharpRootPropertiesBuilder)] IBuilder<CompositionCode, CompositionCode> rootPropertiesBuilder,
+        [IoC.Tag(WellknownTag.CSharpApiMembersBuilder)] IBuilder<CompositionCode, CompositionCode> apiMembersBuilder,
         [IoC.Tag(WellknownTag.CSharpDisposeMethodBuilder)] IBuilder<CompositionCode, CompositionCode> disposeMethodBuilder,
-        [IoC.Tag(WellknownTag.CSharpResolversMembersBuilder)] IBuilder<CompositionCode, CompositionCode> resolversMembersBuilder,
         [IoC.Tag(WellknownTag.CSharpResolversFieldsBuilder)] IBuilder<CompositionCode, CompositionCode> resolversFieldsBuilder,
         [IoC.Tag(WellknownTag.CSharpStaticConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> staticConstructorBuilder,
-        [IoC.Tag(WellknownTag.CSharpResolverClassBuilder)] IBuilder<CompositionCode, CompositionCode> indexClassBuilder)
+        [IoC.Tag(WellknownTag.CSharpResolverClassesBuilder)] IBuilder<CompositionCode, CompositionCode> resolversClassesBuilder)
     {
         _usingDeclarationsBuilder = usingDeclarationsBuilder;
         _codeBuilders = ImmutableArray.Create(
@@ -27,11 +27,11 @@ internal class ClassBuilder : IBuilder<CompositionCode, CompositionCode>
             defaultConstructorBuilder,
             childConstructorBuilder,
             rootPropertiesBuilder,
+            apiMembersBuilder,
             disposeMethodBuilder,
-            resolversMembersBuilder,
             resolversFieldsBuilder,
             staticConstructorBuilder,
-            indexClassBuilder);
+            resolversClassesBuilder);
     }
 
     public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)

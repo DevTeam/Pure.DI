@@ -700,25 +700,18 @@ namespace Pure.DI
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal struct RootKey
+    internal interface IResolver<TComposite>
     {
-        public readonly System.Type Type;
-        public readonly object Tag;
-
-        public RootKey(System.Type type, object tag)
-        {
-            Type = type;
-            Tag = tag;
-        }
+        object ObjectResolve(TComposite composite);
         
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return ((Tag != null ? Tag.GetHashCode() * 397 : 0) ^ Type.GetHashCode());
-            }
-        }
+        object ObjectResolveByTag(TComposite composite, object tag);
+    }
+
+    internal interface IResolver<TComposite, T>: IResolver<TComposite>
+    {
+        T Resolve(TComposite composite);
+        
+        T ResolveByTag(TComposite composite, object tag);
     }
 }
 #endif

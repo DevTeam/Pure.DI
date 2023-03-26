@@ -20,32 +20,36 @@ internal class StaticConstructorBuilder: IBuilder<CompositionCode, CompositionCo
         code.AppendLine("{");
         using (code.Indent())
         {
-            var groups = actualRoots.GroupBy(i => i.Injection.Type, SymbolEqualityComparer.Default);
+            var groups = actualRoots.GroupBy(i => i.Injection.Type, SymbolEqualityComparer.Default).ToArray();
             foreach (var roots in groups)
             {
-                var defaultRoot = roots.SingleOrDefault(i => i.Injection.Tag is not { });
-                if (defaultRoot is { })
+                var className = ResolverClassesBuilder.GetResolveClassName(roots.Key);
+                code.AppendLine($"{className} val{className} = new {className}();");
+                code.AppendLine($"{ResolverClassesBuilder.ResolverClassName}<{roots.Key}>.{ResolverClassesBuilder.ResolverPropertyName} = val{className};");
+            }
+            
+            var divisor = Buckets<object, object>.GetDivisor((uint)groups.Length);
+            var pairs = $"System.Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.ClassName}>";
+            var bucketsTypeName = $"{CodeExtensions.ApiNamespace}Buckets<{pairs}>";
+            var pairTypeName = $"{CodeExtensions.ApiNamespace}Pair<{pairs}>";
+            code.AppendLine($"{ResolversFieldsBuilder.BucketsFieldName} = {bucketsTypeName}.{nameof(Buckets<object, object>.Create)}(");
+            using (code.Indent())
+            {
+                code.AppendLine($"{divisor},");
+                code.AppendLine($"new {pairTypeName}[{groups.Length}]");
+                code.AppendLine("{");
+                using (code.Indent())
                 {
-                    code.AppendLine($"{ResolverClassBuilder.ResolverClassName}<{roots.Key}>.{ResolverClassBuilder.ResolveMethodName} = composition => composition.{defaultRoot.PropertyName};");
-                }
-                
-                var taggedRoots = roots.Where(i => i.Injection.Tag is { }).ToArray();
-                if (taggedRoots.Any())
-                {
-                    code.AppendLine($"{ResolverClassBuilder.ResolverClassName}<{roots.Key}>.{ResolverClassBuilder.ResolveByTagMethodName} = (composition, tag) => ");
-                    code.AppendLine("{");
-                    using (code.Indent())
+                    var isFirst = true;
+                    foreach (var roots in groups)
                     {
-                        foreach (var taggedRoot in taggedRoots)
-                        {
-                            code.AppendLine($"if (Equals(tag, {taggedRoot.Injection.Tag.TagToString()})) return composition.{taggedRoot.PropertyName};");
-                        }
-
-                        code.AppendLine($"throw new System.InvalidOperationException($\"{CodeExtensions.CannotResolve} \\\"{{tag}}\\\" of type {roots.Key}.\");");
+                        var className = ResolverClassesBuilder.GetResolveClassName(roots.Key);
+                        code.AppendLine($"{(isFirst ? ' ' : ',')}new {pairTypeName}(typeof({roots.Key}), val{className})");
+                        isFirst = false;
                     }
-
-                    code.AppendLine("};");
                 }
+
+                code.AppendLine("});");
             }
         }
         
