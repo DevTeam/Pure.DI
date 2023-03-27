@@ -45,7 +45,8 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
     private CancellationToken _cancellationToken = CancellationToken.None;
     private SemanticModel? _semanticModel;
     private readonly List<InvocationExpressionSyntax> _invocations = new();
-    private readonly HashSet<string> _usingDirectives = new();
+    private readonly List<UsingDirectiveSyntax> _usingDirectives = new();
+    private readonly LinkedList<string> _namespaces = new();
     private SyntaxNode? _next;
     private int _recursionDepth;
     private string _namespace = string.Empty;
@@ -148,19 +149,17 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                         switch (invocation.ArgumentList.Arguments)
                         {
                             case [{ Expression: SimpleLambdaExpressionSyntax lambdaExpression }]:
-                                if (GetTypeSymbol<ITypeSymbol>(lambdaExpression) is INamedTypeSymbol
-                                    {
-                                        TypeArguments.Length: 2,
-                                        TypeArguments: [_, { } resultType]
-                                    })
+                                var type = TryGetTypeSymbol<ITypeSymbol>(lambdaExpression) ?? GetTypeSymbol<ITypeSymbol>(lambdaExpression.Body);
+                                // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
+                                if (type is INamedTypeSymbol { TypeArguments.Length: 2, TypeArguments: [_, { } resultType] })
                                 {
                                     VisitFactory(resultType, lambdaExpression);
                                 }
                                 else
                                 {
-                                    NotSupported(invocation);
+                                    VisitFactory(type, lambdaExpression);
                                 }
-
+                                
                                 break;
 
                             case []:
@@ -198,7 +197,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                                         invocation,
                                         GetConstantValue<string>(publicCompositionType),
                                         _namespace,
-                                        _usingDirectives.ToImmutableArray(),
+                                        GetUsingDirectives(invocation),
                                         CompositionKind.Public,
                                         GetSettings(invocation),
                                         ImmutableArray<MdBinding>.Empty,
@@ -217,7 +216,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                                         invocation,
                                         GetConstantValue<string>(publicCompositionType),
                                         _namespace,
-                                        _usingDirectives.ToImmutableArray(),
+                                        GetUsingDirectives(invocation),
                                         GetConstantValue<CompositionKind>(kindExpression),
                                         GetSettings(invocation),
                                         ImmutableArray<MdBinding>.Empty,
@@ -363,22 +362,52 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         }
     }
 
+    private ImmutableArray<MdUsingDirectives> GetUsingDirectives(SyntaxNode syntaxNode)
+    {
+        var namespaces = SemanticModel.LookupNamespacesAndTypes(syntaxNode.Span.Start)
+            .OfType<INamespaceSymbol>()
+            .Where(i => !i.IsGlobalNamespace)
+            .Select(i => i.ToString());
+        
+        var usingDirectives = _usingDirectives
+            .Where(i => !i.StaticKeyword.IsKind(SyntaxKind.StaticKeyword))
+            .Select(i => i.Name.ToString())
+            .Concat(namespaces)
+            .Distinct()
+            .ToImmutableArray();
+        
+        var staticUsingDirectives = _usingDirectives
+            .Where(i => i.StaticKeyword.IsKind(SyntaxKind.StaticKeyword))
+            .Select(i => i.Name.ToString())
+            .Distinct()
+            .ToImmutableArray();
+        
+        return ImmutableArray.Create(new MdUsingDirectives(usingDirectives, staticUsingDirectives));
+    }
+
     public override void VisitUsingDirective(UsingDirectiveSyntax usingDirective)
     {
-        _usingDirectives.Add(usingDirective.Name.ToFullString());
+        if (!_namespaces.Any())
+        {
+            _usingDirectives.Add(usingDirective);
+        }
+
         base.VisitUsingDirective(usingDirective);
     }
 
     public override void VisitFileScopedNamespaceDeclaration(FileScopedNamespaceDeclarationSyntax namespaceDeclaration)
     {
         _namespace = namespaceDeclaration.Name.ToString().Trim();
+        _namespaces.AddLast(_namespace);
         base.VisitFileScopedNamespaceDeclaration(namespaceDeclaration);
     }
 
     public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax namespaceDeclaration)
     {
         _namespace = namespaceDeclaration.Name.ToString().Trim();
+        _namespaces.AddLast(_namespace);
         base.VisitNamespaceDeclaration(namespaceDeclaration);
+        _namespaces.RemoveLast();
     }
 
     private void VisitFactory(ITypeSymbol resultType, SimpleLambdaExpressionSyntax lambdaExpression)
@@ -480,6 +509,19 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
     private T GetTypeSymbol<T>(SyntaxNode node)
         where T : ITypeSymbol
     {
+        var result = TryGetTypeSymbol<T>(node);
+        if (result is {})
+        {
+            return result;
+        }
+
+        _logger.CompileError($"The type {node} is not supported.", node.GetLocation(), LogId.ErrorInvalidMetadata);
+        throw HandledException.Shared;
+    }
+    
+    private T? TryGetTypeSymbol<T>(SyntaxNode node)
+        where T : ITypeSymbol
+    {
         var typeInfo = SemanticModel.GetTypeInfo(node, _cancellationToken);
         var typeSymbol = typeInfo.Type ?? typeInfo.ConvertedType;
         if (typeSymbol is T symbol)
@@ -487,8 +529,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
             return symbol;
         }
 
-        _logger.CompileError($"The type {node} is not supported.", node.GetLocation(), LogId.ErrorInvalidMetadata);
-        throw HandledException.Shared;
+        return default;
     }
 
     // ReSharper disable once SuggestBaseTypeForParameter

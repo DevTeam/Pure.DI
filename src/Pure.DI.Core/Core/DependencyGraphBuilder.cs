@@ -3,6 +3,7 @@ namespace Pure.DI.Core;
 internal class DependencyGraphBuilder : IDependencyGraphBuilder
 {
     private readonly IBuilder<MdSetup, IEnumerable<DependencyNode>>[] _dependencyNodeBuilders;
+    private readonly IBuilder<MdBinding, ISet<Injection>> _injectionsBuilder;
     private readonly IMarker _marker;
     private readonly IUnboundTypeConstructor _unboundTypeConstructor;
     private readonly Func<ITypeConstructor> _typeConstructorFactory;
@@ -10,19 +11,21 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
 
     public DependencyGraphBuilder(
         IBuilder<MdSetup, IEnumerable<DependencyNode>>[] dependencyNodeBuilders,
+        IBuilder<MdBinding, ISet<Injection>> injectionsBuilder,
         IMarker marker,
         IUnboundTypeConstructor unboundTypeConstructor,
         Func<ITypeConstructor> typeConstructorFactory,
         Func<IBuilder<RewriterContext<MdFactory>, MdFactory>> factoryRewriterFactory)
     {
         _dependencyNodeBuilders = dependencyNodeBuilders;
+        _injectionsBuilder = injectionsBuilder;
         _marker = marker;
         _unboundTypeConstructor = unboundTypeConstructor;
         _typeConstructorFactory = typeConstructorFactory;
         _factoryRewriterFactory = factoryRewriterFactory;
     }
 
-    public IEnumerable<ProcessingNode> TryBuild(
+    public IEnumerable<DependencyNode> TryBuild(
         MdSetup setup,
         IReadOnlyCollection<ProcessingNode> nodes,
         out DependencyGraph? dependencyGraph,
@@ -79,10 +82,10 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                         if (map.TryGetValue(unboundInjection, out sourceNode))
                         {
                             var newBinding = CreateGenericBinding(targetNode, injection, sourceNode, ++maxId, cancellationToken);
-                            var newNode = CreateNodes(setup, newBinding, node, cancellationToken)
-                                .Single(i => i.Node.Variation == sourceNode.Variation);
-                            map = map.Add(injection, newNode.Node);
-                            queue.Enqueue(newNode);
+                            var newNode = CreateNodes(setup, newBinding, cancellationToken)
+                                .Single(i => i.Variation == sourceNode.Variation);
+                            map = map.Add(injection, newNode);
+                            queue.Enqueue(CreateNewProcessingNode(newNode));
                             continue;
                         }
 
@@ -100,7 +103,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                             if (constructKind.HasValue)
                             {
                                 var enumerableBinding = CreateConstructBinding(setup, targetNode, injection, enumerableType, ++maxId, constructKind.Value);
-                                return CreateNodes(setup, enumerableBinding, node, cancellationToken);
+                                return CreateNodes(setup, enumerableBinding, cancellationToken);
                             }
                         }
 
@@ -111,7 +114,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                     case IArrayTypeSymbol arrayType:
                     {
                         var arrayBinding = CreateConstructBinding(setup, targetNode, injection, arrayType.ElementType, ++maxId, MdConstructKind.Array);
-                        return CreateNodes(setup, arrayBinding,node, cancellationToken);
+                        return CreateNodes(setup, arrayBinding, cancellationToken);
                     }
                 }
 
@@ -119,7 +122,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                 if (injection.Type is { IsAbstract: false, SpecialType: SpecialType.None })
                 {
                     var autoBinding = CreateAutoBinding(setup, targetNode, injection, ++maxId);
-                    return CreateNodes(setup, autoBinding, node, cancellationToken);
+                    return CreateNodes(setup, autoBinding, cancellationToken);
                 }
 
                 // Not processed
@@ -174,7 +177,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
             map,
             ImmutableDictionary<Injection, Root>.Empty);
         
-        return ImmutableArray<ProcessingNode>.Empty;
+        return ImmutableArray<DependencyNode>.Empty;
     }
 
     private MdBinding CreateGenericBinding(
@@ -281,14 +284,19 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                 dependencyContractsBuilder.ToImmutable())
         };
     }
+    
+    private ProcessingNode CreateNewProcessingNode(DependencyNode dependencyNode)
+    {
+        var exposedInjections = _injectionsBuilder.Build(dependencyNode.Binding, CancellationToken.None);
+        return new ProcessingNode(dependencyNode, exposedInjections, _marker);
+    }
 
-    private IEnumerable<ProcessingNode> CreateNodes(
+    private IEnumerable<DependencyNode> CreateNodes(
         MdSetup setup,
         MdBinding binding,
-        in ProcessingNode node,
         CancellationToken cancellationToken)
     {
         var newSetup = setup with { Roots = ImmutableArray<MdRoot>.Empty, Bindings = ImmutableArray.Create(binding) };
-        return _dependencyNodeBuilders.SelectMany(builder => builder.Build(newSetup, cancellationToken)).Select(node.CreateNew);
+        return _dependencyNodeBuilders.SelectMany(builder => builder.Build(newSetup, cancellationToken));
     }
 }

@@ -15,6 +15,9 @@ internal static partial class Composition
 {
     private static void Setup() => IoC.DI.Setup()
         // Transients
+        .Bind<IGlobalOptions>().To<GlobalOptions>()
+        .Bind<ILogger<TT>>().To<Logger<TT>>()
+        .Bind<ILogObserver>().To<LogObserver>()
         .Bind<IMetadataSyntaxWalker>().To<MetadataSyntaxWalker>()
         .Bind<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>>().To<SetupsBuilder>()
         .Bind<IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>>>().To<MetadataBuilder>()
@@ -34,9 +37,8 @@ internal static partial class Composition
         .Bind<IBuilder<RewriterContext<MdFactory>, MdFactory>>().To<FactoryTypeRewriter>()
         .Bind<IValidator<MdSetup>>().To<MetadataValidator>()
         .Bind<IValidator<DependencyGraph>>().To<DependencyGraphValidator>()
-        .Bind<ILogger<TT>>().To<Logger<TT>>()
         .Bind<IBuilder<LogEntry, LogInfo>>().To<LogInfoBuilder>()
-        .Bind<ILogObserver>().To<LogObserver>()
+        
         // CSharp
         .Bind<IBuilder<DependencyGraph, CompositionCode>>(WellknownTag.CSharpCompositionBuilder).To<CompositionBuilder>()
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpClassBuilder).To<ClassBuilder>()
@@ -53,13 +55,17 @@ internal static partial class Composition
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpApiMembersBuilder).To<ApiMembersBuilder>()
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpResolversFieldsBuilder).To<ResolversFieldsBuilder>()
 
+        .Bind<IObserversRegistry>().Bind<IObserversProvider>().As(IoC.Lifetime.PerResolve).To<ObserversRegistry>()
+        .Bind<Facade>().To<Facade>()
+        .Arg<IContextOptions>()
+        .Arg<IContextProducer>()
+        .Arg<IContextDiagnostic>()
+
         // Singletons
         .Default(IoC.Lifetime.Singleton)
-        .Bind<IObserversRegistry>().Bind<IObserversProvider>().To<ObserversRegistry>()
         .Bind<IClock>().To<Clock>()
         .Bind<IFormatting>().To<Formatting>()
         .Bind<ICache<IoC.TT1, IoC.TT2>>().To<Cache<IoC.TT1, IoC.TT2>>()
-        .Bind<IContextInitializer>().Bind<IContextOptions>().Bind<IContextProducer>().Bind<IContextDiagnostic>().To<GeneratorContext>()
         .Bind<IResources>().To<Resources>()
         .Bind<IMarker>().To<Marker>()
         .Bind<IUnboundTypeConstructor>().To<UnboundTypeConstructor>()

@@ -7,6 +7,7 @@ using Models;
 internal class Generator : IGenerator
 {
     private readonly ILogger<Generator> _logger;
+    private readonly IGlobalOptions _globalOptions;
     private readonly IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>> _metadataBuilder;
     private readonly IBuilder<MdSetup, DependencyGraph> _dependencyGraphBuilder;
     private readonly IValidator<DependencyGraph> _dependencyGraphValidator;
@@ -16,10 +17,11 @@ internal class Generator : IGenerator
     private readonly IContextProducer _contextProducer;
     private readonly IObserversRegistry _observersRegistry;
     private readonly ILogObserver _logObserver;
-    private readonly ImmutableArray<IObserver<DependencyGraph>> _dependencyGraphObservers;
+    private readonly IObserversProvider _observersProvider;
 
     public Generator(
         ILogger<Generator> logger,
+        IGlobalOptions globalOptions,
         IObserversRegistry observersRegistry,
         ILogObserver logObserver,
         IObserversProvider observersProvider,
@@ -32,8 +34,10 @@ internal class Generator : IGenerator
         IContextProducer contextProducer)
     {
         _logger = logger;
+        _globalOptions = globalOptions;
         _observersRegistry = observersRegistry;
         _logObserver = logObserver;
+        _observersProvider = observersProvider;
         _metadataBuilder = metadataBuilder;
         _dependencyGraphBuilder = dependencyGraphBuilder;
         _dependencyGraphValidator = dependencyGraphValidator;
@@ -41,75 +45,95 @@ internal class Generator : IGenerator
         _compositionBuilder = compositionBuilder;
         _classBuilder = classBuilder;
         _contextProducer = contextProducer;
-        _dependencyGraphObservers = observersProvider.GetObservers<DependencyGraph>().ToImmutableArray();
     }
 
     public void Generate(IEnumerable<SyntaxUpdate> updates, CancellationToken cancellationToken)
     {
         var stopwatch = new Stopwatch();
         stopwatch.Start();
-        using var logObserverToken= _observersRegistry.Register(_logObserver);
+        var logFile = _globalOptions.LogFile;
+        using var logObserverToken= string.IsNullOrWhiteSpace(logFile) ? Disposables.Empty : _observersRegistry.Register(_logObserver);
         try
         {
-            using var logToken = _logger.TraceProcess("generating");
+            using var logToken = _logger.TraceProcess("generation");
             ImmutableArray<MdSetup> setups;
-            using (_logger.TraceProcess($"analyzing metadata"))
+            using (_logger.TraceProcess($"metadata analysis"))
             {
                 setups = _metadataBuilder.Build(updates, cancellationToken).ToImmutableArray();
             }
 
             foreach (var setup in setups)
             {
-                using var setupToken = _logger.TraceProcess($"processing setup \"{setup.TypeName}\"");
-
+                using var setupToken = _logger.TraceProcess($"metadata processing \"{setup.TypeName}\"");
                 DependencyGraph dependencyGraph;
-                using (_logger.TraceProcess($"building dependency graph \"{setup.TypeName}\""))
+                using (_logger.TraceProcess($"building a dependency graph \"{setup.TypeName}\""))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     dependencyGraph = _dependencyGraphBuilder.Build(setup, cancellationToken);
-                    foreach (var graphObserver in _dependencyGraphObservers)
+                    foreach (var graphObserver in _observersProvider.GetObservers<DependencyGraph>())
                     {
                         graphObserver.OnNext(dependencyGraph);
                     }
                 }
 
-                using (_logger.TraceProcess($"validating dependency graph \"{setup.TypeName}\""))
+                using (_logger.TraceProcess($"dependency graph validation \"{setup.TypeName}\""))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     _dependencyGraphValidator.Validate(dependencyGraph, cancellationToken);
                 }
 
-                IReadOnlyDictionary<Injection, Root> roots;
                 using (_logger.TraceProcess($"search for roots \"{setup.TypeName}\""))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    roots = _rootsBuilder.Build(dependencyGraph, cancellationToken);
+                    var roots = _rootsBuilder.Build(dependencyGraph, cancellationToken);
                     if (!roots.Any())
                     {
                         return;
                     }
+                    
+                    dependencyGraph = dependencyGraph with { Roots = roots };
                 }
 
                 CompositionCode composition;
-                using (_logger.TraceProcess($"building composition \"{setup.TypeName}\""))
+                using (_logger.TraceProcess($"creating a composition \"{setup.TypeName}\""))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    composition = _compositionBuilder.Build(dependencyGraph with { Roots = roots }, cancellationToken);
+                    composition = _compositionBuilder.Build(dependencyGraph, cancellationToken);
                     if (!composition.Roots.Any())
                     {
                         return;
                     }
                 }
 
-                using (_logger.TraceProcess($"generating composition code \"{setup.TypeName}\""))
+                using (_logger.TraceProcess($"code generation \"{setup.TypeName}\""))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     composition = _classBuilder.Build(composition, cancellationToken);
                 }
 
-                cancellationToken.ThrowIfCancellationRequested();
-                var classCode = string.Join(Environment.NewLine, composition.Code);
-                _contextProducer.AddSource($"{setup.TypeName}.g.cs", SourceText.From(classCode, Encoding.UTF8));
+                using (_logger.TraceProcess($"saving data \"{setup.TypeName}\""))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var classCode = string.Join(Environment.NewLine, composition.Code);
+                    _contextProducer.AddSource($"{setup.TypeName}.g.cs", SourceText.From(classCode, Encoding.UTF8));
+                }
+
+                if (_logger.IsTracing())
+                {
+                    var trace = new List<string> { $"Setup {dependencyGraph.Source.TypeName}:", "---------- Map ----------" };
+                    foreach (var (injection, dependencyNode) in dependencyGraph.Map)
+                    {
+                        trace.Add($"{injection} -> {dependencyNode}");
+                    }
+                    
+                    trace.Add("---------- Roots ----------");
+                    foreach (var root in dependencyGraph.Roots)
+                    {
+                        trace.Add($"{root.Key} {root.Value.PropertyName} -> {root.Value.Node}");
+                    }
+                    
+                    _logger.Trace(trace, state => state);
+                }
             }
         }
         catch (OperationCanceledException)
@@ -144,12 +168,26 @@ internal class Generator : IGenerator
         finally
         {
             stopwatch.Stop();
-            var log = _logObserver.Log;
-            log.Insert(0, $"/*{Environment.NewLine}");
-            log.Append(_logObserver.Outcome);
-            log.AppendLine($"Done in {stopwatch.Elapsed.TotalMilliseconds:F} ms");
-            log.AppendLine("*/");
-            _contextProducer.AddSource("PureDI.log.g.cs", SourceText.From(log.ToString(), Encoding.UTF8));
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(logFile))
+                {
+                    var dir = Path.GetDirectoryName(logFile);
+                    if (dir is { })
+                    {
+                        Directory.CreateDirectory(dir);
+                    }
+
+                    var log = _logObserver.Log;
+                    log.Append(_logObserver.Outcome);
+                    log.AppendLine($"Done in {stopwatch.Elapsed.TotalMilliseconds:F} ms");
+                    File.WriteAllText(logFile, log.ToString());
+                }
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
     }
 }

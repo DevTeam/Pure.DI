@@ -3,11 +3,13 @@
     <PropertyGroup>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
         <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
-        <PureDISeverity>Info</PureDISeverity>
+        <PureDISeverity>Hidden</PureDISeverity>
+        <PureDILogFile>.logs\Pure.DI.UsageTests.log</PureDILogFile>
     </PropertyGroup>
     
     <ItemGroup>
         <CompilerVisibleProperty Include="PureDISeverity" />
+        <CompilerVisibleProperty Include="PureDILogFile" />
         <ProjectReference Include="..\..\src\Pure.DI.Core\Pure.DI.Core.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <ProjectReference Include="..\..\src\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>

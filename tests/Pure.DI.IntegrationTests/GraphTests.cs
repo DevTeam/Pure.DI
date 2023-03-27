@@ -1442,6 +1442,83 @@ System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.
   +[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]<--[Sample.IDependency(3)]--[Dependency()]
 """);
     }
+    
+    [Fact]
+    public async Task ShouldSupportOverrides()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+
+    internal interface IService
+    {
+    }
+
+    internal interface IDependency
+    {
+    }
+
+    internal class Service : IService
+    {
+        internal Service(IDependency dependency)
+        {
+        }
+
+        public Service()
+        {
+        }
+    }
+
+    internal class SimpleService : IService
+    {
+        public SimpleService(int id)
+        {
+        }
+
+        public SimpleService()
+        {
+        }
+    }
+
+    internal class Dependency : IDependency
+    {
+        public Dependency() {}
+
+        public Dependency(int val) {}
+    }
+
+    internal partial class Composition
+    {                   
+        private static void Setup() => Pure.DI.DI.Setup("Composition")
+            .Bind<IDependency>().To<Dependency>()
+            .Bind<IService>().To<Service>()
+            .Root<IService>("Root")
+            .Bind<IService>().To<SimpleService>(); 
+    }               
+
+    public class Program { public static void Main() { } }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result.GeneratedCode);
+        result.Warnings.Count.ShouldBe(1);
+        result.Errors.Count.ShouldBe(0);
+        var graphs = GetGraphs(result);
+        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs[0].ConvertToString().ShouldBe("""
+Sample.IService() Root
+  +[Sample.IService() Root]<--[Sample.IService]--[SimpleService()]
+Dependency()
+SimpleService()
+""");
+    }
 
     private static DependencyGraph[] GetGraphs(Result result) => 
         result.DependencyGraphs.ToArray();

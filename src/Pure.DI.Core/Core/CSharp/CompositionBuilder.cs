@@ -31,7 +31,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         return new CompositionCode(
             className,
             ns,
-            usingDirectives.OrderBy(i => i).ToImmutableArray(),
+            dependencyGraph.Source.UsingDirectives,
             GetSingletons(fields),
             GetArgs(fields),
             _lines.Select(i => i.Key with { Lines = i.Value }).ToImmutableArray(),

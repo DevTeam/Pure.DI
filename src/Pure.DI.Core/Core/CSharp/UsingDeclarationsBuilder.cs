@@ -9,12 +9,17 @@ internal class UsingDeclarationsBuilder: IBuilder<CompositionCode, CompositionCo
         {
             return composition;
         }
-
-        foreach (var usingDirective in composition.UsingDirectives)
+        
+        foreach (var usingDirective in composition.UsingDirectives.SelectMany(i => i.UsingDirectives).OrderBy(i => i).Distinct())
         {
             code.AppendLine($"using {usingDirective};");
         }
-
+        
+        foreach (var usingDirective in composition.UsingDirectives.SelectMany(i => i.StaticUsingDirectives).OrderBy(i => i).Distinct())
+        {
+            code.AppendLine($"using static {usingDirective};");
+        }
+        
         code.AppendLine();
         return composition;
     }

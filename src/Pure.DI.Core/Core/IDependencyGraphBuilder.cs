@@ -2,7 +2,7 @@ namespace Pure.DI.Core;
 
 internal interface IDependencyGraphBuilder
 {
-    IEnumerable<ProcessingNode> TryBuild(
+    IEnumerable<DependencyNode> TryBuild(
         MdSetup setup,
         IReadOnlyCollection<ProcessingNode> nodes,
         out DependencyGraph? dependencyGraph,

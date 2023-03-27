@@ -9,7 +9,7 @@ internal static class CodeExtensions
     public static IEnumerable<Root> GetActualRoots(this IEnumerable<Root> roots) => 
         roots.Where(i => !i.Injection.Type.IsRefLikeType);
 
-    public static string TagToString(this object? tag) => 
+    public static string TagToString(this object? tag, string defaultValue = "null") => 
         tag switch
         {
             string => $"\"{tag}\"",
@@ -26,6 +26,6 @@ internal static class CodeExtensions
             nint => $"(nint){tag}",
             nuint => $"(nuint){tag}",
             {} => tag.ToString(),
-            _ => "null"
+            _ => defaultValue
         };
 }

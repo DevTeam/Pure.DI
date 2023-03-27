@@ -30,7 +30,7 @@ public static class TestExtensions
         var runOptions = options ?? new Options();
         var parseOptions = CSharpParseOptions.Default
             .WithLanguageVersion(runOptions.LanguageVersion);
-        
+
         var generatedApiSources = Facade.GetApi(CancellationToken.None).ToArray();
         var compilation = CreateCompilation()
             .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication).WithNullableContextOptions(runOptions.NullableContextOptions))
@@ -40,14 +40,9 @@ public static class TestExtensions
 
         var globalOptions = new TestAnalyzerConfigOptions(new Dictionary<string, string>
         {
-            { GlobalSettings.Severity, DiagnosticSeverity.Info.ToString() }
+            { GlobalSettings.Severity, DiagnosticSeverity.Info.ToString() },
+            { GlobalSettings.LogFile, ".logs\\IntegrationTests.log" }
         });
-
-        var dependencyGraphObserver = new Observer<DependencyGraph>();
-        using var dependencyGraphObserverToken = Facade.ObserversRegistry.Register(dependencyGraphObserver);
-
-        var logEntryObserver = new Observer<LogEntry>();
-        using var logEntryObserverToken = Facade.ObserversRegistry.Register(logEntryObserver);
 
         var generatedSources = new List<Source>();
         var contextOptions = new Mock<IContextOptions>();
@@ -59,14 +54,20 @@ public static class TestExtensions
 
         var compilationCopy = compilation;
         var updates = compilationCopy.SyntaxTrees.Select(i => CreateUpdate(i, compilationCopy));
-        Facade.GetGenerator(contextOptions.Object, contextProducer.Object, contextDiagnostic.Object)
-            .Generate(updates, CancellationToken.None);
+        var facade = Facade.Create(contextOptions.Object, contextProducer.Object, contextDiagnostic.Object);
+
+        var dependencyGraphObserver = new Observer<DependencyGraph>();
+        using var dependencyGraphObserverToken = facade.ObserversRegistry.Register(dependencyGraphObserver);
+
+        var logEntryObserver = new Observer<LogEntry>();
+        using var logEntryObserverToken = facade.ObserversRegistry.Register(logEntryObserver);
+        
+        facade.Generator.Generate(updates, CancellationToken.None);
         
         var logs = logEntryObserver.Values;
         var errors = logs.Where(i => i.Severity == DiagnosticSeverity.Error).ToImmutableArray();
         var warnings = logs.Where(i => i.Severity == DiagnosticSeverity.Warning).ToImmutableArray();
-        var hasErrorOrWarning = logs.Any(i => i.Severity >= DiagnosticSeverity.Warning);
-        if (hasErrorOrWarning)
+        if (errors.Any())
         {
             return new Result(
                 false,
@@ -157,7 +158,7 @@ public static class TestExtensions
             }
             
             return new Result(
-                true,
+                    !errors.Any() && !warnings.Any(),
                 stdOut.ToImmutableArray(),
                 logs,
                 errors,

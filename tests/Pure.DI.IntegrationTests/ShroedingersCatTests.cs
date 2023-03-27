@@ -12,6 +12,7 @@ public class ShroedingersCatTests
         var result = await """
 using System;
 using Pure.DI;
+using static Pure.DI.Lifetime;
 
 namespace Sample
 {
@@ -55,7 +56,7 @@ namespace Sample
         {
             DI.Setup("Composition")
                 // Models a random subatomic event that may or may not occur
-                .Bind<Random>().As(Lifetime.Singleton).To<Random>()
+                .Bind<Random>().As(Singleton).To<Random>()
                 // Represents a quantum superposition of 2 states: Alive or Dead
                 .Bind<State>().To(ctx =>
                 {

@@ -26,7 +26,7 @@ internal class DisposeMethodBuilder: IBuilder<CompositionCode, CompositionCode>
             {
                 if (composition.DisposableSingletonsCount > 0)
                 {
-                    code.AppendLine($"while ({Variable.DisposeIndexFieldName}-- >= 0)");
+                    code.AppendLine($"while ({Variable.DisposeIndexFieldName} > 0)");
                     code.AppendLine("{");
                     using (code.Indent())
                     {
@@ -34,7 +34,7 @@ internal class DisposeMethodBuilder: IBuilder<CompositionCode, CompositionCode>
                         code.AppendLine("{");
                         using (code.Indent())
                         {
-                            code.AppendLine($"{Variable.DisposablesFieldName}[{Variable.DisposeIndexFieldName}].Dispose();");
+                            code.AppendLine($"{Variable.DisposablesFieldName}[--{Variable.DisposeIndexFieldName}].Dispose();");
                         }
 
                         code.AppendLine("}");

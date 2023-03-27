@@ -11,8 +11,6 @@ internal class Logger<T> : ILogger<T>
         _logEntryObservers = new Lazy<ImmutableArray<IObserver<LogEntry>>>(() => observersProvider.GetObservers<LogEntry>().ToImmutableArray());
     }
 
-    public bool IsEnabled(DiagnosticSeverity severity) => true;
-
     public void Log(in LogEntry logEntry)
     {
         var curLogEntry = logEntry with { Source = _source };

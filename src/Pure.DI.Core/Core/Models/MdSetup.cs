@@ -7,7 +7,7 @@ internal record MdSetup(
     SyntaxNode Source,
     string TypeName,
     string Namespace,
-    in ImmutableArray<string> UsingDirectives,
+    in ImmutableArray<MdUsingDirectives> UsingDirectives,
     CompositionKind Kind,
     ISettings Settings,
     in ImmutableArray<MdBinding> Bindings,

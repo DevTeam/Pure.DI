@@ -57,19 +57,25 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
         cancellationToken.ThrowIfCancellationRequested();
         if (setups.Count == 0)
         {
+            _logger.Trace(Unit.Shared, _ => ImmutableArray.Create("The set of setup is empty."));
             yield break;
         }
 
+        _logger.Trace(setups, state => ImmutableArray.Create($"Raw setups count is {state.Count}: {string.Join(", ", state.Select(i => $"\"{i.TypeName}\""))}"));
+
         var setupMap = setups
+            .Where(i => i.Kind != CompositionKind.Global)
             .GroupBy(i => i.TypeName)
             .Select(setupGroup =>
             {
                 MergeSetups(setupGroup, out var mergedSetup, false, cancellationToken);
                 return mergedSetup;
             })
-            .ToDictionary(i => i.TypeName, i => i);
+            .ToDictionary(i =>  i.TypeName, i => i);
+        
+        _logger.Trace(setupMap, state => ImmutableArray.Create($"Setups map with size {state.Count}: {string.Join(", ", state.Select(i => $"\"{i.Key}\""))}"));
 
-        var globalSetups = setupMap.Values.Where(i => i.Kind == CompositionKind.Global).ToList();
+        var globalSetups = setups.Where(i => i.Kind == CompositionKind.Global).ToList();
         foreach (var setup in setupMap.Values.Where(i => i.Kind == CompositionKind.Public))
         {
             var setupsChain = globalSetups
@@ -100,7 +106,7 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
 
                 if (!map.TryGetValue(compositionTypeName, out var dependsOnSetup))
                 {
-                    _logger.CompileError($"Cannot find setup \"{compositionTypeName}\" for {dependsOn}.", dependsOn.Source.GetLocation(), LogId.ErrorCannotFindSetup);
+                    _logger.CompileError($"Cannot find setup \"{compositionTypeName}\".", dependsOn.Source.GetLocation(), LogId.ErrorCannotFindSetup);
                     throw HandledException.Shared;
                 }
 
@@ -125,8 +131,8 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
         var typeAttributesBuilder = ImmutableArray.CreateBuilder<MdTypeAttribute>(2);
         var tagAttributesBuilder = ImmutableArray.CreateBuilder<MdTagAttribute>(2);
         var ordinalAttributesBuilder = ImmutableArray.CreateBuilder<MdOrdinalAttribute>(2);
+        var usingDirectives = ImmutableArray.CreateBuilder<MdUsingDirectives>(2);
         var ns = string.Empty;
-        var usingDirectives = new HashSet<string>();
         var bindingId = 0;
         foreach (var setup in setups)
         {

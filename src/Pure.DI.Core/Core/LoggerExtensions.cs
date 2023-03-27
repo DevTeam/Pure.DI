@@ -18,7 +18,7 @@ internal static class LoggerExtensions
         {
             return;
         }
-
+        
         logger.Log(new LogEntry(DiagnosticSeverity.Hidden, messageFactory(state), location));
     }
 
@@ -60,5 +60,12 @@ internal static class LoggerExtensions
         });
     }
 
-    public static bool IsTracing<T>(this ILogger<T> logger) => logger.IsEnabled(DiagnosticSeverity.Hidden);
+    public static bool IsTracing<T>(this ILogger<T> logger)
+    {
+#if DEBUG
+        return true;
+#else
+        return false;
+#endif
+    }
 }
