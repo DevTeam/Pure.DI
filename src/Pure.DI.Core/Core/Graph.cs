@@ -21,7 +21,7 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
         var vertexEdgesBuilder = ImmutableDictionary.CreateBuilder<TVertex, GraphEntry<TVertex, TEdge>>();
         foreach (var entry in entries)
         {
-            vertexEdgesBuilder.Add(entry.Vertex, entry);
+            vertexEdgesBuilder.Add(entry.Target, entry);
         }
 
         _vertexEdges = vertexEdgesBuilder.ToImmutable();
@@ -110,21 +110,42 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
         return false;
     }
 
-    public bool IsOutEdgesEmpty(in TVertex vertex) => OutDegree(vertex) == 0;
+    public bool IsOutEdgesEmpty(in TVertex vertex) => InDegree(vertex) == 0;
 
-    public int OutDegree(in TVertex vertex) => 
-        _vertexEdges.TryGetValue(vertex, out var inOutEdges) 
+    public int InDegree(in TVertex target) => 
+        _vertexEdges.TryGetValue(target, out var inOutEdges) 
             ? inOutEdges.Edges.Length
             : throw new VertexNotFoundException();
     
-    public bool TryGetEdges(in TVertex vertex, out ImmutableArray<TEdge> edges)
+    public bool TryGetInEdges(in TVertex target, out ImmutableArray<TEdge> edges)
     {
-        if (_vertexEdges.TryGetValue(vertex, out var inOutEdges))
+        if (_vertexEdges.TryGetValue(target, out var inOutEdges))
         {
             edges = inOutEdges.Edges;
             return true;
         }
 
+        edges = ImmutableArray<TEdge>.Empty;
+        return false;
+    }
+
+    public bool TryGetOutEdges(in TVertex source, out ImmutableArray<TEdge> edges)
+    {
+        var edgesBuilder = ImmutableArray.CreateBuilder<TEdge>();
+        foreach (var vertexEdge in Edges)
+        {
+            if (_vertexEqualityComparer.Equals(vertexEdge.Source, source))
+            {
+                edgesBuilder.Add(vertexEdge);
+            }
+        }
+
+        if (edgesBuilder.Count > 0)
+        {
+            edges = edgesBuilder.ToImmutable();
+            return true;
+        }
+        
         edges = ImmutableArray<TEdge>.Empty;
         return false;
     }

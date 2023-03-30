@@ -16,7 +16,7 @@ internal static class GraphExtensions
                }
 
                sb.Append(node);
-               if (!graph.Graph.TryGetEdges(node, out var dependencies))
+               if (!graph.Graph.TryGetInEdges(node, out var dependencies))
                {
                     continue;
                }

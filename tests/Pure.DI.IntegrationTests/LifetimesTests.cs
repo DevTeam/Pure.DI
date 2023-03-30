@@ -544,4 +544,86 @@ namespace Sample
         result.Success.ShouldBeTrue(result.GeneratedCode);
         result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
     }
+    
+    [Fact]
+    public async Task ShouldSupportPreResolveWithinSingleton()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency {}
+
+    interface ISin
+    {
+        IDependency Dep { get; }
+    }
+
+    class Sin: ISin
+    {
+        public Sin(IDependency dep)
+        {
+            Dep = dep;        
+        }
+
+        public IDependency Dep { get; }        
+    }
+
+    interface IService
+    {        
+        IDependency Dep { get; }
+
+        ISin Sin { get; }
+    }
+
+    class Service: IService 
+    {
+        public Service(IDependency dep, ISin sin)
+        {
+            Dep = dep;
+            Sin = sin;
+        }
+
+        public IDependency Dep { get; }
+
+        public ISin Sin { get; }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>()
+                .Bind<ISin>().As(Lifetime.Singleton).To<Sin>()
+                .Bind<IService>().To<Service>()               
+                .Root<IService>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service = composition.Service;
+            var service2 = composition.Service;
+            Console.WriteLine(service.Dep == service.Sin.Dep);        
+            Console.WriteLine(service.Sin == service2.Sin);
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True"), result.GeneratedCode);
+    }
 }

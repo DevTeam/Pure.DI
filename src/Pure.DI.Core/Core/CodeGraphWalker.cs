@@ -64,20 +64,28 @@ internal class CodeGraphWalker<TContext>
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var arguments = new List<Variable>();
-                if (dependencyGraph.Graph.TryGetEdges(targetVariable.Node, out var dependencies))
+                if (dependencyGraph.Graph.TryGetInEdges(targetVariable.Node, out var dependencies))
                 {
                     foreach (var dependency in dependencies)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
                         var var = CreateVariable(variables, dependency.Source, dependency.Injection);
-                        if (var.IsBlockRoot)
+                        var isBlockRoot = var.IsBlockRoot;
+                        if (!isBlockRoot && var.Node.Lifetime == Lifetime.PerResolve)
+                        {
+                            if (dependencyGraph.Graph.TryGetOutEdges(dependency.Source, out var outDependencies))
+                            {
+                                isBlockRoot = outDependencies.Select(i => i.Target.Factory is { } ? 2 : 1).Sum() > 1;
+                            }
+                        }
+                        
+                        if (isBlockRoot)
                         {
                             blockRootVariables.Push(var);
                         }
                         else
                         {
-                            if (var.Node.Lifetime == Lifetime.PerResolve
-                                || targetVariable.Node.Factory is not { })
+                            if (targetVariable.Node.Factory is not { })
                             {
                                 targets.Push(var);
                             }
