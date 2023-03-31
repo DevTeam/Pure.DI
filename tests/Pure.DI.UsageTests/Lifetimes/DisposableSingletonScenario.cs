@@ -2,7 +2,7 @@
 $v=true
 $p=3
 $d=Disposable Singleton
-$f=To dispose all created singleton instances, simply dispose the composition instance:
+$h=To dispose all created singleton instances, simply dispose the composition instance:
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

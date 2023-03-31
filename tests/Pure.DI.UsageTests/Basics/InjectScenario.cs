@@ -2,7 +2,7 @@
 $v=true
 $p=3
 $d=Injection
-$h=This example demonstrates how to create and initialize an instance manually injecting required dependencies. 
+$h=This example shows how to create and initialize an instance manually injecting required dependencies. 
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

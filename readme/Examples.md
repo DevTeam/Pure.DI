@@ -42,7 +42,7 @@ public Pure.DI.UsageTests.CompositionRoot.IService Root
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\ResolveScenario.cs)
 
-This sample shows how to resolve the composition roots using the _Resolve_ methods. 
+This example shows how to resolve the composition roots using the _Resolve_ methods. 
 
 ``` CSharp
 internal interface IDependency { }
@@ -132,7 +132,7 @@ service.Dependency.IsInitialized.ShouldBeTrue();
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\InjectScenario.cs)
 
-This example demonstrates how to create and initialize an instance manually injecting required dependencies. 
+This example shows how to create and initialize an instance manually injecting required dependencies. 
 
 ``` CSharp
 internal interface IDependency { }
@@ -409,6 +409,8 @@ service2.Dependency1.ShouldNotBe(service1.Dependency1);
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Lifetimes\DisposableSingletonScenario.cs)
 
+To dispose all created singleton instances, simply dispose the composition instance:
+
 ``` CSharp
 internal interface IDependency
 {
@@ -454,8 +456,6 @@ using (var composition = new Composition())
 
 dependency.IsDisposed.ShouldBeTrue();
 ```
-
-To dispose all created singleton instances, simply dispose the composition instance:
 
 #### Default lifetime
 
