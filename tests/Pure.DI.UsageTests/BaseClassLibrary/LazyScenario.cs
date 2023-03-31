@@ -1,13 +1,12 @@
 ﻿/*
 $v=true
-$p=1
-$d=Resolve methods
-$h=This example shows how to resolve the composition roots using the _Resolve_ methods. 
+$p=3
+$d=Lazy 
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
-namespace Pure.DI.UsageTests.Basics.ResolveScenario;
+namespace Pure.DI.UsageTests.BCL.LazyScenario;
 
 using Shouldly;
 using Xunit;
@@ -17,13 +16,21 @@ internal interface IDependency { }
 
 internal class Dependency : IDependency { }
 
-internal interface IService { }
+internal interface IService
+{
+    IDependency Dependency { get; }
+}
 
 internal class Service : IService
 {
-    public Service(IDependency dependency)
+    private readonly Lazy<IDependency> _dependency;
+
+    public Service(Lazy<IDependency> dependency)
     {
+        _dependency = dependency;
     }
+
+    public IDependency Dependency => _dependency.Value;
 }
 // }
 
@@ -35,13 +42,12 @@ public class Scenario
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>();
+            .Bind<IService>().To<Service>()
+            .Root<IService>("Root");
 
         var composition = new Composition();
-        var service1 = composition.Resolve<IService>();
-        var service2 = composition.Resolve(typeof(IService));
+        var service = composition.Root;
+        service.Dependency.ShouldBe(service.Dependency);
 // }            
-        service1.ShouldBeOfType<Service>();
-        service2.ShouldBeOfType<Service>();
     }
 }

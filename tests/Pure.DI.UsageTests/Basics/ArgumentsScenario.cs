@@ -32,7 +32,7 @@ internal class Service : IService
 }
 // }
 
-public class ArgumentsScenario
+public class Scenario
 {
     [Fact]
     public void Run()

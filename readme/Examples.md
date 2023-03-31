@@ -29,7 +29,7 @@ var service = composition.Root;
 
 Actually, the property _Root_ looks like:
 ```csharp
-public Pure.DI.UsageTests.CompositionRoot.IService Root
+public IService Root
 {
   get
   {
@@ -497,5 +497,237 @@ var service1 = composition.Root;
 var service2 = composition.Root;
 service1.ShouldBe(service2);
 service1.Dependency1.ShouldBe(service1.Dependency2);
+```
+
+#### Func
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\BaseClassLibrary\FuncScenario.cs)
+
+_Func<T>_ helps when logic needs to inject instances of some type on demand and multiple times. 
+
+``` CSharp
+internal interface IDependency { }
+
+internal class Dependency : IDependency { }
+
+internal interface IService
+{
+    ImmutableArray<IDependency> Dependencies { get; }
+}
+
+internal class Service : IService
+{
+    public Service(Func<IDependency> dependencyFactory)
+    {
+        Dependencies = Enumerable
+            .Range(0, 10)
+            .Select(i => dependencyFactory())
+            .ToImmutableArray();
+    }
+
+    public ImmutableArray<IDependency> Dependencies { get; }
+}
+
+DI.Setup("Composition")
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>()
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.Dependencies.Length.ShouldBe(10);
+```
+
+#### IEnumerable
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\BaseClassLibrary\EnumerableScenario.cs)
+
+Specifying `IEnumerable<T>` as the injection type allows instances of all bindings that implement type `T` to be injected in a lazy manner - the instances will be provided one by one.
+
+``` CSharp
+internal interface IDependency { }
+
+internal class AbcDependency : IDependency { }
+
+internal class XyzDependency : IDependency { }
+
+internal interface IService
+{
+    ImmutableArray<IDependency> Dependencies { get; }
+}
+
+internal class Service : IService
+{
+    public Service(IEnumerable<IDependency> dependencies)
+    {
+        Dependencies = dependencies.ToImmutableArray();
+    }
+
+    public ImmutableArray<IDependency> Dependencies { get; }
+}
+
+DI.Setup("Composition")
+    .Bind<IDependency>().To<AbcDependency>()
+    .Bind<IDependency>(2).To<XyzDependency>()
+    .Bind<IService>().To<Service>()
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.Dependencies.Length.ShouldBe(2);
+service.Dependencies[0].ShouldBeOfType<AbcDependency>();
+service.Dependencies[1].ShouldBeOfType<XyzDependency>();
+```
+
+#### Array
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\BaseClassLibrary\ArrayScenario.cs)
+
+Specifying `T[]` as the injection type allows instances from all bindings that implement the `T` type to be injected.
+
+``` CSharp
+internal interface IDependency { }
+
+internal class AbcDependency : IDependency { }
+
+internal class XyzDependency : IDependency { }
+
+internal interface IService
+{
+    IDependency[] Dependencies { get; }
+}
+
+internal class Service : IService
+{
+    public Service(IDependency[] dependencies)
+    {
+        Dependencies = dependencies;
+    }
+
+    public IDependency[] Dependencies { get; }
+}
+
+DI.Setup("Composition")
+    .Bind<IDependency>().To<AbcDependency>()
+    .Bind<IDependency>(2).To<XyzDependency>()
+    .Bind<IService>().To<Service>()
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.Dependencies.Length.ShouldBe(2);
+service.Dependencies[0].ShouldBeOfType<AbcDependency>();
+service.Dependencies[1].ShouldBeOfType<XyzDependency>();
+```
+
+In addition to arrays, other collection types are also supported, such as:
+- System.Memory<T>
+- System.ReadOnlyMemory<T>
+- System.Span<T>
+- System.ReadOnlySpan<T>
+- System.Collections.Generic.ICollection<T>
+- System.Collections.Generic.IList<T>
+- System.Collections.Generic.List<T>
+- System.Collections.Generic.IReadOnlyCollection<T>
+- System.Collections.Generic.IReadOnlyList<T>
+- System.Collections.Generic.ISet<T>
+- System.Collections.Generic.HashSet<T>
+- System.Collections.Generic.SortedSet<T>
+- System.Collections.Generic.Queue<T>
+- System.Collections.Generic.Stack<T>
+- System.Collections.Immutable.ImmutableArray<T>
+- System.Collections.Immutable.IImmutableList<T>
+- System.Collections.Immutable.ImmutableList<T>
+- System.Collections.Immutable.IImmutableSet<T>
+- System.Collections.Immutable.ImmutableHashSet<T>
+- System.Collections.Immutable.ImmutableSortedSet<T>
+- System.Collections.Immutable.IImmutableQueue<T>
+- System.Collections.Immutable.ImmutableQueue<T>
+- System.Collections.Immutable.IImmutableStack<T>
+
+#### Lazy 
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\BaseClassLibrary\LazyScenario.cs)
+
+``` CSharp
+internal interface IDependency { }
+
+internal class Dependency : IDependency { }
+
+internal interface IService
+{
+    IDependency Dependency { get; }
+}
+
+internal class Service : IService
+{
+    private readonly Lazy<IDependency> _dependency;
+
+    public Service(Lazy<IDependency> dependency)
+    {
+        _dependency = dependency;
+    }
+
+    public IDependency Dependency => _dependency.Value;
+}
+
+DI.Setup("Composition")
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>()
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.Dependency.ShouldBe(service.Dependency);
+```
+
+#### Span and ReadOnlySpan
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\BaseClassLibrary\SpanScenario.cs)
+
+Specifying `Span<T>` and `ReadOnlySpan<T>` work the same as with the array `T[]`.
+
+``` CSharp
+internal class Dependency
+{
+}
+
+internal interface IService
+{
+    int Count { get; }
+}
+
+internal class Service : IService
+{
+    public Service(ReadOnlySpan<Dependency> dependencies)
+    {
+        Count = dependencies.Length;
+    }
+
+    public int Count { get; }
+}
+
+DI.Setup("Composition")
+    .Bind<Dependency>('a').To<Dependency>()
+    .Bind<Dependency>('b').To<Dependency>()
+    .Bind<Dependency>('c').To<Dependency>()
+    .Bind<IService>().To<Service>()
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.Count.ShouldBe(3);
+```
+
+This scenario is even more efficient when the `Span[]` or `ReadOnlySpan[]` element has a value type. In this case, there are no heap allocations, and the composition root `IService` looks like this:
+```csharp
+public IService Root
+{
+  get
+  {
+    ReadOnlySpan<Dependency> dependencies = stackalloc Dependency[3] { new Dependency(), new Dependency(), new Dependency() };
+    return new Service(dependencies);
+  }
+}
 ```
 

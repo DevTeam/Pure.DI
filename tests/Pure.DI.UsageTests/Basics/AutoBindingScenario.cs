@@ -25,7 +25,7 @@ internal class Service
 }
 // }
 
-public class AutoBindingScenario
+public class Scenario
 {
     [Fact]
     public void Run()

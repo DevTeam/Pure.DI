@@ -36,7 +36,7 @@ internal class Service : IService
 }
 // }
 
-public class PerResolveScenario
+public class Scenario
 {
     [Fact]
     public void Run()

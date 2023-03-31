@@ -122,7 +122,12 @@ public class ReadmeTarget : ITarget
             }
         }
         
-        var groups = new [] { "Basics", "Lifetimes" }
+        var groups = new []
+            {
+                "Basics",
+                "Lifetimes",
+                "BaseClassLibrary"
+            }
             .Select((name, index) => (name, index))
             .ToDictionary(i => i.name , i=> i.index);
 
@@ -142,7 +147,7 @@ public class ReadmeTarget : ITarget
         await readmeWriter.WriteLineAsync("## Examples");
         foreach (var (groupName, sampleItems) in samples)
         {
-            await readmeWriter.WriteLineAsync($"### {groupName}");
+            await readmeWriter.WriteLineAsync($"### {new string(FormatTitle(groupName).ToArray())}");
             foreach (var vars in sampleItems)
             {
                 var description = vars[DescriptionKey];
@@ -174,6 +179,25 @@ public class ReadmeTarget : ITarget
         
         await readmeWriter.FlushAsync();
         await examplesWriter.FlushAsync();
+    }
+
+    private static IEnumerable<char> FormatTitle(string title)
+    {
+        var isFirst = true;
+        foreach (var ch in title)
+        {
+            if (!isFirst && char.IsUpper(ch))
+            {
+                yield return ' ';
+                yield return ch;
+            }
+            else
+            {
+                yield return ch;
+            }
+
+            isFirst = false;
+        }
     }
 
     private static string CreateRef(string text) =>

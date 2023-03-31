@@ -25,6 +25,7 @@ internal static class CodeExtensions
             ushort => $"(ushort){tag}",
             nint => $"(nint){tag}",
             nuint => $"(nuint){tag}",
+            char ch => $"'{ch}'",
             {} => tag.ToString(),
             _ => defaultValue
         };

@@ -45,7 +45,7 @@ internal class Service : IService
 }
 // }
 
-public class TagScenario
+public class Scenario
 {
     [Fact]
     public void Run()

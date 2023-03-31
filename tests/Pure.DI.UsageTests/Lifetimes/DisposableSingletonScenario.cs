@@ -43,7 +43,7 @@ internal class Service : IService
 }
 // }
 
-public class DisposableSingletonScenario
+public class Scenario
 {
     [Fact]
     public void Run()

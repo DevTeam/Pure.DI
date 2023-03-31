@@ -36,7 +36,7 @@ internal class Service : IService
 }
 // }
 
-public class SingletonScenario
+public class Scenario
 {
     [Fact]
     public void Run()

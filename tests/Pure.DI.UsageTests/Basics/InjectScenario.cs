@@ -35,7 +35,7 @@ internal class Service : IService
 }
 // }
 
-public class InjectScenario
+public class Scenario
 {
     [Fact]
     public void Run()

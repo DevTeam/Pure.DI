@@ -37,7 +37,7 @@ internal class Service : IService
 }
 // }
 
-public class TransientScenario
+public class Scenario
 {
     [Fact]
     public void Run()

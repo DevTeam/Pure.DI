@@ -53,7 +53,7 @@ internal class Service : IService
 }
 // }
 
-public class FactoryScenario
+public class Scenario
 {
     [Fact]
     public void Run()

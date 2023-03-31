@@ -155,10 +155,9 @@ class Program
 ```c#
 public Sample.Program Root
 {
-  [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   get
   {
-    System.Func<Sample.State> stateFunc = new System.Func<Sample.State>(() =>
+    Func<State> stateFunc = new Func<State>(() =>
     {
       if (_randomSingleton == null)
       {
@@ -166,7 +165,7 @@ public Sample.Program Root
         {
           if (_randomSingleton == null)
           {
-            _randomSingleton = new System.Random();
+            _randomSingleton = new Random();
           }
         }
       }
@@ -174,10 +173,10 @@ public Sample.Program Root
       return (State)_randomSingleton.Next(2);      
     });
     
-    return new Sample.Program(
-      new Sample.CardboardBox<Sample.ICat>(
-        new Sample.ShroedingersCat(
-          new System.Lazy<Sample.State>(
+    return new Program(
+      new CardboardBox<ICat>(
+        new ShroedingersCat(
+          new Lazy<Sample.State>(
             stateFunc))));    
   }
 }
@@ -218,3 +217,9 @@ _Pure.DI_ works the same as calling a set of nested constructors, but allows dep
 - [Transient](readme/Examples.md#transient)
 - [Disposable Singleton](readme/Examples.md#disposable-singleton)
 - [Default lifetime](readme/Examples.md#default-lifetime)
+### Base Class Library
+- [Func](readme/Examples.md#func)
+- [IEnumerable](readme/Examples.md#ienumerable)
+- [Array](readme/Examples.md#array)
+- [Lazy ](readme/Examples.md#lazy-)
+- [Span and ReadOnlySpan](readme/Examples.md#span-and-readonlyspan)
