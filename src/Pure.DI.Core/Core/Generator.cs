@@ -64,9 +64,9 @@ internal class Generator : IGenerator
 
             foreach (var setup in setups)
             {
-                using var setupToken = _logger.TraceProcess($"metadata processing \"{setup.TypeName}\"");
+                using var setupToken = _logger.TraceProcess($"metadata processing \"{setup.Name.FullName}\"");
                 DependencyGraph dependencyGraph;
-                using (_logger.TraceProcess($"building a dependency graph \"{setup.TypeName}\""))
+                using (_logger.TraceProcess($"building a dependency graph \"{setup.Name.FullName}\""))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     dependencyGraph = _dependencyGraphBuilder.Build(setup, cancellationToken);
@@ -76,13 +76,13 @@ internal class Generator : IGenerator
                     }
                 }
 
-                using (_logger.TraceProcess($"dependency graph validation \"{setup.TypeName}\""))
+                using (_logger.TraceProcess($"dependency graph validation \"{setup.Name.FullName}\""))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     _dependencyGraphValidator.Validate(dependencyGraph, cancellationToken);
                 }
 
-                using (_logger.TraceProcess($"search for roots \"{setup.TypeName}\""))
+                using (_logger.TraceProcess($"search for roots \"{setup.Name.FullName}\""))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     var roots = _rootsBuilder.Build(dependencyGraph, cancellationToken);
@@ -95,7 +95,7 @@ internal class Generator : IGenerator
                 }
 
                 CompositionCode composition;
-                using (_logger.TraceProcess($"creating a composition \"{setup.TypeName}\""))
+                using (_logger.TraceProcess($"creating a composition \"{setup.Name.FullName}\""))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     composition = _compositionBuilder.Build(dependencyGraph, cancellationToken);
@@ -105,22 +105,22 @@ internal class Generator : IGenerator
                     }
                 }
 
-                using (_logger.TraceProcess($"code generation \"{setup.TypeName}\""))
+                using (_logger.TraceProcess($"code generation \"{setup.Name.FullName}\""))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     composition = _classBuilder.Build(composition, cancellationToken);
                 }
 
-                using (_logger.TraceProcess($"saving data \"{setup.TypeName}\""))
+                using (_logger.TraceProcess($"saving data \"{setup.Name.FullName}\""))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     var classCode = string.Join(Environment.NewLine, composition.Code);
-                    _contextProducer.AddSource($"{setup.TypeName}.g.cs", SourceText.From(classCode, Encoding.UTF8));
+                    _contextProducer.AddSource($"{setup.Name.FullName}.g.cs", SourceText.From(classCode, Encoding.UTF8));
                 }
 
                 if (_logger.IsTracing())
                 {
-                    var trace = new List<string> { $"Setup {dependencyGraph.Source.TypeName}:", "---------- Map ----------" };
+                    var trace = new List<string> { $"Setup {dependencyGraph.Source.Name.FullName}:", "---------- Map ----------" };
                     foreach (var (injection, dependencyNode) in dependencyGraph.Map)
                     {
                         trace.Add($"{injection} -> {dependencyNode}");

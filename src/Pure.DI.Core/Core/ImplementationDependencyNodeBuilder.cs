@@ -49,7 +49,7 @@ internal class ImplementationDependencyNodeBuilder :
 
             if (!constructors.Any())
             {
-                _logger.CompileError($"The {implementationType} cannot be constructed due to no constructor available.", implementation.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                _logger.CompileError($"The instance of {implementationType} cannot be instantiated due to no accessible constructor available.", implementation.Source.GetLocation(), LogId.ErrorInvalidMetadata);
                 throw HandledException.Shared;
             }
 

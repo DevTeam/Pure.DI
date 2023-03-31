@@ -13,7 +13,7 @@ internal class ChildConstructorBuilder: IBuilder<CompositionCode, CompositionCod
             code.AppendLine();
         }
 
-        code.AppendLine($"internal {composition.ClassName}({composition.ClassName} {ParentCompositionArgName})");
+        code.AppendLine($"internal {composition.Name.ClassName}({composition.Name.ClassName} {ParentCompositionArgName})");
         code.AppendLine("{");
         using (code.Indent())
         {

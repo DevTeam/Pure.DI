@@ -61,17 +61,17 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
             yield break;
         }
 
-        _logger.Trace(setups, state => ImmutableArray.Create($"Raw setups count is {state.Count}: {string.Join(", ", state.Select(i => $"\"{i.TypeName}\""))}"));
+        _logger.Trace(setups, state => ImmutableArray.Create($"Raw setups count is {state.Count}: {string.Join(", ", state.Select(i => $"\"{i.Name.FullName}\""))}"));
 
         var setupMap = setups
             .Where(i => i.Kind != CompositionKind.Global)
-            .GroupBy(i => i.TypeName)
+            .GroupBy(i => i.Name)
             .Select(setupGroup =>
             {
                 MergeSetups(setupGroup, out var mergedSetup, false, cancellationToken);
                 return mergedSetup;
             })
-            .ToDictionary(i =>  i.TypeName, i => i);
+            .ToDictionary(i =>  i.Name, i => i);
         
         _logger.Trace(setupMap, state => ImmutableArray.Create($"Setups map with size {state.Count}: {string.Join(", ", state.Select(i => $"\"{i.Key}\""))}"));
 
@@ -79,7 +79,7 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
         foreach (var setup in setupMap.Values.Where(i => i.Kind == CompositionKind.Public))
         {
             var setupsChain = globalSetups
-                .Concat(ResolveDependencies(setup, setupMap, new HashSet<string>(), cancellationToken))
+                .Concat(ResolveDependencies(setup, setupMap, new HashSet<CompositionName>(), cancellationToken))
                 .Concat(Enumerable.Repeat(setup, 1));
             
             MergeSetups(setupsChain, out var mergedSetup, true, cancellationToken);
@@ -90,7 +90,7 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
 
     private IEnumerable<MdSetup> ResolveDependencies(
         MdSetup setup,
-        IReadOnlyDictionary<string, MdSetup> map, ISet<string> processed,
+        IReadOnlyDictionary<CompositionName, MdSetup> map, ISet<CompositionName> processed,
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -122,7 +122,7 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
     private static void MergeSetups(IEnumerable<MdSetup> setups, out MdSetup mergedSetup, bool resolveDependsOn, in CancellationToken cancellationToken)
     {
         SyntaxNode? source = default;
-        var compositionTypeName = "";
+        CompositionName? name = default;
         var kind = CompositionKind.Global;
         var settings = new Settings();
         var bindingsBuilder = ImmutableArray.CreateBuilder<MdBinding>(64);
@@ -132,12 +132,11 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
         var tagAttributesBuilder = ImmutableArray.CreateBuilder<MdTagAttribute>(2);
         var ordinalAttributesBuilder = ImmutableArray.CreateBuilder<MdOrdinalAttribute>(2);
         var usingDirectives = ImmutableArray.CreateBuilder<MdUsingDirectives>(2);
-        var ns = string.Empty;
         var bindingId = 0;
         foreach (var setup in setups)
         {
             source = setup.Source;
-            compositionTypeName = setup.TypeName;
+            name = setup.Name;
             kind = setup.Kind;
             foreach (var setting in setup.Settings)
             {
@@ -158,7 +157,6 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
             typeAttributesBuilder.AddRange(setup.TypeAttributes);
             tagAttributesBuilder.AddRange(setup.TagAttributes);
             ordinalAttributesBuilder.AddRange(setup.OrdinalAttributes);
-            ns = setup.Namespace;
             foreach (var usingDirective in setup.UsingDirectives)
             {
                 usingDirectives.Add(usingDirective);   
@@ -169,8 +167,7 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
 
         mergedSetup = new MdSetup(
             source!,
-            compositionTypeName,
-            ns,
+            name!,
             usingDirectives.ToImmutableArray(),
             kind,
             settings,

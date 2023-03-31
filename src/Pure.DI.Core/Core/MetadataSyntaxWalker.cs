@@ -195,8 +195,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                                 MetadataVisitor.VisitSetup(
                                     new MdSetup(
                                         invocation,
-                                        GetConstantValue<string>(publicCompositionType),
-                                        _namespace,
+                                        CreateCompositionName(GetConstantValue<string>(publicCompositionType), _namespace),
                                         GetUsingDirectives(invocation),
                                         CompositionKind.Public,
                                         GetSettings(invocation),
@@ -206,16 +205,13 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                                         ImmutableArray<MdTypeAttribute>.Empty,
                                         ImmutableArray<MdTagAttribute>.Empty,
                                         ImmutableArray<MdOrdinalAttribute>.Empty));
-
-                                _namespace = string.Empty;
                                 break;
 
                             case [{ Expression: { } publicCompositionType }, { Expression: { } kindExpression }]:
                                 MetadataVisitor.VisitSetup(
                                     new MdSetup(
                                         invocation,
-                                        GetConstantValue<string>(publicCompositionType),
-                                        _namespace,
+                                        CreateCompositionName(GetConstantValue<string>(publicCompositionType), _namespace),
                                         GetUsingDirectives(invocation),
                                         GetConstantValue<CompositionKind>(kindExpression),
                                         GetSettings(invocation),
@@ -225,8 +221,6 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                                         ImmutableArray<MdTypeAttribute>.Empty,
                                         ImmutableArray<MdTagAttribute>.Empty,
                                         ImmutableArray<MdOrdinalAttribute>.Empty));
-
-                                _namespace = string.Empty;
                                 break;
 
                             default:
@@ -247,7 +241,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                     case nameof(IConfiguration.DependsOn):
                         if (BuildConstantArgs<string>(invocation.ArgumentList.Arguments) is [..] compositionTypeNames)
                         {
-                            MetadataVisitor.VisitDependsOn(new MdDependsOn(SemanticModel, invocation, compositionTypeNames.ToImmutableArray()));
+                            MetadataVisitor.VisitDependsOn(new MdDependsOn(SemanticModel, invocation, compositionTypeNames.Select(i => CreateCompositionName(i, _namespace)).ToImmutableArray()));
                         }
 
                         break;
@@ -361,6 +355,31 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                 break;
         }
     }
+
+    private static CompositionName CreateCompositionName(string name, string ns)
+    {
+        string className;
+        string newNamespace;
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            var compositionTypeNameParts = name.Split('.', StringSplitOptions.RemoveEmptyEntries);
+            className = compositionTypeNameParts.Last();
+            newNamespace = string.Join('.', compositionTypeNameParts.Take(compositionTypeNameParts.Length - 1)).Trim();
+        }
+        else
+        {
+            className = "";
+            newNamespace = "";
+        }
+
+        if (string.IsNullOrWhiteSpace(newNamespace))
+        {
+            newNamespace = ns;
+        }
+
+        return new CompositionName(className, newNamespace);
+    }
+    
 
     private ImmutableArray<MdUsingDirectives> GetUsingDirectives(SyntaxNode syntaxNode)
     {

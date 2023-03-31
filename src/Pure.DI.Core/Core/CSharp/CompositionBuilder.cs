@@ -16,21 +16,11 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         CancellationToken cancellationToken)
     {
         _lines.Clear();
-        var compositionTypeNameParts = dependencyGraph.Source.TypeName.Split('.', StringSplitOptions.RemoveEmptyEntries);
-        var className = compositionTypeNameParts.Last();
-        var ns = string.Join('.', compositionTypeNameParts.Take(compositionTypeNameParts.Length - 1)).Trim();
-        if (string.IsNullOrWhiteSpace(ns))
-        {
-            ns = dependencyGraph.Source.Namespace;
-        }
-        
-        var usingDirectives = dependencyGraph.Source.UsingDirectives.ToHashSet();
         var variables = new Dictionary<MdBinding, Variable>();
         VisitGraph(RootContext, dependencyGraph, variables, cancellationToken);
         var fields = variables.Select(i => new Field(i.Value.Node, i.Value.Name)).ToImmutableArray();
         return new CompositionCode(
-            className,
-            ns,
+            dependencyGraph.Source.Name,
             dependencyGraph.Source.UsingDirectives,
             GetSingletons(fields),
             GetArgs(fields),

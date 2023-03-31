@@ -1,8 +1,7 @@
 namespace Pure.DI.Core.Models;
 
 internal record CompositionCode(
-    string ClassName,
-    string Namespace,
+    CompositionName Name,
     in ImmutableArray<MdUsingDirectives> UsingDirectives,
     in ImmutableArray<Field> Singletons,
     in ImmutableArray<Field> Args,

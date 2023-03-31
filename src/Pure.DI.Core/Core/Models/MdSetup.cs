@@ -5,8 +5,7 @@ namespace Pure.DI.Core.Models;
 
 internal record MdSetup(
     SyntaxNode Source,
-    string TypeName,
-    string Namespace,
+    CompositionName Name,
     in ImmutableArray<MdUsingDirectives> UsingDirectives,
     CompositionKind Kind,
     ISettings Settings,

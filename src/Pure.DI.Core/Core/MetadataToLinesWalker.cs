@@ -15,7 +15,7 @@ internal class MetadataToLinesWalker: MetadataWalkerBase, IEnumerable<string>
             _lb.AppendLine($"// {setting.Key.ToString()} = {setting.Value}{Environment.NewLine}");
         }
         
-        _lb.AppendLine($"DI.Setup(\"{setup.TypeName}\")");
+        _lb.AppendLine($"DI.Setup(\"{setup.Name.FullName}\")");
         using (_lb.Indent())
         {
             base.VisitSetup(in setup);

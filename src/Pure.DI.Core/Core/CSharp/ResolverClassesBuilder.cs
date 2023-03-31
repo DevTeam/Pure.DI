@@ -26,7 +26,7 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine($"public static {ResolverInterfaceName}<{composition.ClassName}, T> {ResolverPropertyName};");
+            code.AppendLine($"public static {ResolverInterfaceName}<{composition.Name.ClassName}, T> {ResolverPropertyName};");
         }
         code.AppendLine("}");
         
@@ -38,7 +38,7 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
             {
                 var resolverClassName = GetResolveClassName(roots.Key);
                 code.AppendLine();
-                code.AppendLine($"private class {resolverClassName}: {ResolverInterfaceName}<{composition.ClassName}, {roots.Key}>");
+                code.AppendLine($"private class {resolverClassName}: {ResolverInterfaceName}<{composition.Name.ClassName}, {roots.Key}>");
                 code.AppendLine("{");
                 using (code.Indent())
                 {
@@ -64,7 +64,7 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
         LinesBuilder code)
     {
         var defaultRoot = roots.SingleOrDefault(i => i.Injection.Tag is not { });
-        code.AppendLine($"public {returnType} {methodPrefix}{ResolveMethodName}({composition.ClassName} composition)");
+        code.AppendLine($"public {returnType} {methodPrefix}{ResolveMethodName}({composition.Name.ClassName} composition)");
         code.AppendLine("{");
         using (code.Indent())
         {
@@ -82,7 +82,7 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
 
         code.AppendLine();
 
-        code.AppendLine($"public {returnType} {methodPrefix}{ResolveByTagMethodName}({composition.ClassName} composition, object tag)");
+        code.AppendLine($"public {returnType} {methodPrefix}{ResolveByTagMethodName}({composition.Name.ClassName} composition, object tag)");
         code.AppendLine("{");
         using (code.Indent())
         {

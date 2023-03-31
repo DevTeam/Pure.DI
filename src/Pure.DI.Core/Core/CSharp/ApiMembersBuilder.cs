@@ -70,7 +70,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             var divisor = Buckets<object, object>.GetDivisor((uint)actualRoots.Length);
             if (actualRoots.Any())
             {
-                var pairs = $"System.Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.ClassName}>";
+                var pairs = $"System.Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.Name.ClassName}>";
                 var pairTypeName = $"{CodeExtensions.ApiNamespace}Pair<{pairs}>";
                 if (divisor <= 1)
                 {

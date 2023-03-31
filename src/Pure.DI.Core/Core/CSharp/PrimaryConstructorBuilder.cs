@@ -21,7 +21,7 @@ internal class PrimaryConstructorBuilder: IBuilder<CompositionCode, CompositionC
             code.AppendLine();
         }
 
-        code.AppendLine($"public {composition.ClassName}({string.Join(", ", composition.Args.Select(i => $"{i.Node.Type} {i.Node.Arg?.Source.ArgName}"))})");
+        code.AppendLine($"public {composition.Name.ClassName}({string.Join(", ", composition.Args.Select(i => $"{i.Node.Type} {i.Node.Arg?.Source.ArgName}"))})");
         code.AppendLine("{");
         using (code.Indent())
         {

@@ -48,6 +48,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clock.Tests", "samples\Cloc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfAppNetCore", "samples\WpfAppNetCore\WpfAppNetCore.csproj", "{9DBB3FF4-2C02-4F77-AF82-76147C9874C8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "build", "build\build.csproj", "{F62AF473-0F16-4F55-953F-B737F6E2101B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "readme", "readme", "{24E44980-FC88-4DA1-A2D2-C45296AF7D63}"
+	ProjectSection(SolutionItems) = preProject
+		readme\Examples.md = readme\Examples.md
+		readme\ReadmeTemplate.md = readme\ReadmeTemplate.md
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -98,6 +107,10 @@ Global
 		{9DBB3FF4-2C02-4F77-AF82-76147C9874C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DBB3FF4-2C02-4F77-AF82-76147C9874C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DBB3FF4-2C02-4F77-AF82-76147C9874C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F62AF473-0F16-4F55-953F-B737F6E2101B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F62AF473-0F16-4F55-953F-B737F6E2101B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F62AF473-0F16-4F55-953F-B737F6E2101B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F62AF473-0F16-4F55-953F-B737F6E2101B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7C9E056B-CBA9-4548-9CDB-C5CE03C491B0} = {8163CDD7-7018-4301-A984-803C3807A6A6}

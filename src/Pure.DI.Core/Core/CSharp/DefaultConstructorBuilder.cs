@@ -16,7 +16,7 @@ internal class DefaultConstructorBuilder: IBuilder<CompositionCode, CompositionC
             code.AppendLine();
         }
 
-        code.AppendLine($"public {composition.ClassName}()");
+        code.AppendLine($"public {composition.Name.ClassName}()");
         code.AppendLine("{");
         using (code.Indent())
         {

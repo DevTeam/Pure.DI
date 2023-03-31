@@ -57,7 +57,7 @@ namespace Sample
         private static void Setup() =>
             DI.Setup("Composition")
                 // Models a random subatomic event that may or may not occur
-                .Bind<Random>().As(PerResolve).To<Random>()
+                .Bind<Random>().As(Singleton).To<Random>()
                 // Represents a quantum superposition of 2 states: Alive or Dead
                 .Bind<State>().To(ctx =>
                 {
@@ -82,7 +82,7 @@ namespace Sample
 
         private readonly IBox<ICat> _box;
 
-        internal Program(IBox<ICat> box, Random random) => _box = box;
+        internal Program(IBox<ICat> box) => _box = box;
 
         private void Run() => Console.WriteLine(_box);
     }

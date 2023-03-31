@@ -18,7 +18,7 @@ internal class ResolversFieldsBuilder: IBuilder<CompositionCode, CompositionCode
             code.AppendLine();
         }
 
-        var pairs = $"System.Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.ClassName}>";
+        var pairs = $"System.Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.Name.ClassName}>";
         var pairTypeName = $"{CodeExtensions.ApiNamespace}Pair<{pairs}>";
         code.AppendLine($"private readonly static {pairTypeName}[] {BucketsFieldName};");
         return composition with { MembersCount = composition.MembersCount + 2 };
