@@ -18,8 +18,9 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         _lines.Clear();
         var variables = new Dictionary<MdBinding, Variable>();
         VisitGraph(RootContext, dependencyGraph, variables, cancellationToken);
-        var fields = variables.Select(i => new Field(i.Value.Node, i.Value.Name)).ToImmutableArray();
+        var fields = variables.Select(i => i.Value).ToImmutableArray();
         return new CompositionCode(
+            dependencyGraph,
             dependencyGraph.Source.Name,
             dependencyGraph.Source.UsingDirectives,
             GetSingletons(fields),
@@ -69,7 +70,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             FinishSingletonInitBlock(context.Code, block.Root);
             if (context.IsRootContext && block.Root == root)
             {
-                context.Code.AppendLine(GenerateFinalStatement(block.Root, block.Root.Name, true));
+                context.Code.AppendLines(GenerateReturnStatements(block.Root));
             }
         }
     }
@@ -101,10 +102,9 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         CancellationToken cancellationToken)
     {
         base.VisitConstructor(context, dependencyGraph, root, block, instantiation, implementation, constructor, constructorArguments, initOnlyProperties, cancellationToken);
-        var args = string.Join(", ", constructorArguments.Select(i => i.Name));
-        var newStatement = $"new {instantiation.Target.Node.Type}({args})";
-        var statement = GenerateFinalStatement(instantiation.Target, newStatement, false, initOnlyProperties.Any() ? "" : ";");
-        context.Code.AppendLine(statement);
+        var args = string.Join(", ", constructorArguments.Select(Inject));
+        var newStatement = $"new {instantiation.Target.InstanceType}({args})";
+        context.Code.AppendLines(GenerateDeclareStatements(instantiation.Target, newStatement, initOnlyProperties.Any() ? "" : ";"));
         if (initOnlyProperties.Any())
         {
             context.Code.AppendLine("{");
@@ -113,11 +113,13 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
                 for (var index = 0; index < initOnlyProperties.Length; index++)
                 {
                     var property = initOnlyProperties[index];
-                    context.Code.AppendLine($"{property.InitOnlyProperty.Property.Name} = {property.InitOnlyVariable.Name}{(index < initOnlyProperties.Length - 1 ? "," : "")}");
+                    context.Code.AppendLine($"{property.InitOnlyProperty.Property.Name} = {Inject(property.InitOnlyVariable)}{(index < initOnlyProperties.Length - 1 ? "," : "")}");
                 }
             }
             context.Code.AppendLine("};");
         }
+
+        context.Code.AppendLines(GenerateOnInstanceCreatedStatements(instantiation.Target));
     }
 
     public override void VisitField(
@@ -132,7 +134,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         CancellationToken cancellationToken)
     {
         base.VisitField(context, dependencyGraph, root, block, instantiation, implementation, field, fieldVariable, cancellationToken);
-        context.Code.AppendLine($"{instantiation.Target.Name}.{field.Field.Name} = {fieldVariable.Name};");
+        context.Code.AppendLine($"{instantiation.Target.Name}.{field.Field.Name} = {Inject(fieldVariable)};");
     }
 
     public override void VisitProperty(
@@ -147,7 +149,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         CancellationToken cancellationToken)
     {
         base.VisitProperty(context, dependencyGraph, root, block, instantiation, implementation, property, propertyVariable, cancellationToken);
-        context.Code.AppendLine($"{instantiation.Target.Name}.{property.Property.Name} = {propertyVariable.Name};");
+        context.Code.AppendLine($"{instantiation.Target.Name}.{property.Property.Name} = {Inject(propertyVariable)};");
     }
 
     public override void VisitMethod(
@@ -162,7 +164,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         CancellationToken cancellationToken)
     {
         base.VisitMethod(context, dependencyGraph, root, block, instantiation, implementation, method, methodArguments, cancellationToken);
-        var args = string.Join(", ", methodArguments.Select(i => i.Name));
+        var args = string.Join(", ", methodArguments.Select(Inject));
         context.Code.AppendLine($"{instantiation.Target.Name}.{method.Method.Name}({args});");
     }
 
@@ -177,7 +179,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
     {
         if (context.IsRootContext && instantiation.Target == rootVariable)
         {
-            context.Code.AppendLine(GenerateFinalStatement(instantiation.Target, instantiation.Target.Name, true));
+            context.Code.AppendLines(GenerateReturnStatements(instantiation.Target));
         }
 
         base.VisitArg(context, dependencyGraph, rootVariable, block, instantiation, dpArg, cancellationToken);
@@ -198,7 +200,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         }
 
         var localFuncName = $"LocalFunc_{instantiation.Target.Name}";
-        context.Code.AppendLine($"{instantiation.Target.Type} {localFuncName}()");
+        context.Code.AppendLine($"{instantiation.Target.InstanceType} {localFuncName}()");
         context.Code.AppendLine("{");
         using (context.Code.Indent())
         {
@@ -206,12 +208,12 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             {
                 arg.IsCreated = false;
                 VisitRootVariable(context with { IsRootContext = false }, dependencyGraph, context.Variables, arg, cancellationToken);
-                context.Code.AppendLine($"yield return {arg.Name};");
+                context.Code.AppendLine($"yield return {Inject(arg)};");
             }
         }
         context.Code.AppendLine("}");
         context.Code.AppendLine();
-        context.Code.AppendLine($"{instantiation.Target.Type} {instantiation.Target.Name} = {localFuncName}();");
+        context.Code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = {localFuncName}();");
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
     }
@@ -230,7 +232,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             return;
         }
 
-        context.Code.AppendLine($"{instantiation.Target.Type} {instantiation.Target.Name} = new {construct.Source.ElementType}[{instantiation.Arguments.Length}] {{ {string.Join(", ", instantiation.Arguments.Select(i => i.Name))} }};");
+        context.Code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = new {construct.Source.ElementType}[{instantiation.Arguments.Length}] {{ {string.Join(", ", instantiation.Arguments.Select(Inject))} }};");
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
     }
@@ -249,14 +251,14 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             return;
         }
         
-        var createArray = $"{construct.Source.ElementType}[{instantiation.Arguments.Length}] {{ {string.Join(", ", instantiation.Arguments.Select(i => i.Name))} }}";
+        var createArray = $"{construct.Source.ElementType}[{instantiation.Arguments.Length}] {{ {string.Join(", ", instantiation.Arguments.Select(Inject))} }}";
         var createInstance = 
             construct.Source.ElementType.IsValueType
             && construct.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp7_3
             && !IsJustReturn(context, root, instantiation) 
                 ? $"stackalloc {createArray}"
                 : $"new System.Span<{construct.Source.ElementType}>(new {createArray})";
-        context.Code.AppendLine($"{instantiation.Target.Type} {instantiation.Target.Name} = {createInstance};");
+        context.Code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = {createInstance};");
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
     }
@@ -265,7 +267,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
     {
         if (IsJustReturn(context, root, instantiation))
         {
-            context.Code.AppendLine(GenerateFinalStatement(instantiation.Target, instantiation.Target.Name, true));
+            context.Code.AppendLines(GenerateReturnStatements(instantiation.Target));
         }
     }
 
@@ -303,9 +305,9 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
                 foreach (var arg in argsByContext)
                 {
                     var argBuildContext = new BuildContext(context.Variables, new LinesBuilder(), false);
-                    var rootVariable = CreateVariable(argBuildContext.Variables, arg.argument.Node, arg.argument.Injection);
+                    var rootVariable = CreateVariable(dependencyGraph, argBuildContext.Variables, arg.argument.Node, arg.argument.Injection);
                     argCodeBuilder.VisitRootVariable(argBuildContext, dependencyGraph, context.Variables, rootVariable, cancellationToken);
-                    namesMap.Add(arg.factoryInjection.VariableName, rootVariable.Name);
+                    namesMap.Add(arg.factoryInjection.VariableName, Inject(rootVariable));
                     initializers.Add($"{arg.factoryInjection.InjectionId};", argBuildContext.Code.ToImmutableArray());
                 }
             }
@@ -322,7 +324,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             var blockRewriter = new FactoryBlockRewriter(instantiation.Target, finishMark);
             factoryBlock = (BlockSyntax)blockRewriter.VisitBlock(factoryBlock)!;
             var initStatements = factoryBlock.Statements.SelectMany(ConvertToLines);
-            lines.Add($"{instantiation.Target.Type} {instantiation.Target.Name};");
+            lines.Add($"{instantiation.Target.InstanceType} {instantiation.Target.Name};");
             lines.AddRange(initStatements);
             if (lines.Count > 0 && lines[^1].TrimStart() == $"goto {finishMark};")
             {
@@ -335,14 +337,27 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             
             if (justReturn)
             {
-                lines.Add(GenerateFinalStatement(instantiation.Target, instantiation.Target.Name, true));
+                lines.AddRange(GenerateReturnStatements(instantiation.Target));
             }
         }
         else
         {
-            var initStatements = ConvertToLines(lambda.Body).ToArray();
-            initStatements[0] = GenerateFinalStatement(instantiation.Target, initStatements[0], justReturn, "");
+            var initStatements = ConvertToLines(lambda.Body).ToList();
+            var initStatement = initStatements[0];
+            initStatements.RemoveAt(0);
+            var position = 0;
+            foreach (var line in GenerateDeclareStatements(instantiation.Target, initStatement, ""))
+            {
+                initStatements.Insert(position++, line);
+            }
             initStatements[^1] += ";";
+            initStatements.AddRange(GenerateOnInstanceCreatedStatements(instantiation.Target));
+
+            if (justReturn)
+            {
+                initStatements.AddRange(GenerateReturnStatements(instantiation.Target));
+            }
+            
             lines.AddRange(initStatements);
         }
 
@@ -387,7 +402,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
 
     private static void StartSingletonInitBlock(LinesBuilder code, Variable variable)
     {
-        var checkExpression = variable.Node.Type.IsValueType switch
+        var checkExpression = variable.InstanceType.IsValueType switch
         {
             true => $"!{variable.Name}Created",
             false => $"System.Object.ReferenceEquals({variable.Name}, null)"
@@ -411,7 +426,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             code.AppendLine($"{Variable.DisposablesFieldName}[{Variable.DisposeIndexFieldName}++] = {variable.Name};");
         }
         
-        if (variable.Node.Type.IsValueType)
+        if (variable.InstanceType.IsValueType)
         {
             code.AppendLine($"{variable.Name}Created = true;");
         }
@@ -425,23 +440,41 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         code.AppendLine();
     }
     
-    private static string GenerateFinalStatement(Variable variable, string instantiation, bool justReturn, string lastChars = ";")
+    private static IEnumerable<string> GenerateDeclareStatements(Variable variable, string instantiation, string lastChars = ";")
     {
-        if (justReturn)
-        {
-            return $"return {instantiation}{lastChars}";
-        }
-
-        var declaration = variable.IsDeclared ? $"{variable.Name}" : $"{variable.Type} {variable.Name}";
-        return $"{declaration} = {instantiation}{lastChars}";
+        var declaration = variable.IsDeclared ? $"{variable.Name}" : $"{variable.InstanceType} {variable.Name}";
+        yield return $"{declaration} = {instantiation}{lastChars}";
     }
     
+    private static IEnumerable<string> GenerateOnInstanceCreatedStatements(Variable variable)
+    {
+        if (variable.Node.Arg is { })
+        {
+            yield break;
+        }
+
+        yield return OnInstanceCreation(variable) + ";";
+    }
+
+    private static IEnumerable<string> GenerateReturnStatements(Variable variable, string lastChars = ";")
+    {
+        yield return $"return {Inject(variable)}{lastChars}";
+    }
+
+    private static string OnInstanceCreation(Variable variable) => 
+        $"{CodeConstants.OnInstanceCreationMethodName}<{variable.InstanceType}>(ref {variable.Name}, {variable.Injection.Tag.TagToString()}, {variable.Node.Binding.Lifetime?.Lifetime.TagToString() ?? "null"})";
+
+    private static string Inject(Variable variable) =>
+        variable.Source.Source.Settings.GetBool(Setting.TrackInjections) 
+            ? $"{CodeConstants.OnDependencyInjectionMethodName}<{variable.ContractType}>({variable.Name}, {variable.Injection.Tag.TagToString()}, {variable.Node.Binding.Lifetime?.Lifetime.TagToString() ?? "null"})"
+            : variable.Name;
+
     private bool IsDisposable(Variable variable)
     {
         var compilation = variable.Node.Binding.SemanticModel.Compilation;
         if (!_disposableTypes.TryGetValue(compilation, out var disposableType))
         {
-            disposableType = compilation.GetTypeByMetadataName(CodeExtensions.IDisposableInterfaceName);
+            disposableType = compilation.GetTypeByMetadataName(CodeConstants.IDisposableInterfaceName);
             _disposableTypes.Add(compilation, disposableType);
         }
         
@@ -449,13 +482,13 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
                && variable.Node.Type.AllInterfaces.Any(i => disposableType.Equals(i, SymbolEqualityComparer.Default));
     }
     
-    private static ImmutableArray<Field> GetSingletons(in ImmutableArray<Field> fields) =>
+    private static ImmutableArray<Variable> GetSingletons(in ImmutableArray<Variable> fields) =>
         fields
             .Where(i => Equals(i.Node.Binding.Lifetime?.Lifetime, Lifetime.Singleton))
             .OrderBy(i => i.Node.Binding.Id)
             .ToImmutableArray();
 
-    private static ImmutableArray<Field> GetArgs(in ImmutableArray<Field> fields) =>
+    private static ImmutableArray<Variable> GetArgs(in ImmutableArray<Variable> fields) =>
         fields
             .Where(i => i.Node.Arg is { })
             .OrderBy(i => i.Node.Binding.Id)

@@ -40,7 +40,7 @@ internal class CodeGraphWalker<TContext>
             variable.IsCreated = false;
         }
 
-        var rootVariable = CreateVariable(variables, root.Node, root.Injection);
+        var rootVariable = CreateVariable(dependencyGraph, variables, root.Node, root.Injection);
         VisitRootVariable(context, dependencyGraph, variables, rootVariable, cancellationToken);
     }
     
@@ -69,7 +69,7 @@ internal class CodeGraphWalker<TContext>
                     foreach (var dependency in dependencies)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        ProcessVariable(CreateVariable(variables, dependency.Source, dependency.Injection));
+                        ProcessVariable(CreateVariable(dependencyGraph, variables, dependency.Source, dependency.Injection));
                     }
                 }
 
@@ -357,7 +357,7 @@ internal class CodeGraphWalker<TContext>
     {
     }
     
-    protected Variable CreateVariable(IDictionary<MdBinding, Variable> variables, DependencyNode node, Injection injection)
+    protected Variable CreateVariable(DependencyGraph source, IDictionary<MdBinding, Variable> variables, DependencyNode node, Injection injection)
     {
         switch (node)
         {
@@ -367,7 +367,7 @@ internal class CodeGraphWalker<TContext>
                     return argVar;
                 }
 
-                argVar = new Variable(0, node, injection)
+                argVar = new Variable(source, 0, node, injection)
                 {
                     IsDeclared = true,
                     IsCreated = true
@@ -382,7 +382,7 @@ internal class CodeGraphWalker<TContext>
                     return singletonVar;
                 }
 
-                singletonVar = new Variable(0, node, injection)
+                singletonVar = new Variable(source, 0, node, injection)
                 {
                     IsDeclared = true,
                     IsBlockRoot = true
@@ -397,12 +397,12 @@ internal class CodeGraphWalker<TContext>
                     return perResolveVar;
                 }
 
-                perResolveVar = new Variable(_idGenerator.NextId, node, injection);
+                perResolveVar = new Variable(source, _idGenerator.NextId, node, injection);
                 variables.Add(node.Binding, perResolveVar);
                 return perResolveVar;
 
             default:
-                var transientVar = new Variable(_idGenerator.NextId, node, injection);
+                var transientVar = new Variable(source, _idGenerator.NextId, node, injection);
                 return transientVar;
         }
     }

@@ -21,7 +21,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine($"return {ResolverClassesBuilder.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}.{ResolverClassesBuilder.ResolveMethodName}(this);");
+            code.AppendLine($"return {ResolverClassesBuilder.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}!.{ResolverClassesBuilder.ResolveMethodName}(this);");
         }
         code.AppendLine("}");
         
@@ -29,11 +29,11 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
         membersCounter++;
         
         AddMethodHeader(code);
-        code.AppendLine($"public T {ResolverMethodName}<T>(object tag)");
+        code.AppendLine($"public T {ResolverMethodName}<T>(object? tag)");
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine($"return {ResolverClassesBuilder.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}.{ResolverClassesBuilder.ResolveByTagMethodName}(this, tag);");
+            code.AppendLine($"return {ResolverClassesBuilder.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}!.{ResolverClassesBuilder.ResolveByTagMethodName}(this, tag);");
         }
         code.AppendLine("}");
         
@@ -46,8 +46,20 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
         membersCounter++;
         code.AppendLine();
         
-        CreateObjectResolverMethod(composition, roots, "System.Type type, object tag", ResolveByTagMethodName, "this, tag", code);
+        CreateObjectResolverMethod(composition, roots, "System.Type type, object? tag", ResolveByTagMethodName, "this, tag", code);
         membersCounter++;
+        code.AppendLine();
+        
+        code.AppendLine(CodeConstants.MethodImplOptions);
+        code.AppendLine($"partial void {CodeConstants.OnInstanceCreationMethodName}<T>(ref T value, object? tag, object? lifetime);");
+        membersCounter++;
+
+        if (composition.Source.Source.Settings.GetBool(Setting.TrackInjections))
+        {
+            code.AppendLine(CodeConstants.MethodImplOptions);
+            code.AppendLine($"private partial T {CodeConstants.OnDependencyInjectionMethodName}<T>(in T value, object? tag, object? lifetime);");
+            membersCounter++;
+        }
         
         code.AppendLine("#endregion");
         return composition with { MembersCount = membersCounter };
@@ -71,7 +83,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             if (actualRoots.Any())
             {
                 var pairs = $"System.Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.Name.ClassName}>";
-                var pairTypeName = $"{CodeExtensions.ApiNamespace}Pair<{pairs}>";
+                var pairTypeName = $"{CodeConstants.ApiNamespace}Pair<{pairs}>";
                 if (divisor <= 1)
                 {
                     code.AppendLine($"{pairTypeName} pair = {ResolversFieldsBuilder.BucketsFieldName}[0U];");
@@ -105,7 +117,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
                 code.AppendLine();
             }
 
-            code.AppendLine($"throw new System.InvalidOperationException($\"{CodeExtensions.CannotResolve} of type {{type}}.\");");
+            code.AppendLine($"throw new System.InvalidOperationException($\"{CodeConstants.CannotResolve} of type {{type}}.\");");
         }
         
         code.AppendLine("}");
@@ -116,6 +128,6 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
         code.AppendLine("#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER");
         code.AppendLine("[System.Diagnostics.Contracts.Pure]");
         code.AppendLine("#endif");
-        code.AppendLine(CodeExtensions.MethodImplOptions);
+        code.AppendLine(CodeConstants.MethodImplOptions);
     }
 }

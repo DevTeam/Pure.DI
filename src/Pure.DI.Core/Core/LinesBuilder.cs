@@ -40,7 +40,15 @@ internal class LinesBuilder: IEnumerable<string>
             AppendLine(line);
         }
     }
-    
+
+    public void AppendLines(in IEnumerable<string> lines)
+    {
+        foreach (var line in lines)
+        {
+            AppendLine(line);
+        }
+    }
+
     public void AppendLine(string line = "")
     {
         _sb.Append(line);

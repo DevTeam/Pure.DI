@@ -22,7 +22,7 @@ public class BclInjectionTests
     [InlineData("System.Collections.Immutable.IImmutableStack")]
     [InlineData("System.Collections.Immutable.ImmutableStack")]
     [InlineData("System.Span")]
-    [InlineData("System.Span", LanguageVersion.CSharp7)]
+    [InlineData("System.Span", LanguageVersion.CSharp8)]
     [InlineData("System.ReadOnlySpan")]
     [InlineData("System.Memory")]
     [InlineData("System.ReadOnlyMemory")]

@@ -189,7 +189,7 @@ _Pure.DI_ works the same as calling a set of nested constructors, but allows dep
 ## Development environment requirements
 
 - [.NET SDK 6.0.4xx or newer](https://dotnet.microsoft.com/download/dotnet/6.0)
-- [C# 7 or newer](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-version-history#c-version-70)
+- [C# 8 or newer](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-version-history#c-version-80)
 
 ## Supported frameworks
 
@@ -223,3 +223,7 @@ _Pure.DI_ works the same as calling a set of nested constructors, but allows dep
 - [Array](readme/Examples.md#array)
 - [Lazy ](readme/Examples.md#lazy-)
 - [Span and ReadOnlySpan](readme/Examples.md#span-and-readonlyspan)
+### Interception
+- [Decorator](readme/Examples.md#decorator)
+- [Interception](readme/Examples.md#interception)
+- [Advanced interception](readme/Examples.md#advanced-interception)

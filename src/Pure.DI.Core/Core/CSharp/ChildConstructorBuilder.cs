@@ -22,7 +22,7 @@ internal class ChildConstructorBuilder: IBuilder<CompositionCode, CompositionCod
 
                 if (composition.DisposableSingletonsCount == 0)
                 {
-                    code.AppendLine($"{Variable.DisposablesFieldName} = new {CodeConstants.DisposableTypeName}[0];");
+                    code.AppendLine($"{Variable.DisposablesFieldName} = new {CodeConstants.IDisposableInterfaceName}[0];");
                 }
 
                 code.AppendLine($"lock ({ParentCompositionArgName}.{Variable.DisposablesFieldName})");
@@ -31,7 +31,7 @@ internal class ChildConstructorBuilder: IBuilder<CompositionCode, CompositionCod
                 {
                     if (composition.DisposableSingletonsCount > 0)
                     {
-                        code.AppendLine($"{Variable.DisposablesFieldName} = new {CodeConstants.DisposableTypeName}[{composition.DisposableSingletonsCount} - {ParentCompositionArgName}.{Variable.DisposablesFieldName}.Length];");
+                        code.AppendLine($"{Variable.DisposablesFieldName} = new {CodeConstants.IDisposableInterfaceName}[{composition.DisposableSingletonsCount} - {ParentCompositionArgName}.{Variable.DisposablesFieldName}.Length];");
                     }
 
                     foreach (var singletonField in composition.Singletons)
@@ -39,7 +39,7 @@ internal class ChildConstructorBuilder: IBuilder<CompositionCode, CompositionCod
                         cancellationToken.ThrowIfCancellationRequested();
                         code.AppendLine($"{singletonField.Name} = {ParentCompositionArgName}.{singletonField.Name};");
 
-                        if (singletonField.Node.Type.IsValueType)
+                        if (singletonField.InstanceType.IsValueType)
                         {
                             code.AppendLine($"{singletonField.Name}Created = {ParentCompositionArgName}.{singletonField.Name}Created;");
                         }

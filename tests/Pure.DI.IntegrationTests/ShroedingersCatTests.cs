@@ -89,7 +89,7 @@ namespace Sample
         }
     }                
 }
-""".RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp7, NullableContextOptions = NullableContextOptions.Disable } );
+""".RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp8, NullableContextOptions = NullableContextOptions.Disable } );
 
         // Then
         result.Success.ShouldBeTrue(result.GeneratedCode);

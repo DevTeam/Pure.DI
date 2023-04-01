@@ -19,17 +19,17 @@ internal class SingletonFieldsBuilder: IBuilder<CompositionCode, CompositionCode
         }
             
         // Disposables field
-        code.AppendLine($"private readonly {CodeConstants.DisposableTypeName}[] {Variable.DisposablesFieldName};");
+        code.AppendLine($"private readonly {CodeConstants.IDisposableInterfaceName}[] {Variable.DisposablesFieldName};");
         membersCounter++;
 
         // Singleton fields
         foreach (var singletonField in composition.Singletons)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            code.AppendLine($"private {singletonField.Node.Type} {singletonField.Name};");
+            code.AppendLine($"private {singletonField.InstanceType} {singletonField.Name};");
             membersCounter++;
 
-            if (!singletonField.Node.Type.IsValueType)
+            if (!singletonField.InstanceType.IsValueType)
             {
                 continue;
             }

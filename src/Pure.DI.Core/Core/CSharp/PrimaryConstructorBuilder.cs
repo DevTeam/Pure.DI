@@ -21,14 +21,14 @@ internal class PrimaryConstructorBuilder: IBuilder<CompositionCode, CompositionC
             code.AppendLine();
         }
 
-        code.AppendLine($"public {composition.Name.ClassName}({string.Join(", ", composition.Args.Select(i => $"{i.Node.Type} {i.Node.Arg?.Source.ArgName}"))})");
+        code.AppendLine($"public {composition.Name.ClassName}({string.Join(", ", composition.Args.Select(i => $"{i.InstanceType} {i.Node.Arg?.Source.ArgName}"))})");
         code.AppendLine("{");
         using (code.Indent())
         {
             foreach (var arg in composition.Args)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                if (arg.Node.Type.IsValueType)
+                if (arg.InstanceType.IsValueType)
                 {
                     continue;
                 }
@@ -52,7 +52,7 @@ internal class PrimaryConstructorBuilder: IBuilder<CompositionCode, CompositionC
             
             if (composition.Singletons.Any())
             {
-                code.AppendLine($"{Variable.DisposablesFieldName} = new {CodeConstants.DisposableTypeName}[{composition.DisposableSingletonsCount}];");
+                code.AppendLine($"{Variable.DisposablesFieldName} = new {CodeConstants.IDisposableInterfaceName}[{composition.DisposableSingletonsCount}];");
             }
         }
 

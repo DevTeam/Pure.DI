@@ -14,7 +14,7 @@ internal class ArgFieldsBuilder: IBuilder<CompositionCode, CompositionCode>
         foreach (var arg in composition.Args)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            code.AppendLine($"private readonly {arg.Node.Type} {arg.Name};");
+            code.AppendLine($"private readonly {arg.InstanceType} {arg.Name};");
             membersCounter++;
         }
 

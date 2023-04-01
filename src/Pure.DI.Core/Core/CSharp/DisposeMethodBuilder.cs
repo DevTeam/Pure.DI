@@ -56,7 +56,7 @@ internal class DisposeMethodBuilder: IBuilder<CompositionCode, CompositionCode>
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     code.AppendLine(
-                        singletonField.Node.Type.IsValueType
+                        singletonField.InstanceType.IsValueType
                             ? $"{singletonField.Name}Created = false;"
                             : $"{singletonField.Name} = null;");
                 }

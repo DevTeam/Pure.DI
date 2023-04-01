@@ -17,6 +17,14 @@ public class ReadmeTarget : ITarget
     private const string SourceKey = "s";
     private const string BodyKey = "b";
 
+    private static readonly string[] Groups =
+    {
+        "Basics",
+        "Lifetimes",
+        "BaseClassLibrary",
+        "Interception"
+    };
+
     public async Task RunAsync(InvocationContext ctx)
     {
         var items = new List<Dictionary<string, string>>();
@@ -122,12 +130,7 @@ public class ReadmeTarget : ITarget
             }
         }
         
-        var groups = new []
-            {
-                "Basics",
-                "Lifetimes",
-                "BaseClassLibrary"
-            }
+        var groups = Groups
             .Select((name, index) => (name, index))
             .ToDictionary(i => i.name , i=> i.index);
 

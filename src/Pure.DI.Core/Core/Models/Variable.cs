@@ -1,6 +1,10 @@
 namespace Pure.DI.Core.Models;
 
-internal record Variable(int Id, DependencyNode Node, Injection Injection)
+internal record Variable(
+    DependencyGraph Source,
+    int Id,
+    DependencyNode Node,
+    Injection Injection)
 {
     internal static readonly string Postfix = Guid.NewGuid().ToString().ToUpperInvariant().Replace("-", "")[..6];
     internal static readonly string DisposeIndexFieldName = "_disposeIndex" + Postfix;
@@ -30,7 +34,9 @@ internal record Variable(int Id, DependencyNode Node, Injection Injection)
         }
     }
         
-    public string Type => Node.Type.ToString();
+    public ITypeSymbol InstanceType => Node.Type;
+    
+    public ITypeSymbol ContractType => Injection.Type;
 
     public bool IsDeclared { get; set; }
     
