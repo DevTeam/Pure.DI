@@ -22,9 +22,9 @@ internal class RootsBuilder: IBuilder<DependencyGraph, IReadOnlyDictionary<Injec
             var name = "";
             if (node.Root is { } root)
             {
-                if (dependencyGraph.Graph.TryGetInEdges(node, out var rotDependencies))
+                if (dependencyGraph.Graph.TryGetInEdges(node, out var rootDependencies) && rootDependencies.Length == 1)
                 {
-                    node = rotDependencies.Single().Source;
+                    node = rootDependencies.Single().Source;
                     isRoot = true;
                     name = root.Source.Name;
                 }

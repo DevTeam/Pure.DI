@@ -5,6 +5,8 @@ internal static class CodeExtensions
     public const string ApiNamespace = "Pure.DI.";
     public const string CannotResolve = "Cannot resolve composition root";
     public const string MethodImplOptions = "[System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]";
+    public const string IDisposableInterfaceName = "System.IDisposable";
+    public const string IWrapperInterfaceName = "Pure.DI.IWrapper";
 
     public static IEnumerable<Root> GetActualRoots(this IEnumerable<Root> roots) => 
         roots.Where(i => !i.Injection.Type.IsRefLikeType);

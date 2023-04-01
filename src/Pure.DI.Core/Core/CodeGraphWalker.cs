@@ -69,39 +69,43 @@ internal class CodeGraphWalker<TContext>
                     foreach (var dependency in dependencies)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        var var = CreateVariable(variables, dependency.Source, dependency.Injection);
-                        var isBlockRoot = var.IsBlockRoot;
-                        if (!isBlockRoot && var.Node.Lifetime == Lifetime.PerResolve)
-                        {
-                            if (dependencyGraph.Graph.TryGetOutEdges(dependency.Source, out var outDependencies))
-                            {
-                                isBlockRoot = outDependencies.Select(i => i.Target.Factory is { } ? 2 : 1).Sum() > 1;
-                            }
-                        }
-                        
-                        if (isBlockRoot)
-                        {
-                            blockRootVariables.Push(var);
-                        }
-                        else
-                        {
-                            if (targetVariable.Node.Factory is not { })
-                            {
-                                targets.Push(var);
-                            }
-                        }
-
-                        if (targetVariable.Node.Construct is { Source.Kind: MdConstructKind.Enumerable })
-                        {
-                            // Will be created in a Func
-                            var.IsCreated = true;
-                        }
-                        
-                        arguments.Add(var);
+                        ProcessVariable(CreateVariable(variables, dependency.Source, dependency.Injection));
                     }
                 }
 
                 instantiations.Push(new Instantiation(targetVariable, arguments.ToImmutableArray()));
+                
+                void ProcessVariable(Variable var)
+                {
+                    var isBlockRoot = var.IsBlockRoot;
+                    if (!isBlockRoot && var.Node.Lifetime == Lifetime.PerResolve)
+                    {
+                        if (dependencyGraph.Graph.TryGetOutEdges(var.Node, out var outDependencies))
+                        {
+                            isBlockRoot = outDependencies.Select(i => i.Target.Factory is { } ? 2 : 1).Sum() > 1;
+                        }
+                    }
+                        
+                    if (isBlockRoot)
+                    {
+                        blockRootVariables.Push(var);
+                    }
+                    else
+                    {
+                        if (targetVariable.Node.Factory is not { })
+                        {
+                            targets.Push(var);
+                        }
+                    }
+
+                    if (targetVariable.Node.Construct is { Source.Kind: MdConstructKind.Enumerable })
+                    {
+                        // Will be created in a Func
+                        var.IsCreated = true;
+                    }
+                        
+                    arguments.Add(var);   
+                }
             }
 
             blocks.Push(new Block(target, instantiations.ToImmutableArray()));

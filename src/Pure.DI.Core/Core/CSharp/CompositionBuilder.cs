@@ -441,7 +441,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         var compilation = variable.Node.Binding.SemanticModel.Compilation;
         if (!_disposableTypes.TryGetValue(compilation, out var disposableType))
         {
-            disposableType = compilation.GetTypeByMetadataName("System.IDisposable");
+            disposableType = compilation.GetTypeByMetadataName(CodeExtensions.IDisposableInterfaceName);
             _disposableTypes.Add(compilation, disposableType);
         }
         
