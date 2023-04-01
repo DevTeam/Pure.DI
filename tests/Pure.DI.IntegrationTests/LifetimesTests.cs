@@ -95,20 +95,28 @@ using Pure.DI;
 
 namespace Sample
 {
-    interface IDependency {}
+    internal interface IDependency { }
 
-    class Dependency: IDependency {}
+    internal class Dependency : IDependency { }
 
-    interface IService
+    internal interface IService
     {
-        IDependency Dep { get; }
+        public IDependency Dependency1 { get; }
+                
+        public IDependency Dependency2 { get; }
     }
 
-    class Service: IService 
+    internal class Service : IService
     {
-        public Service(IDependency dep) => Dep = dep;
+        public Service(IDependency dependency1, IDependency dependency2)
+        {
+            Dependency1 = dependency1;
+            Dependency2 = dependency2;
+        }
 
-        public IDependency Dep { get; }
+        public IDependency Dependency1 { get; }
+                
+        public IDependency Dependency2 { get; }
     }
 
     static class Setup
@@ -117,8 +125,8 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-                .Bind<IService>().To<Service>()               
-                .Root<IService>("Service");
+                .Bind<IService>().To<Service>()
+                .Root<IService>("Root");
         }
     }
 
@@ -127,8 +135,10 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            Console.WriteLine(composition.Service != composition.Service);                    
-            Console.WriteLine(composition.Service.Dep == composition.Service.Dep);
+            var service1 = composition.Root;
+            var service2 = composition.Root;
+            Console.WriteLine(service1.Dependency1 == service1.Dependency2);                    
+            Console.WriteLine(service2.Dependency1 == service1.Dependency1);
         }
     }                
 }

@@ -55,40 +55,22 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         Block block,
         CancellationToken cancellationToken)
     {
-        if (block.Root.IsCreated && !context.IsRootContext)
+        var initBlock = false;
+        if (block.Root is { IsCreated: false, Node.Lifetime: Lifetime.Singleton })
         {
-            return;
+            StartSingletonInitBlock(context.Code, block.Root);
+            initBlock = true;
         }
 
-        switch (block.Root.Node.Lifetime)
-        {
-            case Lifetime.Singleton:
-                StartSingletonInitBlock(context.Code, block.Root);
-                break;
-            
-            case Lifetime.PerResolve:
-            case Lifetime.Transient:
-            default:
-                break;
-        }
-        
         base.VisitBlock(context, dependencyGraph, root, block, cancellationToken);
-        
-        switch (block.Root.Node.Lifetime)
-        {
-            case Lifetime.Singleton:
-                FinishSingletonInitBlock(context.Code, block.Root);
-                if (context.IsRootContext && block.Root == root)
-                {
-                    context.Code.AppendLine(GenerateFinalStatement(block.Root, block.Root.Name, true));
-                }
 
-                break;
-            
-            case Lifetime.PerResolve:
-            case Lifetime.Transient:
-            default:
-                break;
+        if (initBlock)
+        {
+            FinishSingletonInitBlock(context.Code, block.Root);
+            if (context.IsRootContext && block.Root == root)
+            {
+                context.Code.AppendLine(GenerateFinalStatement(block.Root, block.Root.Name, true));
+            }
         }
     }
 
