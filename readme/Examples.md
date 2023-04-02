@@ -1,4 +1,4 @@
-#### Composition Root
+#### Composition root
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\CompositionRootScenario.cs)
 
@@ -36,13 +36,13 @@ public IService Root
     return new Service(new Dependency());
   }
 }
-``` 
+```
 
 #### Resolve methods
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\ResolveScenario.cs)
 
-This example shows how to resolve the composition roots using the _Resolve_ methods. 
+This example shows how to resolve the composition roots using the _Resolve_ methods.
 
 ``` CSharp
 internal interface IDependency { }
@@ -71,7 +71,7 @@ var service2 = composition.Resolve(typeof(IService));
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\FactoryScenario.cs)
 
-This example demonstrates how to create and initialize an instance manually. 
+This example demonstrates how to create and initialize an instance manually.
 
 ``` CSharp
 internal interface IDependency
@@ -132,7 +132,7 @@ service.Dependency.IsInitialized.ShouldBeTrue();
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\InjectScenario.cs)
 
-This example shows how to create and initialize an instance manually injecting required dependencies. 
+This example shows how to create and initialize an instance manually injecting required dependencies.
 
 ``` CSharp
 internal interface IDependency { }
@@ -173,7 +173,7 @@ var service = composition.Root;
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\AutoBindingScenario.cs)
 
-This approach works great even if DI doesn't have the appropriate bindings. :warning: But it can't be recommended if you follow the dependency inversion principle and want to make sure your types only depend on abstractions. 
+This approach works great even if DI doesn't have the appropriate bindings. :warning: But it can't be recommended if you follow the dependency inversion principle and want to make sure your types only depend on abstractions.
 
 ``` CSharp
 internal class Dependency
@@ -280,7 +280,63 @@ service.Dependency1.ShouldBeOfType<AbcDependency>();
 service.Dependency2.ShouldBeOfType<XyzDependency>();
 ```
 
-Sometimes it's important to take control of building a dependency graph. In this case, _tags_ help: 
+Sometimes it's important to take control of building a dependency graph. In this case, _tags_ help:
+
+#### Child composition
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\ChildCompositionScenario.cs)
+
+``` CSharp
+internal interface IDependency
+{
+    bool IsDisposed { get; }
+}
+
+internal class Dependency : IDependency, IDisposable
+{
+    public bool IsDisposed { get; private set; }
+
+    public void Dispose()
+    {
+        IsDisposed = true;
+    }
+}
+
+internal interface IService
+{
+    IDependency Dependency { get; }
+}
+
+internal class Service : IService
+{
+    public Service(IDependency dependency)
+    {
+        Dependency = dependency;
+    }
+
+    public IDependency Dependency { get; }
+}
+
+DI.Setup("Composition")
+    .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+    .Bind<IService>().To<Service>()
+    .Root<IService>("Root");
+
+var composition = new Composition();
+IService serviceFromChild;
+using (var childComposition = new Composition(composition))
+{
+    serviceFromChild = childComposition.Root;
+}
+        
+serviceFromChild.Dependency.IsDisposed.ShouldBeTrue();
+        
+var service = composition.Root;
+using (var childComposition = new Composition(composition))
+{
+    childComposition.Root.Dependency.ShouldBe(service.Dependency);
+}
+```
 
 #### Singleton
 
@@ -503,7 +559,7 @@ service1.Dependency1.ShouldBe(service1.Dependency2);
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\BaseClassLibrary\FuncScenario.cs)
 
-_Func<T>_ helps when logic needs to inject instances of some type on demand and multiple times. 
+_Func<T>_ helps when logic needs to inject instances of some type on demand and multiple times.
 
 ``` CSharp
 internal interface IDependency { }
@@ -645,7 +701,7 @@ In addition to arrays, other collection types are also supported, such as:
 - System.Collections.Immutable.ImmutableQueue<T>
 - System.Collections.Immutable.IImmutableStack<T>
 
-#### Lazy 
+#### Lazy
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\BaseClassLibrary\LazyScenario.cs)
 

@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
 $p=0
-$d=Composition Root
+$d=Composition root
 $h=This example demonstrates the most efficient way to get the root object of a composition without impacting memory consumption or performance.
 $f=Actually, the property _Root_ looks like:
 $f=```csharp

@@ -204,13 +204,14 @@ _Pure.DI_ works the same as calling a set of nested constructors, but allows dep
 
 ## Examples
 ### Basics
-- [Composition Root](readme/Examples.md#composition-root)
+- [Composition root](readme/Examples.md#composition-root)
 - [Resolve methods](readme/Examples.md#resolve-methods)
 - [Factory](readme/Examples.md#factory)
 - [Injection](readme/Examples.md#injection)
 - [Auto-bindings](readme/Examples.md#auto-bindings)
 - [Arguments](readme/Examples.md#arguments)
 - [Tags](readme/Examples.md#tags)
+- [Child composition](readme/Examples.md#child-composition)
 ### Lifetimes
 - [Singleton](readme/Examples.md#singleton)
 - [PerResolve](readme/Examples.md#perresolve)
@@ -221,7 +222,7 @@ _Pure.DI_ works the same as calling a set of nested constructors, but allows dep
 - [Func](readme/Examples.md#func)
 - [IEnumerable](readme/Examples.md#ienumerable)
 - [Array](readme/Examples.md#array)
-- [Lazy ](readme/Examples.md#lazy-)
+- [Lazy](readme/Examples.md#lazy)
 - [Span and ReadOnlySpan](readme/Examples.md#span-and-readonlyspan)
 ### Interception
 - [Decorator](readme/Examples.md#decorator)

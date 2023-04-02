@@ -88,7 +88,7 @@ public class ReadmeTarget : ITarget
                     var parts = line[1..].Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries);
                     if (parts.Length > 0)
                     {
-                        var key = parts[0];
+                        var key = parts[0].Trim();
                         var curVar = vars[key];
                         if (curVar != string.Empty)
                         {
@@ -97,7 +97,7 @@ public class ReadmeTarget : ITarget
 
                         if (parts.Length == 2)
                         {
-                            vars[key] = curVar + parts[1];
+                            vars[key] = curVar + parts[1].TrimEnd();
                         }
                         else
                         {
