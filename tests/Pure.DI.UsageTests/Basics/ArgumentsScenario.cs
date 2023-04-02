@@ -6,6 +6,7 @@ $d=Arguments
 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
+// ReSharper disable UnusedParameter.Local
 namespace Pure.DI.UsageTests.Basics.ArgumentsScenario;
 
 using Shouldly;

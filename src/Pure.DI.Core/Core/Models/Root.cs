@@ -9,4 +9,4 @@ internal record Root(
     in ImmutableArray<Line> Lines)
 {
     public string PropertyName => IsPublic ? Name : $"Root{Index}Prop{Variable.Postfix}";
-};
+}

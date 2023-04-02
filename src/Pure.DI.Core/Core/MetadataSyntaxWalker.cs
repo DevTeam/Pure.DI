@@ -560,36 +560,38 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
 
     private T GetConstantValue<T>(SyntaxNode node)
     {
-        if (node is LiteralExpressionSyntax { Token.Value: T val })
+        switch (node)
         {
-            return val;
+            case LiteralExpressionSyntax { Token.Value: T val }:
+                return val;
+            
+            case MemberAccessExpressionSyntax memberAccessExpressionSyntax 
+                when memberAccessExpressionSyntax.IsKind(SyntaxKind.SimpleMemberAccessExpression):
+                {
+                    var type = memberAccessExpressionSyntax.Expression.ToString();
+                    var enumValueStr = memberAccessExpressionSyntax.Name.Identifier.Text;
+                    if (type.EndsWith(nameof(CompositionKind)))
+                    {
+                        if (Enum.TryParse<CompositionKind>(enumValueStr, out var enumValue))
+                        {
+                            return (T)(object)enumValue;
+                        }
+                    }
+                    else
+                    {
+                        if (type.EndsWith(nameof(Lifetime)))
+                        {
+                            if (Enum.TryParse<Lifetime>(enumValueStr, out var enumValue))
+                            {
+                                return (T)(object)enumValue;
+                            }
+                        }
+                    }
+
+                    break;
+                }
         }
 
-        if (
-            node is MemberAccessExpressionSyntax memberAccessExpressionSyntax
-            && memberAccessExpressionSyntax.IsKind(SyntaxKind.SimpleMemberAccessExpression))
-        {
-            var type = memberAccessExpressionSyntax.Expression.ToString();
-            var enumValueStr = memberAccessExpressionSyntax.Name.Identifier.Text;
-            if (type.EndsWith(nameof(CompositionKind)))
-            {
-                if (Enum.TryParse<CompositionKind>(enumValueStr, out var enumValue))
-                {
-                    return (T)(object)enumValue;
-                }
-            }
-            else
-            {
-                if (type.EndsWith(nameof(Lifetime)))
-                {
-                    if (Enum.TryParse<Lifetime>(enumValueStr, out var enumValue))
-                    {
-                        return (T)(object)enumValue;
-                    }
-                }
-            }
-        }
-        
         if (SemanticModel.GetConstantValue(node, _cancellationToken) is { HasValue: true, Value: { } value })
         {
             _logger.CompileInfo($"Consider using hardcoded value instead of {node} due to the performance impact.", node.GetLocation(), LogId.InfoPerformanceImpact);

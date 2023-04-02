@@ -149,9 +149,4 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
         edges = ImmutableArray<TEdge>.Empty;
         return false;
     }
-
-    public TEdge OutEdge(in TVertex vertex, int index) => 
-        _vertexEdges.TryGetValue(vertex, out var inOutEdges)
-            ? inOutEdges.Edges[index]
-            : throw new VertexNotFoundException();
 }

@@ -1,3 +1,4 @@
+// ReSharper disable InvertIf
 namespace Pure.DI.Core;
 
 internal class LogObserver: ILogObserver

@@ -8,6 +8,7 @@ $h=This approach works great even if DI doesn't have the appropriate bindings. :
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable UnusedVariable
 // ReSharper disable CheckNamespace
+// ReSharper disable UnusedParameter.Local
 namespace Pure.DI.UsageTests.Basics.AutoBindingScenario;
 
 using Xunit;

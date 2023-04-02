@@ -7,6 +7,7 @@ $h=This example shows how to resolve the composition roots using the _Resolve_ m
 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
+// ReSharper disable UnusedParameter.Local
 namespace Pure.DI.UsageTests.Basics.ResolveScenario;
 
 using Shouldly;

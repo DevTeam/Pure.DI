@@ -6,6 +6,7 @@ $d=Interception
 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
+// ReSharper disable UnusedParameterInPartialMethod
 namespace Pure.DI.UsageTests.Interception.InterceptionScenario;
 
 using System.Collections.Immutable;

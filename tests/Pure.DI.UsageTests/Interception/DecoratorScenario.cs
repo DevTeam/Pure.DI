@@ -6,6 +6,7 @@ $d=Decorator
 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
+// ReSharper disable UnusedParameter.Local
 namespace Pure.DI.UsageTests.Interception.DecoratorScenario;
 
 using Shouldly;

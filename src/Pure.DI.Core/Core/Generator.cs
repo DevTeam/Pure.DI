@@ -1,4 +1,6 @@
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable LoopCanBeConvertedToQuery
+// ReSharper disable InvertIf
 namespace Pure.DI.Core;
 
 using System.Diagnostics;
@@ -57,7 +59,7 @@ internal class Generator : IGenerator
         {
             using var logToken = _logger.TraceProcess("generation");
             ImmutableArray<MdSetup> setups;
-            using (_logger.TraceProcess($"metadata analysis"))
+            using (_logger.TraceProcess("metadata analysis"))
             {
                 setups = _metadataBuilder.Build(updates, cancellationToken).ToImmutableArray();
             }

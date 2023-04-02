@@ -1,3 +1,4 @@
+// ReSharper disable InvertIf
 namespace Pure.DI.Core.CSharp;
 
 internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<DependencyGraph, CompositionCode>

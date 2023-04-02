@@ -33,7 +33,6 @@ $f=- System.Collections.Immutable.IImmutableStack<T>
 // ReSharper disable CheckNamespace
 namespace Pure.DI.UsageTests.BCL.ArrayScenario;
 
-using System.Collections.Immutable;
 using Shouldly;
 using Xunit;
 

@@ -630,7 +630,7 @@ internal class Service : IService
     {
         Dependencies = Enumerable
             .Range(0, 10)
-            .Select(i => dependencyFactory())
+            .Select(_ => dependencyFactory())
             .ToImmutableArray();
     }
 

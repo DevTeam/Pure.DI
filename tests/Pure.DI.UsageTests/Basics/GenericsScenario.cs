@@ -17,6 +17,7 @@ $f=```
 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
+// ReSharper disable UnusedTypeParameter
 namespace Pure.DI.UsageTests.Basics.GenericsScenario;
 
 using Shouldly;

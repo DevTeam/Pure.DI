@@ -1,3 +1,5 @@
+// ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+// ReSharper disable InvertIf
 namespace Pure.DI.Core;
 
 internal class CodeGraphWalker<TContext>

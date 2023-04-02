@@ -39,7 +39,7 @@ internal class DependenciesToLinesWalker: DependenciesWalker, IEnumerable<string
     {
         using (_lb.Indent())
         {
-            _lb.Append($"{construct.Source.Type} {construct.Source.Kind.ToString().ToLowerInvariant()} of {(string.Join(", ", construct.Injections))}");
+            _lb.Append($"{construct.Source.Type} {construct.Source.Kind.ToString().ToLowerInvariant()} of {string.Join(", ", construct.Injections)}");
         }
     }
 
