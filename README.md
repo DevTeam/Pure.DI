@@ -208,9 +208,10 @@ _Pure.DI_ works the same as calling a set of nested constructors, but allows dep
 - [Resolve methods](readme/Examples.md#resolve-methods)
 - [Factory](readme/Examples.md#factory)
 - [Injection](readme/Examples.md#injection)
-- [Auto-bindings](readme/Examples.md#auto-bindings)
+- [Generics](readme/Examples.md#generics)
 - [Arguments](readme/Examples.md#arguments)
 - [Tags](readme/Examples.md#tags)
+- [Auto-bindings](readme/Examples.md#auto-bindings)
 - [Child composition](readme/Examples.md#child-composition)
 ### Lifetimes
 - [Singleton](readme/Examples.md#singleton)

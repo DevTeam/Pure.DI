@@ -169,31 +169,57 @@ var composition = new Composition();
 var service = composition.Root;
 ```
 
-#### Auto-bindings
+#### Generics
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\AutoBindingScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\GenericsScenario.cs)
 
-This approach works great even if DI doesn't have the appropriate bindings. :warning: But it can't be recommended if you follow the dependency inversion principle and want to make sure your types only depend on abstractions.
+Generic types are also supported, this is easy to do by binding generic types and specifying generic markers like `TT`, `TT1` etc. as generic type parameters:
 
 ``` CSharp
-internal class Dependency
+internal interface IDependency<T> { }
+
+internal class Dependency<T> : IDependency<T> { }
+
+internal interface IService
 {
+    IDependency<int> IntDependency { get; }
+
+    IDependency<string> StringDependency { get; }
 }
 
-internal class Service
+internal class Service : IService
 {
-    public Service(Dependency dependency)
+    public Service(IDependency<int> intDependency, IDependency<string> stringDependency)
     {
+        IntDependency = intDependency;
+        StringDependency = stringDependency;
     }
+
+    public IDependency<int> IntDependency { get; }
+
+    public IDependency<string> StringDependency { get; }
 }
 
 DI.Setup("Composition")
-    .Root<Service>("Root");
+    .Bind<IDependency<TT>>().To<Dependency<TT>>()
+    .Bind<IService>().To<Service>()
+    .Root<IService>("Root");
 
 var composition = new Composition();
-var service1 = composition.Root;
-var service2 = composition.Resolve<Service>();
-var service3 = composition.Resolve(typeof(Service));
+var service = composition.Root;
+service.IntDependency.ShouldBeOfType<Dependency<int>>();
+service.StringDependency.ShouldBeOfType<Dependency<string>>();
+```
+
+Actually, the property _Root_ looks like:
+```csharp
+public IService Root
+{
+  get
+  {
+    return new Service(new Dependency<int>(), new Dependency<string>());
+  }
+}
 ```
 
 #### Arguments
@@ -281,6 +307,33 @@ service.Dependency2.ShouldBeOfType<XyzDependency>();
 ```
 
 Sometimes it's important to take control of building a dependency graph. In this case, _tags_ help:
+
+#### Auto-bindings
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\AutoBindingScenario.cs)
+
+This approach works great even if DI doesn't have the appropriate bindings. :warning: But it can't be recommended if you follow the dependency inversion principle and want to make sure your types only depend on abstractions.
+
+``` CSharp
+internal class Dependency
+{
+}
+
+internal class Service
+{
+    public Service(Dependency dependency)
+    {
+    }
+}
+
+DI.Setup("Composition")
+    .Root<Service>("Root");
+
+var composition = new Composition();
+var service1 = composition.Root;
+var service2 = composition.Resolve<Service>();
+var service3 = composition.Resolve(typeof(Service));
+```
 
 #### Child composition
 

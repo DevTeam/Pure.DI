@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=4
+$p=7
 $d=Auto-bindings
 $h=This approach works great even if DI doesn't have the appropriate bindings. :warning: But it can't be recommended if you follow the dependency inversion principle and want to make sure your types only depend on abstractions. 
 */
