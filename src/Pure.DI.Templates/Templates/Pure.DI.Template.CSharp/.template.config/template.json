@@ -1,0 +1,96 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "identity": "Pure.DI.Template.CSharp",
+  "name": "Pure DI Project",
+  "shortName": "di",
+  "groupIdentity": "PureDI",
+  "classifications": [
+    "PureDI",
+    "CSharpCodeGenerator"
+  ],
+  "precedence": "3000",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "description": "A project template for creating console application.",
+  "author": "NikolayP",
+  "generatorVersions": "[1.0.0.0-*)",
+  "sourceName": "_PureDIProjectName_",
+  "preferNameDirectory": true,
+  "defaultName": "PureDIApp",
+  "symbols": {
+    "composerName": {
+      "type": "parameter",
+      "datatype": "string",
+      "description": "The name of the Composer class.",
+      "defaultValue": "Composer",
+      "FileRename": "_ComposerName_",
+      "replaces": "$(ComposerName)"
+    },
+    "framework": {
+      "type": "parameter",
+      "datatype": "string",
+      "description": "The target framework for the project (e.g. net7.0).",
+      "defaultValue": ""
+    },
+    "frameworkDefault": {
+      "type": "generated",
+      "generator": "switch",
+      "description": "generate a default framework value",
+      "parameters": {
+        "evaluator": "C++",
+        "datatype": "string",
+        "cases": [
+          {
+            "condition": "(framework == '')",
+            "value": "net7.0"
+          },
+          {
+            "condition": "(framework != '')",
+            "value": ""
+          }
+        ]
+      }
+    },
+    "frameworkValue": {
+      "type": "generated",
+      "generator": "join",
+      "description": "join framework and frameworkDefault",
+      "parameters": {
+        "symbols": [
+          {
+            "type": "ref",
+            "value": "framework"
+          },
+          {
+            "type": "ref",
+            "value": "frameworkDefault"
+          }
+        ]
+      },
+      "replaces": "$(Framework)"
+    },
+    "version": {
+      "type": "parameter",
+      "datatype": "string",
+      "description": "Version of Pure.DI that will be referenced.",
+      "defaultValue": "2.*",
+      "replaces": "$(PureDIVersion)"
+    }
+  },
+  "sources": [
+    {
+      "source": "./",
+      "target": "./",
+      "exclude": [
+        ".template.config/**"
+      ]
+    }
+  ],
+  "primaryOutputs": [
+    {
+      "path": "_PureDIProjectName_.csproj"
+    }
+  ]
+}
