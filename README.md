@@ -27,34 +27,12 @@ Pure.DI is __NOT__ a framework or library, but a code generator that generates s
 - [X] Supports basic .NET BCL types out of the box.
   >_Pure.DI_ already supports many of [BCL types](https://docs.microsoft.com/en-us/dotnet/standard/framework-libraries#base-class-libraries) like Array, IEnumerable, IList, ISet, Func, ThreadLocal, etc. without any extra effort.
 
-## Try it easy!
-
-Install the DI template [Pure.DI.Templates](https://www.nuget.org/packages/Pure.DI.Templates)
-
-```shell
-dotnet new -i Pure.DI.Templates
-```
-
-Create a "Sample" console application from the template *__di__*
-
-```shell
-dotnet new di -o ./Sample
-```
-
-And run it
- 
-```shell
-dotnet run --project Sample
-```
-
-Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates) for more details about the template.
-
 ## Schrödinger's cat shows how it works [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](samples/ShroedingersCat)
 
 ### The reality is that
 
 ![Cat](readme/cat.png?raw=true)
-``
+
 ### Let's create an abstraction
 
 ```c#
@@ -102,7 +80,7 @@ Package Manager
 ```shell
 Install-Package Pure.DI
 ```
-  
+
 .NET CLI
   
 ```shell
@@ -120,7 +98,11 @@ static class DI
       // Models a random subatomic event that may or may not occur
       .Bind<Random>().As(Singleton).To<Random>()
       // Represents a quantum superposition of 2 states: Alive or Dead
-      .Bind<State>().To(ctx => (State)ctx.Resolve<Random>().Next(2))
+      .Bind<State>().To(ctx =>
+      {
+          ctx.Inject<Random>(out var random);
+          return (State)random.Next(2);
+      })
       // Represents schrodinger's cat
       .Bind<ICat>().To<ShroedingersCat>()
       // Represents a cardboard box with any content
@@ -150,7 +132,10 @@ class Program
 }
 ```
 
-*__Root__* is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) here, a single place in an application where the composition of the object graphs for an application takes place. Each instance is resolved by a strongly-typed block of statements like the operator [*__new__*](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/new-operator), which are compiling with all optimizations with minimal impact on performance or memory consumption. The generated _Composition_ class contains a _Root_ property that allows you to resolve an instance of the _Program_ type:
+*__Root__* is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) here, a single place in an application where the composition of the object graphs for an application takes place. Each instance is resolved by a strongly-typed block of statements like the operator [*__new__*](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/new-operator), which are compiling with all optimizations with minimal impact on performance or memory consumption. The generated _Composition_ class contains a _Root_ property that allows you to resolve an instance of the _Program_ type.
+
+<details>
+<summary>Root property</summary>
 
 ```c#
 public Sample.Program Root
@@ -182,9 +167,36 @@ public Sample.Program Root
 }
 ```
 
+</details>
+
 You can find a complete analogue of this application with top level statements [here](Samples/ShroedingersCatTopLevelStatements). For a top level statements application the name of generated composer is "Composer" by default if it was not override in the Setup call.
 
 _Pure.DI_ works the same as calling a set of nested constructors, but allows dependency injection. And that's a reason to take full advantage of Dependency Injection everywhere, every time, without any compromise!
+
+<details>
+<summary>Just try!</summary>
+
+Install the DI template [Pure.DI.Templates](https://www.nuget.org/packages/Pure.DI.Templates)
+
+```shell
+dotnet new -i Pure.DI.Templates
+```
+
+Create a "Sample" console application from the template *__di__*
+
+```shell
+dotnet new di -o ./Sample
+```
+
+And run it
+
+```shell
+dotnet run --project Sample
+```
+
+Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates) for more details about the template.
+
+</details>
 
 ## Development environment requirements
 
@@ -213,6 +225,7 @@ _Pure.DI_ works the same as calling a set of nested constructors, but allows dep
 - [Tags](readme/Examples.md#tags)
 - [Auto-bindings](readme/Examples.md#auto-bindings)
 - [Child composition](readme/Examples.md#child-composition)
+- [Multi-contract bindings](readme/Examples.md#multi-contract-bindings)
 ### Lifetimes
 - [Singleton](readme/Examples.md#singleton)
 - [PerResolve](readme/Examples.md#perresolve)

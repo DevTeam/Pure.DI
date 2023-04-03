@@ -6,7 +6,7 @@ using static Pure.DI.Lifetime;
 
 namespace Sample
 {
-// Let's create an abstraction
+    // Let's create an abstraction
 
     public interface IBox<out T>
     {
@@ -24,7 +24,7 @@ namespace Sample
         Dead
     }
 
-// Here is our implementation
+    // Here is our implementation
 
     public class CardboardBox<T> : IBox<T>
     {
@@ -48,14 +48,15 @@ namespace Sample
         public override string ToString() => $"{State} cat";
     }
 
-// Let's glue all together
+    // Let's glue all together
 
-    public static class Composer
+    public static class DI
     {
         // Actually, this code never runs and the method might have any name or be a constructor for instance
         // because this is just a hint to set up an object graph.
         private static void Setup() =>
-            DI.Setup("Composition")
+            // ToString = On
+            Pure.DI.DI.Setup("Composition")
                 // Models a random subatomic event that may or may not occur
                 .Bind<Random>().As(Singleton).To<Random>()
                 // Represents a quantum superposition of 2 states: Alive or Dead
@@ -73,7 +74,8 @@ namespace Sample
                 .Root<Program>("Root");
     }
 
-// Time to open boxes!
+    // Time to open boxes!
+
     public class Program
     {
         // Composition Root, a single place in an application

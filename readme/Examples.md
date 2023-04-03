@@ -1,6 +1,6 @@
 #### Composition root
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\CompositionRootScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/CompositionRootScenario.cs)
 
 This example demonstrates the most efficient way to get the root object of a composition without impacting memory consumption or performance.
 
@@ -27,6 +27,9 @@ var composition = new Composition();
 var service = composition.Root;
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -48,6 +51,9 @@ Composition ..> Service : IService Root
 Service *-- Dependency : IDependency dependency
 ```
 
+</details>
+
+
 Actually, the property _Root_ looks like:
 ```csharp
 public IService Root
@@ -58,10 +64,18 @@ public IService Root
   }
 }
 ```
+To avoid generating _Resolve_ methods just add a comment `// Resolve = Off` before a _Setup_ method:
+```csharp
+// Resolve = Off
+DI.Setup("Composition")
+  .Bind<IDependency>().To<Dependency>()
+  ...
+```
+This can be done if these methods are not needed, in case only certain composition roots are used. It's not significant then, but it will help save resources during compilation.
 
 #### Resolve methods
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\ResolveScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/ResolveScenario.cs)
 
 This example shows how to resolve the composition roots using the _Resolve_ methods.
 
@@ -88,6 +102,9 @@ var service1 = composition.Resolve<IService>();
 var service2 = composition.Resolve(typeof(IService));
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -107,9 +124,12 @@ class Service {
 Service *-- Dependency : IDependency dependency
 ```
 
+</details>
+
+
 #### Factory
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\FactoryScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/FactoryScenario.cs)
 
 This example demonstrates how to create and initialize an instance manually.
 
@@ -168,6 +188,9 @@ var service = composition.Root;
 service.Dependency.IsInitialized.ShouldBeTrue();
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -187,9 +210,12 @@ Composition ..> Service : IService Root
 Service *-- Dependency : IDependency dependency
 ```
 
+</details>
+
+
 #### Injection
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\InjectScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/InjectScenario.cs)
 
 This example shows how to create and initialize an instance manually injecting required dependencies.
 
@@ -228,6 +254,9 @@ var composition = new Composition();
 var service = composition.Root;
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -247,9 +276,12 @@ Composition ..> Service : IService Root
 Service *-- Dependency : IDependency
 ```
 
+</details>
+
+
 #### Generics
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\GenericsScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/GenericsScenario.cs)
 
 Generic types are also supported, this is easy to do by binding generic types and specifying generic markers like `TT`, `TT1` etc. as generic type parameters:
 
@@ -289,6 +321,9 @@ service.IntDependency.ShouldBeOfType<Dependency<int>>();
 service.StringDependency.ShouldBeOfType<Dependency<string>>();
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -315,6 +350,9 @@ Service *-- DependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ intDependency
 Service *-- DependencyᐸStringᐳ : IDependencyᐸStringᐳ stringDependency
 ```
 
+</details>
+
+
 Actually, the property _Root_ looks like:
 ```csharp
 public IService Root
@@ -328,7 +366,7 @@ public IService Root
 
 #### Arguments
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\ArgumentsScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/ArgumentsScenario.cs)
 
 ``` CSharp
 internal interface IDependency { }
@@ -361,6 +399,9 @@ var service = composition.Root;
 service.Name.ShouldBe("Abc");
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -384,9 +425,12 @@ Service o-- String : Argument "serviceName"
 Service *-- Dependency : IDependency dependency
 ```
 
+</details>
+
+
 #### Tags
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\TagsScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/TagsScenario.cs)
 
 This example demonstrates the most efficient way to get the root object of a composition without impacting memory consumption or performance.
 
@@ -433,6 +477,9 @@ service.Dependency1.ShouldBeOfType<AbcDependency>();
 service.Dependency2.ShouldBeOfType<XyzDependency>();
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -459,11 +506,14 @@ Service *-- AbcDependency : "Abc"  IDependency dependency1
 Service *-- XyzDependency : "Xyz"  IDependency dependency2
 ```
 
+</details>
+
+
 Sometimes it's important to take control of building a dependency graph. In this case, _tags_ help:
 
 #### Auto-bindings
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\AutoBindingScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/AutoBindingScenario.cs)
 
 This approach works great even if DI doesn't have the appropriate bindings. :warning: But it can't be recommended if you follow the dependency inversion principle and want to make sure your types only depend on abstractions.
 
@@ -488,6 +538,9 @@ var service2 = composition.Resolve<Service>();
 var service3 = composition.Resolve(typeof(Service));
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -504,9 +557,12 @@ Composition ..> Service : Service Root
 Service *-- Dependency : Dependency dependency
 ```
 
+</details>
+
+
 #### Child composition
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Basics\ChildCompositionScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/ChildCompositionScenario.cs)
 
 ``` CSharp
 internal interface IDependency
@@ -560,6 +616,9 @@ using (var childComposition = new Composition(composition))
 }
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -582,9 +641,72 @@ Composition ..> Service : IService Root
 Service o-- "Singleton" Dependency : IDependency dependency
 ```
 
+</details>
+
+
+#### Multi-contract bindings
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/MultiContractBindingsScenario.cs)
+
+``` CSharp
+internal interface IDependency { }
+
+internal interface IAdvancedDependency { }
+
+internal class Dependency : IDependency, IAdvancedDependency { }
+
+internal interface IService { }
+
+internal class Service : IService
+{
+    public Service(
+        IDependency dependency,
+        IAdvancedDependency advancedDependency)
+    {
+    }
+}
+
+DI.Setup("Composition")
+    .Bind<IDependency>().Bind<IAdvancedDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>()
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+```
+
+<details open>
+<summary>Class Diagram</summary>
+
+```mermaid
+classDiagram
+class Composition {
++IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
+}
+Dependency --|> IDependency : 
+Dependency --|> IAdvancedDependency : 
+class Dependency {
++Dependency()
+}
+Service --|> IService : 
+class Service {
++Service(IDependency dependency, IAdvancedDependency advancedDependency)
+}
+Composition ..> Service : IService Root
+Service *-- Dependency : IDependency dependency
+Service *-- Dependency : IAdvancedDependency advancedDependency
+```
+
+</details>
+
+
 #### Singleton
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Lifetimes\SingletonScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/SingletonScenario.cs)
 
 ``` CSharp
 internal interface IDependency { }
@@ -623,6 +745,9 @@ service1.Dependency1.ShouldBe(service1.Dependency2);
 service2.Dependency1.ShouldBe(service1.Dependency1);
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -645,9 +770,12 @@ Service o-- "Singleton" Dependency : IDependency dependency1
 Service o-- "Singleton" Dependency : IDependency dependency2
 ```
 
+</details>
+
+
 #### PerResolve
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Lifetimes\PerResolveScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/PerResolveScenario.cs)
 
 ``` CSharp
 internal interface IDependency { }
@@ -686,6 +814,9 @@ service1.Dependency1.ShouldBe(service1.Dependency2);
 service2.Dependency1.ShouldNotBe(service1.Dependency1);
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -708,9 +839,12 @@ Service o-- "PerResolve" Dependency : IDependency dependency1
 Service o-- "PerResolve" Dependency : IDependency dependency2
 ```
 
+</details>
+
+
 #### Transient
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Lifetimes\TransientScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/TransientScenario.cs)
 
 ``` CSharp
 internal interface IDependency { }
@@ -749,6 +883,9 @@ service1.Dependency1.ShouldNotBe(service1.Dependency2);
 service2.Dependency1.ShouldNotBe(service1.Dependency1);
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -771,9 +908,12 @@ Service *-- Dependency : IDependency dependency1
 Service *-- Dependency : IDependency dependency2
 ```
 
+</details>
+
+
 #### Disposable Singleton
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Lifetimes\DisposableSingletonScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/DisposableSingletonScenario.cs)
 
 To dispose all created singleton instances, simply dispose the composition instance:
 
@@ -823,6 +963,9 @@ using (var composition = new Composition())
 dependency.IsDisposed.ShouldBeTrue();
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -845,9 +988,12 @@ Composition ..> Service : IService Root
 Service o-- "Singleton" Dependency : IDependency dependency
 ```
 
+</details>
+
+
 #### Default lifetime
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Lifetimes\DefaultLifetimeScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/DefaultLifetimeScenario.cs)
 
 ``` CSharp
 internal interface IDependency { }
@@ -887,6 +1033,9 @@ service1.ShouldBe(service2);
 service1.Dependency1.ShouldBe(service1.Dependency2);
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -909,9 +1058,12 @@ Service "Singleton" o-- "Singleton" Dependency : IDependency dependency1
 Service "Singleton" o-- "Singleton" Dependency : IDependency dependency2
 ```
 
+</details>
+
+
 #### Func
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\BaseClassLibrary\FuncScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/FuncScenario.cs)
 
 _Func<T>_ helps when logic needs to inject instances of some type on demand and multiple times.
 
@@ -948,6 +1100,9 @@ var service = composition.Root;
 service.Dependencies.Length.ShouldBe(10);
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -971,9 +1126,12 @@ Service *-- FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ dependencyFactory
 FuncᐸIDependencyᐳ *-- Dependency :   IDependency
 ```
 
+</details>
+
+
 #### IEnumerable
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\BaseClassLibrary\EnumerableScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/EnumerableScenario.cs)
 
 Specifying `IEnumerable<T>` as the injection type allows instances of all bindings that implement type `T` to be injected in a lazy manner - the instances will be provided one by one.
 
@@ -1012,6 +1170,9 @@ service.Dependencies[0].ShouldBeOfType<AbcDependency>();
 service.Dependencies[1].ShouldBeOfType<XyzDependency>();
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -1040,9 +1201,12 @@ IEnumerableᐸIDependencyᐳ *-- AbcDependency :
 IEnumerableᐸIDependencyᐳ *-- XyzDependency : 2  
 ```
 
+</details>
+
+
 #### Array
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\BaseClassLibrary\ArrayScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/ArrayScenario.cs)
 
 Specifying `T[]` as the injection type allows instances from all bindings that implement the `T` type to be injected.
 
@@ -1081,6 +1245,9 @@ service.Dependencies[0].ShouldBeOfType<AbcDependency>();
 service.Dependencies[1].ShouldBeOfType<XyzDependency>();
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -1109,6 +1276,9 @@ ArrayᐸIDependencyᐳ *-- AbcDependency :
 ArrayᐸIDependencyᐳ *-- XyzDependency : 2  
 ```
 
+</details>
+
+
 In addition to arrays, other collection types are also supported, such as:
 - System.Memory<T>
 - System.ReadOnlyMemory<T>
@@ -1136,7 +1306,7 @@ In addition to arrays, other collection types are also supported, such as:
 
 #### Lazy
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\BaseClassLibrary\LazyScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/LazyScenario.cs)
 
 ``` CSharp
 internal interface IDependency { }
@@ -1170,6 +1340,9 @@ var service = composition.Root;
 service.Dependency.ShouldBe(service.Dependency);
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -1195,9 +1368,12 @@ LazyᐸIDependencyᐳ *-- FuncᐸIDependencyᐳ :   FuncᐸIDependencyᐳ
 FuncᐸIDependencyᐳ *-- Dependency :   IDependency
 ```
 
+</details>
+
+
 #### Span and ReadOnlySpan
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\BaseClassLibrary\SpanScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/SpanScenario.cs)
 
 Specifying `Span<T>` and `ReadOnlySpan<T>` work the same as with the array `T[]`.
 
@@ -1233,6 +1409,9 @@ var service = composition.Root;
 service.Count.ShouldBe(3);
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -1257,6 +1436,9 @@ ReadOnlySpanᐸDependencyᐳ *-- Dependency : 'b'
 ReadOnlySpanᐸDependencyᐳ *-- Dependency : 'c'  
 ```
 
+</details>
+
+
 This scenario is even more efficient when the `Span[]` or `ReadOnlySpan[]` element has a value type. In this case, there are no heap allocations, and the composition root `IService` looks like this:
 ```csharp
 public IService Root
@@ -1271,7 +1453,7 @@ public IService Root
 
 #### Decorator
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Interception\DecoratorScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Interception/DecoratorScenario.cs)
 
 ``` CSharp
 internal interface IDependency { }
@@ -1313,6 +1495,9 @@ var service = composition.Root;
 service.GetMessage().ShouldBe("Hello World !!!");
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -1339,9 +1524,12 @@ Service *-- Dependency : IDependency dependency
 DecoratorService *-- Service : "base"  IService baseService
 ```
 
+</details>
+
+
 #### Interception
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Interception\InterceptionScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Interception/InterceptionScenario.cs)
 
 ``` CSharp
 public interface IDependency
@@ -1414,6 +1602,9 @@ service.Dependency.DependencyCall();
 log.ShouldBe(ImmutableArray.Create("ServiceCall", "get_Dependency", "DependencyCall"));
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -1435,9 +1626,12 @@ Composition ..> Service : IService Root
 Service *-- Dependency : IDependency dependency
 ```
 
+</details>
+
+
 #### Advanced interception
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](tests\Pure.DI.UsageTests\Interception\AdvancedInterceptionScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Interception/AdvancedInterceptionScenario.cs)
 
 ``` CSharp
 public interface IDependency
@@ -1531,6 +1725,9 @@ service.Dependency.DependencyCall();
 log.ShouldBe(ImmutableArray.Create("ServiceCall", "get_Dependency", "DependencyCall"));
 ```
 
+<details open>
+<summary>Class Diagram</summary>
+
 ```mermaid
 classDiagram
 class Composition {
@@ -1551,4 +1748,7 @@ class Service {
 Composition ..> Service : IService Root
 Service *-- Dependency : IDependency dependency
 ```
+
+</details>
+
 

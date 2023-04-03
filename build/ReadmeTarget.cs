@@ -158,7 +158,7 @@ public class ReadmeTarget : ITarget
                 await readmeWriter.WriteLineAsync($"- [{description}]({ReadmeDir}/{ExamplesReadmeFile}{CreateRef(description)})");
                 await examplesWriter.WriteLineAsync($"#### {description}");
                 await examplesWriter.WriteLineAsync("");
-                await examplesWriter.WriteLineAsync($"[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)]({vars[SourceKey]})");
+                await examplesWriter.WriteLineAsync($"[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../{vars[SourceKey].Replace('\\', '/')})");
                 var header = vars[HeaderKey];
                 if (!string.IsNullOrWhiteSpace(header))
                 {
@@ -175,10 +175,16 @@ public class ReadmeTarget : ITarget
                 if (File.Exists(classDiagramFile))
                 {
                     await examplesWriter.WriteLineAsync("");
+                    await examplesWriter.WriteLineAsync("<details open>");
+                    await examplesWriter.WriteLineAsync("<summary>Class Diagram</summary>");
+                    await examplesWriter.WriteLineAsync("");
                     await examplesWriter.WriteLineAsync("```mermaid");
                     var classDiagram = await File.ReadAllTextAsync(classDiagramFile);
                     await examplesWriter.WriteLineAsync(classDiagram);
                     await examplesWriter.WriteLineAsync("```");
+                    await examplesWriter.WriteLineAsync("");
+                    await examplesWriter.WriteLineAsync("</details>");
+                    await examplesWriter.WriteLineAsync("");
                 }
                 
                 var footer = vars[FooterKey];

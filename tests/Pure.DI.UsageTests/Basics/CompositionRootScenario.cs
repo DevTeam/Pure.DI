@@ -13,6 +13,14 @@ $f=    return new Service(new Dependency());
 $f=  }
 $f=}
 $f=``` 
+$f=To avoid generating _Resolve_ methods just add a comment `// Resolve = Off` before a _Setup_ method:
+$f=```csharp
+$f=// Resolve = Off
+$f=DI.Setup("Composition")            
+$f=  .Bind<IDependency>().To<Dependency>()
+$f=  ...
+$f=```
+$f=This can be done if these methods are not needed, in case only certain composition roots are used. It's not significant then, but it will help save resources during compilation.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
