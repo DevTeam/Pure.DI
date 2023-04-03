@@ -4,8 +4,7 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
 {
     private readonly IBuilder<MdBinding, ISet<Injection>> _injectionsBuilder;
     private static readonly FormatOptions DefaultFormatOptions = new();
-    private static readonly FormatOptions CommentsFormatOptions = DefaultFormatOptions;
-
+    
     public ClassDiagramBuilder(IBuilder<MdBinding, ISet<Injection>> injectionsBuilder)
     {
         _injectionsBuilder = injectionsBuilder;
@@ -78,7 +77,7 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
             {
                 if (dependency.Target.Root is {} && publicRoots.TryGetValue(dependency.Injection, out var root))
                 {
-                    lines.AppendLine($"{composition.Name.ClassName} ..> {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatInjection(root.Injection, CommentsFormatOptions)} {root.PropertyName}");
+                    lines.AppendLine($"{composition.Name.ClassName} ..> {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatInjection(root.Injection, DefaultFormatOptions)} {root.PropertyName}");
                 }
                 else
                 {
@@ -90,7 +89,7 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
                     else
                     {
                         var relationship = dependency.Source.Lifetime == Lifetime.Transient ? "*--" : "o--";
-                        lines.AppendLine($"{FormatType(dependency.Target.Type, DefaultFormatOptions)}{FormatCardinality(dependency.Target.Binding.Lifetime?.Lifetime)}{relationship}{FormatCardinality(dependency.Source.Binding.Lifetime?.Lifetime)}{FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatDependency(dependency, CommentsFormatOptions)}");   
+                        lines.AppendLine($"{FormatType(dependency.Target.Type, DefaultFormatOptions)}{FormatCardinality(dependency.Target.Binding.Lifetime?.Lifetime)}{relationship}{FormatCardinality(dependency.Source.Binding.Lifetime?.Lifetime)}{FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatDependency(dependency, DefaultFormatOptions)}");   
                     }
                 }
             }
@@ -157,7 +156,7 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
     private static string FormatType(ISymbol typeSymbol, FormatOptions options) =>
         typeSymbol switch
         {
-            INamedTypeSymbol { IsGenericType: true } namedTypeSymbol => $"{namedTypeSymbol.Name}{options.StartGenericArgsSymbol}{string.Join(",", namedTypeSymbol.TypeArguments.Select(i => FormatSymbol(i, options)))}{options.FinishGenericArgsSymbol}",
+            INamedTypeSymbol { IsGenericType: true } namedTypeSymbol => $"{namedTypeSymbol.Name}{options.StartGenericArgsSymbol}{string.Join(options.TypeArgsSeparator, namedTypeSymbol.TypeArguments.Select(i => FormatSymbol(i, options)))}{options.FinishGenericArgsSymbol}",
             IArrayTypeSymbol array => $"Array{options.StartGenericArgsSymbol}{FormatType(array.ElementType, options)}{options.FinishGenericArgsSymbol}",
             _ => typeSymbol.Name
         };
@@ -177,7 +176,8 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
 
     private record FormatOptions(
         char StartGenericArgsSymbol = 'ᐸ',
-        char FinishGenericArgsSymbol = 'ᐳ');
+        char FinishGenericArgsSymbol = 'ᐳ',
+        char TypeArgsSeparator = 'ˏ');
 
     private class ClassDiagramWalker : DependenciesWalker
     {

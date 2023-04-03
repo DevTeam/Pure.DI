@@ -1451,6 +1451,75 @@ public IService Root
 }
 ```
 
+#### Tuple
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/TupleScenario.cs)
+
+``` CSharp
+internal interface IDependency { }
+
+internal class Dependency : IDependency { }
+
+internal readonly record struct Point(int X, int Y);
+
+internal interface IService
+{
+    IDependency Dependency { get; }
+}
+
+internal class Service : IService
+{
+    public Service((Point Point, IDependency Dependency) tuple)
+    {
+        Dependency = tuple.Dependency;
+    }
+
+    public IDependency Dependency { get; }
+}
+
+DI.Setup("Composition")
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<Point>().To(_ => new Point(7, 9))
+    .Bind<IService>().To<Service>()
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var root = composition.Root;
+```
+
+<details open>
+<summary>Class Diagram</summary>
+
+```mermaid
+classDiagram
+class Composition {
++IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
+}
+Dependency --|> IDependency : 
+class Dependency {
++Dependency()
+}
+class Point
+Service --|> IService : 
+class Service {
++Service(ValueTupleᐸPointˏIDependencyᐳ tuple)
+}
+class ValueTupleᐸPointˏIDependencyᐳ {
++ValueTuple(Point item1, IDependency item2)
+}
+Composition ..> Service : IService Root
+Service *-- ValueTupleᐸPointˏIDependencyᐳ : ValueTupleᐸPointˏIDependencyᐳ tuple
+ValueTupleᐸPointˏIDependencyᐳ *-- Point : Point item1
+ValueTupleᐸPointˏIDependencyᐳ *-- Dependency : IDependency item2
+```
+
+</details>
+
+
 #### Decorator
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Interception/DecoratorScenario.cs)

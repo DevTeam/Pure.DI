@@ -1,4 +1,5 @@
 // ReSharper disable InvertIf
+// ReSharper disable ConvertIfStatementToConditionalTernaryExpression
 namespace Pure.DI.Core.CSharp;
 
 internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<DependencyGraph, CompositionCode>
@@ -109,7 +110,16 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
     {
         base.VisitConstructor(context, dependencyGraph, root, block, instantiation, implementation, constructor, constructorArguments, initOnlyProperties, cancellationToken);
         var args = string.Join(", ", constructorArguments.Select(Inject));
-        var newStatement = $"new {instantiation.Target.InstanceType}({args})";
+        string newStatement;
+        if (!instantiation.Target.InstanceType.IsTupleType)
+        {
+            newStatement = $"new {instantiation.Target.InstanceType}({args})";
+        }
+        else
+        {
+            newStatement = $"({args})";
+        }
+
         context.Code.AppendLines(GenerateDeclareStatements(instantiation.Target, newStatement, initOnlyProperties.Any() ? "" : ";"));
         if (initOnlyProperties.Any())
         {
@@ -122,8 +132,10 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
                     context.Code.AppendLine($"{property.InitOnlyProperty.Property.Name} = {Inject(property.InitOnlyVariable)}{(index < initOnlyProperties.Length - 1 ? "," : "")}");
                 }
             }
+
             context.Code.AppendLine("};");
         }
+        
 
         context.Code.AppendLines(GenerateOnInstanceCreatedStatements(instantiation.Target));
     }

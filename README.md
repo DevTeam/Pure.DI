@@ -238,6 +238,7 @@ Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates
 - [Array](readme/Examples.md#array)
 - [Lazy](readme/Examples.md#lazy)
 - [Span and ReadOnlySpan](readme/Examples.md#span-and-readonlyspan)
+- [Tuple](readme/Examples.md#tuple)
 ### Interception
 - [Decorator](readme/Examples.md#decorator)
 - [Interception](readme/Examples.md#interception)
