@@ -2,7 +2,6 @@ namespace Pure.DI.Core.CSharp;
 
 internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
 {
-    internal static readonly string ResolverMethodName = "Resolve";
     internal static readonly string ResolveMethodName = nameof(IResolver<object>.ObjectResolve);
     internal static readonly string ResolveByTagMethodName = nameof(IResolver<object>.ObjectResolveByTag);
 
@@ -19,7 +18,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
         if (composition.Source.Source.Settings.GetState(Setting.Resolve, SettingState.On) == SettingState.On)
         {
             AddMethodHeader(code);
-            code.AppendLine($"public T {ResolverMethodName}<T>()");
+            code.AppendLine($"public T {Constant.ResolverMethodName}<T>()");
             code.AppendLine("{");
             using (code.Indent())
             {
@@ -32,7 +31,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             membersCounter++;
 
             AddMethodHeader(code);
-            code.AppendLine($"public T {ResolverMethodName}<T>(object? tag)");
+            code.AppendLine($"public T {Constant.ResolverMethodName}<T>(object? tag)");
             code.AppendLine("{");
             using (code.Indent())
             {
@@ -82,7 +81,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
         LinesBuilder code)
     {
         AddMethodHeader(code);
-        code.AppendLine($"public object {ResolverMethodName}({methodArgs})");
+        code.AppendLine($"public object {Constant.ResolverMethodName}({methodArgs})");
         code.AppendLine("{");
         using (code.Indent())
         {

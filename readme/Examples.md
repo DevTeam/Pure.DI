@@ -31,6 +31,10 @@ var service = composition.Root;
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 Dependency --|> IDependency : 
 class Dependency {
@@ -40,7 +44,7 @@ Service --|> IService :
 class Service {
 +Service(IDependency dependency)
 }
-Composition <.. Service : IService Root
+Composition ..> Service : IService Root
 Service *-- Dependency : IDependency dependency
 ```
 
@@ -86,7 +90,12 @@ var service2 = composition.Resolve(typeof(IService));
 
 ```mermaid
 classDiagram
-class Composition
+class Composition {
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
+}
 Dependency --|> IDependency : 
 class Dependency {
 +Dependency()
@@ -163,6 +172,10 @@ service.Dependency.IsInitialized.ShouldBeTrue();
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 Dependency --|> IDependency : 
 class Dependency
@@ -170,7 +183,7 @@ Service --|> IService :
 class Service {
 +Service(IDependency dependency)
 }
-Composition <.. Service : IService Root
+Composition ..> Service : IService Root
 Service *-- Dependency : IDependency dependency
 ```
 
@@ -219,6 +232,10 @@ var service = composition.Root;
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 Dependency --|> IDependency : 
 class Dependency {
@@ -226,7 +243,7 @@ class Dependency {
 }
 Service --|> IService : 
 class Service
-Composition <.. Service : IService Root
+Composition ..> Service : IService Root
 Service *-- Dependency : IDependency
 ```
 
@@ -276,6 +293,10 @@ service.StringDependency.ShouldBeOfType<Dependency<string>>();
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 Service --|> IService : 
 class Service {
@@ -289,7 +310,7 @@ DependencyᐸStringᐳ --|> IDependencyᐸStringᐳ :
 class DependencyᐸStringᐳ {
 +Dependency()
 }
-Composition <.. Service : IService Root
+Composition ..> Service : IService Root
 Service *-- DependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ intDependency
 Service *-- DependencyᐸStringᐳ : IDependencyᐸStringᐳ stringDependency
 ```
@@ -344,6 +365,10 @@ service.Name.ShouldBe("Abc");
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 Dependency --|> IDependency : 
 class Dependency {
@@ -354,7 +379,7 @@ class Service {
 +Service(String name, IDependency dependency)
 }
 class String
-Composition <.. Service : IService Root
+Composition ..> Service : IService Root
 Service o-- String : Argument "serviceName"
 Service *-- Dependency : IDependency dependency
 ```
@@ -412,6 +437,10 @@ service.Dependency2.ShouldBeOfType<XyzDependency>();
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 AbcDependency --|> IDependency : "Abc" 
 class AbcDependency {
@@ -425,7 +454,7 @@ Service --|> IService :
 class Service {
 +Service(IDependency dependency1, IDependency dependency2)
 }
-Composition <.. Service : IService Root
+Composition ..> Service : IService Root
 Service *-- AbcDependency : "Abc"  IDependency dependency1
 Service *-- XyzDependency : "Xyz"  IDependency dependency2
 ```
@@ -463,11 +492,15 @@ var service3 = composition.Resolve(typeof(Service));
 classDiagram
 class Composition {
 +Service Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 class Dependency {
 +Dependency()
 }
-Composition <.. Service : Service Root
+Composition ..> Service : Service Root
 Service *-- Dependency : Dependency dependency
 ```
 
@@ -531,6 +564,10 @@ using (var childComposition = new Composition(composition))
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 Composition --|> IDisposable
 Dependency --|> IDependency : 
@@ -541,7 +578,7 @@ Service --|> IService :
 class Service {
 +Service(IDependency dependency)
 }
-Composition <.. Service : IService Root
+Composition ..> Service : IService Root
 Service o-- "Singleton" Dependency : IDependency dependency
 ```
 
@@ -590,6 +627,10 @@ service2.Dependency1.ShouldBe(service1.Dependency1);
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 Dependency --|> IDependency : 
 class Dependency {
@@ -599,7 +640,7 @@ Service --|> IService :
 class Service {
 +Service(IDependency dependency1, IDependency dependency2)
 }
-Composition <.. Service : IService Root
+Composition ..> Service : IService Root
 Service o-- "Singleton" Dependency : IDependency dependency1
 Service o-- "Singleton" Dependency : IDependency dependency2
 ```
@@ -649,6 +690,10 @@ service2.Dependency1.ShouldNotBe(service1.Dependency1);
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 Dependency --|> IDependency : 
 class Dependency {
@@ -658,7 +703,7 @@ Service --|> IService :
 class Service {
 +Service(IDependency dependency1, IDependency dependency2)
 }
-Composition <.. Service : IService Root
+Composition ..> Service : IService Root
 Service o-- "PerResolve" Dependency : IDependency dependency1
 Service o-- "PerResolve" Dependency : IDependency dependency2
 ```
@@ -708,6 +753,10 @@ service2.Dependency1.ShouldNotBe(service1.Dependency1);
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 Dependency --|> IDependency : 
 class Dependency {
@@ -717,7 +766,7 @@ Service --|> IService :
 class Service {
 +Service(IDependency dependency1, IDependency dependency2)
 }
-Composition <.. Service : IService Root
+Composition ..> Service : IService Root
 Service *-- Dependency : IDependency dependency1
 Service *-- Dependency : IDependency dependency2
 ```
@@ -778,6 +827,10 @@ dependency.IsDisposed.ShouldBeTrue();
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 Composition --|> IDisposable
 Dependency --|> IDependency : 
@@ -788,7 +841,7 @@ Service --|> IService :
 class Service {
 +Service(IDependency dependency)
 }
-Composition <.. Service : IService Root
+Composition ..> Service : IService Root
 Service o-- "Singleton" Dependency : IDependency dependency
 ```
 
@@ -838,6 +891,10 @@ service1.Dependency1.ShouldBe(service1.Dependency2);
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 Dependency --|> IDependency : 
 class Dependency {
@@ -847,7 +904,7 @@ Service --|> IService :
 class Service {
 +Service(IDependency dependency1, IDependency dependency2)
 }
-Composition <.. Service : IService Root
+Composition ..> Service : IService Root
 Service "Singleton" o-- "Singleton" Dependency : IDependency dependency1
 Service "Singleton" o-- "Singleton" Dependency : IDependency dependency2
 ```
@@ -895,6 +952,10 @@ service.Dependencies.Length.ShouldBe(10);
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 Dependency --|> IDependency : 
 class Dependency {
@@ -905,7 +966,7 @@ class Service {
 +Service(FuncᐸIDependencyᐳ dependencyFactory)
 }
 class FuncᐸIDependencyᐳ
-Composition <.. Service : IService Root
+Composition ..> Service : IService Root
 Service *-- FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ dependencyFactory
 FuncᐸIDependencyᐳ *-- Dependency :   IDependency
 ```
@@ -955,6 +1016,10 @@ service.Dependencies[1].ShouldBeOfType<XyzDependency>();
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 AbcDependency --|> IDependency : 
 class AbcDependency {
@@ -969,7 +1034,7 @@ class Service {
 +Service(IEnumerableᐸIDependencyᐳ dependencies)
 }
 class IEnumerableᐸIDependencyᐳ
-Composition <.. Service : IService Root
+Composition ..> Service : IService Root
 Service *-- IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ dependencies
 IEnumerableᐸIDependencyᐳ *-- AbcDependency : 
 IEnumerableᐸIDependencyᐳ *-- XyzDependency : 2  
@@ -1020,6 +1085,10 @@ service.Dependencies[1].ShouldBeOfType<XyzDependency>();
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 AbcDependency --|> IDependency : 
 class AbcDependency {
@@ -1034,7 +1103,7 @@ class Service {
 +Service(ArrayᐸIDependencyᐳ dependencies)
 }
 class ArrayᐸIDependencyᐳ
-Composition <.. Service : IService Root
+Composition ..> Service : IService Root
 Service *-- ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ dependencies
 ArrayᐸIDependencyᐳ *-- AbcDependency : 
 ArrayᐸIDependencyᐳ *-- XyzDependency : 2  
@@ -1105,6 +1174,10 @@ service.Dependency.ShouldBe(service.Dependency);
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 Dependency --|> IDependency : 
 class Dependency {
@@ -1116,7 +1189,7 @@ class Service {
 }
 class LazyᐸIDependencyᐳ
 class FuncᐸIDependencyᐳ
-Composition <.. Service : IService Root
+Composition ..> Service : IService Root
 Service *-- LazyᐸIDependencyᐳ : LazyᐸIDependencyᐳ dependency
 LazyᐸIDependencyᐳ *-- FuncᐸIDependencyᐳ :   FuncᐸIDependencyᐳ
 FuncᐸIDependencyᐳ *-- Dependency :   IDependency
@@ -1164,6 +1237,10 @@ service.Count.ShouldBe(3);
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 class Dependency {
 +Dependency()
@@ -1173,7 +1250,7 @@ class Service {
 +Service(ReadOnlySpanᐸDependencyᐳ dependencies)
 }
 class ReadOnlySpanᐸDependencyᐳ
-Composition <.. Service : IService Root
+Composition ..> Service : IService Root
 Service *-- ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ dependencies
 ReadOnlySpanᐸDependencyᐳ *-- Dependency : 'a'  
 ReadOnlySpanᐸDependencyᐳ *-- Dependency : 'b'  
@@ -1240,6 +1317,10 @@ service.GetMessage().ShouldBe("Hello World !!!");
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 Dependency --|> IDependency : 
 class Dependency {
@@ -1253,7 +1334,7 @@ DecoratorService --|> IService :
 class DecoratorService {
 +DecoratorService(IService baseService)
 }
-Composition <.. DecoratorService : IService Root
+Composition ..> DecoratorService : IService Root
 Service *-- Dependency : IDependency dependency
 DecoratorService *-- Service : "base"  IService baseService
 ```
@@ -1337,6 +1418,10 @@ log.ShouldBe(ImmutableArray.Create("ServiceCall", "get_Dependency", "DependencyC
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 Dependency --|> IDependency : 
 class Dependency {
@@ -1346,7 +1431,7 @@ Service --|> IService :
 class Service {
 +Service(IDependency dependency)
 }
-Composition <.. Service : IService Root
+Composition ..> Service : IService Root
 Service *-- Dependency : IDependency dependency
 ```
 
@@ -1450,6 +1535,10 @@ log.ShouldBe(ImmutableArray.Create("ServiceCall", "get_Dependency", "DependencyC
 classDiagram
 class Composition {
 +IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
 }
 Dependency --|> IDependency : 
 class Dependency {
@@ -1459,7 +1548,7 @@ Service --|> IService :
 class Service {
 +Service(IDependency dependency)
 }
-Composition <.. Service : IService Root
+Composition ..> Service : IService Root
 Service *-- Dependency : IDependency dependency
 ```
 

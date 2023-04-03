@@ -17,8 +17,9 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
         lines.AppendLine("classDiagram");
         using (lines.Indent())
         {
+            var hasResolveMethods = composition.Source.Source.Settings.GetState(Setting.Resolve, SettingState.On) == SettingState.On;
             var publicRoots = composition.Roots.Where(i => i.IsPublic).ToDictionary(i => i.Injection, i => i);
-            if (publicRoots.Any())
+            if (hasResolveMethods || publicRoots.Any())
             {
                 lines.AppendLine($"class {composition.Name.ClassName} {{");
                 using (lines.Indent())
@@ -27,6 +28,15 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
                     {
                         lines.AppendLine($"+{FormatType(root.Injection.Type, DefaultFormatOptions)} {root.PropertyName}");
                     }
+                }
+
+                if (hasResolveMethods)
+                {
+                    var genericParameterT = $"{DefaultFormatOptions.StartGenericArgsSymbol}T{DefaultFormatOptions.FinishGenericArgsSymbol}";
+                    lines.AppendLine($"+T {Constant.ResolverMethodName}{genericParameterT}()");
+                    lines.AppendLine($"+T {Constant.ResolverMethodName}{genericParameterT}(object? tag)");
+                    lines.AppendLine($"+object {Constant.ResolverMethodName}{genericParameterT}(Type type)");
+                    lines.AppendLine($"+object {Constant.ResolverMethodName}{genericParameterT}(Type type, object? tag)");
                 }
 
                 lines.AppendLine("}");
@@ -68,7 +78,7 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
             {
                 if (dependency.Target.Root is {} && publicRoots.TryGetValue(dependency.Injection, out var root))
                 {
-                    lines.AppendLine($"{composition.Name.ClassName} <.. {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatInjection(root.Injection, CommentsFormatOptions)} {root.PropertyName}");
+                    lines.AppendLine($"{composition.Name.ClassName} ..> {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatInjection(root.Injection, CommentsFormatOptions)} {root.PropertyName}");
                 }
                 else
                 {
