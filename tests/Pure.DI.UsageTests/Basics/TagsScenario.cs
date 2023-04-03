@@ -8,7 +8,7 @@ $f=Sometimes it's important to take control of building a dependency graph. In t
 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
-namespace Pure.DI.UsageTests.Basics.TagScenario;
+namespace Pure.DI.UsageTests.Basics.TagsScenario;
 
 using Shouldly;
 using Xunit;
@@ -50,6 +50,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // ToString = On
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>("Abc").To<AbcDependency>()
@@ -62,5 +63,6 @@ public class Scenario
         service.Dependency1.ShouldBeOfType<AbcDependency>();
         service.Dependency2.ShouldBeOfType<XyzDependency>();
 // }            
+        TestTools.SaveClassDiagram(composition, nameof(TagsScenario));
     }
 }

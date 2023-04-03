@@ -58,6 +58,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // ToString = On
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>().To(_ =>
@@ -72,6 +73,7 @@ public class Scenario
         var composition = new Composition();
         var service = composition.Root;
         service.Dependency.IsInitialized.ShouldBeTrue();
-// }            
+// }
+        TestTools.SaveClassDiagram(composition, nameof(FactoryScenario));
     }
 }

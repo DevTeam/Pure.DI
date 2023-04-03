@@ -143,12 +143,20 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
         var unresolvedSource = new DependencyNode(0);
         foreach (var node in processed)
         {
+            IEnumerable<(Injection injection, ISymbol? symbol)> pairs;
             var edges = ImmutableArray.CreateBuilder<Dependency>(node.Injections.Length);
-            foreach (var injection in node.Injections)
+            var symbolsWalker = new DependenciesToSymbolsWalker();
+            symbolsWalker.VisitDependencyNode(node.Node);
+            var symbols = symbolsWalker.ToArray();
+            pairs = symbols.Length == node.Injections.Length
+                ? node.Injections.Zip(symbols, (injection, symbol) => (injection, (ISymbol?)symbol))
+                : node.Injections.Select(injection => (injection, default(ISymbol)));
+            
+            foreach (var (injection, symbol) in pairs)
             {
                 var dependency = map.TryGetValue(injection, out var sourceNode)
-                    ? new Dependency(true, sourceNode, injection, node.Node)
-                    : new Dependency(false, unresolvedSource, injection, node.Node);
+                    ? new Dependency(true, sourceNode, injection, node.Node, symbol)
+                    : new Dependency(false, unresolvedSource, injection, node.Node, symbol);
 
                 edges.Add(dependency);
             }
@@ -161,9 +169,11 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
             foreach (var node in notProcessed)
             {
                 var edges = ImmutableArray.CreateBuilder<Dependency>(node.Injections.Length);
-                foreach (var injection in node.Injections)
+                var symbols = new DependenciesToSymbolsWalker();
+                symbols.VisitDependencyNode(node.Node);
+                foreach (var (injection, symbol) in node.Injections.Zip(symbols, (injection, symbol) => (injection, symbol)))
                 {
-                    edges.Add(new Dependency(false, unresolvedSource, injection, node.Node));
+                    edges.Add(new Dependency(false, unresolvedSource, injection, node.Node, symbol));
                 }
 
                 entriesBuilder.Add(new GraphEntry<DependencyNode, Dependency>(node.Node, edges.MoveToImmutable()));

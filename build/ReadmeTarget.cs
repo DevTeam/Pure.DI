@@ -27,8 +27,9 @@ public class ReadmeTarget : ITarget
 
     public async Task RunAsync(InvocationContext ctx)
     {
+        var solutionDirectory = Tools.GetSolutionDirectory();
         var items = new List<Dictionary<string, string>>();
-        var testsDir = Path.Combine("tests", "Pure.DI.UsageTests");
+        var testsDir = Path.Combine(Tools.GetSolutionDirectory(), "tests", "Pure.DI.UsageTests");
         var files = Directory.EnumerateFiles(testsDir, "*.cs", SearchOption.AllDirectories);
         foreach (var file in files)
         {
@@ -169,6 +170,17 @@ public class ReadmeTarget : ITarget
                 await examplesWriter.WriteLineAsync("``` CSharp");
                 await examplesWriter.WriteLineAsync(vars[BodyKey]);
                 await examplesWriter.WriteLineAsync("```");
+
+                var classDiagramFile = Path.Combine(solutionDirectory, ".logs", Path.GetFileNameWithoutExtension(vars[SourceKey]) + ".Mermaid");
+                if (File.Exists(classDiagramFile))
+                {
+                    await examplesWriter.WriteLineAsync("");
+                    await examplesWriter.WriteLineAsync("```mermaid");
+                    var classDiagram = await File.ReadAllTextAsync(classDiagramFile);
+                    await examplesWriter.WriteLineAsync(classDiagram);
+                    await examplesWriter.WriteLineAsync("```");
+                }
+                
                 var footer = vars[FooterKey];
                 if (!string.IsNullOrWhiteSpace(footer))
                 {
@@ -211,7 +223,7 @@ public class ReadmeTarget : ITarget
             .Replace("`", string.Empty)
             .Replace("\\", string.Empty)
             .ToLowerInvariant();
-
+    
     private enum Part
     {
         Comment,

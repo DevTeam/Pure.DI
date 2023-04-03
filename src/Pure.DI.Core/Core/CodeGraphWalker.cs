@@ -196,7 +196,7 @@ internal class CodeGraphWalker<TContext>
         
         var args = instantiation.Arguments.ToList();
         var argsWalker = new DependenciesToVariablesWalker(args);
-        argsWalker.VisitConstruct(implementation.Constructor);
+        argsWalker.VisitConstructor(implementation.Constructor);
         var ctorArgs = argsWalker.GetResult();
 
         var initOnlyProperties = ImmutableArray.CreateBuilder<(Variable InitOnlyVariable, DpProperty InitOnlyProperty)>();

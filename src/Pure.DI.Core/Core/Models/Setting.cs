@@ -11,5 +11,10 @@ internal enum Setting
     /// <summary>
     /// <c>Off</c> by default. 
     /// </summary>
-    OnDependencyInjection
+    OnDependencyInjection,
+    
+    /// <summary>
+    /// <c>Off</c> by default. 
+    /// </summary>
+    ToString
 }

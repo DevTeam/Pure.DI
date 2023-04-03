@@ -42,7 +42,7 @@ internal class DependenciesWalker
     {
         if (implementation.Constructor is var constructor)
         {
-            VisitConstruct(constructor);
+            VisitConstructor(constructor);
         }
         
         foreach (var field in implementation.Fields)
@@ -99,7 +99,7 @@ internal class DependenciesWalker
         VisitInjection(field.Injection, field.Field.Locations);
     }
 
-    public virtual void VisitConstruct(in DpMethod constructor)
+    public virtual void VisitConstructor(in DpMethod constructor)
     {
         foreach (var parameter in constructor.Parameters)
         {

@@ -48,6 +48,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // ToString = On
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
@@ -70,5 +71,6 @@ public class Scenario
         }
 // }            
         service.ShouldBeOfType<Service>();
+        TestTools.SaveClassDiagram(composition, nameof(ChildCompositionScenario));
     }
 }

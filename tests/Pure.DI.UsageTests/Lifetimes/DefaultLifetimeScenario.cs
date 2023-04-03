@@ -41,6 +41,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // ToString = On
 // {            
         DI.Setup("Composition")
             .DefaultLifetime(Lifetime.Singleton)
@@ -54,5 +55,6 @@ public class Scenario
         service1.ShouldBe(service2);
         service1.Dependency1.ShouldBe(service1.Dependency2);
 // }
+        TestTools.SaveClassDiagram(composition, nameof(DefaultLifetimeScenario));
     }
 }

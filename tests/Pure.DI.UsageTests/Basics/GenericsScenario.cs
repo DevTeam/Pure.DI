@@ -54,6 +54,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // ToString = On
 // {            
         DI.Setup("Composition")
             .Bind<IDependency<TT>>().To<Dependency<TT>>()
@@ -65,5 +66,6 @@ public class Scenario
         service.IntDependency.ShouldBeOfType<Dependency<int>>();
         service.StringDependency.ShouldBeOfType<Dependency<string>>();
 // }
+        TestTools.SaveClassDiagram(composition, nameof(GenericsScenario));
     }
 }

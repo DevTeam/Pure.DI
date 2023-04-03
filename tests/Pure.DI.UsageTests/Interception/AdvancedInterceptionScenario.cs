@@ -99,6 +99,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // ToString = On
 // {            
         // OnDependencyInjection = On
         DI.Setup("Composition")
@@ -113,5 +114,6 @@ public class Scenario
         service.Dependency.DependencyCall();
         log.ShouldBe(ImmutableArray.Create("ServiceCall", "get_Dependency", "DependencyCall"));
 // }
+        TestTools.SaveClassDiagram(composition, nameof(AdvancedInterceptionScenario));
     }
 }

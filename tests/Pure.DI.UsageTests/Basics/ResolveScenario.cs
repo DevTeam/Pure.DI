@@ -33,6 +33,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // ToString = On
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
@@ -44,5 +45,6 @@ public class Scenario
 // }            
         service1.ShouldBeOfType<Service>();
         service2.ShouldBeOfType<Service>();
+        TestTools.SaveClassDiagram(composition, nameof(ResolveScenario));
     }
 }

@@ -7,7 +7,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
     private static readonly string IndentPrefix = new Indent(1).ToString();
     private static readonly BuildContext RootContext = new(ImmutableDictionary<MdBinding, Variable>.Empty, new LinesBuilder());
     private readonly Dictionary<Compilation, INamedTypeSymbol?> _disposableTypes = new();
-    private readonly Dictionary<Root, ImmutableArray<Line>> _lines = new();
+    private readonly Dictionary<Root, ImmutableArray<Line>> _roots = new();
 
     public CompositionBuilder(IVarIdGenerator idGenerator)
         : base(idGenerator) => _idGenerator = idGenerator;
@@ -16,7 +16,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         DependencyGraph dependencyGraph,
         CancellationToken cancellationToken)
     {
-        _lines.Clear();
+        _roots.Clear();
         var variables = new Dictionary<MdBinding, Variable>();
         VisitGraph(RootContext, dependencyGraph, variables, cancellationToken);
         var fields = variables.Select(i => i.Value).ToImmutableArray();
@@ -26,7 +26,12 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             dependencyGraph.Source.UsingDirectives,
             GetSingletons(fields),
             GetArgs(fields),
-            _lines.Select(i => i.Key with { Lines = i.Value }).ToImmutableArray(),
+            _roots
+                .Select(i => i.Key with { Lines = i.Value })
+                .OrderByDescending(i => i.IsPublic)
+                .ThenBy(i => i.Node.Binding.Id)
+                .ThenBy(i => i.PropertyName)
+                .ToImmutableArray(),
             variables.Values.Count(IsDisposable),
             new LinesBuilder(),
             0
@@ -40,14 +45,14 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         Root root,
         CancellationToken cancellationToken)
     {
-        if (_lines.ContainsKey(root))
+        if (_roots.ContainsKey(root))
         {
             return;
         }
 
         var newContext = new BuildContext(variables, new LinesBuilder());
         base.VisitRoot(newContext, dependencyGraph, variables, root, cancellationToken);
-        _lines.Add(root, newContext.Code.Lines.ToImmutableArray());
+        _roots.Add(root, newContext.Code.Lines.ToImmutableArray());
     }
 
     public override void VisitBlock(
@@ -454,7 +459,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             yield break;
         }
 
-        if (variable.Source.Source.Settings.GetState(Setting.OnInstanceCreation, SettingState.On) == SettingState.Off)
+        if (variable.Source.Source.Settings.GetState(Setting.OnInstanceCreation, SettingState.On) != SettingState.On)
         {
             yield break;
         }

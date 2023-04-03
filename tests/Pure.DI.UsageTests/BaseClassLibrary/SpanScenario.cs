@@ -49,6 +49,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // ToString = On
 // {            
         DI.Setup("Composition")
             .Bind<Dependency>('a').To<Dependency>()
@@ -61,5 +62,6 @@ public class Scenario
         var service = composition.Root;
         service.Count.ShouldBe(3);
 // }            
+        TestTools.SaveClassDiagram(new Composition(), nameof(SpanScenario));
     }
 }

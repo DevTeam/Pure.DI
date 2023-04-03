@@ -31,6 +31,7 @@ internal static partial class Composition
         .Bind<IBuilder<MdSetup, IEnumerable<DependencyNode>>>(typeof(ArgDependencyNodeBuilder)).To<ArgDependencyNodeBuilder>()
         .Bind<IBuilder<MdSetup, IEnumerable<DependencyNode>>>(typeof(ConstructDependencyNodeBuilder)).To<ConstructDependencyNodeBuilder>()
         .Bind<IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>>>().To<RootsBuilder>()
+        .Bind<IBuilder<CompositionCode, LinesBuilder>>().To<ClassDiagramBuilder>()
         .Bind<IVarIdGenerator>().To<VarIdGenerator>()
         .Bind<IBuilder<MdBinding, ISet<Injection>>>().To<InjectionsBuilder>()
         .Bind<ITypeConstructor>().To<TypeConstructor>()
@@ -38,7 +39,7 @@ internal static partial class Composition
         .Bind<IValidator<MdSetup>>().To<MetadataValidator>()
         .Bind<IValidator<DependencyGraph>>().To<DependencyGraphValidator>()
         .Bind<IBuilder<LogEntry, LogInfo>>().To<LogInfoBuilder>()
-        
+
         // CSharp
         .Bind<IBuilder<DependencyGraph, CompositionCode>>(WellknownTag.CSharpCompositionBuilder).To<CompositionBuilder>()
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpClassBuilder).To<ClassBuilder>()
@@ -54,6 +55,7 @@ internal static partial class Composition
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpStaticConstructorBuilder).To<StaticConstructorBuilder>()
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpApiMembersBuilder).To<ApiMembersBuilder>()
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpResolversFieldsBuilder).To<ResolversFieldsBuilder>()
+        .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpToStringBuilder).To<ToStringBuilder>()
 
         .Bind<IObserversRegistry>().Bind<IObserversProvider>().As(IoC.Lifetime.PerResolve).To<ObserversRegistry>()
         .Bind<Facade>().To<Facade>()

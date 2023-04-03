@@ -48,6 +48,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // ToString = On
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
@@ -63,5 +64,6 @@ public class Scenario
             
         dependency.IsDisposed.ShouldBeTrue();
 // }
+        TestTools.SaveClassDiagram(new Composition(), nameof(DisposableSingletonScenario));
     }
 }

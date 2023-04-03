@@ -33,7 +33,7 @@ internal class LinesBuilder: IEnumerable<string>
     public void AppendLine(in Line line) => 
         _lines.Add(line with { Indent = line.Indent + CurrentIndent.Value });
 
-    public void AppendLines(in ImmutableArray<Line> lines)
+    public void AppendLines(in IEnumerable<Line> lines)
     {
         foreach (var line in lines)
         {

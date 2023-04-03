@@ -42,6 +42,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // ToString = On
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>().As(Lifetime.Transient).To<Dependency>()
@@ -54,5 +55,6 @@ public class Scenario
         service1.Dependency1.ShouldNotBe(service1.Dependency2);
         service2.Dependency1.ShouldNotBe(service1.Dependency1);
 // }
+        TestTools.SaveClassDiagram(composition, nameof(TransientScenario));
     }
 }

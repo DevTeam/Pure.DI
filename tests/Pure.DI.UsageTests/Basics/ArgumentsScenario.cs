@@ -38,6 +38,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // ToString = On
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
@@ -49,5 +50,6 @@ public class Scenario
         var service = composition.Root;
         service.Name.ShouldBe("Abc");
 // }
+        TestTools.SaveClassDiagram(composition, nameof(ArgumentsScenario));
     }
 }

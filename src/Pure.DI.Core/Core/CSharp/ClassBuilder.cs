@@ -15,6 +15,7 @@ internal class ClassBuilder : IBuilder<CompositionCode, CompositionCode>
         [IoC.Tag(WellknownTag.CSharpRootPropertiesBuilder)] IBuilder<CompositionCode, CompositionCode> rootPropertiesBuilder,
         [IoC.Tag(WellknownTag.CSharpApiMembersBuilder)] IBuilder<CompositionCode, CompositionCode> apiMembersBuilder,
         [IoC.Tag(WellknownTag.CSharpDisposeMethodBuilder)] IBuilder<CompositionCode, CompositionCode> disposeMethodBuilder,
+        [IoC.Tag(WellknownTag.CSharpToStringBuilder)] IBuilder<CompositionCode, CompositionCode> toStringBuilder,
         [IoC.Tag(WellknownTag.CSharpResolversFieldsBuilder)] IBuilder<CompositionCode, CompositionCode> resolversFieldsBuilder,
         [IoC.Tag(WellknownTag.CSharpStaticConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> staticConstructorBuilder,
         [IoC.Tag(WellknownTag.CSharpResolverClassesBuilder)] IBuilder<CompositionCode, CompositionCode> resolversClassesBuilder)
@@ -29,6 +30,7 @@ internal class ClassBuilder : IBuilder<CompositionCode, CompositionCode>
             rootPropertiesBuilder,
             apiMembersBuilder,
             disposeMethodBuilder,
+            toStringBuilder,
             resolversFieldsBuilder,
             staticConstructorBuilder,
             resolversClassesBuilder);

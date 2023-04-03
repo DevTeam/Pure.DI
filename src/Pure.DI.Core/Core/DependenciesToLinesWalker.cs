@@ -43,7 +43,7 @@ internal class DependenciesToLinesWalker: DependenciesWalker, IEnumerable<string
         }
     }
 
-    public override void VisitConstruct(in DpMethod constructor)
+    public override void VisitConstructor(in DpMethod constructor)
     {
         using (_lb.Indent())
         {

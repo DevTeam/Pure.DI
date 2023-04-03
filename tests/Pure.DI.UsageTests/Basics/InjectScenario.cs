@@ -40,6 +40,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // ToString = On
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
@@ -53,5 +54,6 @@ public class Scenario
         var composition = new Composition();
         var service = composition.Root;
 // }            
+        TestTools.SaveClassDiagram(composition, nameof(InjectScenario));
     }
 }

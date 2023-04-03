@@ -47,6 +47,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // ToString = On
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
@@ -58,5 +59,6 @@ public class Scenario
         var service = composition.Root;
         service.GetMessage().ShouldBe("Hello World !!!");
 // }
+        TestTools.SaveClassDiagram(composition, nameof(DecoratorScenario));
     }
 }

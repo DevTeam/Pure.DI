@@ -31,6 +31,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // ToString = On
 // {            
         DI.Setup("Composition")
             .Root<Service>("Root");
@@ -40,5 +41,6 @@ public class Scenario
         var service2 = composition.Resolve<Service>();
         var service3 = composition.Resolve(typeof(Service));
 // }
+        TestTools.SaveClassDiagram(composition, nameof(AutoBindingScenario));
     }
 }

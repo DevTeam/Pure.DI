@@ -16,14 +16,9 @@ internal class RootPropertiesBuilder: IBuilder<CompositionCode, CompositionCode>
         }
         
         var membersCounter = composition.MembersCount;
-        var roots = composition.Roots
-            .OrderByDescending(i => i.IsPublic)
-            .ThenBy(i => i.Node.Binding.Id)
-            .ThenBy(i => i.PropertyName);
-
         code.AppendLine("#region Roots");
         var isFirst = true;
-        foreach (var root in roots)
+        foreach (var root in composition.Roots)
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (isFirst)
