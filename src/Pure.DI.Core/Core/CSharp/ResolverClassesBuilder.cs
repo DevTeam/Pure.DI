@@ -15,6 +15,11 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
     
     public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
     {
+        if (composition.Source.Source.Settings.GetState(Setting.Resolve, SettingState.On) != SettingState.On)
+        {
+            return composition;
+        }
+        
         var code = composition.Code;
         if (composition.MembersCount > 0)
         {

@@ -4,12 +4,17 @@ internal class StaticConstructorBuilder: IBuilder<CompositionCode, CompositionCo
 {
     public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
     {
+        if (composition.Source.Source.Settings.GetState(Setting.Resolve, SettingState.On) != SettingState.On)
+        {
+            return composition;
+        }
+
         var actualRoots = composition.Roots.GetActualRoots().ToArray();
         if (!actualRoots.Any())
         {
             return composition;
         }
-        
+
         var code = composition.Code;
         if (composition.MembersCount > 0)
         {

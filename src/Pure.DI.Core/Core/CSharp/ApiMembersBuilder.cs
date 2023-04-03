@@ -16,39 +16,44 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
         }
         
         code.AppendLine("#region API");
-        AddMethodHeader(code);
-        code.AppendLine($"public T {ResolverMethodName}<T>()");
-        code.AppendLine("{");
-        using (code.Indent())
+        if (composition.Source.Source.Settings.GetState(Setting.Resolve, SettingState.On) == SettingState.On)
         {
-            code.AppendLine($"return {ResolverClassesBuilder.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}!.{ResolverClassesBuilder.ResolveMethodName}(this);");
+            AddMethodHeader(code);
+            code.AppendLine($"public T {ResolverMethodName}<T>()");
+            code.AppendLine("{");
+            using (code.Indent())
+            {
+                code.AppendLine($"return {ResolverClassesBuilder.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}!.{ResolverClassesBuilder.ResolveMethodName}(this);");
+            }
+
+            code.AppendLine("}");
+
+            code.AppendLine();
+            membersCounter++;
+
+            AddMethodHeader(code);
+            code.AppendLine($"public T {ResolverMethodName}<T>(object? tag)");
+            code.AppendLine("{");
+            using (code.Indent())
+            {
+                code.AppendLine($"return {ResolverClassesBuilder.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}!.{ResolverClassesBuilder.ResolveByTagMethodName}(this, tag);");
+            }
+
+            code.AppendLine("}");
+
+            code.AppendLine();
+            membersCounter++;
+
+            var roots = composition.Roots.GetActualRoots().ToArray();
+
+            CreateObjectResolverMethod(composition, roots, "System.Type type", ResolveMethodName, "this", code);
+            membersCounter++;
+            code.AppendLine();
+
+            CreateObjectResolverMethod(composition, roots, "System.Type type, object? tag", ResolveByTagMethodName, "this, tag", code);
+            membersCounter++;
+            code.AppendLine();
         }
-        code.AppendLine("}");
-        
-        code.AppendLine();
-        membersCounter++;
-        
-        AddMethodHeader(code);
-        code.AppendLine($"public T {ResolverMethodName}<T>(object? tag)");
-        code.AppendLine("{");
-        using (code.Indent())
-        {
-            code.AppendLine($"return {ResolverClassesBuilder.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}!.{ResolverClassesBuilder.ResolveByTagMethodName}(this, tag);");
-        }
-        code.AppendLine("}");
-        
-        code.AppendLine();
-        membersCounter++;
-        
-        var roots = composition.Roots.GetActualRoots().ToArray();
-        
-        CreateObjectResolverMethod(composition, roots, "System.Type type", ResolveMethodName, "this", code);
-        membersCounter++;
-        code.AppendLine();
-        
-        CreateObjectResolverMethod(composition, roots, "System.Type type, object? tag", ResolveByTagMethodName, "this, tag", code);
-        membersCounter++;
-        code.AppendLine();
 
         if (composition.Source.Source.Settings.GetState(Setting.OnInstanceCreation, SettingState.On) == SettingState.On)
         {

@@ -6,6 +6,11 @@ internal class ResolversFieldsBuilder: IBuilder<CompositionCode, CompositionCode
 
     public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
     {
+        if (composition.Source.Source.Settings.GetState(Setting.Resolve, SettingState.On) != SettingState.On)
+        {
+            return composition;
+        }
+        
         var actualRoots = composition.Roots.GetActualRoots().ToArray();
         if (!actualRoots.Any())
         {

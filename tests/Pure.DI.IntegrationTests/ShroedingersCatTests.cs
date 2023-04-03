@@ -54,6 +54,7 @@ namespace Sample
     {
         private static void SetupComposition()
         {
+            // Resolve = Off
             DI.Setup("Composition")
                 // Models a random subatomic event that may or may not occur
                 .Bind<Random>().As(Singleton).To<Random>()

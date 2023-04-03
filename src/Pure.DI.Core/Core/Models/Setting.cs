@@ -6,6 +6,11 @@ internal enum Setting
     /// <summary>
     /// <c>On</c> by default. 
     /// </summary>
+    Resolve,
+    
+    /// <summary>
+    /// <c>On</c> by default. 
+    /// </summary>
     OnInstanceCreation,
     
     /// <summary>
