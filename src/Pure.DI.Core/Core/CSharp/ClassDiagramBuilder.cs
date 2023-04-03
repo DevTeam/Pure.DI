@@ -53,6 +53,7 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
             var graph = composition.Source.Graph;
             foreach (var node in graph.Vertices.GroupBy(i => i.Type, SymbolEqualityComparer.Default).Select(i => i.First()))
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 if (node.Root is { })
                 {
                     continue;
@@ -75,6 +76,7 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
 
             foreach (var dependency in graph.Edges)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 if (dependency.Target.Root is {} && publicRoots.TryGetValue(dependency.Injection, out var root))
                 {
                     lines.AppendLine($"{composition.Name.ClassName} ..> {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatInjection(root.Injection, DefaultFormatOptions)} {root.PropertyName}");

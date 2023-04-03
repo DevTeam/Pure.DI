@@ -2,7 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/CompositionRootScenario.cs)
 
-This example demonstrates the most efficient way to get the root object of a composition without impacting memory consumption or performance.
+This example demonstrates the most efficient way to obtain a composition root. The number of roots are not limited.
 
 ``` CSharp
 internal interface IDependency { }
@@ -18,13 +18,22 @@ internal class Service : IService
     }
 }
 
+internal class OtherService : IService
+{
+}
+
 DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>("Other").To<OtherService>()
     .Bind<IService>().To<Service>()
-    .Root<IService>("Root");
+    // The single argument is the name of root property
+    .Root<IService>("Root")
+    // The first argument is the name of root property and the second argument is the binding tag
+    .Root<IService>("OtherRoot", "Other");
 
 var composition = new Composition();
 var service = composition.Root;
+var otherService = composition.OtherRoot;
 ```
 
 <details open>
@@ -33,6 +42,7 @@ var service = composition.Root;
 ```mermaid
 classDiagram
 class Composition {
++IService OtherRoot
 +IService Root
 +T ResolveᐸTᐳ()
 +T ResolveᐸTᐳ(object? tag)
@@ -43,10 +53,15 @@ Dependency --|> IDependency :
 class Dependency {
 +Dependency()
 }
+OtherService --|> IService : "Other" 
+class OtherService {
++OtherService()
+}
 Service --|> IService : 
 class Service {
 +Service(IDependency dependency)
 }
+Composition ..> OtherService : "Other" IService OtherRoot
 Composition ..> Service : IService Root
 Service *-- Dependency : IDependency dependency
 ```
@@ -93,13 +108,22 @@ internal class Service : IService
     }
 }
 
+internal class OtherService : IService
+{
+}
+
 DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>();
+    .Bind<IService>().To<Service>()
+    .Bind<IService>("Other").To<OtherService>();
 
 var composition = new Composition();
 var service1 = composition.Resolve<IService>();
 var service2 = composition.Resolve(typeof(IService));
+        
+// Resolve by tag
+var otherService1 = composition.Resolve<IService>("Other");
+var otherService2 = composition.Resolve(typeof(IService),"Other");
 ```
 
 <details open>
@@ -120,6 +144,10 @@ class Dependency {
 Service --|> IService : 
 class Service {
 +Service(IDependency dependency)
+}
+OtherService --|> IService : "Other" 
+class OtherService {
++OtherService()
 }
 Service *-- Dependency : IDependency dependency
 ```

@@ -2,7 +2,7 @@
 $v=true
 $p=0
 $d=Composition root
-$h=This example demonstrates the most efficient way to get the root object of a composition without impacting memory consumption or performance.
+$h=This example demonstrates the most efficient way to obtain a composition root. The number of roots are not limited.
 $f=Actually, the property _Root_ looks like:
 $f=```csharp
 $f=public IService Root
@@ -44,6 +44,10 @@ internal class Service : IService
     {
     }
 }
+
+internal class OtherService : IService
+{
+}
 // }
 
 public class Scenario
@@ -55,13 +59,19 @@ public class Scenario
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
+            .Bind<IService>("Other").To<OtherService>()
             .Bind<IService>().To<Service>()
-            .Root<IService>("Root");
+            // The single argument is the name of root property
+            .Root<IService>("Root")
+            // The first argument is the name of root property and the second argument is the binding tag               
+            .Root<IService>("OtherRoot", "Other");
 
         var composition = new Composition();
         var service = composition.Root;
+        var otherService = composition.OtherRoot;
 // }            
         service.ShouldBeOfType<Service>();
+        otherService.ShouldBeOfType<OtherService>();
         TestTools.SaveClassDiagram(composition, nameof(CompositionRootScenario));
     }
 }
