@@ -49,15 +49,18 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
         CreateObjectResolverMethod(composition, roots, "System.Type type, object? tag", ResolveByTagMethodName, "this, tag", code);
         membersCounter++;
         code.AppendLine();
-        
-        code.AppendLine(CodeConstants.MethodImplOptions);
-        code.AppendLine($"partial void {CodeConstants.OnInstanceCreationMethodName}<T>(ref T value, object? tag, object? lifetime);");
-        membersCounter++;
 
-        if (composition.Source.Source.Settings.GetBool(Setting.TrackInjections))
+        if (composition.Source.Source.Settings.GetState(Setting.OnInstanceCreation, SettingState.On) == SettingState.On)
         {
-            code.AppendLine(CodeConstants.MethodImplOptions);
-            code.AppendLine($"private partial T {CodeConstants.OnDependencyInjectionMethodName}<T>(in T value, object? tag, object? lifetime);");
+            code.AppendLine(Constant.MethodImplOptions);
+            code.AppendLine($"partial void {Constant.OnInstanceCreationMethodName}<T>(ref T value, object? tag, object? lifetime);");
+            membersCounter++;
+        }
+
+        if (composition.Source.Source.Settings.GetState(Setting.OnDependencyInjection) == SettingState.On)
+        {
+            code.AppendLine(Constant.MethodImplOptions);
+            code.AppendLine($"private partial T {Constant.OnDependencyInjectionMethodName}<T>(in T value, object? tag, object? lifetime);");
             membersCounter++;
         }
         
@@ -83,7 +86,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             if (actualRoots.Any())
             {
                 var pairs = $"System.Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.Name.ClassName}>";
-                var pairTypeName = $"{CodeConstants.ApiNamespace}Pair<{pairs}>";
+                var pairTypeName = $"{Constant.ApiNamespace}Pair<{pairs}>";
                 if (divisor <= 1)
                 {
                     code.AppendLine($"{pairTypeName} pair = {ResolversFieldsBuilder.BucketsFieldName}[0U];");
@@ -117,7 +120,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
                 code.AppendLine();
             }
 
-            code.AppendLine($"throw new System.InvalidOperationException($\"{CodeConstants.CannotResolve} of type {{type}}.\");");
+            code.AppendLine($"throw new System.InvalidOperationException($\"{Constant.CannotResolve} of type {{type}}.\");");
         }
         
         code.AppendLine("}");
@@ -128,6 +131,6 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
         code.AppendLine("#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER");
         code.AppendLine("[System.Diagnostics.Contracts.Pure]");
         code.AppendLine("#endif");
-        code.AppendLine(CodeConstants.MethodImplOptions);
+        code.AppendLine(Constant.MethodImplOptions);
     }
 }

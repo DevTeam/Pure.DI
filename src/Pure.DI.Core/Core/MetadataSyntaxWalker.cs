@@ -20,8 +20,8 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
     private static readonly Settings EmptySettings = new();
     private static readonly string[] ApiTypes =
     {
-        CodeConstants.ApiNamespace + nameof(IConfiguration),
-        CodeConstants.ApiNamespace + nameof(IBinding)
+        Constant.ApiNamespace + nameof(IConfiguration),
+        Constant.ApiNamespace + nameof(IBinding)
     };
     private static readonly ImmutableHashSet<string> ApiMethods = ImmutableHashSet.Create(
         nameof(DI.Setup),

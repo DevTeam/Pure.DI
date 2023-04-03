@@ -3,5 +3,13 @@ namespace Pure.DI.Core.Models;
 
 internal enum Setting
 {
-    TrackInjections
+    /// <summary>
+    /// <c>On</c> by default. 
+    /// </summary>
+    OnInstanceCreation,
+    
+    /// <summary>
+    /// <c>Off</c> by default. 
+    /// </summary>
+    OnDependencyInjection
 }

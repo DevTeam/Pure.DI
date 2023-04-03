@@ -1,7 +1,7 @@
 // ReSharper disable InconsistentNaming
 namespace Pure.DI.Core.CSharp;
 
-internal static class CodeConstants
+internal static class Constant
 {
     public const string ApiNamespace = "Pure.DI.";
     public const string CannotResolve = "Cannot resolve composition root";

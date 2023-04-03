@@ -100,7 +100,7 @@ public class Scenario
     public void Run()
     {
 // {            
-        // TrackInjections=true
+        // OnDependencyInjection = On
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().Tags().To<Service>()

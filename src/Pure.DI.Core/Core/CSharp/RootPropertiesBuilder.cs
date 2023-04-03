@@ -49,7 +49,7 @@ internal class RootPropertiesBuilder: IBuilder<CompositionCode, CompositionCode>
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine(CodeConstants.MethodImplOptions);
+            code.AppendLine(Constant.MethodImplOptions);
             code.AppendLine("get");
             code.AppendLine("{");
             using (code.Indent())

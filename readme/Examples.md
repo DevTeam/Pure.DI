@@ -945,7 +945,7 @@ internal partial class Composition: IInterceptor
     }
 }
 
-// TrackInjections=true
+// OnDependencyInjection = On
 DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().Tags().To<Service>()
@@ -1041,7 +1041,7 @@ internal partial class Composition: IInterceptor
     }
 }
 
-// TrackInjections=true
+// OnDependencyInjection = On
 DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().Tags().To<Service>()

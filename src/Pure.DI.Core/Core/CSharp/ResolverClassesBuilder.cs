@@ -3,7 +3,7 @@ namespace Pure.DI.Core.CSharp;
 
 internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode>
 {
-    internal static readonly string ResolverInterfaceName = $"{CodeConstants.ApiNamespace}{nameof(IResolver<object, object>)}";
+    internal static readonly string ResolverInterfaceName = $"{Constant.ApiNamespace}{nameof(IResolver<object, object>)}";
     internal static readonly string ResolverClassName = $"Resolver{Variable.Postfix}";
     internal static readonly string ResolverPropertyName = "Value";
     internal static readonly string ResolveMethodName = nameof(IResolver<object, object>.Resolve);
@@ -75,7 +75,7 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
             }
             else
             {
-                code.AppendLine($"throw new System.InvalidOperationException($\"{CodeConstants.CannotResolve} of type {roots.Key}.\");");
+                code.AppendLine($"throw new System.InvalidOperationException($\"{Constant.CannotResolve} of type {roots.Key}.\");");
             }
         }
 
@@ -98,7 +98,7 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
                 code.AppendLine($"if (Equals(tag, null)) return {cast}composition.{defaultRoot.PropertyName};");
             }
 
-            code.AppendLine($"throw new System.InvalidOperationException($\"{CodeConstants.CannotResolve} \\\"{{tag}}\\\" of type {roots.Key}.\");");
+            code.AppendLine($"throw new System.InvalidOperationException($\"{Constant.CannotResolve} \\\"{{tag}}\\\" of type {roots.Key}.\");");
         }
 
         code.AppendLine("}");

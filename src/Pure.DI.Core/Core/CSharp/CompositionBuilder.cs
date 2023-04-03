@@ -454,7 +454,12 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             yield break;
         }
 
-        yield return OnInstanceCreation(variable) + ";";
+        if (variable.Source.Source.Settings.GetState(Setting.OnInstanceCreation, SettingState.On) == SettingState.Off)
+        {
+            yield break;
+        }
+
+        yield return $"{Constant.OnInstanceCreationMethodName}<{variable.InstanceType}>(ref {variable.Name}, {variable.Injection.Tag.TagToString()}, {variable.Node.Binding.Lifetime?.Lifetime.TagToString() ?? "null"})" + ";";
     }
 
     private static IEnumerable<string> GenerateReturnStatements(Variable variable, string lastChars = ";")
@@ -462,12 +467,9 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         yield return $"return {Inject(variable)}{lastChars}";
     }
 
-    private static string OnInstanceCreation(Variable variable) => 
-        $"{CodeConstants.OnInstanceCreationMethodName}<{variable.InstanceType}>(ref {variable.Name}, {variable.Injection.Tag.TagToString()}, {variable.Node.Binding.Lifetime?.Lifetime.TagToString() ?? "null"})";
-
     private static string Inject(Variable variable) =>
-        variable.Source.Source.Settings.GetBool(Setting.TrackInjections) 
-            ? $"{CodeConstants.OnDependencyInjectionMethodName}<{variable.ContractType}>({variable.Name}, {variable.Injection.Tag.TagToString()}, {variable.Node.Binding.Lifetime?.Lifetime.TagToString() ?? "null"})"
+        variable.Source.Source.Settings.GetState(Setting.OnDependencyInjection) == SettingState.On 
+            ? $"{Constant.OnDependencyInjectionMethodName}<{variable.ContractType}>({variable.Name}, {variable.Injection.Tag.TagToString()}, {variable.Node.Binding.Lifetime?.Lifetime.TagToString() ?? "null"})"
             : variable.Name;
 
     private bool IsDisposable(Variable variable)
@@ -475,7 +477,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         var compilation = variable.Node.Binding.SemanticModel.Compilation;
         if (!_disposableTypes.TryGetValue(compilation, out var disposableType))
         {
-            disposableType = compilation.GetTypeByMetadataName(CodeConstants.IDisposableInterfaceName);
+            disposableType = compilation.GetTypeByMetadataName(Constant.IDisposableInterfaceName);
             _disposableTypes.Add(compilation, disposableType);
         }
         

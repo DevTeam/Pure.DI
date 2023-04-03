@@ -52,7 +52,7 @@ internal class PrimaryConstructorBuilder: IBuilder<CompositionCode, CompositionC
             
             if (composition.Singletons.Any())
             {
-                code.AppendLine($"{Variable.DisposablesFieldName} = new {CodeConstants.IDisposableInterfaceName}[{composition.DisposableSingletonsCount}];");
+                code.AppendLine($"{Variable.DisposablesFieldName} = new {Constant.IDisposableInterfaceName}[{composition.DisposableSingletonsCount}];");
             }
         }
 
