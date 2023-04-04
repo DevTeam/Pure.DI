@@ -2,7 +2,7 @@ namespace Build;
 
 using System.CommandLine.Invocation;
 
-public class ReadmeTarget : ITarget
+internal class ReadmeTarget : ITarget<int>
 {
     private const string ReadmeDir = "readme";
     private const string ExamplesReadmeFile = "Examples.md";
@@ -25,9 +25,10 @@ public class ReadmeTarget : ITarget
         "Interception"
     };
 
-    public async Task RunAsync(InvocationContext ctx)
+    public async Task<int> RunAsync(InvocationContext ctx)
     {
         var solutionDirectory = Tools.GetSolutionDirectory();
+        var logsDirectory = Path.Combine(solutionDirectory, ".logs");
         var items = new List<Dictionary<string, string>>();
         var testsDir = Path.Combine(Tools.GetSolutionDirectory(), "tests", "Pure.DI.UsageTests");
         var files = Directory.EnumerateFiles(testsDir, "*.cs", SearchOption.AllDirectories);
@@ -147,8 +148,54 @@ public class ReadmeTarget : ITarget
             await readmeWriter.WriteLineAsync(line);
         }
         
-        await using var examplesWriter = File.CreateText(Path.Combine(ReadmeDir, ExamplesReadmeFile));
+        var benchmarksReportFiles = Directory.EnumerateFiles(logsDirectory, "*.html").ToArray();
+        if (benchmarksReportFiles.Any())
+        {
+            await readmeWriter.WriteLineAsync("");
+            await readmeWriter.WriteLineAsync("## Benchmarks");
+            await readmeWriter.WriteLineAsync("");
+            var isFirst = true;
+            foreach (var benchmarksReportFile in benchmarksReportFiles.OrderBy(i => i))
+            {
+                var reportName = new string(Path.GetFileNameWithoutExtension(benchmarksReportFile).SkipWhile(i => i != ' ').Skip(1).ToArray());
+                var lines = await File.ReadAllLinesAsync(benchmarksReportFile);
+                if (isFirst)
+                {
+                    var headerLines = lines
+                        .SkipWhile(i => !i.Contains("<pre><code>"))
+                        .TakeWhile(i => !i.Contains("<pre><code></code></pre>"));
+                    
+                    foreach (var headerLine in headerLines)
+                    {
+                        await readmeWriter.WriteLineAsync(headerLine);
+                    }
+                    
+                    await readmeWriter.WriteLineAsync("");
+                }
+                
+                await readmeWriter.WriteLineAsync($"<details{(isFirst ? " open" : "")}>");
+                await readmeWriter.WriteLineAsync($"<summary>{reportName}</summary>");
+                await readmeWriter.WriteLineAsync("");
+                var contentLines = lines
+                    .SkipWhile(i => !i.Contains("<table>"))
+                    .TakeWhile(i => !i.Contains("</body>"));
+
+                foreach (var contentLine in contentLines)
+                {
+                    await readmeWriter.WriteLineAsync(contentLine.Replace('?', ' '));
+                }
+                
+                await readmeWriter.WriteLineAsync("");
+                await readmeWriter.WriteLineAsync("</details>");
+                await readmeWriter.WriteLineAsync("");
+                isFirst = false;
+            }
+        }
+
+        await readmeWriter.WriteLineAsync("");
         await readmeWriter.WriteLineAsync("## Examples");
+        await readmeWriter.WriteLineAsync("");
+        await using var examplesWriter = File.CreateText(Path.Combine(ReadmeDir, ExamplesReadmeFile));
         foreach (var (groupName, sampleItems) in samples)
         {
             await readmeWriter.WriteLineAsync($"### {new string(FormatTitle(groupName).ToArray())}");
@@ -171,7 +218,7 @@ public class ReadmeTarget : ITarget
                 await examplesWriter.WriteLineAsync(vars[BodyKey]);
                 await examplesWriter.WriteLineAsync("```");
 
-                var classDiagramFile = Path.Combine(solutionDirectory, ".logs", Path.GetFileNameWithoutExtension(vars[SourceKey]) + ".Mermaid");
+                var classDiagramFile = Path.Combine(logsDirectory, Path.GetFileNameWithoutExtension(vars[SourceKey]) + ".Mermaid");
                 if (File.Exists(classDiagramFile))
                 {
                     await examplesWriter.WriteLineAsync("");
@@ -197,9 +244,11 @@ public class ReadmeTarget : ITarget
                 await examplesWriter.WriteLineAsync("");
             }
         }
-        
+
         await readmeWriter.FlushAsync();
         await examplesWriter.FlushAsync();
+        
+        return 0;
     }
 
     private static IEnumerable<char> FormatTitle(string title)

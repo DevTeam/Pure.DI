@@ -213,4 +213,3 @@ Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates
 - [.NET IoT](https://dotnet.microsoft.com/apps/iot)
 - [Xamarin](https://dotnet.microsoft.com/apps/xamarin)
 - [.NET Multi-platform App UI (MAUI)](https://docs.microsoft.com/en-us/dotnet/maui/)
-

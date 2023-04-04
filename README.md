@@ -214,7 +214,33 @@ Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates
 - [Xamarin](https://dotnet.microsoft.com/apps/xamarin)
 - [.NET Multi-platform App UI (MAUI)](https://docs.microsoft.com/en-us/dotnet/maui/)
 
+## Benchmarks
+
+<pre><code>
+BenchmarkDotNet=v0.13.5, OS=Windows 10 (10.0.19045.2728/22H2/2022Update)
+Intel Core i7-10850H CPU 2.70GHz, 1 CPU, 12 logical and 6 physical cores
+.NET SDK=7.0.100
+  [Host]     : .NET 7.0.0 (7.0.22.51805), X64 RyuJIT AVX2
+  DefaultJob : .NET 7.0.0 (7.0.22.51805), X64 RyuJIT AVX2
+</code></pre>
+
+<details open>
+<summary>Transient</summary>
+
+<table>
+<thead><tr><th>              Method</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
+</tr>
+</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>0.0012 ns</td><td>0.0036 ns</td><td>0.0037 ns</td><td>0.0000 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>0.4215 ns</td><td>0.0278 ns</td><td>0.0806 ns</td><td>0.3820 ns</td><td> </td><td> </td>
+</tr><tr><td>Pure.DI</td><td>5.1241 ns</td><td>0.1881 ns</td><td>0.5398 ns</td><td>5.0331 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>11.4612 ns</td><td>0.3769 ns</td><td>1.1114 ns</td><td>11.2830 ns</td><td> </td><td> </td>
+</tr></tbody></table>
+
+</details>
+
+
 ## Examples
+
 ### Basics
 - [Composition root](readme/Examples.md#composition-root)
 - [Resolve methods](readme/Examples.md#resolve-methods)

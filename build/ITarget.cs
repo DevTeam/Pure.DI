@@ -2,7 +2,7 @@ namespace Build;
 
 using System.CommandLine.Invocation;
 
-internal interface ITarget
+internal interface ITarget<T>
 {
-    Task RunAsync(InvocationContext ctx);
+    Task<T> RunAsync(InvocationContext ctx);
 }
