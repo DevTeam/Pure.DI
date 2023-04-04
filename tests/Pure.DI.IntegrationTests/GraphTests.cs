@@ -589,10 +589,13 @@ Service(Sample.IDependency dependency<--Sample.IDependency))
         // Given
         var graphText = new StringBuilder();
         var bindingCode = new StringBuilder();
+        var resolveCode = new StringBuilder();
         bindingCode.AppendLine();
         for (var i = 0; i <= count; i++)
         {
             bindingCode.AppendLine($"                        .Bind<IDependency{i}>().To<Dependency{i}>()");
+            resolveCode.AppendLine($"composition.Resolve<IDependency{i}>();");
+            resolveCode.AppendLine($"composition.Resolve(typeof(IDependency{i}));");
         }
 
         bindingCode.AppendLine("                    ;");
@@ -626,7 +629,15 @@ namespace Sample
     using Pure.DI;
     using Sample;
 
-    public class Program { public static void Main() { } }
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();            
+""" + resolveCode +
+"""
+        }
+    }
 
     internal interface IService
     {

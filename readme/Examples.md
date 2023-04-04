@@ -856,8 +856,9 @@ Service *-- Dependency : +IDependency Dependency
 
 #### Complex Generics
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/ComplexGenericsScenario.cs
-Defining generic type arguments using particular marker types like ```TT``` in this sample is a distinguishing and outstanding feature. This allows binding complex generic types with nested generic types and with any type constraints. For instance ```IService<T1, T2, TList, TDictionary> where T2: struct where TList: IList<T1> where TDictionary: IDictionary<T1, T2> { }``` and its binding to the some implementation ```.Bind<IService<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>().To<Service<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()``` with all checks and code-generation at the compile time. It is clear that this example is exaggerated, it just demonstrates the ease of working with marker types like ```TT, TTEnumerable, TTSet``` and etc. for binding complex generic types.)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/ComplexGenericsScenario.cs)
+
+Defining generic type arguments using particular marker types like ```TT``` in this sample is a distinguishing and outstanding feature. This allows binding complex generic types with nested generic types and with any type constraints. For instance ```IService<T1, T2, TList, TDictionary> where T2: struct where TList: IList<T1> where TDictionary: IDictionary<T1, T2> { }``` and its binding to the some implementation ```.Bind<IService<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>().To<Service<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()``` with all checks and code-generation at the compile time. It is clear that this example is exaggerated, it just demonstrates the ease of working with marker types like ```TT, TTEnumerable, TTSet``` and etc. for binding complex generic types.
 
 ``` CSharp
 internal interface IDependency<T> { }
@@ -919,6 +920,39 @@ service.ShouldBeOfType<Service<string, int, List<string>, Dictionary<string, int
 service.Dependency1.ShouldBeOfType<Dependency<string>>();
 service.Dependency2.ShouldBeOfType<DependencyStruct<int>>();
 ```
+
+<details open>
+<summary>Class Diagram</summary>
+
+```mermaid
+classDiagram
+class Composition {
++ProgramᐸStringᐳ Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
+}
+ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ --|> IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ : 
+class ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ {
++Service(IDependencyᐸStringᐳ dependency1, IDependencyᐸInt32ᐳ dependency2)
+}
+DependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 
+class DependencyᐸStringᐳ {
++Dependency()
+}
+DependencyStructᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : "value type" 
+class DependencyStructᐸInt32ᐳ {
++DependencyStruct()
+}
+Composition ..> ProgramᐸStringᐳ : ProgramᐸStringᐳ Root
+ProgramᐸStringᐳ *-- ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ : IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ service
+ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *-- DependencyᐸStringᐳ : IDependencyᐸStringᐳ dependency1
+ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *-- DependencyStructᐸInt32ᐳ : "value type"  IDependencyᐸInt32ᐳ dependency2
+```
+
+</details>
+
 
 #### Singleton
 

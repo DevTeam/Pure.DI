@@ -2,6 +2,14 @@ namespace Pure.DI.Core.CSharp;
 
 internal class StaticConstructorBuilder: IBuilder<CompositionCode, CompositionCode>
 {
+    private readonly IBuilder<IEnumerable<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
+
+    public StaticConstructorBuilder(
+        IBuilder<IEnumerable<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
+    {
+        _resolversBuilder = resolversBuilder;
+    }
+
     public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
     {
         if (composition.Source.Source.Settings.GetState(Setting.Resolve, SettingState.On) != SettingState.On)
@@ -9,8 +17,8 @@ internal class StaticConstructorBuilder: IBuilder<CompositionCode, CompositionCo
             return composition;
         }
 
-        var actualRoots = composition.Roots.GetActualRoots().ToArray();
-        if (!actualRoots.Any())
+        var resolvers = _resolversBuilder.Build(composition.Roots, cancellationToken).ToArray();
+        if (!resolvers.Any())
         {
             return composition;
         }
@@ -25,15 +33,14 @@ internal class StaticConstructorBuilder: IBuilder<CompositionCode, CompositionCo
         code.AppendLine("{");
         using (code.Indent())
         {
-            var groups = actualRoots.GroupBy(i => i.Injection.Type, SymbolEqualityComparer.Default).ToArray();
-            foreach (var roots in groups)
+            foreach (var resolver in resolvers)
             {
-                var className = ResolverClassesBuilder.GetResolveClassName(roots.Key);
+                var className = resolver.ClassName;
                 code.AppendLine($"{className} val{className} = new {className}();");
-                code.AppendLine($"{ResolverClassesBuilder.ResolverClassName}<{roots.Key}>.{ResolverClassesBuilder.ResolverPropertyName} = val{className};");
+                code.AppendLine($"{ResolverInfo.ResolverClassName}<{resolver.Type}>.{ResolverClassesBuilder.ResolverPropertyName} = val{className};");
             }
             
-            var divisor = Buckets<object, object>.GetDivisor((uint)groups.Length);
+            var divisor = Buckets<object, object>.GetDivisor((uint)resolvers.Length);
             var pairs = $"System.Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.Name.ClassName}>";
             var bucketsTypeName = $"{Constant.ApiNamespace}Buckets<{pairs}>";
             var pairTypeName = $"{Constant.ApiNamespace}Pair<{pairs}>";
@@ -41,15 +48,15 @@ internal class StaticConstructorBuilder: IBuilder<CompositionCode, CompositionCo
             using (code.Indent())
             {
                 code.AppendLine($"{divisor},");
-                code.AppendLine($"new {pairTypeName}[{groups.Length}]");
+                code.AppendLine($"new {pairTypeName}[{resolvers.Length}]");
                 code.AppendLine("{");
                 using (code.Indent())
                 {
                     var isFirst = true;
-                    foreach (var roots in groups)
+                    foreach (var resolver in resolvers)
                     {
-                        var className = ResolverClassesBuilder.GetResolveClassName(roots.Key);
-                        code.AppendLine($"{(isFirst ? ' ' : ',')}new {pairTypeName}(typeof({roots.Key}), val{className})");
+                        var className = resolver.ClassName;
+                        code.AppendLine($"{(isFirst ? ' ' : ',')}new {pairTypeName}(typeof({resolver.Type}), val{className})");
                         isFirst = false;
                     }
                 }

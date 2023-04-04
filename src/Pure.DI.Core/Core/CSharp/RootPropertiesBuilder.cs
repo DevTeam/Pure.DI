@@ -14,11 +14,12 @@ internal class RootPropertiesBuilder: IBuilder<CompositionCode, CompositionCode>
         {
             code.AppendLine();
         }
-        
+
+        var generatePrivateRoots = composition.Source.Source.Settings.GetState(Setting.Resolve, SettingState.On) == SettingState.On;
         var membersCounter = composition.MembersCount;
         code.AppendLine("#region Roots");
         var isFirst = true;
-        foreach (var root in composition.Roots)
+        foreach (var root in composition.Roots.Where(i => generatePrivateRoots || i.IsPublic))
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (isFirst)

@@ -12,7 +12,9 @@ using Model;
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class Enum : BenchmarkBase
 {
-    private static void SetupDI() => DI.Setup("EnumDI")
+    private static void SetupDI() =>
+        // ThreadSafe = Off
+        DI.Setup("EnumDI")
         .Bind<ICompositionRoot>().To<CompositionRoot>()
         .Bind<IService1>().To<Service1>()
         .Bind<IService2>().To<Service2Enum>()

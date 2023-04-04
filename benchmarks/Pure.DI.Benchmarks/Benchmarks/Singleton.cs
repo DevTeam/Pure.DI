@@ -14,7 +14,9 @@ using Model;
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class Singleton : BenchmarkBase
 {
-    private static void SetupDI() => DI.Setup("SingletonDI")
+    private static void SetupDI() =>
+        // ThreadSafe = Off
+        DI.Setup("SingletonDI")
         .Bind<ICompositionRoot>().To<CompositionRoot>()
         .Bind<IService1>().As(Lifetime.Singleton).To<Service1>()
         .Bind<IService2>().To<Service2>()

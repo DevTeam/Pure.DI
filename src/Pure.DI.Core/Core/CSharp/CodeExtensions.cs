@@ -3,9 +3,6 @@ namespace Pure.DI.Core.CSharp;
 
 internal static class CodeExtensions
 {
-    public static IEnumerable<Root> GetActualRoots(this IEnumerable<Root> roots) => 
-        roots.Where(i => !i.Injection.Type.IsRefLikeType);
-
     public static string TagToString(this object? tag, string defaultValue = "null") => 
         tag switch
         {

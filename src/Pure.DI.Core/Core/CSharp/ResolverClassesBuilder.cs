@@ -1,18 +1,21 @@
 // ReSharper disable ConvertIfStatementToConditionalTernaryExpression
+// ReSharper disable InvertIf
 namespace Pure.DI.Core.CSharp;
 
 internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode>
 {
+    private readonly IBuilder<IEnumerable<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
     internal static readonly string ResolverInterfaceName = $"{Constant.ApiNamespace}{nameof(IResolver<object, object>)}";
-    internal static readonly string ResolverClassName = $"Resolver{Variable.Postfix}";
     internal static readonly string ResolverPropertyName = "Value";
     internal static readonly string ResolveMethodName = nameof(IResolver<object, object>.Resolve);
     internal static readonly string ResolveByTagMethodName = nameof(IResolver<object, object>.ResolveByTag);
-
-    [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]
-    public static string GetResolveClassName(ISymbol? type) => 
-        $"{ResolverClassName}{(uint)(type?.GetHashCode() ?? 0)}";
     
+    public ResolverClassesBuilder(
+        IBuilder<IEnumerable<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
+    {
+        _resolversBuilder = resolversBuilder;
+    }
+
     public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
     {
         if (composition.Source.Source.Settings.GetState(Setting.Resolve, SettingState.On) != SettingState.On)
@@ -28,7 +31,7 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
         
         code.AppendLine("#region Resolvers");
         code.AppendLine("#pragma warning disable CS0649");
-        code.AppendLine($"private class {ResolverClassName}<T>");
+        code.AppendLine($"private class {ResolverInfo.ResolverClassName}<T>");
         code.AppendLine("{");
         using (code.Indent())
         {
@@ -36,21 +39,20 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
         }
         code.AppendLine("}");
         
-        var actualRoots = composition.Roots.GetActualRoots().ToArray();
-        if (actualRoots.Any())
+        var resolvers = _resolversBuilder.Build(composition.Roots, cancellationToken).ToArray();
+        if (resolvers.Any())
         {
-            var groups = actualRoots.GroupBy(i => i.Injection.Type, SymbolEqualityComparer.Default);
-            foreach (var roots in groups)
+            foreach (var resolver in resolvers)
             {
-                var resolverClassName = GetResolveClassName(roots.Key);
+                var resolverClassName = resolver.ClassName;
                 code.AppendLine();
-                code.AppendLine($"private class {resolverClassName}: {ResolverInterfaceName}<{composition.Name.ClassName}, {roots.Key}>");
+                code.AppendLine($"private sealed class {resolverClassName}: {ResolverInterfaceName}<{composition.Name.ClassName}, {resolver.Type}>");
                 code.AppendLine("{");
                 using (code.Indent())
                 {
-                    GenerateResolverMethods(composition, roots, roots.Key?.ToString() ?? "", "", "", code);
+                    GenerateResolverMethods(composition, resolver, resolver.Type.ToString() ?? "", "", "", code);
                     code.AppendLine();
-                    GenerateResolverMethods(composition, roots, "object", "Object", "(object)", code);
+                    GenerateResolverMethods(composition, resolver, "object", "Object", "(object)", code);
                 }
                 code.AppendLine("}");   
             }
@@ -63,13 +65,13 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
 
     private static void GenerateResolverMethods(
         CompositionCode composition,
-        IGrouping<ISymbol?, Root> roots,
+        ResolverInfo resolver,
         string returnType,
         string methodPrefix,
         string cast,
         LinesBuilder code)
     {
-        var defaultRoot = roots.SingleOrDefault(i => i.Injection.Tag is not { });
+        var defaultRoot = resolver.Roots.SingleOrDefault(i => i.Injection.Tag is not { });
         code.AppendLine($"public {returnType} {methodPrefix}{ResolveMethodName}({composition.Name.ClassName} composition)");
         code.AppendLine("{");
         using (code.Indent())
@@ -80,7 +82,7 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
             }
             else
             {
-                code.AppendLine($"throw new System.InvalidOperationException($\"{Constant.CannotResolve} of type {roots.Key}.\");");
+                code.AppendLine($"throw new System.InvalidOperationException($\"{Constant.CannotResolve} of type {resolver.Type}.\");");
             }
         }
 
@@ -92,7 +94,7 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
         code.AppendLine("{");
         using (code.Indent())
         {
-            var taggedRoots = roots.Where(i => i.Injection.Tag is { }).ToArray();
+            var taggedRoots = resolver.Roots.Where(i => i.Injection.Tag is { }).ToArray();
             foreach (var taggedRoot in taggedRoots)
             {
                 code.AppendLine($"if (Equals(tag, {taggedRoot.Injection.Tag.TagToString()})) return {cast}composition.{taggedRoot.PropertyName};");
@@ -103,7 +105,7 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
                 code.AppendLine($"if (Equals(tag, null)) return {cast}composition.{defaultRoot.PropertyName};");
             }
 
-            code.AppendLine($"throw new System.InvalidOperationException($\"{Constant.CannotResolve} \\\"{{tag}}\\\" of type {roots.Key}.\");");
+            code.AppendLine($"throw new System.InvalidOperationException($\"{Constant.CannotResolve} \\\"{{tag}}\\\" of type {resolver.Type}.\");");
         }
 
         code.AppendLine("}");

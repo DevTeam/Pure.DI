@@ -12,7 +12,9 @@ using Model;
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class Array : BenchmarkBase
 {
-    private static void SetupDI() => DI.Setup("ArrayDI")
+    private static void SetupDI() =>
+        // ThreadSafe = Off
+        DI.Setup("ArrayDI")
         .Bind<ICompositionRoot>().To<CompositionRoot>()
         .Bind<IService1>().To<Service1>()
         .Bind<IService2>().To<Service2Array>()

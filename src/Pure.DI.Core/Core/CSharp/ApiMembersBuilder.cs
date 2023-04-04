@@ -2,8 +2,15 @@ namespace Pure.DI.Core.CSharp;
 
 internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
 {
+    private readonly IBuilder<IEnumerable<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
     internal static readonly string ResolveMethodName = nameof(IResolver<object>.ObjectResolve);
     internal static readonly string ResolveByTagMethodName = nameof(IResolver<object>.ObjectResolveByTag);
+
+    public ApiMembersBuilder(
+        IBuilder<IEnumerable<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
+    {
+        _resolversBuilder = resolversBuilder;
+    }
 
     public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
     {
@@ -22,7 +29,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             code.AppendLine("{");
             using (code.Indent())
             {
-                code.AppendLine($"return {ResolverClassesBuilder.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}!.{ResolverClassesBuilder.ResolveMethodName}(this);");
+                code.AppendLine($"return {ResolverInfo.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}!.{ResolverClassesBuilder.ResolveMethodName}(this);");
             }
 
             code.AppendLine("}");
@@ -35,7 +42,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             code.AppendLine("{");
             using (code.Indent())
             {
-                code.AppendLine($"return {ResolverClassesBuilder.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}!.{ResolverClassesBuilder.ResolveByTagMethodName}(this, tag);");
+                code.AppendLine($"return {ResolverInfo.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}!.{ResolverClassesBuilder.ResolveByTagMethodName}(this, tag);");
             }
 
             code.AppendLine("}");
@@ -43,13 +50,12 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             code.AppendLine();
             membersCounter++;
 
-            var roots = composition.Roots.GetActualRoots().ToArray();
-
-            CreateObjectResolverMethod(composition, roots, "System.Type type", ResolveMethodName, "this", code);
+            var resolvers = _resolversBuilder.Build(composition.Roots, cancellationToken).ToArray();
+            CreateObjectResolverMethod(composition, resolvers, "System.Type type", ResolveMethodName, "this", code);
             membersCounter++;
             code.AppendLine();
 
-            CreateObjectResolverMethod(composition, roots, "System.Type type, object? tag", ResolveByTagMethodName, "this, tag", code);
+            CreateObjectResolverMethod(composition, resolvers, "System.Type type, object? tag", ResolveByTagMethodName, "this, tag", code);
             membersCounter++;
             code.AppendLine();
         }
@@ -74,7 +80,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
 
     private static void CreateObjectResolverMethod(
         CompositionCode composition,
-        IEnumerable<Root> roots,
+        IReadOnlyCollection<ResolverInfo> resolvers,
         string methodArgs,
         string resolveMethodName,
         string resolveMethodArgs,
@@ -85,9 +91,8 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
         code.AppendLine("{");
         using (code.Indent())
         {
-            var actualRoots = roots.Where(i => i.Injection.Tag is not { }).ToArray();
-            var divisor = Buckets<object, object>.GetDivisor((uint)actualRoots.Length);
-            if (actualRoots.Any())
+            var divisor = Buckets<object, object>.GetDivisor((uint)resolvers.Count);
+            if (resolvers.Any())
             {
                 var pairs = $"System.Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.Name.ClassName}>";
                 var pairTypeName = $"{Constant.ApiNamespace}Pair<{pairs}>";

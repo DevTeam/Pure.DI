@@ -5,6 +5,7 @@
         <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
         <PureDINamespace>IoC</PureDINamespace>
         <RootNamespace>Pure.DI</RootNamespace>
+        <OutputPath>bin/$(Configuration)/roslyn$(AnalyzerRoslynVersion)</OutputPath>
     </PropertyGroup>
     
     <ItemGroup>

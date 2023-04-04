@@ -2,16 +2,22 @@
 // ReSharper disable ConvertIfStatementToConditionalTernaryExpression
 namespace Pure.DI.Core.CSharp;
 
+using System.Text.RegularExpressions;
+
 internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<DependencyGraph, CompositionCode>
 {
+    private readonly ILogger<CompositionBuilder> _logger;
     private readonly IVarIdGenerator _idGenerator;
     private static readonly string IndentPrefix = new Indent(1).ToString();
-    private static readonly BuildContext RootContext = new(ImmutableDictionary<MdBinding, Variable>.Empty, new LinesBuilder());
     private readonly Dictionary<Compilation, INamedTypeSymbol?> _disposableTypes = new();
     private readonly Dictionary<Root, ImmutableArray<Line>> _roots = new();
 
-    public CompositionBuilder(IVarIdGenerator idGenerator)
-        : base(idGenerator) => _idGenerator = idGenerator;
+    public CompositionBuilder(ILogger<CompositionBuilder> logger, IVarIdGenerator idGenerator)
+        : base(idGenerator)
+    {
+        _logger = logger;
+        _idGenerator = idGenerator;
+    }
 
     public CompositionCode Build(
         DependencyGraph dependencyGraph,
@@ -19,7 +25,9 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
     {
         _roots.Clear();
         var variables = new Dictionary<MdBinding, Variable>();
-        VisitGraph(RootContext, dependencyGraph, variables, cancellationToken);
+        var isThreadSafe = dependencyGraph.Source.Settings.GetState(Setting.ThreadSafe, SettingState.On) == SettingState.On;
+        var context = new BuildContext(isThreadSafe, ImmutableDictionary<MdBinding, Variable>.Empty, new LinesBuilder());
+        VisitGraph(context, dependencyGraph, variables, cancellationToken);
         var fields = variables.Select(i => i.Value).ToImmutableArray();
         return new CompositionCode(
             dependencyGraph,
@@ -51,7 +59,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             return;
         }
 
-        var newContext = new BuildContext(variables, new LinesBuilder());
+        var newContext = context with { Variables = variables, Code = new LinesBuilder() };
         base.VisitRoot(newContext, dependencyGraph, variables, root, cancellationToken);
         _roots.Add(root, newContext.Code.Lines.ToImmutableArray());
     }
@@ -66,7 +74,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         var initBlock = false;
         if (block.Root is { IsCreated: false, Node.Lifetime: Lifetime.Singleton })
         {
-            StartSingletonInitBlock(context.Code, block.Root);
+            StartSingletonInitBlock(context, block.Root);
             initBlock = true;
         }
 
@@ -74,7 +82,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
 
         if (initBlock)
         {
-            FinishSingletonInitBlock(context.Code, block.Root);
+            FinishSingletonInitBlock(context, block.Root);
             if (context.IsRootContext && block.Root == root)
             {
                 context.Code.AppendLines(GenerateReturnStatements(block.Root));
@@ -227,7 +235,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             {
                 if (!isFirst)
                 {
-                    context.Code.AppendLine("");
+                    context.Code.AppendLine();
                 }
 
                 arg.IsCreated = false;
@@ -290,7 +298,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         instantiation.Target.IsCreated = true;
     }
     
-    private static void AddReturnStatement(BuildContext context, Variable root, Instantiation instantiation)
+    private void AddReturnStatement(BuildContext context, Variable root, Instantiation instantiation)
     {
         if (IsJustReturn(context, root, instantiation))
         {
@@ -328,10 +336,10 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             var namesMap = new Dictionary<string, string>(); 
             foreach (var argsByContext in argsByContexts)
             {
-                var argCodeBuilder = new CompositionBuilder(_idGenerator);
+                var argCodeBuilder = new CompositionBuilder(_logger, _idGenerator);
                 foreach (var arg in argsByContext)
                 {
-                    var argBuildContext = new BuildContext(context.Variables, new LinesBuilder(), false);
+                    var argBuildContext = context with { Code = new LinesBuilder(), IsRootContext = false };
                     var rootVariable = CreateVariable(dependencyGraph, argBuildContext.Variables, arg.argument.Node, arg.argument.Injection);
                     argCodeBuilder.VisitRootVariable(argBuildContext, dependencyGraph, context.Variables, rootVariable, cancellationToken);
                     namesMap.Add(arg.factoryInjection.VariableName, Inject(rootVariable));
@@ -427,7 +435,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         return node.NormalizeWhitespace(IndentPrefix).ToString().Split(Environment.NewLine);
     }
 
-    private static void StartSingletonInitBlock(LinesBuilder code, Variable variable)
+    private static void StartSingletonInitBlock(BuildContext context, Variable variable)
     {
         var checkExpression = variable.InstanceType.IsValueType switch
         {
@@ -435,19 +443,25 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             false => $"System.Object.ReferenceEquals({variable.Name}, null)"
         };
 
-        code.AppendLine($"if ({checkExpression})");
-        code.AppendLine("{");
-        code.IncIndent();
-        code.AppendLine($"lock ({Variable.DisposablesFieldName})");
-        code.AppendLine("{");
-        code.IncIndent();
+        var code = context.Code;
+        if (context.IsThreadSafe)
+        {
+            code.AppendLine($"if ({checkExpression})");
+            code.AppendLine("{");
+            code.IncIndent();
+            code.AppendLine($"lock ({Variable.DisposablesFieldName})");
+            code.AppendLine("{");
+            code.IncIndent();
+        }
+
         code.AppendLine($"if ({checkExpression})");
         code.AppendLine("{");
         code.IncIndent();
     }
 
-    private void FinishSingletonInitBlock(LinesBuilder code, Variable variable)
+    private void FinishSingletonInitBlock(BuildContext context, Variable variable)
     {
+        var code = context.Code;
         if (IsDisposable(variable))
         {
             code.AppendLine($"{Variable.DisposablesFieldName}[{Variable.DisposeIndexFieldName}++] = {variable.Name};");
@@ -460,11 +474,14 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
 
         code.DecIndent();
         code.AppendLine("}");
-        code.DecIndent();
-        code.AppendLine("}");
-        code.DecIndent();
-        code.AppendLine("}");
-        code.AppendLine();
+        if (context.IsThreadSafe)
+        {
+            code.DecIndent();
+            code.AppendLine("}");
+            code.DecIndent();
+            code.AppendLine("}");
+            code.AppendLine();
+        }
     }
     
     private static IEnumerable<string> GenerateDeclareStatements(Variable variable, string instantiation, string lastChars = ";")
@@ -488,15 +505,66 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         yield return $"{Constant.OnInstanceCreationMethodName}<{variable.InstanceType}>(ref {variable.Name}, {variable.Injection.Tag.TagToString()}, {variable.Node.Binding.Lifetime?.Lifetime.TagToString() ?? "null"})" + ";";
     }
 
-    private static IEnumerable<string> GenerateReturnStatements(Variable variable, string lastChars = ";")
+    private IEnumerable<string> GenerateReturnStatements(Variable variable, string lastChars = ";")
     {
         yield return $"return {Inject(variable)}{lastChars}";
     }
 
-    private static string Inject(Variable variable) =>
-        variable.Source.Source.Settings.GetState(Setting.OnDependencyInjection) == SettingState.On 
-            ? $"{Constant.OnDependencyInjectionMethodName}<{variable.ContractType}>({variable.Name}, {variable.Injection.Tag.TagToString()}, {variable.Node.Binding.Lifetime?.Lifetime.TagToString() ?? "null"})"
-            : variable.Name;
+    private string Inject(Variable variable)
+    {
+        if (variable.Source.Source.Settings.GetState(Setting.OnDependencyInjection) != SettingState.On)
+        {
+            return variable.Name;
+        }
+
+        if (!IsMeetRegularExpression(
+                variable,
+                Setting.OnDependencyInjectionImplementationTypeNameRegularExpression,
+                variable.Node.Type.ToString()))
+        {
+            return variable.Name;
+        }
+        
+        if (!IsMeetRegularExpression(
+                variable,
+                Setting.OnDependencyInjectionContractTypeNameRegularExpression,
+                variable.Injection.Type.ToString()))
+        {
+            return variable.Name;
+        }
+        
+        if (!IsMeetRegularExpression(
+                variable,
+                Setting.OnDependencyInjectionTagRegularExpression,
+                variable.Injection.Tag.TagToString()))
+        {
+            return variable.Name;
+        }
+
+        return $"{Constant.OnDependencyInjectionMethodName}<{variable.ContractType}>({variable.Name}, {variable.Injection.Tag.TagToString()}, {variable.Node.Binding.Lifetime?.Lifetime.TagToString() ?? "null"})";
+    }
+
+    private bool IsMeetRegularExpression(Variable variable, Setting setting, string value)
+    {
+        if (variable.Source.Source.Settings.TryGetValue(setting, out var regularExpression)
+            && !string.IsNullOrWhiteSpace(regularExpression))
+        {
+            try
+            {
+                var regex = new Regex(regularExpression.Trim());
+                if (!regex.IsMatch(value))
+                {
+                    return false;
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.CompileError($"Invalid regular expression {regularExpression}. {ex.Message}", variable.Source.Source.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+            }
+        }
+
+        return true;
+    }
 
     private bool IsDisposable(Variable variable)
     {

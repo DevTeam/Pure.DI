@@ -12,7 +12,9 @@ using Model;
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class Transient : BenchmarkBase
 {
-    private static void SetupDI() => DI.Setup("TransientDI")
+    private static void SetupDI() =>
+        // ThreadSafe = Off
+        DI.Setup("TransientDI")
         .Bind<ICompositionRoot>().To<CompositionRoot>()
         .Bind<IService1>().To<Service1>()
         .Bind<IService2>().To<Service2>()

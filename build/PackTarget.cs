@@ -23,24 +23,20 @@ internal class PackTarget: ITarget<string?>
     public Task<string?> RunAsync(InvocationContext ctx)
     {
         var packageVersion = Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI"), _settings.DefaultVersion);
-        
+        var projectDirectory = Path.Combine("src", "Pure.DI");
         var packages = _settings.Cases
-            .Select(i => CreatePackage(packageVersion, i))
+            .Select(i => CreatePackage(packageVersion, i, projectDirectory))
             .ToArray();
 
         var targetPackage = Path.GetFullPath(
-            Path.Combine(
-                "Pure.DI",
-                "bin",
-                _settings.Configuration,
-                $"Pure.DI.{packageVersion}.nupkg"));
+            Path.Combine(projectDirectory, "bin", _settings.Configuration, $"Pure.DI.{packageVersion}.nupkg"));
 
         MergeNuGetPackages(packages, targetPackage);
         _teamCityWriter.PublishArtifact($"{targetPackage} => .");
         return Task.FromResult<string?>(targetPackage);
     }
     
-    private string CreatePackage(NuGetVersion packageVersion, BuildCase buildCase)
+    private string CreatePackage(NuGetVersion packageVersion, BuildCase buildCase, string projectDirectory)
     {
         var analyzerRoslynPackageVersion = buildCase.AnalyzerRoslynPackageVersion;
         var analyzerRoslynVersion = new Version(analyzerRoslynPackageVersion.Major, analyzerRoslynPackageVersion.Minor);
@@ -75,12 +71,12 @@ internal class PackTarget: ITarget<string?>
             .WithConfiguration(_settings.Configuration)
             .WithNoBuild(true)
             .WithNoLogo(true)
-            .WithProject(Path.Combine("src", "Pure.DI", "Pure.DI.csproj"));
+            .WithProject(Path.Combine(projectDirectory, "Pure.DI.csproj"));
         
         Assertion.Succeed(pack.Build());
 
         return Path.Combine(
-            "Pure.DI",
+            projectDirectory,
             "bin",
             _settings.Configuration,
             $"roslyn{analyzerRoslynVersion}",

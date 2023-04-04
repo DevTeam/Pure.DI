@@ -2,7 +2,14 @@ namespace Pure.DI.Core.CSharp;
 
 internal class ResolversFieldsBuilder: IBuilder<CompositionCode, CompositionCode>
 {
+    private readonly IBuilder<IEnumerable<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
     internal static readonly string BucketsFieldName = $"_buckets{Variable.Postfix}";
+
+    public ResolversFieldsBuilder(
+        IBuilder<IEnumerable<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
+    {
+        _resolversBuilder = resolversBuilder;
+    }
 
     public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
     {
@@ -11,8 +18,8 @@ internal class ResolversFieldsBuilder: IBuilder<CompositionCode, CompositionCode
             return composition;
         }
         
-        var actualRoots = composition.Roots.GetActualRoots().ToArray();
-        if (!actualRoots.Any())
+        var resolvers = _resolversBuilder.Build(composition.Roots, cancellationToken).ToArray();
+        if (!resolvers.Any())
         {
             return composition;
         }
