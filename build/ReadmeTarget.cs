@@ -1,9 +1,12 @@
 namespace Build;
 
 using System.CommandLine.Invocation;
+using HostApi;
+using Pure.DI;
 
 internal class ReadmeTarget : ITarget<int>
 {
+    private readonly ITarget<int> _benchmarksTarget;
     private const string ReadmeDir = "readme";
     private const string ExamplesReadmeFile = "Examples.md";
     private const string ReadmeTemplateFile = "ReadmeTemplate.md";
@@ -25,9 +28,20 @@ internal class ReadmeTarget : ITarget<int>
         "Interception"
     };
 
+    public ReadmeTarget([Tag(nameof(BenchmarksTarget))] ITarget<int> benchmarksTarget)
+    {
+        _benchmarksTarget = benchmarksTarget;
+    }
+
     public async Task<int> RunAsync(InvocationContext ctx)
     {
         var solutionDirectory = Tools.GetSolutionDirectory();
+        await _benchmarksTarget.RunAsync(ctx);
+        var testResult = new DotNetTest()
+            .WithProject(Path.Combine(solutionDirectory, "tests", "Pure.DI.UsageTests", "Pure.DI.UsageTests.csproj"))
+            .Build();
+        Assertion.Succeed(testResult);
+
         var logsDirectory = Path.Combine(solutionDirectory, ".logs");
         var items = new List<Dictionary<string, string>>();
         var testsDir = Path.Combine(Tools.GetSolutionDirectory(), "tests", "Pure.DI.UsageTests");

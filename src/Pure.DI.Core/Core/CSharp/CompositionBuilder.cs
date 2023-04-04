@@ -222,16 +222,24 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         context.Code.AppendLine("{");
         using (context.Code.Indent())
         {
+            var isFirst = true;
             foreach (var arg in instantiation.Arguments)
             {
+                if (!isFirst)
+                {
+                    context.Code.AppendLine("");
+                }
+
                 arg.IsCreated = false;
                 VisitRootVariable(context with { IsRootContext = false }, dependencyGraph, context.Variables, arg, cancellationToken);
                 context.Code.AppendLine($"yield return {Inject(arg)};");
+                isFirst = false;
             }
         }
         context.Code.AppendLine("}");
         context.Code.AppendLine();
         context.Code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = {localFuncName}();");
+        context.Code.AppendLines(GenerateOnInstanceCreatedStatements(instantiation.Target));
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
     }
@@ -251,6 +259,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         }
 
         context.Code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = new {construct.Source.ElementType}[{instantiation.Arguments.Length}] {{ {string.Join(", ", instantiation.Arguments.Select(Inject))} }};");
+        context.Code.AppendLines(GenerateOnInstanceCreatedStatements(instantiation.Target));
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
     }
