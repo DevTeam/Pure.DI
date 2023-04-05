@@ -10,6 +10,7 @@ internal class ReadmeTarget : ITarget<int>
     private const string ReadmeDir = "readme";
     private const string ExamplesReadmeFile = "Examples.md";
     private const string ReadmeTemplateFile = "ReadmeTemplate.md";
+    private const string FooterTemplateFile = "FooterTemplate.md";
     private const string ReadmeFile = "README.md";
     private const string VisibleKey = "v";
     private const string TitleKey = "t";
@@ -260,9 +261,14 @@ internal class ReadmeTarget : ITarget<int>
             }
         }
 
-        await readmeWriter.FlushAsync();
         await examplesWriter.FlushAsync();
+ 
+        foreach (var line in await File.ReadAllLinesAsync(Path.Combine(ReadmeDir, FooterTemplateFile)))
+        {
+            await readmeWriter.WriteLineAsync(line);
+        }
         
+        await readmeWriter.FlushAsync();
         return 0;
     }
 

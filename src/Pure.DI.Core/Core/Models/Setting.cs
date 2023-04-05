@@ -4,32 +4,27 @@ namespace Pure.DI.Core.Models;
 internal enum Setting
 {
     /// <summary>
-    /// On or Off.
-    /// <c>On</c> by default. 
+    /// Determine whether to generate <c>Resolve</c> methods. <c>On</c> or <c>Off</c>. <c>On</c> by default.
     /// </summary>
     Resolve,
     
     /// <summary>
-    /// On or Off.
-    /// <c>On</c> by default. 
+    /// Determine whether to generate <c>OnInstanceCreation</c> method.<c>On</c> or <c>Off</c>. <c>On</c> by default.
     /// </summary>
     OnInstanceCreation,
     
     /// <summary>
-    /// On or Off.
-    /// <c>Off</c> by default. 
+    /// Determine whether to generate partial <c>OnDependencyInjection</c> method to control of dependency injection. <c>On</c> or <c>Off</c>. <c>Off</c> by default.
     /// </summary>
     OnDependencyInjection,
     
     /// <summary>
-    /// Regular expression.
-    /// ".+" by default. 
+    /// The regular expression to filter by the instance type name. ".+" by default.
     /// </summary>
     OnDependencyInjectionImplementationTypeNameRegularExpression,
     
     /// <summary>
-    /// Regular expression.
-    /// ".+" by default. 
+    /// The regular expression to filter by the resolving type name. ".+" by default.
     /// </summary>
     OnDependencyInjectionContractTypeNameRegularExpression,
     
@@ -40,13 +35,13 @@ internal enum Setting
     OnDependencyInjectionTagRegularExpression,
     
     /// <summary>
-    /// On or Off.
+    /// <c>On</c> or <c>Off</c>.
     /// <c>Off</c> by default. 
     /// </summary>
     ToString,
     
     /// <summary>
-    /// On or Off.
+    /// <c>On or <c>Off</c>.
     /// <c>On</c> by default. 
     /// </summary>
     ThreadSafe
