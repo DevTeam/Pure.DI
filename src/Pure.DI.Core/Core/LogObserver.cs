@@ -3,23 +3,17 @@ namespace Pure.DI.Core;
 
 internal class LogObserver: ILogObserver
 {
-    private readonly DiagnosticSeverity _severity = DiagnosticSeverity.Warning;
+    private readonly DiagnosticSeverity _severity;
     private readonly IBuilder<LogEntry, LogInfo> _logInfoBuilder;
     private readonly IContextDiagnostic _diagnostic;
 
-    public LogObserver(
-        IContextOptions contextOptions,
+    public LogObserver(IGlobalOptions globalOptions,
         IBuilder<LogEntry, LogInfo> logInfoBuilder,
         IContextDiagnostic diagnostic)
     {
         _logInfoBuilder = logInfoBuilder;
         _diagnostic = diagnostic;
-        if (contextOptions.GlobalOptions.TryGetValue(GlobalSettings.Severity, out var severityStr)
-            && !string.IsNullOrWhiteSpace(severityStr)
-            && Enum.TryParse<DiagnosticSeverity>(severityStr, true, out var severityVal))
-        {
-            _severity = severityVal;
-        }
+        _severity = globalOptions.Severity;
     }
 
     public StringBuilder Log { get; } = new();

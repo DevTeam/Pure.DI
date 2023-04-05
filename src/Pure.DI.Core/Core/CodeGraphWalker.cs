@@ -19,7 +19,7 @@ internal class CodeGraphWalker<TContext>
             cancellationToken.ThrowIfCancellationRequested();
             VisitRoot(context, dependencyGraph, variables, root, cancellationToken);
             var keysToRemove = variables
-                .Where(i => i.Value.Node.Lifetime != Lifetime.Singleton && i.Value.Node.Arg is not {})
+                .Where(i => i.Value.Node.Lifetime != Lifetime.Singleton && i.Value.Node.Arg is null)
                 .Select(i => i.Key)
                 .ToImmutableArray();
 
@@ -71,8 +71,6 @@ internal class CodeGraphWalker<TContext>
                     foreach (var dependency in dependencies)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        var injection = dependency.Injection;
-                        
                         ProcessVariable(CreateVariable(dependencyGraph, variables, dependency.Source, dependency.Injection));
                     }
                 }
@@ -86,7 +84,7 @@ internal class CodeGraphWalker<TContext>
                     {
                         if (dependencyGraph.Graph.TryGetOutEdges(var.Node, out var outDependencies))
                         {
-                            isBlockRoot = outDependencies.Select(i => i.Target.Factory is { } ? 2 : 1).Sum() > 1;
+                            isBlockRoot = outDependencies.Select(i => i.Target.Factory is not null ? 2 : 1).Sum() > 1;
                         }
                     }
                         
@@ -96,7 +94,7 @@ internal class CodeGraphWalker<TContext>
                     }
                     else
                     {
-                        if (targetVariable.Node.Factory is not { })
+                        if (targetVariable.Node.Factory is null)
                         {
                             targets.Push(var);
                         }
@@ -365,7 +363,7 @@ internal class CodeGraphWalker<TContext>
     {
         switch (node)
         {
-            case { Arg: {} }:
+            case { Arg: not null }:
                 if (variables.TryGetValue(node.Binding, out var argVar))
                 {
                     return argVar;

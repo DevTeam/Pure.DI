@@ -59,6 +59,12 @@ internal class RootsBuilder: IBuilder<DependencyGraph, IReadOnlyDictionary<Injec
             .GroupBy(i => i.Key)
             .ToDictionary(
                 i => i.Key,
-                i => i.OrderByDescending(j => j.Value.IsPublic).Select(j => j.Value).First() with { Index = index++ });
+                i => CreateRoot(i, ref index));
     }
+
+    private static Root CreateRoot(IEnumerable<KeyValuePair<Injection, Root>> routesGroup, ref int index) =>
+        routesGroup
+            .OrderByDescending(j => j.Value.IsPublic)
+            .Select(j => j.Value)
+            .First() with { Index = index++ };
 }

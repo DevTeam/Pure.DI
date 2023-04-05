@@ -8,7 +8,9 @@ internal class ObserversRegistry : IObserversRegistry, IObserversProvider
     {
         var observers = GetOfType<T>();
         observers.Add(observer);
-        return Disposables.Create(() => { observers.Remove(observer); });
+
+        void Remove() => observers.Remove(observer);
+        return Disposables.Create(Remove);
     }
 
     public IEnumerable<IObserver<T>> GetObservers<T>() => GetOfType<T>().Cast<IObserver<T>>();

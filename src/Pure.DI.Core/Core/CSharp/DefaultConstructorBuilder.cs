@@ -22,7 +22,7 @@ internal class DefaultConstructorBuilder: IBuilder<CompositionCode, CompositionC
         {
             if (composition.Singletons.Any())
             {
-                code.AppendLine($"{Variable.DisposablesFieldName} = new {Constant.IDisposableInterfaceName}[{composition.DisposableSingletonsCount}];");
+                code.AppendLine($"{Variable.DisposablesFieldName} = new {Constant.IDisposableInterfaceName}[{composition.DisposableSingletonsCount.ToString()}];");
             }
         }
 

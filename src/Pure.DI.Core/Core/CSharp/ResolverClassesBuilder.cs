@@ -4,14 +4,14 @@ namespace Pure.DI.Core.CSharp;
 
 internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode>
 {
-    private readonly IBuilder<IEnumerable<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
+    private readonly IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
     internal static readonly string ResolverInterfaceName = $"{Constant.ApiNamespace}{nameof(IResolver<object, object>)}";
     internal static readonly string ResolverPropertyName = "Value";
     internal static readonly string ResolveMethodName = nameof(IResolver<object, object>.Resolve);
     internal static readonly string ResolveByTagMethodName = nameof(IResolver<object, object>.ResolveByTag);
     
     public ResolverClassesBuilder(
-        IBuilder<IEnumerable<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
+        IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
     {
         _resolversBuilder = resolversBuilder;
     }
@@ -71,12 +71,12 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
         string cast,
         LinesBuilder code)
     {
-        var defaultRoot = resolver.Roots.SingleOrDefault(i => i.Injection.Tag is not { });
+        var defaultRoot = resolver.Roots.SingleOrDefault(i => i.Injection.Tag is null);
         code.AppendLine($"public {returnType} {methodPrefix}{ResolveMethodName}({composition.Name.ClassName} composition)");
         code.AppendLine("{");
         using (code.Indent())
         {
-            if (defaultRoot is { })
+            if (defaultRoot is not null)
             {
                 code.AppendLine($"return {cast}composition.{defaultRoot.PropertyName};");
             }
@@ -94,13 +94,13 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
         code.AppendLine("{");
         using (code.Indent())
         {
-            var taggedRoots = resolver.Roots.Where(i => i.Injection.Tag is { }).ToArray();
+            var taggedRoots = resolver.Roots.Where(i => i.Injection.Tag is not null).ToArray();
             foreach (var taggedRoot in taggedRoots)
             {
                 code.AppendLine($"if (Equals(tag, {taggedRoot.Injection.Tag.TagToString()})) return {cast}composition.{taggedRoot.PropertyName};");
             }
 
-            if (defaultRoot is { })
+            if (defaultRoot is not null)
             {
                 code.AppendLine($"if (Equals(tag, null)) return {cast}composition.{defaultRoot.PropertyName};");
             }

@@ -10,7 +10,7 @@ internal readonly record struct MdTag(
     public override string ToString() =>
         Value switch
         {
-            not {} => "null",
+            null => "null",
             string => $"\"{Value}\"",
             _ => Value.ToString()
         };

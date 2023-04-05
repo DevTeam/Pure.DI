@@ -25,7 +25,7 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
         }
 
         var cycles = new List<(Dependency CyclicDependency, ImmutableArray<DependencyNode> Path)>();
-        foreach (var rootNode in graph.Vertices.Where(i => i.Root is not {}))
+        foreach (var rootNode in graph.Vertices.Where(i => i.Root is null))
         {
             if (!graph.TryGetInEdges(rootNode, out var dependencies))
             {

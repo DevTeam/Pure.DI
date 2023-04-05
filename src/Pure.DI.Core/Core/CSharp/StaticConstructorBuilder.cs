@@ -2,10 +2,10 @@ namespace Pure.DI.Core.CSharp;
 
 internal class StaticConstructorBuilder: IBuilder<CompositionCode, CompositionCode>
 {
-    private readonly IBuilder<IEnumerable<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
+    private readonly IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
 
     public StaticConstructorBuilder(
-        IBuilder<IEnumerable<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
+        IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
     {
         _resolversBuilder = resolversBuilder;
     }
@@ -47,8 +47,8 @@ internal class StaticConstructorBuilder: IBuilder<CompositionCode, CompositionCo
             code.AppendLine($"{ResolversFieldsBuilder.BucketsFieldName} = {bucketsTypeName}.{nameof(Buckets<object, object>.Create)}(");
             using (code.Indent())
             {
-                code.AppendLine($"{divisor},");
-                code.AppendLine($"new {pairTypeName}[{resolvers.Length}]");
+                code.AppendLine($"{divisor.ToString()},");
+                code.AppendLine($"new {pairTypeName}[{resolvers.Length.ToString()}]");
                 code.AppendLine("{");
                 using (code.Indent())
                 {
@@ -56,7 +56,7 @@ internal class StaticConstructorBuilder: IBuilder<CompositionCode, CompositionCo
                     foreach (var resolver in resolvers)
                     {
                         var className = resolver.ClassName;
-                        code.AppendLine($"{(isFirst ? ' ' : ',')}new {pairTypeName}(typeof({resolver.Type}), val{className})");
+                        code.AppendLine($"{(isFirst ? " " : ",")}new {pairTypeName}(typeof({resolver.Type}), val{className})");
                         isFirst = false;
                     }
                 }

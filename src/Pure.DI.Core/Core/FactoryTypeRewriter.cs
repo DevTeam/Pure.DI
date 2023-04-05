@@ -44,7 +44,7 @@ internal class FactoryTypeRewriter: CSharpSyntaxRewriter, IBuilder<RewriterConte
     public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node)
     {
         var identifier = base.VisitIdentifierName(node) as IdentifierNameSyntax;
-        if (identifier is not { })
+        if (identifier is null)
         {
             return identifier;
         }

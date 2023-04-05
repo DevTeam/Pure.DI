@@ -1,3 +1,4 @@
+// ReSharper disable HeapView.ImplicitCapture
 namespace Build;
 
 using HostApi;
@@ -29,7 +30,7 @@ internal static class Tools
             new DotNetCustom("--version")
                 .WithShortName($"Checking the .NET SDK version {requiredSdkVersion}")
 #pragma warning disable CA1806
-                .Run(output=> Version.TryParse(output.Line, out sdkVersion)) == 0
+                .Run(output => Version.TryParse(output.Line, out sdkVersion)) == 0
 #pragma warning restore CA1806
             && sdkVersion != requiredSdkVersion)
         {

@@ -27,7 +27,7 @@ internal class FactoryResolversSyntaxWalker : CSharpSyntaxWalker, IEnumerable<In
                                 Name: GenericNameSyntax
                                 {
                                     Identifier.Text: nameof(IContext.Inject),
-                                    TypeArgumentList.Arguments: [{ }]
+                                    TypeArgumentList.Arguments: [not null]
                                 },
                                 Expression: IdentifierNameSyntax contextIdentifierName
                             } contextMemberAccess

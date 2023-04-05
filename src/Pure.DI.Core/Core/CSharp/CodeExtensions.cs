@@ -20,9 +20,9 @@ internal static class CodeExtensions
             ushort => $"(ushort){tag}",
             nint => $"(nint){tag}",
             nuint => $"(nuint){tag}",
-            char ch => $"'{ch}'",
+            char ch => $"'{ch.ToString()}'",
             Enum en => $"{en.GetType()}.{en}",
-            {} => tag.ToString(),
+            not null => tag.ToString(),
             _ => defaultValue
         };
 }

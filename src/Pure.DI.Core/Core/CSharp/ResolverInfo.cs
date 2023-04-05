@@ -7,5 +7,5 @@ internal record ResolverInfo(
 {
     internal static readonly string ResolverClassName = $"Resolver{Variable.Postfix}";
 
-    public string ClassName => $"{ResolverClassName}{Id}";
-};
+    public string ClassName => $"{ResolverClassName}{Id.ToString()}";
+}

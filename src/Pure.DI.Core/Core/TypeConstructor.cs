@@ -92,7 +92,8 @@ internal sealed class TypeConstructor : ITypeConstructor
 
             case INamedTypeSymbol namedType:
             {
-                var args = namedType.TypeArguments.Select(i => Construct(compilation, i));
+                ITypeSymbol Construct(ITypeSymbol typeArgument) => this.Construct(compilation, typeArgument);
+                var args = namedType.TypeArguments.Select(Construct);
                 return namedType.OriginalDefinition.Construct(args.ToArray());
             }
 

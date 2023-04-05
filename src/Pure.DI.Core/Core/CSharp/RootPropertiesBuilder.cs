@@ -38,7 +38,7 @@ internal class RootPropertiesBuilder: IBuilder<CompositionCode, CompositionCode>
         return composition with { MembersCount = membersCounter };
     }
     
-    private static ImmutableArray<Line> BuildProperty(ITypeSymbol type, Root root)
+    private static IEnumerable<Line> BuildProperty(ITypeSymbol type, Root root)
     {
         var code = new LinesBuilder();
         code.AppendLine($"{(root.IsPublic ? "public" : "private")} {type} {root.PropertyName}");
@@ -57,6 +57,6 @@ internal class RootPropertiesBuilder: IBuilder<CompositionCode, CompositionCode>
         }
 
         code.AppendLine("}");
-        return code.Lines.ToImmutableArray();
+        return code.Lines;
     }
 }

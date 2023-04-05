@@ -1,4 +1,5 @@
-﻿#pragma warning disable CS0169
+﻿// ReSharper disable RedundantUsingDirective
+#pragma warning disable CS0169
 namespace Pure.DI.Benchmarks;
 
 using Autofac;

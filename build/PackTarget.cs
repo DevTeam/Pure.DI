@@ -1,4 +1,6 @@
 // ReSharper disable StringLiteralTypo
+// ReSharper disable HeapView.DelegateAllocation
+// ReSharper disable HeapView.ClosureAllocation
 namespace Build;
 
 using System.CommandLine.Invocation;

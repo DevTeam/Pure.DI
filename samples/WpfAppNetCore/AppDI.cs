@@ -1,5 +1,6 @@
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedMember.Global
+// ReSharper disable RedundantNameQualifier
 namespace WpfAppNetCore;
 
 using Clock.Models;

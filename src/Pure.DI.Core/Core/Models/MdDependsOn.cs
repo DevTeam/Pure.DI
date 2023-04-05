@@ -6,5 +6,5 @@ internal readonly record struct MdDependsOn(
     SyntaxNode Source,
     in ImmutableArray<CompositionName> CompositionTypeNames)
 {
-    public override string ToString() => $"DependsOn(\"{CompositionTypeNames}\")";
+    public override string ToString() => $"DependsOn(\"{string.Join(", ", CompositionTypeNames.Select(i => $"\"{i.FullName}\""))}\")";
 }

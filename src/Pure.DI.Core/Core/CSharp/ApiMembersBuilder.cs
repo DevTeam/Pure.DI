@@ -2,12 +2,12 @@ namespace Pure.DI.Core.CSharp;
 
 internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
 {
-    private readonly IBuilder<IEnumerable<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
+    private readonly IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
     internal static readonly string ResolveMethodName = nameof(IResolver<object>.ObjectResolve);
     internal static readonly string ResolveByTagMethodName = nameof(IResolver<object>.ObjectResolveByTag);
 
     public ApiMembersBuilder(
-        IBuilder<IEnumerable<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
+        IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
     {
         _resolversBuilder = resolversBuilder;
     }
@@ -105,7 +105,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
                     code.AppendLine("#if NETSTANDARD || NETCOREAPP");
                     code.AppendLine($"{pairTypeName} pair = {ResolversFieldsBuilder.BucketsFieldName}[(uint)System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % {divisor}];");
                     code.AppendLine("#else");
-                    code.AppendLine($"{pairTypeName} pair = {ResolversFieldsBuilder.BucketsFieldName}[(uint)type.GetHashCode() % {divisor}];");
+                    code.AppendLine($"{pairTypeName} pair = {ResolversFieldsBuilder.BucketsFieldName}[(uint)type.GetHashCode() % {divisor.ToString()}];");
                     code.AppendLine("#endif");
                 }
 

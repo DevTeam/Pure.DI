@@ -23,13 +23,13 @@ internal record DependencyNode(
     public Lifetime Lifetime => Binding.Lifetime?.Lifetime is Lifetime lifetime ? lifetime : Lifetime.Transient;
 
     public string KindName => 
-        Root is { } 
+        Root is not null
             ? "root"
-            : Implementation is { }
+            : Implementation is not null
                 ? "type"
-                : Factory is { }
+                : Factory is not null
                     ? "factory"
-                    : Arg is { }
+                    : Arg is not null
                         ? "argument"
                         : Construct is { } construct
                             ? construct.Source.Kind.ToString()
@@ -37,7 +37,8 @@ internal record DependencyNode(
 
     public override string ToString() => string.Join(Environment.NewLine, ToStrings(0));
 
-    public virtual bool Equals(DependencyNode? other) => Binding.Equals(other?.Binding);
+    public virtual bool Equals(DependencyNode? other) => 
+        ReferenceEquals(this, other) || (other is not null && Binding.Equals(other.Binding));
 
     public override int GetHashCode() => Binding.GetHashCode();
 }

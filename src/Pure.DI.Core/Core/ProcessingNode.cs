@@ -15,13 +15,17 @@ internal readonly struct ProcessingNode
         HasNode = true;
         Node = node;
         Contracts = contracts;
-        _isMarkerBased = new Lazy<bool>(() => marker.IsMarkerBased(node.Type));
-        _injections = new Lazy<ImmutableArray<Injection>>(() =>
+
+        bool IsMarkerBased() => marker.IsMarkerBased(node.Type);
+        _isMarkerBased = new Lazy<bool>(IsMarkerBased);
+
+        ImmutableArray<Injection> GetInjections()
         {
             var injectionsWalker = new DependenciesToInjectionsWalker();
             injectionsWalker.VisitDependencyNode(node);
-            return injectionsWalker.ToImmutableArray();    
-        });
+            return injectionsWalker.ToImmutableArray();
+        }
+        _injections = new Lazy<ImmutableArray<Injection>>(GetInjections);
     }
 
     public bool IsMarkerBased => _isMarkerBased.Value;

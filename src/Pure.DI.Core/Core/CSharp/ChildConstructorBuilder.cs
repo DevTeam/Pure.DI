@@ -31,7 +31,7 @@ internal class ChildConstructorBuilder: IBuilder<CompositionCode, CompositionCod
                 {
                     if (composition.DisposableSingletonsCount > 0)
                     {
-                        code.AppendLine($"{Variable.DisposablesFieldName} = new {Constant.IDisposableInterfaceName}[{composition.DisposableSingletonsCount} - {ParentCompositionArgName}.{Variable.DisposeIndexFieldName}];");
+                        code.AppendLine($"{Variable.DisposablesFieldName} = new {Constant.IDisposableInterfaceName}[{composition.DisposableSingletonsCount.ToString()} - {ParentCompositionArgName}.{Variable.DisposeIndexFieldName}];");
                     }
 
                     foreach (var singletonField in composition.Singletons)

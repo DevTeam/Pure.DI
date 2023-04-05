@@ -43,7 +43,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                 maxId = node.Binding.Id;
             }
 
-            if (node.Root is not { })
+            if (node.Root is null)
             {
                 foreach (var contract in processingNode.Contracts)
                 {
@@ -299,7 +299,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
             }
 
             var tag = matchedContracts.First().Tags.Concat(nestedBinding.Tags).Select(i => i.Value).FirstOrDefault();
-            var tags = tag is { }
+            var tags = tag is not null
                 ? ImmutableArray.Create(new MdTag(0, tag))
                 : ImmutableArray<MdTag>.Empty;
             dependencyContractsBuilder.Add(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, elementType, tags));

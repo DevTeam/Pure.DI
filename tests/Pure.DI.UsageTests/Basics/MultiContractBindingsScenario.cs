@@ -7,9 +7,9 @@ $d=Multi-contract bindings
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
+// ReSharper disable UnusedVariable
 namespace Pure.DI.UsageTests.Basics.MultiContractBindingsScenario;
 
-using Shouldly;
 using Xunit;
 
 // {

@@ -12,7 +12,7 @@ internal class MetadataToLinesWalker: MetadataWalkerBase, IEnumerable<string>
     {
         foreach (var setting in setup.Settings)
         {
-            _lb.AppendLine($"// {setting.Key.ToString()} = {setting.Value}{Environment.NewLine}");
+            _lb.AppendLine($"// {setting.Key} = {setting.Value}{Environment.NewLine}");
         }
         
         _lb.AppendLine($"DI.Setup(\"{setup.Name.FullName}\")");

@@ -9,5 +9,5 @@ internal readonly record struct MdResolver(
     MdTag? Tag,
     ExpressionSyntax TargetValue)
 {
-    public override string ToString() => $"<=={ContractType}({Tag})";
+    public override string ToString() => $"<=={ContractType}({Tag?.ToString()})";
 }

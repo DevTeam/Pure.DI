@@ -23,13 +23,13 @@ internal static class LoggerExtensions
     }
 
     public static void CompileError<T>(this ILogger<T> logger, string errorMessage, in Location location, string id) =>
-        logger.Log(new LogEntry(DiagnosticSeverity.Error, ImmutableArray.Create(errorMessage), location, id));
+        logger.Log(new LogEntry(DiagnosticSeverity.Error, new []{ errorMessage }, location, id));
 
     public static void CompileWarning<T>(this ILogger<T> logger, string waringMessage, in Location location, string id) =>
-        logger.Log(new LogEntry(DiagnosticSeverity.Warning, ImmutableArray.Create(waringMessage), location, id));
+        logger.Log(new LogEntry(DiagnosticSeverity.Warning, new []{ waringMessage }, location, id));
     
     public static void CompileInfo<T>(this ILogger<T> logger, string message, in Location location, string id) =>
-        logger.Log(new LogEntry(DiagnosticSeverity.Info, ImmutableArray.Create(message), location, id));
+        logger.Log(new LogEntry(DiagnosticSeverity.Info, new []{ message }, location, id));
 
     public static IDisposable TraceProcess<T>(this ILogger<T> logger, string shortDescription, in Location? location = default)
     {
@@ -41,7 +41,7 @@ internal static class LoggerExtensions
         _processLevel++;
         var logEntry = new LogEntry(
             DiagnosticSeverity.Hidden,
-            ImmutableArray.Create($"{new string('>', _processLevel * 4)}{shortDescription} started"),
+            new []{ $"{new string('>', _processLevel * 4)}{shortDescription} started" },
             location);
 
         logger.Log(logEntry);
@@ -52,7 +52,7 @@ internal static class LoggerExtensions
             stopwatch.Stop();
             logger.Log(logEntry with
             {
-                Lines = ImmutableArray.Create($"{new string('<', _processLevel * 4)}{shortDescription} finished in {stopwatch.Elapsed.TotalMilliseconds:F} ms"),
+                Lines = new []{ $"{new string('<', _processLevel * 4)}{shortDescription} finished in {stopwatch.Elapsed.TotalMilliseconds:F} ms" },
                 IsOutcome = true
             });
             

@@ -1,3 +1,4 @@
+// ReSharper disable HeapView.BoxingAllocation
 namespace Pure.DI.Core.Models;
 
 internal record Variable(
@@ -19,17 +20,17 @@ internal record Variable(
                 case { Lifetime: Lifetime.Singleton }:
                 {
                     var binding = Node.Binding;
-                    return $"_f{binding.Id}Singleton{Postfix}";
+                    return $"_f{binding.Id.ToString()}Singleton{Postfix}";
                 }
 
                 case { Lifetime: Lifetime.PerResolve }:
-                    return $"v{Id}PerResolve{Postfix}";
+                    return $"v{Id.ToString()}PerResolve{Postfix}";
                 
                 case { Arg: {} arg }:
                     return $"_{arg.Source.ArgName}Arg{Postfix}";
 
                 default:
-                    return $"v{Id}Local{Postfix}";
+                    return $"v{Id.ToString()}Local{Postfix}";
             }
         }
     }
@@ -44,5 +45,5 @@ internal record Variable(
     
     public bool IsBlockRoot { get; init; }
     
-    public override string ToString() => $"{Node.Lifetime} {Node.Type} {Id}";
+    public override string ToString() => $"{Node.Lifetime} {Node.Type} {Id.ToString()}";
 }

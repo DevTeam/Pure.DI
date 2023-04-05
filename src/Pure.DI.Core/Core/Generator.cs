@@ -175,7 +175,7 @@ internal class Generator : IGenerator
                 if (!string.IsNullOrWhiteSpace(logFile))
                 {
                     var dir = Path.GetDirectoryName(logFile);
-                    if (dir is { })
+                    if (dir is not null)
                     {
                         Directory.CreateDirectory(dir);
                     }

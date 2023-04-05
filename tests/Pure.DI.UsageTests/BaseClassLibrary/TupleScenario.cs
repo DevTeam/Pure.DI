@@ -6,6 +6,7 @@ $d=Tuple
 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
+// ReSharper disable UnusedVariable
 namespace Pure.DI.UsageTests.BCL.TupleScenario;
 
 using Xunit;

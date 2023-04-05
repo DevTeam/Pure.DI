@@ -45,7 +45,7 @@ internal readonly record struct Injection(
     }
 
     private static bool EqualCompositeTags(object? tag, CompositeTag compositeTag) => 
-        tag is { }
+        tag is not null
             ? compositeTag.Tags.Contains(tag)
             : compositeTag.Tags.IsEmpty;
 }

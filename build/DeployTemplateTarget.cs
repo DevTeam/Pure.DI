@@ -52,6 +52,6 @@ internal class DeployTemplateTarget: ITarget<string>
             Warning($"The NuGet key was not specified, the package {targetPackage} will not be pushed.");
         }
 
-        return Task.FromResult<string>(targetPackage);
+        return Task.FromResult(targetPackage);
     }
 }

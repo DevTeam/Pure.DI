@@ -8,7 +8,8 @@ internal class Logger<T> : ILogger<T>
     public Logger(IObserversProvider observersProvider)
     {
         _source = typeof(T).Name;
-        _logEntryObservers = new Lazy<ImmutableArray<IObserver<LogEntry>>>(() => observersProvider.GetObservers<LogEntry>().ToImmutableArray());
+        ImmutableArray<IObserver<LogEntry>> CreateObservers() => observersProvider.GetObservers<LogEntry>().ToImmutableArray();
+        _logEntryObservers = new Lazy<ImmutableArray<IObserver<LogEntry>>>(CreateObservers);
     }
 
     public void Log(in LogEntry logEntry)

@@ -11,7 +11,6 @@ namespace Pure.DI.Core;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
-using CSharp;
 using Microsoft.CodeAnalysis.Operations;
 
 internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
@@ -530,7 +529,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         where T : ITypeSymbol
     {
         var result = TryGetTypeSymbol<T>(node);
-        if (result is {})
+        if (result is not null)
         {
             return result;
         }

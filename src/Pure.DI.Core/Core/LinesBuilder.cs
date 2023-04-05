@@ -1,3 +1,4 @@
+// ReSharper disable ConvertIfStatementToReturnStatement
 namespace Pure.DI.Core;
 
 using System.Collections;
@@ -5,9 +6,18 @@ using System.Text;
 
 internal class LinesBuilder: IEnumerable<string>
 {
+    private static readonly string[] Indents = new string[64]; 
     private readonly StringBuilder _sb = new(); 
     private readonly List<Line> _lines = new();
     private readonly Indent _indent;
+
+    static LinesBuilder()
+    {
+        for (var i = 0; i < Indents.Length; i++)
+        {
+            Indents[i] = new Indent(i).ToString();
+        }
+    }
 
     public LinesBuilder(Indent indent) => _indent = new Indent(indent.Value - 1);
 
@@ -33,7 +43,15 @@ internal class LinesBuilder: IEnumerable<string>
     public void AppendLine(in Line line) => 
         _lines.Add(line with { Indent = line.Indent + CurrentIndent.Value });
 
-    public void AppendLines(in IEnumerable<Line> lines)
+    public void AppendLines(in ImmutableArray<Line> lines)
+    {
+        foreach (var line in lines)
+        {
+            AppendLine(line);
+        }
+    }
+    
+    public void AppendLines(IEnumerable<Line> lines)
     {
         foreach (var line in lines)
         {
@@ -58,8 +76,8 @@ internal class LinesBuilder: IEnumerable<string>
 
     public IDisposable Indent()
     {
-        _indent.Value++;
-        return Disposables.Create(() => _indent.Value--);
+        IncIndent();
+        return Disposables.Create(DecIndent);
     }
     
     public void IncIndent() => _indent.Value++;
@@ -73,8 +91,23 @@ internal class LinesBuilder: IEnumerable<string>
             AppendLine();
         }
 
-        return _lines.Select(i => $"{new Indent(i.Indent)}{i.Text}").GetEnumerator();
+        return _lines.Select(i => $"{GetIndent(i.Indent)}{i.Text}").GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    private static string GetIndent(int indent)
+    {
+        if (indent < 1)
+        {
+            return string.Empty;
+        }
+
+        if (indent < Indents.Length)
+        {
+            return Indents[indent];
+        }
+
+        return new Indent(indent).ToString();
+    }
 }

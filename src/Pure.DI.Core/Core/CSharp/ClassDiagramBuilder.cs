@@ -1,3 +1,5 @@
+// ReSharper disable ConvertIfStatementToReturnStatement
+// ReSharper disable HeapView.BoxingAllocation
 namespace Pure.DI.Core.CSharp;
 
 internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
@@ -54,7 +56,7 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
             foreach (var node in graph.Vertices.GroupBy(i => i.Type, SymbolEqualityComparer.Default).Select(i => i.First()))
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                if (node.Root is { })
+                if (node.Root is not null)
                 {
                     continue;
                 }
@@ -77,7 +79,7 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
             foreach (var dependency in graph.Edges)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                if (dependency.Target.Root is {} && publicRoots.TryGetValue(dependency.Injection, out var root))
+                if (dependency.Target.Root is not null && publicRoots.TryGetValue(dependency.Injection, out var root))
                 {
                     lines.AppendLine($"{composition.Name.ClassName} ..> {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatInjection(root.Injection, DefaultFormatOptions)} {root.PropertyName}");
                 }
@@ -104,7 +106,7 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
         @object switch
         {
             Lifetime.Transient => " ",
-            not { } => " ",
+            null => " ",
             _ => $" \\\"{@object}\\\" "
         };
 
@@ -140,10 +142,12 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
 
         if (method.MethodKind == MethodKind.Constructor)
         {
-            return $"{Format(method.DeclaredAccessibility)}{method.ContainingType.Name}({(string.Join(", ", method.Parameters.Select(parameter => $"{FormatType(parameter.Type, options)} {parameter.Name}")))})"; 
+            string FormatProperty(IParameterSymbol parameter) => $"{FormatType(parameter.Type, options)} {parameter.Name}";
+            return $"{Format(method.DeclaredAccessibility)}{method.ContainingType.Name}({string.Join(", ", method.Parameters.Select(FormatProperty))})";
         }
-        
-        return $"{Format(method.DeclaredAccessibility)}{method.Name}({(string.Join(", ", method.Parameters.Select(parameter => $"{FormatType(parameter.Type, options)} {parameter.Name}")))}) : {FormatType(method.ReturnType, options)}";
+
+        string FormatParameter(IParameterSymbol parameter) => $"{FormatType(parameter.Type, options)} {parameter.Name}";
+        return $"{Format(method.DeclaredAccessibility)}{method.Name}({(string.Join(", ", method.Parameters.Select(FormatParameter)))}) : {FormatType(method.ReturnType, options)}";
     }
 
     private static string FormatProperty(IPropertySymbol property, FormatOptions options) =>
@@ -155,13 +159,16 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
     private static string FormatParameter(IParameterSymbol parameter, FormatOptions options) =>
         $"{FormatType(parameter.Type, options)} {parameter.Name}";
 
-    private static string FormatType(ISymbol typeSymbol, FormatOptions options) =>
-        typeSymbol switch
+    private static string FormatType(ISymbol typeSymbol, FormatOptions options)
+    {
+        string FormatSymbol(ITypeSymbol i) => ClassDiagramBuilder.FormatSymbol(i, options);
+        return typeSymbol switch
         {
-            INamedTypeSymbol { IsGenericType: true } namedTypeSymbol => $"{namedTypeSymbol.Name}{options.StartGenericArgsSymbol}{string.Join(options.TypeArgsSeparator, namedTypeSymbol.TypeArguments.Select(i => FormatSymbol(i, options)))}{options.FinishGenericArgsSymbol}",
+            INamedTypeSymbol { IsGenericType: true } namedTypeSymbol => $"{namedTypeSymbol.Name}{options.StartGenericArgsSymbol}{string.Join(options.TypeArgsSeparator, namedTypeSymbol.TypeArguments.Select(FormatSymbol))}{options.FinishGenericArgsSymbol}",
             IArrayTypeSymbol array => $"Array{options.StartGenericArgsSymbol}{FormatType(array.ElementType, options)}{options.FinishGenericArgsSymbol}",
             _ => typeSymbol.Name
         };
+    }
 
     private static string Format(Accessibility accessibility) =>
         accessibility switch
@@ -177,9 +184,9 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
         };
 
     private record FormatOptions(
-        char StartGenericArgsSymbol = 'ᐸ',
-        char FinishGenericArgsSymbol = 'ᐳ',
-        char TypeArgsSeparator = 'ˏ');
+        string StartGenericArgsSymbol = "ᐸ",
+        string FinishGenericArgsSymbol = "ᐳ",
+        string TypeArgsSeparator = "ˏ");
 
     private class ClassDiagramWalker : DependenciesWalker
     {

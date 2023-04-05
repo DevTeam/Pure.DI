@@ -5,6 +5,7 @@ using Build;
 using JetBrains.TeamCity.ServiceMessages.Write.Special;
 using NuGet.Versioning;
 using Pure.DI;
+// ReSharper disable HeapView.DelegateAllocation
 
 Directory.SetCurrentDirectory(Tools.GetSolutionDirectory());
 var version = NuGetVersion.Parse(Property.Get("version", "2.0.0-dev", true));
@@ -48,6 +49,7 @@ return await new RootCommand
 }.InvokeAsync(args);
 
 #pragma warning disable CS0162
+// ReSharper disable once HeuristicUnreachableCode
 DI.Setup("Composition")
     .Arg<Settings>()
     .Bind<ITeamCityWriter>().To(_ => GetService<ITeamCityWriter>())

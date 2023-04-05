@@ -32,14 +32,15 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
 
     public DependencyGraph Build(MdSetup setup, CancellationToken cancellationToken)
     {
-        var rawNodes = SortByPriority(_dependencyNodeBuilders.SelectMany(builder => builder.Build(setup, cancellationToken))).Reverse().ToArray();
+        IEnumerable<DependencyNode> BuildNodes(IBuilder<MdSetup, IEnumerable<DependencyNode>> builder) => builder.Build(setup, cancellationToken);
+        var rawNodes = SortByPriority(_dependencyNodeBuilders.SelectMany(BuildNodes)).Reverse().ToArray();
         var allNodes = new List<ProcessingNode>();
         var injections = new Dictionary<Injection, DependencyNode>();
         var allOverriddenInjections = new HashSet<Injection>();
         foreach (var node in rawNodes)
         {
             var contracts = _contractsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag), cancellationToken);
-            var isRoot = node.Root is { };
+            var isRoot = node.Root is not null;
             if (!isRoot)
             {
                 var overriddenInjections = new List<KeyValuePair<Injection, DependencyNode>>();
@@ -60,7 +61,7 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
                     contracts.Remove(overriddenInjection);
                     if (allOverriddenInjections.Add(overriddenInjection))
                     {
-                        _logger.CompileWarning($"{overriddenInjection} has been overridden.", prevNode.Binding.Source.GetLocation(), LogId.WarningOverriddenBinding);
+                        _logger.CompileWarning($"{overriddenInjection.ToString()} has been overridden.", prevNode.Binding.Source.GetLocation(), LogId.WarningOverriddenBinding);
                     }
                 }
             }
@@ -79,8 +80,14 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
             while (TryGetNextNodes(variations, out var nodes))
             {
                 cancellationToken.ThrowIfCancellationRequested();
+
+                ProcessingNode CreateProcessingNode(DependencyNode dependencyNode) => new(
+                    dependencyNode,
+                    _contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, MdTag.ContextTag),cancellationToken),
+                    _marker);
+
                 var newNodes = SortByPriority(_graphBuilder.TryBuild(setup, nodes, out var dependencyGraph, cancellationToken))
-                    .Select(i => new ProcessingNode(i, _contractsBuilder.Build(new ContractsBuildContext(i.Binding, MdTag.ContextTag), cancellationToken), _marker))
+                    .Select(CreateProcessingNode)
                     .ToArray();
 
                 if (newNodes.Any())

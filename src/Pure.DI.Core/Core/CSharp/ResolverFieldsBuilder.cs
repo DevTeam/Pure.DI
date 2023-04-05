@@ -2,11 +2,11 @@ namespace Pure.DI.Core.CSharp;
 
 internal class ResolversFieldsBuilder: IBuilder<CompositionCode, CompositionCode>
 {
-    private readonly IBuilder<IEnumerable<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
+    private readonly IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
     internal static readonly string BucketsFieldName = $"_buckets{Variable.Postfix}";
 
     public ResolversFieldsBuilder(
-        IBuilder<IEnumerable<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
+        IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
     {
         _resolversBuilder = resolversBuilder;
     }

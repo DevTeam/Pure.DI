@@ -1,3 +1,4 @@
+// ReSharper disable HeapView.BoxingAllocation
 namespace Pure.DI.IntegrationTests;
 
 using System.Text;

@@ -39,13 +39,13 @@ internal sealed class FactoryInjectsRewriter: CSharpSyntaxRewriter, IEnumerable<
                 Name: GenericNameSyntax
                 {
                     Identifier.Text: nameof(IContext.Inject),
-                    TypeArgumentList.Arguments: [{ }]
+                    TypeArgumentList.Arguments: [not null]
                 },
                 Expression: IdentifierNameSyntax ctx
             }
             && ctx.Identifier.Text == _factory.Source.Context.Identifier.Text)
         {
-            var injectionId = $"injection{_injectionId++}{Variable.Postfix}";
+            var injectionId = $"injection{(_injectionId++).ToString()}{Variable.Postfix}";
             switch (invocation.ArgumentList.Arguments.Last().Expression)
             {
                 case IdentifierNameSyntax identifierName:
