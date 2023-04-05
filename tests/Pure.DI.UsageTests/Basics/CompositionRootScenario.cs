@@ -4,7 +4,7 @@ $p=0
 $d=Composition root
 $h=This example demonstrates the most efficient way to obtain a composition root. The number of roots are not limited.
 $f=Actually, the property _Root_ looks like:
-$f=```csharp
+$f=```c#
 $f=public IService Root
 $f={
 $f=  get
@@ -14,7 +14,7 @@ $f=  }
 $f=}
 $f=``` 
 $f=To avoid generating _Resolve_ methods just add a comment `// Resolve = Off` before a _Setup_ method:
-$f=```csharp
+$f=```c#
 $f=// Resolve = Off
 $f=DI.Setup("Composition")            
 $f=  .Bind<IDependency>().To<Dependency>()

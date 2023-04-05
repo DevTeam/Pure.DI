@@ -192,7 +192,8 @@ internal class ReadmeTarget : ITarget<int>
                 await readmeWriter.WriteLineAsync("");
                 var contentLines = lines
                     .SkipWhile(i => !i.Contains("<table>"))
-                    .TakeWhile(i => !i.Contains("</body>"));
+                    .TakeWhile(i => !i.Contains("</body>"))
+                    .Where(i => !i.Contains("<td>NA</td>"));
 
                 foreach (var contentLine in contentLines)
                 {
@@ -228,7 +229,7 @@ internal class ReadmeTarget : ITarget<int>
                 }
 
                 await examplesWriter.WriteLineAsync("");
-                await examplesWriter.WriteLineAsync("``` CSharp");
+                await examplesWriter.WriteLineAsync("```c#");
                 await examplesWriter.WriteLineAsync(vars[BodyKey]);
                 await examplesWriter.WriteLineAsync("```");
 

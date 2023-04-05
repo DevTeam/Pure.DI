@@ -4,7 +4,7 @@
 
 This example demonstrates the most efficient way to obtain a composition root. The number of roots are not limited.
 
-``` CSharp
+```c#
 internal interface IDependency { }
 
 internal class Dependency : IDependency { }
@@ -70,7 +70,7 @@ Service *-- Dependency : IDependency dependency
 
 
 Actually, the property _Root_ looks like:
-```csharp
+```c#
 public IService Root
 {
   get
@@ -80,7 +80,7 @@ public IService Root
 }
 ```
 To avoid generating _Resolve_ methods just add a comment `// Resolve = Off` before a _Setup_ method:
-```csharp
+```c#
 // Resolve = Off
 DI.Setup("Composition")
   .Bind<IDependency>().To<Dependency>()
@@ -94,7 +94,7 @@ This can be done if these methods are not needed, in case only certain compositi
 
 This example shows how to resolve the composition roots using the _Resolve_ methods.
 
-``` CSharp
+```c#
 internal interface IDependency { }
 
 internal class Dependency : IDependency { }
@@ -161,7 +161,7 @@ Service *-- Dependency : IDependency dependency
 
 This example demonstrates how to create and initialize an instance manually.
 
-``` CSharp
+```c#
 internal interface IDependency
 {
     DateTimeOffset Time { get; }
@@ -247,7 +247,7 @@ Service *-- Dependency : IDependency dependency
 
 This example shows how to create and initialize an instance manually injecting required dependencies.
 
-``` CSharp
+```c#
 internal interface IDependency { }
 
 internal class Dependency : IDependency
@@ -313,7 +313,7 @@ Service *-- Dependency : IDependency
 
 Generic types are also supported, this is easy to do by binding generic types and specifying generic markers like `TT`, `TT1` etc. as generic type parameters:
 
-``` CSharp
+```c#
 internal interface IDependency<T> { }
 
 internal class Dependency<T> : IDependency<T> { }
@@ -382,7 +382,7 @@ Service *-- DependencyᐸStringᐳ : IDependencyᐸStringᐳ stringDependency
 
 
 Actually, the property _Root_ looks like:
-```csharp
+```c#
 public IService Root
 {
   get
@@ -396,7 +396,7 @@ public IService Root
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/ArgumentsScenario.cs)
 
-``` CSharp
+```c#
 internal interface IDependency { }
 
 internal class Dependency : IDependency { }
@@ -462,7 +462,7 @@ Service *-- Dependency : IDependency dependency
 
 This example demonstrates the most efficient way to get the root object of a composition without impacting memory consumption or performance.
 
-``` CSharp
+```c#
 internal interface IDependency { }
 
 internal class AbcDependency : IDependency { }
@@ -545,7 +545,7 @@ Sometimes it's important to take control of building a dependency graph. In this
 
 This approach works great even if DI doesn't have the appropriate bindings. :warning: But it can't be recommended if you follow the dependency inversion principle and want to make sure your types only depend on abstractions.
 
-``` CSharp
+```c#
 internal class Dependency
 {
 }
@@ -592,7 +592,7 @@ Service *-- Dependency : Dependency dependency
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/ChildCompositionScenario.cs)
 
-``` CSharp
+```c#
 internal interface IDependency
 {
     bool IsDisposed { get; }
@@ -676,7 +676,7 @@ Service o-- "Singleton" Dependency : IDependency dependency
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/MultiContractBindingsScenario.cs)
 
-``` CSharp
+```c#
 internal interface IDependency { }
 
 internal interface IAdvancedDependency { }
@@ -738,7 +738,7 @@ Service *-- Dependency : IAdvancedDependency advancedDependency
 
 To use dependency injection for a field, make sure the field is writable and simply add the _Ordinal_ attribute to that field, specifying an ordinal that will be used to determine the injection order:
 
-``` CSharp
+```c#
 internal interface IDependency { }
 
 internal class Dependency : IDependency { }
@@ -800,7 +800,7 @@ Service *-- Dependency : ~IDependency DependencyVal
 
 To use dependency injection on a property, make sure the property is writable and simply add the _Ordinal_ attribute to that property, specifying the ordinal that will be used to determine the injection order:
 
-``` CSharp
+```c#
 internal interface IDependency { }
 
 internal class Dependency : IDependency { }
@@ -860,7 +860,7 @@ Service *-- Dependency : +IDependency Dependency
 
 Defining generic type arguments using particular marker types like ```TT``` in this sample is a distinguishing and outstanding feature. This allows binding complex generic types with nested generic types and with any type constraints. For instance ```IService<T1, T2, TList, TDictionary> where T2: struct where TList: IList<T1> where TDictionary: IDictionary<T1, T2> { }``` and its binding to the some implementation ```.Bind<IService<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>().To<Service<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()``` with all checks and code-generation at the compile time. It is clear that this example is exaggerated, it just demonstrates the ease of working with marker types like ```TT, TTEnumerable, TTSet``` and etc. for binding complex generic types.
 
-``` CSharp
+```c#
 internal interface IDependency<T> { }
 
 internal class Dependency<T> : IDependency<T> { }
@@ -958,7 +958,7 @@ ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *-- 
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/SingletonScenario.cs)
 
-``` CSharp
+```c#
 internal interface IDependency { }
 
 internal class Dependency : IDependency { }
@@ -1027,7 +1027,7 @@ Service o-- "Singleton" Dependency : IDependency dependency2
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/PerResolveScenario.cs)
 
-``` CSharp
+```c#
 internal interface IDependency { }
 
 internal class Dependency : IDependency { }
@@ -1096,7 +1096,7 @@ Service o-- "PerResolve" Dependency : IDependency dependency2
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/TransientScenario.cs)
 
-``` CSharp
+```c#
 internal interface IDependency { }
 
 internal class Dependency : IDependency { }
@@ -1167,7 +1167,7 @@ Service *-- Dependency : IDependency dependency2
 
 To dispose all created singleton instances, simply dispose the composition instance:
 
-``` CSharp
+```c#
 internal interface IDependency
 {
     bool IsDisposed { get; }
@@ -1245,7 +1245,7 @@ Service o-- "Singleton" Dependency : IDependency dependency
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/DefaultLifetimeScenario.cs)
 
-``` CSharp
+```c#
 internal interface IDependency { }
 
 internal class Dependency : IDependency { }
@@ -1317,7 +1317,7 @@ Service "Singleton" o-- "Singleton" Dependency : IDependency dependency2
 
 _Func<T>_ helps when logic needs to inject instances of some type on demand and multiple times.
 
-``` CSharp
+```c#
 internal interface IDependency { }
 
 internal class Dependency : IDependency { }
@@ -1373,7 +1373,7 @@ class Service {
 class FuncᐸIDependencyᐳ
 Composition ..> Service : IService Root
 Service *-- FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ dependencyFactory
-FuncᐸIDependencyᐳ *-- Dependency :   IDependency
+FuncᐸIDependencyᐳ *-- Dependency : IDependency
 ```
 
 </details>
@@ -1385,7 +1385,7 @@ FuncᐸIDependencyᐳ *-- Dependency :   IDependency
 
 Specifying `IEnumerable<T>` as the injection type allows instances of all bindings that implement type `T` to be injected in a lazy manner - the instances will be provided one by one.
 
-``` CSharp
+```c#
 internal interface IDependency { }
 
 internal class AbcDependency : IDependency { }
@@ -1460,7 +1460,7 @@ IEnumerableᐸIDependencyᐳ *-- XyzDependency : 2
 
 Specifying `T[]` as the injection type allows instances from all bindings that implement the `T` type to be injected.
 
-``` CSharp
+```c#
 internal interface IDependency { }
 
 internal class AbcDependency : IDependency { }
@@ -1558,7 +1558,7 @@ In addition to arrays, other collection types are also supported, such as:
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/LazyScenario.cs)
 
-``` CSharp
+```c#
 internal interface IDependency { }
 
 internal class Dependency : IDependency { }
@@ -1614,8 +1614,8 @@ class LazyᐸIDependencyᐳ
 class FuncᐸIDependencyᐳ
 Composition ..> Service : IService Root
 Service *-- LazyᐸIDependencyᐳ : LazyᐸIDependencyᐳ dependency
-LazyᐸIDependencyᐳ *-- FuncᐸIDependencyᐳ :   FuncᐸIDependencyᐳ
-FuncᐸIDependencyᐳ *-- Dependency :   IDependency
+LazyᐸIDependencyᐳ *-- FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+FuncᐸIDependencyᐳ *-- Dependency : IDependency
 ```
 
 </details>
@@ -1627,7 +1627,7 @@ FuncᐸIDependencyᐳ *-- Dependency :   IDependency
 
 Specifying `Span<T>` and `ReadOnlySpan<T>` work the same as with the array `T[]`.
 
-``` CSharp
+```c#
 internal class Dependency
 {
 }
@@ -1690,7 +1690,7 @@ ReadOnlySpanᐸDependencyᐳ *-- Dependency : 'c'
 
 
 This scenario is even more efficient when the `Span[]` or `ReadOnlySpan[]` element has a value type. In this case, there are no heap allocations, and the composition root `IService` looks like this:
-```csharp
+```c#
 public IService Root
 {
   get
@@ -1705,7 +1705,7 @@ public IService Root
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/TupleScenario.cs)
 
-``` CSharp
+```c#
 internal interface IDependency { }
 
 internal class Dependency : IDependency { }
@@ -1774,7 +1774,7 @@ ValueTupleᐸPointˏIDependencyᐳ *-- Dependency : IDependency item2
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Interception/DecoratorScenario.cs)
 
-``` CSharp
+```c#
 internal interface IDependency { }
 
 internal class Dependency : IDependency { }
@@ -1850,7 +1850,7 @@ DecoratorService *-- Service : "base"  IService baseService
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Interception/InterceptionScenario.cs)
 
-``` CSharp
+```c#
 public interface IDependency
 {
     void DependencyCall();
@@ -1952,7 +1952,7 @@ Service *-- Dependency : IDependency dependency
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Interception/AdvancedInterceptionScenario.cs)
 
-``` CSharp
+```c#
 public interface IDependency
 {
     void DependencyCall();

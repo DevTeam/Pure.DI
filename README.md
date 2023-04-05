@@ -278,10 +278,6 @@ Intel Core i7-10850H CPU 2.70GHz, 1 CPU, 12 logical and 6 physical cores
 <table>
 <thead><tr><th>                    Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</thead><tbody><tr><td>CastleWindsor</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td> </td><td> </td>
-</tr><tr><td>SimpleInjector</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td> </td><td> </td>
-</tr><tr><td>Ninject</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td> </td><td> </td>
-</tr><tr><td>MicrosoftDependencyInjection</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td> </td><td> </td>
 </tr><tr><td>&#39;Hand Coded&#39;</td><td>76.87 ns</td><td>1.880 ns</td><td>5.513 ns</td><td>75.50 ns</td><td>1.00</td><td>0.00</td>
 </tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>82.40 ns</td><td>1.916 ns</td><td>5.649 ns</td><td>81.02 ns</td><td>1.08</td><td>0.10</td>
 </tr><tr><td>Pure.DI</td><td>83.35 ns</td><td>2.217 ns</td><td>6.502 ns</td><td>81.38 ns</td><td>1.09</td><td>0.11</td>
@@ -302,10 +298,6 @@ Intel Core i7-10850H CPU 2.70GHz, 1 CPU, 12 logical and 6 physical cores
 <table>
 <thead><tr><th>                    Method</th><th>  Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</thead><tbody><tr><td>CastleWindsor</td><td>NA</td><td>NA</td><td>NA</td><td> </td><td> </td>
-</tr><tr><td>SimpleInjector</td><td>NA</td><td>NA</td><td>NA</td><td> </td><td> </td>
-</tr><tr><td>Ninject</td><td>NA</td><td>NA</td><td>NA</td><td> </td><td> </td>
-</tr><tr><td>MicrosoftDependencyInjection</td><td>NA</td><td>NA</td><td>NA</td><td> </td><td> </td>
 </tr><tr><td>&#39;Hand Coded&#39;</td><td>90.14 ns</td><td>3.018 ns</td><td>8.898 ns</td><td>1.00</td><td>0.00</td>
 </tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>99.19 ns</td><td>3.491 ns</td><td>10.293 ns</td><td>1.11</td><td>0.17</td>
 </tr><tr><td>&#39;IoC.Container composition root&#39;</td><td>100.17 ns</td><td>3.280 ns</td><td>9.671 ns</td><td>1.12</td><td>0.16</td>
@@ -326,9 +318,6 @@ Intel Core i7-10850H CPU 2.70GHz, 1 CPU, 12 logical and 6 physical cores
 <table>
 <thead><tr><th>                    Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</thead><tbody><tr><td>CastleWindsor</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td> </td><td> </td>
-</tr><tr><td>SimpleInjector</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td> </td><td> </td>
-</tr><tr><td>Ninject</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td> </td><td> </td>
 </tr><tr><td>&#39;Hand Coded&#39;</td><td>209.6 ns</td><td>4.26 ns</td><td>12.57 ns</td><td>207.2 ns</td><td>1.00</td><td>0.00</td>
 </tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>216.9 ns</td><td>4.47 ns</td><td>13.05 ns</td><td>215.2 ns</td><td>1.04</td><td>0.08</td>
 </tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>220.9 ns</td><td>4.47 ns</td><td>12.82 ns</td><td>217.6 ns</td><td>1.06</td><td>0.08</td>
