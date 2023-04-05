@@ -2,9 +2,10 @@ namespace Pure.DI.Core;
 
 internal class RootsBuilder: IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>>
 {
-    private readonly IBuilder<MdBinding, ISet<Injection>> _injectionsBuilder;
+    private readonly IBuilder<ContractsBuildContext, ISet<Injection>> _contractsBuilder;
 
-    public RootsBuilder(IBuilder<MdBinding, ISet<Injection>> injectionsBuilder) => _injectionsBuilder = injectionsBuilder;
+    public RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder) =>
+        _contractsBuilder = contractsBuilder;
 
     public IReadOnlyDictionary<Injection, Root> Build(DependencyGraph dependencyGraph, CancellationToken cancellationToken)
     {
@@ -39,7 +40,7 @@ internal class RootsBuilder: IBuilder<DependencyGraph, IReadOnlyDictionary<Injec
             }
 
             // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var injection in _injectionsBuilder.Build(node.Binding, cancellationToken))
+            foreach (var injection in _contractsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag), cancellationToken))
             {
                 rootsPairs.Add(new KeyValuePair<Injection, Root>(
                     injection,

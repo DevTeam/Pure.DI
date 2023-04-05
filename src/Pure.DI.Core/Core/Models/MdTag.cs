@@ -2,8 +2,6 @@
 namespace Pure.DI.Core.Models;
 
 internal readonly record struct MdTag(
-    SemanticModel SemanticModel,
-    SyntaxNode Source,
     int Position,
     object Value)
 {

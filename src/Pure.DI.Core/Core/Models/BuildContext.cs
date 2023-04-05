@@ -4,4 +4,5 @@ internal record BuildContext(
     bool IsThreadSafe,
     IDictionary<MdBinding, Variable> Variables,
     LinesBuilder Code,
-    bool IsRootContext = true);
+    bool IsRootContext = true,
+    object? ContextTag = default);

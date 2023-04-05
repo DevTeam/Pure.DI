@@ -295,7 +295,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                             for (var index = 1; index < args.Count; index++)
                             {
                                 var arg = args[index];
-                                tagsBuilder.Add(new MdTag(SemanticModel, arg, index - 1, GetConstantValue<object>(arg.Expression)));
+                                tagsBuilder.Add(new MdTag(index - 1, GetConstantValue<object>(arg.Expression)));
                             }
 
                             var argType = GetTypeSymbol<ITypeSymbol>(argTypeSyntax);
@@ -315,10 +315,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                             if (rootArgs.Count == 2)
                             {
                                 var tagArg = rootArgs[1];
-                                tag = new MdTag(
-                                    SemanticModel,
-                                    tagArg,
-                                    0,
+                                tag = new MdTag(0,
                                     GetConstantValue<object>(tagArg.Expression));
                             }
 
@@ -434,6 +431,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         var resolversWalker = new FactoryResolversSyntaxWalker();
         resolversWalker.Visit(lambdaExpression);
         var position = 0;
+        var hasContextTag = false;
         var resolvers = resolversWalker.Select(invocation =>
         {
             if (invocation.Expression is MemberAccessExpressionSyntax
@@ -458,19 +456,21 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                             targetValue.Expression);
 
                     case [{ RefOrOutKeyword.IsMissing: false } tag, { RefOrOutKeyword.IsMissing: false } targetValue]:
-                        var parentTag = 
+                        hasContextTag = 
                             tag.Expression is MemberAccessExpressionSyntax memberAccessExpression
                             && memberAccessExpression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
                             && memberAccessExpression.Name.Identifier.Text == nameof(IContext.Tag)
-                            && memberAccessExpression.Expression is IdentifierNameSyntax identifierName
+                            && memberAccessExpression.Expression is IdentifierNameSyntax identifierName 
                             && identifierName.Identifier.Text == lambdaExpression.Parameter.Identifier.Text;
+                        
+                        var resolverTag = new MdTag(0, hasContextTag ? MdTag.ContextTag : GetConstantValue<object>(tag.Expression));
 
                         return new MdResolver(
                             SemanticModel,
                             invocation,
                             position++,
                             GetTypeSymbol<ITypeSymbol>(resolverContractType),
-                            new MdTag(SemanticModel, tag, 0, parentTag ? MdTag.ContextTag : GetConstantValue<object>(tag.Expression)),
+                            resolverTag,
                             targetValue.Expression);
                 }
             }
@@ -485,7 +485,8 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                 resultType,
                 lambdaExpression,
                 lambdaExpression.Parameter,
-                resolvers.ToImmutableArray()));
+                resolvers.ToImmutableArray(),
+                hasContextTag));
     }
 
     private static ISettings GetSettings(SyntaxNode node)
@@ -632,7 +633,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         for (var index = 0; index < arguments.Count; index++)
         {
             var argument = arguments[index];
-            builder.Add(new MdTag(SemanticModel, argument, index, GetConstantValue<object>(argument.Expression)));
+            builder.Add(new MdTag(index, GetConstantValue<object>(argument.Expression)));
         }
 
         return builder;

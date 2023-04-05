@@ -71,6 +71,8 @@ internal class CodeGraphWalker<TContext>
                     foreach (var dependency in dependencies)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
+                        var injection = dependency.Injection;
+                        
                         ProcessVariable(CreateVariable(dependencyGraph, variables, dependency.Source, dependency.Injection));
                     }
                 }

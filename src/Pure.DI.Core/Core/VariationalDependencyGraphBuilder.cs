@@ -13,20 +13,20 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
     private readonly ILogger<VariationalDependencyGraphBuilder> _logger;
     private readonly IBuilder<MdSetup, IEnumerable<DependencyNode>>[] _dependencyNodeBuilders;
     private readonly IMarker _marker;
-    private readonly IBuilder<MdBinding, ISet<Injection>> _injectionsBuilder;
+    private readonly IBuilder<ContractsBuildContext, ISet<Injection>> _contractsBuilder;
     private readonly IDependencyGraphBuilder _graphBuilder;
 
     public VariationalDependencyGraphBuilder(
         ILogger<VariationalDependencyGraphBuilder> logger,
         IBuilder<MdSetup, IEnumerable<DependencyNode>>[] dependencyNodeBuilders,
         IMarker marker,
-        IBuilder<MdBinding, ISet<Injection>> injectionsBuilder,
+        IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
         IDependencyGraphBuilder graphBuilder)
     {
         _logger = logger;
         _dependencyNodeBuilders = dependencyNodeBuilders;
         _marker = marker;
-        _injectionsBuilder = injectionsBuilder;
+        _contractsBuilder = contractsBuilder;
         _graphBuilder = graphBuilder;
     }
 
@@ -38,12 +38,12 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
         var allOverriddenInjections = new HashSet<Injection>();
         foreach (var node in rawNodes)
         {
-            var exposedInjections = _injectionsBuilder.Build(node.Binding, cancellationToken);
+            var contracts = _contractsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag), cancellationToken);
             var isRoot = node.Root is { };
             if (!isRoot)
             {
                 var overriddenInjections = new List<KeyValuePair<Injection, DependencyNode>>();
-                foreach (var exposedInjection in exposedInjections)
+                foreach (var exposedInjection in contracts)
                 {
                     if (!injections.TryGetValue(exposedInjection, out var currentNode) || currentNode.Binding == node.Binding)
                     {
@@ -57,7 +57,7 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
 
                 foreach (var (overriddenInjection, prevNode) in overriddenInjections)
                 {
-                    exposedInjections.Remove(overriddenInjection);
+                    contracts.Remove(overriddenInjection);
                     if (allOverriddenInjections.Add(overriddenInjection))
                     {
                         _logger.CompileWarning($"{overriddenInjection} has been overridden.", prevNode.Binding.Source.GetLocation(), LogId.WarningOverriddenBinding);
@@ -65,9 +65,9 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
                 }
             }
 
-            if (isRoot || exposedInjections.Any())
+            if (isRoot || contracts.Any())
             {
-                allNodes.Add(new ProcessingNode(node, exposedInjections, _marker));
+                allNodes.Add(new ProcessingNode(node, contracts, _marker));
             }
         }
 
@@ -80,7 +80,7 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var newNodes = SortByPriority(_graphBuilder.TryBuild(setup, nodes, out var dependencyGraph, cancellationToken))
-                    .Select(i => new ProcessingNode(i, _injectionsBuilder.Build(i.Binding, cancellationToken), _marker))
+                    .Select(i => new ProcessingNode(i, _contractsBuilder.Build(new ContractsBuildContext(i.Binding, MdTag.ContextTag), cancellationToken), _marker))
                     .ToArray();
 
                 if (newNodes.Any())

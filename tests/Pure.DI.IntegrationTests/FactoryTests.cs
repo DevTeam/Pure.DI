@@ -283,10 +283,19 @@ namespace Sample
         public IDependency Dep { get; }
     }
 
+    internal partial class Composition
+    {
+        private partial T OnDependencyInjection<T>(in T value, object? tag, object? lifetime)            
+        {
+            return value;                  
+        }
+    }
+
     static class Setup
     {
         private static void SetupComposition()
         {
+            // OnDependencyInjection = On
             DI.Setup("Composition")
                 .Bind<IDependency>(123).To(ctx => new Dependency())
                 .Bind<IService>(123).To(ctx => {

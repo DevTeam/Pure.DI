@@ -2,10 +2,10 @@ namespace Pure.DI.Core.CSharp;
 
 internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
 {
-    private readonly IBuilder<MdBinding, ISet<Injection>> _injectionsBuilder;
+    private readonly IBuilder<ContractsBuildContext, ISet<Injection>> _injectionsBuilder;
     private static readonly FormatOptions DefaultFormatOptions = new();
     
-    public ClassDiagramBuilder(IBuilder<MdBinding, ISet<Injection>> injectionsBuilder)
+    public ClassDiagramBuilder(IBuilder<ContractsBuildContext, ISet<Injection>> injectionsBuilder)
     {
         _injectionsBuilder = injectionsBuilder;
     }
@@ -59,15 +59,15 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
                     continue;
                 }
                 
-                var exposedInjections = _injectionsBuilder.Build(node.Binding, CancellationToken.None);
-                foreach (var exposedInjection in exposedInjections)
+                var contracts = _injectionsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag), CancellationToken.None);
+                foreach (var contract in contracts)
                 {
-                    if (node.Type.Equals(exposedInjection.Type, SymbolEqualityComparer.Default))
+                    if (node.Type.Equals(contract.Type, SymbolEqualityComparer.Default))
                     {
                         continue;
                     }
                     
-                    lines.AppendLine($"{FormatType(node.Type, DefaultFormatOptions)} --|> {FormatType(exposedInjection.Type, DefaultFormatOptions)} : {FormatTag(exposedInjection.Tag)}");
+                    lines.AppendLine($"{FormatType(node.Type, DefaultFormatOptions)} --|> {FormatType(contract.Type, DefaultFormatOptions)} : {FormatTag(contract.Tag)}");
                 }
 
                 var classDiagramWalker = new ClassDiagramWalker(lines, DefaultFormatOptions);

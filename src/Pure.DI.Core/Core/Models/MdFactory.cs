@@ -7,7 +7,8 @@ internal readonly record struct MdFactory(
     ITypeSymbol Type,
     SimpleLambdaExpressionSyntax Factory,
     ParameterSyntax Context,
-    in ImmutableArray<MdResolver> Resolvers)
+    in ImmutableArray<MdResolver> Resolvers,
+    bool HasContextTag)
     : IMdImplementation
 {
     public override string ToString() => $"To<{Type}>({Factory})";

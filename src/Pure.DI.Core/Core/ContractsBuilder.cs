@@ -1,11 +1,11 @@
 namespace Pure.DI.Core;
 
-internal class InjectionsBuilder: IBuilder<MdBinding, ISet<Injection>>
+internal class ContractsBuilder: IBuilder<ContractsBuildContext, ISet<Injection>>
 {
     private readonly IMarker _marker;
     private readonly IUnboundTypeConstructor _unboundTypeConstructor;
 
-    public InjectionsBuilder(
+    public ContractsBuilder(
         IMarker marker,
         IUnboundTypeConstructor unboundTypeConstructor)
     {
@@ -13,14 +13,16 @@ internal class InjectionsBuilder: IBuilder<MdBinding, ISet<Injection>>
         _unboundTypeConstructor = unboundTypeConstructor;
     }
 
-    public ISet<Injection> Build(MdBinding binding, CancellationToken cancellationToken)
+    public ISet<Injection> Build(ContractsBuildContext context, CancellationToken cancellationToken)
     {
+        var binding = context.Binding;
         if (binding.Tags.IsDefault)
         {
             return ImmutableHashSet<Injection>.Empty;
         }
 
-        var injections = new HashSet<Injection>();
+        var hasContextTag = binding.Factory is { HasContextTag: true };
+        var contracts = new HashSet<Injection>();
         var bindingTags = binding.Tags.Select(i => i.Value).ToHashSet();
         foreach (var contract in binding.Contracts)
         {
@@ -35,6 +37,11 @@ internal class InjectionsBuilder: IBuilder<MdBinding, ISet<Injection>>
             {
                 contractTags.Add(tag.Value);
             }
+            
+            if (hasContextTag)
+            {
+                contractTags.Add(context.ContextTag);
+            }
 
             if (!contractTags.Any())
             {
@@ -43,10 +50,10 @@ internal class InjectionsBuilder: IBuilder<MdBinding, ISet<Injection>>
 
             foreach (var tag in contractTags)
             {
-                injections.Add(new Injection(contractType, tag));
+                contracts.Add(new Injection(contractType, tag));
             }
         }
 
-        return injections;
+        return contracts;
     }
 }

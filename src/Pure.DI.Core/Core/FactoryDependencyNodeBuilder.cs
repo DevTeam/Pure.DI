@@ -14,13 +14,7 @@ internal class FactoryDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<Depe
             var injectionsBuilder = ImmutableArray.CreateBuilder<Injection>(factory.Resolvers.Length);
             foreach (var resolver in factory.Resolvers)
             {
-                var tag = resolver.Tag?.Value;
-                if (ReferenceEquals(tag, MdTag.ContextTag))
-                {
-                    tag = new CompositeTag(binding.Tags.Concat(binding.Contracts.SelectMany(i => i.Tags)).Select(i => i.Value).ToImmutableHashSet());
-                }
-                
-                injectionsBuilder.Add(new Injection(resolver.ContractType, tag));
+                injectionsBuilder.Add(new Injection(resolver.ContractType, resolver.Tag?.Value));
             }
 
             yield return new DependencyNode(0, Factory: new DpFactory(factory, binding, injectionsBuilder.SafeMoveToImmutable()));

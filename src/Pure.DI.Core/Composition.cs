@@ -33,7 +33,7 @@ internal static partial class Composition
         .Bind<IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>>>().To<RootsBuilder>()
         .Bind<IBuilder<CompositionCode, LinesBuilder>>().To<ClassDiagramBuilder>()
         .Bind<IVarIdGenerator>().To<VarIdGenerator>()
-        .Bind<IBuilder<MdBinding, ISet<Injection>>>().To<InjectionsBuilder>()
+        .Bind<IBuilder<ContractsBuildContext, ISet<Injection>>>().To<ContractsBuilder>()
         .Bind<ITypeConstructor>().To<TypeConstructor>()
         .Bind<IBuilder<RewriterContext<MdFactory>, MdFactory>>().To<FactoryTypeRewriter>()
         .Bind<IValidator<MdSetup>>().To<MetadataValidator>()

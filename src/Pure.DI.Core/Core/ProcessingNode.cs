@@ -9,12 +9,12 @@ internal readonly struct ProcessingNode
 
     public ProcessingNode(
         DependencyNode node,
-        ISet<Injection> exposedInjections,
+        ISet<Injection> contracts,
         IMarker marker)
     {
         HasNode = true;
         Node = node;
-        ExposedInjections = exposedInjections;
+        Contracts = contracts;
         _isMarkerBased = new Lazy<bool>(() => marker.IsMarkerBased(node.Type));
         _injections = new Lazy<ImmutableArray<Injection>>(() =>
         {
@@ -26,7 +26,7 @@ internal readonly struct ProcessingNode
 
     public bool IsMarkerBased => _isMarkerBased.Value;
         
-    public ISet<Injection> ExposedInjections { get; }
+    public ISet<Injection> Contracts { get; }
 
     public ImmutableArray<Injection> Injections => _injections.Value;
 

@@ -14,6 +14,16 @@ internal readonly record struct Injection(
 
     private static bool EqualTags(object? tag, object? otherTag)
     {
+        if (ReferenceEquals(tag, MdTag.ContextTag))
+        {
+            return true;
+        }
+        
+        if (ReferenceEquals(otherTag, MdTag.ContextTag))
+        {
+            return true;
+        }
+        
         if (Equals(tag, otherTag))
         {
             return true;

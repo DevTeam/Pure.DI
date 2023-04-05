@@ -4,6 +4,7 @@ internal class ResolversBuilder: IBuilder<IEnumerable<Root>, IEnumerable<Resolve
 {
     public IEnumerable<ResolverInfo> Build(IEnumerable<Root> roots, CancellationToken cancellationToken) =>
         roots.Where(i => !i.Injection.Type.IsRefLikeType)
+            .Where(i => !ReferenceEquals(i.Injection.Tag, MdTag.ContextTag))
             .GroupBy(i => i.Injection.Type, SymbolEqualityComparer.Default)
             .Select((i, id) => new ResolverInfo(id, (ITypeSymbol)i.Key!, i.ToImmutableArray()));
 }

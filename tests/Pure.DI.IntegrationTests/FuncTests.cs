@@ -182,4 +182,64 @@ namespace Sample
         result.Success.ShouldBeTrue(result.GeneratedCode);
         result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
     }
+    
+    [Fact]
+    public async Task ShouldSupportFuncWithTag()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency {}
+
+    interface IService
+    {
+        IDependency Dep { get; }        
+    }
+
+    class Service: IService 
+    {
+        private Func<IDependency> _depFactory;
+        public Service([Tag("Abc")] Func<IDependency> depFactory)
+        { 
+            _depFactory = depFactory;           
+        }
+
+        public IDependency Dep => _depFactory();
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<IDependency>("Abc").To<Dependency>()
+                .Bind<IService>().To<Service>()    
+                .Root<IService>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service = composition.Service;
+            Console.WriteLine(service.Dep != service.Dep);                               
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
+    }
 }

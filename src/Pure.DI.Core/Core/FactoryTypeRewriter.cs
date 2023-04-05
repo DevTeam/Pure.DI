@@ -16,8 +16,29 @@ internal class FactoryTypeRewriter: CSharpSyntaxRewriter, IBuilder<RewriterConte
         {
             Type = context.TypeConstructor.Construct(factory.SemanticModel.Compilation, factory.Type),
             Factory = newFactory,
-            Resolvers = factory.Resolvers.Select(resolver => resolver with { ContractType = context.TypeConstructor.Construct(factory.SemanticModel.Compilation, resolver.ContractType) }).ToImmutableArray() 
+            Resolvers = factory.Resolvers
+                .Select(resolver => resolver with
+                {
+                    ContractType = context.TypeConstructor.Construct(factory.SemanticModel.Compilation, resolver.ContractType),
+                    Tag = CreateTag(context.Injection, resolver.Tag) 
+                })
+                .ToImmutableArray() 
         };
+    }
+
+    private static MdTag? CreateTag(in Injection injection, in MdTag? tag)
+    {
+        if (!tag.HasValue || !ReferenceEquals(tag.Value.Value, MdTag.ContextTag))
+        {
+            return tag;
+        }
+        
+        if (injection.Tag is { } newTag)
+        {
+            return new MdTag(0, newTag);
+        }
+
+        return default;
     }
 
     public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node)
