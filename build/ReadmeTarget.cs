@@ -1,3 +1,4 @@
+// ReSharper disable InvertIf
 namespace Build;
 
 using System.CommandLine.Invocation;
@@ -37,13 +38,47 @@ internal class ReadmeTarget : ITarget<int>
     public async Task<int> RunAsync(InvocationContext ctx)
     {
         var solutionDirectory = Tools.GetSolutionDirectory();
-        await _benchmarksTarget.RunAsync(ctx);
-        var testResult = new DotNetTest()
-            .WithProject(Path.Combine(solutionDirectory, "tests", "Pure.DI.UsageTests", "Pure.DI.UsageTests.csproj"))
-            .Build();
-        Assertion.Succeed(testResult);
-
         var logsDirectory = Path.Combine(solutionDirectory, ".logs");
+        
+        // Run benchmarks
+        await _benchmarksTarget.RunAsync(ctx);
+        
+        // Run tests for Class Diagrams
+        var testResult = await new DotNetTest()
+            .WithProject(Path.Combine(solutionDirectory, "tests", "Pure.DI.UsageTests", "Pure.DI.UsageTests.csproj"))
+            .BuildAsync();
+        
+        Assertion.Succeed(testResult);
+        
+        await using var readmeWriter = File.CreateText(ReadmeFile);
+        
+        await AddContent(ReadmeTemplateFile, readmeWriter);
+        
+        await readmeWriter.WriteLineAsync("");
+        
+        var examples = await CreateExamples(ctx);
+        await GenerateExamples(examples, readmeWriter, logsDirectory);
+
+        await AddContent(FooterTemplateFile, readmeWriter);
+        
+        await readmeWriter.WriteLineAsync("");
+        
+        await AddBencmarks(logsDirectory, readmeWriter);
+
+        await readmeWriter.FlushAsync();
+        return 0;
+    }
+
+    private static async Task AddContent(string sourceFile, TextWriter readmeWriter)
+    {
+        foreach (var line in await File.ReadAllLinesAsync(Path.Combine(ReadmeDir, sourceFile)))
+        {
+            await readmeWriter.WriteLineAsync(line);
+        }
+    }
+
+    private static async Task<IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)>> CreateExamples(InvocationContext ctx)
+    {
         var items = new List<Dictionary<string, string>>();
         var testsDir = Path.Combine(Tools.GetSolutionDirectory(), "tests", "Pure.DI.UsageTests");
         var files = Directory.EnumerateFiles(testsDir, "*.cs", SearchOption.AllDirectories);
@@ -73,19 +108,19 @@ internal class ReadmeTarget : ITarget<int>
                     part = Part.Comment;
                     continue;
                 }
-                
+
                 if (str.StartsWith("*/"))
                 {
                     part = default;
                     continue;
                 }
-                
+
                 if (str.StartsWith("//{"))
                 {
                     part = Part.Body;
                     continue;
                 }
-                
+
                 if (str.StartsWith("//}"))
                 {
                     if (body.Any())
@@ -99,7 +134,7 @@ internal class ReadmeTarget : ITarget<int>
                     part = default;
                     continue;
                 }
-                
+
                 if (part == Part.Comment && str.StartsWith("$"))
                 {
                     var parts = line[1..].Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries);
@@ -121,7 +156,7 @@ internal class ReadmeTarget : ITarget<int>
                             vars[key] = curVar;
                         }
                     }
-                    
+
                     continue;
                 }
 
@@ -146,71 +181,24 @@ internal class ReadmeTarget : ITarget<int>
                 vars[BodyKey] = string.Join(Environment.NewLine, body);
             }
         }
-        
+
         var groups = Groups
             .Select((name, index) => (name, index))
-            .ToDictionary(i => i.name , i=> i.index);
+            .ToDictionary(i => i.name, i => i.index);
 
-        var samples = items
+        var examples = items
             .Where(i => i.ContainsKey(BodyKey) && i[VisibleKey] != "False")
             .GroupBy(i => i[TitleKey])
             .OrderBy(i => groups.TryGetValue(i.Key, out var index) ? index : int.MaxValue)
             .Select(i => (GroupName: i.Key, SampleItems: i.OrderBy(j => int.Parse(j[PriorityKey])).ThenBy(j => j[DescriptionKey]).ToArray()));
-        
-        await using var readmeWriter = File.CreateText(ReadmeFile);
-        foreach (var line in await File.ReadAllLinesAsync(Path.Combine(ReadmeDir, ReadmeTemplateFile)))
-        {
-            await readmeWriter.WriteLineAsync(line);
-        }
-        
-        var benchmarksReportFiles = Directory.EnumerateFiles(logsDirectory, "*.html").ToArray();
-        if (benchmarksReportFiles.Any())
-        {
-            await readmeWriter.WriteLineAsync("");
-            await readmeWriter.WriteLineAsync("## Benchmarks");
-            await readmeWriter.WriteLineAsync("");
-            var isFirst = true;
-            foreach (var benchmarksReportFile in benchmarksReportFiles.OrderBy(i => i))
-            {
-                var reportName = new string(Path.GetFileNameWithoutExtension(benchmarksReportFile).SkipWhile(i => i != ' ').Skip(1).ToArray());
-                var lines = await File.ReadAllLinesAsync(benchmarksReportFile);
-                if (isFirst)
-                {
-                    var headerLines = lines
-                        .SkipWhile(i => !i.Contains("<pre><code>"))
-                        .TakeWhile(i => !i.Contains("<pre><code></code></pre>"));
-                    
-                    foreach (var headerLine in headerLines)
-                    {
-                        await readmeWriter.WriteLineAsync(headerLine);
-                    }
-                    
-                    await readmeWriter.WriteLineAsync("");
-                }
-                
-                await readmeWriter.WriteLineAsync($"<details{(isFirst ? " open" : "")}>");
-                await readmeWriter.WriteLineAsync($"<summary>{reportName}</summary>");
-                await readmeWriter.WriteLineAsync("");
-                var contentLines = lines
-                    .SkipWhile(i => !i.Contains("<table>"))
-                    .TakeWhile(i => !i.Contains("</body>"))
-                    .Where(i => !i.Contains("<td>NA</td>"));
+        return examples;
+    }
 
-                foreach (var contentLine in contentLines)
-                {
-                    await readmeWriter.WriteLineAsync(contentLine.Replace('?', ' '));
-                }
-                
-                await readmeWriter.WriteLineAsync("");
-                await readmeWriter.WriteLineAsync("</details>");
-                await readmeWriter.WriteLineAsync("");
-                isFirst = false;
-            }
-        }
-
-        await readmeWriter.WriteLineAsync("");
+    private static async Task GenerateExamples(IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)> samples, StreamWriter readmeWriter, string logsDirectory)
+    {
         await readmeWriter.WriteLineAsync("## Examples");
         await readmeWriter.WriteLineAsync("");
+        
         await using var examplesWriter = File.CreateText(Path.Combine(ReadmeDir, ExamplesReadmeFile));
         foreach (var (groupName, sampleItems) in samples)
         {
@@ -249,7 +237,7 @@ internal class ReadmeTarget : ITarget<int>
                     await examplesWriter.WriteLineAsync("</details>");
                     await examplesWriter.WriteLineAsync("");
                 }
-                
+
                 var footer = vars[FooterKey];
                 if (!string.IsNullOrWhiteSpace(footer))
                 {
@@ -262,14 +250,59 @@ internal class ReadmeTarget : ITarget<int>
         }
 
         await examplesWriter.FlushAsync();
- 
-        foreach (var line in await File.ReadAllLinesAsync(Path.Combine(ReadmeDir, FooterTemplateFile)))
+    }
+
+    private static async Task AddBencmarks(string logsDirectory, TextWriter readmeWriter)
+    {
+        var benchmarksReportFiles = Directory.EnumerateFiles(logsDirectory, "*.html").ToArray();
+        if (benchmarksReportFiles.Any())
         {
-            await readmeWriter.WriteLineAsync(line);
+            await readmeWriter.WriteLineAsync("");
+            await readmeWriter.WriteLineAsync("## Benchmarks");
+            await readmeWriter.WriteLineAsync("");
+            var files = benchmarksReportFiles.OrderBy(i => i).ToArray();
+            for (var i = 0; i < files.Length; i++)
+            {
+                var benchmarksReportFile = files[i];
+                var reportName = new string(Path.GetFileNameWithoutExtension(benchmarksReportFile).SkipWhile(i => i != ' ').Skip(1).ToArray());
+                var lines = await File.ReadAllLinesAsync(benchmarksReportFile);
+                await readmeWriter.WriteLineAsync($"<details>");
+                await readmeWriter.WriteLineAsync($"<summary>{reportName}</summary>");
+                await readmeWriter.WriteLineAsync("");
+                var contentLines = lines
+                    .SkipWhile(i => !i.Contains("<table>"))
+                    .TakeWhile(i => !i.Contains("</body>"))
+                    .Where(i => !i.Contains("<td>NA</td>"));
+
+                foreach (var contentLine in contentLines)
+                {
+                    await readmeWriter.WriteLineAsync(contentLine.Replace('?', ' '));
+                }
+
+                await readmeWriter.WriteLineAsync("");
+                await readmeWriter.WriteLineAsync("</details>");
+                await readmeWriter.WriteLineAsync("");
+
+                if (i == files.Length - 1)
+                {
+                    await readmeWriter.WriteLineAsync("<details>");
+                    await readmeWriter.WriteLineAsync("<summary>Benchmarks environment</summary>");
+                    await readmeWriter.WriteLineAsync("");
+
+                    var headerLines = lines
+                        .SkipWhile(i => !i.Contains("<pre><code>"))
+                        .TakeWhile(i => !i.Contains("<pre><code></code></pre>"));
+
+                    foreach (var headerLine in headerLines)
+                    {
+                        await readmeWriter.WriteLineAsync(headerLine);
+                    }
+
+                    await readmeWriter.WriteLineAsync("");
+                    await readmeWriter.WriteLineAsync("</details>");
+                }
+            }
         }
-        
-        await readmeWriter.FlushAsync();
-        return 0;
     }
 
     private static IEnumerable<char> FormatTitle(string title)

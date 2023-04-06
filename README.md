@@ -198,6 +198,299 @@ Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates
 
 </details>
 
+## Examples
+
+### Basics
+- [Composition root](readme/Examples.md#composition-root)
+- [Resolve methods](readme/Examples.md#resolve-methods)
+- [Factory](readme/Examples.md#factory)
+- [Injection](readme/Examples.md#injection)
+- [Generics](readme/Examples.md#generics)
+- [Arguments](readme/Examples.md#arguments)
+- [Tags](readme/Examples.md#tags)
+- [Auto-bindings](readme/Examples.md#auto-bindings)
+- [Child composition](readme/Examples.md#child-composition)
+- [Multi-contract bindings](readme/Examples.md#multi-contract-bindings)
+- [Field Injection](readme/Examples.md#field-injection)
+- [Property Injection](readme/Examples.md#property-injection)
+- [Complex Generics](readme/Examples.md#complex-generics)
+### Lifetimes
+- [Singleton](readme/Examples.md#singleton)
+- [PerResolve](readme/Examples.md#perresolve)
+- [Transient](readme/Examples.md#transient)
+- [Disposable Singleton](readme/Examples.md#disposable-singleton)
+- [Default lifetime](readme/Examples.md#default-lifetime)
+### Base Class Library
+- [Func](readme/Examples.md#func)
+- [IEnumerable](readme/Examples.md#ienumerable)
+- [Array](readme/Examples.md#array)
+- [Lazy](readme/Examples.md#lazy)
+- [Span and ReadOnlySpan](readme/Examples.md#span-and-readonlyspan)
+- [Tuple](readme/Examples.md#tuple)
+### Interception
+- [Decorator](readme/Examples.md#decorator)
+- [Interception](readme/Examples.md#interception)
+- [Advanced interception](readme/Examples.md#advanced-interception)
+## Composition class
+
+For each generated class, hereinafter referred to as _composition_, the setup must be done:
+
+```c#
+DI.Setup("Composition")
+    .Bind<IService>().To<Service>();
+```
+
+<details>
+<summary>Setup arguments</summary>
+
+The first parameter is used to specify the name of the composition class. All setups with the same name will be combined to create one composition class. In addition, this name may contain a namespace, for example for `Sample.Composition` the composition class is generated:
+
+```c#
+namespace Sample
+{
+    partial class Composition
+    {
+        ...
+    }
+}
+```
+
+The second optional parameter can have several values to determine the kind of composition:
+
+| Options                  |                                                                                                                                              |
+|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| CompositionKind.Public   | Default value. This option will create a composition class.                                                                                  |
+| CompositionKind.Internal | If this value is specified, the class will not be generated, but this setup can be used for others as a base.                                |
+| CompositionKind.Global   | If this value is specified, the composition class will not be generated, but this setup is a default base for all setups in current project. |
+
+</details>
+
+The composition may contain the following parts:
+
+<details>
+<summary>Constructors</summary>
+
+### Constructors
+
+1. Default constructor
+
+   Just initializes the internal state.
+
+2. Argument constructor
+
+   It replaces the default constructor and is only created if at least one argument is provided. For example:
+   ```c#
+   DI.Setup("Composition")
+       .Arg<string>("name")
+       .Arg<int>("id")
+       ...
+   ```
+   In this case, the argument constructor looks like this:
+   ```c#
+   public Composition(string name, int id) { ... }
+   ```
+   and default constructor is missing.
+
+3. Child constructor
+
+   This constructor is always available and is used to create a child composition based on the parent composition:
+   ```c#
+   var parentComposition = new Composition();
+   var childComposition = new Composition(parentComposition); 
+   ```
+   The child composition inherits the state of the parent composition in the form of arguments and singleton objects. States are copied, and compositions are completely independent, except when calling the _Dispose()_ method on the parent container before disposing of the child container, because the child container can use singleton objects created before it was created.
+
+</details>
+
+<details>
+<summary>Methods to resolve instances</summary>
+
+### _Resolve_
+
+By default a set of four _Resolve_ methods are generated within generated composition class.
+
+```c#
+public T Resolve<T>() { ... }
+
+public T Resolve<T>(object? tag) { ... }
+
+public object Resolve(Type type) { ... }
+
+public object Resolve(Type type, object? tag) { ... }
+```
+
+These methods are useful when using the Service Locator approach when the code resolves composition roots in place:
+
+```c#
+var composition = new Composition();
+
+composition.Resolve<IService>();
+```
+
+To control the generation of these methods, see [Resolve Hint](#Resolve-Hint).
+
+</details>
+
+<details>
+<summary>Roots</summary>
+
+To be able to quickly and conveniently create an object graph, a set of properties is generated. The type of the property is the type of the root object created by the composition. Accordingly, each access to the property leads to the creation of a composition with the root element of this type.
+
+### Private Roots
+
+The composition has properties for each potential root that are used in those _Resolve_ methods. For example:
+
+```c#
+private IService Root2PropABB3D0
+{
+    get { ... }
+}
+```
+
+These properties have a random name and a private accessor and cannot be used directly from code. Don't try to use them.
+
+### Public Roots
+
+To be able to use a specific composition root, that root must be explicitly defined by the _Root_ method with a specific name and type:
+
+```c#
+DI.Setup("Composition")
+    .Bind<IService>().To<Service>()
+    .Root<IService>("MyService");
+```
+
+In this case, the property for type _IService_ will be named _MyService_ and will be available for direct use. The result of its use will be the creation of a composition of objects with a root of type _IService_:
+
+```c#
+public IService MyService
+{
+    get
+    { 
+        ...
+        retunr new Service(...);
+    }
+}
+```
+
+The composition can contain any number of roots.
+
+</details>
+
+<details>
+<summary>Dispose</summary>
+
+### Dispose method
+
+This method is only generated if the composition contains at least one singleton object that implements the [IDisposable](https://learn.microsoft.com/en-us/dotnet/api/system.idisposable) interface. To dispose of all created singleton objects, call the composition `Dispose()` method:
+
+```c#
+using(var composition = new Composition())
+{
+    ...
+}
+```
+
+</details>
+
+<details>
+<summary>Setup hints</summary>
+
+## Setup hints
+
+Setup hints are comments before method _Setup_ in the form ```hint = value``` that are used to fine-tune code generation. For example:
+
+```c#
+// Resolve = Off
+// ThreadSafe = Off
+// ToString = On
+DI.Setup("Composition")
+    ...
+```
+
+| Hint                                                                                                                               | Default Value |
+|------------------------------------------------------------------------------------------------------------------------------------|---------------|
+| [Resolve](#Resolve-Hint)                                                                                                           | On            |
+| [OnInstanceCreation](#OnInstanceCreation-Hint)                                                                                     | On            |
+| [OnDependencyInjection](#OnDependencyInjection-Hint)                                                                               | Off           |
+| [OnDependencyInjectionImplementationTypeNameRegularExpression](#OnDependencyInjectionImplementationTypeNameRegularExpression-Hint) | .+            |
+| [OnDependencyInjectionContractTypeNameRegularExpression](#OnDependencyInjectionContractTypeNameRegularExpression-Hint)             | .+            |
+| [OnDependencyInjectionTagRegularExpression](#OnDependencyInjectionTagRegularExpression-Hint)                                       | .+            |
+| [ToString](#ToString-Hint)                                                                                                         | Off           |
+| [ThreadSafe](#ThreadSafe-Hint)                                                                                                     | On            |
+
+### Resolve Hint
+
+Determine whether to generate [_Resolve_ methods](#resolve-methods). By default a set of four _Resolve_ methods are generated. Set this hint to _Off_ to disable the generation of resolve methods. This will reduce class composition generation time and no [private composition roots](#Private-Roots) will be generated in this case. The composition will be tiny and will only have [public roots](#Public-Roots).
+
+### OnInstanceCreation Hint
+
+Determine whether to generate partial _OnInstanceCreation_ method. This partial method is generated by default, has no body, and can be overridden as needed. If the body is not defined, then the compiler will cut out its calls. This can be useful, for example, for logging:
+
+```c#
+internal partial class Composition
+{
+    partial void OnInstanceCreation<T>(ref T value, object? tag, object? lifetime)            
+    {
+        Console.WriteLine($"'{typeof(T)}'('{tag}') created.");            
+    }
+}
+```
+
+You can also replace the created instance of type `T`, where `T` is actually type of created instance.
+
+### OnDependencyInjection Hint
+
+Determine whether to generate partial _OnDependencyInjection_ method to control of dependency injection. This partial method is not generated by default. It cannot have an empty body due to the return value. It must be overridden when generated. This can be useful, for example, for [interception](#Interception).
+
+```c#
+// OnDependencyInjection = On
+// OnDependencyInjectionContractTypeNameRegularExpression = ICalculator[\d]{1}
+// OnDependencyInjectionTagRegularExpression = Abc
+DI.Setup("Composition")
+    ...
+```
+
+To minimize the performance penalty when calling _OnDependencyInjection_, use the other hints below.
+
+### OnDependencyInjectionImplementationTypeNameRegularExpression Hint
+
+It is a regular expression to filter by the instance type name. This hint is useful when _OnDependencyInjection_ is in the _On_ state and you want to limit the set of types for which the method _OnDependencyInjection_ will be called.
+
+### OnDependencyInjectionContractTypeNameRegularExpression Hint
+
+It is a regular expression to filter by the resolving type name. This hint is useful also when _OnDependencyInjection_ is in the _On_ state and you want to limit the set of resolving types for which the method _OnDependencyInjection_ will be called.
+
+### OnDependencyInjectionTagRegularExpression Hint
+
+It is a regular expression to filter by the _tag_. This hint is useful also when _OnDependencyInjection_ is in the _On_ state and you want to limit the set of _tag_ for which the method _OnDependencyInjection_ will be called.
+
+### ToString Hint
+
+Determine if the _ToString()_ method should be generated. This method provides a text-based class diagram in the format [mermaid](https://mermaid.js.org/). To see this diagram, just call the ToString method and copy the text to [this site](https://mermaid.live/).
+
+```c#
+// ToString = On
+DI.Setup("Composition")
+    .Bind<IService>().To<Service>()
+    .Root<IService>("MyService");
+    
+var composition = new Composition();
+string classDiagram = composition.ToString(); 
+```
+
+### ThreadSafe Hint
+
+This hint determines whether object composition will be created in a thread-safe manner. This hint is _On_ by default. It is good practice not to use threads when creating an object graph, in which case this hint can be turned off, which will lead to a slight increase in performance.
+
+```c#
+// ThreadSafe = Off
+DI.Setup("Composition")
+    .Bind<IService>().To<Service>()
+    .Root<IService>("MyService");
+```
+
+</details>
+
 ## Development environment requirements
 
 - [.NET SDK 6.0.4xx or newer](https://dotnet.microsoft.com/download/dotnet/6.0)
@@ -214,17 +507,10 @@ Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates
 - [Xamarin](https://dotnet.microsoft.com/apps/xamarin)
 - [.NET Multi-platform App UI (MAUI)](https://docs.microsoft.com/en-us/dotnet/maui/)
 
+
 ## Benchmarks
 
-<pre><code>
-BenchmarkDotNet=v0.13.5, OS=Windows 10 (10.0.19045.2728/22H2/2022Update)
-Intel Core i7-10850H CPU 2.70GHz, 1 CPU, 12 logical and 6 physical cores
-.NET SDK=7.0.100
-  [Host]     : .NET 7.0.0 (7.0.22.51805), X64 RyuJIT AVX2
-  DefaultJob : .NET 7.0.0 (7.0.22.51805), X64 RyuJIT AVX2
-</code></pre>
-
-<details open>
+<details>
 <summary>Transient</summary>
 
 <table>
@@ -333,212 +619,15 @@ Intel Core i7-10850H CPU 2.70GHz, 1 CPU, 12 logical and 6 physical cores
 
 </details>
 
-
-## Examples
-
-### Basics
-- [Composition root](readme/Examples.md#composition-root)
-- [Resolve methods](readme/Examples.md#resolve-methods)
-- [Factory](readme/Examples.md#factory)
-- [Injection](readme/Examples.md#injection)
-- [Generics](readme/Examples.md#generics)
-- [Arguments](readme/Examples.md#arguments)
-- [Tags](readme/Examples.md#tags)
-- [Auto-bindings](readme/Examples.md#auto-bindings)
-- [Child composition](readme/Examples.md#child-composition)
-- [Multi-contract bindings](readme/Examples.md#multi-contract-bindings)
-- [Field Injection](readme/Examples.md#field-injection)
-- [Property Injection](readme/Examples.md#property-injection)
-- [Complex Generics](readme/Examples.md#complex-generics)
-### Lifetimes
-- [Singleton](readme/Examples.md#singleton)
-- [PerResolve](readme/Examples.md#perresolve)
-- [Transient](readme/Examples.md#transient)
-- [Disposable Singleton](readme/Examples.md#disposable-singleton)
-- [Default lifetime](readme/Examples.md#default-lifetime)
-### Base Class Library
-- [Func](readme/Examples.md#func)
-- [IEnumerable](readme/Examples.md#ienumerable)
-- [Array](readme/Examples.md#array)
-- [Lazy](readme/Examples.md#lazy)
-- [Span and ReadOnlySpan](readme/Examples.md#span-and-readonlyspan)
-- [Tuple](readme/Examples.md#tuple)
-### Interception
-- [Decorator](readme/Examples.md#decorator)
-- [Interception](readme/Examples.md#interception)
-- [Advanced interception](readme/Examples.md#advanced-interception)
-## Composition class
-
-For each generated class, hereinafter referred to as _composition_, the setup must be done:
-
-```c#
-DI.Setup("Composition")
-    .Bind<IService>().To<Service>();
-```
-
-The first parameter is used to specify the name of the composition class. All setups with the same name will be combined to create one composition class. In addition, this name may contain a namespace, for example for `Sample.Composition` the composition class is generated:
-
-```c#
-namespace Sample
-{
-    partial class Composition
-    {
-        ...
-    }
-}
-```
-
 <details>
-<summary>The second optional parameter</summary>
+<summary>Benchmarks environment</summary>
 
-The second optional parameter can have several values to determine the kind of composition:
-
-| Options                  |                                                                                                                                              |
-|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| CompositionKind.Public   | Default value. This option will create a composition class.                                                                                  |
-| CompositionKind.Internal | If this value is specified, the class will not be generated, but this setup can be used for others as a base.                                |
-| CompositionKind.Global   | If this value is specified, the composition class will not be generated, but this setup is a default base for all setups in current project. |
-
-</details>
-
-The composition may contain the following parts:
-
-### Resolve Methods
-
-By default a set of four _Resolve_ methods are generated within generated composition class.
-
-```c#
-public T Resolve<T>() { ... }
-
-public T Resolve<T>(object? tag) { ... }
-
-public object Resolve(Type type) { ... }
-
-public object Resolve(Type type, object? tag) { ... }
-```
-
-These methods are useful when using the Service Locator approach when the code resolves composition roots in place:
-
-```c#
-var composition = new Composition();
-
-composition.Resolve<IService>();
-```
-
-To control the generation of these methods, see [Resolve Hint](#Resolve-Hint).
-
-A set of private properties are generated.
-
-### Private Roots
-
-The composition has properties for each potential root that are used in those _Resolve_ methods. For example:
-
-```c#
-private IService Root2PropABB3D0
-{
-    get { ... }
-}
-```
-
-This properties have a random name and a private accessor and cannot be used directly from code.
-
-### Public Roots
-
-To be able to use a specific composition root, that root must be explicitly defined by the _Root_ method:
-
-```c#
-DI.Setup("Composition")
-    .Bind<IService>().To<Service>()
-    .Root<IService>("MyService");
-```
-
-In this case, the property for type _IService_ will have a specific name and will be available for direct use. The result of its use will be the creation of a composition of objects with a root of type _IService_:
-
-```c#
-public IService MyService
-{
-    get
-    { 
-        ...
-        retunr new Service(...);
-    }
-}
-```
-
-## Setup hints
-
-Setup hints are comments before method _Setup_ in the form ```hint = value``` that are used to fine-tune code generation. For example:
-
-```c#
-// Resolve = Off
-// ThreadSafe = Off
-// ToString = On
-DI.Setup("Composition")
-    ...
-```
-
-<details>
-<summary>Available hints</summary>
-
-| Hint                                                                                                                               | Default Value |
-|------------------------------------------------------------------------------------------------------------------------------------|---------------|
-| [Resolve](#Resolve-Hint)                                                                                                           | On            |
-| [OnInstanceCreation](#OnInstanceCreation-Hint)                                                                                     | On            |
-| [OnDependencyInjection](#OnDependencyInjection-Hint)                                                                               | Off           |
-| [OnDependencyInjectionImplementationTypeNameRegularExpression](#OnDependencyInjectionImplementationTypeNameRegularExpression-Hint) | .+            |
-| [OnDependencyInjectionContractTypeNameRegularExpression](#OnDependencyInjectionContractTypeNameRegularExpression-Hint)             | .+            |
-| [OnDependencyInjectionTagRegularExpression](#OnDependencyInjectionTagRegularExpression-Hint)                                       | .+            |
-| [ToString](#ToString-Hint)                                                                                                         | Off           |
-| [ThreadSafe](#ThreadSafe-Hint)                                                                                                     | On            |
-
-### Resolve Hint
-
-Determine whether to generate [_Resolve_ methods](#resolve-methods). By default a set of four _Resolve_ methods are generated. Set this hint to _Off_ to disable the generation of resolve methods. This will reduce class composition generation time and no [private composition roots](#Private-Roots) will be generated in this case. The composition will be tiny and will only have [public roots](#Public-Roots).
-
-### OnInstanceCreation Hint
-
-Determine whether to generate partial _OnInstanceCreation_ method. This partial method is generated by default, has no body, and can be overridden as needed. If the body is not defined, then the compiler will cut out its calls. This can be useful, for example, for logging:
-
-```c#
-internal partial class Composition
-{
-    partial void OnInstanceCreation<T>(ref T value, object? tag, object? lifetime)            
-    {
-        Console.WriteLine($"'{typeof(T)}'('{tag}') created.");            
-    }
-}
-```
-
-You can also replace the created instance of type `T`, where `T` is actually type of created instance.
-
-### OnDependencyInjection Hint
-
-Determine whether to generate partial _OnDependencyInjection_ method to control of dependency injection. This partial method is not generated by default. It cannot have an empty body due to the return value. It must be overridden when generated. This can be useful, for example, for [interception](#Interception).
-
-```c#
-// OnDependencyInjection = On
-// OnDependencyInjectionContractTypeNameRegularExpression = ICalculator[\d]{1}
-// OnDependencyInjectionTagRegularExpression = Abc
-DI.Setup("Composition")
-    ...
-```
-
-To minimize the performance penalty when calling _OnDependencyInjection_, use the other hints below.
-
-### OnDependencyInjectionImplementationTypeNameRegularExpression Hint
-
-It is a regular expression to filter by the instance type name. This hint is useful when _OnDependencyInjection_ is in the _On_ state and you want to limit the set of types for which the method _OnDependencyInjection_ will be called.
-
-### OnDependencyInjectionContractTypeNameRegularExpression Hint
-
-It is a regular expression to filter by the resolving type name. This hint is useful also when _OnDependencyInjection_ is in the _On_ state and you want to limit the set of resolving types for which the method _OnDependencyInjection_ will be called.
-
-### OnDependencyInjectionTagRegularExpression Hint
-
-It is a regular expression to filter by the _tag_. This hint is useful also when _OnDependencyInjection_ is in the _On_ state and you want to limit the set of _tag_ for which the method _OnDependencyInjection_ will be called.
-
-### ToString Hint
-
-### ThreadSafe Hint
+<pre><code>
+BenchmarkDotNet=v0.13.5, OS=Windows 10 (10.0.19045.2728/22H2/2022Update)
+Intel Core i7-10850H CPU 2.70GHz, 1 CPU, 12 logical and 6 physical cores
+.NET SDK=7.0.100
+  [Host]     : .NET 7.0.0 (7.0.22.51805), X64 RyuJIT AVX2
+  DefaultJob : .NET 7.0.0 (7.0.22.51805), X64 RyuJIT AVX2
+</code></pre>
 
 </details>

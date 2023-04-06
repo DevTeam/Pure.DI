@@ -7,6 +7,9 @@ DI.Setup("Composition")
     .Bind<IService>().To<Service>();
 ```
 
+<details>
+<summary>Setup arguments</summary>
+
 The first parameter is used to specify the name of the composition class. All setups with the same name will be combined to create one composition class. In addition, this name may contain a namespace, for example for `Sample.Composition` the composition class is generated:
 
 ```c#
@@ -18,9 +21,6 @@ namespace Sample
     }
 }
 ```
-
-<details>
-<summary>The second optional parameter</summary>
 
 The second optional parameter can have several values to determine the kind of composition:
 
@@ -34,7 +34,45 @@ The second optional parameter can have several values to determine the kind of c
 
 The composition may contain the following parts:
 
-### Resolve Methods
+<details>
+<summary>Constructors</summary>
+
+### Constructors
+
+1. Default constructor
+
+   Just initializes the internal state.
+
+2. Argument constructor
+
+   It replaces the default constructor and is only created if at least one argument is provided. For example:
+   ```c#
+   DI.Setup("Composition")
+       .Arg<string>("name")
+       .Arg<int>("id")
+       ...
+   ```
+   In this case, the argument constructor looks like this:
+   ```c#
+   public Composition(string name, int id) { ... }
+   ```
+   and default constructor is missing.
+
+3. Child constructor
+
+   This constructor is always available and is used to create a child composition based on the parent composition:
+   ```c#
+   var parentComposition = new Composition();
+   var childComposition = new Composition(parentComposition); 
+   ```
+   The child composition inherits the state of the parent composition in the form of arguments and singleton objects. States are copied, and compositions are completely independent, except when calling the _Dispose()_ method on the parent container before disposing of the child container, because the child container can use singleton objects created before it was created.
+
+</details>
+
+<details>
+<summary>Methods to resolve instances</summary>
+
+### _Resolve_
 
 By default a set of four _Resolve_ methods are generated within generated composition class.
 
@@ -58,7 +96,12 @@ composition.Resolve<IService>();
 
 To control the generation of these methods, see [Resolve Hint](#Resolve-Hint).
 
-A set of private properties are generated.
+</details>
+
+<details>
+<summary>Roots</summary>
+
+To be able to quickly and conveniently create an object graph, a set of properties is generated. The type of the property is the type of the root object created by the composition. Accordingly, each access to the property leads to the creation of a composition with the root element of this type.
 
 ### Private Roots
 
@@ -71,11 +114,11 @@ private IService Root2PropABB3D0
 }
 ```
 
-This properties have a random name and a private accessor and cannot be used directly from code.
+These properties have a random name and a private accessor and cannot be used directly from code. Don't try to use them.
 
 ### Public Roots
 
-To be able to use a specific composition root, that root must be explicitly defined by the _Root_ method:
+To be able to use a specific composition root, that root must be explicitly defined by the _Root_ method with a specific name and type:
 
 ```c#
 DI.Setup("Composition")
@@ -83,7 +126,7 @@ DI.Setup("Composition")
     .Root<IService>("MyService");
 ```
 
-In this case, the property for type _IService_ will have a specific name and will be available for direct use. The result of its use will be the creation of a composition of objects with a root of type _IService_:
+In this case, the property for type _IService_ will be named _MyService_ and will be available for direct use. The result of its use will be the creation of a composition of objects with a root of type _IService_:
 
 ```c#
 public IService MyService
@@ -96,6 +139,29 @@ public IService MyService
 }
 ```
 
+The composition can contain any number of roots.
+
+</details>
+
+<details>
+<summary>Dispose</summary>
+
+### Dispose method
+
+This method is only generated if the composition contains at least one singleton object that implements the [IDisposable](https://learn.microsoft.com/en-us/dotnet/api/system.idisposable) interface. To dispose of all created singleton objects, call the composition `Dispose()` method:
+
+```c#
+using(var composition = new Composition())
+{
+    ...
+}
+```
+
+</details>
+
+<details>
+<summary>Setup hints</summary>
+
 ## Setup hints
 
 Setup hints are comments before method _Setup_ in the form ```hint = value``` that are used to fine-tune code generation. For example:
@@ -107,9 +173,6 @@ Setup hints are comments before method _Setup_ in the form ```hint = value``` th
 DI.Setup("Composition")
     ...
 ```
-
-<details>
-<summary>Available hints</summary>
 
 | Hint                                                                                                                               | Default Value |
 |------------------------------------------------------------------------------------------------------------------------------------|---------------|
@@ -170,6 +233,43 @@ It is a regular expression to filter by the _tag_. This hint is useful also when
 
 ### ToString Hint
 
+Determine if the _ToString()_ method should be generated. This method provides a text-based class diagram in the format [mermaid](https://mermaid.js.org/). To see this diagram, just call the ToString method and copy the text to [this site](https://mermaid.live/).
+
+```c#
+// ToString = On
+DI.Setup("Composition")
+    .Bind<IService>().To<Service>()
+    .Root<IService>("MyService");
+    
+var composition = new Composition();
+string classDiagram = composition.ToString(); 
+```
+
 ### ThreadSafe Hint
 
+This hint determines whether object composition will be created in a thread-safe manner. This hint is _On_ by default. It is good practice not to use threads when creating an object graph, in which case this hint can be turned off, which will lead to a slight increase in performance.
+
+```c#
+// ThreadSafe = Off
+DI.Setup("Composition")
+    .Bind<IService>().To<Service>()
+    .Root<IService>("MyService");
+```
+
 </details>
+
+## Development environment requirements
+
+- [.NET SDK 6.0.4xx or newer](https://dotnet.microsoft.com/download/dotnet/6.0)
+- [C# 8 or newer](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-version-history#c-version-80)
+
+## Supported frameworks
+
+- [.NET and .NET Core](https://docs.microsoft.com/en-us/dotnet/core/) 1.0+
+- [.NET Standard](https://docs.microsoft.com/en-us/dotnet/standard/net-standard) 1.0+
+- [Native AOT](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/)
+- [.NET Framework](https://docs.microsoft.com/en-us/dotnet/framework/) 2.0+
+- [UWP/XBOX](https://docs.microsoft.com/en-us/windows/uwp/index)
+- [.NET IoT](https://dotnet.microsoft.com/apps/iot)
+- [Xamarin](https://dotnet.microsoft.com/apps/xamarin)
+- [.NET Multi-platform App UI (MAUI)](https://docs.microsoft.com/en-us/dotnet/maui/)

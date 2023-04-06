@@ -197,19 +197,3 @@ dotnet run --project Sample
 Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates) for more details about the template.
 
 </details>
-
-## Development environment requirements
-
-- [.NET SDK 6.0.4xx or newer](https://dotnet.microsoft.com/download/dotnet/6.0)
-- [C# 8 or newer](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-version-history#c-version-80)
-
-## Supported frameworks
-
-- [.NET and .NET Core](https://docs.microsoft.com/en-us/dotnet/core/) 1.0+
-- [.NET Standard](https://docs.microsoft.com/en-us/dotnet/standard/net-standard) 1.0+
-- [Native AOT](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/)
-- [.NET Framework](https://docs.microsoft.com/en-us/dotnet/framework/) 2.0+
-- [UWP/XBOX](https://docs.microsoft.com/en-us/windows/uwp/index)
-- [.NET IoT](https://dotnet.microsoft.com/apps/iot)
-- [Xamarin](https://dotnet.microsoft.com/apps/xamarin)
-- [.NET Multi-platform App UI (MAUI)](https://docs.microsoft.com/en-us/dotnet/maui/)
