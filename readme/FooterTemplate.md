@@ -37,84 +37,46 @@ The composition may contain the following parts:
 <details>
 <summary>Constructors</summary>
 
-### Constructors
+### Default constructor
 
-1. Default constructor
+Just initializes the internal state.
 
-   Just initializes the internal state.
+### Argument constructor
 
-2. Argument constructor
+It replaces the default constructor and is only created if at least one argument is provided. For example:
 
-   It replaces the default constructor and is only created if at least one argument is provided. For example:
-   ```c#
-   DI.Setup("Composition")
-       .Arg<string>("name")
-       .Arg<int>("id")
-       ...
-   ```
-   In this case, the argument constructor looks like this:
-   ```c#
-   public Composition(string name, int id) { ... }
-   ```
-   and default constructor is missing.
+```c#
+DI.Setup("Composition")
+    .Arg<string>("name")
+    .Arg<int>("id")
+    ...
+```
 
-3. Child constructor
+In this case, the argument constructor looks like this:
 
-   This constructor is always available and is used to create a child composition based on the parent composition:
-   ```c#
-   var parentComposition = new Composition();
-   var childComposition = new Composition(parentComposition); 
-   ```
-   The child composition inherits the state of the parent composition in the form of arguments and singleton objects. States are copied, and compositions are completely independent, except when calling the _Dispose()_ method on the parent container before disposing of the child container, because the child container can use singleton objects created before it was created.
+```c#
+public Composition(string name, int id) { ... }
+```
+
+and default constructor is missing.
+
+### Child constructor
+
+This constructor is always available and is used to create a child composition based on the parent composition:
+
+```c#
+var parentComposition = new Composition();
+var childComposition = new Composition(parentComposition); 
+```
+
+The child composition inherits the state of the parent composition in the form of arguments and singleton objects. States are copied, and compositions are completely independent, except when calling the _Dispose()_ method on the parent container before disposing of the child container, because the child container can use singleton objects created before it was created.
 
 </details>
 
 <details>
-<summary>Methods to resolve instances</summary>
-
-### _Resolve_
-
-By default a set of four _Resolve_ methods are generated within generated composition class.
-
-```c#
-public T Resolve<T>() { ... }
-
-public T Resolve<T>(object? tag) { ... }
-
-public object Resolve(Type type) { ... }
-
-public object Resolve(Type type, object? tag) { ... }
-```
-
-These methods are useful when using the Service Locator approach when the code resolves composition roots in place:
-
-```c#
-var composition = new Composition();
-
-composition.Resolve<IService>();
-```
-
-To control the generation of these methods, see [Resolve Hint](#Resolve-Hint).
-
-</details>
-
-<details>
-<summary>Roots</summary>
+<summary>Properties</summary>
 
 To be able to quickly and conveniently create an object graph, a set of properties is generated. The type of the property is the type of the root object created by the composition. Accordingly, each access to the property leads to the creation of a composition with the root element of this type.
-
-### Private Roots
-
-The composition has properties for each potential root that are used in those _Resolve_ methods. For example:
-
-```c#
-private IService Root2PropABB3D0
-{
-    get { ... }
-}
-```
-
-These properties have a random name and a private accessor and cannot be used directly from code. Don't try to use them.
 
 ### Public Roots
 
@@ -139,16 +101,53 @@ public IService MyService
 }
 ```
 
-The composition can contain any number of roots.
+This is recommended way to create composition roots. The composition can contain any number of roots.
+
+### Private Roots
+
+The composition has properties for each potential root that are used in those _Resolve_ methods. For example:
+
+```c#
+private IService Root2PropABB3D0
+{
+    get { ... }
+}
+```
+
+These properties have a random name and a private accessor and cannot be used directly from code. Don't try to use them.
 
 </details>
 
 <details>
-<summary>Dispose</summary>
+<summary>Methods</summary>
 
-### Dispose method
+### Resolve
 
-This method is only generated if the composition contains at least one singleton object that implements the [IDisposable](https://learn.microsoft.com/en-us/dotnet/api/system.idisposable) interface. To dispose of all created singleton objects, call the composition `Dispose()` method:
+By default a set of four _Resolve_ methods are generated within generated composition class.
+
+```c#
+public T Resolve<T>() { ... }
+
+public T Resolve<T>(object? tag) { ... }
+
+public object Resolve(Type type) { ... }
+
+public object Resolve(Type type, object? tag) { ... }
+```
+
+These methods are useful when using the Service Locator approach when the code resolves composition roots in place:
+
+```c#
+var composition = new Composition();
+
+composition.Resolve<IService>();
+```
+
+This is not recommended way to create composition roots. To control the generation of these methods, see the _Resolve_ hint.
+
+### Dispose
+
+Provides a mechanism for releasing unmanaged resources. This method is only generated if the composition contains at least one singleton object that implements the [IDisposable](https://learn.microsoft.com/en-us/dotnet/api/system.idisposable) interface. To dispose of all created singleton objects, call the composition `Dispose()` method:
 
 ```c#
 using(var composition = new Composition())
