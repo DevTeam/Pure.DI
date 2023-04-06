@@ -1,10 +1,10 @@
 ## Composition class
 
-For each generated class, hereinafter referred to as _composition_, the setup must be done:
+For each generated class, hereinafter referred to as _composition_, the setup must be done. It starts with the `Setup(...)` method, for example:
 
 ```c#
 DI.Setup("Composition")
-    .Bind<IService>().To<Service>();
+    ...;
 ```
 
 <details>
@@ -32,14 +32,12 @@ The second optional parameter can have several values to determine the kind of c
 
 </details>
 
-The composition may contain the following parts:
-
 <details>
 <summary>Constructors</summary>
 
 ### Default constructor
 
-Just initializes the internal state.
+Everything is quite banal, this constructor simply initializes the internal state.
 
 ### Argument constructor
 
@@ -101,7 +99,7 @@ public IService MyService
 }
 ```
 
-This is recommended way to create composition roots. The composition can contain any number of roots.
+This is [recommended way](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) to create a composition root. A composition class can contain any number of roots.
 
 ### Private Roots
 
@@ -123,7 +121,7 @@ These properties have a random name and a private accessor and cannot be used di
 
 ### Resolve
 
-By default a set of four _Resolve_ methods are generated within generated composition class.
+By default a set of four _Resolve_ methods are generated:
 
 ```c#
 public T Resolve<T>() { ... }
@@ -135,7 +133,7 @@ public object Resolve(Type type) { ... }
 public object Resolve(Type type, object? tag) { ... }
 ```
 
-These methods are useful when using the Service Locator approach when the code resolves composition roots in place:
+These methods are useful when using the [Service Locator](https://martinfowler.com/articles/injection.html) approach when the code resolves composition roots in place:
 
 ```c#
 var composition = new Composition();
@@ -143,7 +141,7 @@ var composition = new Composition();
 composition.Resolve<IService>();
 ```
 
-This is not recommended way to create composition roots. To control the generation of these methods, see the _Resolve_ hint.
+This is [not recommended](https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/) way to create a composition root. To control the generation of these methods, see the _Resolve_ hint.
 
 ### Dispose
 

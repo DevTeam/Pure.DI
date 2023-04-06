@@ -233,11 +233,11 @@ Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates
 - [Advanced interception](readme/Examples.md#advanced-interception)
 ## Composition class
 
-For each generated class, hereinafter referred to as _composition_, the setup must be done:
+For each generated class, hereinafter referred to as _composition_, the setup must be done. It starts with the `Setup(...)` method, for example:
 
 ```c#
 DI.Setup("Composition")
-    .Bind<IService>().To<Service>();
+    ...;
 ```
 
 <details>
@@ -265,89 +265,49 @@ The second optional parameter can have several values to determine the kind of c
 
 </details>
 
-The composition may contain the following parts:
-
 <details>
 <summary>Constructors</summary>
 
-### Constructors
+### Default constructor
 
-1. Default constructor
+Just initializes the internal state.
 
-   Just initializes the internal state.
+### Argument constructor
 
-2. Argument constructor
+It replaces the default constructor and is only created if at least one argument is provided. For example:
 
-   It replaces the default constructor and is only created if at least one argument is provided. For example:
-   ```c#
-   DI.Setup("Composition")
-       .Arg<string>("name")
-       .Arg<int>("id")
-       ...
-   ```
-   In this case, the argument constructor looks like this:
-   ```c#
-   public Composition(string name, int id) { ... }
-   ```
-   and default constructor is missing.
+```c#
+DI.Setup("Composition")
+    .Arg<string>("name")
+    .Arg<int>("id")
+    ...
+```
 
-3. Child constructor
+In this case, the argument constructor looks like this:
 
-   This constructor is always available and is used to create a child composition based on the parent composition:
-   ```c#
-   var parentComposition = new Composition();
-   var childComposition = new Composition(parentComposition); 
-   ```
-   The child composition inherits the state of the parent composition in the form of arguments and singleton objects. States are copied, and compositions are completely independent, except when calling the _Dispose()_ method on the parent container before disposing of the child container, because the child container can use singleton objects created before it was created.
+```c#
+public Composition(string name, int id) { ... }
+```
+
+and default constructor is missing.
+
+### Child constructor
+
+This constructor is always available and is used to create a child composition based on the parent composition:
+
+```c#
+var parentComposition = new Composition();
+var childComposition = new Composition(parentComposition); 
+```
+
+The child composition inherits the state of the parent composition in the form of arguments and singleton objects. States are copied, and compositions are completely independent, except when calling the _Dispose()_ method on the parent container before disposing of the child container, because the child container can use singleton objects created before it was created.
 
 </details>
 
 <details>
-<summary>Methods to resolve instances</summary>
-
-### _Resolve_
-
-By default a set of four _Resolve_ methods are generated within generated composition class.
-
-```c#
-public T Resolve<T>() { ... }
-
-public T Resolve<T>(object? tag) { ... }
-
-public object Resolve(Type type) { ... }
-
-public object Resolve(Type type, object? tag) { ... }
-```
-
-These methods are useful when using the Service Locator approach when the code resolves composition roots in place:
-
-```c#
-var composition = new Composition();
-
-composition.Resolve<IService>();
-```
-
-To control the generation of these methods, see [Resolve Hint](#Resolve-Hint).
-
-</details>
-
-<details>
-<summary>Roots</summary>
+<summary>Properties</summary>
 
 To be able to quickly and conveniently create an object graph, a set of properties is generated. The type of the property is the type of the root object created by the composition. Accordingly, each access to the property leads to the creation of a composition with the root element of this type.
-
-### Private Roots
-
-The composition has properties for each potential root that are used in those _Resolve_ methods. For example:
-
-```c#
-private IService Root2PropABB3D0
-{
-    get { ... }
-}
-```
-
-These properties have a random name and a private accessor and cannot be used directly from code. Don't try to use them.
 
 ### Public Roots
 
@@ -372,16 +332,53 @@ public IService MyService
 }
 ```
 
-The composition can contain any number of roots.
+This is [recommended way](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) to create a composition root. A composition class can contain any number of roots.
+
+### Private Roots
+
+The composition has properties for each potential root that are used in those _Resolve_ methods. For example:
+
+```c#
+private IService Root2PropABB3D0
+{
+    get { ... }
+}
+```
+
+These properties have a random name and a private accessor and cannot be used directly from code. Don't try to use them.
 
 </details>
 
 <details>
-<summary>Dispose</summary>
+<summary>Methods</summary>
 
-### Dispose method
+### Resolve
 
-This method is only generated if the composition contains at least one singleton object that implements the [IDisposable](https://learn.microsoft.com/en-us/dotnet/api/system.idisposable) interface. To dispose of all created singleton objects, call the composition `Dispose()` method:
+By default a set of four _Resolve_ methods are generated:
+
+```c#
+public T Resolve<T>() { ... }
+
+public T Resolve<T>(object? tag) { ... }
+
+public object Resolve(Type type) { ... }
+
+public object Resolve(Type type, object? tag) { ... }
+```
+
+These methods are useful when using the [Service Locator](https://martinfowler.com/articles/injection.html) approach when the code resolves composition roots in place:
+
+```c#
+var composition = new Composition();
+
+composition.Resolve<IService>();
+```
+
+This is [not recommended](https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/) way to create a composition root. To control the generation of these methods, see the _Resolve_ hint.
+
+### Dispose
+
+Provides a mechanism for releasing unmanaged resources. This method is only generated if the composition contains at least one singleton object that implements the [IDisposable](https://learn.microsoft.com/en-us/dotnet/api/system.idisposable) interface. To dispose of all created singleton objects, call the composition `Dispose()` method:
 
 ```c#
 using(var composition = new Composition())
@@ -516,20 +513,20 @@ DI.Setup("Composition")
 <table>
 <thead><tr><th>                    Method</th><th>    Mean</th><th>  Error</th><th> StdDev</th><th>  Median</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>0.1529 ns</td><td>0.0498 ns</td><td>0.1468 ns</td><td>0.0993 ns</td><td> </td><td> </td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>0.4598 ns</td><td>0.0255 ns</td><td>0.0752 ns</td><td>0.4521 ns</td><td> </td><td> </td>
-</tr><tr><td>Pure.DI</td><td>6.2269 ns</td><td>0.2886 ns</td><td>0.8371 ns</td><td>6.0107 ns</td><td> </td><td> </td>
-</tr><tr><td>&#39;IoC.Container composition root&#39;</td><td>6.3210 ns</td><td>0.2087 ns</td><td>0.5988 ns</td><td>6.1957 ns</td><td> </td><td> </td>
-</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>9.8488 ns</td><td>0.3375 ns</td><td>0.9791 ns</td><td>9.6665 ns</td><td> </td><td> </td>
-</tr><tr><td>LightInject</td><td>12.1087 ns</td><td>0.2613 ns</td><td>0.6930 ns</td><td>12.0452 ns</td><td> </td><td> </td>
-</tr><tr><td>IoC.Container</td><td>14.5004 ns</td><td>0.3218 ns</td><td>0.9182 ns</td><td>14.4337 ns</td><td> </td><td> </td>
-</tr><tr><td>DryIoc</td><td>21.3930 ns</td><td>0.4570 ns</td><td>0.9439 ns</td><td>21.2226 ns</td><td> </td><td> </td>
-</tr><tr><td>SimpleInjector</td><td>24.6414 ns</td><td>0.5810 ns</td><td>1.6575 ns</td><td>24.2427 ns</td><td> </td><td> </td>
-</tr><tr><td>MicrosoftDependencyInjection</td><td>24.6491 ns</td><td>0.4937 ns</td><td>0.9972 ns</td><td>24.4348 ns</td><td> </td><td> </td>
-</tr><tr><td>Unity</td><td>3,478.0617 ns</td><td>65.6788 ns</td><td>149.5838 ns</td><td>3,450.3662 ns</td><td> </td><td> </td>
-</tr><tr><td>Autofac</td><td>9,458.4904 ns</td><td>208.3826 ns</td><td>597.8889 ns</td><td>9,307.9445 ns</td><td> </td><td> </td>
-</tr><tr><td>CastleWindsor</td><td>27,806.5832 ns</td><td>704.6249 ns</td><td>2,077.6025 ns</td><td>27,493.1534 ns</td><td> </td><td> </td>
-</tr><tr><td>Ninject</td><td>90,384.5923 ns</td><td>3,463.6120 ns</td><td>9,993.3126 ns</td><td>88,617.4011 ns</td><td> </td><td> </td>
+</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>0.0000 ns</td><td>0.0000 ns</td><td>0.0000 ns</td><td>0.0000 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>0.4303 ns</td><td>0.0142 ns</td><td>0.0330 ns</td><td>0.4152 ns</td><td> </td><td> </td>
+</tr><tr><td>Pure.DI</td><td>4.5776 ns</td><td>0.1244 ns</td><td>0.1900 ns</td><td>4.5021 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;IoC.Container composition root&#39;</td><td>6.7533 ns</td><td>0.1651 ns</td><td>0.3259 ns</td><td>6.6503 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>7.7167 ns</td><td>0.1204 ns</td><td>0.1067 ns</td><td>7.6917 ns</td><td> </td><td> </td>
+</tr><tr><td>LightInject</td><td>10.9557 ns</td><td>0.3219 ns</td><td>0.9289 ns</td><td>10.6802 ns</td><td> </td><td> </td>
+</tr><tr><td>IoC.Container</td><td>12.6151 ns</td><td>0.2089 ns</td><td>0.2145 ns</td><td>12.6279 ns</td><td> </td><td> </td>
+</tr><tr><td>DryIoc</td><td>18.7482 ns</td><td>0.1502 ns</td><td>0.1332 ns</td><td>18.7593 ns</td><td> </td><td> </td>
+</tr><tr><td>SimpleInjector</td><td>21.6415 ns</td><td>0.4536 ns</td><td>0.7579 ns</td><td>21.3362 ns</td><td> </td><td> </td>
+</tr><tr><td>MicrosoftDependencyInjection</td><td>22.1023 ns</td><td>0.2293 ns</td><td>0.1915 ns</td><td>22.0782 ns</td><td> </td><td> </td>
+</tr><tr><td>Unity</td><td>3,183.1330 ns</td><td>63.1780 ns</td><td>108.9789 ns</td><td>3,163.4781 ns</td><td> </td><td> </td>
+</tr><tr><td>Autofac</td><td>8,200.5722 ns</td><td>124.5648 ns</td><td>97.2520 ns</td><td>8,233.8547 ns</td><td> </td><td> </td>
+</tr><tr><td>CastleWindsor</td><td>22,880.6503 ns</td><td>457.2682 ns</td><td>812.7938 ns</td><td>22,535.7346 ns</td><td> </td><td> </td>
+</tr><tr><td>Ninject</td><td>77,290.9201 ns</td><td>2,216.3830 ns</td><td>6,287.5097 ns</td><td>76,955.4077 ns</td><td> </td><td> </td>
 </tr></tbody></table>
 
 </details>
@@ -540,20 +537,20 @@ DI.Setup("Composition")
 <table>
 <thead><tr><th>                    Method</th><th>    Mean</th><th>  Error</th><th> StdDev</th><th>  Median</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>0.0000 ns</td><td>0.0000 ns</td><td>0.0000 ns</td><td>0.0000 ns</td><td> </td><td> </td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>5.0321 ns</td><td>0.2259 ns</td><td>0.6626 ns</td><td>4.8740 ns</td><td> </td><td> </td>
-</tr><tr><td>Pure.DI</td><td>5.5561 ns</td><td>0.2084 ns</td><td>0.6113 ns</td><td>5.4859 ns</td><td> </td><td> </td>
-</tr><tr><td>&#39;IoC.Container composition root&#39;</td><td>6.3188 ns</td><td>0.1683 ns</td><td>0.4963 ns</td><td>6.2785 ns</td><td> </td><td> </td>
-</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>8.9291 ns</td><td>0.2493 ns</td><td>0.7350 ns</td><td>8.8480 ns</td><td> </td><td> </td>
-</tr><tr><td>IoC.Container</td><td>15.2365 ns</td><td>0.3505 ns</td><td>1.0279 ns</td><td>15.0078 ns</td><td> </td><td> </td>
-</tr><tr><td>DryIoc</td><td>24.3105 ns</td><td>0.3886 ns</td><td>0.3635 ns</td><td>24.3210 ns</td><td> </td><td> </td>
-</tr><tr><td>SimpleInjector</td><td>25.3659 ns</td><td>0.8997 ns</td><td>2.5523 ns</td><td>24.8437 ns</td><td> </td><td> </td>
-</tr><tr><td>MicrosoftDependencyInjection</td><td>26.3175 ns</td><td>0.5359 ns</td><td>1.1420 ns</td><td>26.2766 ns</td><td> </td><td> </td>
-</tr><tr><td>LightInject</td><td>38.3048 ns</td><td>0.7978 ns</td><td>2.3271 ns</td><td>37.7940 ns</td><td> </td><td> </td>
-</tr><tr><td>Unity</td><td>2,641.2160 ns</td><td>52.7157 ns</td><td>129.3124 ns</td><td>2,620.4657 ns</td><td> </td><td> </td>
-</tr><tr><td>Autofac</td><td>6,717.1834 ns</td><td>129.3396 ns</td><td>181.3161 ns</td><td>6,738.5216 ns</td><td> </td><td> </td>
-</tr><tr><td>CastleWindsor</td><td>17,344.0375 ns</td><td>343.9448 ns</td><td>769.2818 ns</td><td>17,068.9468 ns</td><td> </td><td> </td>
-</tr><tr><td>Ninject</td><td>72,232.5207 ns</td><td>1,912.8200 ns</td><td>5,363.7525 ns</td><td>71,045.8191 ns</td><td> </td><td> </td>
+</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>0.0195 ns</td><td>0.0229 ns</td><td>0.0235 ns</td><td>0.0063 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>3.8203 ns</td><td>0.0354 ns</td><td>0.0296 ns</td><td>3.8193 ns</td><td> </td><td> </td>
+</tr><tr><td>Pure.DI</td><td>4.9871 ns</td><td>0.1351 ns</td><td>0.2022 ns</td><td>4.9011 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;IoC.Container composition root&#39;</td><td>6.0158 ns</td><td>0.1227 ns</td><td>0.1148 ns</td><td>6.0008 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>9.0370 ns</td><td>0.2364 ns</td><td>0.4935 ns</td><td>8.9314 ns</td><td> </td><td> </td>
+</tr><tr><td>IoC.Container</td><td>14.5328 ns</td><td>0.3201 ns</td><td>0.6319 ns</td><td>14.3176 ns</td><td> </td><td> </td>
+</tr><tr><td>DryIoc</td><td>19.6103 ns</td><td>0.3828 ns</td><td>0.3393 ns</td><td>19.5617 ns</td><td> </td><td> </td>
+</tr><tr><td>SimpleInjector</td><td>21.8840 ns</td><td>0.4605 ns</td><td>0.4729 ns</td><td>21.8218 ns</td><td> </td><td> </td>
+</tr><tr><td>MicrosoftDependencyInjection</td><td>23.3222 ns</td><td>0.4075 ns</td><td>0.4529 ns</td><td>23.2933 ns</td><td> </td><td> </td>
+</tr><tr><td>LightInject</td><td>32.3530 ns</td><td>0.6412 ns</td><td>1.2506 ns</td><td>31.8038 ns</td><td> </td><td> </td>
+</tr><tr><td>Unity</td><td>2,508.6886 ns</td><td>49.2618 ns</td><td>82.3053 ns</td><td>2,489.2700 ns</td><td> </td><td> </td>
+</tr><tr><td>Autofac</td><td>6,745.9371 ns</td><td>134.0016 ns</td><td>267.6157 ns</td><td>6,637.3131 ns</td><td> </td><td> </td>
+</tr><tr><td>CastleWindsor</td><td>17,408.9145 ns</td><td>262.2540 ns</td><td>218.9940 ns</td><td>17,312.9379 ns</td><td> </td><td> </td>
+</tr><tr><td>Ninject</td><td>60,594.4595 ns</td><td>1,249.6474 ns</td><td>3,585.4726 ns</td><td>59,927.0508 ns</td><td> </td><td> </td>
 </tr></tbody></table>
 
 </details>
@@ -564,16 +561,16 @@ DI.Setup("Composition")
 <table>
 <thead><tr><th>                    Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>76.87 ns</td><td>1.880 ns</td><td>5.513 ns</td><td>75.50 ns</td><td>1.00</td><td>0.00</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>82.40 ns</td><td>1.916 ns</td><td>5.649 ns</td><td>81.02 ns</td><td>1.08</td><td>0.10</td>
-</tr><tr><td>Pure.DI</td><td>83.35 ns</td><td>2.217 ns</td><td>6.502 ns</td><td>81.38 ns</td><td>1.09</td><td>0.11</td>
-</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>92.87 ns</td><td>2.169 ns</td><td>6.395 ns</td><td>91.25 ns</td><td>1.22</td><td>0.13</td>
-</tr><tr><td>DryIoc</td><td>101.95 ns</td><td>2.434 ns</td><td>7.178 ns</td><td>100.63 ns</td><td>1.33</td><td>0.14</td>
-</tr><tr><td>&#39;IoC.Container composition root&#39;</td><td>116.79 ns</td><td>3.314 ns</td><td>9.613 ns</td><td>114.23 ns</td><td>1.53</td><td>0.17</td>
-</tr><tr><td>IoC.Container</td><td>125.21 ns</td><td>2.582 ns</td><td>7.531 ns</td><td>123.50 ns</td><td>1.64</td><td>0.16</td>
-</tr><tr><td>LightInject</td><td>412.53 ns</td><td>8.201 ns</td><td>18.343 ns</td><td>406.62 ns</td><td>5.35</td><td>0.47</td>
-</tr><tr><td>Unity</td><td>3,209.96 ns</td><td>63.584 ns</td><td>73.223 ns</td><td>3,206.25 ns</td><td>40.99</td><td>3.24</td>
-</tr><tr><td>Autofac</td><td>7,810.48 ns</td><td>154.973 ns</td><td>413.655 ns</td><td>7,695.99 ns</td><td>101.90</td><td>8.96</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>75.24 ns</td><td>1.734 ns</td><td>5.057 ns</td><td>72.82 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>Pure.DI</td><td>79.78 ns</td><td>1.620 ns</td><td>1.990 ns</td><td>79.14 ns</td><td>1.08</td><td>0.05</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>79.82 ns</td><td>1.656 ns</td><td>4.724 ns</td><td>77.68 ns</td><td>1.07</td><td>0.10</td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>87.24 ns</td><td>1.804 ns</td><td>5.292 ns</td><td>84.71 ns</td><td>1.16</td><td>0.10</td>
+</tr><tr><td>DryIoc</td><td>94.14 ns</td><td>1.798 ns</td><td>1.501 ns</td><td>94.11 ns</td><td>1.26</td><td>0.05</td>
+</tr><tr><td>&#39;IoC.Container composition root&#39;</td><td>109.83 ns</td><td>2.212 ns</td><td>4.468 ns</td><td>107.90 ns</td><td>1.46</td><td>0.12</td>
+</tr><tr><td>IoC.Container</td><td>125.72 ns</td><td>2.535 ns</td><td>2.371 ns</td><td>125.12 ns</td><td>1.70</td><td>0.07</td>
+</tr><tr><td>LightInject</td><td>415.89 ns</td><td>8.252 ns</td><td>20.242 ns</td><td>408.93 ns</td><td>5.55</td><td>0.48</td>
+</tr><tr><td>Unity</td><td>3,253.41 ns</td><td>64.917 ns</td><td>128.140 ns</td><td>3,221.60 ns</td><td>43.29</td><td>3.58</td>
+</tr><tr><td>Autofac</td><td>7,941.42 ns</td><td>158.057 ns</td><td>366.321 ns</td><td>7,875.67 ns</td><td>106.52</td><td>8.71</td>
 </tr></tbody></table>
 
 </details>
@@ -582,18 +579,18 @@ DI.Setup("Composition")
 <summary>Array</summary>
 
 <table>
-<thead><tr><th>                    Method</th><th>  Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th>
+<thead><tr><th>                    Method</th><th>  Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>90.14 ns</td><td>3.018 ns</td><td>8.898 ns</td><td>1.00</td><td>0.00</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>99.19 ns</td><td>3.491 ns</td><td>10.293 ns</td><td>1.11</td><td>0.17</td>
-</tr><tr><td>&#39;IoC.Container composition root&#39;</td><td>100.17 ns</td><td>3.280 ns</td><td>9.671 ns</td><td>1.12</td><td>0.16</td>
-</tr><tr><td>Pure.DI</td><td>100.86 ns</td><td>2.944 ns</td><td>8.679 ns</td><td>1.13</td><td>0.16</td>
-</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>107.44 ns</td><td>3.566 ns</td><td>10.515 ns</td><td>1.21</td><td>0.18</td>
-</tr><tr><td>DryIoc</td><td>114.77 ns</td><td>4.064 ns</td><td>11.725 ns</td><td>1.29</td><td>0.17</td>
-</tr><tr><td>IoC.Container</td><td>122.81 ns</td><td>4.125 ns</td><td>12.032 ns</td><td>1.37</td><td>0.19</td>
-</tr><tr><td>LightInject</td><td>126.81 ns</td><td>2.961 ns</td><td>8.639 ns</td><td>1.42</td><td>0.17</td>
-</tr><tr><td>Unity</td><td>4,540.45 ns</td><td>111.509 ns</td><td>325.276 ns</td><td>50.79</td><td>6.14</td>
-</tr><tr><td>Autofac</td><td>10,841.80 ns</td><td>216.085 ns</td><td>576.775 ns</td><td>122.45</td><td>13.77</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>84.83 ns</td><td>2.587 ns</td><td>7.586 ns</td><td>81.75 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;IoC.Container composition root&#39;</td><td>89.55 ns</td><td>2.367 ns</td><td>6.942 ns</td><td>87.56 ns</td><td>1.06</td><td>0.12</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>93.20 ns</td><td>2.723 ns</td><td>7.987 ns</td><td>91.12 ns</td><td>1.11</td><td>0.13</td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>97.34 ns</td><td>1.940 ns</td><td>2.235 ns</td><td>97.35 ns</td><td>1.13</td><td>0.11</td>
+</tr><tr><td>Pure.DI</td><td>98.16 ns</td><td>2.980 ns</td><td>8.693 ns</td><td>94.92 ns</td><td>1.17</td><td>0.15</td>
+</tr><tr><td>LightInject</td><td>98.69 ns</td><td>3.073 ns</td><td>8.865 ns</td><td>95.45 ns</td><td>1.17</td><td>0.15</td>
+</tr><tr><td>IoC.Container</td><td>108.70 ns</td><td>3.237 ns</td><td>9.543 ns</td><td>105.17 ns</td><td>1.29</td><td>0.15</td>
+</tr><tr><td>DryIoc</td><td>135.24 ns</td><td>6.780 ns</td><td>19.883 ns</td><td>134.38 ns</td><td>1.61</td><td>0.30</td>
+</tr><tr><td>Unity</td><td>4,405.14 ns</td><td>96.115 ns</td><td>280.372 ns</td><td>4,360.28 ns</td><td>52.25</td><td>5.34</td>
+</tr><tr><td>Autofac</td><td>10,752.87 ns</td><td>213.598 ns</td><td>591.880 ns</td><td>10,661.81 ns</td><td>127.12</td><td>12.40</td>
 </tr></tbody></table>
 
 </details>
@@ -604,17 +601,17 @@ DI.Setup("Composition")
 <table>
 <thead><tr><th>                    Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>209.6 ns</td><td>4.26 ns</td><td>12.57 ns</td><td>207.2 ns</td><td>1.00</td><td>0.00</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>216.9 ns</td><td>4.47 ns</td><td>13.05 ns</td><td>215.2 ns</td><td>1.04</td><td>0.08</td>
-</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>220.9 ns</td><td>4.47 ns</td><td>12.82 ns</td><td>217.6 ns</td><td>1.06</td><td>0.08</td>
-</tr><tr><td>Pure.DI</td><td>230.3 ns</td><td>5.51 ns</td><td>15.99 ns</td><td>226.5 ns</td><td>1.10</td><td>0.11</td>
-</tr><tr><td>LightInject</td><td>242.4 ns</td><td>5.22 ns</td><td>15.40 ns</td><td>242.2 ns</td><td>1.16</td><td>0.09</td>
-</tr><tr><td>DryIoc</td><td>245.5 ns</td><td>5.63 ns</td><td>16.51 ns</td><td>240.3 ns</td><td>1.18</td><td>0.10</td>
-</tr><tr><td>MicrosoftDependencyInjection</td><td>258.5 ns</td><td>7.07 ns</td><td>20.84 ns</td><td>254.0 ns</td><td>1.24</td><td>0.13</td>
-</tr><tr><td>&#39;IoC.Container composition root&#39;</td><td>291.6 ns</td><td>7.14 ns</td><td>21.06 ns</td><td>285.6 ns</td><td>1.40</td><td>0.13</td>
-</tr><tr><td>IoC.Container</td><td>324.5 ns</td><td>10.37 ns</td><td>30.26 ns</td><td>316.6 ns</td><td>1.55</td><td>0.18</td>
-</tr><tr><td>Unity</td><td>6,441.3 ns</td><td>133.83 ns</td><td>392.49 ns</td><td>6,337.7 ns</td><td>30.85</td><td>2.64</td>
-</tr><tr><td>Autofac</td><td>11,450.2 ns</td><td>227.42 ns</td><td>544.88 ns</td><td>11,345.6 ns</td><td>54.75</td><td>4.41</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>191.9 ns</td><td>3.85 ns</td><td>8.36 ns</td><td>188.7 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>204.9 ns</td><td>4.16 ns</td><td>10.06 ns</td><td>201.2 ns</td><td>1.08</td><td>0.08</td>
+</tr><tr><td>Pure.DI</td><td>218.7 ns</td><td>4.44 ns</td><td>12.81 ns</td><td>215.6 ns</td><td>1.14</td><td>0.10</td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>224.5 ns</td><td>4.84 ns</td><td>13.97 ns</td><td>222.5 ns</td><td>1.18</td><td>0.07</td>
+</tr><tr><td>LightInject</td><td>226.0 ns</td><td>4.98 ns</td><td>14.69 ns</td><td>221.8 ns</td><td>1.17</td><td>0.10</td>
+</tr><tr><td>DryIoc</td><td>234.8 ns</td><td>4.94 ns</td><td>14.42 ns</td><td>231.2 ns</td><td>1.23</td><td>0.09</td>
+</tr><tr><td>MicrosoftDependencyInjection</td><td>240.1 ns</td><td>4.79 ns</td><td>11.01 ns</td><td>238.2 ns</td><td>1.25</td><td>0.07</td>
+</tr><tr><td>&#39;IoC.Container composition root&#39;</td><td>287.5 ns</td><td>7.64 ns</td><td>22.29 ns</td><td>284.1 ns</td><td>1.52</td><td>0.14</td>
+</tr><tr><td>IoC.Container</td><td>302.5 ns</td><td>6.22 ns</td><td>18.14 ns</td><td>298.9 ns</td><td>1.58</td><td>0.12</td>
+</tr><tr><td>Unity</td><td>6,219.7 ns</td><td>123.50 ns</td><td>342.21 ns</td><td>6,138.6 ns</td><td>32.54</td><td>2.20</td>
+</tr><tr><td>Autofac</td><td>10,359.5 ns</td><td>206.85 ns</td><td>555.69 ns</td><td>10,206.7 ns</td><td>53.69</td><td>4.29</td>
 </tr></tbody></table>
 
 </details>
