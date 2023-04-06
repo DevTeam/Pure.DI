@@ -35,7 +35,7 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine($"public static {ResolverInterfaceName}<{composition.Name.ClassName}, T>? {ResolverPropertyName};");
+            code.AppendLine($"public static {ResolverInterfaceName}<{composition.Name.ClassName}, T> {ResolverPropertyName};");
         }
         code.AppendLine("}");
         
@@ -46,13 +46,40 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
             {
                 var resolverClassName = resolver.ClassName;
                 code.AppendLine();
-                code.AppendLine($"private sealed class {resolverClassName}: {ResolverInterfaceName}<{composition.Name.ClassName}, {resolver.Type}>");
+                var interfaceName = $"{ResolverInterfaceName}<{composition.Name.ClassName}, {resolver.Type}>";
+                var interfaces = new List<string> { interfaceName };
+                var objectInterfaceName = "";
+                if (resolver.Type.IsValueType)
+                {
+                    objectInterfaceName = $"{ResolverInterfaceName}<{composition.Name.ClassName}, object>";
+                    interfaces.Add(objectInterfaceName);
+                }
+                
+                code.AppendLine($"private sealed class {resolverClassName}: {string.Join(", ", interfaces)}");
                 code.AppendLine("{");
                 using (code.Indent())
                 {
-                    GenerateResolverMethods(composition, resolver, resolver.Type.ToString() ?? "", "", "", code);
-                    code.AppendLine();
-                    GenerateResolverMethods(composition, resolver, "object", "Object", "(object)", code);
+                    ImplementInterface(composition, resolver, code);
+
+                    if (!string.IsNullOrWhiteSpace(objectInterfaceName))
+                    {
+                        code.AppendLine($"object {objectInterfaceName}.{ResolveMethodName}({composition.Name.ClassName} composition)");
+                        code.AppendLine("{");
+                        using (code.Indent())
+                        {
+                            code.AppendLine($"return {ResolveMethodName}(composition);");
+                        }
+                        code.AppendLine("}");
+                        
+                        code.AppendLine();
+                        code.AppendLine($"object {objectInterfaceName}.{ResolveByTagMethodName}({composition.Name.ClassName} composition, object tag)");
+                        code.AppendLine("{");
+                        using (code.Indent())
+                        {
+                            code.AppendLine($"return {ResolveByTagMethodName}(composition, tag);");
+                        }
+                        code.AppendLine("}");
+                    }
                 }
                 code.AppendLine("}");   
             }
@@ -63,22 +90,18 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
         return composition with { MembersCount = composition.MembersCount + 1 };
     }
 
-    private static void GenerateResolverMethods(
-        CompositionCode composition,
-        ResolverInfo resolver,
-        string returnType,
-        string methodPrefix,
-        string cast,
-        LinesBuilder code)
+    private static void ImplementInterface(CompositionCode composition, ResolverInfo resolver, LinesBuilder code)
     {
         var defaultRoot = resolver.Roots.SingleOrDefault(i => i.Injection.Tag is null);
-        code.AppendLine($"public {returnType} {methodPrefix}{ResolveMethodName}({composition.Name.ClassName} composition)");
+
+        code.AppendLine(Constant.MethodImplOptions);
+        code.AppendLine($"public {resolver.Type} {ResolveMethodName}({composition.Name.ClassName} composition)");
         code.AppendLine("{");
         using (code.Indent())
         {
             if (defaultRoot is not null)
             {
-                code.AppendLine($"return {cast}composition.{defaultRoot.PropertyName};");
+                code.AppendLine($"return composition.{defaultRoot.PropertyName};");
             }
             else
             {
@@ -90,19 +113,20 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
 
         code.AppendLine();
 
-        code.AppendLine($"public {returnType} {methodPrefix}{ResolveByTagMethodName}({composition.Name.ClassName} composition, object tag)");
+        code.AppendLine(Constant.MethodImplOptions);
+        code.AppendLine($"public {resolver.Type} {ResolveByTagMethodName}({composition.Name.ClassName} composition, object tag)");
         code.AppendLine("{");
         using (code.Indent())
         {
             var taggedRoots = resolver.Roots.Where(i => i.Injection.Tag is not null).ToArray();
             foreach (var taggedRoot in taggedRoots)
             {
-                code.AppendLine($"if (Equals(tag, {taggedRoot.Injection.Tag.TagToString()})) return {cast}composition.{taggedRoot.PropertyName};");
+                code.AppendLine($"if (Equals(tag, {taggedRoot.Injection.Tag.TagToString()})) return composition.{taggedRoot.PropertyName};");
             }
 
             if (defaultRoot is not null)
             {
-                code.AppendLine($"if (Equals(tag, null)) return {cast}composition.{defaultRoot.PropertyName};");
+                code.AppendLine($"if (Equals(tag, null)) return composition.{defaultRoot.PropertyName};");
             }
 
             code.AppendLine($"throw new System.InvalidOperationException($\"{Constant.CannotResolve} \\\"{{tag}}\\\" of type {resolver.Type}.\");");

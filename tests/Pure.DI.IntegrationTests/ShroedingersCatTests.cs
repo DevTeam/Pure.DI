@@ -86,7 +86,7 @@ namespace Sample
             using(var composition = new Composition())
             {
                 composition.Root.Run();
-                Console.WriteLine(composition);
+                Console.WriteLine(composition);                
             }
         }
     }                

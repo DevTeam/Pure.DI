@@ -41,13 +41,14 @@ internal class StaticConstructorBuilder: IBuilder<CompositionCode, CompositionCo
             }
             
             var divisor = Buckets<object, object>.GetDivisor((uint)resolvers.Length);
-            var pairs = $"System.Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.Name.ClassName}>";
+            var pairs = $"System.Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.Name.ClassName}, object>";
             var bucketsTypeName = $"{Constant.ApiNamespace}Buckets<{pairs}>";
             var pairTypeName = $"{Constant.ApiNamespace}Pair<{pairs}>";
             code.AppendLine($"{ResolversFieldsBuilder.BucketsFieldName} = {bucketsTypeName}.{nameof(Buckets<object, object>.Create)}(");
             using (code.Indent())
             {
                 code.AppendLine($"{divisor.ToString()},");
+                code.AppendLine($"out {ResolversFieldsBuilder.BucketSizeFieldName},");
                 code.AppendLine($"new {pairTypeName}[{resolvers.Length.ToString()}]");
                 code.AppendLine("{");
                 using (code.Indent())

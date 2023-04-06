@@ -506,61 +506,64 @@ namespace Pure.DI
     }
     
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal sealed class Pair<TKey, TValue>
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    internal struct Pair<TKey, TValue>
     {
         public readonly TKey Key;
         public readonly TValue Value;
-        public Pair<TKey, TValue> Next;
 
         public Pair(TKey key, TValue value)
         {
             Key = key;
             Value = value;
         }
+
+        public override string ToString()
+        {
+            return Key?.ToString() ?? "empty" + " = " + Value.ToString();
+        }
     }
     
     [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal static class Buckets<TKey, TValue>
     {
-        private static readonly Pair<TKey, TValue> Empty = new Pair<TKey, TValue>(default(TKey), default(TValue));
-
         public static uint GetDivisor(uint count)
         {
             return count < 2 ? count : count << 1;
         }
 
-        public static Pair<TKey, TValue>[] Create(uint divisor, Pair<TKey, TValue>[] pairs)
+        public static Pair<TKey, TValue>[] Create(
+            uint divisor,
+            out int bucketSize,
+            Pair<TKey, TValue>[] pairs)
         {
-            Pair<TKey, TValue>[] buckets = new Pair<TKey, TValue>[divisor];
-            for (int i = 0; i < buckets.Length; i++)
-            {
-                buckets[i] = Empty;
-            }
-
+            bucketSize = 0;
+            int[] bicketSizes = new int[divisor];
             for (int i = 0; i < pairs.Length; i++)
             {
-                Pair<TKey, TValue> pair = pairs[i];
-                uint bucket = ((uint)pair.Key.GetHashCode()) % divisor;
-                Pair<TKey, TValue> next = buckets[bucket];
-                buckets[bucket] = pair;
-                if (!ReferenceEquals(next, Empty))
+                uint bucket = ((uint)System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pairs[i].Key)) % divisor;
+                int size = bicketSizes[bucket] + 1;
+                bicketSizes[bucket] = size;
+                if (size > bucketSize)
                 {
-                    pair.Next = next;
+                    bucketSize = size;
                 }
             }
-
+            
+            Pair<TKey, TValue>[] buckets = new Pair<TKey, TValue>[divisor * bucketSize];
+            for (int i = 0; i < pairs.Length; i++)
+            {
+                uint bucket = ((uint)System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pairs[i].Key)) % divisor;
+                var index = bicketSizes[bucket] - 1;
+                buckets[bucket * bucketSize + index] = pairs[i];
+                bicketSizes[bucket] = index;
+            }
+            
             return buckets;
         }
     }
 
-    internal interface IResolver<TComposite>
-    {
-        object ObjectResolve(TComposite composite);
-        
-        object ObjectResolveByTag(TComposite composite, object tag);
-    }
-
-    internal interface IResolver<TComposite, T>: IResolver<TComposite>
+    internal interface IResolver<TComposite, out T>
     {
         T Resolve(TComposite composite);
         

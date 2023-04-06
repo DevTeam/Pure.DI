@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Benchmarks App" type="DotNetProject" factoryName=".NET Project">
-    <option name="EXE_PATH" value="$PROJECT_DIR$/benchmarks/Pure.DI.Benchmarks/bin/roslyn4.3/Release/net7.0/Pure.DI.Benchmarks.exe" />
-    <option name="PROGRAM_PARAMETERS" value="-f *Array*" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/benchmarks/Pure.DI.Benchmarks/bin/roslyn4.3/Release/net7.0" />
+    <option name="EXE_PATH" value="$PROJECT_DIR$/benchmarks/Pure.DI.Benchmarks/bin/roslyn4.3/Debug/net7.0/Pure.DI.Benchmarks.exe" />
+    <option name="PROGRAM_PARAMETERS" value="" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/benchmarks/Pure.DI.Benchmarks/bin/roslyn4.3/Debug/net7.0" />
     <option name="PASS_PARENT_ENVS" value="1" />
     <option name="USE_EXTERNAL_CONSOLE" value="0" />
     <option name="USE_MONO" value="0" />

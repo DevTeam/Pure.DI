@@ -3,9 +3,7 @@ namespace Pure.DI.Core.CSharp;
 internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
 {
     private readonly IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
-    internal static readonly string ResolveMethodName = nameof(IResolver<object>.ObjectResolve);
-    internal static readonly string ResolveByTagMethodName = nameof(IResolver<object>.ObjectResolveByTag);
-
+    
     public ApiMembersBuilder(
         IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
     {
@@ -29,7 +27,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             code.AppendLine("{");
             using (code.Indent())
             {
-                code.AppendLine($"return {ResolverInfo.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}!.{ResolverClassesBuilder.ResolveMethodName}(this);");
+                code.AppendLine($"return {ResolverInfo.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}.{ResolverClassesBuilder.ResolveMethodName}(this);");
             }
 
             code.AppendLine("}");
@@ -42,7 +40,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             code.AppendLine("{");
             using (code.Indent())
             {
-                code.AppendLine($"return {ResolverInfo.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}!.{ResolverClassesBuilder.ResolveByTagMethodName}(this, tag);");
+                code.AppendLine($"return {ResolverInfo.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}.{ResolverClassesBuilder.ResolveByTagMethodName}(this, tag);");
             }
 
             code.AppendLine("}");
@@ -51,11 +49,11 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             membersCounter++;
 
             var resolvers = _resolversBuilder.Build(composition.Roots, cancellationToken).ToArray();
-            CreateObjectResolverMethod(composition, resolvers, "System.Type type", ResolveMethodName, "this", code);
+            CreateObjectResolverMethod(resolvers, "System.Type type", ResolverClassesBuilder.ResolveMethodName, "this", code);
             membersCounter++;
             code.AppendLine();
 
-            CreateObjectResolverMethod(composition, resolvers, "System.Type type, object? tag", ResolveByTagMethodName, "this, tag", code);
+            CreateObjectResolverMethod(resolvers, "System.Type type, object? tag", ResolverClassesBuilder.ResolveByTagMethodName, "this, tag", code);
             membersCounter++;
             code.AppendLine();
         }
@@ -78,9 +76,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
         return composition with { MembersCount = membersCounter };
     }
 
-    private static void CreateObjectResolverMethod(
-        CompositionCode composition,
-        IReadOnlyCollection<ResolverInfo> resolvers,
+    private static void CreateObjectResolverMethod(IReadOnlyCollection<ResolverInfo> resolvers,
         string methodArgs,
         string resolveMethodName,
         string resolveMethodArgs,
@@ -94,38 +90,33 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             var divisor = Buckets<object, object>.GetDivisor((uint)resolvers.Count);
             if (resolvers.Any())
             {
-                var pairs = $"System.Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.Name.ClassName}>";
-                var pairTypeName = $"{Constant.ApiNamespace}Pair<{pairs}>";
-                if (divisor <= 1)
-                {
-                    code.AppendLine($"{pairTypeName} pair = {ResolversFieldsBuilder.BucketsFieldName}[0U];");
-                }
-                else
-                {
-                    code.AppendLine("#if NETSTANDARD || NETCOREAPP");
-                    code.AppendLine($"{pairTypeName} pair = {ResolversFieldsBuilder.BucketsFieldName}[(uint)System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % {divisor}];");
-                    code.AppendLine("#else");
-                    code.AppendLine($"{pairTypeName} pair = {ResolversFieldsBuilder.BucketsFieldName}[(uint)type.GetHashCode() % {divisor.ToString()}];");
-                    code.AppendLine("#endif");
-                }
-
-                code.AppendLine("do");
+                code.AppendLine($"int index = (int)({ResolversFieldsBuilder.BucketSizeFieldName} * ((uint)System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % {divisor}));");
+                code.AppendLine($"ref var pair = ref {ResolversFieldsBuilder.BucketsFieldName}[index];");
+                code.AppendLine("if (ReferenceEquals(pair.Key, type))");
                 code.AppendLine("{");
                 using (code.Indent())
                 {
-                    code.AppendLine("if (ReferenceEquals(type, pair.Key))");
+                    code.AppendLine($"return pair.Value.{resolveMethodName}({resolveMethodArgs});");
+                }
+
+                code.AppendLine("}");
+                code.AppendLine();
+                code.AppendLine($"int maxIndex = index + {ResolversFieldsBuilder.BucketSizeFieldName};");
+                code.AppendLine("for (int i = index + 1; i < maxIndex; i++)");
+                code.AppendLine("{");
+                using (code.Indent())
+                {
+                    code.AppendLine($"pair = ref {ResolversFieldsBuilder.BucketsFieldName}[i];");
+                    code.AppendLine("if (ReferenceEquals(pair.Key, type))");
                     code.AppendLine("{");
                     using (code.Indent())
                     {
                         code.AppendLine($"return pair.Value.{resolveMethodName}({resolveMethodArgs});");
                     }
-
+                    
                     code.AppendLine("}");
-                    code.AppendLine();
-                    code.AppendLine("pair = pair.Next;");
                 }
-
-                code.AppendLine("} while (pair != null);");
+                code.AppendLine("}");
                 code.AppendLine();
             }
 
