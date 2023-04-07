@@ -26,14 +26,17 @@ DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>("Other").To<OtherService>()
     .Bind<IService>().To<Service>()
-    // The single argument is the name of root property
+    // The only argument is the name of the root property
     .Root<IService>("Root")
-    // The first argument is the name of root property and the second argument is the binding tag
-    .Root<IService>("OtherRoot", "Other");
+    // The first argument is the name of the root property, and the second argument is the tag
+    .Root<IService>("OtherRoot", "Other")
+    // It is possible to use non abstract types as roots
+    .Root<OtherService>("NonAbstractRoot", "Other");
 
 var composition = new Composition();
-var service = composition.Root;
-var otherService = composition.OtherRoot;
+IService service = composition.Root;
+IService otherService = composition.OtherRoot;
+OtherService nonAbstractRoot = composition.NonAbstractRoot;
 ```
 
 <details open>
@@ -44,6 +47,7 @@ classDiagram
 class Composition {
 +IService OtherRoot
 +IService Root
++OtherService NonAbstractRoot
 +T ResolveᐸTᐳ()
 +T ResolveᐸTᐳ(object? tag)
 +object ResolveᐸTᐳ(Type type)
@@ -53,14 +57,11 @@ Dependency --|> IDependency :
 class Dependency {
 +Dependency()
 }
-OtherService --|> IService : "Other" 
-class OtherService {
-+OtherService()
-}
 Service --|> IService : 
 class Service {
 +Service(IDependency dependency)
 }
+Composition ..> OtherService : "Other" OtherService NonAbstractRoot
 Composition ..> OtherService : "Other" IService OtherRoot
 Composition ..> Service : IService Root
 Service *-- Dependency : IDependency dependency

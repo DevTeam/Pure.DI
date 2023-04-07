@@ -133,7 +133,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                 if (injection.Type is { IsAbstract: false, SpecialType: SpecialType.None })
                 {
                     var autoBinding = CreateAutoBinding(setup, targetNode, injection, ++maxId);
-                    return CreateNodes(setup, autoBinding, cancellationToken);
+                    return CreateNodes(setup, autoBinding, cancellationToken).ToArray();
                 }
                 
                 // OnCannotResolve
@@ -306,6 +306,10 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
             typeConstructor.Bind(injection.Type, injection.Type);
             sourceType = typeConstructor.Construct(compilation, injection.Type);
         }
+        
+        var newTags = injection.Tag is not null
+            ? ImmutableArray.Create(new MdTag(0, injection.Tag))
+            : ImmutableArray<MdTag>.Empty;
 
         var newContracts = ImmutableArray.Create(new MdContract(semanticModel, setup.Source, sourceType, ImmutableArray<MdTag>.Empty));
         var newBinding = new MdBinding(
@@ -313,7 +317,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
             targetNode.Binding.Source,
             semanticModel,
             newContracts,
-            ImmutableArray<MdTag>.Empty,
+            newTags,
             new MdLifetime(semanticModel, setup.Source, Lifetime.Transient),
             new MdImplementation(semanticModel, setup.Source, sourceType));
         return newBinding;
