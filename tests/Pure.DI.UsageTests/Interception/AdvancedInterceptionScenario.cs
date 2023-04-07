@@ -62,10 +62,15 @@ internal partial class Composition: IInterceptor
         _interceptors = new IInterceptor[]{ this };
     }
 
-    private partial T OnDependencyInjection<T>(in T value, object? tag, object? lifetime) => 
-        typeof(T).IsValueType 
-            ? value :
-            ProxyFactory<T>.GetFactory(ProxyBuilder)(value, _interceptors);
+    private partial T OnDependencyInjection<T>(in T value, object? tag, object? lifetime)
+    {
+        if (typeof(T).IsValueType)
+        {
+            return value;
+        }
+
+        return ProxyFactory<T>.GetFactory(ProxyBuilder)(value, _interceptors);
+    }
 
     public void Intercept(IInvocation invocation)
     {
@@ -112,7 +117,12 @@ public class Scenario
         var service = composition.Root;
         service.ServiceCall();
         service.Dependency.DependencyCall();
-        log.ShouldBe(ImmutableArray.Create("ServiceCall", "get_Dependency", "DependencyCall"));
+
+        log.ShouldBe(
+            ImmutableArray.Create(
+                "ServiceCall",
+                "get_Dependency",
+                "DependencyCall"));
 // }
         TestTools.SaveClassDiagram(composition, nameof(AdvancedInterceptionScenario));
     }

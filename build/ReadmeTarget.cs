@@ -27,7 +27,8 @@ internal class ReadmeTarget : ITarget<int>
         "Basics",
         "Lifetimes",
         "BaseClassLibrary",
-        "Interception"
+        "Interception",
+        "Hints"
     };
 
     public ReadmeTarget([Tag(nameof(BenchmarksTarget))] ITarget<int> benchmarksTarget)

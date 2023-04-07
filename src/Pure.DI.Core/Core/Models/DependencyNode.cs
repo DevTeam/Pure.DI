@@ -19,8 +19,10 @@ internal record DependencyNode(
     public MdBinding Binding { get; } = Root?.Binding ?? Implementation?.Binding ?? Factory?.Binding ?? Arg?.Binding ?? Construct?.Binding ?? new MdBinding();
 
     public ITypeSymbol Type => Root?.Source.RootType ?? Implementation?.Source.Type ?? Factory?.Source.Type ?? Arg?.Source.Type ?? Construct?.Source.Type!;
+    
+    public object? OriginalLifetime => Binding.Lifetime?.Lifetime;
 
-    public Lifetime Lifetime => Binding.Lifetime?.Lifetime is Lifetime lifetime ? lifetime : Lifetime.Transient;
+    public Lifetime Lifetime => OriginalLifetime is Lifetime lifetime ? lifetime : Lifetime.Transient;
 
     public string KindName => 
         Root is not null

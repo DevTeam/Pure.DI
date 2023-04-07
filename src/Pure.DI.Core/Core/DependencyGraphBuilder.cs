@@ -1,5 +1,7 @@
 namespace Pure.DI.Core;
 
+using CSharp;
+
 internal class DependencyGraphBuilder : IDependencyGraphBuilder
 {
     private readonly IBuilder<MdSetup, IEnumerable<DependencyNode>>[] _dependencyNodeBuilders;
@@ -8,6 +10,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
     private readonly IUnboundTypeConstructor _unboundTypeConstructor;
     private readonly Func<ITypeConstructor> _typeConstructorFactory;
     private readonly Func<IBuilder<RewriterContext<MdFactory>, MdFactory>> _factoryRewriterFactory;
+    private readonly IFilter _filter;
 
     public DependencyGraphBuilder(
         IBuilder<MdSetup, IEnumerable<DependencyNode>>[] dependencyNodeBuilders,
@@ -15,7 +18,8 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
         IMarker marker,
         IUnboundTypeConstructor unboundTypeConstructor,
         Func<ITypeConstructor> typeConstructorFactory,
-        Func<IBuilder<RewriterContext<MdFactory>, MdFactory>> factoryRewriterFactory)
+        Func<IBuilder<RewriterContext<MdFactory>, MdFactory>> factoryRewriterFactory,
+        IFilter filter)
     {
         _dependencyNodeBuilders = dependencyNodeBuilders;
         _contractsBuilder = contractsBuilder;
@@ -23,6 +27,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
         _unboundTypeConstructor = unboundTypeConstructor;
         _typeConstructorFactory = typeConstructorFactory;
         _factoryRewriterFactory = factoryRewriterFactory;
+        _filter = filter;
     }
 
     public IEnumerable<DependencyNode> TryBuild(
@@ -102,9 +107,15 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
 
                             if (constructKind.HasValue)
                             {
-                                var enumerableBinding = CreateConstructBinding(setup, targetNode, injection, constructType, ++maxId, constructKind.Value);
+                                var enumerableBinding = CreateConstructBinding(setup, targetNode, injection, constructType, default, ++maxId, constructKind.Value);
                                 return CreateNodes(setup, enumerableBinding, cancellationToken);
                             }
+                        }
+                        
+                        // OnCannotResolve
+                        if (TryCreateOnCannotResolve(setup, targetNode, injection))
+                        {
+                            continue;
                         }
 
                         break;
@@ -113,7 +124,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                     // Array construct
                     case IArrayTypeSymbol arrayType:
                     {
-                        var arrayBinding = CreateConstructBinding(setup, targetNode, injection, arrayType.ElementType, ++maxId, MdConstructKind.Array);
+                        var arrayBinding = CreateConstructBinding(setup, targetNode, injection, arrayType.ElementType, default, ++maxId, MdConstructKind.Array);
                         return CreateNodes(setup, arrayBinding, cancellationToken);
                     }
                 }
@@ -123,6 +134,33 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                 {
                     var autoBinding = CreateAutoBinding(setup, targetNode, injection, ++maxId);
                     return CreateNodes(setup, autoBinding, cancellationToken);
+                }
+                
+                // OnCannotResolve
+                if (TryCreateOnCannotResolve(setup, targetNode, injection))
+                {
+                    continue;
+                }
+
+                bool TryCreateOnCannotResolve(MdSetup mdSetup, DependencyNode ownerNode, Injection unresolvedInjection)
+                {
+                    if (mdSetup.Settings.GetState(Setting.OnCannotResolve) == SettingState.On
+                        && _filter.IsMeetRegularExpression(
+                            mdSetup,
+                            (Setting.OnCannotResolveContractTypeNameRegularExpression, unresolvedInjection.Type.ToString()),
+                            (Setting.OnCannotResolveTagRegularExpression, unresolvedInjection.Tag.TagToString())))
+                    {
+                        var onCannotResolveBinding = CreateConstructBinding(mdSetup, ownerNode, unresolvedInjection, unresolvedInjection.Type, unresolvedInjection.Tag, ++maxId, MdConstructKind.OnCannotResolve);
+                        var onCannotResolveNodes = CreateNodes(mdSetup, onCannotResolveBinding, cancellationToken);
+                        foreach (var onCannotResolveNode in onCannotResolveNodes)
+                        {
+                            map = map.Add(unresolvedInjection, onCannotResolveNode);
+                            processed.Add(CreateNewProcessingNode(unresolvedInjection, onCannotResolveNode));
+                            return true;
+                        }
+                    }
+
+                    return false;
                 }
 
                 // Not processed
@@ -286,6 +324,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
         DependencyNode targetNode,
         Injection injection,
         ITypeSymbol elementType,
+        object? tag,
         int newId,
         MdConstructKind constructKind)
     {
@@ -298,14 +337,17 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                 continue;
             }
 
-            var tag = matchedContracts.First().Tags.Concat(nestedBinding.Tags).Select(i => i.Value).FirstOrDefault();
-            var tags = tag is not null
-                ? ImmutableArray.Create(new MdTag(0, tag))
-                : ImmutableArray<MdTag>.Empty;
+            var tags = matchedContracts.First().Tags
+                .Concat(nestedBinding.Tags)
+                .Select((i, position) => i with { Position = position })
+                .ToImmutableArray();
             dependencyContractsBuilder.Add(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, elementType, tags));
         }
 
-        var newContracts = ImmutableArray.Create(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, injection.Type, ImmutableArray<MdTag>.Empty));
+        var newTags = tag is not null
+            ? ImmutableArray.Create(new MdTag(0, tag))
+            : ImmutableArray<MdTag>.Empty;
+        var newContracts = ImmutableArray.Create(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, injection.Type, newTags));
         return new MdBinding(newId, targetNode.Binding.Source, targetNode.Binding.SemanticModel, newContracts, ImmutableArray<MdTag>.Empty)
         {
             Id = newId,

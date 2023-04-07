@@ -308,7 +308,20 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
     }
-    
+
+    public override void VisitOnCannotResolve(BuildContext context, DependencyGraph dependencyGraph, Block block, Variable root, in DpConstruct construct, Instantiation instantiation, CancellationToken cancellationToken)
+    {
+        if (instantiation.Target.IsCreated)
+        {
+            return;
+        }
+
+        context.Code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = {Constant.OnCannotResolve}<{instantiation.Target.ContractType}>({instantiation.Target.Injection.Tag.TagToString()}, {instantiation.Target.Node.OriginalLifetime?.TagToString() ?? "null"});");
+        context.Code.AppendLines(GenerateOnInstanceCreatedStatements(context, instantiation.Target));
+        AddReturnStatement(context, root, instantiation);
+        instantiation.Target.IsCreated = true;
+    }
+
     private void AddReturnStatement(BuildContext context, Variable root, Instantiation instantiation)
     {
         if (IsJustReturn(context, root, instantiation))
@@ -522,7 +535,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         }
 
         var tag = GetTag(context, variable);
-        yield return $"{Constant.OnInstanceCreationMethodName}<{variable.InstanceType}>(ref {variable.Name}, {tag.TagToString()}, {variable.Node.Binding.Lifetime?.Lifetime.TagToString() ?? "null"})" + ";";
+        yield return $"{Constant.OnInstanceCreationMethodName}<{variable.InstanceType}>(ref {variable.Name}, {tag.TagToString()}, {variable.Node.OriginalLifetime?.TagToString() ?? "null"})" + ";";
     }
 
     private static object? GetTag(BuildContext context, Variable variable)

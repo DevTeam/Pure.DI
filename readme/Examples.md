@@ -1895,10 +1895,18 @@ internal partial class Composition: IInterceptor
         _log = log;
     }
 
-    private partial T OnDependencyInjection<T>(in T value, object? tag, object? lifetime) =>
-        typeof(T).IsValueType
-            ? value
-            : (T)ProxyGenerator.CreateInterfaceProxyWithTargetInterface(typeof(T), value, this);
+    private partial T OnDependencyInjection<T>(in T value, object? tag, object? lifetime)
+    {
+        if (typeof(T).IsValueType)
+        {
+            return value;
+        }
+
+        return (T)ProxyGenerator.CreateInterfaceProxyWithTargetInterface(
+            typeof(T),
+            value,
+            this);
+    }
 
     public void Intercept(IInvocation invocation)
     {
@@ -1918,7 +1926,12 @@ var composition = new Composition(log);
 var service = composition.Root;
 service.ServiceCall();
 service.Dependency.DependencyCall();
-log.ShouldBe(ImmutableArray.Create("ServiceCall", "get_Dependency", "DependencyCall"));
+
+log.ShouldBe(
+    ImmutableArray.Create(
+        "ServiceCall",
+        "get_Dependency",
+        "DependencyCall"));
 ```
 
 <details open>
@@ -1999,10 +2012,15 @@ internal partial class Composition: IInterceptor
         _interceptors = new IInterceptor[]{ this };
     }
 
-    private partial T OnDependencyInjection<T>(in T value, object? tag, object? lifetime) =>
-        typeof(T).IsValueType
-            ? value :
-            ProxyFactory<T>.GetFactory(ProxyBuilder)(value, _interceptors);
+    private partial T OnDependencyInjection<T>(in T value, object? tag, object? lifetime)
+    {
+        if (typeof(T).IsValueType)
+        {
+            return value;
+        }
+
+        return ProxyFactory<T>.GetFactory(ProxyBuilder)(value, _interceptors);
+    }
 
     public void Intercept(IInvocation invocation)
     {
@@ -2041,7 +2059,12 @@ var composition = new Composition(log);
 var service = composition.Root;
 service.ServiceCall();
 service.Dependency.DependencyCall();
-log.ShouldBe(ImmutableArray.Create("ServiceCall", "get_Dependency", "DependencyCall"));
+
+log.ShouldBe(
+    ImmutableArray.Create(
+        "ServiceCall",
+        "get_Dependency",
+        "DependencyCall"));
 ```
 
 <details open>
@@ -2065,6 +2088,447 @@ class Service {
 +Service(IDependency dependency)
 }
 Composition ..> Service : IService Root
+Service *-- Dependency : IDependency dependency
+```
+
+</details>
+
+
+#### Resolve Hint
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/ResolveHintScenario.cs)
+
+The _Resolve_ hint determines whether to generate _Resolve_ methods. By default a set of four _Resolve_ methods are generated. Set this hint to _Off_ to disable the generation of resolve methods. This will reduce class composition generation time and no private composition roots will be generated in this case. When the _Resolve_ hint is disabled, only the public root properties are available, so be sure to define them explicitly with the `Root<T>(...)` method.
+
+```c#
+internal interface IDependency { }
+
+internal class Dependency : IDependency { }
+
+internal interface IService { }
+
+internal class Service : IService
+{
+    public Service(IDependency dependency)
+    {
+    }
+}
+
+// Resolve = Off
+DI.Setup("Composition")
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>()
+    .Root<IService>("Root")
+    .Root<IDependency>("DependencyRoot");
+
+var composition = new Composition();
+var service = composition.Root;
+var dependencyRoot = composition.DependencyRoot;
+```
+
+<details open>
+<summary>Class Diagram</summary>
+
+```mermaid
+classDiagram
+class Composition {
++IDependency DependencyRoot
++IService Root
+}
+Dependency --|> IDependency : 
+class Dependency {
++Dependency()
+}
+Service --|> IService : 
+class Service {
++Service(IDependency dependency)
+}
+Composition ..> Dependency : IDependency DependencyRoot
+Composition ..> Service : IService Root
+Service *-- Dependency : IDependency dependency
+```
+
+</details>
+
+
+#### ThreadSafe Hint
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/ThreadSafeHintScenario.cs)
+
+The _ThreadSafe_ hint determines whether object composition will be created in a thread-safe manner. This hint is _On_ by default. It is good practice not to use threads when creating an object graph, in which case this hint can be turned off, which will lead to a slight increase in performance.
+
+```c#
+internal interface IDependency { }
+
+internal class Dependency : IDependency { }
+
+internal interface IService { }
+
+internal class Service : IService
+{
+    public Service(IDependency dependency)
+    {
+    }
+}
+
+// ThreadSafe = Off
+DI.Setup("Composition")
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>()
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+```
+
+<details open>
+<summary>Class Diagram</summary>
+
+```mermaid
+classDiagram
+class Composition {
++IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
+}
+Dependency --|> IDependency : 
+class Dependency {
++Dependency()
+}
+Service --|> IService : 
+class Service {
++Service(IDependency dependency)
+}
+Composition ..> Service : IService Root
+Service *-- Dependency : IDependency dependency
+```
+
+</details>
+
+
+#### OnDependencyInjection Hint
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/OnDependencyInjectionHintScenario.cs)
+
+The _OnDependencyInjection_ hint determines whether to generate partial _OnDependencyInjection_ method to control of dependency injection.
+
+```c#
+public interface IDependency
+{
+}
+
+public class Dependency : IDependency
+{
+}
+
+public interface IService
+{
+    IDependency Dependency { get; }
+}
+
+public class Service : IService
+{
+    public Service(IDependency dependency)
+    {
+        Dependency = dependency;
+    }
+
+    public IDependency Dependency { get; }
+}
+
+internal partial class Composition
+{
+    private readonly List<string> _log;
+
+    public Composition(List<string> log)
+        : this()
+    {
+        _log = log;
+    }
+
+    private partial T OnDependencyInjection<T>(in T value, object? tag, object? lifetime)
+    {
+        _log.Add($"{value?.GetType().Name} injected");
+        return value;
+    }
+}
+
+// OnDependencyInjection = On
+// OnDependencyInjectionContractTypeNameRegularExpression = IDependency
+DI.Setup("Composition")
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().Tags().To<Service>()
+    .Root<IService>("Root");
+
+var log = new List<string>();
+var composition = new Composition(log);
+var service = composition.Root;
+        
+log.ShouldBe(ImmutableArray.Create("Dependency injected"));
+```
+
+<details open>
+<summary>Class Diagram</summary>
+
+```mermaid
+classDiagram
+class Composition {
++IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
+}
+Dependency --|> IDependency : 
+class Dependency {
++Dependency()
+}
+Service --|> IService : 
+class Service {
++Service(IDependency dependency)
+}
+Composition ..> Service : IService Root
+Service *-- Dependency : IDependency dependency
+```
+
+</details>
+
+
+#### OnCannotResolve Hint
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/OnCannotResolveHintScenario.cs)
+
+The _OnCannotResolve_ hint determines whether to generate a partial `OnCannotResolve<T>(...)` method to handle a scenario where an instance which cannot be resolved.
+
+```c#
+public interface IDependency
+{
+}
+
+public class Dependency : IDependency
+{
+    private readonly string _name;
+
+    public Dependency(string name)
+    {
+        _name = name;
+    }
+
+    public override string ToString() => _name;
+}
+
+public interface IService
+{
+    IDependency Dependency { get; }
+}
+
+public class Service : IService
+{
+    public Service(IDependency dependency)
+    {
+        Dependency = dependency;
+    }
+
+    public IDependency Dependency { get; }
+
+}
+
+internal partial class Composition
+{
+    private partial T OnCannotResolve<T>(object? tag, object? lifetime)
+    {
+        if (typeof(T) == typeof(string))
+        {
+            return (T)(object)"Dependency with name";
+        }
+
+        throw new InvalidOperationException("Cannot resolve.");
+    }
+}
+
+// OnCannotResolve = On
+// OnCannotResolveContractTypeNameRegularExpression = string
+DI.Setup("Composition")
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().Tags().To<Service>()
+    .Root<IService>("Root");
+
+var composition = new Composition();
+var service = composition.Root;
+service.Dependency.ToString().ShouldBe("Dependency with name");
+        
+```
+
+<details open>
+<summary>Class Diagram</summary>
+
+```mermaid
+classDiagram
+class Composition {
++IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
+}
+Dependency --|> IDependency : 
+class Dependency {
++Dependency(String name)
+}
+Service --|> IService : 
+class Service {
++Service(IDependency dependency)
+}
+class String
+Composition ..> Service : IService Root
+Dependency *-- String : String name
+Service *-- Dependency : IDependency dependency
+```
+
+</details>
+
+
+#### OnInstanceCreation Hint
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/OnInstanceCreationHintScenario.cs)
+
+The _OnInstanceCreation_ hint determines whether to generate partial _OnInstanceCreation_ method. The default value is On, so you can omit it if you don't want to explicitly disable it.
+
+```c#
+public interface IDependency
+{
+}
+
+public class Dependency : IDependency
+{
+    public override string ToString() => "Dependency";
+}
+
+public interface IService
+{
+    IDependency Dependency { get; }
+}
+
+public class Service : IService
+{
+    public Service(IDependency dependency)
+    {
+        Dependency = dependency;
+    }
+
+    public IDependency Dependency { get; }
+
+    public override string ToString() => "Service";
+}
+
+internal partial class Composition
+{
+    private readonly List<string> _log;
+
+    public Composition(List<string> log)
+        : this()
+    {
+        _log = log;
+    }
+
+    partial void OnInstanceCreation<T>(ref T value, object? tag, object? lifetime)
+    {
+        _log.Add(typeof(T).Name);
+    }
+}
+
+// This is the default hint, so you can omit it.
+// OnInstanceCreation = On
+DI.Setup("Composition")
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().Tags().To<Service>()
+    .Root<IService>("Root");
+
+var log = new List<string>();
+var composition = new Composition(log);
+var service = composition.Root;
+        
+log.ShouldBe(ImmutableArray.Create("Dependency", "Service"));
+```
+
+<details open>
+<summary>Class Diagram</summary>
+
+```mermaid
+classDiagram
+class Composition {
++IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
+}
+Dependency --|> IDependency : 
+class Dependency {
++Dependency()
+}
+Service --|> IService : 
+class Service {
++Service(IDependency dependency)
+}
+Composition ..> Service : IService Root
+Service *-- Dependency : IDependency dependency
+```
+
+</details>
+
+
+#### ToString Hint
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/ToStringHintScenario.cs)
+
+The _ToString_ hint determines if the _ToString()_ method should be generated. This method provides a text-based class diagram in the format [mermaid](https://mermaid.js.org/). To see this diagram, just call the ToString method and copy the text to [this site](https://mermaid.live/). An example class diagram can be seen below.
+
+```c#
+internal interface IDependency { }
+
+internal class Dependency : IDependency { }
+
+internal interface IService { }
+
+internal class Service : IService
+{
+    public Service(IDependency dependency) { }
+}
+
+// ToString = On
+DI.Setup("Composition")
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>()
+    .Root<IService>("MyService");
+
+var composition = new Composition();
+string classDiagram = composition.ToString();
+```
+
+<details open>
+<summary>Class Diagram</summary>
+
+```mermaid
+classDiagram
+class Composition {
++IService MyService
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
+}
+Dependency --|> IDependency : 
+class Dependency {
++Dependency()
+}
+Service --|> IService : 
+class Service {
++Service(IDependency dependency)
+}
+Composition ..> Service : IService MyService
 Service *-- Dependency : IDependency dependency
 ```
 

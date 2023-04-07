@@ -173,13 +173,17 @@ internal class CodeGraphWalker<TContext>
                             case MdConstructKind.Span:
                                 VisitSpanConstruct(context, dependencyGraph, block, root, construct, instantiation, cancellationToken);
                                 break;
+                            
+                            case MdConstructKind.OnCannotResolve:
+                                VisitOnCannotResolve(context, dependencyGraph, block, root, construct, instantiation, cancellationToken);
+                                break;
                         }
                     }
                 }
             }
         }
     }
-
+    
     public virtual void VisitImplementation(
         TContext context,
         DependencyGraph dependencyGraph,
@@ -349,6 +353,17 @@ internal class CodeGraphWalker<TContext>
     }
     
     public virtual void VisitSpanConstruct(
+        TContext context,
+        DependencyGraph dependencyGraph,
+        Block block,
+        Variable root,
+        in DpConstruct construct,
+        Instantiation instantiation,
+        CancellationToken cancellationToken)
+    {
+    }
+    
+    public virtual void VisitOnCannotResolve(
         TContext context,
         DependencyGraph dependencyGraph,
         Block block,

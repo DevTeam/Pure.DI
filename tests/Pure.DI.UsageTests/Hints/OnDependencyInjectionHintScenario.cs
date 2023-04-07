@@ -1,37 +1,32 @@
 ﻿/*
 $v=true
-$p=1
-$d=Interception
+$p=2
+$d=OnDependencyInjection Hint
+$h=The _OnDependencyInjection_ hint determines whether to generate partial _OnDependencyInjection_ method to control of dependency injection.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameterInPartialMethod
-namespace Pure.DI.UsageTests.Interception.InterceptionScenario;
+// ReSharper disable UnusedVariable
+namespace Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario;
 
 using System.Collections.Immutable;
-using Castle.DynamicProxy;
 using Shouldly;
 using Xunit;
 
 // {
 public interface IDependency
 {
-    void DependencyCall();
 }
 
 public class Dependency : IDependency
 {
-    public void DependencyCall()
-    {
-    }
 }
 
 public interface IService
 {
     IDependency Dependency { get; }
-
-    void ServiceCall();
 }
 
 public class Service : IService
@@ -42,16 +37,11 @@ public class Service : IService
     }
 
     public IDependency Dependency { get; }
-
-    public void ServiceCall()
-    {
-    }
 }
 
-internal partial class Composition: IInterceptor
+internal partial class Composition
 {
     private readonly List<string> _log;
-    private static readonly ProxyGenerator ProxyGenerator = new();
 
     public Composition(List<string> log)
         : this()
@@ -61,21 +51,8 @@ internal partial class Composition: IInterceptor
 
     private partial T OnDependencyInjection<T>(in T value, object? tag, object? lifetime)
     {
-        if (typeof(T).IsValueType)
-        {
-            return value;
-        }
-
-        return (T)ProxyGenerator.CreateInterfaceProxyWithTargetInterface(
-            typeof(T),
-            value,
-            this);
-    }
-
-    public void Intercept(IInvocation invocation)
-    {
-        _log.Add(invocation.Method.Name);
-        invocation.Proceed();
+        _log.Add($"{value?.GetType().Name} injected");
+        return value;
     }
 }
 // }
@@ -88,6 +65,7 @@ public class Scenario
         // ToString = On
 // {            
         // OnDependencyInjection = On
+        // OnDependencyInjectionContractTypeNameRegularExpression = IDependency
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().Tags().To<Service>()
@@ -96,15 +74,9 @@ public class Scenario
         var log = new List<string>();
         var composition = new Composition(log);
         var service = composition.Root;
-        service.ServiceCall();
-        service.Dependency.DependencyCall();
-
-        log.ShouldBe(
-            ImmutableArray.Create(
-                "ServiceCall",
-                "get_Dependency",
-                "DependencyCall"));
+        
+        log.ShouldBe(ImmutableArray.Create("Dependency injected"));
 // }
-        TestTools.SaveClassDiagram(composition, nameof(InterceptionScenario));
+        TestTools.SaveClassDiagram(composition, nameof(OnDependencyInjectionHintScenario));
     }
 }

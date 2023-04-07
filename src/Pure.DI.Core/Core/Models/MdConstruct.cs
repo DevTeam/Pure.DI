@@ -8,5 +8,5 @@ internal readonly record struct MdConstruct(
     MdConstructKind Kind,
     ImmutableArray<MdContract> Dependencies)
 {
-    public override string ToString() => $"To<IEnumerable<{Type}>>()";
+    public override string ToString() => $"To<{Kind}<{Type}>>()";
 }

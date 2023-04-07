@@ -10,4 +10,5 @@ internal static class Constant
     public const string IDisposableInterfaceName = "System.IDisposable";
     public const string OnInstanceCreationMethodName = "OnInstanceCreation";
     public const string OnDependencyInjectionMethodName = "OnDependencyInjection";
+    public const string OnCannotResolve = "OnCannotResolve";
 }

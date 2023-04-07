@@ -72,6 +72,13 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             membersCounter++;
         }
         
+        if (composition.Source.Source.Settings.GetState(Setting.OnCannotResolve) == SettingState.On)
+        {
+            code.AppendLine(Constant.MethodImplOptions);
+            code.AppendLine($"private partial T {Constant.OnCannotResolve}<T>(object? tag, object? lifetime);");
+            membersCounter++;
+        }
+        
         code.AppendLine("#endregion");
         return composition with { MembersCount = membersCounter };
     }

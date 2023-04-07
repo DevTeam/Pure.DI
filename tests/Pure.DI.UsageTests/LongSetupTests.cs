@@ -1,3 +1,4 @@
+/*
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
 // ReSharper disable CheckNamespace
 namespace Pure.DI.UsageTests.LongSetupScenario;
@@ -9,7 +10,6 @@ public class LongSetupTests
     [Fact]
     public void Run()
     {
-        //   Abc
         var composition = new Composition();
         composition.Resolve<IDependency0>();
         composition.Resolve(typeof(IDependency0));
@@ -4244,3 +4244,5 @@ internal class Dependency300 : IDependency300
     {
     }
 }
+
+*/

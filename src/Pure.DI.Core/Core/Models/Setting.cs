@@ -19,20 +19,36 @@ internal enum Setting
     OnDependencyInjection,
     
     /// <summary>
-    /// The regular expression to filter by the instance type name. ".+" by default.
+    /// The regular expression to filter OnDependencyInjection by the instance type name. ".+" by default.
     /// </summary>
     OnDependencyInjectionImplementationTypeNameRegularExpression,
     
     /// <summary>
-    /// The regular expression to filter by the resolving type name. ".+" by default.
+    /// The regular expression to filter OnDependencyInjection by the resolving type name. ".+" by default.
     /// </summary>
     OnDependencyInjectionContractTypeNameRegularExpression,
     
     /// <summary>
-    /// Regular expression.
+    /// The regular expression to filter OnDependencyInjection by the tag. ".+" by default.
     /// ".+" by default. 
     /// </summary>
     OnDependencyInjectionTagRegularExpression,
+    
+    /// <summary>
+    /// Determine whether to generate partial <c>OnCannotResolve</c> method to control of dependency injection. <c>On</c> or <c>Off</c>. <c>Off</c> by default.
+    /// </summary>
+    OnCannotResolve,
+    
+    /// <summary>
+    /// The regular expression to filter OnCannotResolve by the resolving type name. ".+" by default.
+    /// </summary>
+    OnCannotResolveContractTypeNameRegularExpression,
+    
+    /// <summary>
+    /// The regular expression to filter OnCannotResolve by the tag. ".+" by default.
+    /// ".+" by default. 
+    /// </summary>
+    OnCannotResolveTagRegularExpression,
     
     /// <summary>
     /// <c>On</c> or <c>Off</c>.
