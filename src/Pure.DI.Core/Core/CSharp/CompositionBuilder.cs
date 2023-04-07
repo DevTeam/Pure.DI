@@ -2,22 +2,27 @@
 // ReSharper disable ConvertIfStatementToConditionalTernaryExpression
 namespace Pure.DI.Core.CSharp;
 
-using System.Text.RegularExpressions;
-
 internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<DependencyGraph, CompositionCode>
 {
+    private static readonly string IndentPrefix = new Indent(1).ToString();
     private readonly ILogger<CompositionBuilder> _logger;
     private readonly IVarIdGenerator _idGenerator;
-    private static readonly string IndentPrefix = new Indent(1).ToString();
+    private readonly IFilter _filter;
     private readonly Dictionary<Compilation, INamedTypeSymbol?> _disposableTypes = new();
     private readonly Dictionary<Root, ImmutableArray<Line>> _roots = new();
 
-    public CompositionBuilder(ILogger<CompositionBuilder> logger, IVarIdGenerator idGenerator)
+    public CompositionBuilder(
+        ILogger<CompositionBuilder> logger,
+        IVarIdGenerator idGenerator,
+        IFilter filter)
         : base(idGenerator)
     {
         _logger = logger;
         _idGenerator = idGenerator;
+        _filter = filter;
     }
+    
+    private CompositionBuilder CreateChildBuilder() => new(_logger, _idGenerator, _filter);
 
     public CompositionCode Build(
         DependencyGraph dependencyGraph,
@@ -342,7 +347,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             var namesMap = new Dictionary<string, string>(); 
             foreach (var argsByContext in argsByContexts)
             {
-                var argCodeBuilder = new CompositionBuilder(_logger, _idGenerator);
+                var argCodeBuilder = CreateChildBuilder();
                 foreach (var arg in argsByContext)
                 {
                     var argBuildContext = context with
@@ -444,7 +449,9 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             return block.Statements.SelectMany(ConvertToLines);
         }
 
-        return node.NormalizeWhitespace(IndentPrefix).ToString().Split(Environment.NewLine);
+        return node.NormalizeWhitespace(IndentPrefix)
+            .ToString()
+            .Split(Environment.NewLine);
     }
 
     private static void StartSingletonInitBlock(BuildContext context, Variable variable)
@@ -541,26 +548,11 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             return variable.Name;
         }
 
-        if (!IsMeetRegularExpression(
-                variable,
-                Setting.OnDependencyInjectionImplementationTypeNameRegularExpression,
-                variable.Node.Type.ToString()))
-        {
-            return variable.Name;
-        }
-        
-        if (!IsMeetRegularExpression(
-                variable,
-                Setting.OnDependencyInjectionContractTypeNameRegularExpression,
-                variable.Injection.Type.ToString()))
-        {
-            return variable.Name;
-        }
-        
-        if (!IsMeetRegularExpression(
-                variable,
-                Setting.OnDependencyInjectionTagRegularExpression,
-                variable.Injection.Tag.TagToString()))
+        if (!_filter.IsMeetRegularExpression(
+                variable.Source.Source,
+                (Setting.OnDependencyInjectionImplementationTypeNameRegularExpression, variable.Node.Type.ToString()),
+                (Setting.OnDependencyInjectionContractTypeNameRegularExpression, variable.Injection.Type.ToString()),
+                (Setting.OnDependencyInjectionTagRegularExpression, variable.Injection.Tag.TagToString())))
         {
             return variable.Name;
         }
@@ -568,29 +560,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         var tag = GetTag(context, variable);
         return $"{Constant.OnDependencyInjectionMethodName}<{variable.ContractType}>({variable.Name}, {tag.TagToString()}, {variable.Node.Binding.Lifetime?.Lifetime.TagToString() ?? "null"})";
     }
-
-    private bool IsMeetRegularExpression(Variable variable, Setting setting, string value)
-    {
-        if (variable.Source.Source.Settings.TryGetValue(setting, out var regularExpression)
-            && !string.IsNullOrWhiteSpace(regularExpression))
-        {
-            try
-            {
-                var regex = new Regex(regularExpression.Trim());
-                if (!regex.IsMatch(value))
-                {
-                    return false;
-                }
-            }
-            catch (ArgumentException ex)
-            {
-                _logger.CompileError($"Invalid regular expression {regularExpression}. {ex.Message}", variable.Source.Source.Source.GetLocation(), LogId.ErrorInvalidMetadata);
-            }
-        }
-
-        return true;
-    }
-
+    
     private bool IsDisposable(Variable variable)
     {
         var compilation = variable.Node.Binding.SemanticModel.Compilation;

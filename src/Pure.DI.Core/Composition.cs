@@ -71,6 +71,7 @@ internal static partial class Composition
         .Bind<ICache<IoC.TT1, IoC.TT2>>().To<Cache<IoC.TT1, IoC.TT2>>()
         .Bind<IResources>().To<Resources>()
         .Bind<IMarker>().To<Marker>()
+        .Bind<IFilter>().To<Filter>()
         .Bind<IUnboundTypeConstructor>().To<UnboundTypeConstructor>()
         .Bind<IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>>>().To<ResolversBuilder>()
         .Bind<Func<string, Regex>>().To(_ => new Func<string, Regex>(value => new Regex(value, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase)));
