@@ -22,13 +22,29 @@ namespace Sample
 }
 ```
 
-The second optional parameter can have several values to determine the kind of composition:
+The second optional parameter can have several values to determine the kind of composition.
 
-| Options                  |                                                                                                                                              |
-|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| CompositionKind.Public   | Default value. This option will create a composition class.                                                                                  |
-| CompositionKind.Internal | If this value is specified, the class will not be generated, but this setup can be used for others as a base.                                |
-| CompositionKind.Global   | If this value is specified, the composition class will not be generated, but this setup is a default base for all setups in current project. |
+### CompositionKind.Public
+
+This is the default value. If this value is specified, a composition class will be created.
+
+### CompositionKind.Internal
+
+If this value is specified, the class will not be generated, but this setup can be used for others as a base. For example:
+
+```c#
+DI.Setup("BaseComposition", CompositionKind.Internal)
+    .Bind<IDependency>().To<Dependency>();
+
+DI.Setup("Composition").DependsOn("BaseComposition")
+    .Bind<IService>().To<Service>();    
+```
+
+When the composition _CompositionKind.Public_ flag is set in the composition setup, it can also be the base composition for others like in the example above.
+
+### CompositionKind.Global
+
+If this value is specified, no composition class will be created, but this setup is the base for all setups in the current project, and `DependsOn(...)` is not required.
 
 </details>
 
@@ -295,3 +311,55 @@ DI.Setup("Composition")
 - [.NET IoT](https://dotnet.microsoft.com/apps/iot)
 - [Xamarin](https://dotnet.microsoft.com/apps/xamarin)
 - [.NET Multi-platform App UI (MAUI)](https://docs.microsoft.com/en-us/dotnet/maui/)
+
+## Troubleshooting
+
+<details>
+<summary>Generated files</summary>
+
+You can set build properties to save the generated file and control where the generated files are stored. In a project file, add the <EmitCompilerGeneratedFiles> element to a <PropertyGroup>, and set its value to true. Build your project again. Now, the generated files are created under obj/Debug/netX.X/generated/Pure.DI/Pure.DI.SourceGenerator. The components of the path map to the build configuration, target framework, source generator project name, and fully qualified type name of the generator. You can choose a more convenient output folder by adding the <CompilerGeneratedFilesOutputPath> element to the application's project file. For example:
+
+```xml
+<Project Sdk="Microsoft.NET.Sdk">
+    
+    <PropertyGroup>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+        <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
+    </PropertyGroup>
+    
+</Project>
+```
+
+</details>
+
+<details>
+<summary>Log files</summary>
+
+You can set build properties to save the log file. In the project file, add a <PureDILogFile> element to the <PropertyGroup> and set the path to the log directory, and add the related element `<CompilerVisibleProperty Include="PureDILogFile" />` to the <ItemGroup> to make this property visible in the source generator. To change the log level, specify the same with the _PureDISeverity_ property, as in the example below:
+
+```xml
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PureDILogFile>.logs\Pure.DI.log</PureDILogFile>
+        <PureDISeverity>Info</PureDISeverity>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <CompilerVisibleProperty Include="PureDILogFile" />
+        <CompilerVisibleProperty Include="PureDISeverity" />
+    </ItemGroup>
+
+</Project>
+```
+
+The _PureDISeverity_ property has several options available:
+
+| Severity | Description                                                            |
+|----------|------------------------------------------------------------------------|
+| Hidden   | Debug information.                                                     |
+| Info     | Information that does not indicate a problem (i.e. not prescriptive).  |
+| Warning  | Something suspicious, but allowed. This is the default value.          |
+| Error    | Something not allowed by the rules of the language or other authority. |
+
+</details>
