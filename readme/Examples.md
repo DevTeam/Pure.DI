@@ -1896,7 +1896,7 @@ internal partial class Composition: IInterceptor
         _log = log;
     }
 
-    private partial T OnDependencyInjection<T>(in T value, object? tag, object? lifetime)
+    private partial T OnDependencyInjection<T>(in T value, object? tag, object lifetime)
     {
         if (typeof(T).IsValueType)
         {
@@ -2013,7 +2013,7 @@ internal partial class Composition: IInterceptor
         _interceptors = new IInterceptor[]{ this };
     }
 
-    private partial T OnDependencyInjection<T>(in T value, object? tag, object? lifetime)
+    private partial T OnDependencyInjection<T>(in T value, object? tag, object lifetime)
     {
         if (typeof(T).IsValueType)
         {
@@ -2249,7 +2249,7 @@ internal partial class Composition
         _log = log;
     }
 
-    private partial T OnDependencyInjection<T>(in T value, object? tag, object? lifetime)
+    private partial T OnDependencyInjection<T>(in T value, object? tag, object lifetime)
     {
         _log.Add($"{value?.GetType().Name} injected");
         return value;
@@ -2434,7 +2434,7 @@ internal partial class Composition
         _log = log;
     }
 
-    partial void OnInstanceCreation<T>(ref T value, object? tag, object? lifetime)
+    partial void OnInstanceCreation<T>(ref T value, object? tag, object lifetime)
     {
         _log.Add(typeof(T).Name);
     }

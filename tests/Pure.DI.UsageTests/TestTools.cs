@@ -6,9 +6,9 @@ internal static class TestTools
 {
     public static void SaveClassDiagram(object composition, string name)
     {
-        var dirName = Path.Combine(GetSolutionDirectory(), ".logs");
-        Path.GetDirectoryName(dirName);
-        var fileName = Path.Combine(dirName, $"{name}.Mermaid");
+        var logDirName = Path.Combine(GetSolutionDirectory(), ".logs");
+        Directory.CreateDirectory(logDirName);
+        var fileName = Path.Combine(logDirName, $"{name}.Mermaid");
         if (File.Exists(fileName))
         {
             File.Delete(fileName);

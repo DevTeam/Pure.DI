@@ -285,7 +285,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnDependencyInjection<T>(in T value, object? tag, object? lifetime)            
+        private partial T OnDependencyInjection<T>(in T value, object? tag, object lifetime)            
         {
             return value;                  
         }

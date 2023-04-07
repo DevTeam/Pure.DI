@@ -316,7 +316,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             return;
         }
 
-        context.Code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = {Constant.OnCannotResolve}<{instantiation.Target.ContractType}>({instantiation.Target.Injection.Tag.TagToString()}, {instantiation.Target.Node.OriginalLifetime?.TagToString() ?? "null"});");
+        context.Code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = {Constant.OnCannotResolve}<{instantiation.Target.ContractType}>({instantiation.Target.Injection.Tag.TagToString()}, {instantiation.Target.Node.OriginalLifetime?.TagToString() ?? Constant.TransientLifetime});");
         context.Code.AppendLines(GenerateOnInstanceCreatedStatements(context, instantiation.Target));
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
@@ -399,6 +399,8 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             {
                 lines.Add($"{finishMark}:;");
             }
+            
+            lines.AddRange(GenerateOnInstanceCreatedStatements(context, instantiation.Target));
             
             if (justReturn)
             {
@@ -535,7 +537,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         }
 
         var tag = GetTag(context, variable);
-        yield return $"{Constant.OnInstanceCreationMethodName}<{variable.InstanceType}>(ref {variable.Name}, {tag.TagToString()}, {variable.Node.OriginalLifetime?.TagToString() ?? "null"})" + ";";
+        yield return $"{Constant.OnInstanceCreationMethodName}<{variable.InstanceType}>(ref {variable.Name}, {tag.TagToString()}, {variable.Node.OriginalLifetime?.TagToString() ?? Constant.TransientLifetime})" + ";";
     }
 
     private static object? GetTag(BuildContext context, Variable variable)
@@ -571,7 +573,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         }
         
         var tag = GetTag(context, variable);
-        return $"{Constant.OnDependencyInjectionMethodName}<{variable.ContractType}>({variable.Name}, {tag.TagToString()}, {variable.Node.Binding.Lifetime?.Lifetime.TagToString() ?? "null"})";
+        return $"{Constant.OnDependencyInjectionMethodName}<{variable.ContractType}>({variable.Name}, {tag.TagToString()}, {variable.Node.Binding.Lifetime?.Lifetime.TagToString() ?? Constant.TransientLifetime})";
     }
     
     private bool IsDisposable(Variable variable)

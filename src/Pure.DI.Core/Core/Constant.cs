@@ -11,4 +11,5 @@ internal static class Constant
     public const string OnInstanceCreationMethodName = "OnInstanceCreation";
     public const string OnDependencyInjectionMethodName = "OnDependencyInjection";
     public const string OnCannotResolve = "OnCannotResolve";
+    public const string TransientLifetime = $"{ApiNamespace}{nameof(Lifetime)}.{nameof(Lifetime.Transient)}";
 }

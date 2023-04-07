@@ -62,7 +62,7 @@ internal partial class Composition: IInterceptor
         _interceptors = new IInterceptor[]{ this };
     }
 
-    private partial T OnDependencyInjection<T>(in T value, object? tag, object? lifetime)
+    private partial T OnDependencyInjection<T>(in T value, object? tag, object lifetime)
     {
         if (typeof(T).IsValueType)
         {

@@ -212,7 +212,7 @@ Determine whether to generate partial _OnInstanceCreation_ method. This partial 
 ```c#
 internal partial class Composition
 {
-    partial void OnInstanceCreation<T>(ref T value, object? tag, object? lifetime)            
+    partial void OnInstanceCreation<T>(ref T value, object? tag, object lifetime)            
     {
         Console.WriteLine($"'{typeof(T)}'('{tag}') created.");            
     }

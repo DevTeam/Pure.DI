@@ -41,7 +41,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        partial void OnInstanceCreation<T>(ref T value, object? tag, object? lifetime)            
+        partial void OnInstanceCreation<T>(ref T value, object? tag, object lifetime)            
         {
             Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} created");            
         }
@@ -71,7 +71,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Dependency '' Singleton created", "System.Func`1[Sample.IDependency] ''  created", "Sample.Service ''  created"), result.GeneratedCode);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Dependency '' Singleton created", "System.Func`1[Sample.IDependency] '' Transient created", "Sample.Service '' Transient created"), result.GeneratedCode);
     }
     
     [Fact]
@@ -112,7 +112,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnDependencyInjection<T>(in T value, object? tag, object? lifetime)            
+        private partial T OnDependencyInjection<T>(in T value, object? tag, object lifetime)            
         {
             Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} injected");
             return value;                  
@@ -144,7 +144,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.IDependency '' Singleton injected", "System.Func`1[Sample.IDependency] ''  injected", "Sample.IDependency '' Singleton injected", "Sample.IService ''  injected"), result.GeneratedCode);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.IDependency '' Singleton injected", "System.Func`1[Sample.IDependency] '' Transient injected", "Sample.IDependency '' Singleton injected", "Sample.IService '' Transient injected"), result.GeneratedCode);
     }
     
     [Fact]
@@ -185,7 +185,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnDependencyInjection<T>(in T value, object? tag, object? lifetime)            
+        private partial T OnDependencyInjection<T>(in T value, object? tag, object lifetime)            
         {
             Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} injected");
             return value;                  
@@ -259,7 +259,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnDependencyInjection<T>(in T value, object? tag, object? lifetime)            
+        private partial T OnDependencyInjection<T>(in T value, object? tag, object lifetime)            
         {
             Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} injected");
             return value;                  
@@ -292,7 +292,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.IService ''  injected"), result.GeneratedCode);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.IService '' Transient injected"), result.GeneratedCode);
     }
     
     [Fact]
@@ -333,7 +333,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnDependencyInjection<T>(in T value, object? tag, object? lifetime)            
+        private partial T OnDependencyInjection<T>(in T value, object? tag, object lifetime)            
         {
             Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} injected");
             return value;                  
@@ -414,7 +414,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnCannotResolve<T>(object? tag, object? lifetime)            
+        private partial T OnCannotResolve<T>(object? tag, object lifetime)            
         {
             if (typeof(T) == typeof(string))
             {
@@ -503,7 +503,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnCannotResolve<T>(object? tag, object? lifetime)            
+        private partial T OnCannotResolve<T>(object? tag, object lifetime)            
         {
             if (typeof(T) == typeof(string))
             {
@@ -592,7 +592,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnCannotResolve<T>(object? tag, object? lifetime)            
+        private partial T OnCannotResolve<T>(object? tag, object lifetime)            
         {
             if (typeof(T) == typeof(string))
             {
@@ -669,7 +669,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnCannotResolve<T>(object? tag, object? lifetime)            
+        private partial T OnCannotResolve<T>(object? tag, object lifetime)            
         {
             if (typeof(T) == typeof(IDependency<string>))
             {

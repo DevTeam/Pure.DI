@@ -49,7 +49,7 @@ public class Service : IService
 
 internal partial class Composition
 {
-    private partial T OnCannotResolve<T>(object? tag, object? lifetime)
+    private partial T OnCannotResolve<T>(object? tag, object lifetime)
     {
         if (typeof(T) == typeof(string))
         {

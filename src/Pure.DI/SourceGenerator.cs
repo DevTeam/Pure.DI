@@ -6,6 +6,7 @@ public class SourceGenerator: IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         // ReSharper disable once InvocationIsSkipped
+        // Run Rider as administrator
         DebugHelper.Debug();
 
         context.RegisterPostInitializationOutput(initializationContext =>

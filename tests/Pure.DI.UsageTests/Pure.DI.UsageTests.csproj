@@ -3,13 +3,13 @@
     <PropertyGroup>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
         <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
-        <PureDISeverity>Info</PureDISeverity>
-        <PureDILogFile>.logs\Pure.DI.UsageTests.log</PureDILogFile>
+        <!--<PureDISeverity>Info</PureDISeverity>
+        <PureDILogFile>.logs\Pure.DI.UsageTests.log</PureDILogFile>-->
     </PropertyGroup>
     
     <ItemGroup>
-        <CompilerVisibleProperty Include="PureDISeverity" />
-        <CompilerVisibleProperty Include="PureDILogFile" />
+        <!--<CompilerVisibleProperty Include="PureDISeverity" />
+        <CompilerVisibleProperty Include="PureDILogFile" />-->
         <ProjectReference Include="..\..\src\Pure.DI.Core\Pure.DI.Core.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <ProjectReference Include="..\..\src\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="Castle.Core" Version="5.1.1" />
