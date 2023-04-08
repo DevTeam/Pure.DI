@@ -88,12 +88,12 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
                     if (dependency.Source.Arg is { } arg)
                     {
                         var tags = arg.Binding.Contracts.SelectMany(i => i.Tags.Select(tag => tag.Value)).ToArray();
-                        lines.AppendLine($"{FormatType(dependency.Target.Type, DefaultFormatOptions)}{FormatCardinality(dependency.Target.Binding.Lifetime?.Lifetime)}o-- {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {(tags.Any() ? FormatTags(tags) + " " : "")}Argument \\\"{arg.Source.ArgName}\\\"");
+                        lines.AppendLine($"{FormatType(dependency.Target.Type, DefaultFormatOptions)}{FormatCardinality(dependency.Target.Lifetime)}o-- {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {(tags.Any() ? FormatTags(tags) + " " : "")}Argument \\\"{arg.Source.ArgName}\\\"");
                     }
                     else
                     {
                         var relationship = dependency.Source.Lifetime == Lifetime.Transient ? "*--" : "o--";
-                        lines.AppendLine($"{FormatType(dependency.Target.Type, DefaultFormatOptions)}{FormatCardinality(dependency.Target.Binding.Lifetime?.Lifetime)}{relationship}{FormatCardinality(dependency.Source.Binding.Lifetime?.Lifetime)}{FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatDependency(dependency, DefaultFormatOptions)}");   
+                        lines.AppendLine($"{FormatType(dependency.Target.Type, DefaultFormatOptions)}{FormatCardinality(dependency.Target.Lifetime)}{relationship}{FormatCardinality(dependency.Source.Lifetime)}{FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatDependency(dependency, DefaultFormatOptions)}");   
                     }
                 }
             }
@@ -102,12 +102,11 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
         return lines;
     }
 
-    private static string FormatCardinality(object? @object) =>
-        @object switch
+    private static string FormatCardinality(Lifetime lifetime) =>
+        lifetime switch
         {
-            Lifetime.Transient => " ",
-            null => " ",
-            _ => $" \\\"{@object}\\\" "
+            Lifetime.Transient => "",
+            _ => $" \\\"{lifetime}\\\" "
         };
 
     private static string FormatInjection(Injection injection, FormatOptions options) => 

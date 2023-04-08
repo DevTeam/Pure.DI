@@ -11,6 +11,11 @@ namespace Pure.DI
     internal enum Lifetime
     {
         /// <summary>
+        /// Creates a new instance of the requested type every time.
+        /// </summary>
+        Transient,
+
+        /// <summary>
         /// Creates an instance first time and then provides the same instance each time.
         /// </summary>
         Singleton,
@@ -18,12 +23,7 @@ namespace Pure.DI
         /// <summary>
         /// The per resolve lifetime is similar to the <see cref="Lifetime.Transient"/>, but it reuses the instance in the recursive object graph.
         /// </summary>
-        PerResolve,
-        
-        /// <summary>
-        /// Creates a new instance of the requested type every time.
-        /// </summary>
-        Transient
+        PerResolve
     }
 
     /// <summary>
@@ -241,7 +241,7 @@ namespace Pure.DI
         /// </summary>
         /// <param name="lifetime">The new default lifetime.</param>
         /// <returns>DI configuration API.</returns>
-        IConfiguration DefaultLifetime(object lifetime);
+        IConfiguration DefaultLifetime(Pure.DI.Lifetime lifetime);
         
         /// <summary>
         /// Adds a resolution argument  
@@ -298,7 +298,7 @@ namespace Pure.DI
         /// </summary>
         /// <param name="lifetime">The binding <see cref="Lifetime"/>.</param>
         /// <returns>Binding configuration API.</returns>
-        IBinding As(object lifetime);
+        IBinding As(Pure.DI.Lifetime lifetime);
 
         /// <summary>
         /// Determines a binding tag.
@@ -447,7 +447,7 @@ namespace Pure.DI
             }
 
             /// <inheritdoc />
-            public IConfiguration DefaultLifetime(object lifetime)
+            public IConfiguration DefaultLifetime(Pure.DI.Lifetime lifetime)
             {
                 return this;
             }
@@ -480,7 +480,7 @@ namespace Pure.DI
             }
 
             /// <inheritdoc />
-            public IBinding As(object lifetime)
+            public IBinding As(Pure.DI.Lifetime lifetime)
             {
                 return this;
             }

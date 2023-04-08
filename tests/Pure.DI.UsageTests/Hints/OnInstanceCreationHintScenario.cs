@@ -52,7 +52,7 @@ internal partial class Composition
         _log = log;
     }
 
-    partial void OnInstanceCreation<T>(ref T value, object? tag, object lifetime)
+    partial void OnInstanceCreation<T>(ref T value, object? tag, Lifetime lifetime)
     {
         _log.Add(typeof(T).Name);
     }

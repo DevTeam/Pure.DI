@@ -49,7 +49,7 @@ internal partial class Composition
         _log = log;
     }
 
-    private partial T OnDependencyInjection<T>(in T value, object? tag, object lifetime)
+    private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)
     {
         _log.Add($"{value?.GetType().Name} injected");
         return value;

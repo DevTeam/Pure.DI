@@ -174,7 +174,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                     case nameof(IBinding.As):
                         if (invocation.ArgumentList.Arguments is [{ Expression: { } lifetimeExpression }])
                         {
-                            MetadataVisitor.VisitLifetime(new MdLifetime(SemanticModel, invocation, GetConstantValue<object>(lifetimeExpression)));
+                            MetadataVisitor.VisitLifetime(new MdLifetime(SemanticModel, invocation, GetConstantValue<Lifetime>(lifetimeExpression)));
                         }
 
                         break;
@@ -232,7 +232,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                     case nameof(IConfiguration.DefaultLifetime):
                         if (invocation.ArgumentList.Arguments is [{ Expression: { } defaultLifetimeSyntax }])
                         {
-                            MetadataVisitor.VisitDefaultLifetime(new MdDefaultLifetime(new MdLifetime(SemanticModel, invocation, GetConstantValue<object>(defaultLifetimeSyntax))));
+                            MetadataVisitor.VisitDefaultLifetime(new MdDefaultLifetime(new MdLifetime(SemanticModel, invocation, GetConstantValue<Lifetime>(defaultLifetimeSyntax))));
                         }
 
                         break;

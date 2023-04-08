@@ -41,7 +41,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        partial void OnInstanceCreation<T>(ref T value, object? tag, object lifetime)            
+        partial void OnInstanceCreation<T>(ref T value, object? tag, Lifetime lifetime)            
         {
             Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} created");            
         }
@@ -112,7 +112,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnDependencyInjection<T>(in T value, object? tag, object lifetime)            
+        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)            
         {
             Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} injected");
             return value;                  
@@ -185,7 +185,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnDependencyInjection<T>(in T value, object? tag, object lifetime)            
+        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)            
         {
             Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} injected");
             return value;                  
@@ -259,7 +259,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnDependencyInjection<T>(in T value, object? tag, object lifetime)            
+        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)            
         {
             Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} injected");
             return value;                  
@@ -333,7 +333,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnDependencyInjection<T>(in T value, object? tag, object lifetime)            
+        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)            
         {
             Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} injected");
             return value;                  
@@ -414,7 +414,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnCannotResolve<T>(object? tag, object lifetime)            
+        private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime)            
         {
             if (typeof(T) == typeof(string))
             {
@@ -503,7 +503,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnCannotResolve<T>(object? tag, object lifetime)            
+        private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime)            
         {
             if (typeof(T) == typeof(string))
             {
@@ -592,7 +592,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnCannotResolve<T>(object? tag, object lifetime)            
+        private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime)            
         {
             if (typeof(T) == typeof(string))
             {
@@ -669,7 +669,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private partial T OnCannotResolve<T>(object? tag, object lifetime)            
+        private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime)            
         {
             if (typeof(T) == typeof(IDependency<string>))
             {

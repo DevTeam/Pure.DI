@@ -64,14 +64,11 @@ public class Scenario
             // The only argument is the name of the root property
             .Root<IService>("Root")
             // The first argument is the name of the root property, and the second argument is the tag               
-            .Root<IService>("OtherRoot", "Other")
-            // It is possible to use non abstract types as roots
-            .Root<OtherService>("NonAbstractRoot", "Other");
+            .Root<IService>("OtherRoot", "Other");
 
         var composition = new Composition();
-        IService service = composition.Root;
-        IService otherService = composition.OtherRoot;
-        OtherService nonAbstractRoot = composition.NonAbstractRoot;
+        var service = composition.Root;
+        var otherService = composition.OtherRoot;
 // }            
         service.ShouldBeOfType<Service>();
         otherService.ShouldBeOfType<OtherService>();

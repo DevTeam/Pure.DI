@@ -59,7 +59,7 @@ internal partial class Composition: IInterceptor
         _log = log;
     }
 
-    private partial T OnDependencyInjection<T>(in T value, object? tag, object lifetime)
+    private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)
     {
         if (typeof(T).IsValueType)
         {

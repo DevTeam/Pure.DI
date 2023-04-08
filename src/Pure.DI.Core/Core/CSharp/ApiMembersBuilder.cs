@@ -61,21 +61,21 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
         if (composition.Source.Source.Settings.GetState(Setting.OnInstanceCreation, SettingState.On) == SettingState.On)
         {
             code.AppendLine(Constant.MethodImplOptions);
-            code.AppendLine($"partial void {Constant.OnInstanceCreationMethodName}<T>(ref T value, object? tag, object lifetime);");
+            code.AppendLine($"partial void {Constant.OnInstanceCreationMethodName}<T>(ref T value, object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
 
         if (composition.Source.Source.Settings.GetState(Setting.OnDependencyInjection) == SettingState.On)
         {
             code.AppendLine(Constant.MethodImplOptions);
-            code.AppendLine($"private partial T {Constant.OnDependencyInjectionMethodName}<T>(in T value, object? tag, object lifetime);");
+            code.AppendLine($"private partial T {Constant.OnDependencyInjectionMethodName}<T>(in T value, object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
         
         if (composition.Source.Source.Settings.GetState(Setting.OnCannotResolve) == SettingState.On)
         {
             code.AppendLine(Constant.MethodImplOptions);
-            code.AppendLine($"private partial T {Constant.OnCannotResolve}<T>(object? tag, object lifetime);");
+            code.AppendLine($"private partial T {Constant.OnCannotResolve}<T>(object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
         

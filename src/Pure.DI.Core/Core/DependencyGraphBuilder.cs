@@ -149,7 +149,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                             mdSetup,
                             (Setting.OnCannotResolveContractTypeNameRegularExpression, unresolvedInjection.Type.ToString()),
                             (Setting.OnCannotResolveTagRegularExpression, unresolvedInjection.Tag.ValueToString()),
-                            (Setting.OnCannotResolveLifetimeRegularExpression, ownerNode.OriginalLifetime.ValueToString(Constant.TransientLifetime))))
+                            (Setting.OnCannotResolveLifetimeRegularExpression, ownerNode.Lifetime.ValueToString())))
                     {
                         var onCannotResolveBinding = CreateConstructBinding(mdSetup, ownerNode, unresolvedInjection, unresolvedInjection.Type, unresolvedInjection.Tag, ++maxId, MdConstructKind.OnCannotResolve);
                         var onCannotResolveNodes = CreateNodes(mdSetup, onCannotResolveBinding, cancellationToken);

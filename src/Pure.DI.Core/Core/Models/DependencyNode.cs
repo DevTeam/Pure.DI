@@ -20,9 +20,7 @@ internal record DependencyNode(
 
     public ITypeSymbol Type => Root?.Source.RootType ?? Implementation?.Source.Type ?? Factory?.Source.Type ?? Arg?.Source.Type ?? Construct?.Source.Type!;
     
-    public object? OriginalLifetime => Binding.Lifetime?.Lifetime;
-
-    public Lifetime Lifetime => OriginalLifetime is Lifetime lifetime ? lifetime : Lifetime.Transient;
+    public Lifetime Lifetime => Binding.Lifetime?.Value ?? Lifetime.Transient;
 
     public string KindName => 
         Root is not null

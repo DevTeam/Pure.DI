@@ -316,7 +316,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             return;
         }
 
-        context.Code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = {Constant.OnCannotResolve}<{instantiation.Target.ContractType}>({instantiation.Target.Injection.Tag.ValueToString()}, {instantiation.Target.Node.OriginalLifetime?.ValueToString() ?? Constant.TransientLifetime});");
+        context.Code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = {Constant.OnCannotResolve}<{instantiation.Target.ContractType}>({instantiation.Target.Injection.Tag.ValueToString()}, {instantiation.Target.Node.Lifetime.ValueToString()});");
         context.Code.AppendLines(GenerateOnInstanceCreatedStatements(context, instantiation.Target));
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
@@ -537,7 +537,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         }
 
         var tag = GetTag(context, variable);
-        yield return $"{Constant.OnInstanceCreationMethodName}<{variable.InstanceType}>(ref {variable.Name}, {tag.ValueToString()}, {variable.Node.OriginalLifetime?.ValueToString() ?? Constant.TransientLifetime})" + ";";
+        yield return $"{Constant.OnInstanceCreationMethodName}<{variable.InstanceType}>(ref {variable.Name}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})" + ";";
     }
 
     private static object? GetTag(BuildContext context, Variable variable)
@@ -568,13 +568,13 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
                 (Setting.OnDependencyInjectionImplementationTypeNameRegularExpression, variable.Node.Type.ToString()),
                 (Setting.OnDependencyInjectionContractTypeNameRegularExpression, variable.Injection.Type.ToString()),
                 (Setting.OnDependencyInjectionTagRegularExpression, variable.Injection.Tag.ValueToString()),
-                (Setting.OnDependencyInjectionLifetimeRegularExpression, variable.Node.OriginalLifetime.ValueToString(Constant.TransientLifetime))))
+                (Setting.OnDependencyInjectionLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
         {
             return variable.Name;
         }
         
         var tag = GetTag(context, variable);
-        return $"{Constant.OnDependencyInjectionMethodName}<{variable.ContractType}>({variable.Name}, {tag.ValueToString()}, {variable.Node.Binding.Lifetime?.Lifetime.ValueToString() ?? Constant.TransientLifetime})";
+        return $"{Constant.OnDependencyInjectionMethodName}<{variable.ContractType}>({variable.Name}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})";
     }
     
     private bool IsDisposable(Variable variable)
@@ -591,7 +591,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
     
     private static ImmutableArray<Variable> GetSingletons(in ImmutableArray<Variable> fields) =>
         fields
-            .Where(i => Equals(i.Node.Binding.Lifetime?.Lifetime, Lifetime.Singleton))
+            .Where(i => Equals(i.Node.Lifetime, Lifetime.Singleton))
             .OrderBy(i => i.Node.Binding.Id)
             .ToImmutableArray();
 
