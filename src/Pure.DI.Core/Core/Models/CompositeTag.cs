@@ -8,5 +8,5 @@ internal class CompositeTag
 
     public CompositeTag(ImmutableHashSet<object> tags) => Tags = tags;
 
-    public override string ToString() => string.Join(", ", Tags.Select(i => i.TagToString()));
+    public override string ToString() => string.Join(", ", Tags.Select(i => i.ValueToString()));
 }

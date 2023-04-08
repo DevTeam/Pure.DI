@@ -121,7 +121,7 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
             var taggedRoots = resolver.Roots.Where(i => i.Injection.Tag is not null).ToArray();
             foreach (var taggedRoot in taggedRoots)
             {
-                code.AppendLine($"if (Equals(tag, {taggedRoot.Injection.Tag.TagToString()})) return composition.{taggedRoot.PropertyName};");
+                code.AppendLine($"if (Equals(tag, {taggedRoot.Injection.Tag.ValueToString()})) return composition.{taggedRoot.PropertyName};");
             }
 
             if (defaultRoot is not null)

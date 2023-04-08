@@ -35,6 +35,12 @@ internal enum Setting
     OnDependencyInjectionTagRegularExpression,
     
     /// <summary>
+    /// The regular expression to filter OnDependencyInjection by the lifetime. ".+" by default.
+    /// ".+" by default. 
+    /// </summary>
+    OnDependencyInjectionLifetimeRegularExpression,
+    
+    /// <summary>
     /// Determine whether to generate partial <c>OnCannotResolve</c> method to control of dependency injection. <c>On</c> or <c>Off</c>. <c>Off</c> by default.
     /// </summary>
     OnCannotResolve,
@@ -49,6 +55,12 @@ internal enum Setting
     /// ".+" by default. 
     /// </summary>
     OnCannotResolveTagRegularExpression,
+    
+    /// <summary>
+    /// The regular expression to filter OnCannotResolve by the lifetime. ".+" by default.
+    /// ".+" by default. 
+    /// </summary>
+    OnCannotResolveLifetimeRegularExpression,
     
     /// <summary>
     /// <c>On</c> or <c>Off</c>.

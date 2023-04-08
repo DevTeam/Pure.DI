@@ -3,10 +3,10 @@ namespace Pure.DI.Core.CSharp;
 
 internal static class CodeExtensions
 {
-    public static string TagToString(this object? tag, string defaultValue = "null") => 
+    public static string ValueToString(this object? tag, string defaultValue = "null") => 
         tag switch
         {
-            CompositeTag compositeTag => compositeTag.Tags.FirstOrDefault()?.TagToString() ?? defaultValue,
+            CompositeTag compositeTag => compositeTag.Tags.FirstOrDefault()?.ValueToString() ?? defaultValue,
             string => $"\"{tag}\"",
             double => $"{tag}D",
             float => $"{tag}F",

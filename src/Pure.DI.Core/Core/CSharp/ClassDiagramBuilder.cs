@@ -117,7 +117,7 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
         $"{(dependency.Injection.Tag == default ? "" : FormatTag(dependency.Injection.Tag) + " ")}{FormatSymbol(dependency.TargetSymbol, options)}";
 
     private static string FormatTag(object? tag) =>
-        tag != default ? $"{tag.TagToString("").Replace("\"", "\\\"")} " : "";
+        tag != default ? $"{tag.ValueToString("").Replace("\"", "\\\"")} " : "";
     
     private static string FormatTags(IEnumerable<object?> tags) =>
         string.Join(", ", tags.Distinct().Select(FormatTag).OrderBy(i => i));
