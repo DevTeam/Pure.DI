@@ -126,7 +126,25 @@ internal class ImplementationDependencyNodeBuilder :
                         constructor,
                         methods.ToImmutableArray(),
                         properties.ToImmutableArray(),
-                        fields.ToImmutableArray()));
+                        fields.ToImmutableArray()))
+                .ToArray();
+
+            var implementationsWithOrdinal = baseImplementations.Where(i => i.Constructor.Ordinal.HasValue).ToArray();
+            if (implementationsWithOrdinal.Any())
+            {
+                var variantsWithOrdinal = implementationsWithOrdinal
+                    .OrderBy(i => i.Constructor.Ordinal)
+                    .SelectMany(impl => 
+                        _implementationVariantsBuilder.Build(impl, cancellationToken)
+                            .OrderByDescending(i => GetInjectionsCount(i)));
+
+                foreach (var node in CreateNodes(variantsWithOrdinal))
+                {
+                    yield return node;
+                }
+                
+                continue;
+            }
 
             var implementations = baseImplementations
                 .SelectMany(impl => _implementationVariantsBuilder.Build(impl, cancellationToken))
@@ -135,17 +153,20 @@ internal class ImplementationDependencyNodeBuilder :
 
             var maxInjectionsCount = implementations.Max(i => i.InjectionsCount);
             
-            var nodes = implementations
+            var orderedImplementations = implementations
                 .OrderBy(i => maxInjectionsCount - i.InjectionsCount)
                 .ThenByDescending(i => i.Implementation.Constructor.Method.DeclaredAccessibility)
-                .Select((i, variantId) => new DependencyNode(variantId, Implementation: i.Implementation));
+                .Select(i => i.Implementation);
 
-            foreach (var node in nodes)
+            foreach (var node in CreateNodes(orderedImplementations))
             {
                 yield return node;
             }
         }
     }
+
+    private static IEnumerable<DependencyNode> CreateNodes(IEnumerable<DpImplementation> implementations) => 
+        implementations.Select((implementation, variantId) => new DependencyNode(variantId, Implementation: implementation));
 
     private static int GetInjectionsCount(in DpImplementation implementation)
     {

@@ -45,10 +45,9 @@ internal class ReadmeTarget : ITarget<int>
         await _benchmarksTarget.RunAsync(ctx);
         
         // Run tests for Class Diagrams
-        var testResult = await new DotNetTest()
-            .WithProject(Path.Combine(solutionDirectory, "tests", "Pure.DI.UsageTests", "Pure.DI.UsageTests.csproj"))
-            .BuildAsync();
-        
+        var testProject = Path.Combine(solutionDirectory, "tests", "Pure.DI.UsageTests", "Pure.DI.UsageTests.csproj");
+        await new DotNetClean().WithProject(testProject).BuildAsync();
+        var testResult = await new DotNetTest().WithProject(testProject).BuildAsync();
         Assertion.Succeed(testResult);
         
         await using var readmeWriter = File.CreateText(ReadmeFile);
