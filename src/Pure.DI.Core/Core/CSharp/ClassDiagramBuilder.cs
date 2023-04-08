@@ -88,12 +88,12 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
                     if (dependency.Source.Arg is { } arg)
                     {
                         var tags = arg.Binding.Contracts.SelectMany(i => i.Tags.Select(tag => tag.Value)).ToArray();
-                        lines.AppendLine($"{FormatType(dependency.Target.Type, DefaultFormatOptions)}{FormatCardinality(dependency.Target.Lifetime)}o-- {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {(tags.Any() ? FormatTags(tags) + " " : "")}Argument \\\"{arg.Source.ArgName}\\\"");
+                        lines.AppendLine($"{FormatType(dependency.Target.Type, DefaultFormatOptions)} o-- {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {(tags.Any() ? FormatTags(tags) + " " : "")}Argument \\\"{arg.Source.ArgName}\\\"");
                     }
                     else
                     {
                         var relationship = dependency.Source.Lifetime == Lifetime.Transient ? "*--" : "o--";
-                        lines.AppendLine($"{FormatType(dependency.Target.Type, DefaultFormatOptions)}{FormatCardinality(dependency.Target.Lifetime)}{relationship}{FormatCardinality(dependency.Source.Lifetime)}{FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatDependency(dependency, DefaultFormatOptions)}");   
+                        lines.AppendLine($"{FormatType(dependency.Target.Type, DefaultFormatOptions)} {relationship} {FormatCardinality(dependency.Source.Lifetime)} {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatDependency(dependency, DefaultFormatOptions)}");   
                     }
                 }
             }
@@ -106,7 +106,7 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
         lifetime switch
         {
             Lifetime.Transient => "",
-            _ => $" \\\"{lifetime}\\\" "
+            _ => $" \\\"{lifetime}\\\""
         };
 
     private static string FormatInjection(Injection injection, FormatOptions options) => 

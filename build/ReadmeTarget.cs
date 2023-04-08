@@ -26,6 +26,7 @@ internal class ReadmeTarget : ITarget<int>
     {
         "Basics",
         "Lifetimes",
+        "Attributes",
         "BaseClassLibrary",
         "Interception",
         "Hints"

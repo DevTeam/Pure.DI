@@ -63,7 +63,7 @@ class Service {
 }
 Composition ..> OtherService : "Other" IService OtherRoot
 Composition ..> Service : IService Root
-Service*--Dependency : IDependency dependency
+Service *--  Dependency : IDependency dependency
 ```
 
 </details>
@@ -149,7 +149,7 @@ OtherService --|> IService : "Other"
 class OtherService {
 +OtherService()
 }
-Service*--Dependency : IDependency dependency
+Service *--  Dependency : IDependency dependency
 ```
 
 </details>
@@ -235,7 +235,7 @@ class Service {
 +Service(IDependency dependency)
 }
 Composition ..> Service : IService Root
-Service*--Dependency : IDependency dependency
+Service *--  Dependency : IDependency dependency
 ```
 
 </details>
@@ -301,7 +301,7 @@ class Dependency {
 Service --|> IService : 
 class Service
 Composition ..> Service : IService Root
-Service*--Dependency : IDependency
+Service *--  Dependency : IDependency
 ```
 
 </details>
@@ -374,8 +374,8 @@ class DependencyᐸStringᐳ {
 +Dependency()
 }
 Composition ..> Service : IService Root
-Service*--DependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ intDependency
-Service*--DependencyᐸStringᐳ : IDependencyᐸStringᐳ stringDependency
+Service *--  DependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ intDependency
+Service *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ stringDependency
 ```
 
 </details>
@@ -449,8 +449,8 @@ class Service {
 }
 class String
 Composition ..> Service : IService Root
-Serviceo-- String : Argument "serviceName"
-Service*--Dependency : IDependency dependency
+Service o-- String : Argument "serviceName"
+Service *--  Dependency : IDependency dependency
 ```
 
 </details>
@@ -530,8 +530,8 @@ class Service {
 +Service(IDependency dependency1, IDependency dependency2)
 }
 Composition ..> Service : IService Root
-Service*--AbcDependency : "Abc"  IDependency dependency1
-Service*--XyzDependency : "Xyz"  IDependency dependency2
+Service *--  AbcDependency : "Abc"  IDependency dependency1
+Service *--  XyzDependency : "Xyz"  IDependency dependency2
 ```
 
 </details>
@@ -582,7 +582,7 @@ class Dependency {
 +Dependency()
 }
 Composition ..> Service : Service Root
-Service*--Dependency : Dependency dependency
+Service *--  Dependency : Dependency dependency
 ```
 
 </details>
@@ -666,7 +666,7 @@ class Service {
 +Service(IDependency dependency)
 }
 Composition ..> Service : IService Root
-Serviceo-- "Singleton" Dependency : IDependency dependency
+Service o--  "Singleton" Dependency : IDependency dependency
 ```
 
 </details>
@@ -725,8 +725,8 @@ class Service {
 +Service(IDependency dependency, IAdvancedDependency advancedDependency)
 }
 Composition ..> Service : IService Root
-Service*--Dependency : IDependency dependency
-Service*--Dependency : IAdvancedDependency advancedDependency
+Service *--  Dependency : IDependency dependency
+Service *--  Dependency : IAdvancedDependency advancedDependency
 ```
 
 </details>
@@ -788,7 +788,7 @@ class Service {
 ~IDependency DependencyVal
 }
 Composition ..> Service : IService Root
-Service*--Dependency : ~IDependency DependencyVal
+Service *--  Dependency : ~IDependency DependencyVal
 ```
 
 </details>
@@ -848,7 +848,7 @@ class Service {
 +IDependency Dependency
 }
 Composition ..> Service : IService Root
-Service*--Dependency : +IDependency Dependency
+Service *--  Dependency : +IDependency Dependency
 ```
 
 </details>
@@ -946,9 +946,9 @@ class DependencyStructᐸInt32ᐳ {
 +DependencyStruct()
 }
 Composition ..> ProgramᐸStringᐳ : ProgramᐸStringᐳ Root
-ProgramᐸStringᐳ*--ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ : IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ service
-ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ*--DependencyᐸStringᐳ : IDependencyᐸStringᐳ dependency1
-ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ*--DependencyStructᐸInt32ᐳ : "value type"  IDependencyᐸInt32ᐳ dependency2
+ProgramᐸStringᐳ *--  ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ : IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ service
+ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ dependency1
+ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *--  DependencyStructᐸInt32ᐳ : "value type"  IDependencyᐸInt32ᐳ dependency2
 ```
 
 </details>
@@ -1016,8 +1016,8 @@ class Service {
 +Service(IDependency dependency1, IDependency dependency2)
 }
 Composition ..> Service : IService Root
-Serviceo-- "Singleton" Dependency : IDependency dependency1
-Serviceo-- "Singleton" Dependency : IDependency dependency2
+Service o--  "Singleton" Dependency : IDependency dependency1
+Service o--  "Singleton" Dependency : IDependency dependency2
 ```
 
 </details>
@@ -1085,8 +1085,8 @@ class Service {
 +Service(IDependency dependency1, IDependency dependency2)
 }
 Composition ..> Service : IService Root
-Serviceo-- "PerResolve" Dependency : IDependency dependency1
-Serviceo-- "PerResolve" Dependency : IDependency dependency2
+Service o--  "PerResolve" Dependency : IDependency dependency1
+Service o--  "PerResolve" Dependency : IDependency dependency2
 ```
 
 </details>
@@ -1154,8 +1154,8 @@ class Service {
 +Service(IDependency dependency1, IDependency dependency2)
 }
 Composition ..> Service : IService Root
-Service*--Dependency : IDependency dependency1
-Service*--Dependency : IDependency dependency2
+Service *--  Dependency : IDependency dependency1
+Service *--  Dependency : IDependency dependency2
 ```
 
 </details>
@@ -1235,7 +1235,7 @@ class Service {
 +Service(IDependency dependency)
 }
 Composition ..> Service : IService Root
-Serviceo-- "Singleton" Dependency : IDependency dependency
+Service o--  "Singleton" Dependency : IDependency dependency
 ```
 
 </details>
@@ -1304,8 +1304,161 @@ class Service {
 +Service(IDependency dependency1, IDependency dependency2)
 }
 Composition ..> Service : IService Root
-Service "Singleton" o-- "Singleton" Dependency : IDependency dependency1
-Service "Singleton" o-- "Singleton" Dependency : IDependency dependency2
+Service o--  "Singleton" Dependency : IDependency dependency1
+Service o--  "Singleton" Dependency : IDependency dependency2
+```
+
+</details>
+
+
+#### Constructor Ordinal Attribute
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Attributes/ConstructorOrdinalAttributeScenario.cs)
+
+When applied to any constructor in a type, automatic injection constructor selection is disabled. The selection will only focus on constructors marked with this attribute, in the appropriate order from smallest value to largest.
+
+```c#
+internal interface IDependency { }
+
+internal class Dependency : IDependency { }
+
+internal interface IService { }
+
+internal class Service : IService
+{
+    private readonly string _name = "";
+
+    [Ordinal(1)]
+    public Service(IDependency dependency) => _name = "with dependency";
+
+    [Ordinal(0)]
+    internal Service(string name) => _name = name;
+
+    public Service() => _name = "default";
+
+    public override string ToString() => _name;
+}
+
+DI.Setup("Composition")
+    .Arg<string>("serviceName")
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>()
+    .Root<IService>("Root");
+
+var composition = new Composition("Xyz");
+var service = composition.Root;
+service.ToString().ShouldBe("Xyz");
+```
+
+<details open>
+<summary>Class Diagram</summary>
+
+```mermaid
+classDiagram
+class Composition {
++IService Root
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
+}
+class String
+Dependency --|> IDependency : 
+class Dependency {
++Dependency()
+}
+Service --|> IService : 
+class Service {
+~Service(String name)
+}
+Composition ..> Service : IService Root
+Service o-- String : Argument "serviceName"
+```
+
+</details>
+
+
+#### Member Ordinal Attribute
+
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Attributes/MemberOrdinalAttributeScenario.cs)
+
+When applied to a property or field, these type members will also participate in dependency injection in the appropriate order from smallest value to largest.
+
+```c#
+internal interface IPerson
+{
+    string Name { get; }
+}
+
+internal class Person : IPerson
+{
+    private readonly StringBuilder _name = new();
+
+    public string Name => _name.ToString();
+
+    [Ordinal(0)]
+    internal int Id;
+
+    [Ordinal(1)]
+    internal string FirstName
+    {
+        set
+        {
+            _name.Append(Id);
+            _name.Append(' ');
+            _name.Append(value);
+        }
+    }
+
+    [Ordinal(2)]
+    internal DateTime Birthday
+    {
+        set
+        {
+            _name.Append(' ');
+            _name.Append($"{value:yyyy-MM-dd}");
+        }
+    }
+}
+
+DI.Setup("PersonComposition")
+    .Arg<int>("personId")
+    .Arg<string>("personName")
+    .Arg<DateTime>("personBirthday")
+    .Bind<IPerson>().To<Person>()
+    .Root<IPerson>("Person");
+
+var composition = new PersonComposition(123, "Nik", new DateTime(1977, 11, 16));
+var person = composition.Person;
+person.Name.ShouldBe("123 Nik 1977-11-16");
+```
+
+<details open>
+<summary>Class Diagram</summary>
+
+```mermaid
+classDiagram
+class PersonComposition {
++IPerson Person
++T ResolveᐸTᐳ()
++T ResolveᐸTᐳ(object? tag)
++object ResolveᐸTᐳ(Type type)
++object ResolveᐸTᐳ(Type type, object? tag)
+}
+class Int32
+class String
+class DateTime
+Person --|> IPerson : 
+class Person {
++Person()
+~Int32 Id
+~String FirstName
+~DateTime Birthday
+}
+PersonComposition ..> Person : IPerson Person
+Person o-- Int32 : Argument "personId"
+Person o-- String : Argument "personName"
+Person o-- DateTime : Argument "personBirthday"
 ```
 
 </details>
@@ -1372,8 +1525,8 @@ class Service {
 }
 class FuncᐸIDependencyᐳ
 Composition ..> Service : IService Root
-Service*--FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ dependencyFactory
-FuncᐸIDependencyᐳ*--Dependency : IDependency
+Service *--  FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ dependencyFactory
+FuncᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 
 </details>
@@ -1446,9 +1599,9 @@ class Service {
 }
 class IEnumerableᐸIDependencyᐳ
 Composition ..> Service : IService Root
-Service*--IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ dependencies
-IEnumerableᐸIDependencyᐳ*--AbcDependency : 
-IEnumerableᐸIDependencyᐳ*--XyzDependency : 2  
+Service *--  IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ dependencies
+IEnumerableᐸIDependencyᐳ *--  AbcDependency : 
+IEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  
 ```
 
 </details>
@@ -1521,9 +1674,9 @@ class Service {
 }
 class ArrayᐸIDependencyᐳ
 Composition ..> Service : IService Root
-Service*--ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ dependencies
-ArrayᐸIDependencyᐳ*--AbcDependency : 
-ArrayᐸIDependencyᐳ*--XyzDependency : 2  
+Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ dependencies
+ArrayᐸIDependencyᐳ *--  AbcDependency : 
+ArrayᐸIDependencyᐳ *--  XyzDependency : 2  
 ```
 
 </details>
@@ -1613,9 +1766,9 @@ class Service {
 class LazyᐸIDependencyᐳ
 class FuncᐸIDependencyᐳ
 Composition ..> Service : IService Root
-Service*--LazyᐸIDependencyᐳ : LazyᐸIDependencyᐳ dependency
-LazyᐸIDependencyᐳ*--FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
-FuncᐸIDependencyᐳ*--Dependency : IDependency
+Service *--  LazyᐸIDependencyᐳ : LazyᐸIDependencyᐳ dependency
+LazyᐸIDependencyᐳ *--  FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+FuncᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 
 </details>
@@ -1680,10 +1833,10 @@ class Service {
 }
 class ReadOnlySpanᐸDependencyᐳ
 Composition ..> Service : IService Root
-Service*--ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ dependencies
-ReadOnlySpanᐸDependencyᐳ*--Dependency : 'a'  
-ReadOnlySpanᐸDependencyᐳ*--Dependency : 'b'  
-ReadOnlySpanᐸDependencyᐳ*--Dependency : 'c'  
+Service *--  ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ dependencies
+ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'a'  
+ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'b'  
+ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'c'  
 ```
 
 </details>
@@ -1762,9 +1915,9 @@ class ValueTupleᐸPointˏIDependencyᐳ {
 +ValueTuple(Point item1, IDependency item2)
 }
 Composition ..> Service : IService Root
-Service*--ValueTupleᐸPointˏIDependencyᐳ : ValueTupleᐸPointˏIDependencyᐳ tuple
-ValueTupleᐸPointˏIDependencyᐳ*--Point : Point item1
-ValueTupleᐸPointˏIDependencyᐳ*--Dependency : IDependency item2
+Service *--  ValueTupleᐸPointˏIDependencyᐳ : ValueTupleᐸPointˏIDependencyᐳ tuple
+ValueTupleᐸPointˏIDependencyᐳ *--  Point : Point item1
+ValueTupleᐸPointˏIDependencyᐳ *--  Dependency : IDependency item2
 ```
 
 </details>
@@ -1839,8 +1992,8 @@ class DecoratorService {
 +DecoratorService(IService baseService)
 }
 Composition ..> DecoratorService : IService Root
-Service*--Dependency : IDependency dependency
-DecoratorService*--Service : "base"  IService baseService
+Service *--  Dependency : IDependency dependency
+DecoratorService *--  Service : "base"  IService baseService
 ```
 
 </details>
@@ -1955,7 +2108,7 @@ class Service {
 +Service(IDependency dependency)
 }
 Composition ..> Service : IService Root
-Service*--Dependency : IDependency dependency
+Service *--  Dependency : IDependency dependency
 ```
 
 </details>
@@ -2088,7 +2241,7 @@ class Service {
 +Service(IDependency dependency)
 }
 Composition ..> Service : IService Root
-Service*--Dependency : IDependency dependency
+Service *--  Dependency : IDependency dependency
 ```
 
 </details>
@@ -2145,7 +2298,7 @@ class Service {
 }
 Composition ..> Dependency : IDependency DependencyRoot
 Composition ..> Service : IService Root
-Service*--Dependency : IDependency dependency
+Service *--  Dependency : IDependency dependency
 ```
 
 </details>
@@ -2202,7 +2355,7 @@ class Service {
 +Service(IDependency dependency)
 }
 Composition ..> Service : IService Root
-Service*--Dependency : IDependency dependency
+Service *--  Dependency : IDependency dependency
 ```
 
 </details>
@@ -2290,7 +2443,7 @@ class Service {
 +Service(IDependency dependency)
 }
 Composition ..> Service : IService Root
-Service*--Dependency : IDependency dependency
+Service *--  Dependency : IDependency dependency
 ```
 
 </details>
@@ -2383,8 +2536,8 @@ class Service {
 }
 class String
 Composition ..> Service : IService Root
-Dependency*--String : String name
-Service*--Dependency : IDependency dependency
+Dependency *--  String : String name
+Service *--  Dependency : IDependency dependency
 ```
 
 </details>
@@ -2474,7 +2627,7 @@ class Service {
 +Service(IDependency dependency)
 }
 Composition ..> Service : IService Root
-Service*--Dependency : IDependency dependency
+Service *--  Dependency : IDependency dependency
 ```
 
 </details>
@@ -2529,7 +2682,7 @@ class Service {
 +Service(IDependency dependency)
 }
 Composition ..> Service : IService MyService
-Service*--Dependency : IDependency dependency
+Service *--  Dependency : IDependency dependency
 ```
 
 </details>

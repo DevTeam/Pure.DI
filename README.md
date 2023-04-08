@@ -220,6 +220,9 @@ Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates
 - [Transient](readme/Examples.md#transient)
 - [Disposable Singleton](readme/Examples.md#disposable-singleton)
 - [Default lifetime](readme/Examples.md#default-lifetime)
+### Attributes
+- [Constructor Ordinal Attribute](readme/Examples.md#constructor-ordinal-attribute)
+- [Member Ordinal Attribute](readme/Examples.md#member-ordinal-attribute)
 ### Base Class Library
 - [Func](readme/Examples.md#func)
 - [IEnumerable](readme/Examples.md#ienumerable)
