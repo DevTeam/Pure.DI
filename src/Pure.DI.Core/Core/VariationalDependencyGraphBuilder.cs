@@ -11,6 +11,7 @@ using Variation = IEnumerator<ProcessingNode>;
 internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
 {
     private readonly ILogger<VariationalDependencyGraphBuilder> _logger;
+    private readonly IGlobalOptions _globalOptions;
     private readonly IBuilder<MdSetup, IEnumerable<DependencyNode>>[] _dependencyNodeBuilders;
     private readonly IMarker _marker;
     private readonly IBuilder<ContractsBuildContext, ISet<Injection>> _contractsBuilder;
@@ -18,12 +19,14 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
 
     public VariationalDependencyGraphBuilder(
         ILogger<VariationalDependencyGraphBuilder> logger,
+        IGlobalOptions globalOptions,
         IBuilder<MdSetup, IEnumerable<DependencyNode>>[] dependencyNodeBuilders,
         IMarker marker,
         IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
         IDependencyGraphBuilder graphBuilder)
     {
         _logger = logger;
+        _globalOptions = globalOptions;
         _dependencyNodeBuilders = dependencyNodeBuilders;
         _marker = marker;
         _contractsBuilder = contractsBuilder;
@@ -76,9 +79,15 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
         var variations = new LinkedList<Variation>(CreateVariations(allNodes));
         try
         {
+            var maxIterations = _globalOptions.MaxIterations;
             DependencyGraph? first = default;
             while (TryGetNextNodes(variations, out var nodes))
             {
+                if (maxIterations-- <= 0)
+                {
+                    _logger.CompileError($"The maximum number of iterations {_globalOptions.MaxIterations.ToString()} was exceeded when building the optimal dependency graph. Try to specify the dependency graph more accurately.", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                }
+                
                 cancellationToken.ThrowIfCancellationRequested();
 
                 ProcessingNode CreateProcessingNode(DependencyNode dependencyNode) => new(
