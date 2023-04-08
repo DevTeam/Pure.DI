@@ -2,10 +2,10 @@ namespace Pure.DI.Core;
 
 using System.Collections;
 
-internal class DependenciesToInjectionsWalker: DependenciesWalker, IEnumerable<Injection>
+internal sealed class DependenciesToInjectionsWalker: DependenciesWalker, IEnumerable<Injection>
 {
     private readonly List<Injection> _injections = new();
-    
+
     public override void VisitInjection(in Injection injection, in ImmutableArray<Location> locations)
     {
         _injections.Add(injection);

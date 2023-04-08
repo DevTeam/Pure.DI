@@ -72,6 +72,8 @@ internal static partial class Composition
         .Bind<IResources>().To<Resources>()
         .Bind<IMarker>().To<Marker>()
         .Bind<IFilter>().To<Filter>()
+        .Bind<IVariator<TT>>().To<Variator<TT>>()
+        .Bind<IBuilder<DpImplementation, IEnumerable<DpImplementation>>>().To<ImplementationVariantsBuilder>()
         .Bind<IUnboundTypeConstructor>().To<UnboundTypeConstructor>()
         .Bind<IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>>>().To<ResolversBuilder>()
         .Bind<Func<string, Regex>>().To(_ => new Func<string, Regex>(value => new Regex(value, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase)));

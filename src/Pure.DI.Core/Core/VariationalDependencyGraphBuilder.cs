@@ -13,6 +13,7 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
     private readonly ILogger<VariationalDependencyGraphBuilder> _logger;
     private readonly IGlobalOptions _globalOptions;
     private readonly IBuilder<MdSetup, IEnumerable<DependencyNode>>[] _dependencyNodeBuilders;
+    private readonly IVariator<ProcessingNode> _variator;
     private readonly IMarker _marker;
     private readonly IBuilder<ContractsBuildContext, ISet<Injection>> _contractsBuilder;
     private readonly IDependencyGraphBuilder _graphBuilder;
@@ -21,6 +22,7 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
         ILogger<VariationalDependencyGraphBuilder> logger,
         IGlobalOptions globalOptions,
         IBuilder<MdSetup, IEnumerable<DependencyNode>>[] dependencyNodeBuilders,
+        IVariator<ProcessingNode> variator,
         IMarker marker,
         IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
         IDependencyGraphBuilder graphBuilder)
@@ -28,6 +30,7 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
         _logger = logger;
         _globalOptions = globalOptions;
         _dependencyNodeBuilders = dependencyNodeBuilders;
+        _variator = variator;
         _marker = marker;
         _contractsBuilder = contractsBuilder;
         _graphBuilder = graphBuilder;
@@ -81,7 +84,7 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
         {
             var maxIterations = _globalOptions.MaxIterations;
             DependencyGraph? first = default;
-            while (TryGetNextNodes(variations, out var nodes))
+            while (_variator.TryGetNextVariants(variations, node => !node.HasNode, out var nodes))
             {
                 if (maxIterations-- <= 0)
                 {
@@ -137,37 +140,4 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
             .OrderBy(i => i.Implementation?.Constructor.Ordinal ?? int.MaxValue)
             .ThenByDescending(i => i.Implementation?.Constructor.Parameters.Count(p => !p.ParameterSymbol.IsOptional))
             .ThenByDescending(i => i.Implementation?.Constructor.Method.DeclaredAccessibility);
-
-    private static bool TryGetNextNodes(
-        LinkedList<Variation> variants,
-        [NotNullWhen(true)] out IReadOnlyCollection<ProcessingNode>? nodeSet)
-    {
-        var hasNext = false;
-        var nodes = new List<ProcessingNode>();
-        foreach (var enumerator in variants)
-        {
-            if (!hasNext && enumerator.MoveNext())
-            {
-                hasNext = true;
-                nodes.Add(enumerator.Current);
-                continue;
-            }
-
-            if (!enumerator.Current.HasNode)
-            {
-                enumerator.MoveNext();
-            }
-            
-            nodes.Add(enumerator.Current);
-        }
-
-        if (hasNext)
-        {
-            nodeSet = nodes;
-            return hasNext;
-        }
-
-        nodeSet = default;
-        return false;
-    }
 }

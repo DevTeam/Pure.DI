@@ -1,15 +1,18 @@
-﻿// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-// ReSharper disable InvertIf
-// ReSharper disable ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
-// ReSharper disable HeapView.ObjectAllocation
-namespace Pure.DI.Core;
+﻿namespace Pure.DI.Core;
 
 internal class ImplementationDependencyNodeBuilder : 
     IBuilder<MdSetup, IEnumerable<DependencyNode>>
 {
     private readonly ILogger<ImplementationDependencyNodeBuilder> _logger;
+    private readonly IBuilder<DpImplementation, IEnumerable<DpImplementation>> _implementationVariantsBuilder;
 
-    public ImplementationDependencyNodeBuilder(ILogger<ImplementationDependencyNodeBuilder> logger) => _logger = logger;
+    public ImplementationDependencyNodeBuilder(
+        ILogger<ImplementationDependencyNodeBuilder> logger,
+        IBuilder<DpImplementation, IEnumerable<DpImplementation>> implementationVariantsBuilder)
+    {
+        _logger = logger;
+        _implementationVariantsBuilder = implementationVariantsBuilder;
+    }
 
     public IEnumerable<DependencyNode> Build(MdSetup setup, CancellationToken cancellationToken)
     {
@@ -53,9 +56,9 @@ internal class ImplementationDependencyNodeBuilder :
                 throw HandledException.Shared;
             }
 
-            var methodsBuilder = ImmutableArray.CreateBuilder<DpMethod>();
-            var fieldsBuilder = ImmutableArray.CreateBuilder<DpField>();
-            var propertiesBuilder = ImmutableArray.CreateBuilder<DpProperty>();
+            var methods = new List<DpMethod>();
+            var fields = new List<DpField>();
+            var properties = new List<DpProperty>();
             foreach (var member in implementationType.GetMembers())
             {
                 if (member.IsStatic || member.DeclaredAccessibility is not (Accessibility.Internal or Accessibility.Public or Accessibility.Friend))
@@ -71,7 +74,7 @@ internal class ImplementationDependencyNodeBuilder :
                             var ordinal = GetAttribute(setup.OrdinalAttributes, member, default(int?));
                             if (ordinal.HasValue)
                             {
-                                methodsBuilder.Add(new DpMethod(method, ordinal.Value, GetParameters(setup, method.Parameters, compilation, setup.TypeConstructor)));
+                                methods.Add(new DpMethod(method, ordinal.Value, GetParameters(setup, method.Parameters, compilation, setup.TypeConstructor)));
                             }
                         }
 
@@ -83,7 +86,7 @@ internal class ImplementationDependencyNodeBuilder :
                             var ordinal = GetAttribute(setup.OrdinalAttributes, member, default(int?));
                             if (ordinal.HasValue || field.IsRequired)
                             {
-                                fieldsBuilder.Add(
+                                fields.Add(
                                     new DpField(
                                         field,
                                         ordinal,
@@ -101,7 +104,7 @@ internal class ImplementationDependencyNodeBuilder :
                             var ordinal = GetAttribute(setup.OrdinalAttributes, member, default(int?));
                             if (ordinal.HasValue || property.IsRequired)
                             {
-                                propertiesBuilder.Add(
+                                properties.Add(
                                     new DpProperty(
                                         property,
                                         ordinal,
@@ -115,20 +118,40 @@ internal class ImplementationDependencyNodeBuilder :
                 }
             }
 
-            var variantId = 0;
-            foreach (var constructor in constructors)
+            var baseImplementations = constructors
+                .Select(constructor => 
+                    new DpImplementation(
+                        implementation,
+                        binding,
+                        constructor,
+                        methods.ToImmutableArray(),
+                        properties.ToImmutableArray(),
+                        fields.ToImmutableArray()));
+
+            var implementations = baseImplementations
+                .SelectMany(impl => _implementationVariantsBuilder.Build(impl, cancellationToken))
+                .Select(impl => (Implementation: impl, InjectionsCount: GetInjectionsCount(impl)))
+                .ToArray();
+
+            var maxInjectionsCount = implementations.Max(i => i.InjectionsCount);
+            
+            var nodes = implementations
+                .OrderBy(i => maxInjectionsCount - i.InjectionsCount)
+                .ThenByDescending(i => i.Implementation.Constructor.Method.DeclaredAccessibility)
+                .Select((i, variantId) => new DependencyNode(variantId, Implementation: i.Implementation));
+
+            foreach (var node in nodes)
             {
-                var dpImplementation = new DpImplementation(
-                    implementation,
-                    binding,
-                    constructor,
-                    methodsBuilder.ToImmutable(),
-                    propertiesBuilder.ToImmutable(),
-                    fieldsBuilder.ToImmutable());
-                
-                yield return new DependencyNode(variantId++, Implementation: dpImplementation);
+                yield return node;
             }
         }
+    }
+
+    private static int GetInjectionsCount(in DpImplementation implementation)
+    {
+        var injectionsWalker = new DependenciesToInjectionsCountWalker();
+        injectionsWalker.VisitImplementation(implementation);
+        return injectionsWalker.Count;
     }
 
     private ImmutableArray<DpParameter> GetParameters(
@@ -184,5 +207,14 @@ internal class ImplementationDependencyNodeBuilder :
         }
 
         return defaultValue;
+    }
+    
+    internal sealed class DependenciesToInjectionsCountWalker: DependenciesWalker
+    {
+        private int _count;
+
+        public int Count => _count;
+
+        public override void VisitInjection(in Injection injection, in ImmutableArray<Location> locations) => _count++;
     }
 }
