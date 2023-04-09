@@ -5,6 +5,7 @@ namespace Pure.DI.Core.CSharp;
 internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<DependencyGraph, CompositionCode>
 {
     private static readonly string IndentPrefix = new Indent(1).ToString();
+    private static readonly string InjectionStatement = $"{Variable.InjectionMarker};";
     private readonly ILogger<CompositionBuilder> _logger;
     private readonly IVarIdGenerator _idGenerator;
     private readonly IFilter _filter;
@@ -123,7 +124,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
     {
         base.VisitConstructor(context, dependencyGraph, root, block, instantiation, implementation, constructor, constructorArguments, initOnlyProperties, cancellationToken);
         
-        string InjectVar(Variable variable) => this.Inject(context, variable);
+        string InjectVar(Variable variable) => Inject(context, variable);
         var args = string.Join(", ", constructorArguments.Select(InjectVar));
         string newStatement;
         if (!instantiation.Target.InstanceType.IsTupleType)
@@ -346,129 +347,128 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         {
             return;
         }
+        
 
-        var lambda = factory.Source.Factory;
-        var initializers = new Dictionary<string, ImmutableArray<string>>();
-        if (instantiation.Arguments.Any())
+        var code = context.Code;
+        if (!instantiation.Target.IsDeclared)
         {
-            var injectsRewriter = new FactoryInjectsRewriter(factory);
-            lambda = (SimpleLambdaExpressionSyntax)injectsRewriter.VisitSimpleLambdaExpression(factory.Source.Factory)!;
-            var argsByContexts = injectsRewriter
-                .Zip(instantiation.Arguments, (factoryInjection, argument) => (factoryInjection, argument))
-                .GroupBy(i => i.factoryInjection.ContextId);
-
-            var namesMap = new Dictionary<string, string>(); 
-            foreach (var argsByContext in argsByContexts)
-            {
-                var argCodeBuilder = CreateChildBuilder();
-                foreach (var arg in argsByContext)
-                {
-                    var argBuildContext = context with
-                    {
-                        Code = new LinesBuilder(),
-                        IsRootContext = false,
-                        ContextTag = root.Injection.Tag
-                    };
-
-                    var rootVariable = CreateVariable(dependencyGraph, argBuildContext.Variables, arg.argument.Node, arg.argument.Injection);
-                    argCodeBuilder.VisitRootVariable(argBuildContext, dependencyGraph, context.Variables, rootVariable, cancellationToken);
-                    namesMap.Add(arg.factoryInjection.VariableName, Inject(context, rootVariable));
-                    initializers.Add($"{arg.factoryInjection.InjectionId};", argBuildContext.Code.ToImmutableArray());
-                }
-            }
-            
-            var namesRewriter = new FactoryNamesRewriter(namesMap);
-            lambda = (SimpleLambdaExpressionSyntax)namesRewriter.VisitSimpleLambdaExpression(lambda)!;
+            code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name};");
         }
         
-        var justReturn = context.IsRootContext && instantiation.Target == root && instantiation.Target.Node.Lifetime != Lifetime.Singleton;
-        var lines = new List<string>();
-        if (lambda.Block is { } factoryBlock)
+        var factoryBuildContext = context with
         {
-            var finishMark = $"mark{_idGenerator.NextId.ToString()}{Variable.Postfix}";
-            var blockRewriter = new FactoryBlockRewriter(instantiation.Target, finishMark);
-            factoryBlock = (BlockSyntax)blockRewriter.VisitBlock(factoryBlock)!;
-            var initStatements = factoryBlock.Statements.SelectMany(ConvertToLines);
-            lines.Add($"{instantiation.Target.InstanceType} {instantiation.Target.Name};");
-            lines.AddRange(initStatements);
-            if (lines.Count > 0 && lines[^1].TrimStart() == $"goto {finishMark};")
-            {
-                lines.RemoveAt(lines.Count - 1);
-            }
-            else
-            {
-                lines.Add($"{finishMark}:;");
-            }
-            
-            lines.AddRange(GenerateOnInstanceCreatedStatements(context, instantiation.Target));
-            
-            if (justReturn)
-            {
-                lines.AddRange(GenerateReturnStatements(context, instantiation.Target));
-            }
+            IsRootContext = false,
+            ContextTag = root.Injection.Tag
+        };
+        
+        var rewrittenCode = RewriteFactory(factoryBuildContext, dependencyGraph, instantiation, factory, cancellationToken);
+        if (factory.Source.Factory.Block is not null)
+        {
+            code.AppendLines(rewrittenCode);
         }
         else
         {
-            var initStatements = ConvertToLines(lambda.Body).ToList();
-            var initStatement = initStatements[0];
-            initStatements.RemoveAt(0);
-            var position = 0;
-            foreach (var line in GenerateDeclareStatements(instantiation.Target, initStatement, ""))
+            code.AppendLine($"{instantiation.Target.Name} =");
+            using (code.Indent())
             {
-                initStatements.Insert(position++, line);
+                code.AppendLines(rewrittenCode);
             }
-            initStatements[^1] += ";";
-            initStatements.AddRange(GenerateOnInstanceCreatedStatements(context, instantiation.Target));
-
-            if (justReturn)
-            {
-                initStatements.AddRange(GenerateReturnStatements(context, instantiation.Target));
-            }
-            
-            lines.AddRange(initStatements);
         }
+        
+        code.AppendLines(GenerateOnInstanceCreatedStatements(context, instantiation.Target));
 
-        if (initializers.Any())
+        var justReturn = context.IsRootContext && instantiation.Target == root && instantiation.Target.Node.Lifetime != Lifetime.Singleton;
+        if (justReturn)
         {
-            var newLines = new List<string>(lines.Count);
-            foreach (var line in lines)
-            {
-                var trimmedLine = line.TrimStart();
-                var indent = new string(' ', line.Length - trimmedLine.Length);
-                if (initializers.TryGetValue(trimmedLine, out var initLines))
-                {
-                    newLines.AddRange(initLines.Select(i => indent + i));
-                }
-                else
-                {
-                    newLines.Add(line);
-                }
-            }
-
-            lines = newLines;
+            code.AppendLines(GenerateReturnStatements(context, instantiation.Target));
         }
-
-        foreach (var line in lines)
-        {
-            context.Code.AppendLine(line);
-        }
-
+        
         instantiation.Target.IsCreated = true;
         base.VisitFactory(context, dependencyGraph, root, block, instantiation, factory, cancellationToken);
     }
 
-    private static IEnumerable<string> ConvertToLines(SyntaxNode node)
+    private LinesBuilder RewriteFactory(
+        BuildContext context,
+        DependencyGraph dependencyGraph,
+        Instantiation instantiation,
+        DpFactory factory,
+        CancellationToken cancellationToken)
     {
-        if (node is BlockSyntax block)
+        // Rewrites syntax tree
+        var finishMark = $"mark{_idGenerator.NextId.ToString()}{Variable.Postfix}";
+        var injections = new List<FactoryRewriter.Injection>();
+        var factoryRewriter = new FactoryRewriter(factory, instantiation.Target, finishMark, injections);
+        var lambda = (SimpleLambdaExpressionSyntax)factoryRewriter.Visit(factory.Source.Factory);
+        StatementSyntax statementSyntax = lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);
+
+        // Converts to lines of code 
+        var rewrittenCode = new LinesBuilder();
+        WriteStatementCode(statementSyntax, rewrittenCode);
+
+        // Replaces injection markers by injection code
+        if (injections.Any())
         {
-            return block.Statements.SelectMany(ConvertToLines);
+            var injectionPairs = injections
+                .Zip(instantiation.Arguments, (injection, argument) => (injection, argument));
+
+            var factoryCodeBuilder = CreateChildBuilder();
+            var newCode = new LinesBuilder();
+            var factoryBuildContext = context with { Code = newCode };
+            using var resolvers = injectionPairs.GetEnumerator();
+            foreach (var line in rewrittenCode.Lines)
+            {
+                if (line.Text.EndsWith(InjectionStatement) && resolvers.MoveNext())
+                {
+                    // When an injection marker
+                    var resolver = resolvers.Current;
+                    var injectedVariable = CreateVariable(dependencyGraph, factoryBuildContext.Variables, resolver.argument.Node, resolver.argument.Injection);
+                    factoryCodeBuilder.VisitRootVariable(factoryBuildContext, dependencyGraph, context.Variables, injectedVariable, cancellationToken);
+                    newCode.AppendLine(new Line(line.Indent + 1, $"{(resolver.injection.DeclarationRequired ? $"{resolver.argument.Injection.Type} " : "")}{resolver.injection.VariableName} = {Inject(context, injectedVariable)};"));
+                }
+                else
+                {
+                    // When a code
+                    newCode.AppendLine(line);
+                }
+            }
+
+            rewrittenCode = newCode;
+        }
+        
+        if (factoryRewriter.IsFinishMarkRequired)
+        {
+            rewrittenCode.AppendLine($"{finishMark}:");
         }
 
-        return node.NormalizeWhitespace(IndentPrefix)
-            .ToString()
-            .Split(Environment.NewLine);
+        return rewrittenCode;
     }
 
+    private static void WriteStatementCode(StatementSyntax statement, LinesBuilder code, bool removeBlock = true)
+    {
+        if (removeBlock && statement is BlockSyntax block)
+        {
+            foreach (var blockStatement in block.Statements)
+            {
+                WriteStatementCode(blockStatement, code, false);
+            }
+            
+            return;
+        }
+
+        int? initialIndent = default;
+        foreach (var line in statement.NormalizeWhitespace(IndentPrefix).ToString().Split(Environment.NewLine))
+        {
+            var trimmedLine = line.TrimStart();
+            var indent = (line.Length - trimmedLine.Length) / IndentPrefix.Length;
+            if (!initialIndent.HasValue && !string.IsNullOrWhiteSpace(trimmedLine))
+            {
+                initialIndent = indent;
+            }
+            
+            code.AppendLine(new Line(indent - initialIndent ?? 0, line));
+        }
+    }
+    
     private static void StartSingletonInitBlock(BuildContext context, Variable variable)
     {
         var checkExpression = variable.InstanceType.IsValueType switch

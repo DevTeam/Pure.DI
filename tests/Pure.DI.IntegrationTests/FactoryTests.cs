@@ -321,4 +321,72 @@ namespace Sample
         result.Success.ShouldBeTrue(result.GeneratedCode);
         result.StdOut.ShouldBe(ImmutableArray.Create("Created"), result.GeneratedCode);
     }
+    
+    [Fact]
+    public async Task ShouldSupportFactoryWithInjectInFunc()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency {}
+
+    interface IService
+    {
+        IDependency Dep { get; }
+    }
+
+    class Service: IService 
+    {
+        public Service(IDependency dep)
+        { 
+            Dep = dep;           
+        }
+
+        public IDependency Dep { get; }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<IDependency>().To(ctx => new Dependency())
+                .Bind<IService>().To(ctx => {
+                    var func = new Func<IDependency>(() => {
+                        ctx.Inject<IDependency>(out var dependency);
+                        return dependency;
+                    });
+                    
+                    var dependency2 = func();
+                    return new Service(dependency2);
+                })   
+                .Root<IService>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service1 = composition.Service;
+            var service2 = composition.Service;
+            Console.WriteLine(service1.Dep != service2.Dep);                                            
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
+    }
 }

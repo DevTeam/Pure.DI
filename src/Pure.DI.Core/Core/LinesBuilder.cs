@@ -74,15 +74,15 @@ internal class LinesBuilder: IEnumerable<string>
         _sb.Clear();
     }
 
-    public IDisposable Indent()
+    public IDisposable Indent(int value = 1)
     {
-        IncIndent();
-        return Disposables.Create(DecIndent);
+        IncIndent(value);
+        return Disposables.Create(() => DecIndent(value));
     }
     
-    public void IncIndent() => _indent.Value++;
+    public void IncIndent(int value = 1) => _indent.Value += value;
     
-    public void DecIndent() => _indent.Value--;
+    public void DecIndent(int value = 1) => _indent.Value -= value;
 
     public IEnumerator<string> GetEnumerator()
     {

@@ -374,7 +374,11 @@ internal class CodeGraphWalker<TContext>
     {
     }
     
-    protected Variable CreateVariable(DependencyGraph source, IDictionary<MdBinding, Variable> variables, DependencyNode node, Injection injection)
+    protected Variable CreateVariable(
+        DependencyGraph source,
+        IDictionary<MdBinding, Variable> variables,
+        DependencyNode node,
+        Injection injection)
     {
         switch (node)
         {

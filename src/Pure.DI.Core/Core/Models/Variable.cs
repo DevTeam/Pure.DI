@@ -10,6 +10,7 @@ internal record Variable(
     internal static readonly string Postfix = Guid.NewGuid().ToString().ToUpperInvariant().Replace("-", "")[..6];
     internal static readonly string DisposeIndexFieldName = "_disposeIndex" + Postfix;
     internal static readonly string DisposablesFieldName = "_disposables" + Postfix;
+    internal static readonly string InjectionMarker = "injection" + Postfix;
 
     public string Name
     {
@@ -45,5 +46,5 @@ internal record Variable(
     
     public bool IsBlockRoot { get; init; }
     
-    public override string ToString() => $"{Node.Lifetime} {Node.Type} {Id.ToString()}";
+    public override string ToString() => Name;
 }
