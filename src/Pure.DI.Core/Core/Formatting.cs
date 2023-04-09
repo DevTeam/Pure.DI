@@ -6,6 +6,7 @@ namespace Pure.DI.Core;
 
 internal class Formatting : IFormatting
 {
+    public const int IndentSize = 2;
     private const int IndentsCount = 5;
     private static readonly ImmutableArray<string> Indents;
 
@@ -30,5 +31,5 @@ internal class Formatting : IFormatting
             _ => IndentInternal(indent.Value)
         };
 
-    private static string IndentInternal(int count = 1) => new(' ', count * 2);
+    private static string IndentInternal(int count = 1) => new(' ', count * IndentSize);
 }

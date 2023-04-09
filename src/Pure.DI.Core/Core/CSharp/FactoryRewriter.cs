@@ -24,6 +24,11 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
     
     public bool IsFinishMarkRequired { get; private set; }
 
+    public SimpleLambdaExpressionSyntax Rewrite(SimpleLambdaExpressionSyntax lambda)
+    {
+        return (SimpleLambdaExpressionSyntax)VisitSimpleLambdaExpression(lambda)!;
+    }
+
     public override SyntaxNode? VisitSimpleLambdaExpression(SimpleLambdaExpressionSyntax node)
     {
         _nestedLambdaCounter++;
@@ -106,8 +111,8 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
         {
             return newNode
                 .WithoutLeadingTrivia()
-                .WithLeadingTrivia(SyntaxFactory.CarriageReturn, SyntaxFactory.LineFeed)
-                .WithTrailingTrivia(SyntaxFactory.CarriageReturn, SyntaxFactory.LineFeed);
+                .WithLeadingTrivia(SyntaxFactory.LineFeed)
+                .WithTrailingTrivia(SyntaxFactory.LineFeed);
         }
 
         return newNode;
