@@ -57,6 +57,9 @@ internal class FactoryTypeRewriter: CSharpSyntaxRewriter, IBuilder<RewriterConte
         }
         
         var newType = _context.TypeConstructor.Construct(semanticModel.Compilation, type);
-        return SyntaxFactory.IdentifierName(newType.ToDisplayString());
+        return node.WithIdentifier(
+            SyntaxFactory.Identifier(newType.ToString())
+                .WithLeadingTrivia(node.Identifier.LeadingTrivia)
+                .WithTrailingTrivia(node.Identifier.TrailingTrivia));
     }
 }

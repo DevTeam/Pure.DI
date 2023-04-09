@@ -4,7 +4,6 @@ namespace Pure.DI.Core.CSharp;
 
 internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<DependencyGraph, CompositionCode>
 {
-    private static readonly string IndentPrefix = new Indent(1).ToString();
     private static readonly string InjectionStatement = $"{Variable.InjectionMarker};";
     private readonly ILogger<CompositionBuilder> _logger;
     private readonly IVarIdGenerator _idGenerator;
@@ -199,8 +198,8 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
     {
         base.VisitMethod(context, dependencyGraph, root, block, instantiation, implementation, method, methodArguments, cancellationToken);
 
-        string Inject(Variable variable) => this.Inject(context, variable);
-        var args = string.Join(", ", methodArguments.Select(Inject));
+        string InjectVariable(Variable variable) => this.Inject(context, variable);
+        var args = string.Join(", ", methodArguments.Select(InjectVariable));
         context.Code.AppendLine($"{instantiation.Target.Name}.{method.Method.Name}({args});");
     }
 
@@ -276,8 +275,8 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             return;
         }
 
-        string Inject(Variable variable) => this.Inject(context, variable);
-        context.Code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = new {construct.Source.ElementType}[{instantiation.Arguments.Length.ToString()}] {{ {string.Join(", ", instantiation.Arguments.Select(Inject))} }};");
+        string InjectVariable(Variable variable) => Inject(context, variable);
+        context.Code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = new {construct.Source.ElementType}[{instantiation.Arguments.Length.ToString()}] {{ {string.Join(", ", instantiation.Arguments.Select(InjectVariable))} }};");
         context.Code.AppendLines(GenerateOnInstanceCreatedStatements(context, instantiation.Target));
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
@@ -297,8 +296,8 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             return;
         }
         
-        string Inject(Variable variable) => this.Inject(context, variable);
-        var createArray = $"{construct.Source.ElementType}[{instantiation.Arguments.Length.ToString()}] {{ {string.Join(", ", instantiation.Arguments.Select(Inject))} }}";
+        string InjectVariable(Variable variable) => this.Inject(context, variable);
+        var createArray = $"{construct.Source.ElementType}[{instantiation.Arguments.Length.ToString()}] {{ {string.Join(", ", instantiation.Arguments.Select(InjectVariable))} }}";
         var createInstance = 
             construct.Source.ElementType.IsValueType
             && construct.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp7_3
@@ -361,20 +360,12 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             ContextTag = root.Injection.Tag
         };
         
-        var rewrittenCode = RewriteFactory(factoryBuildContext, dependencyGraph, instantiation, factory, cancellationToken);
-        if (factory.Source.Factory.Block is not null)
+        if (factory.Source.Factory.Block is null)
         {
-            code.AppendLines(rewrittenCode);
-        }
-        else
-        {
-            code.AppendLine($"{instantiation.Target.Name} =");
-            using (code.Indent())
-            {
-                code.AppendLines(rewrittenCode);
-            }
+            code.Append($"{instantiation.Target.Name} = ");
         }
         
+        code.AppendLines(RewriteFactory(factoryBuildContext, dependencyGraph, instantiation, factory, cancellationToken));
         code.AppendLines(GenerateOnInstanceCreatedStatements(context, instantiation.Target));
 
         var justReturn = context.IsRootContext && instantiation.Target == root && instantiation.Target.Node.Lifetime != Lifetime.Singleton;
@@ -399,36 +390,32 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         var injections = new List<FactoryRewriter.Injection>();
         var factoryRewriter = new FactoryRewriter(factory, instantiation.Target, finishMark, injections);
         var lambda = (SimpleLambdaExpressionSyntax)factoryRewriter.Visit(factory.Source.Factory);
-        StatementSyntax statementSyntax = lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);
-
+        
         // Converts to lines of code 
         var rewrittenCode = new LinesBuilder();
-        WriteStatementCode(statementSyntax, rewrittenCode);
+        WriteStatementCode(rewrittenCode, lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body));
 
         // Replaces injection markers by injection code
         if (injections.Any())
         {
-            var injectionPairs = injections
-                .Zip(instantiation.Arguments, (injection, argument) => (injection, argument));
-
             var factoryCodeBuilder = CreateChildBuilder();
             var newCode = new LinesBuilder();
             var factoryBuildContext = context with { Code = newCode };
-            using var resolvers = injectionPairs.GetEnumerator();
+            using var resolvers = injections.Zip(instantiation.Arguments, (injection, argument) => (injection, argument)).GetEnumerator();
             foreach (var line in rewrittenCode.Lines)
             {
-                if (line.Text.EndsWith(InjectionStatement) && resolvers.MoveNext())
+                if (line.Text.Trim() == InjectionStatement && resolvers.MoveNext())
                 {
                     // When an injection marker
                     var resolver = resolvers.Current;
                     var injectedVariable = CreateVariable(dependencyGraph, factoryBuildContext.Variables, resolver.argument.Node, resolver.argument.Injection);
                     factoryCodeBuilder.VisitRootVariable(factoryBuildContext, dependencyGraph, context.Variables, injectedVariable, cancellationToken);
-                    newCode.AppendLine(new Line(line.Indent + 1, $"{(resolver.injection.DeclarationRequired ? $"{resolver.argument.Injection.Type} " : "")}{resolver.injection.VariableName} = {Inject(context, injectedVariable)};"));
+                    newCode.AppendLine(line with { Text = $"{(resolver.injection.DeclarationRequired ? $"{resolver.argument.Injection.Type} " : "")}{resolver.injection.VariableName} = {Inject(context, injectedVariable)};" });
                 }
                 else
                 {
                     // When a code
-                    newCode.AppendLine(line);
+                    newCode.AppendLine(line with { Indent = 0 });
                 }
             }
 
@@ -443,29 +430,11 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         return rewrittenCode;
     }
 
-    private static void WriteStatementCode(StatementSyntax statement, LinesBuilder code, bool removeBlock = true)
+    private static void WriteStatementCode(LinesBuilder code, StatementSyntax statement)
     {
-        if (removeBlock && statement is BlockSyntax block)
+        foreach (var line in statement.ToString().Split(Environment.NewLine))
         {
-            foreach (var blockStatement in block.Statements)
-            {
-                WriteStatementCode(blockStatement, code, false);
-            }
-            
-            return;
-        }
-
-        int? initialIndent = default;
-        foreach (var line in statement.NormalizeWhitespace(IndentPrefix).ToString().Split(Environment.NewLine))
-        {
-            var trimmedLine = line.TrimStart();
-            var indent = (line.Length - trimmedLine.Length) / IndentPrefix.Length;
-            if (!initialIndent.HasValue && !string.IsNullOrWhiteSpace(trimmedLine))
-            {
-                initialIndent = indent;
-            }
-            
-            code.AppendLine(new Line(indent - initialIndent ?? 0, line));
+            code.AppendLine(line.TrimStart());
         }
     }
     

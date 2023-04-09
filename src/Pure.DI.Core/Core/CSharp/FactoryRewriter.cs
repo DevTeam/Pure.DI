@@ -1,7 +1,9 @@
-﻿namespace Pure.DI.Core.CSharp;
+﻿// ReSharper disable ConvertIfStatementToReturnStatement
+namespace Pure.DI.Core.CSharp;
 
 internal class FactoryRewriter : CSharpSyntaxRewriter
 {
+    private static readonly IdentifierNameSyntax InjectionMarkerExpression = SyntaxFactory.IdentifierName(Variable.InjectionMarker);
     private readonly DpFactory _factory;
     private readonly Variable _variable;
     private readonly string _finishMark;
@@ -57,12 +59,12 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
                 SyntaxFactory.ExpressionStatement(
                     SyntaxFactory.AssignmentExpression(
                         SyntaxKind.SimpleAssignmentExpression,
-                        SyntaxFactory.IdentifierName(_variable.Name), 
-                        (ExpressionSyntax)Visit(returnBody))),
+                        SyntaxFactory.IdentifierName(_variable.Name).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space), 
+                        (ExpressionSyntax)Visit(returnBody).WithLeadingTrivia(SyntaxFactory.Space))),
                 SyntaxFactory.GotoStatement(
                     SyntaxKind.GotoStatement,
-                    SyntaxFactory.IdentifierName(_finishMark))
-            );
+                    SyntaxFactory.IdentifierName(_finishMark).WithLeadingTrivia(SyntaxFactory.Space)).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space)
+            ).WithLeadingTrivia(node.GetLeadingTrivia());
         }
         
         return base.VisitReturnStatement(node);
@@ -86,15 +88,29 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
             {
                 case IdentifierNameSyntax identifierName:
                     _injections.Add(new Injection(identifierName.Identifier.Text, false));
-                    return SyntaxFactory.IdentifierName(Variable.InjectionMarker);
+                    return InjectionMarkerExpression;
                 
                 case DeclarationExpressionSyntax { Designation: SingleVariableDesignationSyntax singleVariableDesignationSyntax }:
                     _injections.Add(new Injection(singleVariableDesignationSyntax.Identifier.Text, true));
-                    return SyntaxFactory.IdentifierName(Variable.InjectionMarker);
+                    return InjectionMarkerExpression;
             }
         }
 
         return base.VisitInvocationExpression(invocation);
+    }
+
+    public override SyntaxNode VisitExpressionStatement(ExpressionStatementSyntax node)
+    {
+        var newNode = (ExpressionStatementSyntax)base.VisitExpressionStatement(node)!;
+        if (newNode.Expression.IsEquivalentTo(InjectionMarkerExpression))
+        {
+            return newNode
+                .WithoutLeadingTrivia()
+                .WithLeadingTrivia(SyntaxFactory.CarriageReturn, SyntaxFactory.LineFeed)
+                .WithTrailingTrivia(SyntaxFactory.CarriageReturn, SyntaxFactory.LineFeed);
+        }
+
+        return newNode;
     }
 
     internal record Injection(string VariableName, bool DeclarationRequired);
