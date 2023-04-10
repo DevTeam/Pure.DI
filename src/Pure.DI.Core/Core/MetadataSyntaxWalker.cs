@@ -591,23 +591,22 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                     break;
                 }
         }
-
-        if (SemanticModel.GetConstantValue(node, _cancellationToken) is { HasValue: true, Value: { } value })
+        
+        var optionalValue = SemanticModel.GetConstantValue(node);
+        if (optionalValue.Value is not null)
         {
-            _logger.CompileInfo($"Consider using hardcoded value instead of {node} due to the performance impact.", node.GetLocation(), LogId.InfoPerformanceImpact);
-            var type = SemanticModel.GetTypeInfo(node);
-            if ((type.Type ?? type.ConvertedType) is { } typeSymbol)
-            {
-                if (Type.GetType(typeSymbol.ToString()) is { IsEnum: true } runtimeType)
-                {
-                    return (T)Enum.ToObject(runtimeType, value);
-                }
-            }
+            return (T)optionalValue.Value;
+        }
 
-            if (value is T v)
-            {
-                return v;
-            }
+        var operation = SemanticModel.GetOperation(node);
+        if (operation?.ConstantValue.Value is not null)
+        {
+            return (T)operation.ConstantValue.Value!;
+        }
+
+        if (typeof(T) == typeof(object))
+        {
+            return (T)(object)new SyntaxTag(node);
         }
 
         _logger.CompileError($"{node} must be a constant value of type {typeof(T)}.", node.GetLocation(), LogId.ErrorInvalidMetadata);

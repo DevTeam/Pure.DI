@@ -57,28 +57,38 @@ internal class MetadataValidator : IValidator<MdSetup>
             throw HandledException.Shared;
         }
         
-        var supportedContracts = new HashSet<ITypeSymbol>(implementationType.AllInterfaces, SymbolEqualityComparer.Default) { implementationType };
-        var notSupportedContractsBuilder = ImmutableArray.CreateBuilder<MdContract>();
-        foreach (var contract in binding.Contracts)
-        {
-            if (!supportedContracts.Contains(contract.ContractType))
-            {
-                notSupportedContractsBuilder.Add(contract);
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-        }
-
-        var notSupportedContracts = notSupportedContractsBuilder.SafeMoveToImmutable();
-        if (notSupportedContracts.Length <= 0)
+        var supportedContracts = new HashSet<ITypeSymbol>(GetBaseTypes(implementationType), SymbolEqualityComparer.Default) { implementationType };
+        var notSupportedContracts = binding.Contracts
+            .Where(contract => !supportedContracts.Contains(contract.ContractType))
+            .Select(i => i.ContractType)
+            .ToArray();
+        
+        if (!notSupportedContracts.Any())
         {
             return;
         }
 
-        var itemsBuilder = ImmutableArray.CreateBuilder<string>();
-        notSupportedContracts.ToBuilder(itemsBuilder, i => i.ToString());
-        var items = itemsBuilder.Join(", ");
-        _logger.CompileError($"{implementationType} does not implement {items}.", location, LogId.ErrorInvalidMetadata);
+        _logger.CompileError($"{implementationType} does not implement {string.Join(", ", notSupportedContracts.Select(i => i.ToString()))}.", location, LogId.ErrorInvalidMetadata);
         throw HandledException.Shared;
+    }
+    
+    private static IEnumerable<ITypeSymbol> GetBaseTypes(ITypeSymbol symbol)
+    {
+        while (true)
+        {
+            yield return symbol;
+            foreach (var type in symbol.AllInterfaces.SelectMany(GetBaseTypes))
+            {
+                yield return type;
+            }
+
+            if (symbol.BaseType != default)
+            {
+                symbol = symbol.BaseType;
+                continue;
+            }
+
+            break;
+        }
     }
 }

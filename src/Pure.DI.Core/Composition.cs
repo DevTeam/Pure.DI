@@ -58,7 +58,6 @@ internal static partial class Composition
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpResolversFieldsBuilder).To<ResolversFieldsBuilder>()
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpToStringBuilder).To<ToStringBuilder>()
 
-        .Bind<IObserversRegistry>().Bind<IObserversProvider>().As(IoC.Lifetime.PerResolve).To<ObserversRegistry>()
         .Bind<Facade>().To<Facade>()
         .Arg<IContextOptions>()
         .Arg<IContextProducer>()
@@ -66,6 +65,7 @@ internal static partial class Composition
 
         // Singletons
         .Default(IoC.Lifetime.Singleton)
+        .Bind<IObserversRegistry>().Bind<IObserversProvider>().To<ObserversRegistry>()
         .Bind<IClock>().To<Clock>()
         .Bind<IFormatting>().To<Formatting>()
         .Bind<ICache<IoC.TT1, IoC.TT2>>().To<Cache<IoC.TT1, IoC.TT2>>()
