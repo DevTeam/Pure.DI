@@ -14,6 +14,12 @@ internal sealed class TypeConstructor : ITypeConstructor
 
     public void Bind(ITypeSymbol source, ITypeSymbol target)
     {
+        if (_marker.IsMarker(source))
+        {
+            _map[source] = target;
+            return;
+        }
+        
         switch (source)
         {
             case INamedTypeSymbol sourceNamedType when target is INamedTypeSymbol targetNamedType:

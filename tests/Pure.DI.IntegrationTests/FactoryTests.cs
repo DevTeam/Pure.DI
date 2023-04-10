@@ -252,6 +252,75 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldSupportFactoryWithInjectWithTheSameValueName()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency {}
+
+    interface IService
+    {
+        IDependency Dep { get; }
+    }
+
+    class Service: IService 
+    {
+        public Service(IDependency dep)
+        { 
+            Dep = dep;           
+        }
+
+        public IDependency Dep { get; }
+    }
+
+    class MyRoot
+    {
+        public MyRoot(IService service1, [Tag(2)] IService service2) { }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<IDependency>().To(ctx => new Dependency())
+                .Bind<IService>().To(ctx => {
+                    ctx.Inject<IDependency>(out var dependency);
+                    return new Service(dependency);
+                })
+                .Bind<IService>(2).To(ctx => {
+                    IDependency dependency;
+                    ctx.Inject<IDependency>(out dependency);
+                    return new Service(dependency);
+                })
+                .Root<MyRoot>("Root");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();                                                        
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
+    }
+    
+    [Fact]
     public async Task ShouldSupportFactoryWithParentTagInjection()
     {
         // Given

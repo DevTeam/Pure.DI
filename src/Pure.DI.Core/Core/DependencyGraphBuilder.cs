@@ -1,5 +1,6 @@
 namespace Pure.DI.Core;
 
+using System.Collections.ObjectModel;
 using CSharp;
 
 internal class DependencyGraphBuilder : IDependencyGraphBuilder
@@ -38,7 +39,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
     {
         dependencyGraph = default;
         var maxId = 0;
-        var mapBuilder = ImmutableDictionary.CreateBuilder<Injection, DependencyNode>();
+        var map = new Dictionary<Injection, DependencyNode>(nodes.Count);
         var queue = new Queue<ProcessingNode>();
         foreach (var processingNode in nodes)
         {
@@ -52,7 +53,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
             {
                 foreach (var contract in processingNode.Contracts)
                 {
-                    mapBuilder[contract] = node;
+                    map[contract] = node;
                 }
             }
 
@@ -62,9 +63,8 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
             }
         }
 
-        var map = mapBuilder.ToImmutableDictionary();
         var isValid = true;
-        var processed = new List<ProcessingNode>();
+        var processed = new List<ProcessingNode>(nodes.Count);
         var notProcessed = new List<ProcessingNode>();
         while (queue.TryDequeue(out var node))
         {
@@ -89,7 +89,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                             var newBinding = CreateGenericBinding(targetNode, injection, sourceNode, ++maxId, cancellationToken);
                             var newNode = CreateNodes(setup, newBinding, cancellationToken)
                                 .Single(i => i.Variation == sourceNode.Variation);
-                            map = map.Add(injection, newNode);
+                            map.Add(injection, newNode);
                             queue.Enqueue(CreateNewProcessingNode(injection, newNode));
                             continue;
                         }
@@ -155,7 +155,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                         var onCannotResolveNodes = CreateNodes(mdSetup, onCannotResolveBinding, cancellationToken);
                         foreach (var onCannotResolveNode in onCannotResolveNodes)
                         {
-                            map = map.Add(unresolvedInjection, onCannotResolveNode);
+                            map.Add(unresolvedInjection, onCannotResolveNode);
                             processed.Add(CreateNewProcessingNode(unresolvedInjection, onCannotResolveNode));
                             return true;
                         }
@@ -180,7 +180,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
 
         foreach (var key in map.Keys.Where(i => ReferenceEquals(i.Tag, MdTag.ContextTag)))
         {
-            map = map.Remove(key);
+            map.Remove(key);
         }
 
         var entriesBuilder = ImmutableArray.CreateBuilder<GraphEntry<DependencyNode, Dependency>>();
@@ -267,7 +267,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
             })
             .ToImmutableArray();
 
-        var newBinding = sourceNode.Binding with
+        return sourceNode.Binding with
         {
             Id = newId,
             Contracts = newContracts,
@@ -289,7 +289,6 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                 }
                 : default(MdArg?)
         };
-        return newBinding;
     }
 
     private MdBinding CreateAutoBinding(

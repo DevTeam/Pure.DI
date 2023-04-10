@@ -72,6 +72,7 @@ internal class ReadmeTarget : ITarget<int>
 
     private static async Task AddContent(string sourceFile, TextWriter readmeWriter)
     {
+        WriteLine($"Adding a content from \"{sourceFile}\"", Color.Details);
         foreach (var line in await File.ReadAllLinesAsync(Path.Combine(ReadmeDir, sourceFile)))
         {
             await readmeWriter.WriteLineAsync(line);
@@ -195,18 +196,21 @@ internal class ReadmeTarget : ITarget<int>
         return examples;
     }
 
-    private static async Task GenerateExamples(IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)> samples, StreamWriter readmeWriter, string logsDirectory)
+    private static async Task GenerateExamples(IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)> examples, StreamWriter readmeWriter, string logsDirectory)
     {
         await readmeWriter.WriteLineAsync("## Examples");
         await readmeWriter.WriteLineAsync("");
         
         await using var examplesWriter = File.CreateText(Path.Combine(ReadmeDir, ExamplesReadmeFile));
-        foreach (var (groupName, sampleItems) in samples)
+        foreach (var (groupName, exampleItems) in examples)
         {
-            await readmeWriter.WriteLineAsync($"### {new string(FormatTitle(groupName).ToArray())}");
-            foreach (var vars in sampleItems)
+            var groupTitle = new string(FormatTitle(groupName).ToArray());
+            WriteLine($"Processing examples group \"{groupTitle}\"", Color.Details);
+            await readmeWriter.WriteLineAsync($"### {groupTitle}");
+            foreach (var vars in exampleItems)
             {
                 var description = vars[DescriptionKey];
+                WriteLine($"  · \"{description}\"", Color.Details);
                 await readmeWriter.WriteLineAsync($"- [{description}]({ReadmeDir}/{ExamplesReadmeFile}{CreateRef(description)})");
                 await examplesWriter.WriteLineAsync($"#### {description}");
                 await examplesWriter.WriteLineAsync("");
@@ -266,6 +270,7 @@ internal class ReadmeTarget : ITarget<int>
             {
                 var benchmarksReportFile = files[i];
                 var reportName = new string(Path.GetFileNameWithoutExtension(benchmarksReportFile).SkipWhile(i => i != ' ').Skip(1).ToArray());
+                WriteLine($"Processing benchmarks \"{reportName}\"", Color.Details);
                 var lines = await File.ReadAllLinesAsync(benchmarksReportFile);
                 await readmeWriter.WriteLineAsync($"<details>");
                 await readmeWriter.WriteLineAsync($"<summary>{reportName}</summary>");
