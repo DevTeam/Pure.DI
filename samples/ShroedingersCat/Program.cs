@@ -49,13 +49,14 @@ public class ShroedingersCat : ICat
 
 // Let's glue all together
 
-public static class DI
+internal partial class Composition
 {
-    // Actually, this code never runs and the method might have any name or be a constructor for instance
-    // because this is just a hint to set up an object graph.
+    // In fact, this code is never run, and the method can have any name or be a constructor, for example,
+    // and can be in any part of the compiled code because this is just a hint to set up an object graph.
+    // Here the setup is part of the generated class, just as an example.
     private static void Setup() =>
         // ToString = On
-        Pure.DI.DI.Setup("Composition")
+        DI.Setup(nameof(Composition))
             // Models a random subatomic event that may or may not occur
             .Bind<Random>().As(Singleton).To<Random>()
             // Represents a quantum superposition of 2 states: Alive or Dead

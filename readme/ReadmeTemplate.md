@@ -90,11 +90,12 @@ dotnet add package Pure.DI
 Bind abstractions to their implementations or factories, define lifetimes and other options in a class like the following:
 
 ```c#
-static class DI
+internal partial class Composition
 {
-  // Actually, this code never runs and the method might have any name or be a constructor for instance
-  // because this is just a hint to set up an object graph.
-  private static void Setup() => DI.Setup("Composition")
+  // In fact, this code is never run, and the method can have any name or be a constructor, for example,
+  // and can be in any part of the compiled code because this is just a hint to set up an object graph.
+  // Here the setup is part of the generated class, just as an example.
+  private static void Setup() => DI.Setup(nameof(Composition))
       // Models a random subatomic event that may or may not occur
       .Bind<Random>().As(Singleton).To<Random>()
       // Represents a quantum superposition of 2 states: Alive or Dead

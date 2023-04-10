@@ -50,12 +50,12 @@ namespace Sample
 
     // Let's glue all together
 
-    static class Setup
+    internal partial class Composition
     {
-        private static void SetupComposition()
+        private static void Setup()
         {
             // Resolve = Off
-            DI.Setup("Composition")
+            DI.Setup(nameof(Composition))
                 // Models a random subatomic event that may or may not occur
                 .Bind<Random>().As(Singleton).To<Random>()
                 // Represents a quantum superposition of 2 states: Alive or Dead

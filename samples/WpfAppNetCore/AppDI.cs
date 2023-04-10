@@ -8,9 +8,9 @@ using Clock.ViewModels;
 using Pure.DI;
 using static Pure.DI.Lifetime;
 
-internal static class AppDI
+internal partial class Composition
 {
-    private static void Setup() => DI.Setup("Composition")
+    private static void Setup() => DI.Setup(nameof(Composition))
         // View Models
         .Bind<IClockViewModel>().To<ClockViewModel>()
 

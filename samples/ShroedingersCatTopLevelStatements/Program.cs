@@ -8,6 +8,8 @@ using static Pure.DI.Lifetime;
 // by default if it was not override in the Setup call below.
 new Composition().Root.Run();
 
+// In fact, this code is never run, and the method can have any name or be a constructor, for example,
+// and can be in any part of the compiled code because this is just a hint to set up an object graph.
 DI.Setup("Composition")
     // Models a random subatomic event that may or may not occur
     .Bind<Random>().As(Singleton).To<Random>()

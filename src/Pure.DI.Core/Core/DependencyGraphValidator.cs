@@ -13,14 +13,16 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
     {
         var graph = data.Graph;
         var isValid = data.IsValid;
+        var isErrorReported = false;
         foreach (var dependency in graph.Edges.Where(i => !i.IsResolved))
         {
-            var errorMessage = $"Cannot resolve injected dependency [{dependency.Injection}] of {dependency.Target.KindName} {dependency.Target}.";
+            var errorMessage = $"Cannot resolve {dependency.TargetSymbol?.ToString() ?? "dependency"} of {dependency.Target.KindName} {dependency.Target}.";
             var locationsWalker = new DependencyGraphLocationsWalker(dependency.Injection);
             locationsWalker.VisitDependencyNode(dependency.Target);
             foreach (var location in locationsWalker.Locations)
             {
-                _logger.CompileError(errorMessage, location, LogId.ErrorUnresolved);   
+                _logger.CompileError(errorMessage, location, LogId.ErrorUnresolved);
+                isErrorReported = true;
             }
         }
 
@@ -93,12 +95,14 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
                 foreach (var location in locationsWalker.Locations)
                 {
                     _logger.CompileError(errorMessage, location, LogId.ErrorCyclicDependency);
+                    isErrorReported = true;
                 }
             }
         }
 
-        if (!isValid)
+        if (!isValid && !isErrorReported)
         {
+            _logger.CompileError("Cannot build a dependency graph.", data.Source.Source.GetLocation(), LogId.ErrorUnresolved);
             throw HandledException.Shared;
         }
     }
