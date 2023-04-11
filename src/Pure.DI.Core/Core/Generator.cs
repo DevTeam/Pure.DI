@@ -68,7 +68,7 @@ internal class Generator : IGenerator
             {
                 _logger.Trace(setup.Settings, i => Enumerable.Repeat($"Settings \"{setup.Name.FullName}\":", 1).Concat(i.Select(j => $"{j.Key} = {j.Value}")));
                 
-                using var setupToken = _logger.TraceProcess($"metadata processing \"{setup.Name.FullName}\"");
+                using var setupToken = _logger.TraceProcess($"metadata processing \"{setup.Name.FullName}\", {setup.Bindings.Length} bindings");
                 DependencyGraph dependencyGraph;
                 using (_logger.TraceProcess($"building a dependency graph \"{setup.Name.FullName}\""))
                 {

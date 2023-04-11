@@ -74,11 +74,11 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
         {
             isValid = false;
             var hashes = new List<HashSet<int>>();
-            var errors = new Dictionary<Location, string>();
+            var locations = new HashSet<Location>();
             foreach (var cycle in cycles)
             {
                 var hash = cycle.Path.Select(i => i.Binding.Id).ToHashSet();
-                if (hashes.Any(i => i.SetEquals(hash)))
+                if (hashes.Any(i => hash.IsSubsetOf(i)))
                 {
                     continue;
                 }
@@ -91,18 +91,12 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
                 }
                 
                 hashes.Add(hash);
-                var pathDescription = string.Join("<--", cycle.Path.Select(i => $"{i.Type}"));
-                var errorMessage = $"A cyclic dependency has been found {pathDescription}.";
-                foreach (var location in locationsWalker.Locations.Distinct())
+                foreach (var location in locationsWalker.Locations.Take(1).Where(i => locations.Add(i)))
                 {
-                    errors[location] = errorMessage;
+                    var pathDescription = string.Join(" <-- ", cycle.Path.Select(i => $"{i.Type}"));
+                    _logger.CompileError($"A cyclic dependency has been found {pathDescription}.", location, LogId.ErrorCyclicDependency);
+                    isErrorReported = true;    
                 }
-            }
-
-            foreach (var (location, error) in errors)
-            {
-                _logger.CompileError(error, location, LogId.ErrorCyclicDependency);
-                isErrorReported = true;
             }
         }
 

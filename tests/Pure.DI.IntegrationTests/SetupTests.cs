@@ -273,4 +273,62 @@ namespace Sample
         result.Success.ShouldBeTrue(result.GeneratedCode);
         result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Service", "Sample.OtherService"), result.GeneratedCode);
     }
+    
+    [Fact]
+    public async Task ShouldSupportCombinedSetup()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    internal interface IDependency { }
+
+    internal class Dependency : IDependency { }
+
+    internal interface IService { }
+
+    internal class Service : IService
+    {
+        public Service(IDependency dependency)
+        {
+        }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>()
+                .Bind<IDependency>(1).To<Dependency>()
+                .Bind<IDependency>(2).To<Dependency>()
+                .Bind<IDependency>(3).To<Dependency>()
+                .Bind<IDependency>(4).To<Dependency>()
+                .Bind<IDependency>(5).To<Dependency>()
+                .Bind<IDependency>(6).To<Dependency>()
+                .Bind<IDependency>(7).To<Dependency>();
+
+            DI.Setup("Composition")
+                .Bind<IService>().To<Service>();
+        }
+    }          
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();                                                       
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
+    }
 }

@@ -5,14 +5,14 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
     private readonly ILogger<SetupsBuilder> _logger;
     private readonly IMetadataSyntaxWalker _metadataSyntaxWalker;
     private readonly List<MdSetup> _setups = new();
-    private readonly ImmutableArray<MdBinding>.Builder _bindingsBuilder = ImmutableArray.CreateBuilder<MdBinding>();
-    private readonly ImmutableArray<MdRoot>.Builder _rootsBuilder = ImmutableArray.CreateBuilder<MdRoot>();
-    private readonly ImmutableArray<MdDependsOn>.Builder _dependsOnBuilder = ImmutableArray.CreateBuilder<MdDependsOn>();
-    private readonly ImmutableArray<MdTypeAttribute>.Builder _typeAttributesBuilder = ImmutableArray.CreateBuilder<MdTypeAttribute>();
-    private readonly ImmutableArray<MdTagAttribute>.Builder _tagAttributesBuilder = ImmutableArray.CreateBuilder<MdTagAttribute>();
-    private readonly ImmutableArray<MdOrdinalAttribute>.Builder _ordinalAttributesBuilder = ImmutableArray.CreateBuilder<MdOrdinalAttribute>();
-    private readonly ImmutableArray<MdContract>.Builder _contractsBuilder = ImmutableArray.CreateBuilder<MdContract>();
-    private readonly ImmutableArray<MdTag>.Builder _tagsBuilder = ImmutableArray.CreateBuilder<MdTag>();
+    private readonly List<MdBinding> _bindings = new();
+    private readonly List<MdRoot> _roots = new();
+    private readonly List<MdDependsOn> _dependsOn = new();
+    private readonly List<MdTypeAttribute> _typeAttributes = new();
+    private readonly List<MdTagAttribute> _tagAttributes = new();
+    private readonly List<MdOrdinalAttribute> _ordinalAttributes = new();
+    private readonly List<MdContract> _contracts = new();
+    private readonly List<MdTag> _tags = new();
     private MdSetup? _setup;
     private MdBinding? _binding;
     private MdDefaultLifetime? _defaultLifetime;
@@ -55,7 +55,7 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
 
     public void VisitBinding(in MdBinding binding) => _binding = binding;
 
-    public void VisitContract(in MdContract contract) => _contractsBuilder.Add(contract);
+    public void VisitContract(in MdContract contract) => _contracts.Add(contract);
 
     public void VisitImplementation(in MdImplementation implementation)
     {
@@ -85,7 +85,7 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
     {
     }
 
-    public void VisitRoot(in MdRoot root) => _rootsBuilder.Add(root);
+    public void VisitRoot(in MdRoot root) => _roots.Add(root);
 
     public void VisitArg(in MdArg arg)
     {
@@ -103,21 +103,21 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
         _defaultLifetime = defaultLifetime;
 
     public void VisitDependsOn(in MdDependsOn dependsOn) =>
-        _dependsOnBuilder.Add(dependsOn);
+        _dependsOn.Add(dependsOn);
 
     public void VisitTypeAttribute(in MdTypeAttribute typeAttribute) =>
-        _typeAttributesBuilder.Add(typeAttribute);
+        _typeAttributes.Add(typeAttribute);
 
     public void VisitTagAttribute(in MdTagAttribute tagAttribute) =>
-        _tagAttributesBuilder.Add(tagAttribute);
+        _tagAttributes.Add(tagAttribute);
 
     public void VisitOrdinalAttribute(in MdOrdinalAttribute ordinalAttribute) =>
-        _ordinalAttributesBuilder.Add(ordinalAttribute);
+        _ordinalAttributes.Add(ordinalAttribute);
 
     public void VisitLifetime(in MdLifetime lifetime) =>
         Binding = Binding with { Lifetime = lifetime };
     
-    public void VisitTag(in MdTag tag) => _tagsBuilder.Add(tag);
+    public void VisitTag(in MdTag tag) => _tags.Add(tag);
 
     public void VisitFinish() => FinishSetup();
 
@@ -128,49 +128,48 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
             return;
         }
 
-        _bindingsBuilder.Add(
+        _bindings.Add(
             _binding.Value with
             {
-                Contracts = _contractsBuilder.ToImmutable(),
-                Tags = _tagsBuilder.ToImmutable()
+                Contracts = _contracts.ToImmutableArray(),
+                Tags = _tags.ToImmutableArray()
             });
         
-        _contractsBuilder.Clear();
-        _tagsBuilder.Clear();
+        _contracts.Clear();
+        _tags.Clear();
         _binding = default;
     }
 
     private void FinishSetup()
     {
+        if (_setup == default)
+        {
+            return;
+        }
+
         if (_binding.HasValue)
         {
             _logger.CompileError($"Binding {_binding} is not fully defined.", _binding.Value.Source.GetLocation(), LogId.ErrorInvalidMetadata);
             throw HandledException.Shared;
         }
 
-        FinishBinding();
-        if (_setup != default)
-        {
-            _setups.Add(
-                _setup with
-                {
-                    Bindings = _bindingsBuilder.ToImmutable(),
-                    Roots = _rootsBuilder.ToImmutable(),
-                    DependsOn = _dependsOnBuilder.ToImmutable(),
-                    TypeAttributes = _typeAttributesBuilder.ToImmutable(),
-                    TagAttributes = _tagAttributesBuilder.ToImmutable(),
-                    OrdinalAttributes = _ordinalAttributesBuilder.ToImmutable()
-                });
+        _setups.Add(
+            _setup with
+            {
+                Bindings = _bindings.ToImmutableArray(),
+                Roots = _roots.ToImmutableArray(),
+                DependsOn = _dependsOn.ToImmutableArray(),
+                TypeAttributes = _typeAttributes.ToImmutableArray(),
+                TagAttributes = _tagAttributes.ToImmutableArray(),
+                OrdinalAttributes = _ordinalAttributes.ToImmutableArray()
+            });
             
-            _bindingsBuilder.Clear();
-            _rootsBuilder.Clear();
-            _dependsOnBuilder.Clear();
-            _typeAttributesBuilder.Clear();
-            _tagsBuilder.Clear();
-            _ordinalAttributesBuilder.Clear();
-            _setup = default;
-        }
-        
-        _defaultLifetime = default;
+        _bindings.Clear();
+        _roots.Clear();
+        _dependsOn.Clear();
+        _typeAttributes.Clear();
+        _tags.Clear();
+        _ordinalAttributes.Clear();
+        _setup = default;
     }
 }

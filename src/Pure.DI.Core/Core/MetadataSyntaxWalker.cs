@@ -43,12 +43,11 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
     private IMetadataVisitor? _metadataVisitor;
     private CancellationToken _cancellationToken = CancellationToken.None;
     private SemanticModel? _semanticModel;
-    private readonly List<InvocationExpressionSyntax> _invocations = new();
     private readonly List<UsingDirectiveSyntax> _usingDirectives = new();
     private readonly LinkedList<string> _namespaces = new();
-    private SyntaxNode? _next;
-    private int _recursionDepth;
+    private readonly Stack<InvocationExpressionSyntax> _invocations = new();
     private string _namespace = string.Empty;
+    private Compilation? _compilation;
 
     public MetadataSyntaxWalker(ILogger<MetadataSyntaxWalker> logger) => _logger = logger;
 
@@ -62,72 +61,45 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         _metadataVisitor = metadataVisitor;
         _semanticModel = update.SemanticModel;
         _cancellationToken = cancellationToken;
-        var api =
-            ApiTypes.Select(i => SemanticModel.Compilation.GetTypeByMetadataName(i))
+        if (_compilation != update.SemanticModel.Compilation)
+        {
+            _compilation = update.SemanticModel.Compilation;
+            var api = ApiTypes
+                .Select(i => SemanticModel.Compilation.GetTypeByMetadataName(i))
                 .Select(i => i!);
 
-        _api.Clear();
-        foreach (var apiSymbol in api)
-        {
-            _api.Add(apiSymbol);
+            _api.Clear();
+            foreach (var apiSymbol in api)
+            {
+                _api.Add(apiSymbol);
+            }
         }
         
-        _invocations.Clear();
         _usingDirectives.Clear();
-        _next = update.Node;
-        do
+        Visit(update.Node);
+        var invocations = new Stack<InvocationExpressionSyntax>();
+        while (_invocations.TryPop(out var invocation))
         {
-            _recursionDepth = 0;
-            Visit(_next);
-        } while (_next != default && _invocations.Any());
-
-        foreach (var invocations in SplitInvocationsBySetups(_invocations))
-        {
-            foreach (var invocation in invocations)
-            {
-                ProcessInvocation(invocation);
-            }
+            invocations.Push(invocation);
+            base.VisitInvocationExpression(invocation);
         }
 
-        _invocations.Clear();
+        while (invocations.TryPop(out var invocation))
+        {
+            ProcessInvocation(invocation);
+        }
+
         metadataVisitor.VisitFinish();
     }
-
-    private static IEnumerable<IEnumerable<InvocationExpressionSyntax>> SplitInvocationsBySetups(IEnumerable<InvocationExpressionSyntax> invocations)
-    {
-        var part = new List<InvocationExpressionSyntax>();
-        foreach (var invocation in invocations)
-        {
-            part.Add(invocation);
-            if (invocation.Expression is MemberAccessExpressionSyntax { Name: IdentifierNameSyntax { Identifier.Text: nameof(DI.Setup) } })
-            {
-                yield return part.AsEnumerable().Reverse();
-                part.Clear();
-            }
-        }
-
-        yield return part.AsEnumerable().Reverse();
-    }
-
+    
     // ReSharper disable once CognitiveComplexity
     public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
     {
         _cancellationToken.ThrowIfCancellationRequested();
-        if (!IsMetadata(invocation))
+        if (_invocations.Count > 0 || IsMetadata(invocation))
         {
-            return;
+            _invocations.Push(invocation);
         }
-        
-        _next = default;
-        if (_recursionDepth >= 20)
-        {
-            _next = invocation;
-            return;
-        }
-
-        _recursionDepth++;
-        _invocations.Add(invocation);
-        base.VisitInvocationExpression(invocation);
     }
 
     private void ProcessInvocation(InvocationExpressionSyntax invocation)
