@@ -6,6 +6,7 @@ internal class LogObserver: ILogObserver
     private readonly DiagnosticSeverity _severity;
     private readonly IBuilder<LogEntry, LogInfo> _logInfoBuilder;
     private readonly IContextDiagnostic _diagnostic;
+    private readonly HashSet<DiagnosticInfo> _diagnostics = new();
 
     public LogObserver(IGlobalOptions globalOptions,
         IBuilder<LogEntry, LogInfo> logInfoBuilder,
@@ -27,7 +28,10 @@ internal class LogObserver: ILogObserver
             var logInfo = _logInfoBuilder.Build(logEntry, CancellationToken.None);
             if (logInfo.DiagnosticDescriptor is { } descriptor)
             {
-                _diagnostic.ReportDiagnostic(Diagnostic.Create(descriptor, logEntry.Location));
+                lock (_diagnostics)
+                {
+                    _diagnostics.Add(new DiagnosticInfo(descriptor, logEntry.Location));
+                }
             }
 
             foreach (var line in logInfo.Lines)
@@ -52,4 +56,21 @@ internal class LogObserver: ILogObserver
     public void OnCompleted()
     {
     }
+
+    public void Flush()
+    {
+        lock (_diagnostics)
+        {
+            foreach (var (descriptor, location) in _diagnostics)
+            {
+                _diagnostic.ReportDiagnostic(Diagnostic.Create(descriptor, location));
+            }
+
+            _diagnostics.Clear();
+        }
+    }
+
+    private record DiagnosticInfo(
+        DiagnosticDescriptor Descriptor,
+        Location? Location);
 }

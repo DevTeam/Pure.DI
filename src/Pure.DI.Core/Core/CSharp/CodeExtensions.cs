@@ -22,6 +22,7 @@ internal static class CodeExtensions
             nuint => $"(nuint){tag}",
             char ch => $"'{ch.ToString()}'",
             Enum en => $"{en.GetType()}.{en}",
+            ITypeSymbol => $"typeof({tag})",
             not null => tag.ToString(),
             _ => defaultValue
         };

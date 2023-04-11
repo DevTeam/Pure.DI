@@ -16,7 +16,7 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
         var isErrorReported = false;
         foreach (var dependency in graph.Edges.Where(i => !i.IsResolved))
         {
-            var errorMessage = $"Cannot resolve {dependency.TargetSymbol?.ToString() ?? "dependency"} of {dependency.Target.KindName} {dependency.Target}.";
+            var errorMessage = $"Cannot resolve {dependency.TargetSymbol?.ToString() ?? dependency.Injection.ToString()} in {dependency.Target.Type}.";
             var locationsWalker = new DependencyGraphLocationsWalker(dependency.Injection);
             locationsWalker.VisitDependencyNode(dependency.Target);
             foreach (var location in locationsWalker.Locations)
@@ -73,7 +73,8 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
         if (cycles.Any())
         {
             isValid = false;
-            var hashes = new List<HashSet<int>>(); 
+            var hashes = new List<HashSet<int>>();
+            var errors = new Dictionary<Location, string>();
             foreach (var cycle in cycles)
             {
                 var hash = cycle.Path.Select(i => i.Binding.Id).ToHashSet();
@@ -90,13 +91,18 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
                 }
                 
                 hashes.Add(hash);
-                var pathDescription = string.Join("<--", cycle.Path.Select(i => $"[{i.Type}]"));
+                var pathDescription = string.Join("<--", cycle.Path.Select(i => $"{i.Type}"));
                 var errorMessage = $"A cyclic dependency has been found {pathDescription}.";
-                foreach (var location in locationsWalker.Locations)
+                foreach (var location in locationsWalker.Locations.Distinct())
                 {
-                    _logger.CompileError(errorMessage, location, LogId.ErrorCyclicDependency);
-                    isErrorReported = true;
+                    errors[location] = errorMessage;
                 }
+            }
+
+            foreach (var (location, error) in errors)
+            {
+                _logger.CompileError(error, location, LogId.ErrorCyclicDependency);
+                isErrorReported = true;
             }
         }
 

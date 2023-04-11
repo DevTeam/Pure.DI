@@ -913,7 +913,7 @@ new int[] {1, 2, 3}
                 ctx.Inject<int[]>(out int[] array); 
                 ctx.Inject<string>("MyStr", out var str);
                 return new Dependency<int>(array, str);
-            }]<--[string(MyStr)]--["Abc"]
+            }]<--[string("MyStr")]--["Abc"]
 """);
     }
     

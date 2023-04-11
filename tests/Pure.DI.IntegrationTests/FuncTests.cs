@@ -485,4 +485,79 @@ namespace Sample
         result.Success.ShouldBeTrue(result.GeneratedCode);
         result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
     }
+    
+    [Fact]
+    public async Task ShouldSupportFuncWithArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency
+    {
+        private string _name;
+
+        public Dependency(string name)
+        {
+            _name = name;
+        }
+
+        public override string ToString() => _name;
+    }
+
+    interface IService
+    {
+        IDependency Dep { get; }        
+    }
+
+    class Service: IService 
+    {
+        private Func<string, IDependency> _depFactory;
+        public Service([Tag(typeof(string))] Func<string, IDependency> depFactory)
+        { 
+            _depFactory = depFactory;           
+        }
+
+        public IDependency Dep => _depFactory("Xyz");
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<System.Func<string, IDependency>>(typeof(string)).To(ctx => new System.Func<string, IDependency>(i => 
+                {
+                    ctx.Inject<string>(out var prefix);
+                    return new Dependency(prefix + i);
+                }))
+                .Bind<IService>().To<Service>()
+                .Arg<string>("prefix")    
+                .Root<IService>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition("Abc");
+            var service = composition.Service;
+            Console.WriteLine(service.Dep.ToString());                               
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.StdOut.ShouldBe(ImmutableArray.Create("AbcXyz"), result.GeneratedCode);
+    }
 }

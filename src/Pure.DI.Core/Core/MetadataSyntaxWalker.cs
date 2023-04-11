@@ -603,10 +603,10 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         {
             return (T)operation.ConstantValue.Value!;
         }
-
-        if (typeof(T) == typeof(object))
+        
+        if (typeof(T) == typeof(object) && operation is ITypeOfOperation typeOfOperation)
         {
-            return (T)(object)new SyntaxTag(node);
+            return (T)typeOfOperation.TypeOperand;
         }
 
         _logger.CompileError($"{node} must be a constant value of type {typeof(T)}.", node.GetLocation(), LogId.ErrorInvalidMetadata);

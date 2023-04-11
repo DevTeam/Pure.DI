@@ -5,4 +5,6 @@ internal interface ILogObserver: IObserver<LogEntry>
     StringBuilder Log { get; }
     
     StringBuilder Outcome { get; }
+
+    void Flush();
 }

@@ -172,6 +172,7 @@ internal class Generator : IGenerator
         finally
         {
             stopwatch.Stop();
+            _logObserver.Flush();
             try
             {
                 if (!string.IsNullOrWhiteSpace(logFile))

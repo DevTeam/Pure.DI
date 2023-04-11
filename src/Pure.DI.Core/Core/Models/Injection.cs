@@ -1,10 +1,12 @@
 ﻿namespace Pure.DI.Core.Models;
 
+using CSharp;
+
 internal readonly record struct Injection(
     ITypeSymbol Type,
     object? Tag)
 {
-    public override string ToString() => $"{Type}{(Tag != default ? $"({Tag})" : "")}";
+    public override string ToString() => $"{Type}{(Tag != default ? $"({Tag.ValueToString()})" : "")}";
 
     public bool Equals(Injection other) => 
         SymbolEqualityComparer.Default.Equals(Type, other.Type) && EqualTags(Tag, other.Tag);
