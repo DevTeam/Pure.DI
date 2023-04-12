@@ -3,6 +3,7 @@
 
 using Pure.DI;
 using static Pure.DI.Lifetime;
+// ReSharper disable ClassNeverInstantiated.Global
 
 namespace Sample;
 // Let's create an abstraction
@@ -55,7 +56,6 @@ internal partial class Composition
     // and can be in any part of the compiled code because this is just a hint to set up an object graph.
     // Here the setup is part of the generated class, just as an example.
     private static void Setup() =>
-        // ToString = On
         DI.Setup(nameof(Composition))
             // Models a random subatomic event that may or may not occur
             .Bind<Random>().As(Singleton).To<Random>()

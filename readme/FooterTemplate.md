@@ -1,11 +1,43 @@
 ## Composition class
 
-For each generated class, hereinafter referred to as _composition_, the setup must be done. It starts with the `Setup(...)` method, for example:
+Each generated class, hereinafter referred to as _composition_, needs to be configured. It starts with the `Setup(...)` method:
 
 ```c#
 DI.Setup("Composition")
-    ...;
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>()
+    .Root<IService>("Root");
 ```
+
+<details>
+<summary>The following class will be generated</summary>
+
+```c#
+partial class Composition
+{
+    public Composition() { }
+
+    internal Composition(Composition parent) { }
+
+    public IService Root
+    {
+        get
+        {
+            return new Service(new Dependency());
+        }
+    }
+
+    public T Resolve<T>()  { ... }
+
+    public T Resolve<T>(object? tag)  { ... }
+
+    public object Resolve(System.Type type) { ... }
+
+    public object Resolve(System.Type type, object? tag) { ... }
+}
+```
+
+</details>
 
 <details>
 <summary>Setup arguments</summary>
@@ -88,9 +120,9 @@ The child composition inherits the state of the parent composition in the form o
 </details>
 
 <details>
-<summary>Properties</summary>
+<summary>Composition Roots</summary>
 
-To be able to quickly and conveniently create an object graph, a set of properties is generated. The type of the property is the type of the root object created by the composition. Accordingly, each access to the property leads to the creation of a composition with the root element of this type.
+To be able to quickly and conveniently create an object graph, a set of properties is generated. These properties are called compositions roots here. The type of the property is the type of a root object created by the composition. Accordingly, each access to the property leads to the creation of a composition with the root element of this type.
 
 ### Public Roots
 
@@ -110,7 +142,7 @@ public IService MyService
     get
     { 
         ...
-        retunr new Service(...);
+        return new Service(...);
     }
 }
 ```
@@ -122,13 +154,19 @@ This is [recommended way](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) to 
 When the root name is empty, a private composition root is created. This root is used in these _Resolve_ methods in the same way as public roots. For example:
 
 ```c#
-private IService Root2PropABB3D0
+DI.Setup("Composition")
+    .Bind<IService>().To<Service>()
+    .Root<IService>();
+```
+
+```c#
+private IService Root1ABB3D0
 {
     get { ... }
 }
 ```
 
-These properties have a random name and a private accessor and cannot be used directly from code. Don't try to use them.
+These properties have a random name and a private accessor and cannot be used directly from code. Don't try to use them. Private composition roots can be resolved by the _Resolve_ methods.
 
 </details>
 
@@ -149,7 +187,7 @@ public object Resolve(Type type) { ... }
 public object Resolve(Type type, object? tag) { ... }
 ```
 
-These methods are useful when using the [Service Locator](https://martinfowler.com/articles/injection.html) approach when the code resolves composition roots in place:
+These methods can resolve public composition roots as well as private roots and are useful when using the [Service Locator](https://martinfowler.com/articles/injection.html) approach when the code resolves composition roots in place:
 
 ```c#
 var composition = new Composition();
@@ -157,7 +195,7 @@ var composition = new Composition();
 composition.Resolve<IService>();
 ```
 
-This is [not recommended](https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/) way to create a composition root. To control the generation of these methods, see the _Resolve_ hint.
+This is [not recommended](https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/) way to create composition roots. To control the generation of these methods, see the _Resolve_ hint.
 
 ### Dispose
 
@@ -191,6 +229,9 @@ DI.Setup("Composition")
 |------------------------------------------------------------------------------------------------------------------------------------|---------------|
 | [Resolve](#Resolve-Hint)                                                                                                           | On            |
 | [OnInstanceCreation](#OnInstanceCreation-Hint)                                                                                     | Off           |
+| [OnInstanceCreationImplementationTypeNameRegularExpression](#OnInstanceCreationImplementationTypeNameRegularExpression-Hint)       | .+            |
+| [OnInstanceCreationTagRegularExpression](#OnInstanceCreationTagRegularExpression-Hint)                                             | .+            |
+| [OnInstanceCreationLifetimeRegularExpression](#OnInstanceCreationLifetimeRegularExpression-Hint)                                   | .+            |
 | [OnDependencyInjection](#OnDependencyInjection-Hint)                                                                               | Off           |
 | [OnDependencyInjectionImplementationTypeNameRegularExpression](#OnDependencyInjectionImplementationTypeNameRegularExpression-Hint) | .+            |
 | [OnDependencyInjectionContractTypeNameRegularExpression](#OnDependencyInjectionContractTypeNameRegularExpression-Hint)             | .+            |
@@ -221,7 +262,19 @@ internal partial class Composition
 }
 ```
 
-You can also replace the created instance of type `T`, where `T` is actually type of created instance.
+You can also replace the created instance of type `T`, where `T` is actually type of created instance. To minimize the performance penalty when calling _OnInstanceCreation_, use the three related hints below.
+
+### OnInstanceCreationImplementationTypeNameRegularExpression Hint
+
+It is a regular expression to filter by the instance type name. This hint is useful when _OnInstanceCreation_ is in the _On_ state and you want to limit the set of types for which the method _OnInstanceCreation_ will be called.
+
+### OnInstanceCreationTagRegularExpression Hint
+
+It is a regular expression to filter by the _tag_. This hint is useful also when _OnInstanceCreation_ is in the _On_ state and you want to limit the set of _tag_ for which the method _OnInstanceCreation_ will be called.
+
+### OnInstanceCreationLifetimeRegularExpression Hint
+
+It is a regular expression to filter by the _lifetime_. This hint is useful also when _OnInstanceCreation_ is in the _On_ state and you want to limit the set of _lifetime_ for which the method _OnInstanceCreation_ will be called.
 
 ### OnDependencyInjection Hint
 

@@ -14,61 +14,68 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
         var graph = data.Graph;
         var isValid = data.IsValid;
         var isErrorReported = false;
-        foreach (var dependency in graph.Edges.Where(i => !i.IsResolved))
+        using (_logger.TraceProcess("search for unresolved nodes"))
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            var errorMessage = $"Cannot resolve {dependency.TargetSymbol?.ToString() ?? dependency.Injection.ToString()} in {dependency.Target.Type}.";
-            var locationsWalker = new DependencyGraphLocationsWalker(dependency.Injection);
-            locationsWalker.VisitDependencyNode(dependency.Target);
-            foreach (var location in locationsWalker.Locations)
+            foreach (var dependency in graph.Edges.Where(i => !i.IsResolved))
             {
-                _logger.CompileError(errorMessage, location, LogId.ErrorUnresolved);
-                isErrorReported = true;
+                cancellationToken.ThrowIfCancellationRequested();
+                var errorMessage = $"Cannot resolve {dependency.TargetSymbol?.ToString() ?? dependency.Injection.ToString()} in {dependency.Target.Type}.";
+                var locationsWalker = new DependencyGraphLocationsWalker(dependency.Injection);
+                locationsWalker.VisitDependencyNode(dependency.Target);
+                foreach (var location in locationsWalker.Locations)
+                {
+                    _logger.CompileError(errorMessage, location, LogId.ErrorUnresolved);
+                    isErrorReported = true;
+                }
             }
         }
 
         var cycles = new List<(Dependency CyclicDependency, ImmutableArray<DependencyNode> Path)>();
-        foreach (var rootNode in graph.Vertices.Where(i => i.Root is null))
+        using (_logger.TraceProcess("search for cycles"))
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            if (!graph.TryGetInEdges(rootNode, out var dependencies))
+            foreach (var rootNode in data.Roots.Select(i => i.Value.Node))
             {
-                continue;
-            }
-            
-            var path = new LinkedList<DependencyNode>();
-            path.AddLast(rootNode);
-            var ids = new HashSet<int>();
-            var enumerators = new Stack<(int Id, ImmutableArray<Dependency>.Enumerator Enumerator)>();
-            enumerators.Push((rootNode.Binding.Id, dependencies.GetEnumerator()));
-            while (enumerators.TryPop(out var enumerator))
-            {
-                if (!enumerator.Enumerator.MoveNext())
+                cancellationToken.ThrowIfCancellationRequested();
+                if (!graph.TryGetInEdges(rootNode, out var dependencies))
                 {
-                    if (path.Count > 0)
+                    continue;
+                }
+
+                var path = new LinkedList<DependencyNode>();
+                path.AddLast(rootNode);
+                var ids = new HashSet<int>();
+                var enumerators = new Stack<(int Id, IEnumerator<Dependency> Enumerator)>();
+                enumerators.Push((rootNode.Binding.Id, dependencies.GetEnumerator()));
+                while (enumerators.TryPop(out var enumerator))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (!enumerator.Enumerator.MoveNext())
                     {
-                        path.RemoveLast();
+                        if (path.Count > 0)
+                        {
+                            path.RemoveLast();
+                        }
+
+                        ids.Remove(enumerator.Id);
+                        continue;
                     }
 
-                    ids.Remove(enumerator.Id);
-                    continue;
-                }
+                    var dependency = enumerator.Enumerator.Current;
+                    if (!ids.Add(dependency.Source.Binding.Id))
+                    {
+                        cycles.Add((dependency, path.ToImmutableArray()));
+                        break;
+                    }
 
-                var dependency = enumerator.Enumerator.Current;
-                if (!ids.Add(dependency.Source.Binding.Id))
-                {
-                    cycles.Add((dependency, path.ToImmutableArray()));
-                    break;
+                    path.AddLast(dependency.Source);
+                    enumerators.Push(enumerator);
+                    if (!graph.TryGetInEdges(dependency.Source, out var nestedDependencies))
+                    {
+                        continue;
+                    }
+
+                    enumerators.Push((dependency.Source.Binding.Id, nestedDependencies.GetEnumerator()));
                 }
-                    
-                path.AddLast(dependency.Source);
-                enumerators.Push(enumerator);
-                if (!graph.TryGetInEdges(dependency.Source, out var nestedDependencies))
-                {
-                    continue;
-                }
-                
-                enumerators.Push((dependency.Source.Binding.Id, nestedDependencies.GetEnumerator()));
             }
         }
 

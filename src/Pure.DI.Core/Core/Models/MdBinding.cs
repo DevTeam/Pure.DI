@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Models;
 
-internal record struct MdBinding(
+internal readonly record struct MdBinding(
     int Id,
     in SyntaxNode Source,
     in SemanticModel SemanticModel,
@@ -19,7 +19,7 @@ internal record struct MdBinding(
         return string.Join(Environment.NewLine, walker);
     }
 
-    public readonly bool Equals(in MdBinding other) => Id == other.Id;
+    public bool Equals(in MdBinding other) => Id == other.Id;
 
-    public readonly override int GetHashCode() => Id;
+    public override int GetHashCode() => Id;
 }

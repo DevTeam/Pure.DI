@@ -211,7 +211,7 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
             _lines.AppendLine($"class {FormatType(node.Type, _options)} {{");
             using (_lines.Indent())
             {
-                _lines.AppendLines(_nodeLines);
+                _lines.AppendLines(_nodeLines.Lines);
             }
             
             _lines.AppendLine("}");

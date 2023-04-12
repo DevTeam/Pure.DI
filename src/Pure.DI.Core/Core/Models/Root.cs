@@ -9,5 +9,5 @@ internal record Root(
 {
     public bool IsPublic => !string.IsNullOrWhiteSpace(Name);
 
-    public string PropertyName => IsPublic ? Name : $"Root{Index.ToString()}Prop{Variable.Postfix}";
+    public string PropertyName => IsPublic ? Name : $"Root{Index.ToString()}{Variable.Postfix}";
 }

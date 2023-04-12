@@ -42,6 +42,45 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldShowErrorWhenDuplicatedRoots()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<string>().To(_ => "Abc")
+                .Root<string>("Root1")
+                .Root<string>("Root2")
+                .Root<string>("Root3");
+        }
+    }          
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();                                                       
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result.GeneratedCode);
+        result.Errors.Count.ShouldBe(2);
+    }
+    
+    [Fact]
     public async Task ShouldOverrideBinding()
     {
         // Given
@@ -156,8 +195,8 @@ namespace Sample
     {
         private static void SetupBaseComposition()
         {
-            DI.Setup("BaseComposition")
-                .Bind<IService>().To<Service>().Root<IService>("Result")
+            DI.Setup("BaseComposition", CompositionKind.Internal)
+                .Bind<IService>().To<Service>()
                 .Bind<string>().To(_ => "Abc");
         }
 

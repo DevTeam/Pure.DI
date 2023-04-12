@@ -4,10 +4,11 @@ namespace Pure.DI.Core;
 
 internal class ApiBuilder : IBuilder<Unit, IEnumerable<Source>>
 {
-    private static readonly ImmutableArray<string> ApiTemplates = ImmutableArray.Create(
+    private static readonly string[] ApiTemplates = {
         "Api.g.cs",
         "GenericTypeArguments.g.cs",
-        "Default.g.cs");
+        "Default.g.cs"
+    };
 
     private readonly IResources _resources;
 

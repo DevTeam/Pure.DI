@@ -44,10 +44,6 @@ internal class Service : IService
     {
     }
 }
-
-internal class OtherService : IService
-{
-}
 // }
 
 public class Scenario
@@ -59,19 +55,13 @@ public class Scenario
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>("Other").To<OtherService>()
-                // The first argument is the name of the root property, and the second argument is the tag               
-                .Root<IService>("OtherRoot", "Other")
             .Bind<IService>().To<Service>()
-                // The only argument is the name of the root property
-                .Root<IService>("Root");
+            .Root<IService>("Root");
 
         var composition = new Composition();
         var service = composition.Root;
-        var otherService = composition.OtherRoot;
 // }            
         service.ShouldBeOfType<Service>();
-        otherService.ShouldBeOfType<OtherService>();
         TestTools.SaveClassDiagram(composition, nameof(CompositionRootScenario));
     }
 }

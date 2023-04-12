@@ -39,9 +39,10 @@ internal static class LoggerExtensions
         }
 
         _processLevel++;
+        var prefix = new string(' ', _processLevel * 2);
         var logEntry = new LogEntry(
             DiagnosticSeverity.Hidden,
-            new []{ $"{new string('>', _processLevel * 4)}{shortDescription} started" },
+            new []{ $">        {prefix}{shortDescription} started" },
             location);
 
         logger.Log(logEntry);
@@ -52,7 +53,7 @@ internal static class LoggerExtensions
             stopwatch.Stop();
             logger.Log(logEntry with
             {
-                Lines = new []{ $"{new string('<', _processLevel * 4)}{shortDescription} finished in {stopwatch.Elapsed.TotalMilliseconds:F} ms" },
+                Lines = new []{ $"{stopwatch.Elapsed.TotalMilliseconds,8:#####0.0} {prefix}{shortDescription} finished" },
                 IsOutcome = true
             });
             

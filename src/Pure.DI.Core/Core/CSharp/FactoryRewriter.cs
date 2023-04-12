@@ -6,19 +6,19 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
     private static readonly IdentifierNameSyntax InjectionMarkerExpression = SyntaxFactory.IdentifierName(Variable.InjectionMarker);
     private readonly DpFactory _factory;
     private readonly Variable _variable;
-    private readonly string _finishMark;
+    private readonly string _finishLabel;
     private readonly ICollection<Injection> _injections;
     private int _nestedLambdaCounter;
 
     public FactoryRewriter(
         DpFactory factory,
         Variable variable,
-        string finishMark,
+        string finishLabel,
         ICollection<Injection> injections)
     {
         _factory = factory;
         _variable = variable;
-        _finishMark = finishMark;
+        _finishLabel = finishLabel;
         _injections = injections;
     }
     
@@ -68,7 +68,7 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
                         (ExpressionSyntax)Visit(returnBody).WithLeadingTrivia(SyntaxFactory.Space))),
                 SyntaxFactory.GotoStatement(
                     SyntaxKind.GotoStatement,
-                    SyntaxFactory.IdentifierName(_finishMark).WithLeadingTrivia(SyntaxFactory.Space)).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space)
+                    SyntaxFactory.IdentifierName(_finishLabel).WithLeadingTrivia(SyntaxFactory.Space)).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space)
             ).WithLeadingTrivia(node.GetLeadingTrivia());
         }
         

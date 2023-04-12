@@ -14,6 +14,23 @@ internal enum Setting
     OnInstanceCreation,
     
     /// <summary>
+    /// The regular expression to filter OnInstanceCreation by the instance type name. ".+" by default.
+    /// </summary>
+    OnInstanceCreationImplementationTypeNameRegularExpression,
+    
+    /// <summary>
+    /// The regular expression to filter OnInstanceCreation by the tag. ".+" by default.
+    /// ".+" by default. 
+    /// </summary>
+    OnInstanceCreationTagRegularExpression,
+    
+    /// <summary>
+    /// The regular expression to filter OnInstanceCreation by the lifetime. ".+" by default.
+    /// ".+" by default. 
+    /// </summary>
+    OnInstanceCreationLifetimeRegularExpression,
+    
+    /// <summary>
     /// Determine whether to generate partial <c>OnDependencyInjection</c> method to control of dependency injection. <c>On</c> or <c>Off</c>. <c>Off</c> by default.
     /// </summary>
     OnDependencyInjection,

@@ -108,9 +108,9 @@ namespace Sample
 
     internal class Service : IService
     {
-        public Service(IDependency dependency1, IDependency dependency2)
+        public Service(Func<IDependency> dependency1, IDependency dependency2)
         {
-            Dependency1 = dependency1;
+            Dependency1 = dependency1();
             Dependency2 = dependency2;
         }
 
@@ -126,6 +126,7 @@ namespace Sample
             DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
                 .Bind<IService>().To<Service>()
+                .Root<IDependency>("Dependency")
                 .Root<IService>("Root");
         }
     }

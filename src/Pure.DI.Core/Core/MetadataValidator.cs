@@ -1,4 +1,5 @@
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
 using System.Diagnostics.CodeAnalysis;
@@ -19,7 +20,27 @@ internal class MetadataValidator : IValidator<MdSetup>
             _logger.CompileWarning("None of the composition roots are declared. Add at least one root.", setup.Source.GetLocation(), LogId.WarningMetadataDefect);
         }
 
-        if (!setup.Bindings.Aggregate(true, (current, binding) => current & Validate(binding, cancellationToken)))
+        var isValid = setup.Bindings
+            .Aggregate(
+                true, 
+                (current, binding) => current & Validate(binding, cancellationToken));
+
+        foreach (var routeGroups in setup.Roots.GroupBy(root => new Injection(root.RootType, root.Tag?.Value)))
+        {
+            var roots = routeGroups.ToArray();
+            if (roots.Length <= 1)
+            {
+                continue;
+            }
+
+            foreach (var root in roots.Skip(1))
+            {
+                _logger.CompileError($"The composition root \"{root.Name}\" duplicates the previously declared root \"{roots[0].Name}\"", root.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                isValid = false;
+            }
+        }
+
+        if (!isValid)
         {
             throw HandledException.Shared;
         }

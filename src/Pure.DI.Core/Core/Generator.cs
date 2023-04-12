@@ -79,18 +79,18 @@ internal class Generator : IGenerator
                         graphObserver.OnNext(dependencyGraph);
                     }
                 }
-
-                using (_logger.TraceProcess($"dependency graph validation \"{setup.Name.FullName}\""))
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    _dependencyGraphValidator.Validate(dependencyGraph, cancellationToken);
-                }
-
+                
                 using (_logger.TraceProcess($"search for roots \"{setup.Name.FullName}\""))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     var roots = _rootsBuilder.Build(dependencyGraph, cancellationToken);
                     dependencyGraph = dependencyGraph with { Roots = roots };
+                }
+
+                using (_logger.TraceProcess($"dependency graph validation \"{setup.Name.FullName}\""))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    _dependencyGraphValidator.Validate(dependencyGraph, cancellationToken);
                 }
 
                 CompositionCode composition;
@@ -176,7 +176,7 @@ internal class Generator : IGenerator
 
                     var log = _logObserver.Log;
                     log.Append(_logObserver.Outcome);
-                    log.AppendLine($"Done in {stopwatch.Elapsed.TotalMilliseconds:F} ms");
+                    log.AppendLine($"{stopwatch.Elapsed.TotalMilliseconds,8:#####0.0} ms");
                     File.WriteAllText(logFile, log.ToString());
                 }
             }

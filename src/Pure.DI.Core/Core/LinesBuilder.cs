@@ -8,7 +8,7 @@ internal class LinesBuilder: IEnumerable<string>
 {
     private static readonly string[] Indents = new string[64]; 
     private readonly StringBuilder _sb = new(); 
-    private readonly List<Line> _lines = new();
+    private readonly List<Line> _lines = new(64);
     private readonly Indent _indent;
 
     static LinesBuilder()
@@ -43,23 +43,7 @@ internal class LinesBuilder: IEnumerable<string>
     public void AppendLine(in Line line) => 
         _lines.Add(line with { Indent = line.Indent + CurrentIndent.Value });
 
-    public void AppendLines(in ImmutableArray<Line> lines)
-    {
-        foreach (var line in lines)
-        {
-            AppendLine(line);
-        }
-    }
-    
     public void AppendLines(IEnumerable<Line> lines)
-    {
-        foreach (var line in lines)
-        {
-            AppendLine(line);
-        }
-    }
-
-    public void AppendLines(in IEnumerable<string> lines)
     {
         foreach (var line in lines)
         {
@@ -69,9 +53,16 @@ internal class LinesBuilder: IEnumerable<string>
 
     public void AppendLine(string line = "")
     {
-        _sb.Append(line);
-        _lines.Add(new Line(_indent.Value, _sb.ToString()));
-        _sb.Clear();
+        if (_sb.Length > 0)
+        {
+            _sb.Append(line);
+            _lines.Add(new Line(_indent.Value, _sb.ToString()));
+            _sb.Clear();
+        }
+        else
+        {
+            _lines.Add(new Line(_indent.Value, line));
+        }
     }
 
     public IDisposable Indent(int value = 1)

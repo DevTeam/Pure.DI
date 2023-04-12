@@ -44,7 +44,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
     private CancellationToken _cancellationToken = CancellationToken.None;
     private SemanticModel? _semanticModel;
     private readonly List<UsingDirectiveSyntax> _usingDirectives = new();
-    private readonly LinkedList<string> _namespaces = new();
+    private readonly HashSet<string> _namespaces = new();
     private readonly Stack<InvocationExpressionSyntax> _invocations = new();
     private string _namespace = string.Empty;
     private Compilation? _compilation;
@@ -388,16 +388,15 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
     public override void VisitFileScopedNamespaceDeclaration(FileScopedNamespaceDeclarationSyntax namespaceDeclaration)
     {
         _namespace = namespaceDeclaration.Name.ToString().Trim();
-        _namespaces.AddLast(_namespace);
+        _namespaces.Add(_namespace);
         base.VisitFileScopedNamespaceDeclaration(namespaceDeclaration);
     }
 
     public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax namespaceDeclaration)
     {
         _namespace = namespaceDeclaration.Name.ToString().Trim();
-        _namespaces.AddLast(_namespace);
+        _namespaces.Add(_namespace);
         base.VisitNamespaceDeclaration(namespaceDeclaration);
-        _namespaces.RemoveLast();
     }
 
     private void VisitFactory(ITypeSymbol resultType, SimpleLambdaExpressionSyntax lambdaExpression)

@@ -17,7 +17,7 @@ internal class RootPropertiesBuilder: IBuilder<CompositionCode, CompositionCode>
 
         var generatePrivateRoots = composition.Source.Source.Settings.GetState(Setting.Resolve, SettingState.On) == SettingState.On;
         var membersCounter = composition.MembersCount;
-        code.AppendLine("#region Roots");
+        code.AppendLine("#region Composition Roots");
         var isFirst = true;
         foreach (var root in composition.Roots.Where(i => generatePrivateRoots || i.IsPublic))
         {

@@ -6,9 +6,9 @@ internal class CodeGraphWalker<TContext>
 {
     private readonly IVarIdGenerator _idGenerator;
 
-    public CodeGraphWalker(IVarIdGenerator idGenerator) => _idGenerator = idGenerator;
+    protected CodeGraphWalker(IVarIdGenerator idGenerator) => _idGenerator = idGenerator;
 
-    public virtual void VisitGraph(
+    protected void VisitGraph(
         TContext context,
         DependencyGraph dependencyGraph, 
         IDictionary<MdBinding, Variable> variables,
@@ -18,35 +18,36 @@ internal class CodeGraphWalker<TContext>
         {
             cancellationToken.ThrowIfCancellationRequested();
             VisitRoot(context, dependencyGraph, variables, root, cancellationToken);
-            var keysToRemove = variables
-                .Where(i => i.Value.Node.Lifetime != Lifetime.Singleton && i.Value.Node.Arg is null)
-                .Select(i => i.Key)
-                .ToImmutableArray();
-
-            foreach (var binding in keysToRemove)
-            {
-                variables.Remove(binding);
-            }
         }
     }
 
-    public virtual void VisitRoot(
+    protected virtual void VisitRoot(
         TContext context,
         DependencyGraph dependencyGraph,
         IDictionary<MdBinding, Variable> variables,
         Root root,
         CancellationToken cancellationToken)
     {
+        var rootVariable = CreateVariable(dependencyGraph, variables, root.Node, root.Injection);
+        VisitRootVariable(context, dependencyGraph, variables, rootVariable, cancellationToken);
+        
+        var keysToRemove = variables
+            .Where(i => i.Value.Node.Lifetime != Lifetime.Singleton && i.Value.Node.Arg is null)
+            .Select(i => i.Key)
+            .ToArray();
+
+        foreach (var binding in keysToRemove)
+        {
+            variables.Remove(binding);
+        }
+        
         foreach (var variable in variables.Values)
         {
             variable.IsCreated = false;
         }
-
-        var rootVariable = CreateVariable(dependencyGraph, variables, root.Node, root.Injection);
-        VisitRootVariable(context, dependencyGraph, variables, rootVariable, cancellationToken);
     }
-    
-    public virtual void VisitRootVariable(
+
+    protected virtual void VisitRootVariable(
         TContext context,
         DependencyGraph dependencyGraph,
         IDictionary<MdBinding, Variable> variables,
@@ -119,7 +120,7 @@ internal class CodeGraphWalker<TContext>
         }
     }
 
-    public virtual void VisitBlock(TContext context,
+    protected virtual void VisitBlock(TContext context,
         DependencyGraph dependencyGraph,
         Variable root,
         Block block,
@@ -128,33 +129,32 @@ internal class CodeGraphWalker<TContext>
         foreach (var instantiation in block.Instantiations)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            VisitInstantiation(context, dependencyGraph, root, block, instantiation, cancellationToken);
+            VisitInstantiation(context, dependencyGraph, root, instantiation, cancellationToken);
         }
     }
 
-    public virtual void VisitInstantiation(
+    protected virtual void VisitInstantiation(
         TContext context,
         DependencyGraph dependencyGraph,
         Variable root,
-        Block block,
         Instantiation instantiation,
         CancellationToken cancellationToken)
     {
         if (instantiation.Target.Node.Implementation is { } implementation)
         {
-            VisitImplementation(context, dependencyGraph, root, block, instantiation, implementation, cancellationToken);
+            VisitImplementation(context, root, instantiation, implementation, cancellationToken);
         }
         else
         {
             if (instantiation.Target.Node.Factory is { } factory)
             {
-                VisitFactory(context, dependencyGraph, root, block, instantiation, factory, cancellationToken);
+                VisitFactory(context, dependencyGraph, root, instantiation, factory, cancellationToken);
             }
             else
             {
                 if (instantiation.Target.Node.Arg is { } arg)
                 {
-                    VisitArg(context, dependencyGraph, root, block, instantiation, arg, cancellationToken);
+                    VisitArg(context, root, instantiation, arg);
                 }
                 else
                 {
@@ -163,19 +163,19 @@ internal class CodeGraphWalker<TContext>
                         switch (construct.Source.Kind)
                         {
                             case MdConstructKind.Enumerable:
-                                VisitEnumerableConstruct(context, dependencyGraph, block, root, construct, instantiation, cancellationToken);
+                                VisitEnumerableConstruct(context, dependencyGraph, root, construct, instantiation, cancellationToken);
                                 break;
                 
                             case MdConstructKind.Array:
-                                VisitArrayConstruct(context, dependencyGraph, block, root, construct, instantiation, cancellationToken);
+                                VisitArrayConstruct(context, root, construct, instantiation);
                                 break;
                             
                             case MdConstructKind.Span:
-                                VisitSpanConstruct(context, dependencyGraph, block, root, construct, instantiation, cancellationToken);
+                                VisitSpanConstruct(context, root, construct, instantiation);
                                 break;
                             
                             case MdConstructKind.OnCannotResolve:
-                                VisitOnCannotResolve(context, dependencyGraph, block, root, construct, instantiation, cancellationToken);
+                                VisitOnCannotResolve(context, root, construct, instantiation);
                                 break;
                         }
                     }
@@ -183,12 +183,10 @@ internal class CodeGraphWalker<TContext>
             }
         }
     }
-    
-    public virtual void VisitImplementation(
+
+    protected virtual void VisitImplementation(
         TContext context,
-        DependencyGraph dependencyGraph,
         Variable root,
-        Block block,
         Instantiation instantiation,
         in DpImplementation implementation,
         CancellationToken cancellationToken)
@@ -212,15 +210,11 @@ internal class CodeGraphWalker<TContext>
 
         VisitConstructor(
             context,
-            dependencyGraph,
-            root,
-            block,
             instantiation,
             implementation,
             implementation.Constructor,
             ctorArgs,
-            initOnlyProperties.ToImmutableArray(),
-            cancellationToken);
+            initOnlyProperties.ToImmutableArray());
 
         var curImplementation = implementation;
         var visits = new List<(Action Run, int? Ordinal)>();
@@ -228,7 +222,7 @@ internal class CodeGraphWalker<TContext>
         {
             argsWalker.VisitField(field);
             var fieldVariable = argsWalker.GetResult().Single();
-            void VisitFieldAction() => VisitField(context, dependencyGraph, root, block, instantiation, curImplementation, field, fieldVariable, cancellationToken);
+            void VisitFieldAction() => VisitField(context, instantiation, field, fieldVariable);
             visits.Add((VisitFieldAction, field.Ordinal));
         }
         
@@ -236,7 +230,7 @@ internal class CodeGraphWalker<TContext>
         {
             argsWalker.VisitProperty(property);
             var propertyVariable = argsWalker.GetResult().Single();
-            void VisitFieldAction() => VisitProperty(context, dependencyGraph, root, block, instantiation, curImplementation, property, propertyVariable, cancellationToken);
+            void VisitFieldAction() => VisitProperty(context, instantiation, property, propertyVariable);
             visits.Add((VisitFieldAction, property.Ordinal));
         }
         
@@ -244,7 +238,7 @@ internal class CodeGraphWalker<TContext>
         {
             argsWalker.VisitMethod(method);
             var methodArgs = argsWalker.GetResult();
-            void VisitMethodAction() => VisitMethod(context, dependencyGraph, root, block, instantiation, curImplementation, method, methodArgs, cancellationToken);
+            void VisitMethodAction() => VisitMethod(context, instantiation, method, methodArgs);
             visits.Add((VisitMethodAction, method.Ordinal));
         }
 
@@ -255,64 +249,44 @@ internal class CodeGraphWalker<TContext>
         }
     }
 
-    public virtual void VisitConstructor(
+    protected virtual void VisitConstructor(
         TContext context,
-        DependencyGraph dependencyGraph,
-        Variable root,
-        Block block,
         Instantiation instantiation,
         in DpImplementation implementation,
         in DpMethod constructor,
         in ImmutableArray<Variable> constructorArguments,
-        in ImmutableArray<(Variable InitOnlyVariable, DpProperty InitOnlyProperty)> initOnlyProperties,
-        CancellationToken cancellationToken)
+        in ImmutableArray<(Variable InitOnlyVariable, DpProperty InitOnlyProperty)> initOnlyProperties)
     {
     }
-    
-    public virtual void VisitField(
+
+    protected virtual void VisitField(
         TContext context,
-        DependencyGraph dependencyGraph,
-        Variable root,
-        Block block,
         Instantiation instantiation,
-        in DpImplementation implementation,
         in DpField field,
-        Variable fieldVariable,
-        CancellationToken cancellationToken)
+        Variable fieldVariable)
     {
     }
 
-    public virtual void VisitProperty(
+    protected virtual void VisitProperty(
         TContext context,
-        DependencyGraph dependencyGraph,
-        Variable root,
-        Block block,
         Instantiation instantiation,
-        in DpImplementation implementation,
         in DpProperty property,
-        Variable propertyVariable,
-        CancellationToken cancellationToken)
-    {
-    }
-    
-    public virtual void VisitMethod(
-        TContext context,
-        DependencyGraph dependencyGraph,
-        Variable root,
-        Block block,
-        Instantiation instantiation,
-        in DpImplementation implementation,
-        in DpMethod method,
-        in ImmutableArray<Variable> methodArguments,
-        CancellationToken cancellationToken)
+        Variable propertyVariable)
     {
     }
 
-    public virtual void VisitFactory(
+    protected virtual void VisitMethod(
+        TContext context,
+        Instantiation instantiation,
+        in DpMethod method,
+        in ImmutableArray<Variable> methodArguments)
+    {
+    }
+
+    protected virtual void VisitFactory(
         TContext context,
         DependencyGraph dependencyGraph,
         Variable root,
-        Block block,
         Instantiation instantiation,
         in DpFactory factory,
         CancellationToken cancellationToken)
@@ -321,56 +295,43 @@ internal class CodeGraphWalker<TContext>
 
     public virtual void VisitArg(
         TContext context,
-        DependencyGraph dependencyGraph,
         Variable rootVariable,
-        Block block,
         Instantiation instantiation,
-        in DpArg dpArg,
-        CancellationToken cancellationToken)
+        in DpArg dpArg)
     {
     }
-    
-    public virtual void VisitEnumerableConstruct(
+
+    protected virtual void VisitEnumerableConstruct(
         TContext context,
         DependencyGraph dependencyGraph,
-        Block block,
         Variable root,
         in DpConstruct construct,
         Instantiation instantiation,
         CancellationToken cancellationToken)
     {
     }
-    
-    public virtual void VisitArrayConstruct(
+
+    protected virtual void VisitArrayConstruct(
         TContext context,
-        DependencyGraph dependencyGraph,
-        Block block,
         Variable root,
         in DpConstruct construct,
-        Instantiation instantiation,
-        CancellationToken cancellationToken)
+        Instantiation instantiation)
     {
     }
-    
-    public virtual void VisitSpanConstruct(
+
+    protected virtual void VisitSpanConstruct(
         TContext context,
-        DependencyGraph dependencyGraph,
-        Block block,
         Variable root,
         in DpConstruct construct,
-        Instantiation instantiation,
-        CancellationToken cancellationToken)
+        Instantiation instantiation)
     {
     }
-    
-    public virtual void VisitOnCannotResolve(
+
+    protected virtual void VisitOnCannotResolve(
         TContext context,
-        DependencyGraph dependencyGraph,
-        Block block,
         Variable root,
         in DpConstruct construct,
-        Instantiation instantiation,
-        CancellationToken cancellationToken)
+        Instantiation instantiation)
     {
     }
     
@@ -400,7 +361,7 @@ internal class CodeGraphWalker<TContext>
             case { Lifetime: Lifetime.Singleton }:
                 if (variables.TryGetValue(node.Binding, out var singletonVar))
                 {
-                    return singletonVar;
+                    return singletonVar.CreateLinkedVariable(injection);
                 }
 
                 singletonVar = new Variable(source, 0, node, injection)
@@ -415,7 +376,7 @@ internal class CodeGraphWalker<TContext>
             case { Lifetime: Lifetime.PerResolve }:
                 if (variables.TryGetValue(node.Binding, out var perResolveVar))
                 {
-                    return perResolveVar;
+                    return perResolveVar.CreateLinkedVariable(injection);
                 }
 
                 perResolveVar = new Variable(source, _idGenerator.NextId, node, injection);
