@@ -67,8 +67,7 @@ public class Scenario
                 dependency.Initialize();
                 return dependency;
             })
-            .Bind<IService>().To<Service>()
-            .Root<IService>("Root");
+            .Bind<IService>().To<Service>().Root<IService>("Root");
 
         var composition = new Composition();
         var service = composition.Root;

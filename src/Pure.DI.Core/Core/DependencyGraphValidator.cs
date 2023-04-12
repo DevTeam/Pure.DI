@@ -9,13 +9,14 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
         _logger = logger;
     }
 
-    public void Validate(in DependencyGraph data, in CancellationToken cancellationToken)
+    public void Validate(in DependencyGraph data, CancellationToken cancellationToken)
     {
         var graph = data.Graph;
         var isValid = data.IsValid;
         var isErrorReported = false;
         foreach (var dependency in graph.Edges.Where(i => !i.IsResolved))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var errorMessage = $"Cannot resolve {dependency.TargetSymbol?.ToString() ?? dependency.Injection.ToString()} in {dependency.Target.Type}.";
             var locationsWalker = new DependencyGraphLocationsWalker(dependency.Injection);
             locationsWalker.VisitDependencyNode(dependency.Target);
@@ -29,6 +30,7 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
         var cycles = new List<(Dependency CyclicDependency, ImmutableArray<DependencyNode> Path)>();
         foreach (var rootNode in graph.Vertices.Where(i => i.Root is null))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (!graph.TryGetInEdges(rootNode, out var dependencies))
             {
                 continue;
@@ -77,6 +79,7 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
             var locations = new HashSet<Location>();
             foreach (var cycle in cycles)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 var hash = cycle.Path.Select(i => i.Binding.Id).ToHashSet();
                 if (hashes.Any(i => hash.IsSubsetOf(i)))
                 {

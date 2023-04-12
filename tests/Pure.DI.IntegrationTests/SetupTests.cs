@@ -6,6 +6,42 @@ using Core;
 public class SetupTests
 {
     [Fact]
+    public async Task ShouldGenerateCompositionWhenHasNoAnyRoots()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<string>().To(_ => "Abc");
+        }
+    }          
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();                                                       
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result.GeneratedCode);
+        result.Warnings.Count.ShouldBe(1);
+    }
+    
+    [Fact]
     public async Task ShouldOverrideBinding()
     {
         // Given
@@ -121,15 +157,15 @@ namespace Sample
         private static void SetupBaseComposition()
         {
             DI.Setup("BaseComposition")
-                .Bind<IService>().To<Service>()
+                .Bind<IService>().To<Service>().Root<IService>("Result")
                 .Bind<string>().To(_ => "Abc");
         }
 
         private static void SetupComposition()
         {
             DI.Setup("Composition").DependsOn("BaseComposition")
-                .Root<IService>("Result")                
-                .Bind<string>().To(_ => "Xyz");
+                .Bind<string>().To(_ => "Xyz")
+                .Root<IService>("Result");
         }
     }          
 
@@ -314,7 +350,7 @@ namespace Sample
                 .Bind<IDependency>(7).To<Dependency>();
 
             DI.Setup("Composition")
-                .Bind<IService>().To<Service>();
+                .Bind<IService>().To<Service>().Root<IService>();
         }
     }          
 

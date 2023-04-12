@@ -41,8 +41,8 @@ public class Scenario
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>()
-            .Bind<IService>("Other").To<OtherService>();
+            .Bind<IService>().To<Service>().Root<IService>("Service")
+            .Bind<IService>("Other").To<OtherService>().Root<IService>("OtherService", "Other");
 
         var composition = new Composition();
         var service1 = composition.Resolve<IService>();

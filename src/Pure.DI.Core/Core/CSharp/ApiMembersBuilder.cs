@@ -58,7 +58,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             code.AppendLine();
         }
 
-        if (composition.Source.Source.Settings.GetState(Setting.OnInstanceCreation, SettingState.On) == SettingState.On)
+        if (composition.Source.Source.Settings.GetState(Setting.OnInstanceCreation) == SettingState.On)
         {
             code.AppendLine(Constant.MethodImplOptions);
             code.AppendLine($"partial void {Constant.OnInstanceCreationMethodName}<T>(ref T value, object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");

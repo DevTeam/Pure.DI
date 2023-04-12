@@ -72,8 +72,7 @@ public class Scenario
         // OnCannotResolveContractTypeNameRegularExpression = string
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().Tags().To<Service>()
-            .Root<IService>("Root");
+            .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
 
         var composition = new Composition();
         var service = composition.Root;

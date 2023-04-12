@@ -90,23 +90,14 @@ internal class Generator : IGenerator
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     var roots = _rootsBuilder.Build(dependencyGraph, cancellationToken);
-                    if (!roots.Any())
-                    {
-                        return;
-                    }
-                    
                     dependencyGraph = dependencyGraph with { Roots = roots };
                 }
 
                 CompositionCode composition;
-                using (_logger.TraceProcess($"creating a composition \"{setup.Name.FullName}\""))
+                using (_logger.TraceProcess($"creating composition \"{setup.Name.FullName}\""))
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     composition = _compositionBuilder.Build(dependencyGraph, cancellationToken);
-                    if (!composition.Roots.Any())
-                    {
-                        return;
-                    }
                 }
 
                 using (_logger.TraceProcess($"code generation \"{setup.Name.FullName}\""))

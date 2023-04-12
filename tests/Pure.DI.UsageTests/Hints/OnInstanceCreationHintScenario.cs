@@ -2,7 +2,7 @@
 $v=true
 $p=4
 $d=OnInstanceCreation Hint
-$h=The _OnInstanceCreation_ hint determines whether to generate partial _OnInstanceCreation_ method. The default value is On, so you can omit it if you don't want to explicitly disable it.
+$h=The _OnInstanceCreation_ hint determines whether to generate partial _OnInstanceCreation_ method.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -66,12 +66,10 @@ public class Scenario
     {
         // ToString = On
 // {
-        // This is the default hint, so you can omit it.
         // OnInstanceCreation = On
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().Tags().To<Service>()
-            .Root<IService>("Root");
+            .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
 
         var log = new List<string>();
         var composition = new Composition(log);

@@ -44,12 +44,13 @@ public class Scenario
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To(ctx =>
-            {
-                ctx.Inject<IDependency>(out var dependency);
-                return new Service(dependency);
-            })
-            .Root<IService>("Root");
+            .Bind<IService>()
+                .To(ctx =>
+                {
+                    ctx.Inject<IDependency>(out var dependency);
+                    return new Service(dependency);
+                })
+                .Root<IService>("Root");
 
         var composition = new Composition();
         var service = composition.Root;

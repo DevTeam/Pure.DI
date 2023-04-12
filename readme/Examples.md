@@ -25,11 +25,11 @@ internal class OtherService : IService
 DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>("Other").To<OtherService>()
+        // The first argument is the name of the root property, and the second argument is the tag
+        .Root<IService>("OtherRoot", "Other")
     .Bind<IService>().To<Service>()
-    // The only argument is the name of the root property
-    .Root<IService>("Root")
-    // The first argument is the name of the root property, and the second argument is the tag
-    .Root<IService>("OtherRoot", "Other");
+        // The only argument is the name of the root property
+        .Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;
@@ -61,8 +61,8 @@ Service --|> IService :
 class Service {
 +Service(IDependency dependency)
 }
-Composition ..> OtherService : "Other" IService OtherRoot
 Composition ..> Service : IService Root
+Composition ..> OtherService : "Other" IService OtherRoot
 Service *--  Dependency : IDependency dependency
 ```
 
@@ -114,8 +114,8 @@ internal class OtherService : IService
 
 DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
-    .Bind<IService>("Other").To<OtherService>();
+    .Bind<IService>().To<Service>().Root<IService>("Service")
+    .Bind<IService>("Other").To<OtherService>().Root<IService>("OtherService", "Other");
 
 var composition = new Composition();
 var service1 = composition.Resolve<IService>();
@@ -132,6 +132,8 @@ var otherService2 = composition.Resolve(typeof(IService),"Other");
 ```mermaid
 classDiagram
 class Composition {
++IService Service
++IService OtherService
 +T ResolveᐸTᐳ()
 +T ResolveᐸTᐳ(object? tag)
 +object ResolveᐸTᐳ(Type type)
@@ -149,6 +151,8 @@ OtherService --|> IService : "Other"
 class OtherService {
 +OtherService()
 }
+Composition ..> OtherService : "Other" IService OtherService
+Composition ..> Service : IService Service
 Service *--  Dependency : IDependency dependency
 ```
 
@@ -208,8 +212,7 @@ DI.Setup("Composition")
         dependency.Initialize();
         return dependency;
     })
-    .Bind<IService>().To<Service>()
-    .Root<IService>("Root");
+    .Bind<IService>().To<Service>().Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;
@@ -271,12 +274,13 @@ internal class Service : IService
 
 DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To(ctx =>
-    {
-        ctx.Inject<IDependency>(out var dependency);
-        return new Service(dependency);
-    })
-    .Root<IService>("Root");
+    .Bind<IService>()
+        .To(ctx =>
+        {
+            ctx.Inject<IDependency>(out var dependency);
+            return new Service(dependency);
+        })
+        .Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;
@@ -340,8 +344,7 @@ internal class Service : IService
 
 DI.Setup("Composition")
     .Bind<IDependency<TT>>().To<Dependency<TT>>()
-    .Bind<IService>().To<Service>()
-    .Root<IService>("Root");
+    .Bind<IService>().To<Service>().Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;
@@ -418,9 +421,8 @@ internal class Service : IService
 
 DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
-    .Arg<string>("serviceName")
-    .Root<IService>("Root");
+    .Bind<IService>().To<Service>().Root<IService>("Root")
+    .Arg<string>("serviceName");
 
 var composition = new Composition("Abc");
 var service = composition.Root;
@@ -496,8 +498,7 @@ internal class Service : IService
 DI.Setup("Composition")
     .Bind<IDependency>("Abc").To<AbcDependency>()
     .Bind<IDependency>("Xyz").To<XyzDependency>()
-    .Bind<IService>().To<Service>()
-    .Root<IService>("Root");
+    .Bind<IService>().To<Service>().Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;
@@ -625,8 +626,7 @@ internal class Service : IService
 
 DI.Setup("Composition")
     .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-    .Bind<IService>().To<Service>()
-    .Root<IService>("Root");
+    .Bind<IService>().To<Service>().Root<IService>("Root");
 
 var composition = new Composition();
 IService serviceFromChild;
@@ -696,8 +696,7 @@ internal class Service : IService
 
 DI.Setup("Composition")
     .Bind<IDependency>().Bind<IAdvancedDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
-    .Root<IService>("Root");
+    .Bind<IService>().To<Service>().Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;
@@ -758,8 +757,7 @@ internal class Service : IService
 
 DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
-    .Root<IService>("Root");
+    .Bind<IService>().To<Service>().Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;
@@ -818,8 +816,7 @@ internal class Service : IService
 
 DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
-    .Root<IService>("Root");
+    .Bind<IService>().To<Service>().Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;
@@ -985,8 +982,7 @@ internal class Service : IService
 
 DI.Setup("Composition")
     .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-    .Bind<IService>().To<Service>()
-    .Root<IService>("Root");
+    .Bind<IService>().To<Service>().Root<IService>("Root");
 
 var composition = new Composition();
 var service1 = composition.Root;
@@ -1054,8 +1050,7 @@ internal class Service : IService
 
 DI.Setup("Composition")
     .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>()
-    .Bind<IService>().To<Service>()
-    .Root<IService>("Root");
+    .Bind<IService>().To<Service>().Root<IService>("Root");
 
 var composition = new Composition();
 var service1 = composition.Root;
@@ -1123,8 +1118,7 @@ internal class Service : IService
 
 DI.Setup("Composition")
     .Bind<IDependency>().As(Lifetime.Transient).To<Dependency>()
-    .Bind<IService>().To<Service>()
-    .Root<IService>("Root");
+    .Bind<IService>().To<Service>().Root<IService>("Root");
 
 var composition = new Composition();
 var service1 = composition.Root;
@@ -1200,8 +1194,7 @@ internal class Service : IService
 
 DI.Setup("Composition")
     .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-    .Bind<IService>().To<Service>()
-    .Root<IService>("Root");
+    .Bind<IService>().To<Service>().Root<IService>("Root");
 
 IDependency dependency;
 using (var composition = new Composition())
@@ -1273,8 +1266,7 @@ internal class Service : IService
 DI.Setup("Composition")
     .DefaultLifetime(Lifetime.Singleton)
     .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
-    .Root<IService>("Root");
+    .Bind<IService>().To<Service>().Root<IService>("Root");
 
 var composition = new Composition();
 var service1 = composition.Root;
@@ -1959,8 +1951,7 @@ internal class DecoratorService : IService
 DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>("base").To<Service>()
-    .Bind<IService>().To<DecoratorService>()
-    .Root<IService>("Root");
+    .Bind<IService>().To<DecoratorService>().Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;
@@ -2071,8 +2062,7 @@ internal partial class Composition: IInterceptor
 // OnDependencyInjection = On
 DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().Tags().To<Service>()
-    .Root<IService>("Root");
+    .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
 
 var log = new List<string>();
 var composition = new Composition(log);
@@ -2204,8 +2194,7 @@ internal partial class Composition: IInterceptor
 // OnDependencyInjection = On
 DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().Tags().To<Service>()
-    .Root<IService>("Root");
+    .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
 
 var log = new List<string>();
 var composition = new Composition(log);
@@ -2269,10 +2258,8 @@ internal class Service : IService
 
 // Resolve = Off
 DI.Setup("Composition")
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
-    .Root<IService>("Root")
-    .Root<IDependency>("DependencyRoot");
+    .Bind<IDependency>().To<Dependency>().Root<IDependency>("DependencyRoot")
+    .Bind<IService>().To<Service>().Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;
@@ -2296,8 +2283,8 @@ Service --|> IService :
 class Service {
 +Service(IDependency dependency)
 }
-Composition ..> Dependency : IDependency DependencyRoot
 Composition ..> Service : IService Root
+Composition ..> Dependency : IDependency DependencyRoot
 Service *--  Dependency : IDependency dependency
 ```
 
@@ -2327,8 +2314,7 @@ internal class Service : IService
 // ThreadSafe = Off
 DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
-    .Root<IService>("Root");
+    .Bind<IService>().To<Service>().Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;
@@ -2412,8 +2398,7 @@ internal partial class Composition
 // OnDependencyInjectionContractTypeNameRegularExpression = IDependency
 DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().Tags().To<Service>()
-    .Root<IService>("Root");
+    .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
 
 var log = new List<string>();
 var composition = new Composition(log);
@@ -2505,8 +2490,7 @@ internal partial class Composition
 // OnCannotResolveContractTypeNameRegularExpression = string
 DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().Tags().To<Service>()
-    .Root<IService>("Root");
+    .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;
@@ -2547,7 +2531,7 @@ Service *--  Dependency : IDependency dependency
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/OnInstanceCreationHintScenario.cs)
 
-The _OnInstanceCreation_ hint determines whether to generate partial _OnInstanceCreation_ method. The default value is On, so you can omit it if you don't want to explicitly disable it.
+The _OnInstanceCreation_ hint determines whether to generate partial _OnInstanceCreation_ method.
 
 ```c#
 public interface IDependency
@@ -2592,12 +2576,10 @@ internal partial class Composition
     }
 }
 
-// This is the default hint, so you can omit it.
 // OnInstanceCreation = On
 DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().Tags().To<Service>()
-    .Root<IService>("Root");
+    .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
 
 var log = new List<string>();
 var composition = new Composition(log);
@@ -2654,8 +2636,7 @@ internal class Service : IService
 // ToString = On
 DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>()
-    .Root<IService>("MyService");
+    .Bind<IService>().To<Service>().Root<IService>("MyService");
 
 var composition = new Composition();
 string classDiagram = composition.ToString();

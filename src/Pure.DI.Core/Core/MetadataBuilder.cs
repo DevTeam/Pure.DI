@@ -5,6 +5,7 @@
 // ReSharper disable HeapView.ObjectAllocation.Possible
 // ReSharper disable HeapView.DelegateAllocation
 // ReSharper disable HeapView.ClosureAllocation
+// ReSharper disable LoopCanBeConvertedToQuery
 namespace Pure.DI.Core;
 
 using System.Diagnostics.CodeAnalysis;
@@ -47,7 +48,6 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
             var setupsBuilder = _setupsBuilderFactory();
             foreach (var newSetup in setupsBuilder.Build(update, cancellationToken))
             {
-                _metadataValidator.Validate(newSetup, cancellationToken);
                 setups.Add(newSetup);    
             }
             
@@ -84,6 +84,7 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
             
             MergeSetups(setupsChain, out var mergedSetup, true, cancellationToken);
             _logger.Trace(mergedSetup, i => Enumerable.Repeat("Metadata created", 1).Concat(i.ToStrings(1)), setup.Source.GetLocation());
+            _metadataValidator.Validate(mergedSetup, cancellationToken);
             yield return mergedSetup;
         }
     }

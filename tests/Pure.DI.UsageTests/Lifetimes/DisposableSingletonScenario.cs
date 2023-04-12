@@ -52,8 +52,7 @@ public class Scenario
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-            .Bind<IService>().To<Service>()
-            .Root<IService>("Root");
+            .Bind<IService>().To<Service>().Root<IService>("Root");
 
         IDependency dependency;
         using (var composition = new Composition())

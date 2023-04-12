@@ -183,7 +183,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
             map.Remove(key);
         }
 
-        var entriesBuilder = ImmutableArray.CreateBuilder<GraphEntry<DependencyNode, Dependency>>();
+        var entries = new List<GraphEntry<DependencyNode, Dependency>>(processed.Count);
         var unresolvedSource = new DependencyNode(0);
         foreach (var node in processed)
         {
@@ -204,14 +204,14 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                 edges.Add(dependency);
             }
 
-            entriesBuilder.Add(new GraphEntry<DependencyNode, Dependency>(node.Node, edges.ToImmutable()));
+            entries.Add(new GraphEntry<DependencyNode, Dependency>(node.Node, edges.ToImmutable()));
         }
 
         if (notProcessed.Any())
         {
             foreach (var node in notProcessed)
             {
-                var edges = ImmutableArray.CreateBuilder<Dependency>(node.Injections.Length);
+                var edges = new List<Dependency>(node.Injections.Length);
                 var symbols = new DependenciesToSymbolsWalker();
                 symbols.VisitDependencyNode(node.Node);
                 foreach (var (injection, symbol) in node.Injections.Zip(symbols, (injection, symbol) => (injection, symbol)))
@@ -219,14 +219,14 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                     edges.Add(new Dependency(false, unresolvedSource, injection, node.Node, symbol));
                 }
 
-                entriesBuilder.Add(new GraphEntry<DependencyNode, Dependency>(node.Node, edges.MoveToImmutable()));
+                entries.Add(new GraphEntry<DependencyNode, Dependency>(node.Node, edges.ToImmutableArray()));
             }
         }
 
         dependencyGraph = new DependencyGraph(
             isValid,
             setup,
-            new Graph<DependencyNode, Dependency>(entriesBuilder.ToImmutable()),
+            new Graph<DependencyNode, Dependency>(entries.ToImmutableArray()),
             map,
             ImmutableDictionary<Injection, Root>.Empty);
         

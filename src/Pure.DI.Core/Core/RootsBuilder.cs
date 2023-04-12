@@ -19,14 +19,12 @@ internal class RootsBuilder: IBuilder<DependencyGraph, IReadOnlyDictionary<Injec
                 continue;
             }
 
-            bool isRoot;
             var name = "";
             if (node.Root is { } root)
             {
                 if (dependencyGraph.Graph.TryGetInEdges(node, out var rootDependencies) && rootDependencies.Length == 1)
                 {
                     node = rootDependencies.Single().Source;
-                    isRoot = true;
                     name = root.Source.Name;
                 }
                 else
@@ -36,7 +34,7 @@ internal class RootsBuilder: IBuilder<DependencyGraph, IReadOnlyDictionary<Injec
             }
             else
             {
-                isRoot = false;
+                continue;
             }
 
             // ReSharper disable once LoopCanBeConvertedToQuery
@@ -48,7 +46,6 @@ internal class RootsBuilder: IBuilder<DependencyGraph, IReadOnlyDictionary<Injec
                         0,
                         node,
                         injection,
-                        isRoot,
                         name,
                         ImmutableArray<Line>.Empty)));
             }

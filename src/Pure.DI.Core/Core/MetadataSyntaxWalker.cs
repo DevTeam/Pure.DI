@@ -277,17 +277,20 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                         break;
 
                     case nameof(IConfiguration.Root):
-                        if (genericName.TypeArgumentList.Arguments is [{ } rootType]
-                            && invocation.ArgumentList.Arguments is [{ Expression: { } nameExpression }, ..] rootArgs)
+                        if (genericName.TypeArgumentList.Arguments is [{ } rootType])
                         {
+                            var rootArgs = invocation.ArgumentList.Arguments;
                             var rootSymbol = GetTypeSymbol<INamedTypeSymbol>(rootType);
-                            var name = GetConstantValue<string>(nameExpression);
-                            MdTag? tag = default;
-                            if (rootArgs.Count == 2)
+                            var name = "";
+                            if (rootArgs.Count >= 1)
                             {
-                                var tagArg = rootArgs[1];
-                                tag = new MdTag(0,
-                                    GetConstantValue<object>(tagArg.Expression));
+                                name = GetConstantValue<string>(rootArgs[0].Expression);
+                            }
+
+                            MdTag? tag = default;
+                            if (rootArgs.Count >= 2)
+                            {
+                                tag = new MdTag(0, GetConstantValue<object>(rootArgs[1].Expression));
                             }
 
                             MetadataVisitor.VisitRoot(new MdRoot(invocation, SemanticModel, rootSymbol, name, tag));

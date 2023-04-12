@@ -22,7 +22,7 @@ namespace Sample
         private static void SetupComposition()
         {
             DI.Setup("Composition")
-                .Bind<IService>().To<Service>();
+                .Bind<IService>().To<Service>().Root<IService>("Root");
         }
     }
 

@@ -12,16 +12,21 @@ internal class MetadataValidator : IValidator<MdSetup>
         _logger = logger;
     }
 
-    public void Validate(in MdSetup setup, in CancellationToken cancellationToken)
+    public void Validate(in MdSetup setup, CancellationToken cancellationToken)
     {
-        foreach (var binding in setup.Bindings)
+        if (setup.Kind == CompositionKind.Public && !setup.Roots.Any())
         {
-            Validate(binding, cancellationToken);
+            _logger.CompileWarning("None of the composition roots are declared. Add at least one root.", setup.Source.GetLocation(), LogId.WarningMetadataDefect);
+        }
+
+        if (!setup.Bindings.Aggregate(true, (current, binding) => current & Validate(binding, cancellationToken)))
+        {
+            throw HandledException.Shared;
         }
     }
 
     [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]
-    private void Validate(in MdBinding binding, in CancellationToken cancellationToken)
+    private bool Validate(in MdBinding binding, in CancellationToken cancellationToken)
     {
         ITypeSymbol? implementationType = default;
         SemanticModel? semanticModel = default;
@@ -65,11 +70,11 @@ internal class MetadataValidator : IValidator<MdSetup>
         
         if (!notSupportedContracts.Any())
         {
-            return;
+            return true;
         }
 
         _logger.CompileError($"{implementationType} does not implement {string.Join(", ", notSupportedContracts.Select(i => i.ToString()))}.", location, LogId.ErrorInvalidMetadata);
-        throw HandledException.Shared;
+        return false;
     }
     
     private static IEnumerable<ITypeSymbol> GetBaseTypes(ITypeSymbol symbol)

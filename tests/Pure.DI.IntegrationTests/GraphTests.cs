@@ -44,7 +44,7 @@ namespace Sample
     {                   
         private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>(); 
+            .Bind<IService>().To<Service>().Root<IService>(); 
     }               
 
     public class Program { public static void Main() { } }
@@ -53,6 +53,64 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result.GeneratedCode);
+        var graphs = GetGraphs(result);
+        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs[0].ConvertToString().ShouldBe("""
+Sample.IService() 
+  +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+Dependency()
+Service(Sample.IDependency dependency<--Sample.IDependency))
+  +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
+""");
+    }
+    
+    [Fact]
+    public async Task ShouldSupportBindToImplementationWhenHasNoRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+
+    internal interface IService
+    {
+    }
+
+    internal interface IDependency
+    {
+    }
+
+    internal class Service : IService
+    {
+        internal Service(IDependency dependency)
+        {
+        }
+    }
+
+    internal class Dependency : IDependency
+    {
+        public Dependency() {}
+    }
+
+    internal partial class Composition
+    {                   
+        private static void Setup() => Pure.DI.DI.Setup("Composition")
+            .Bind<IDependency>().To<Dependency>()
+            .Bind<IService>().To<Service>(); 
+    }               
+
+    public class Program { public static void Main() { } }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result.GeneratedCode);
+        result.Errors.Count.ShouldBe(0);
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result.GeneratedCode);
         graphs[0].ConvertToString().ShouldBe("""
@@ -163,7 +221,7 @@ namespace Sample
     {                   
         private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>(); 
+            .Bind<IService>().To<Service>().Root<IService>(); 
     }               
 
     public class Program { public static void Main() { } }
@@ -175,6 +233,8 @@ namespace Sample
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result.GeneratedCode);
         graphs[0].ConvertToString().ShouldBe("""
+Sample.IService() 
+  +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
 Dependency()
 Service(Sample.IDependency dependency<--Sample.IDependency))
   +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
@@ -218,7 +278,7 @@ namespace Sample
     {                   
         private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To(_ => new Dependency())
-            .Bind<IService>().To<Service>(); 
+            .Bind<IService>().To<Service>().Root<IService>(); 
     }               
 
     public class Program { public static void Main() { } }
@@ -230,6 +290,8 @@ namespace Sample
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result.GeneratedCode);
         graphs[0].ConvertToString().ShouldBe("""
+Sample.IService() 
+  +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
 new Dependency()
 Service(Sample.IDependency dependency<--Sample.IDependency))
   +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[new Dependency()]
@@ -273,7 +335,7 @@ namespace Sample
     {                   
         private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Arg<IDependency>("dep")
-            .Bind<IService>().To<Service>(); 
+            .Bind<IService>().To<Service>().Root<IService>(); 
     }
 
     public class Program { public static void Main() { } }               
@@ -285,6 +347,8 @@ namespace Sample
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result.GeneratedCode);
         graphs[0].ConvertToString().ShouldBe("""
+Sample.IService() 
+  +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
 Sample.IDependency dep
 Service(Sample.IDependency dependency<--Sample.IDependency))
   +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Sample.IDependency dep]
@@ -332,7 +396,7 @@ namespace Sample
                .Bind<IDependency>().To<Dependency>();
 
             Pure.DI.DI.Setup("Composition")
-                .Bind<IService>().To<Service>();
+                .Bind<IService>().To<Service>().Root<IService>();
         }  
     }               
 
@@ -345,6 +409,8 @@ namespace Sample
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result.GeneratedCode);
         graphs[0].ConvertToString().ShouldBe("""
+Sample.IService() 
+  +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
 Dependency()
 Service(Sample.IDependency dependency<--Sample.IDependency))
   +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
@@ -448,7 +514,7 @@ namespace Sample
 
         private static void Setup2() => Pure.DI.DI.Setup("Composition")
             .DependsOn("BaseComposition")
-            .Bind<IService>().To<Service>();
+            .Bind<IService>().To<Service>().Root<IService>();
     }
 
     public class Program { public static void Main() { } }               
@@ -460,6 +526,8 @@ namespace Sample
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result.GeneratedCode);
         graphs[0].ConvertToString().ShouldBe("""
+Sample.IService() 
+  +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
 Dependency()
 Service(Sample.IDependency dependency<--Sample.IDependency))
   +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
@@ -505,7 +573,7 @@ namespace Sample
             .Bind<IDependency>().To<Dependency>(); 
 
         private static void Setup2() => Pure.DI.DI.Setup("Composition")
-            .Bind<IService>().To<Service>();
+            .Bind<IService>().To<Service>().Root<IService>();
     }
 
     public class Program { public static void Main() { } }               
@@ -517,6 +585,8 @@ namespace Sample
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result.GeneratedCode);
         graphs[0].ConvertToString().ShouldBe("""
+Sample.IService() 
+  +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
 Dependency()
 Service(Sample.IDependency dependency<--Sample.IDependency))
   +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
@@ -559,11 +629,13 @@ namespace Sample
     internal partial class Composition
     {                   
         private static void Setup1() => Pure.DI.DI.Setup("BaseComposition", CompositionKind.Public)
-            .Bind<IDependency>().To<Dependency>(); 
+            .Bind<IDependency>().To<Dependency>()
+            .Root<IDependency>(); 
 
         private static void Setup2() => Pure.DI.DI.Setup("Composition")
             .DependsOn("BaseComposition")
-            .Bind<IService>().To<Service>();
+            .Bind<IService>().To<Service>()
+            .Root<IService>();
     }
 
     public class Program { public static void Main() { } }               
@@ -575,6 +647,10 @@ namespace Sample
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(2, result.GeneratedCode);
         graphs[1].ConvertToString().ShouldBe("""
+Sample.IService() 
+  +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+Sample.IDependency() 
+  +[Sample.IDependency() ]<--[Sample.IDependency]--[Dependency()]
 Dependency()
 Service(Sample.IDependency dependency<--Sample.IDependency))
   +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
@@ -653,7 +729,7 @@ namespace Sample
     internal partial class Composition
     {                   
         private static void Setup() => Pure.DI.DI.Setup("Composition")
-            .Bind<IService>().To<Service>() 
+            .Bind<IService>().To<Service>().Root<IService>() 
 """ + bindingCode;
 
         // When
@@ -664,6 +740,8 @@ namespace Sample
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result.GeneratedCode);
         graphs[0].ConvertToString().ShouldBe("""
+Sample.IService() 
+  +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency0 dependency<--Sample.IDependency0))]
 Service(Sample.IDependency0 dependency<--Sample.IDependency0))
   +[Service(Sample.IDependency0 dependency<--Sample.IDependency0))]<--[Sample.IDependency0]--[Dependency0(Sample.IDependency1 dep<--Sample.IDependency1))]
 """ + graphText);
@@ -708,7 +786,7 @@ namespace Sample
     {                   
         private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>(); 
+            .Bind<IService>().To<Service>().Root<IService>(); 
     }
 
     public class Program { public static void Main() { } }               
@@ -720,6 +798,8 @@ namespace Sample
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result.GeneratedCode);
         graphs[0].ConvertToString().ShouldBe("""
+Sample.IService() 
+  +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
 Dependency()
 Service(Sample.IDependency dependency<--Sample.IDependency))
   +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
@@ -763,7 +843,7 @@ namespace Sample
     {                   
         private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency<TT>>().To<Dependency<TT>>()
-            .Bind<IService>().To<Service>(); 
+            .Bind<IService>().To<Service>().Root<IService>(); 
     }
 
     public class Program { public static void Main() { } }               
@@ -775,6 +855,8 @@ namespace Sample
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result.GeneratedCode);
         graphs[0].ConvertToString().ShouldBe("""
+Sample.IService() 
+  +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]
 Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))
   +[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]<--[Sample.IDependency<int>]--[Dependency<int>()]
 Dependency<int>()
@@ -818,7 +900,7 @@ namespace Sample
     {                   
         private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency<TT>>().To(_ => new Dependency<TT>(new TT[1]))
-            .Bind<IService>().To<Service>(); 
+            .Bind<IService>().To<Service>().Root<IService>(); 
     }
 
     public class Program { public static void Main() { } }               
@@ -830,6 +912,8 @@ namespace Sample
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result.GeneratedCode);
         graphs[0].ConvertToString().ShouldBe("""
+Sample.IService() 
+  +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]
 Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))
   +[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]<--[Sample.IDependency<int>]--[new Dependency<int>(new int[1])]
 new Dependency<int>(new int[1])
@@ -878,7 +962,7 @@ namespace Sample
                 ctx.Inject<string>("MyStr", out var str);
                 return new Dependency<TT>(array, str);
             })
-            .Bind<IService>().To<Service>()
+            .Bind<IService>().To<Service>().Root<IService>()
             .Bind<int[]>().To(_ => new int[] {1, 2, 3}); 
     }
 
@@ -891,6 +975,8 @@ namespace Sample
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result.GeneratedCode);
         graphs[0].ConvertToString().ShouldBe("""
+Sample.IService() 
+  +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]
 "Abc"
 Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))
   +[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]<--[Sample.IDependency<int>]--[{
@@ -963,7 +1049,7 @@ namespace Sample
     {                   
         private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency<TT1, TT2>>().To<Dependency<TT1, TT2>>()
-            .Bind<IService>().To<Service>(); 
+            .Bind<IService>().To<Service>().Root<IService>(); 
     }
 
     public class Program { public static void Main() { } }               
@@ -975,6 +1061,8 @@ namespace Sample
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result.GeneratedCode);
         graphs[0].ConvertToString().ShouldBe("""
+Sample.IService() 
+  +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>> dependency<--Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>))]
 Service(Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>> dependency<--Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>))
   +[Service(Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>> dependency<--Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>))]<--[Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>]--[Dependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>(Sample.Dependency2 dep<--Sample.Dependency2))]
 Dependency2()
@@ -1015,7 +1103,7 @@ namespace Sample
     internal partial class Composition
     {                   
         private static void Setup() => Pure.DI.DI.Setup("Composition")
-            .Bind<IService>().To<Service>(); 
+            .Bind<IService>().To<Service>().Root<IService>(); 
     }
 
     public class Program { public static void Main() { } }               
@@ -1027,6 +1115,8 @@ namespace Sample
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result.GeneratedCode);
         graphs[0].ConvertToString().ShouldBe("""
+Sample.IService() 
+  +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.Dependency dependency<--Sample.Dependency))]
 Service(Sample.Dependency dependency<--Sample.Dependency))
   +[Service(Sample.Dependency dependency<--Sample.Dependency))]<--[Sample.Dependency]--[Dependency()]
 Dependency()
@@ -1075,7 +1165,7 @@ namespace Sample
     {                   
         private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency2>().To<Dependency2>()
-            .Bind<IService>().To<Service>(); 
+            .Bind<IService>().To<Service>().Root<IService>(); 
     }
 
     public class Program { public static void Main() { } }               
@@ -1087,6 +1177,8 @@ namespace Sample
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result.GeneratedCode);
         graphs[0].ConvertToString().ShouldBe("""
+Sample.IService() 
+  +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.Dependency dependency<--Sample.Dependency))]
 Dependency2()
 Service(Sample.Dependency dependency<--Sample.Dependency))
   +[Service(Sample.Dependency dependency<--Sample.Dependency))]<--[Sample.Dependency]--[Dependency(Sample.IDependency2 dep<--Sample.IDependency2))]
@@ -1127,7 +1219,7 @@ namespace Sample
     internal partial class Composition
     {                   
         private static void Setup() => Pure.DI.DI.Setup("Composition")
-            .Bind<IService>().To<Service>(); 
+            .Bind<IService>().To<Service>().Root<IService>(); 
     }
 
     public class Program { public static void Main() { } }               
@@ -1139,6 +1231,8 @@ namespace Sample
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result.GeneratedCode);
         graphs[0].ConvertToString().ShouldBe("""
+Sample.IService() 
+  +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.Dependency<string> dependency<--Sample.Dependency<string>))]
 Service(Sample.Dependency<string> dependency<--Sample.Dependency<string>))
   +[Service(Sample.Dependency<string> dependency<--Sample.Dependency<string>))]<--[Sample.Dependency<string>]--[Dependency<string>()]
 Dependency<string>()
@@ -1356,11 +1450,11 @@ namespace Sample
     {                   
         private static void Setup1() => Pure.DI.DI.Setup("Composition1")
             .Bind<IDependency1>().To<Dependency1>()
-            .Bind<IService1>().To<Service1>();        
+            .Bind<IService1>().To<Service1>().Root<IService1>();        
 
         private static void Setup2() => Pure.DI.DI.Setup("Composition2")
             .Bind<IDependency2>().To<Dependency2>()
-            .Bind<IService2>().To<Service2>();
+            .Bind<IService2>().To<Service2>().Root<IService2>();
     }               
 
     public class Program { public static void Main() { } }
@@ -1372,11 +1466,15 @@ namespace Sample
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(2, result.GeneratedCode);
         graphs[0].ConvertToString().ShouldBe("""
+Sample.IService1() 
+  +[Sample.IService1() ]<--[Sample.IService1]--[Service1(Sample.IDependency1 dependency<--Sample.IDependency1))]
 Dependency1()
 Service1(Sample.IDependency1 dependency<--Sample.IDependency1))
   +[Service1(Sample.IDependency1 dependency<--Sample.IDependency1))]<--[Sample.IDependency1]--[Dependency1()]
 """);
         graphs[1].ConvertToString().ShouldBe("""
+Sample.IService2() 
+  +[Sample.IService2() ]<--[Sample.IService2]--[Service2(Sample.IDependency2 dependency<--Sample.IDependency2))]
 Dependency2()
 Service2(Sample.IDependency2 dependency<--Sample.IDependency2))
   +[Service2(Sample.IDependency2 dependency<--Sample.IDependency2))]<--[Sample.IDependency2]--[Dependency2()]

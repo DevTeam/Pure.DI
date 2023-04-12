@@ -99,7 +99,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
     {
         if (!instantiation.Target.IsDeclared)
         {
-            context.Code.AppendLine($"//----------{instantiation.Target.Injection.ToString().PadRight(64, '-')}----------//");
+            context.Code.AppendLine($"//---{instantiation.Target.Injection.ToString().PadRight(64, '-')}---//");
         }
 
         base.VisitInstantiation(context, dependencyGraph, root, block, instantiation, cancellationToken);
@@ -501,7 +501,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             yield break;
         }
 
-        if (variable.Source.Source.Settings.GetState(Setting.OnInstanceCreation, SettingState.On) != SettingState.On)
+        if (variable.Source.Source.Settings.GetState(Setting.OnInstanceCreation) != SettingState.On)
         {
             yield break;
         }

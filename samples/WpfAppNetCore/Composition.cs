@@ -12,7 +12,7 @@ internal partial class Composition
 {
     private static void Setup() => DI.Setup(nameof(Composition))
         // View Models
-        .Bind<IClockViewModel>().To<ClockViewModel>()
+        .Bind<IClockViewModel>().To<ClockViewModel>().Root<IClockViewModel>()
 
         // Singletons:
         .DefaultLifetime(Singleton)
@@ -24,8 +24,4 @@ internal partial class Composition
         .Bind<ILog<TT>>().To<Log<TT>>()
         .Bind<ITimer>().To(_ => new Clock.Models.Timer(TimeSpan.FromSeconds(1)))
         .Bind<IClock>().To<SystemClock>();
-        
-    private static void SetupDesignTime() => DI.Setup("DesignTimeComposition")
-        // Design-time View Models
-        .Bind<IClockViewModel>().To<ClockViewModelDesignTime>();    
 }

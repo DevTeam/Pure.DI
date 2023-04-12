@@ -60,11 +60,11 @@ public class Scenario
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>("Other").To<OtherService>()
+                // The first argument is the name of the root property, and the second argument is the tag               
+                .Root<IService>("OtherRoot", "Other")
             .Bind<IService>().To<Service>()
-            // The only argument is the name of the root property
-            .Root<IService>("Root")
-            // The first argument is the name of the root property, and the second argument is the tag               
-            .Root<IService>("OtherRoot", "Other");
+                // The only argument is the name of the root property
+                .Root<IService>("Root");
 
         var composition = new Composition();
         var service = composition.Root;
