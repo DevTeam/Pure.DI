@@ -384,7 +384,7 @@ namespace Sample
         }
     }                
 }
-""".RunAsync();
+""".RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
         result.Success.ShouldBeTrue(result.GeneratedCode);

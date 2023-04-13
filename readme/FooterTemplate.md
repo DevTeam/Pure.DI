@@ -225,24 +225,24 @@ DI.Setup("Composition")
     ...
 ```
 
-| Hint                                                                                                                               | Default Value |
-|------------------------------------------------------------------------------------------------------------------------------------|---------------|
-| [Resolve](#Resolve-Hint)                                                                                                           | On            |
-| [OnInstanceCreation](#OnInstanceCreation-Hint)                                                                                     | Off           |
-| [OnInstanceCreationImplementationTypeNameRegularExpression](#OnInstanceCreationImplementationTypeNameRegularExpression-Hint)       | .+            |
-| [OnInstanceCreationTagRegularExpression](#OnInstanceCreationTagRegularExpression-Hint)                                             | .+            |
-| [OnInstanceCreationLifetimeRegularExpression](#OnInstanceCreationLifetimeRegularExpression-Hint)                                   | .+            |
-| [OnDependencyInjection](#OnDependencyInjection-Hint)                                                                               | Off           |
-| [OnDependencyInjectionImplementationTypeNameRegularExpression](#OnDependencyInjectionImplementationTypeNameRegularExpression-Hint) | .+            |
-| [OnDependencyInjectionContractTypeNameRegularExpression](#OnDependencyInjectionContractTypeNameRegularExpression-Hint)             | .+            |
-| [OnDependencyInjectionTagRegularExpression](#OnDependencyInjectionTagRegularExpression-Hint)                                       | .+            |
-| [OnDependencyInjectionLifetimeRegularExpression](#OnDependencyInjectionLifetimeRegularExpression-Hint)                             | .+            |
-| [OnCannotResolve](#OnCannotResolve-Hint)                                                                                           | Off           |
-| [OnCannotResolveContractTypeNameRegularExpression](#OnCannotResolveContractTypeNameRegularExpression-Hint)                         | .+            |
-| [OnCannotResolveTagRegularExpression](#OnCannotResolveTagRegularExpression-Hint)                                                   | .+            |
-| [OnCannotResolveLifetimeRegularExpression](#OnCannotResolveLifetimeRegularExpression-Hint)                                         | .+            |
-| [ToString](#ToString-Hint)                                                                                                         | Off           |
-| [ThreadSafe](#ThreadSafe-Hint)                                                                                                     | On            |
+| Hint                                                                                                                               | Default | C# version |
+|------------------------------------------------------------------------------------------------------------------------------------|---------|------------|
+| [Resolve](#Resolve-Hint)                                                                                                           | On      |            |
+| [OnInstanceCreation](#OnInstanceCreation-Hint)                                                                                     | Off     | 9.0        |
+| [OnInstanceCreationImplementationTypeNameRegularExpression](#OnInstanceCreationImplementationTypeNameRegularExpression-Hint)       | .+      |            |
+| [OnInstanceCreationTagRegularExpression](#OnInstanceCreationTagRegularExpression-Hint)                                             | .+      |            |
+| [OnInstanceCreationLifetimeRegularExpression](#OnInstanceCreationLifetimeRegularExpression-Hint)                                   | .+      |            |
+| [OnDependencyInjection](#OnDependencyInjection-Hint)                                                                               | Off     | 9.0        |
+| [OnDependencyInjectionImplementationTypeNameRegularExpression](#OnDependencyInjectionImplementationTypeNameRegularExpression-Hint) | .+      |            |
+| [OnDependencyInjectionContractTypeNameRegularExpression](#OnDependencyInjectionContractTypeNameRegularExpression-Hint)             | .+      |            |
+| [OnDependencyInjectionTagRegularExpression](#OnDependencyInjectionTagRegularExpression-Hint)                                       | .+      |            |
+| [OnDependencyInjectionLifetimeRegularExpression](#OnDependencyInjectionLifetimeRegularExpression-Hint)                             | .+      |            |
+| [OnCannotResolve](#OnCannotResolve-Hint)                                                                                           | Off     | 9.0        |
+| [OnCannotResolveContractTypeNameRegularExpression](#OnCannotResolveContractTypeNameRegularExpression-Hint)                         | .+      |            |
+| [OnCannotResolveTagRegularExpression](#OnCannotResolveTagRegularExpression-Hint)                                                   | .+      |            |
+| [OnCannotResolveLifetimeRegularExpression](#OnCannotResolveLifetimeRegularExpression-Hint)                                         | .+      |            |
+| [ToString](#ToString-Hint)                                                                                                         | Off     |            |
+| [ThreadSafe](#ThreadSafe-Hint)                                                                                                     | On      |            |
 
 ### Resolve Hint
 
