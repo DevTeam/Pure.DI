@@ -203,7 +203,7 @@ internal class ImplementationDependencyNodeBuilder :
     {
         foreach (var attribute in attributeMetadata)
         {
-            var attributeData = attribute.SemanticModel.Compilation.GetAttributes(member, attribute.AttributeType);
+            var attributeData = member.GetAttributes(attribute.AttributeType);
             switch (attributeData.Count)
             {
                 case 1:
@@ -229,8 +229,8 @@ internal class ImplementationDependencyNodeBuilder :
 
         return defaultValue;
     }
-    
-    internal sealed class DependenciesToInjectionsCountWalker: DependenciesWalker
+
+    private sealed class DependenciesToInjectionsCountWalker: DependenciesWalker
     {
         private int _count;
 
