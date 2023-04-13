@@ -32,23 +32,29 @@ var service = composition.Root;
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-+Service(IDependency dependency)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-Service *--  Dependency : IDependency dependency
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service *--  Dependency : IDependency dependency
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -116,29 +122,35 @@ var otherService2 = composition.Resolve(typeof(IService),"Other");
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Service
-+IService OtherService
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-+Service(IDependency dependency)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-OtherService --|> IService : "Other" 
-class OtherService {
-+OtherService()
-}
-Service *--  Dependency : IDependency dependency
-Composition ..> Service : IService Service
-Composition ..> OtherService : "Other" IService OtherService
+  class Composition {
+    +IService OtherService
+    +IService Service
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  OtherService --|> IService : "Other" 
+  class OtherService {
+    +OtherService()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service *--  Dependency : IDependency dependency
+  Composition ..> Service : IService Service
+  Composition ..> OtherService : "Other" IService OtherService
 ```
 
 </details>
@@ -209,21 +221,27 @@ service.Dependency.IsInitialized.ShouldBeTrue();
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-+Service(IDependency dependency)
-}
-Dependency --|> IDependency : 
-class Dependency
-Service *--  Dependency : IDependency dependency
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency)
+  }
+  Dependency --|> IDependency : 
+  class Dependency
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service *--  Dependency : IDependency dependency
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -276,21 +294,27 @@ var service = composition.Root;
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-Service --|> IService : 
-class Service
-Composition ..> Service : IService Root
-Service *--  Dependency : IDependency
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  Service --|> IService : 
+  class Service
+  class IDependency {
+    <<abstract>>
+  }
+  class IService {
+    <<abstract>>
+  }
+  Composition ..> Service : IService Root
+  Service *--  Dependency : IDependency
 ```
 
 </details>
@@ -342,28 +366,37 @@ service.StringDependency.ShouldBeOfType<Dependency<string>>();
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-+Service(IDependencyᐸInt32ᐳ intDependency, IDependencyᐸStringᐳ stringDependency)
-}
-DependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : 
-class DependencyᐸInt32ᐳ {
-+Dependency()
-}
-DependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 
-class DependencyᐸStringᐳ {
-+Dependency()
-}
-Service *--  DependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ intDependency
-Service *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ stringDependency
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependencyᐸInt32ᐳ intDependency, IDependencyᐸStringᐳ stringDependency)
+  }
+  DependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : 
+  class DependencyᐸInt32ᐳ {
+    +Dependency()
+  }
+  DependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 
+  class DependencyᐸStringᐳ {
+    +Dependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependencyᐸInt32ᐳ {
+    <<abstract>>
+  }
+  class IDependencyᐸStringᐳ {
+    <<abstract>>
+  }
+  Service *--  DependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ intDependency
+  Service *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ stringDependency
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -419,25 +452,31 @@ service.Name.ShouldBe("Abc");
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-+Service(String name, IDependency dependency)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-class String
-Service o-- String : Argument "serviceName"
-Service *--  Dependency : IDependency dependency
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(String name, IDependency dependency)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class String
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service o-- String : Argument "serviceName"
+  Service *--  Dependency : IDependency dependency
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -496,28 +535,34 @@ service.Dependency2.ShouldBeOfType<XyzDependency>();
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-+Service(IDependency dependency1, IDependency dependency2)
-}
-AbcDependency --|> IDependency : "Abc" 
-class AbcDependency {
-+AbcDependency()
-}
-XyzDependency --|> IDependency : "Xyz" 
-class XyzDependency {
-+XyzDependency()
-}
-Service *--  AbcDependency : "Abc"  IDependency dependency1
-Service *--  XyzDependency : "Xyz"  IDependency dependency2
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency1, IDependency dependency2)
+  }
+  AbcDependency --|> IDependency : "Abc" 
+  class AbcDependency {
+    +AbcDependency()
+  }
+  XyzDependency --|> IDependency : "Xyz" 
+  class XyzDependency {
+    +XyzDependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service *--  AbcDependency : "Abc"  IDependency dependency1
+  Service *--  XyzDependency : "Xyz"  IDependency dependency2
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -557,21 +602,21 @@ var service3 = composition.Resolve(typeof(Service));
 
 ```mermaid
 classDiagram
-class Composition {
-+Service Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-class Dependency {
-+Dependency()
-}
-class Service {
-+Service(Dependency dependency)
-}
-Service *--  Dependency : Dependency dependency
-Composition ..> Service : Service Root
+  class Composition {
+    +Service Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  class Dependency {
+    +Dependency()
+  }
+  class Service {
+    +Service(Dependency dependency)
+  }
+  Service *--  Dependency : Dependency dependency
+  Composition ..> Service : Service Root
 ```
 
 </details>
@@ -637,24 +682,30 @@ using (var childComposition = new Composition(composition))
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Composition --|> IDisposable
-Service --|> IService : 
-class Service {
-+Service(IDependency dependency)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-Service o--  "Singleton" Dependency : IDependency dependency
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Composition --|> IDisposable
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service o--  "Singleton" Dependency : IDependency dependency
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -695,25 +746,34 @@ var service = composition.Root;
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-+Service(IDependency dependency, IAdvancedDependency advancedDependency)
-}
-Dependency --|> IDependency : 
-Dependency --|> IAdvancedDependency : 
-class Dependency {
-+Dependency()
-}
-Service *--  Dependency : IDependency dependency
-Service *--  Dependency : IAdvancedDependency advancedDependency
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency, IAdvancedDependency advancedDependency)
+  }
+  Dependency --|> IDependency : 
+  Dependency --|> IAdvancedDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  class IAdvancedDependency {
+    <<abstract>>
+  }
+  Service *--  Dependency : IDependency dependency
+  Service *--  Dependency : IAdvancedDependency advancedDependency
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -757,24 +817,30 @@ service.Dependency.ShouldBeOfType<Dependency>();
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-Service --|> IService : 
-class Service {
-+Service()
-~IDependency DependencyVal
-}
-Service *--  Dependency : ~IDependency DependencyVal
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  Service --|> IService : 
+  class Service {
+    +Service()
+    ~IDependency DependencyVal
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  class IService {
+    <<abstract>>
+  }
+  Service *--  Dependency : ~IDependency DependencyVal
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -816,24 +882,30 @@ service.Dependency.ShouldBeOfType<Dependency>();
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-Service --|> IService : 
-class Service {
-+Service()
-+IDependency Dependency
-}
-Service *--  Dependency : +IDependency Dependency
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  Service --|> IService : 
+  class Service {
+    +Service()
+    +IDependency Dependency
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  class IService {
+    <<abstract>>
+  }
+  Service *--  Dependency : +IDependency Dependency
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -911,32 +983,41 @@ service.Dependency2.ShouldBeOfType<DependencyStruct<int>>();
 
 ```mermaid
 classDiagram
-class Composition {
-+ProgramᐸStringᐳ Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-class ProgramᐸStringᐳ {
-+Program(IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ service)
-}
-ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ --|> IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ : 
-class ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ {
-+Service(IDependencyᐸStringᐳ dependency1, IDependencyᐸInt32ᐳ dependency2)
-}
-DependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 
-class DependencyᐸStringᐳ {
-+Dependency()
-}
-DependencyStructᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : "value type" 
-class DependencyStructᐸInt32ᐳ {
-+DependencyStruct()
-}
-ProgramᐸStringᐳ *--  ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ : IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ service
-Composition ..> ProgramᐸStringᐳ : ProgramᐸStringᐳ Root
-ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ dependency1
-ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *--  DependencyStructᐸInt32ᐳ : "value type"  IDependencyᐸInt32ᐳ dependency2
+  class Composition {
+    +ProgramᐸStringᐳ Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  class ProgramᐸStringᐳ {
+    +Program(IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ service)
+  }
+  ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ --|> IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ : 
+  class ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ {
+    +Service(IDependencyᐸStringᐳ dependency1, IDependencyᐸInt32ᐳ dependency2)
+  }
+  DependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 
+  class DependencyᐸStringᐳ {
+    +Dependency()
+  }
+  DependencyStructᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : "value type" 
+  class DependencyStructᐸInt32ᐳ {
+    +DependencyStruct()
+  }
+  class IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ {
+    <<abstract>>
+  }
+  class IDependencyᐸStringᐳ {
+    <<abstract>>
+  }
+  class IDependencyᐸInt32ᐳ {
+    <<abstract>>
+  }
+  ProgramᐸStringᐳ *--  ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ : IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ service
+  Composition ..> ProgramᐸStringᐳ : ProgramᐸStringᐳ Root
+  ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ dependency1
+  ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *--  DependencyStructᐸInt32ᐳ : "value type"  IDependencyᐸInt32ᐳ dependency2
 ```
 
 </details>
@@ -987,24 +1068,30 @@ service2.Dependency1.ShouldBe(service1.Dependency1);
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-+Service(IDependency dependency1, IDependency dependency2)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-Service o--  "Singleton" Dependency : IDependency dependency1
-Service o--  "Singleton" Dependency : IDependency dependency2
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency1, IDependency dependency2)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service o--  "Singleton" Dependency : IDependency dependency1
+  Service o--  "Singleton" Dependency : IDependency dependency2
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -1055,24 +1142,30 @@ service2.Dependency1.ShouldNotBe(service1.Dependency1);
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-+Service(IDependency dependency1, IDependency dependency2)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-Service o--  "PerResolve" Dependency : IDependency dependency1
-Service o--  "PerResolve" Dependency : IDependency dependency2
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency1, IDependency dependency2)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service o--  "PerResolve" Dependency : IDependency dependency1
+  Service o--  "PerResolve" Dependency : IDependency dependency2
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -1123,24 +1216,30 @@ service2.Dependency1.ShouldNotBe(service1.Dependency1);
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-+Service(IDependency dependency1, IDependency dependency2)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-Service *--  Dependency : IDependency dependency1
-Service *--  Dependency : IDependency dependency2
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency1, IDependency dependency2)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service *--  Dependency : IDependency dependency1
+  Service *--  Dependency : IDependency dependency2
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -1202,24 +1301,30 @@ dependency.IsDisposed.ShouldBeTrue();
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Composition --|> IDisposable
-Service --|> IService : 
-class Service {
-+Service(IDependency dependency)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-Service o--  "Singleton" Dependency : IDependency dependency
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Composition --|> IDisposable
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service o--  "Singleton" Dependency : IDependency dependency
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -1271,24 +1376,30 @@ service1.Dependency1.ShouldBe(service1.Dependency2);
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-+Service(IDependency dependency1, IDependency dependency2)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-Service o--  "Singleton" Dependency : IDependency dependency1
-Service o--  "Singleton" Dependency : IDependency dependency2
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency1, IDependency dependency2)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service o--  "Singleton" Dependency : IDependency dependency1
+  Service o--  "Singleton" Dependency : IDependency dependency2
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -1338,24 +1449,30 @@ service.ToString().ShouldBe("Xyz");
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-~Service(String name)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-class String
-Service o-- String : Argument "serviceName"
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    ~Service(String name)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class String
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service o-- String : Argument "serviceName"
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -1421,27 +1538,30 @@ person.Name.ShouldBe("123 Nik 1977-11-16");
 
 ```mermaid
 classDiagram
-class PersonComposition {
-+IPerson Person
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Person --|> IPerson : 
-class Person {
-+Person()
-~Int32 Id
-~String FirstName
-~DateTime Birthday
-}
-class Int32
-class String
-class DateTime
-Person o-- Int32 : Argument "personId"
-Person o-- String : Argument "personName"
-Person o-- DateTime : Argument "personBirthday"
-PersonComposition ..> Person : IPerson Person
+  class PersonComposition {
+    +IPerson Person
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Person --|> IPerson : 
+  class Person {
+    +Person()
+    ~Int32 Id
+    ~String FirstName
+    ~DateTime Birthday
+  }
+  class Int32
+  class String
+  class DateTime
+  class IPerson {
+    <<abstract>>
+  }
+  Person o-- Int32 : Argument "personId"
+  Person o-- String : Argument "personName"
+  Person o-- DateTime : Argument "personBirthday"
+  PersonComposition ..> Person : IPerson Person
 ```
 
 </details>
@@ -1491,25 +1611,31 @@ service.Dependencies.Length.ShouldBe(10);
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-+Service(FuncᐸIDependencyᐳ dependencyFactory)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-class FuncᐸIDependencyᐳ
-Service *--  FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ dependencyFactory
-Composition ..> Service : IService Root
-FuncᐸIDependencyᐳ *--  Dependency : IDependency
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(FuncᐸIDependencyᐳ dependencyFactory)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class FuncᐸIDependencyᐳ
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service *--  FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ dependencyFactory
+  Composition ..> Service : IService Root
+  FuncᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 
 </details>
@@ -1561,30 +1687,36 @@ service.Dependencies[1].ShouldBeOfType<XyzDependency>();
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-class IEnumerableᐸIDependencyᐳ
-Service --|> IService : 
-class Service {
-+Service(IEnumerableᐸIDependencyᐳ dependencies)
-}
-AbcDependency --|> IDependency : 
-class AbcDependency {
-+AbcDependency()
-}
-XyzDependency --|> IDependency : 2 
-class XyzDependency {
-+XyzDependency()
-}
-IEnumerableᐸIDependencyᐳ *--  AbcDependency : 
-IEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  
-Service *--  IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ dependencies
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  class IEnumerableᐸIDependencyᐳ
+  Service --|> IService : 
+  class Service {
+    +Service(IEnumerableᐸIDependencyᐳ dependencies)
+  }
+  AbcDependency --|> IDependency : 
+  class AbcDependency {
+    +AbcDependency()
+  }
+  XyzDependency --|> IDependency : 2 
+  class XyzDependency {
+    +XyzDependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  IEnumerableᐸIDependencyᐳ *--  AbcDependency : 
+  IEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  
+  Service *--  IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ dependencies
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -1636,30 +1768,36 @@ service.Dependencies[1].ShouldBeOfType<XyzDependency>();
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-class ArrayᐸIDependencyᐳ
-Service --|> IService : 
-class Service {
-+Service(ArrayᐸIDependencyᐳ dependencies)
-}
-AbcDependency --|> IDependency : 
-class AbcDependency {
-+AbcDependency()
-}
-XyzDependency --|> IDependency : 2 
-class XyzDependency {
-+XyzDependency()
-}
-ArrayᐸIDependencyᐳ *--  AbcDependency : 
-ArrayᐸIDependencyᐳ *--  XyzDependency : 2  
-Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ dependencies
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  class ArrayᐸIDependencyᐳ
+  Service --|> IService : 
+  class Service {
+    +Service(ArrayᐸIDependencyᐳ dependencies)
+  }
+  AbcDependency --|> IDependency : 
+  class AbcDependency {
+    +AbcDependency()
+  }
+  XyzDependency --|> IDependency : 2 
+  class XyzDependency {
+    +XyzDependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  ArrayᐸIDependencyᐳ *--  AbcDependency : 
+  ArrayᐸIDependencyᐳ *--  XyzDependency : 2  
+  Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ dependencies
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -1731,27 +1869,33 @@ service.Dependency.ShouldBe(service.Dependency);
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-+Service(LazyᐸIDependencyᐳ dependency)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-class LazyᐸIDependencyᐳ
-class FuncᐸIDependencyᐳ
-Service *--  LazyᐸIDependencyᐳ : LazyᐸIDependencyᐳ dependency
-Composition ..> Service : IService Root
-LazyᐸIDependencyᐳ *--  FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
-FuncᐸIDependencyᐳ *--  Dependency : IDependency
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(LazyᐸIDependencyᐳ dependency)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class LazyᐸIDependencyᐳ
+  class FuncᐸIDependencyᐳ
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service *--  LazyᐸIDependencyᐳ : LazyᐸIDependencyᐳ dependency
+  Composition ..> Service : IService Root
+  LazyᐸIDependencyᐳ *--  FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+  FuncᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 
 </details>
@@ -1800,26 +1944,29 @@ service.Count.ShouldBe(3);
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-class ReadOnlySpanᐸDependencyᐳ
-Service --|> IService : 
-class Service {
-+Service(ReadOnlySpanᐸDependencyᐳ dependencies)
-}
-class Dependency {
-+Dependency()
-}
-ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'a'  
-ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'b'  
-ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'c'  
-Service *--  ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ dependencies
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  class ReadOnlySpanᐸDependencyᐳ
+  Service --|> IService : 
+  class Service {
+    +Service(ReadOnlySpanᐸDependencyᐳ dependencies)
+  }
+  class Dependency {
+    +Dependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'a'  
+  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'b'  
+  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'c'  
+  Service *--  ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ dependencies
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -1878,29 +2025,35 @@ var root = composition.Root;
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-class ValueTupleᐸPointˏIDependencyᐳ {
-+ValueTuple(Point item1, IDependency item2)
-}
-Service --|> IService : 
-class Service {
-+Service(ValueTupleᐸPointˏIDependencyᐳ tuple)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-class Point
-ValueTupleᐸPointˏIDependencyᐳ *--  Point : Point item1
-ValueTupleᐸPointˏIDependencyᐳ *--  Dependency : IDependency item2
-Service *--  ValueTupleᐸPointˏIDependencyᐳ : ValueTupleᐸPointˏIDependencyᐳ tuple
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  class ValueTupleᐸPointˏIDependencyᐳ {
+    +ValueTuple(Point item1, IDependency item2)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(ValueTupleᐸPointˏIDependencyᐳ tuple)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class Point
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  ValueTupleᐸPointˏIDependencyᐳ *--  Point : Point item1
+  ValueTupleᐸPointˏIDependencyᐳ *--  Dependency : IDependency item2
+  Service *--  ValueTupleᐸPointˏIDependencyᐳ : ValueTupleᐸPointˏIDependencyᐳ tuple
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -1954,28 +2107,34 @@ service.GetMessage().ShouldBe("Hello World !!!");
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : "base" 
-class Service {
-+Service(IDependency dependency)
-}
-DecoratorService --|> IService : 
-class DecoratorService {
-+DecoratorService(IService baseService)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-Service *--  Dependency : IDependency dependency
-DecoratorService *--  Service : "base"  IService baseService
-Composition ..> DecoratorService : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : "base" 
+  class Service {
+    +Service(IDependency dependency)
+  }
+  DecoratorService --|> IService : 
+  class DecoratorService {
+    +DecoratorService(IService baseService)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service *--  Dependency : IDependency dependency
+  DecoratorService *--  Service : "base"  IService baseService
+  Composition ..> DecoratorService : IService Root
 ```
 
 </details>
@@ -2073,23 +2232,29 @@ log.ShouldBe(
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-+Service(IDependency dependency)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-Service *--  Dependency : IDependency dependency
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service *--  Dependency : IDependency dependency
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -2205,23 +2370,29 @@ log.ShouldBe(
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-+Service(IDependency dependency)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-Service *--  Dependency : IDependency dependency
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service *--  Dependency : IDependency dependency
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -2262,21 +2433,27 @@ var dependencyRoot = composition.DependencyRoot;
 
 ```mermaid
 classDiagram
-class Composition {
-+IDependency DependencyRoot
-+IService Root
-}
-Service --|> IService : 
-class Service {
-+Service(IDependency dependency)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-Service *--  Dependency : IDependency dependency
-Composition ..> Dependency : IDependency DependencyRoot
-Composition ..> Service : IService Root
+  class Composition {
+    +IDependency DependencyRoot
+    +IService Root
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service *--  Dependency : IDependency dependency
+  Composition ..> Dependency : IDependency DependencyRoot
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -2316,23 +2493,29 @@ var service = composition.Root;
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-+Service(IDependency dependency)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-Service *--  Dependency : IDependency dependency
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service *--  Dependency : IDependency dependency
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -2403,23 +2586,29 @@ log.ShouldBe(ImmutableArray.Create("Dependency injected"));
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-+Service(IDependency dependency)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-Service *--  Dependency : IDependency dependency
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service *--  Dependency : IDependency dependency
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -2494,25 +2683,31 @@ service.Dependency.ToString().ShouldBe("Dependency with name");
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-class String
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency(String name)
-}
-Service --|> IService : 
-class Service {
-+Service(IDependency dependency)
-}
-Dependency *--  String : String name
-Service *--  Dependency : IDependency dependency
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  class String
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency(String name)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency)
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  class IService {
+    <<abstract>>
+  }
+  Dependency *--  String : String name
+  Service *--  Dependency : IDependency dependency
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -2584,23 +2779,29 @@ log.ShouldBe(ImmutableArray.Create("Dependency", "Service"));
 
 ```mermaid
 classDiagram
-class Composition {
-+IService Root
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-+Service(IDependency dependency)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-Service *--  Dependency : IDependency dependency
-Composition ..> Service : IService Root
+  class Composition {
+    +IService Root
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service *--  Dependency : IDependency dependency
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -2638,23 +2839,29 @@ string classDiagram = composition.ToString();
 
 ```mermaid
 classDiagram
-class Composition {
-+IService MyService
-+T ResolveᐸTᐳ()
-+T ResolveᐸTᐳ(object? tag)
-+object ResolveᐸTᐳ(Type type)
-+object ResolveᐸTᐳ(Type type, object? tag)
-}
-Service --|> IService : 
-class Service {
-+Service(IDependency dependency)
-}
-Dependency --|> IDependency : 
-class Dependency {
-+Dependency()
-}
-Service *--  Dependency : IDependency dependency
-Composition ..> Service : IService MyService
+  class Composition {
+    +IService MyService
+    +T ResolveᐸTᐳ()
+    +T ResolveᐸTᐳ(object? tag)
+    +object ResolveᐸTᐳ(Type type)
+    +object ResolveᐸTᐳ(Type type, object? tag)
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency)
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  class IService {
+    <<abstract>>
+  }
+  class IDependency {
+    <<abstract>>
+  }
+  Service *--  Dependency : IDependency dependency
+  Composition ..> Service : IService MyService
 ```
 
 </details>

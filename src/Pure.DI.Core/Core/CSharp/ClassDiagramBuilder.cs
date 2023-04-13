@@ -25,19 +25,19 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
                 lines.AppendLine($"class {composition.Name.ClassName} {{");
                 using (lines.Indent())
                 {
-                    foreach (var root in composition.Roots.Where(i => i.IsPublic))
+                    foreach (var root in composition.Roots.OrderByDescending(i => i.IsPublic).ThenBy(i => i.Name))
                     {
-                        lines.AppendLine($"+{FormatType(root.Injection.Type, DefaultFormatOptions)} {root.PropertyName}");
+                        lines.AppendLine($"{(root.IsPublic ? "+" : "-")}{FormatType(root.Injection.Type, DefaultFormatOptions)} {root.PropertyName}");
                     }
-                }
-
-                if (hasResolveMethods)
-                {
-                    var genericParameterT = $"{DefaultFormatOptions.StartGenericArgsSymbol}T{DefaultFormatOptions.FinishGenericArgsSymbol}";
-                    lines.AppendLine($"+T {Constant.ResolverMethodName}{genericParameterT}()");
-                    lines.AppendLine($"+T {Constant.ResolverMethodName}{genericParameterT}(object? tag)");
-                    lines.AppendLine($"+object {Constant.ResolverMethodName}{genericParameterT}(Type type)");
-                    lines.AppendLine($"+object {Constant.ResolverMethodName}{genericParameterT}(Type type, object? tag)");
+                    
+                    if (hasResolveMethods)
+                    {
+                        var genericParameterT = $"{DefaultFormatOptions.StartGenericArgsSymbol}T{DefaultFormatOptions.FinishGenericArgsSymbol}";
+                        lines.AppendLine($"+T {Constant.ResolverMethodName}{genericParameterT}()");
+                        lines.AppendLine($"+T {Constant.ResolverMethodName}{genericParameterT}(object? tag)");
+                        lines.AppendLine($"+object {Constant.ResolverMethodName}{genericParameterT}(Type type)");
+                        lines.AppendLine($"+object {Constant.ResolverMethodName}{genericParameterT}(Type type, object? tag)");
+                    }
                 }
 
                 lines.AppendLine("}");
@@ -52,6 +52,7 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
                 lines.AppendLine($"{composition.Name.ClassName} --|> IDisposable");
             }
 
+            var types = new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
             var graph = composition.Source.Graph;
             foreach (var node in graph.Vertices.GroupBy(i => i.Type, SymbolEqualityComparer.Default).Select(i => i.First()))
             {
@@ -68,7 +69,8 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
                     {
                         continue;
                     }
-                    
+
+                    types.Add(contract.Type);
                     lines.AppendLine($"{FormatType(node.Type, DefaultFormatOptions)} --|> {FormatType(contract.Type, DefaultFormatOptions)} : {FormatTag(contract.Tag)}");
                 }
 
@@ -76,6 +78,41 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
                 classDiagramWalker.VisitDependencyNode(node);
             }
 
+            foreach (var type in types)
+            {
+                var typeKind = "";
+                if (type.IsRecord)
+                {
+                    typeKind = "record";
+                }
+                else
+                {
+                    if (type.IsTupleType)
+                    {
+                        typeKind = "tuple";
+                    }
+                    else
+                    {
+                        if (type.IsAbstract)
+                        {
+                            typeKind = "abstract";
+                        }
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(typeKind))
+                {
+                    continue;
+                }
+
+                lines.AppendLine($"class {FormatType(type, DefaultFormatOptions)} {{");
+                using (lines.Indent())
+                {
+                    lines.AppendLine($"<<{typeKind}>>");    
+                }
+                lines.AppendLine("}");
+            }
+            
             foreach (var dependency in graph.Edges)
             {
                 cancellationToken.ThrowIfCancellationRequested();

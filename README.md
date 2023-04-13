@@ -671,3 +671,127 @@ The _PureDISeverity_ property has several options available:
 
 </details>
 
+
+## Benchmarks
+
+<details>
+<summary>Transient</summary>
+
+<table>
+<thead><tr><th>                    Method</th><th>    Mean</th><th>  Error</th><th> StdDev</th><th>  Median</th><th>Ratio</th><th>RatioSD</th>
+</tr>
+</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>0.0000 ns</td><td>0.0000 ns</td><td>0.0000 ns</td><td>0.0000 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>0.4303 ns</td><td>0.0142 ns</td><td>0.0330 ns</td><td>0.4152 ns</td><td> </td><td> </td>
+</tr><tr><td>Pure.DI</td><td>4.5776 ns</td><td>0.1244 ns</td><td>0.1900 ns</td><td>4.5021 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;IoC.Container composition root&#39;</td><td>6.7533 ns</td><td>0.1651 ns</td><td>0.3259 ns</td><td>6.6503 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>7.7167 ns</td><td>0.1204 ns</td><td>0.1067 ns</td><td>7.6917 ns</td><td> </td><td> </td>
+</tr><tr><td>LightInject</td><td>10.9557 ns</td><td>0.3219 ns</td><td>0.9289 ns</td><td>10.6802 ns</td><td> </td><td> </td>
+</tr><tr><td>IoC.Container</td><td>12.6151 ns</td><td>0.2089 ns</td><td>0.2145 ns</td><td>12.6279 ns</td><td> </td><td> </td>
+</tr><tr><td>DryIoc</td><td>18.7482 ns</td><td>0.1502 ns</td><td>0.1332 ns</td><td>18.7593 ns</td><td> </td><td> </td>
+</tr><tr><td>SimpleInjector</td><td>21.6415 ns</td><td>0.4536 ns</td><td>0.7579 ns</td><td>21.3362 ns</td><td> </td><td> </td>
+</tr><tr><td>MicrosoftDependencyInjection</td><td>22.1023 ns</td><td>0.2293 ns</td><td>0.1915 ns</td><td>22.0782 ns</td><td> </td><td> </td>
+</tr><tr><td>Unity</td><td>3,183.1330 ns</td><td>63.1780 ns</td><td>108.9789 ns</td><td>3,163.4781 ns</td><td> </td><td> </td>
+</tr><tr><td>Autofac</td><td>8,200.5722 ns</td><td>124.5648 ns</td><td>97.2520 ns</td><td>8,233.8547 ns</td><td> </td><td> </td>
+</tr><tr><td>CastleWindsor</td><td>22,880.6503 ns</td><td>457.2682 ns</td><td>812.7938 ns</td><td>22,535.7346 ns</td><td> </td><td> </td>
+</tr><tr><td>Ninject</td><td>77,290.9201 ns</td><td>2,216.3830 ns</td><td>6,287.5097 ns</td><td>76,955.4077 ns</td><td> </td><td> </td>
+</tr></tbody></table>
+
+</details>
+
+<details>
+<summary>Singleton</summary>
+
+<table>
+<thead><tr><th>                    Method</th><th>    Mean</th><th>  Error</th><th> StdDev</th><th>  Median</th><th>Ratio</th><th>RatioSD</th>
+</tr>
+</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>0.0195 ns</td><td>0.0229 ns</td><td>0.0235 ns</td><td>0.0063 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>3.8203 ns</td><td>0.0354 ns</td><td>0.0296 ns</td><td>3.8193 ns</td><td> </td><td> </td>
+</tr><tr><td>Pure.DI</td><td>4.9871 ns</td><td>0.1351 ns</td><td>0.2022 ns</td><td>4.9011 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;IoC.Container composition root&#39;</td><td>6.0158 ns</td><td>0.1227 ns</td><td>0.1148 ns</td><td>6.0008 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>9.0370 ns</td><td>0.2364 ns</td><td>0.4935 ns</td><td>8.9314 ns</td><td> </td><td> </td>
+</tr><tr><td>IoC.Container</td><td>14.5328 ns</td><td>0.3201 ns</td><td>0.6319 ns</td><td>14.3176 ns</td><td> </td><td> </td>
+</tr><tr><td>DryIoc</td><td>19.6103 ns</td><td>0.3828 ns</td><td>0.3393 ns</td><td>19.5617 ns</td><td> </td><td> </td>
+</tr><tr><td>SimpleInjector</td><td>21.8840 ns</td><td>0.4605 ns</td><td>0.4729 ns</td><td>21.8218 ns</td><td> </td><td> </td>
+</tr><tr><td>MicrosoftDependencyInjection</td><td>23.3222 ns</td><td>0.4075 ns</td><td>0.4529 ns</td><td>23.2933 ns</td><td> </td><td> </td>
+</tr><tr><td>LightInject</td><td>32.3530 ns</td><td>0.6412 ns</td><td>1.2506 ns</td><td>31.8038 ns</td><td> </td><td> </td>
+</tr><tr><td>Unity</td><td>2,508.6886 ns</td><td>49.2618 ns</td><td>82.3053 ns</td><td>2,489.2700 ns</td><td> </td><td> </td>
+</tr><tr><td>Autofac</td><td>6,745.9371 ns</td><td>134.0016 ns</td><td>267.6157 ns</td><td>6,637.3131 ns</td><td> </td><td> </td>
+</tr><tr><td>CastleWindsor</td><td>17,408.9145 ns</td><td>262.2540 ns</td><td>218.9940 ns</td><td>17,312.9379 ns</td><td> </td><td> </td>
+</tr><tr><td>Ninject</td><td>60,594.4595 ns</td><td>1,249.6474 ns</td><td>3,585.4726 ns</td><td>59,927.0508 ns</td><td> </td><td> </td>
+</tr></tbody></table>
+
+</details>
+
+<details>
+<summary>Func</summary>
+
+<table>
+<thead><tr><th>                    Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
+</tr>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>75.24 ns</td><td>1.734 ns</td><td>5.057 ns</td><td>72.82 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>Pure.DI</td><td>79.78 ns</td><td>1.620 ns</td><td>1.990 ns</td><td>79.14 ns</td><td>1.08</td><td>0.05</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>79.82 ns</td><td>1.656 ns</td><td>4.724 ns</td><td>77.68 ns</td><td>1.07</td><td>0.10</td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>87.24 ns</td><td>1.804 ns</td><td>5.292 ns</td><td>84.71 ns</td><td>1.16</td><td>0.10</td>
+</tr><tr><td>DryIoc</td><td>94.14 ns</td><td>1.798 ns</td><td>1.501 ns</td><td>94.11 ns</td><td>1.26</td><td>0.05</td>
+</tr><tr><td>&#39;IoC.Container composition root&#39;</td><td>109.83 ns</td><td>2.212 ns</td><td>4.468 ns</td><td>107.90 ns</td><td>1.46</td><td>0.12</td>
+</tr><tr><td>IoC.Container</td><td>125.72 ns</td><td>2.535 ns</td><td>2.371 ns</td><td>125.12 ns</td><td>1.70</td><td>0.07</td>
+</tr><tr><td>LightInject</td><td>415.89 ns</td><td>8.252 ns</td><td>20.242 ns</td><td>408.93 ns</td><td>5.55</td><td>0.48</td>
+</tr><tr><td>Unity</td><td>3,253.41 ns</td><td>64.917 ns</td><td>128.140 ns</td><td>3,221.60 ns</td><td>43.29</td><td>3.58</td>
+</tr><tr><td>Autofac</td><td>7,941.42 ns</td><td>158.057 ns</td><td>366.321 ns</td><td>7,875.67 ns</td><td>106.52</td><td>8.71</td>
+</tr></tbody></table>
+
+</details>
+
+<details>
+<summary>Array</summary>
+
+<table>
+<thead><tr><th>                    Method</th><th>  Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
+</tr>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>84.83 ns</td><td>2.587 ns</td><td>7.586 ns</td><td>81.75 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;IoC.Container composition root&#39;</td><td>89.55 ns</td><td>2.367 ns</td><td>6.942 ns</td><td>87.56 ns</td><td>1.06</td><td>0.12</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>93.20 ns</td><td>2.723 ns</td><td>7.987 ns</td><td>91.12 ns</td><td>1.11</td><td>0.13</td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>97.34 ns</td><td>1.940 ns</td><td>2.235 ns</td><td>97.35 ns</td><td>1.13</td><td>0.11</td>
+</tr><tr><td>Pure.DI</td><td>98.16 ns</td><td>2.980 ns</td><td>8.693 ns</td><td>94.92 ns</td><td>1.17</td><td>0.15</td>
+</tr><tr><td>LightInject</td><td>98.69 ns</td><td>3.073 ns</td><td>8.865 ns</td><td>95.45 ns</td><td>1.17</td><td>0.15</td>
+</tr><tr><td>IoC.Container</td><td>108.70 ns</td><td>3.237 ns</td><td>9.543 ns</td><td>105.17 ns</td><td>1.29</td><td>0.15</td>
+</tr><tr><td>DryIoc</td><td>135.24 ns</td><td>6.780 ns</td><td>19.883 ns</td><td>134.38 ns</td><td>1.61</td><td>0.30</td>
+</tr><tr><td>Unity</td><td>4,405.14 ns</td><td>96.115 ns</td><td>280.372 ns</td><td>4,360.28 ns</td><td>52.25</td><td>5.34</td>
+</tr><tr><td>Autofac</td><td>10,752.87 ns</td><td>213.598 ns</td><td>591.880 ns</td><td>10,661.81 ns</td><td>127.12</td><td>12.40</td>
+</tr></tbody></table>
+
+</details>
+
+<details>
+<summary>Enum</summary>
+
+<table>
+<thead><tr><th>                    Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
+</tr>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>191.9 ns</td><td>3.85 ns</td><td>8.36 ns</td><td>188.7 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>204.9 ns</td><td>4.16 ns</td><td>10.06 ns</td><td>201.2 ns</td><td>1.08</td><td>0.08</td>
+</tr><tr><td>Pure.DI</td><td>218.7 ns</td><td>4.44 ns</td><td>12.81 ns</td><td>215.6 ns</td><td>1.14</td><td>0.10</td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>224.5 ns</td><td>4.84 ns</td><td>13.97 ns</td><td>222.5 ns</td><td>1.18</td><td>0.07</td>
+</tr><tr><td>LightInject</td><td>226.0 ns</td><td>4.98 ns</td><td>14.69 ns</td><td>221.8 ns</td><td>1.17</td><td>0.10</td>
+</tr><tr><td>DryIoc</td><td>234.8 ns</td><td>4.94 ns</td><td>14.42 ns</td><td>231.2 ns</td><td>1.23</td><td>0.09</td>
+</tr><tr><td>MicrosoftDependencyInjection</td><td>240.1 ns</td><td>4.79 ns</td><td>11.01 ns</td><td>238.2 ns</td><td>1.25</td><td>0.07</td>
+</tr><tr><td>&#39;IoC.Container composition root&#39;</td><td>287.5 ns</td><td>7.64 ns</td><td>22.29 ns</td><td>284.1 ns</td><td>1.52</td><td>0.14</td>
+</tr><tr><td>IoC.Container</td><td>302.5 ns</td><td>6.22 ns</td><td>18.14 ns</td><td>298.9 ns</td><td>1.58</td><td>0.12</td>
+</tr><tr><td>Unity</td><td>6,219.7 ns</td><td>123.50 ns</td><td>342.21 ns</td><td>6,138.6 ns</td><td>32.54</td><td>2.20</td>
+</tr><tr><td>Autofac</td><td>10,359.5 ns</td><td>206.85 ns</td><td>555.69 ns</td><td>10,206.7 ns</td><td>53.69</td><td>4.29</td>
+</tr></tbody></table>
+
+</details>
+
+<details>
+<summary>Benchmarks environment</summary>
+
+<pre><code>
+BenchmarkDotNet=v0.13.5, OS=Windows 10 (10.0.19045.2728/22H2/2022Update)
+Intel Core i7-10850H CPU 2.70GHz, 1 CPU, 12 logical and 6 physical cores
+.NET SDK=7.0.100
+  [Host]     : .NET 7.0.0 (7.0.22.51805), X64 RyuJIT AVX2
+  DefaultJob : .NET 7.0.0 (7.0.22.51805), X64 RyuJIT AVX2
+</code></pre>
+
+</details>

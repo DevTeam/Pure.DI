@@ -34,7 +34,7 @@ internal class ToStringBuilder: IBuilder<CompositionCode, CompositionCode>
                 for (var i = 0; i < lines.Length; i++)
                 {
                     var line = lines[i];
-                    code.AppendLine(line with { Text = $"\"{line.Text}{(i == lines.Length - 1 ? "\";" : "\\n\" +")}" });
+                    code.AppendLine(line with { Text = $"\"{line}{(i == lines.Length - 1 ? "\";" : "\\n\" +")}" });
                 }
             }
         }
