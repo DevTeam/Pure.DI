@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Pack" type="DotNetProject" factoryName=".NET Project">
     <option name="EXE_PATH" value="$PROJECT_DIR$/build/bin/roslyn4.3/Debug/net7.0/build.exe" />
-    <option name="PROGRAM_PARAMETERS" value="pack" />
+    <option name="PROGRAM_PARAMETERS" value="-p version=2.0.0-alpha1 pack" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     <option name="PASS_PARENT_ENVS" value="1" />
     <option name="USE_EXTERNAL_CONSOLE" value="0" />

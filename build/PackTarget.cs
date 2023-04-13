@@ -46,12 +46,12 @@ internal class PackTarget: ITarget<string?>
 
         var props = new[]
         {
-            ("version", packageVersion.ToString()!),
+            ("version", packageVersion.ToString()),
             ("AnalyzerRoslynVersion", analyzerRoslynVersion.ToString()),
             ("AnalyzerRoslynPackageVersion", analyzerRoslynPackageVersion.ToString())
         };
         
-        var build = new DotNetTest()
+        var build = new DotNetBuild()
             .WithProps(props)
             .WithConfiguration(_settings.Configuration);
         

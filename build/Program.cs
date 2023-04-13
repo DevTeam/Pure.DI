@@ -46,7 +46,7 @@ return await new RootCommand
     benchmarksCommand,
     deployCommand,
     deployTemplateCommand
-}.InvokeAsync(args);
+}.InvokeAsync(Args.ToArray());
 
 #pragma warning disable CS0162
 // ReSharper disable once HeuristicUnreachableCode
