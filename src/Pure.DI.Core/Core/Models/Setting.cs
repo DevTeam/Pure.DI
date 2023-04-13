@@ -86,8 +86,53 @@ internal enum Setting
     ToString,
     
     /// <summary>
-    /// <c>On or <c>Off</c>.
+    /// <c>On</c> or <c>Off</c>.
     /// <c>On</c> by default. 
     /// </summary>
-    ThreadSafe
+    ThreadSafe,
+    
+    /// <summary>
+    /// Determine Resolve method modifiers. "public" by default.
+    /// </summary>
+    ResolveMethodModifiers,
+    
+    /// <summary>
+    /// Determine Resolve method modifiers. "Resolve" by default.
+    /// </summary>
+    ResolveMethodName,
+    
+    /// <summary>
+    /// Determine Resolve by tag method modifiers. "public" by default.
+    /// </summary>
+    ResolveByTagMethodModifiers,
+    
+    /// <summary>
+    /// Determine Resolve by tag method modifiers. "Resolve" by default.
+    /// </summary>
+    ResolveByTagMethodName,
+    
+    /// <summary>
+    /// Determine object Resolve method modifiers. "public" by default.
+    /// </summary>
+    ObjectResolveMethodModifiers,
+    
+    /// <summary>
+    /// Determine object Resolve method modifiers. "Resolve" by default.
+    /// </summary>
+    ObjectResolveMethodName,
+    
+    /// <summary>
+    /// Determine object Resolve by tag method modifiers. "public" by default.
+    /// </summary>
+    ObjectResolveByTagMethodModifiers,
+    
+    /// <summary>
+    /// Determine object Resolve by tag method modifiers. "Resolve" by default.
+    /// </summary>
+    ObjectResolveByTagMethodName,
+    
+    /// <summary>
+    /// Determine Dispose method modifiers. "public" by default.
+    /// </summary>
+    DisposeMethodModifiers
 }

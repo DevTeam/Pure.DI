@@ -364,11 +364,11 @@ The child composition inherits the state of the parent composition in the form o
 </details>
 
 <details>
-<summary>Composition Roots</summary>
+<summary>Properties</summary>
 
 To be able to quickly and conveniently create an object graph, a set of properties is generated. These properties are called compositions roots here. The type of the property is the type of a root object created by the composition. Accordingly, each access to the property leads to the creation of a composition with the root element of this type.
 
-### Public Roots
+### Public Composition Roots
 
 To be able to use a specific composition root, that root must be explicitly defined by the _Root_ method with a specific name and type:
 
@@ -393,7 +393,7 @@ public IService MyService
 
 This is [recommended way](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) to create a composition root. A composition class can contain any number of roots.
 
-### Private Roots
+### Private Composition Roots
 
 When the root name is empty, a private composition root is created. This root is used in these _Resolve_ methods in the same way as public roots. For example:
 
@@ -487,6 +487,15 @@ DI.Setup("Composition")
 | [OnCannotResolveLifetimeRegularExpression](#OnCannotResolveLifetimeRegularExpression-Hint)                                         | .+      |            |
 | [ToString](#ToString-Hint)                                                                                                         | Off     |            |
 | [ThreadSafe](#ThreadSafe-Hint)                                                                                                     | On      |            |
+| [ResolveMethodModifiers](#ResolveMethodModifiers-Hint)                                                                             | public  |            |
+| [ResolveMethodName](#ResolveMethodName-Hint)                                                                                       | Resolve |            |
+| [ResolveByTagMethodModifiers](#ResolveByTagMethodModifiers-Hint)                                                                   | public  |            |
+| [ResolveByTagMethodName](#ResolveByTagMethodName-Hint)                                                                             | Resolve |            |
+| [ObjectResolveMethodModifiers](#ObjectResolveMethodModifiers-Hint)                                                                 | public  |            |
+| [ObjectResolveMethodName](#ObjectResolveMethodName-Hint)                                                                           | Resolve |            |
+| [ObjectResolveByTagMethodModifiers](#ObjectResolveByTagMethodModifiers-Hint)                                                       | public  |            |
+| [ObjectResolveByTagMethodName](#ObjectResolveByTagMethodName-Hint)                                                                 | Resolve |            |
+| [DisposeMethodModifiers](#DisposeMethodModifiers-Hint)                                                                             | public  |            |
 
 ### Resolve Hint
 
@@ -600,6 +609,42 @@ DI.Setup("Composition")
     .Bind<IService>().To<Service>()
     .Root<IService>("MyService");
 ```
+
+### ResolveMethodModifiers Hint
+
+Overrides modifiers of the method `public T Resolve<T>()`.
+
+### ResolveMethodName Hint
+
+Overrides name of the method `public T Resolve<T>()`.
+
+### ResolveByTagMethodModifiers Hint
+
+Overrides modifiers of the method `public T Resolve<T>(object? tag)`.
+
+### ResolveByTagMethodName Hint
+
+Overrides name of the method `public T Resolve<T>(object? tag)`.
+
+### ObjectResolveMethodModifiers Hint
+
+Overrides modifiers of the method `public object Resolve(Type type)`.
+
+### ObjectResolveMethodName Hint
+
+Overrides name of the method `public object Resolve(Type type)`.
+
+### ObjectResolveByTagMethodModifiers Hint
+
+Overrides modifiers of the method `public object Resolve(Type type, object? tag)`.
+
+### ObjectResolveByTagMethodName Hint
+
+Overrides name of the method `public object Resolve(Type type, object? tag)`.
+
+### DisposeMethodModifiers Hint
+
+Overrides modifiers of the method `public void Dispose()`.
 
 </details>
 

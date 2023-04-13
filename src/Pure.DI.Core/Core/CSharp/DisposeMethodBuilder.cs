@@ -15,8 +15,8 @@ internal class DisposeMethodBuilder: IBuilder<CompositionCode, CompositionCode>
         {
             code.AppendLine();
         }
-
-        code.AppendLine("public void Dispose()");
+        
+        code.AppendLine($"{composition.Source.Source.Settings.GetValueOrDefault(Setting.DisposeMethodModifiers, Constant.DefaultApiMethodModifiers)} void Dispose()");
         code.AppendLine("{");
         using (code.Indent())
         {

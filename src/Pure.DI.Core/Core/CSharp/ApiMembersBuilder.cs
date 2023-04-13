@@ -18,12 +18,13 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
         {
             code.AppendLine();
         }
-        
+
+        var settings = composition.Source.Source.Settings;
         code.AppendLine("#region API");
-        if (composition.Source.Source.Settings.GetState(Setting.Resolve, SettingState.On) == SettingState.On)
+        if (settings.GetState(Setting.Resolve, SettingState.On) == SettingState.On)
         {
             AddMethodHeader(code);
-            code.AppendLine($"public T {Constant.ResolverMethodName}<T>()");
+            code.AppendLine($"{settings.GetValueOrDefault(Setting.ResolveMethodModifiers, Constant.DefaultApiMethodModifiers)} T {settings.GetValueOrDefault(Setting.ResolveMethodName, Constant.ResolverMethodName)}<T>()");
             code.AppendLine("{");
             using (code.Indent())
             {
@@ -36,7 +37,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             membersCounter++;
 
             AddMethodHeader(code);
-            code.AppendLine($"public T {Constant.ResolverMethodName}<T>(object? tag)");
+            code.AppendLine($"{settings.GetValueOrDefault(Setting.ResolveByTagMethodModifiers, Constant.DefaultApiMethodModifiers)} T {settings.GetValueOrDefault(Setting.ResolveByTagMethodName, Constant.ResolverMethodName)}<T>(object? tag)");
             code.AppendLine("{");
             using (code.Indent())
             {
@@ -49,11 +50,27 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             membersCounter++;
 
             var resolvers = _resolversBuilder.Build(composition.Roots, cancellationToken).ToArray();
-            CreateObjectResolverMethod(resolvers, "System.Type type", ResolverClassesBuilder.ResolveMethodName, "this", code);
+            CreateObjectResolverMethod(
+                settings.GetValueOrDefault(Setting.ObjectResolveMethodModifiers, Constant.DefaultApiMethodModifiers),
+                settings.GetValueOrDefault(Setting.ObjectResolveMethodName, Constant.ResolverMethodName),
+                resolvers,
+                "System.Type type",
+                ResolverClassesBuilder.ResolveMethodName,
+                "this",
+                code);
+            
             membersCounter++;
             code.AppendLine();
 
-            CreateObjectResolverMethod(resolvers, "System.Type type, object? tag", ResolverClassesBuilder.ResolveByTagMethodName, "this, tag", code);
+            CreateObjectResolverMethod(
+                settings.GetValueOrDefault(Setting.ObjectResolveByTagMethodModifiers, Constant.DefaultApiMethodModifiers),
+                settings.GetValueOrDefault(Setting.ObjectResolveByTagMethodName, Constant.ResolverMethodName),
+                resolvers,
+                "System.Type type, object? tag",
+                ResolverClassesBuilder.ResolveByTagMethodName,
+                "this, tag",
+                code);
+
             membersCounter++;
             code.AppendLine();
         }
@@ -83,14 +100,17 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
         return composition with { MembersCount = membersCounter };
     }
 
-    private static void CreateObjectResolverMethod(IReadOnlyCollection<ResolverInfo> resolvers,
+    private static void CreateObjectResolverMethod(
+        string methodModifiers,
+        string methodName,
+        IReadOnlyCollection<ResolverInfo> resolvers,
         string methodArgs,
         string resolveMethodName,
         string resolveMethodArgs,
         LinesBuilder code)
     {
         AddMethodHeader(code);
-        code.AppendLine($"public object {Constant.ResolverMethodName}({methodArgs})");
+        code.AppendLine($"{methodModifiers} object {methodName}({methodArgs})");
         code.AppendLine("{");
         using (code.Indent())
         {
