@@ -10,11 +10,11 @@ using BenchmarkDotNet.Order;
 using Model;
 
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-public class Enum : BenchmarkBase
+public partial class Enum : BenchmarkBase
 {
     private static void SetupDI() =>
         // ThreadSafe = Off
-        DI.Setup("EnumDI")
+        DI.Setup(nameof(Enum))
         .Bind<ICompositionRoot>().To<CompositionRoot>()
         .Bind<IService1>().To<Service1>()
         .Bind<IService2>().To<Service2Enum>()
@@ -24,8 +24,6 @@ public class Enum : BenchmarkBase
         .Bind<IService3>().Tags(4).To<Service3v4>()
         .Root<ICompositionRoot>("Root");
     
-    private static readonly EnumDI Composition = new();
-
     protected override TActualContainer? CreateContainer<TActualContainer, TAbstractContainer>()
         where TActualContainer : class
     {
@@ -41,13 +39,13 @@ public class Enum : BenchmarkBase
     }
 
     [Benchmark(Description = "Pure.DI")]
-    public ICompositionRoot PureDI() => Composition.Resolve<ICompositionRoot>();
+    public ICompositionRoot PureDI() => Resolve<ICompositionRoot>();
     
     [Benchmark(Description = "Pure.DI non-generic")]
-    public object PureDINonGeneric() => Composition.Resolve(typeof(ICompositionRoot));
+    public object PureDINonGeneric() => Resolve(typeof(ICompositionRoot));
 
     [Benchmark(Description = "Pure.DI composition root")]
-    public ICompositionRoot PureDIByCR() => Composition.Root;
+    public ICompositionRoot PureDIByCR() => Root;
 
     [Benchmark(Description = "Hand Coded", Baseline = true)]
     public void HandCoded() => NewInstance();

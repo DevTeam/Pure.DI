@@ -50,19 +50,9 @@ public abstract class BenchmarkBase
     }
 
 #if !DEBUG
-    [Benchmark(Description = "IoC.Container")]
-    public void IoCContainer() => _iocContainer.Resolve<ICompositionRoot>();
-
-    [Benchmark(Description = "IoC.Container composition root")]
-    // ReSharper disable once InconsistentNaming
-    public void IoCContainerByCR() => _iocRootResolver!();
-
     [Benchmark]
     public void Autofac() => _autofacContainer!.Resolve<ICompositionRoot>();
-
-    [Benchmark]
-    public void CastleWindsor() => _windsorContainerContainer!.Resolve<ICompositionRoot>();
-
+    
     [Benchmark]
     public void DryIoc() => _dryIocContainer.Resolve<ICompositionRoot>();
 
@@ -71,14 +61,26 @@ public abstract class BenchmarkBase
 
     [Benchmark]
     public void LightInject() => _lightInjectContainer.GetInstance<ICompositionRoot>();
+    
+    [Benchmark]
+    public void MicrosoftDependencyInjection() => _microsoftContainer!.GetService<ICompositionRoot>();
+    
+#if LEGACY
+    [Benchmark(Description = "IoC.Container")]
+    public void IoCContainer() => _iocContainer.Resolve<ICompositionRoot>();
+
+    [Benchmark(Description = "IoC.Container composition root")]
+    // ReSharper disable once InconsistentNaming
+    public void IoCContainerByCR() => _iocRootResolver!();
+
+    [Benchmark]
+    public void CastleWindsor() => _windsorContainerContainer!.Resolve<ICompositionRoot>();
 
     [Benchmark]
     public void Ninject() => _ninjectContainer!.Get<ICompositionRoot>();
 
     [Benchmark]
     public void Unity() => _unityContainer.Resolve<ICompositionRoot>();
-
-    [Benchmark]
-    public void MicrosoftDependencyInjection() => _microsoftContainer!.GetService<ICompositionRoot>();
+#endif
 #endif
 }

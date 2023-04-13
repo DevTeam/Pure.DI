@@ -10,19 +10,17 @@ using BenchmarkDotNet.Order;
 using Model;
 
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-public class Transient : BenchmarkBase
+public partial class Transient : BenchmarkBase
 {
     private static void SetupDI() =>
         // ThreadSafe = Off
-        DI.Setup("TransientDI")
+        DI.Setup(nameof(Transient))
         .Bind<ICompositionRoot>().To<CompositionRoot>()
         .Bind<IService1>().To<Service1>()
         .Bind<IService2>().To<Service2>()
         .Bind<IService3>().To<Service3>()
         .Root<ICompositionRoot>("Root");
     
-    private static readonly TransientDI Composition = new();
-
     protected override TActualContainer? CreateContainer<TActualContainer, TAbstractContainer>()
         where TActualContainer : class
     {
@@ -35,13 +33,13 @@ public class Transient : BenchmarkBase
     }
 
     [Benchmark(Description = "Pure.DI")]
-    public ICompositionRoot PureDI() => Composition.Resolve<ICompositionRoot>();
+    public ICompositionRoot PureDI() => Resolve<ICompositionRoot>();
     
     [Benchmark(Description = "Pure.DI non-generic")]
-    public object PureDINonGeneric() => Composition.Resolve(typeof(ICompositionRoot));
+    public object PureDINonGeneric() => Resolve(typeof(ICompositionRoot));
 
-    [Benchmark(Description = "Pure.DI composition root", OperationsPerInvoke = 10)]
-    public ICompositionRoot PureDIByCR() => Composition.Root;
+    [Benchmark(Description = "Pure.DI composition root")]
+    public ICompositionRoot PureDIByCR() => Root;
 
     [Benchmark(Description = "Hand Coded", Baseline = true)]
     public void HandCoded() => NewInstance();

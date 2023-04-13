@@ -12,19 +12,17 @@ using BenchmarkDotNet.Order;
 using Model;
 
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-public class Singleton : BenchmarkBase
+public partial class Singleton : BenchmarkBase
 {
     private static void SetupDI() =>
         // ThreadSafe = Off
-        DI.Setup("SingletonDI")
+        DI.Setup(nameof(Singleton))
         .Bind<ICompositionRoot>().To<CompositionRoot>()
         .Bind<IService1>().As(Lifetime.Singleton).To<Service1>()
         .Bind<IService2>().To<Service2>()
         .Bind<IService3>().To<Service3>()
         .Root<ICompositionRoot>("Root");
     
-    private static readonly SingletonDI Composition = new();
-
     protected override TActualContainer? CreateContainer<TActualContainer, TAbstractContainer>()
         where TActualContainer : class
     {
@@ -37,13 +35,13 @@ public class Singleton : BenchmarkBase
     }
 
     [Benchmark(Description = "Pure.DI")]
-    public ICompositionRoot PureDI() => Composition.Resolve<ICompositionRoot>();
+    public ICompositionRoot PureDI() => Resolve<ICompositionRoot>();
     
     [Benchmark(Description = "Pure.DI non-generic")]
-    public object PureDINonGeneric() => Composition.Resolve(typeof(ICompositionRoot));
+    public object PureDINonGeneric() => Resolve(typeof(ICompositionRoot));
 
     [Benchmark(Description = "Pure.DI composition root")]
-    public ICompositionRoot PureDIByCR() => Composition.Root;
+    public ICompositionRoot PureDIByCR() => Root;
 
     [Benchmark(Description = "Hand Coded", Baseline = true)]
     public void HandCoded() => NewInstance();
