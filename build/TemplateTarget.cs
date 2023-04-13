@@ -6,12 +6,12 @@ using HostApi;
 using JetBrains.TeamCity.ServiceMessages.Write.Special;
 using NuGet.Versioning;
 
-internal class DeployTemplateTarget: ITarget<string>
+internal class TemplateTarget: ITarget<string>
 {
     private readonly Settings _settings;
     private readonly ITeamCityWriter _teamCityWriter;
 
-    public DeployTemplateTarget(
+    public TemplateTarget(
         Settings settings,
         ITeamCityWriter teamCityWriter)
     {

@@ -11,7 +11,7 @@ internal class DeployTarget: ITarget<int>
 
     public DeployTarget(
         Settings settings,
-        [Tag(nameof(PackTarget))] ITarget<string> packTarget)
+        [Tag("pack")] ITarget<string> packTarget)
     {
         _settings = settings;
         _packTarget = packTarget;

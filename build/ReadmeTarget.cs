@@ -32,7 +32,7 @@ internal class ReadmeTarget : ITarget<int>
         "Hints"
     };
 
-    public ReadmeTarget([Tag(nameof(BenchmarksTarget))] ITarget<int> benchmarksTarget)
+    public ReadmeTarget([Tag("benchmarks")] ITarget<int> benchmarksTarget)
     {
         _benchmarksTarget = benchmarksTarget;
     }

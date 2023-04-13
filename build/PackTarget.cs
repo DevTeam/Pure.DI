@@ -9,7 +9,7 @@ using HostApi;
 using JetBrains.TeamCity.ServiceMessages.Write.Special;
 using NuGet.Versioning;
 
-internal class PackTarget: ITarget<string?>
+internal class PackTarget: ITarget<string>
 {
     private readonly Settings _settings;
     private readonly ITeamCityWriter _teamCityWriter;
@@ -22,7 +22,7 @@ internal class PackTarget: ITarget<string?>
         _teamCityWriter = teamCityWriter;
     }
 
-    public Task<string?> RunAsync(InvocationContext ctx)
+    public Task<string> RunAsync(InvocationContext ctx)
     {
         var packageVersion = Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI"), _settings.DefaultVersion);
         var projectDirectory = Path.Combine("src", "Pure.DI");
@@ -35,7 +35,7 @@ internal class PackTarget: ITarget<string?>
 
         MergeNuGetPackages(packages, targetPackage);
         _teamCityWriter.PublishArtifact($"{targetPackage} => .");
-        return Task.FromResult<string?>(targetPackage);
+        return Task.FromResult(targetPackage);
     }
     
     private string CreatePackage(NuGetVersion packageVersion, BuildCase buildCase, string projectDirectory)
