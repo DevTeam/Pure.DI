@@ -637,4 +637,85 @@ namespace Sample
         result.Success.ShouldBeTrue(result.GeneratedCode);
         result.StdOut.ShouldBe(ImmutableArray.Create("True", "True"), result.GeneratedCode);
     }
+    
+    [Fact]
+    public async Task ShouldSupportPreResolveWithinFunc()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency {}
+
+    interface ISin
+    {
+        IDependency Dep { get; }
+    }
+
+    class Sin: ISin
+    {
+        public Sin(IDependency dep)
+        {
+            Dep = dep;        
+        }
+
+        public IDependency Dep { get; }        
+    }
+
+    interface IService
+    {        
+        IDependency Dep { get; }
+
+        ISin Sin { get; }
+    }
+
+    class Service: IService 
+    {
+        private Func<IDependency> _dep;
+        public Service(Func<IDependency> dep, ISin sin)
+        {
+            _dep = dep;
+            Sin = sin;
+        }
+
+        public IDependency Dep => _dep();
+
+        public ISin Sin { get; }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>()
+                .Bind<ISin>().To<Sin>()
+                .Bind<IService>().To<Service>()               
+                .Root<IService>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service = composition.Service;
+            Console.WriteLine(service.Dep == service.Sin.Dep);            
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
+    }
 }
