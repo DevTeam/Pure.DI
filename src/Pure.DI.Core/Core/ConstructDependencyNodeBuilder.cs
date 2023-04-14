@@ -11,14 +11,14 @@ internal class ConstructDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<De
                 continue;
             }
 
-            var injectionsBuilder = ImmutableArray.CreateBuilder<Injection>();
+            var injections = new List<Injection>();
             foreach (var contract in construct.Dependencies)
             {
                 var tag = contract.Tags.Select(i => i.Value).FirstOrDefault();
-                injectionsBuilder.Add(new Injection(contract.ContractType, tag));
+                injections.Add(new Injection(contract.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), tag));
             }
             
-            yield return new DependencyNode(0, Construct: new DpConstruct(construct, binding, injectionsBuilder.ToImmutable()));
+            yield return new DependencyNode(0, Construct: new DpConstruct(construct, binding, injections.ToImmutableArray()));
         }
     }
 }

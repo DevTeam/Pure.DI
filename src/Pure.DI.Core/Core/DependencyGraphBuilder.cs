@@ -331,7 +331,8 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
         int newId,
         MdConstructKind constructKind)
     {
-        var dependencyContractsBuilder = ImmutableArray.CreateBuilder<MdContract>();
+        elementType = elementType.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
+        var dependencyContracts = new List<MdContract>();
         foreach (var nestedBinding in setup.Bindings.Where(i => i != targetNode.Binding))
         {
             var matchedContracts = nestedBinding.Contracts.Where(i => SymbolEqualityComparer.Default.Equals(i.ContractType, elementType)).ToImmutableArray();
@@ -344,7 +345,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                 .Concat(nestedBinding.Tags)
                 .Select((i, position) => i with { Position = position })
                 .ToImmutableArray();
-            dependencyContractsBuilder.Add(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, elementType, tags));
+            dependencyContracts.Add(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, elementType, tags));
         }
 
         var newTags = tag is not null
@@ -362,7 +363,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                 injection.Type,
                 elementType,
                 constructKind,
-                dependencyContractsBuilder.ToImmutable())
+                dependencyContracts.ToImmutableArray())
         };
     }
     

@@ -83,6 +83,7 @@ internal class ImplementationDependencyNodeBuilder :
                     case IFieldSymbol field:
                         if (field is { IsReadOnly: false, IsStatic: false, IsConst: false })
                         {
+                            var type = field.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
                             var ordinal = GetAttribute(setup.OrdinalAttributes, member, default(int?));
                             if (ordinal.HasValue || field.IsRequired)
                             {
@@ -91,7 +92,7 @@ internal class ImplementationDependencyNodeBuilder :
                                         field,
                                         ordinal,
                                         new Injection(
-                                            GetAttribute(setup.TypeAttributes, field, setup.TypeConstructor?.Construct(compilation, field.Type) ?? field.Type),
+                                            GetAttribute(setup.TypeAttributes, field, setup.TypeConstructor?.Construct(compilation, type) ?? type),
                                             GetAttribute(setup.TagAttributes, field, default(object?)))));
                             }
                         }
@@ -101,6 +102,7 @@ internal class ImplementationDependencyNodeBuilder :
                     case IPropertySymbol property:
                         if (property is { IsReadOnly: false, IsStatic: false, IsIndexer: false })
                         {
+                            var type = property.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
                             var ordinal = GetAttribute(setup.OrdinalAttributes, member, default(int?));
                             if (ordinal.HasValue || property.IsRequired)
                             {
@@ -109,7 +111,7 @@ internal class ImplementationDependencyNodeBuilder :
                                         property,
                                         ordinal,
                                         new Injection(
-                                            GetAttribute(setup.TypeAttributes, property, setup.TypeConstructor?.Construct(compilation, property.Type) ?? property.Type),
+                                            GetAttribute(setup.TypeAttributes, property, setup.TypeConstructor?.Construct(compilation, type) ?? type),
                                             GetAttribute(setup.TagAttributes, property, default(object?)))));
                             }
                         }
@@ -184,11 +186,12 @@ internal class ImplementationDependencyNodeBuilder :
         var dependenciesBuilder = ImmutableArray.CreateBuilder<DpParameter>(parameters.Length);
         foreach (var parameter in parameters)
         {
+            var type = parameter.Type.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
             dependenciesBuilder.Add(
                 new DpParameter(
                     parameter,
                     new Injection(
-                        GetAttribute(setup.TypeAttributes, parameter, typeConstructor?.Construct(compilation, parameter.Type) ?? parameter.Type),
+                        GetAttribute(setup.TypeAttributes, parameter, typeConstructor?.Construct(compilation, type) ?? type),
                         GetAttribute(setup.TagAttributes, parameter, default(object?)))));
         }
 

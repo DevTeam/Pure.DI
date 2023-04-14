@@ -519,7 +519,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         var typeSymbol = typeInfo.Type ?? typeInfo.ConvertedType;
         if (typeSymbol is T symbol)
         {
-            return symbol;
+            return (T)symbol.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
         }
 
         return default;
