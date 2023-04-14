@@ -16,6 +16,7 @@ internal class Generator : IGenerator
     private readonly IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>> _rootsBuilder;
     private readonly IBuilder<DependencyGraph, CompositionCode> _compositionBuilder;
     private readonly IBuilder<CompositionCode, CompositionCode> _classBuilder;
+    private readonly IValidator<MdSetup> _metadataValidator;
     private readonly IContextProducer _contextProducer;
     private readonly IObserversRegistry _observersRegistry;
     private readonly ILogObserver _logObserver;
@@ -33,6 +34,7 @@ internal class Generator : IGenerator
         IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>> rootsBuilder,
         [IoC.Tag(WellknownTag.CSharpCompositionBuilder)] IBuilder<DependencyGraph, CompositionCode> compositionBuilder,
         [IoC.Tag(WellknownTag.CSharpClassBuilder)] IBuilder<CompositionCode, CompositionCode> classBuilder,
+        IValidator<MdSetup> metadataValidator,
         IContextProducer contextProducer)
     {
         _logger = logger;
@@ -46,6 +48,7 @@ internal class Generator : IGenerator
         _rootsBuilder = rootsBuilder;
         _compositionBuilder = compositionBuilder;
         _classBuilder = classBuilder;
+        _metadataValidator = metadataValidator;
         _contextProducer = contextProducer;
     }
 
@@ -69,8 +72,8 @@ internal class Generator : IGenerator
                 try
                 {
                     _logger.Trace(setup.Settings, i => Enumerable.Repeat($"Settings \"{setup.Name.FullName}\":", 1).Concat(i.Select(j => $"{j.Key} = {j.Value}")));
-
                     using var setupToken = _logger.TraceProcess($"metadata processing \"{setup.Name.FullName}\", {setup.Bindings.Length} bindings");
+                    _metadataValidator.Validate(setup, cancellationToken);
                     DependencyGraph dependencyGraph;
                     using (_logger.TraceProcess($"building a dependency graph \"{setup.Name.FullName}\""))
                     {
@@ -191,7 +194,7 @@ internal class Generator : IGenerator
 #if DEBUG
                 DiagnosticSeverity.Info,
 #else
-                    DiagnosticSeverity.Hidden,
+                DiagnosticSeverity.Hidden,
 #endif
                 ImmutableArray.Create("Generation interrupted."),
                 default,

@@ -15,16 +15,13 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
 {
     private readonly ILogger<MetadataBuilder> _logger;
     private readonly Func<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>> _setupsBuilderFactory;
-    private readonly IValidator<MdSetup> _metadataValidator;
-
+    
     public MetadataBuilder(
         ILogger<MetadataBuilder> logger,
-        Func<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>> setupsBuilderFactory,
-        IValidator<MdSetup> metadataValidator)
+        Func<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>> setupsBuilderFactory)
     {
         _logger = logger;
         _setupsBuilderFactory = setupsBuilderFactory;
-        _metadataValidator = metadataValidator;
     }
 
     public IEnumerable<MdSetup> Build(IEnumerable<SyntaxUpdate> updates, CancellationToken cancellationToken)
@@ -84,7 +81,6 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
             
             MergeSetups(setupsChain, out var mergedSetup, true, cancellationToken);
             _logger.Trace(mergedSetup, i => Enumerable.Repeat("Metadata created", 1).Concat(i.ToStrings(1)), setup.Source.GetLocation());
-            _metadataValidator.Validate(mergedSetup, cancellationToken);
             yield return mergedSetup;
         }
     }

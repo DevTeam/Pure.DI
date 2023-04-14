@@ -4,7 +4,6 @@ namespace Build;
 using System.CommandLine.Invocation;
 using HostApi;
 using JetBrains.TeamCity.ServiceMessages.Write.Special;
-using NuGet.Versioning;
 
 internal class TemplateTarget: ITarget<string>
 {
