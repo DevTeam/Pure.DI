@@ -168,14 +168,27 @@ public static class TestExtensions
         }
         finally
         {
-            if (File.Exists(assemblyPath))
+            var attempts = 3;
+            while (attempts-- > 0)
             {
-                File.Delete(assemblyPath);
-            }
+                try
+                {
+                    if (File.Exists(assemblyPath))
+                    {
+                        File.Delete(assemblyPath);
+                    }
 
-            if (File.Exists(configPath))
-            {
-                File.Delete(configPath);
+                    if (File.Exists(configPath))
+                    {
+                        File.Delete(configPath);
+                    }
+
+                    attempts = 0;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    Thread.Sleep(300);
+                }
             }
         }
     }
