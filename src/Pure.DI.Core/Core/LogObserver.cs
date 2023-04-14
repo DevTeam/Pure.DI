@@ -7,14 +7,17 @@ internal class LogObserver: ILogObserver
     private readonly IBuilder<LogEntry, LogInfo> _logInfoBuilder;
     private readonly IContextDiagnostic _diagnostic;
     private readonly HashSet<DiagnosticInfo> _diagnostics = new();
+    private readonly bool _hasLogFile;
 
-    public LogObserver(IGlobalOptions globalOptions,
+    public LogObserver(
+        IGlobalOptions globalOptions,
         IBuilder<LogEntry, LogInfo> logInfoBuilder,
         IContextDiagnostic diagnostic)
     {
         _logInfoBuilder = logInfoBuilder;
         _diagnostic = diagnostic;
         _severity = globalOptions.Severity;
+        _hasLogFile = string.IsNullOrWhiteSpace(globalOptions.LogFile);
     }
 
     public StringBuilder Log { get; } = new();
@@ -34,14 +37,17 @@ internal class LogObserver: ILogObserver
                 }
             }
 
-            foreach (var line in logInfo.Lines)
+            if (_hasLogFile)
             {
-                Log.AppendLine(line);
+                foreach (var line in logInfo.Lines)
+                {
+                    Log.AppendLine(line);
+                }
             }
         }
         else
         {
-            if (logEntry.IsOutcome)
+            if (_hasLogFile && logEntry.IsOutcome)
             {
                 var logInfo = _logInfoBuilder.Build(logEntry, CancellationToken.None);
                 Outcome.AppendLine(logInfo.Outcome);

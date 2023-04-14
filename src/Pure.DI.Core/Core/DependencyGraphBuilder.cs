@@ -1,6 +1,5 @@
 namespace Pure.DI.Core;
 
-using System.Collections.ObjectModel;
 using CSharp;
 
 internal class DependencyGraphBuilder : IDependencyGraphBuilder
@@ -64,8 +63,8 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
         }
 
         var isValid = true;
-        var processed = new List<ProcessingNode>(nodes.Count);
-        var notProcessed = new List<ProcessingNode>();
+        var processed = new HashSet<ProcessingNode>(nodes.Count);
+        var notProcessed = new HashSet<ProcessingNode>();
         while (queue.TryDequeue(out var node))
         {
             var targetNode = node.Node;
@@ -89,7 +88,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                             var newBinding = CreateGenericBinding(targetNode, injection, sourceNode, ++maxId, cancellationToken);
                             var newNode = CreateNodes(setup, newBinding, cancellationToken)
                                 .Single(i => i.Variation == sourceNode.Variation);
-                            map.Add(injection, newNode);
+                            map[injection] = newNode;
                             queue.Enqueue(CreateNewProcessingNode(injection, newNode));
                             continue;
                         }
@@ -155,7 +154,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                         var onCannotResolveNodes = CreateNodes(mdSetup, onCannotResolveBinding, cancellationToken);
                         foreach (var onCannotResolveNode in onCannotResolveNodes)
                         {
-                            map.Add(unresolvedInjection, onCannotResolveNode);
+                            map[unresolvedInjection] = onCannotResolveNode;
                             processed.Add(CreateNewProcessingNode(unresolvedInjection, onCannotResolveNode));
                             return true;
                         }
@@ -187,7 +186,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
         var unresolvedSource = new DependencyNode(0);
         foreach (var node in processed)
         {
-            var edges = ImmutableArray.CreateBuilder<Dependency>(node.Injections.Length);
+            var edges = new List<Dependency>(node.Injections.Length);
             var symbolsWalker = new DependenciesToSymbolsWalker();
             symbolsWalker.VisitDependencyNode(node.Node);
             var symbols = symbolsWalker.ToArray();
@@ -204,7 +203,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                 edges.Add(dependency);
             }
 
-            entries.Add(new GraphEntry<DependencyNode, Dependency>(node.Node, edges.ToImmutable()));
+            entries.Add(new GraphEntry<DependencyNode, Dependency>(node.Node, edges.ToImmutableArray()));
         }
 
         if (notProcessed.Any())

@@ -54,7 +54,7 @@ internal class Generator : IGenerator
         var stopwatch = new Stopwatch();
         stopwatch.Start();
         var logFile = _globalOptions.LogFile;
-        using var logObserverToken= string.IsNullOrWhiteSpace(logFile) ? Disposables.Empty : _observersRegistry.Register(_logObserver);
+        using var logObserverToken= _observersRegistry.Register(_logObserver);
         try
         {
             using var logToken = _logger.TraceProcess("generation");
@@ -66,68 +66,75 @@ internal class Generator : IGenerator
 
             foreach (var setup in setups)
             {
-                _logger.Trace(setup.Settings, i => Enumerable.Repeat($"Settings \"{setup.Name.FullName}\":", 1).Concat(i.Select(j => $"{j.Key} = {j.Value}")));
-                
-                using var setupToken = _logger.TraceProcess($"metadata processing \"{setup.Name.FullName}\", {setup.Bindings.Length} bindings");
-                DependencyGraph dependencyGraph;
-                using (_logger.TraceProcess($"building a dependency graph \"{setup.Name.FullName}\""))
+                try
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    dependencyGraph = _dependencyGraphBuilder.Build(setup, cancellationToken);
-                    foreach (var graphObserver in _observersProvider.GetObservers<DependencyGraph>())
+                    _logger.Trace(setup.Settings, i => Enumerable.Repeat($"Settings \"{setup.Name.FullName}\":", 1).Concat(i.Select(j => $"{j.Key} = {j.Value}")));
+
+                    using var setupToken = _logger.TraceProcess($"metadata processing \"{setup.Name.FullName}\", {setup.Bindings.Length} bindings");
+                    DependencyGraph dependencyGraph;
+                    using (_logger.TraceProcess($"building a dependency graph \"{setup.Name.FullName}\""))
                     {
-                        graphObserver.OnNext(dependencyGraph);
+                        cancellationToken.ThrowIfCancellationRequested();
+                        dependencyGraph = _dependencyGraphBuilder.Build(setup, cancellationToken);
+                        foreach (var graphObserver in _observersProvider.GetObservers<DependencyGraph>())
+                        {
+                            graphObserver.OnNext(dependencyGraph);
+                        }
+                    }
+
+                    using (_logger.TraceProcess($"search for roots \"{setup.Name.FullName}\""))
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        var roots = _rootsBuilder.Build(dependencyGraph, cancellationToken);
+                        dependencyGraph = dependencyGraph with { Roots = roots };
+                    }
+
+                    using (_logger.TraceProcess($"dependency graph validation \"{setup.Name.FullName}\""))
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        _dependencyGraphValidator.Validate(dependencyGraph, cancellationToken);
+                    }
+
+                    CompositionCode composition;
+                    using (_logger.TraceProcess($"creating composition \"{setup.Name.FullName}\""))
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        composition = _compositionBuilder.Build(dependencyGraph, cancellationToken);
+                    }
+
+                    using (_logger.TraceProcess($"code generation \"{setup.Name.FullName}\""))
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        composition = _classBuilder.Build(composition, cancellationToken);
+                    }
+
+                    using (_logger.TraceProcess($"saving data \"{setup.Name.FullName}\""))
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        var classCode = string.Join(Environment.NewLine, composition.Code);
+                        _contextProducer.AddSource($"{setup.Name.FullName}.g.cs", SourceText.From(classCode, Encoding.UTF8));
+                    }
+
+                    if (_logger.IsTracing())
+                    {
+                        var trace = new List<string> { $"Setup {dependencyGraph.Source.Name.FullName}:", "---------- Map ----------" };
+                        foreach (var (injection, dependencyNode) in dependencyGraph.Map)
+                        {
+                            trace.Add($"{injection} -> {dependencyNode}");
+                        }
+
+                        trace.Add("---------- Roots ----------");
+                        foreach (var root in dependencyGraph.Roots)
+                        {
+                            trace.Add($"{root.Key} {root.Value.PropertyName} -> {root.Value.Node}");
+                        }
+
+                        _logger.Trace(trace, state => state);
                     }
                 }
-                
-                using (_logger.TraceProcess($"search for roots \"{setup.Name.FullName}\""))
+                catch (HandledException handledException)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    var roots = _rootsBuilder.Build(dependencyGraph, cancellationToken);
-                    dependencyGraph = dependencyGraph with { Roots = roots };
-                }
-
-                using (_logger.TraceProcess($"dependency graph validation \"{setup.Name.FullName}\""))
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    _dependencyGraphValidator.Validate(dependencyGraph, cancellationToken);
-                }
-
-                CompositionCode composition;
-                using (_logger.TraceProcess($"creating composition \"{setup.Name.FullName}\""))
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    composition = _compositionBuilder.Build(dependencyGraph, cancellationToken);
-                }
-
-                using (_logger.TraceProcess($"code generation \"{setup.Name.FullName}\""))
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    composition = _classBuilder.Build(composition, cancellationToken);
-                }
-
-                using (_logger.TraceProcess($"saving data \"{setup.Name.FullName}\""))
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    var classCode = string.Join(Environment.NewLine, composition.Code);
-                    _contextProducer.AddSource($"{setup.Name.FullName}.g.cs", SourceText.From(classCode, Encoding.UTF8));
-                }
-
-                if (_logger.IsTracing())
-                {
-                    var trace = new List<string> { $"Setup {dependencyGraph.Source.Name.FullName}:", "---------- Map ----------" };
-                    foreach (var (injection, dependencyNode) in dependencyGraph.Map)
-                    {
-                        trace.Add($"{injection} -> {dependencyNode}");
-                    }
-                    
-                    trace.Add("---------- Roots ----------");
-                    foreach (var root in dependencyGraph.Roots)
-                    {
-                        trace.Add($"{root.Key} {root.Value.PropertyName} -> {root.Value.Node}");
-                    }
-                    
-                    _logger.Trace(trace, state => state);
+                    OnHandledException(handledException);
                 }
             }
         }
@@ -136,17 +143,7 @@ internal class Generator : IGenerator
         }
         catch (HandledException handledException)
         {
-            _logger.Log(
-                new LogEntry(
-#if DEBUG
-                    DiagnosticSeverity.Info,
-#else
-                    DiagnosticSeverity.Hidden,
-#endif
-                    ImmutableArray.Create("Generation interrupted."),
-                    default,
-                    LogId.InfoGenerationInterrupted,
-                    handledException));
+            OnHandledException(handledException);
         }
         catch (Exception error)
         {
@@ -185,5 +182,20 @@ internal class Generator : IGenerator
                 // ignored
             }
         }
+    }
+
+    private void OnHandledException(Exception handledException)
+    {
+        _logger.Log(
+            new LogEntry(
+#if DEBUG
+                DiagnosticSeverity.Info,
+#else
+                    DiagnosticSeverity.Hidden,
+#endif
+                ImmutableArray.Create("Generation interrupted."),
+                default,
+                LogId.InfoGenerationInterrupted,
+                handledException));
     }
 }
