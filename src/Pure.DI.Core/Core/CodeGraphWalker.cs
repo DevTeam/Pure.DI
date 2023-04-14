@@ -1,5 +1,6 @@
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable InvertIf
+// ReSharper disable UnusedParameter.Global
 namespace Pure.DI.Core;
 
 internal class CodeGraphWalker<TContext>
@@ -47,7 +48,7 @@ internal class CodeGraphWalker<TContext>
         }
     }
 
-    protected virtual void VisitRootVariable(
+    protected void VisitRootVariable(
         TContext context,
         DependencyGraph dependencyGraph,
         IDictionary<MdBinding, Variable> variables,
@@ -216,7 +217,6 @@ internal class CodeGraphWalker<TContext>
             ctorArgs,
             initOnlyProperties.ToImmutableArray());
 
-        var curImplementation = implementation;
         var visits = new List<(Action Run, int? Ordinal)>();
         foreach (var field in implementation.Fields)
         {
@@ -293,7 +293,7 @@ internal class CodeGraphWalker<TContext>
     {
     }
 
-    public virtual void VisitArg(
+    protected virtual void VisitArg(
         TContext context,
         Variable rootVariable,
         Instantiation instantiation,

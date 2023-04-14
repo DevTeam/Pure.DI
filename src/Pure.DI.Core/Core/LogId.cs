@@ -16,5 +16,4 @@ internal static class LogId
 
     // Info
     public const string InfoGenerationInterrupted = "DII000";
-    public const string InfoPerformanceImpact = "DII001";
 }

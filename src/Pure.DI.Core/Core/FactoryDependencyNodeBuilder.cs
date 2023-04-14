@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core;
+﻿// ReSharper disable ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
+namespace Pure.DI.Core;
 
 internal class FactoryDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<DependencyNode>>
 {
@@ -11,13 +12,13 @@ internal class FactoryDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<Depe
                 continue;
             }
 
-            var injectionsBuilder = ImmutableArray.CreateBuilder<Injection>(factory.Resolvers.Length);
+            var injections = new List<Injection>(factory.Resolvers.Length);
             foreach (var resolver in factory.Resolvers)
             {
-                injectionsBuilder.Add(new Injection(resolver.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), resolver.Tag?.Value));
+                injections.Add(new Injection(resolver.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), resolver.Tag?.Value));
             }
 
-            yield return new DependencyNode(0, Factory: new DpFactory(factory, binding, injectionsBuilder.SafeMoveToImmutable()));
+            yield return new DependencyNode(0, Factory: new DpFactory(factory, binding, injections.ToImmutableArray()));
         }
     }
 }

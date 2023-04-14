@@ -8,6 +8,7 @@ $h=This example shows how to create and initialize an instance manually injectin
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedVariable
+// ReSharper disable UnusedMemberInSuper.Global
 namespace Pure.DI.UsageTests.Basics.InjectScenario;
 
 using Xunit;

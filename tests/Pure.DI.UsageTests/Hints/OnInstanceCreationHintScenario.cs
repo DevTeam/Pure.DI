@@ -9,6 +9,7 @@ $h=The _OnInstanceCreation_ hint determines whether to generate partial _OnInsta
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable UnusedVariable
+// ReSharper disable UnusedMemberInSuper.Global
 namespace Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario;
 
 using System.Collections.Immutable;

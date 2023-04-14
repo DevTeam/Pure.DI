@@ -14,7 +14,7 @@ internal static class LoggerExtensions
     [Conditional("DEBUG")]
     public static void Trace<T, TState>(this ILogger<T> logger, in TState state, Func<TState, IEnumerable<string>> messageFactory, in Location? location = default)
     {
-        if (!IsTracing(logger))
+        if (!IsTracing())
         {
             return;
         }
@@ -33,7 +33,7 @@ internal static class LoggerExtensions
 
     public static IDisposable TraceProcess<T>(this ILogger<T> logger, string shortDescription, in Location? location = default)
     {
-        if (!IsTracing(logger))
+        if (!IsTracing())
         {
             return Disposables.Empty;
         }
@@ -61,7 +61,7 @@ internal static class LoggerExtensions
         });
     }
 
-    public static bool IsTracing<T>(this ILogger<T> logger)
+    public static bool IsTracing()
     {
 #if DEBUG
         return true;

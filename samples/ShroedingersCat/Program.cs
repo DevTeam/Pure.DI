@@ -1,9 +1,11 @@
-﻿// ReSharper disable InconsistentNaming
-// ReSharper disable UnusedMember.Local
-
-using Pure.DI;
+﻿using Pure.DI;
 using static Pure.DI.Lifetime;
+
+// ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Local
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UnusedMemberInSuper.Global
+// ReSharper disable UnusedMember.Global
 
 namespace Sample;
 // Let's create an abstraction

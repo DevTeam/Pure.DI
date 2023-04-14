@@ -262,15 +262,15 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                             && invocation.ArgumentList.Arguments is [{ Expression: { } nameArgExpression }, ..] args)
                         {
                             var name = GetConstantValue<string>(nameArgExpression).Trim();
-                            var tagsBuilder = ImmutableArray.CreateBuilder<MdTag>(args.Count - 1);
+                            var tags = new List<MdTag>(args.Count - 1);
                             for (var index = 1; index < args.Count; index++)
                             {
                                 var arg = args[index];
-                                tagsBuilder.Add(new MdTag(index - 1, GetConstantValue<object>(arg.Expression)));
+                                tags.Add(new MdTag(index - 1, GetConstantValue<object>(arg.Expression)));
                             }
 
                             var argType = GetTypeSymbol<ITypeSymbol>(argTypeSyntax);
-                            MetadataVisitor.VisitContract(new MdContract(SemanticModel, invocation, argType, tagsBuilder.SafeMoveToImmutable()));
+                            MetadataVisitor.VisitContract(new MdContract(SemanticModel, invocation, argType, tags.ToImmutableArray()));
                             MetadataVisitor.VisitArg(new MdArg(SemanticModel, invocation, argType, name));
                         }
 

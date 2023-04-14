@@ -1,4 +1,5 @@
 // ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedMemberInSuper.Global
 namespace Pure.DI;
 
 public interface IContextOptions

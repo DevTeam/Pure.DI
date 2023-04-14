@@ -1,3 +1,4 @@
+// ReSharper disable UnusedMember.Global
 namespace Build;
 
 using HostApi;

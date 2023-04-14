@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Benchmarks.Containers;
+﻿// ReSharper disable UnusedType.Global
+namespace Pure.DI.Benchmarks.Containers;
 
 using global::Unity;
 using global::Unity.Lifetime;

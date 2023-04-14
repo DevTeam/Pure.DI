@@ -23,7 +23,7 @@ internal class MetadataValidator : IValidator<MdSetup>
         var isValid = setup.Bindings
             .Aggregate(
                 true, 
-                (current, binding) => current & Validate(binding, cancellationToken));
+                (current, binding) => current & Validate(binding));
 
         foreach (var routeGroups in setup.Roots.GroupBy(root => new Injection(root.RootType, root.Tag?.Value)))
         {
@@ -47,7 +47,7 @@ internal class MetadataValidator : IValidator<MdSetup>
     }
 
     [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]
-    private bool Validate(in MdBinding binding, in CancellationToken cancellationToken)
+    private bool Validate(in MdBinding binding)
     {
         ITypeSymbol? implementationType = default;
         SemanticModel? semanticModel = default;

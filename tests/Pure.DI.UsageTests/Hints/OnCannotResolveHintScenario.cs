@@ -11,6 +11,7 @@ $h=The _OnCannotResolve_ hint determines whether to generate a partial `OnCannot
 // ReSharper disable UnusedVariable
 namespace Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario;
 
+using System.Diagnostics.CodeAnalysis;
 using Shouldly;
 using Xunit;
 
@@ -49,6 +50,7 @@ public class Service : IService
 
 internal partial class Composition
 {
+    [SuppressMessage("Performance", "CA1822:Mark members as static")]
     private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime)
     {
         if (typeof(T) == typeof(string))

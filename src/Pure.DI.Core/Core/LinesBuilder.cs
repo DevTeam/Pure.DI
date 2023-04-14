@@ -23,8 +23,6 @@ internal class LinesBuilder: IEnumerable<string>
 
     public LinesBuilder() => _indent = new Indent(0);
 
-    public Indent CurrentIndent => _indent.Value;
-    
     public IEnumerable<Line> Lines
     {
         get
@@ -41,7 +39,7 @@ internal class LinesBuilder: IEnumerable<string>
     public void Append(string text) => _sb.Append(text);
 
     public void AppendLine(in Line line) => 
-        _lines.Add(line with { Indent = line.Indent + CurrentIndent.Value });
+        _lines.Add(line with { Indent = line.Indent + _indent.Value });
 
     public void AppendLines(IEnumerable<Line> lines)
     {

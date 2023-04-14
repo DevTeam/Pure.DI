@@ -7,7 +7,6 @@ internal readonly record struct MdArg(
     SyntaxNode Source,
     ITypeSymbol Type,
     string ArgName)
-    : IMdImplementation
 {
     public override string ToString() => $"To<{Type}>(arg: \"{ArgName}\")";
 }

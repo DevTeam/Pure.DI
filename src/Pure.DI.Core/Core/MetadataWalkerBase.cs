@@ -1,3 +1,4 @@
+// ReSharper disable MemberCanBeProtected.Global
 namespace Pure.DI.Core;
 
 internal class MetadataWalkerBase: IMetadataVisitor

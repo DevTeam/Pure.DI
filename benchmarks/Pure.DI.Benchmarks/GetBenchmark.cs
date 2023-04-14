@@ -1,3 +1,4 @@
+// ReSharper disable SuggestVarOrType_BuiltInTypes
 namespace Pure.DI.Benchmarks;
 
 using System.Diagnostics.CodeAnalysis;
@@ -121,7 +122,7 @@ public class GetBenchmark
             {
                 return pair.Value;
             }
-        };
+        }
 
         throw new InvalidOperationException();
     }

@@ -8,6 +8,8 @@ $h=When applied to any constructor in a type, automatic injection constructor se
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UnusedMember.Global
 namespace Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario;
 
 using Shouldly;
@@ -22,7 +24,7 @@ internal interface IService { }
 
 internal class Service : IService
 {
-    private readonly string _name = "";
+    private readonly string _name;
 
     [Ordinal(1)]
     public Service(IDependency dependency) => _name = "with dependency";

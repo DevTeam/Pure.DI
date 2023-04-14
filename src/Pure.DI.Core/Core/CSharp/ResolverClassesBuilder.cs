@@ -5,11 +5,11 @@ namespace Pure.DI.Core.CSharp;
 internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode>
 {
     private readonly IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
-    internal static readonly string ResolverInterfaceName = $"{Constant.ApiNamespace}{nameof(IResolver<object, object>)}";
-    internal static readonly string ResolverPropertyName = "Value";
-    internal static readonly string ResolveMethodName = nameof(IResolver<object, object>.Resolve);
-    internal static readonly string ResolveByTagMethodName = nameof(IResolver<object, object>.ResolveByTag);
-    
+    internal const string ResolverInterfaceName = $"{Constant.ApiNamespace}{nameof(IResolver<object, object>)}";
+    internal const string ResolverPropertyName = "Value";
+    internal const string ResolveMethodName = nameof(IResolver<object, object>.Resolve);
+    internal const string ResolveByTagMethodName = nameof(IResolver<object, object>.ResolveByTag);
+
     public ResolverClassesBuilder(
         IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
     {

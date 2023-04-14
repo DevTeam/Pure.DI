@@ -115,7 +115,7 @@ internal class Generator : IGenerator
                         _contextProducer.AddSource($"{setup.Name.FullName}.g.cs", SourceText.From(classCode, Encoding.UTF8));
                     }
 
-                    if (_logger.IsTracing())
+                    if (LoggerExtensions.IsTracing())
                     {
                         var trace = new List<string> { $"Setup {dependencyGraph.Source.Name.FullName}:", "---------- Map ----------" };
                         foreach (var (injection, dependencyNode) in dependencyGraph.Map)

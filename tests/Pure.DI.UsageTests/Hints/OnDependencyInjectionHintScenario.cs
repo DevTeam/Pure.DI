@@ -9,6 +9,7 @@ $h=The _OnDependencyInjection_ hint determines whether to generate partial _OnDe
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable UnusedVariable
+// ReSharper disable UnusedMemberInSuper.Global
 namespace Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario;
 
 using System.Collections.Immutable;

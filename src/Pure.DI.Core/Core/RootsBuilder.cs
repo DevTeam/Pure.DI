@@ -19,7 +19,7 @@ internal class RootsBuilder: IBuilder<DependencyGraph, IReadOnlyDictionary<Injec
                 continue;
             }
 
-            var name = "";
+            string name;
             if (node.Root is { } root)
             {
                 if (dependencyGraph.Graph.TryGetInEdges(node, out var rootDependencies) && rootDependencies.Count == 1)

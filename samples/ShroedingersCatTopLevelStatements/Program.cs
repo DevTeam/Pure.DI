@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CA1050
 // ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedMemberInSuper.Global
 
 using Pure.DI;
 using static Pure.DI.Lifetime;

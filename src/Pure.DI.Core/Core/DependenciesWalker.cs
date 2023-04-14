@@ -1,6 +1,8 @@
 // ReSharper disable ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable HeapView.ObjectAllocation.Evident
 // ReSharper disable HeapView.ObjectAllocation.Possible
+// ReSharper disable VirtualMemberNeverOverridden.Global
+// ReSharper disable MemberCanBeProtected.Global
 namespace Pure.DI.Core;
 
 internal class DependenciesWalker

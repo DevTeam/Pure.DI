@@ -7,6 +7,7 @@ $h=This example demonstrates how to create and initialize an instance manually.
 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
+// ReSharper disable UnusedMemberInSuper.Global
 namespace Pure.DI.UsageTests.Basics.FactoryScenario;
 
 using Shouldly;

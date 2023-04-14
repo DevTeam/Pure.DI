@@ -1,4 +1,5 @@
 // ReSharper disable InvertIf
+// ReSharper disable ConvertIfStatementToSwitchStatement
 namespace Build;
 
 using System.CommandLine.Invocation;
@@ -64,7 +65,7 @@ internal class ReadmeTarget : ITarget<int>
         
         await readmeWriter.WriteLineAsync("");
         
-        await AddBencmarks(logsDirectory, readmeWriter);
+        await AddBenchmarks(logsDirectory, readmeWriter);
 
         await readmeWriter.FlushAsync();
         return 0;
@@ -196,7 +197,7 @@ internal class ReadmeTarget : ITarget<int>
         return examples;
     }
 
-    private static async Task GenerateExamples(IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)> examples, StreamWriter readmeWriter, string logsDirectory)
+    private static async Task GenerateExamples(IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)> examples, TextWriter readmeWriter, string logsDirectory)
     {
         await readmeWriter.WriteLineAsync("## Examples");
         await readmeWriter.WriteLineAsync("");
@@ -257,7 +258,7 @@ internal class ReadmeTarget : ITarget<int>
         await examplesWriter.FlushAsync();
     }
 
-    private static async Task AddBencmarks(string logsDirectory, TextWriter readmeWriter)
+    private static async Task AddBenchmarks(string logsDirectory, TextWriter readmeWriter)
     {
         var benchmarksReportFiles = Directory.EnumerateFiles(logsDirectory, "*.html").ToArray();
         if (benchmarksReportFiles.Any())
@@ -266,13 +267,13 @@ internal class ReadmeTarget : ITarget<int>
             await readmeWriter.WriteLineAsync("## Benchmarks");
             await readmeWriter.WriteLineAsync("");
             var files = benchmarksReportFiles.OrderBy(i => i).ToArray();
-            for (var i = 0; i < files.Length; i++)
+            for (var fileIndex = 0; fileIndex < files.Length; fileIndex++)
             {
-                var benchmarksReportFile = files[i];
-                var reportName = new string(Path.GetFileNameWithoutExtension(benchmarksReportFile).SkipWhile(i => i != ' ').Skip(1).ToArray());
+                var benchmarksReportFile = files[fileIndex];
+                var reportName = new string(Path.GetFileNameWithoutExtension(benchmarksReportFile).SkipWhile(ch => ch != ' ').Skip(1).ToArray());
                 WriteLine($"Processing benchmarks \"{reportName}\"", Color.Details);
                 var lines = await File.ReadAllLinesAsync(benchmarksReportFile);
-                await readmeWriter.WriteLineAsync($"<details>");
+                await readmeWriter.WriteLineAsync("<details>");
                 await readmeWriter.WriteLineAsync($"<summary>{reportName}</summary>");
                 await readmeWriter.WriteLineAsync("");
                 var contentLines = lines
@@ -289,7 +290,7 @@ internal class ReadmeTarget : ITarget<int>
                 await readmeWriter.WriteLineAsync("</details>");
                 await readmeWriter.WriteLineAsync("");
 
-                if (i == files.Length - 1)
+                if (fileIndex == files.Length - 1)
                 {
                     await readmeWriter.WriteLineAsync("<details>");
                     await readmeWriter.WriteLineAsync("<summary>Benchmarks environment</summary>");

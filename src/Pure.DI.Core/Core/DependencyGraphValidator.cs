@@ -110,14 +110,16 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
             }
         }
 
-        if (!isValid)
+        if (isValid)
         {
-            if (!isErrorReported)
-            {
-                _logger.CompileError("Cannot build a dependency graph.", data.Source.Source.GetLocation(), LogId.ErrorUnresolved);
-            }
-
-            throw HandledException.Shared;
+            return;
         }
+
+        if (!isErrorReported)
+        {
+            _logger.CompileError("Cannot build a dependency graph.", data.Source.Source.GetLocation(), LogId.ErrorUnresolved);
+        }
+
+        throw HandledException.Shared;
     }
 }

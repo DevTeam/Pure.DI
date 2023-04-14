@@ -6,7 +6,6 @@ internal static class CodeExtensions
     public static string ValueToString(this object? tag, string defaultValue = "null") => 
         tag switch
         {
-            CompositeTag compositeTag => compositeTag.Tags.FirstOrDefault()?.ValueToString() ?? defaultValue,
             string => $"\"{tag}\"",
             double => $"{tag}D",
             float => $"{tag}F",

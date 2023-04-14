@@ -1,3 +1,4 @@
+// ReSharper disable LoopCanBeConvertedToQuery
 namespace Pure.DI.Core;
 
 internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>

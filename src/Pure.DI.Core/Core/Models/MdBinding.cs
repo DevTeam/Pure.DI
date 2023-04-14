@@ -19,7 +19,7 @@ internal readonly record struct MdBinding(
         return string.Join(Environment.NewLine, walker);
     }
 
-    public bool Equals(in MdBinding other) => Id == other.Id;
+    public bool Equals(MdBinding other) => Id == other.Id;
 
     public override int GetHashCode() => Id;
 }

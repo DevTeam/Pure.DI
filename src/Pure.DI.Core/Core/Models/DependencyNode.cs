@@ -8,7 +8,7 @@ internal record DependencyNode(
     DpArg? Arg = default,
     DpConstruct? Construct = default)
 {
-    public IEnumerable<string> ToStrings(int indent) =>
+    private IEnumerable<string> ToStrings(int indent) =>
         Root?.ToStrings(indent)
         ?? Implementation?.ToStrings(indent)
         ?? Factory?.ToStrings(indent)

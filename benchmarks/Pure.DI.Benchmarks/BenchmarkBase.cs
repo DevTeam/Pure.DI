@@ -1,7 +1,9 @@
 ﻿// ReSharper disable RedundantUsingDirective
+// ReSharper disable UnusedMember.Global
 #pragma warning disable CS0169
 namespace Pure.DI.Benchmarks;
 
+using System.Diagnostics.CodeAnalysis;
 using Autofac;
 using BenchmarkDotNet.Attributes;
 using Castle.Windsor;
@@ -33,6 +35,7 @@ public abstract class BenchmarkBase
         where TAbstractContainer : IAbstractContainer<TContainer>, new() where TContainer : class;
 
     [GlobalSetup]
+    [SuppressMessage("Performance", "CA1822:Mark members as static")]
     public void Setup()
     {
 #if !DEBUG

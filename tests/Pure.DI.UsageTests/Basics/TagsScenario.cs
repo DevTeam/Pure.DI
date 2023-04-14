@@ -8,6 +8,7 @@ $f=Sometimes it's important to take control of building a dependency graph. In t
 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
+// ReSharper disable UnusedType.Global
 namespace Pure.DI.UsageTests.Basics.TagsScenario;
 
 using Shouldly;

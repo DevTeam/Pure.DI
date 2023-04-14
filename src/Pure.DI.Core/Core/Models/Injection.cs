@@ -21,33 +21,6 @@ internal readonly record struct Injection(
             return true;
         }
         
-        if (ReferenceEquals(otherTag, MdTag.ContextTag))
-        {
-            return true;
-        }
-        
-        if (Equals(tag, otherTag))
-        {
-            return true;
-        }
-
-        if (tag is CompositeTag compositeTag)
-        {
-            return EqualCompositeTags(otherTag, compositeTag);
-        }
-        
-        if (otherTag is CompositeTag otherCompositeTag)
-        {
-            return EqualCompositeTags(tag, otherCompositeTag);
-        }
-
-        return tag is CompositeTag compositeTag1
-               && otherTag is CompositeTag compositeTag2
-               && compositeTag1.Tags.Intersect(compositeTag2.Tags).Any();
+        return ReferenceEquals(otherTag, MdTag.ContextTag) || Equals(tag, otherTag);
     }
-
-    private static bool EqualCompositeTags(object? tag, CompositeTag compositeTag) => 
-        tag is not null
-            ? compositeTag.Tags.Contains(tag)
-            : compositeTag.Tags.IsEmpty;
 }

@@ -1,4 +1,5 @@
-﻿namespace WpfAppNetCore;
+﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
+namespace WpfAppNetCore;
 
 using System.Windows;
 using System.Windows.Data;

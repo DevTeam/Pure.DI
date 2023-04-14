@@ -188,12 +188,12 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
     {
         base.VisitMethod(context, instantiation, method, methodArguments);
 
-        string InjectVariable(Variable variable) => this.Inject(context, variable);
+        string InjectVariable(Variable variable) => Inject(context, variable);
         var args = string.Join(", ", methodArguments.Select(InjectVariable));
         context.Code.AppendLine($"{instantiation.Target.Name}.{method.Method.Name}({args});");
     }
 
-    public override void VisitArg(
+    protected override void VisitArg(
         BuildContext context,
         Variable rootVariable,
         Instantiation instantiation,
@@ -276,7 +276,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             return;
         }
         
-        string InjectVariable(Variable variable) => this.Inject(context, variable);
+        string InjectVariable(Variable variable) => Inject(context, variable);
         var createArray = $"{construct.Source.ElementType}[{instantiation.Arguments.Length.ToString()}] {{ {string.Join(", ", instantiation.Arguments.Select(InjectVariable))} }}";
         var createInstance = 
             construct.Source.ElementType.IsValueType

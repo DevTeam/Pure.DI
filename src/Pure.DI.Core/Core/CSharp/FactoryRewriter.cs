@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ConvertIfStatementToReturnStatement
+// ReSharper disable InvertIf
 namespace Pure.DI.Core.CSharp;
 
 internal class FactoryRewriter : CSharpSyntaxRewriter

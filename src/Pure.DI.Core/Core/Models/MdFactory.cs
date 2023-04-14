@@ -9,7 +9,6 @@ internal readonly record struct MdFactory(
     ParameterSyntax Context,
     in ImmutableArray<MdResolver> Resolvers,
     bool HasContextTag)
-    : IMdImplementation
 {
     public override string ToString() => $"To<{Type}>({Factory})";
 }

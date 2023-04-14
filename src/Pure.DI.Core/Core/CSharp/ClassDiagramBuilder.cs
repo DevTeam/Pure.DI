@@ -178,12 +178,12 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
 
         if (method.MethodKind == MethodKind.Constructor)
         {
-            string FormatProperty(IParameterSymbol parameter) => $"{FormatType(parameter.Type, options)} {parameter.Name}";
-            return $"{Format(method.DeclaredAccessibility)}{method.ContainingType.Name}({string.Join(", ", method.Parameters.Select(FormatProperty))})";
+            string FormatPropertyLocal(IParameterSymbol parameter) => $"{FormatType(parameter.Type, options)} {parameter.Name}";
+            return $"{Format(method.DeclaredAccessibility)}{method.ContainingType.Name}({string.Join(", ", method.Parameters.Select(FormatPropertyLocal))})";
         }
 
-        string FormatParameter(IParameterSymbol parameter) => $"{FormatType(parameter.Type, options)} {parameter.Name}";
-        return $"{Format(method.DeclaredAccessibility)}{method.Name}({(string.Join(", ", method.Parameters.Select(FormatParameter)))}) : {FormatType(method.ReturnType, options)}";
+        string FormatParameterLocal(IParameterSymbol parameter) => $"{FormatType(parameter.Type, options)} {parameter.Name}";
+        return $"{Format(method.DeclaredAccessibility)}{method.Name}({string.Join(", ", method.Parameters.Select(FormatParameterLocal))}) : {FormatType(method.ReturnType, options)}";
     }
 
     private static string FormatProperty(IPropertySymbol property, FormatOptions options) =>
@@ -197,10 +197,10 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
 
     private static string FormatType(ISymbol typeSymbol, FormatOptions options)
     {
-        string FormatSymbol(ITypeSymbol i) => ClassDiagramBuilder.FormatSymbol(i, options);
+        string FormatSymbolLocal(ITypeSymbol i) => FormatSymbol(i, options);
         return typeSymbol switch
         {
-            INamedTypeSymbol { IsGenericType: true } namedTypeSymbol => $"{namedTypeSymbol.Name}{options.StartGenericArgsSymbol}{string.Join(options.TypeArgsSeparator, namedTypeSymbol.TypeArguments.Select(FormatSymbol))}{options.FinishGenericArgsSymbol}",
+            INamedTypeSymbol { IsGenericType: true } namedTypeSymbol => $"{namedTypeSymbol.Name}{options.StartGenericArgsSymbol}{string.Join(options.TypeArgsSeparator, namedTypeSymbol.TypeArguments.Select(FormatSymbolLocal))}{options.FinishGenericArgsSymbol}",
             IArrayTypeSymbol array => $"Array{options.StartGenericArgsSymbol}{FormatType(array.ElementType, options)}{options.FinishGenericArgsSymbol}",
             _ => typeSymbol.Name
         };

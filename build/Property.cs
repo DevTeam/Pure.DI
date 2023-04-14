@@ -7,7 +7,7 @@ internal static class Property
     public static string Get(string name, string defaultProp, bool showWarning = false) =>
         Get(Props, name, defaultProp, showWarning);
 
-    public static string Get(IProperties props, string name, string defaultProp, bool showWarning = false)
+    private static string Get(IProperties props, string name, string defaultProp, bool showWarning = false)
     {
         if (props.TryGetValue(name, out var prop) && !string.IsNullOrWhiteSpace(prop))
         {

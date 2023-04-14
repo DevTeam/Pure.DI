@@ -1,4 +1,7 @@
-﻿namespace Pure.DI.Core;
+﻿// ReSharper disable ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
+// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+// ReSharper disable ConvertToAutoPropertyWhenPossible
+namespace Pure.DI.Core;
 
 internal class ImplementationDependencyNodeBuilder : 
     IBuilder<MdSetup, IEnumerable<DependencyNode>>

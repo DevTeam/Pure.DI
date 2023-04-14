@@ -7,6 +7,7 @@ $d=Advanced interception
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameterInPartialMethod
+// ReSharper disable ConvertIfStatementToReturnStatement
 namespace Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario;
 
 using System.Collections.Immutable;

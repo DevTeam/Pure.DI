@@ -40,23 +40,6 @@ internal static partial class Tools
 
         return release;
     }
-
-    public static void CheckRequiredSdk(Version requiredSdkVersion)
-    {
-        Version? sdkVersion = default;
-        // ReSharper disable once InvertIf
-        if (
-            new DotNetCustom("--version")
-                .WithShortName($"Checking the .NET SDK version {requiredSdkVersion}")
-#pragma warning disable CA1806
-                .Run(output => Version.TryParse(output.Line, out sdkVersion)) == 0
-#pragma warning restore CA1806
-            && sdkVersion != requiredSdkVersion)
-        {
-            Error($".NET SDK {requiredSdkVersion} is required.");
-            Environment.Exit(1);
-        }
-    }
     
     public static string GetSolutionDirectory()
     {

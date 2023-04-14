@@ -1,4 +1,5 @@
 // ReSharper disable HeapView.BoxingAllocation
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
 namespace Pure.DI.Core.Models;
 
 internal record Variable(

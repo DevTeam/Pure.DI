@@ -1,3 +1,5 @@
+// ReSharper disable LoopCanBeConvertedToQuery
+// ReSharper disable InvertIf
 namespace Pure.DI.Core;
 
 using CSharp;
