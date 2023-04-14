@@ -1420,7 +1420,7 @@ internal interface IService { }
 
 internal class Service : IService
 {
-    private readonly string _name = "";
+    private readonly string _name;
 
     [Ordinal(1)]
     public Service(IDependency dependency) => _name = "with dependency";
@@ -2655,6 +2655,7 @@ public class Service : IService
 
 internal partial class Composition
 {
+    [SuppressMessage("Performance", "CA1822:Mark members as static")]
     private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime)
     {
         if (typeof(T) == typeof(string))
