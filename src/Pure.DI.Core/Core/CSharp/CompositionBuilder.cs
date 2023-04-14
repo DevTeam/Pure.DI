@@ -98,7 +98,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
     {
         var injection = instantiation.Target.Injection.ToString();
         using var logToken = _logger.TraceProcess($"processing {injection}");
-        if (!instantiation.Target.IsDeclared)
+        if (!instantiation.Target.IsCreated)
         {
             context.Code.AppendLine($"//---{injection.PadRight(64, '-')}---//");
         }

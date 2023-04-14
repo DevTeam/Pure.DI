@@ -23,7 +23,7 @@ return await composition.Root.RunAsync();
 // ReSharper disable once HeuristicUnreachableCode
 DI.Setup("Composition")
     .Arg<Settings>("settings")
-    .Bind<ITeamCityWriter>().To(_ => GetService<ITeamCityWriter>())
+    .Bind<ITeamCityWriter>().As(Lifetime.PerResolve).To(_ => GetService<ITeamCityWriter>())
     .Bind<ITarget<int>>("readme").To<ReadmeTarget>()
     .Bind<ITarget<string>>("pack").To<PackTarget>()
     .Bind<ITarget<int>>("benchmarks").To<BenchmarksTarget>()
