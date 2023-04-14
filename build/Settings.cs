@@ -5,7 +5,7 @@ using NuGet.Versioning;
 
 record Settings(
     string Configuration,
-    NuGetVersion DefaultVersion,
+    VersionRange VersionRange,
     string NuGetKey,
     params BuildCase[] Cases);
 

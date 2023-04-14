@@ -9,21 +9,15 @@ internal static partial class Tools
 {
     private static readonly Regex ReleaseRegex = CreateReleaseRegex();
     
-    public static NuGetVersion GetNextVersion(NuGetRestoreSettings settings, NuGetVersion defaultVersion)
-    {
-        var floatRange = defaultVersion.Release != string.Empty
-            ? new FloatRange(NuGetVersionFloatBehavior.Prerelease, defaultVersion)
-            : new FloatRange(NuGetVersionFloatBehavior.Minor, defaultVersion);
-
-        return GetService<INuGet>()
-            .Restore(settings.WithHideWarningsAndErrors(true).WithVersionRange(new VersionRange(defaultVersion, floatRange)))
+    public static NuGetVersion GetNextVersion(NuGetRestoreSettings settings, VersionRange versionRange) =>
+        GetService<INuGet>()
+            .Restore(settings.WithHideWarningsAndErrors(true).WithVersionRange(versionRange))
             .Where(i => i.Name == settings.PackageId)
             .Select(i => i.NuGetVersion)
-            .Select(i => defaultVersion.Release != string.Empty 
-                ? new NuGetVersion(i.Major, i.Minor, i.Patch, GetNextRelease(defaultVersion.Release))
+            .Select(i => i.Release != string.Empty 
+                ? new NuGetVersion(i.Major, i.Minor, i.Patch, GetNextRelease(i.Release))
                 : new NuGetVersion(i.Major, i.Minor, i.Patch + 1))
-            .Max() ?? defaultVersion;
-    }
+            .Max() ?? new NuGetVersion(2, 0, 0, "dev");
 
     private static string GetNextRelease(string release)
     {

@@ -7,7 +7,7 @@ using NuGet.Versioning;
 using Pure.DI;
 
 Directory.SetCurrentDirectory(Tools.GetSolutionDirectory());
-var version = NuGetVersion.Parse(Property.Get("version", "2.0.0-dev", true));
+var version = VersionRange.Parse(Property.Get("version", "2.*-*", true));
 var nuGetKey = Property.Get("NuGetKey", string.Empty);
 var configuration = Environment.OSVersion.Platform == PlatformID.Win32NT ? "Release" : "Linux";
 var settings = new Settings(

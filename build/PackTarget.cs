@@ -24,7 +24,7 @@ internal class PackTarget: ITarget<string>
 
     public Task<string> RunAsync(InvocationContext ctx)
     {
-        var packageVersion = Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI"), _settings.DefaultVersion);
+        var packageVersion = Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI"), _settings.VersionRange);
         var projectDirectory = Path.Combine("src", "Pure.DI");
         var packages = _settings.Cases
             .Select(i => CreatePackage(packageVersion, i, projectDirectory))
