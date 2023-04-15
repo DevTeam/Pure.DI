@@ -15,15 +15,11 @@ using Microsoft.CodeAnalysis.Operations;
 
 internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
 {
+    private const string DISetup = $"{nameof(DI)}.{nameof(DI.Setup)}";
     private static readonly Regex CommentRegex = new(@"//\s*(\w+)\s*=\s*(.+)\s*", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
     private static readonly Settings EmptySettings = new();
-    private static readonly string[] ApiTypes =
-    {
-        Constant.ApiNamespace + nameof(IConfiguration),
-        Constant.ApiNamespace + nameof(IBinding)
-    };
     private static readonly ImmutableHashSet<string> ApiMethods = ImmutableHashSet.Create(
-        nameof(DI.Setup),
+        DISetup,
         nameof(IConfiguration.Arg),
         nameof(IConfiguration.Bind),
         nameof(IConfiguration.DependsOn),
@@ -37,8 +33,6 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         nameof(IBinding.Tags)
     );
     
-    private readonly Dictionary<Location, bool> _metadataMap = new();
-    private readonly HashSet<ITypeSymbol?> _api = new(SymbolEqualityComparer.Default);
     private readonly ILogger<MetadataSyntaxWalker> _logger;
     private IMetadataVisitor? _metadataVisitor;
     private CancellationToken _cancellationToken = CancellationToken.None;
@@ -47,7 +41,6 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
     private readonly HashSet<string> _namespaces = new();
     private readonly Stack<InvocationExpressionSyntax> _invocations = new();
     private string _namespace = string.Empty;
-    private Compilation? _compilation;
 
     public MetadataSyntaxWalker(ILogger<MetadataSyntaxWalker> logger) => _logger = logger;
 
@@ -61,20 +54,6 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         _metadataVisitor = metadataVisitor;
         _semanticModel = update.SemanticModel;
         _cancellationToken = cancellationToken;
-        if (_compilation != update.SemanticModel.Compilation)
-        {
-            _compilation = update.SemanticModel.Compilation;
-            var api = ApiTypes
-                .Select(i => SemanticModel.Compilation.GetTypeByMetadataName(i))
-                .Select(i => i!);
-
-            _api.Clear();
-            foreach (var apiSymbol in api)
-            {
-                _api.Add(apiSymbol);
-            }
-        }
-        
         _usingDirectives.Clear();
         Visit(update.Node);
         var invocations = new Stack<InvocationExpressionSyntax>();
@@ -610,29 +589,46 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
 
         return builder;
     }
+    
+    private static string GetInvocationName(InvocationExpressionSyntax invocation) => GetName(invocation.Expression, 2);
 
-    [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter")]
-    private bool IsMetadata(InvocationExpressionSyntax invocation)
+    private static string GetName(ExpressionSyntax expression, int deepness = int.MaxValue)
     {
-        if (invocation.Expression is not MemberAccessExpressionSyntax memberAccess
-            || !ApiMethods.Contains(memberAccess.Name.Identifier.Text))
+        switch (expression)
+        {
+            case IdentifierNameSyntax identifierNameSyntax:
+                return identifierNameSyntax.Identifier.Text;
+            
+            case MemberAccessExpressionSyntax memberAccess when memberAccess.IsKind(SyntaxKind.SimpleMemberAccessExpression):
+            {
+                var name = memberAccess.Name.Identifier.Text;
+                if (--deepness > 0)
+                {
+                    var prefix = GetName(memberAccess.Expression, deepness);
+                    return prefix == string.Empty ? name : $"{prefix}.{name}";
+                }
+
+                return name;
+            }
+            
+            default:
+                return string.Empty;
+        }
+    }
+    
+    [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter")]
+    private static bool IsMetadata(InvocationExpressionSyntax invocation)
+    {
+        if (!ApiMethods.Contains(GetInvocationName(invocation)))
         {
             return false;
         }
-        
-        var rootInvocation = invocation.AncestorsAndSelf().Reverse().OfType<InvocationExpressionSyntax>().First();
-        var location = rootInvocation.GetLocation();
-        if (_metadataMap.TryGetValue(location, out var isMetadata))
-        {
-            return isMetadata;
-        }
 
-        isMetadata = SemanticModel.GetOperation(rootInvocation, _cancellationToken) is IInvocationOperation invocationOperation
-                     // ReSharper disable once MergeIntoPattern
-                     && invocationOperation.Type is not null
-                     && _api.Contains(invocationOperation.Type);
+        var setupInvocation = invocation
+            .DescendantNodesAndSelf()
+            .OfType<InvocationExpressionSyntax>()
+            .FirstOrDefault(i => GetInvocationName(i) == DISetup);
 
-        _metadataMap.Add(location, isMetadata);
-        return isMetadata;
+        return setupInvocation is not null;
     }
 }
