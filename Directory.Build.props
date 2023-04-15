@@ -16,6 +16,7 @@
         <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">4.3.1</AnalyzerRoslynPackageVersion>
         <BaseIntermediateOutputPath>obj\roslyn$(AnalyzerRoslynVersion)</BaseIntermediateOutputPath>
         <BaseOutputPath>bin\roslyn$(AnalyzerRoslynVersion)</BaseOutputPath>
+        <EnableWindowsTargeting>true</EnableWindowsTargeting>
     </PropertyGroup>
 
     <Target Name="Info" BeforeTargets="Build">

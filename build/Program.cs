@@ -7,13 +7,10 @@ using NuGet.Versioning;
 using Pure.DI;
 
 Directory.SetCurrentDirectory(Tools.GetSolutionDirectory());
-var version = VersionRange.Parse(Property.Get("version", "2.*-*", true));
-var nuGetKey = Property.Get("NuGetKey", string.Empty);
-var configuration = Environment.OSVersion.Platform == PlatformID.Win32NT ? "Release" : "Linux";
 var settings = new Settings(
-    configuration,
-    version,
-    nuGetKey,
+    "Release",
+    VersionRange.Parse(Property.Get("version", "2.*-*", true)),
+    Property.Get("NuGetKey", string.Empty),
     new BuildCase(new Version(4, 3, 1)));
 
 var composition = new Composition(settings);
