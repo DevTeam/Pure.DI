@@ -218,6 +218,7 @@ Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates
 - [PerResolve](readme/Examples.md#perresolve)
 - [Transient](readme/Examples.md#transient)
 - [Disposable Singleton](readme/Examples.md#disposable-singleton)
+- [Scope](readme/Examples.md#scope)
 - [Default lifetime](readme/Examples.md#default-lifetime)
 ### Attributes
 - [Constructor Ordinal Attribute](readme/Examples.md#constructor-ordinal-attribute)

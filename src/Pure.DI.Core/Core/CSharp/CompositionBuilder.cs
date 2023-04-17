@@ -289,6 +289,22 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         instantiation.Target.IsCreated = true;
     }
 
+    protected override void VisitCompositionConstruct(
+        BuildContext context,
+        Variable root,
+        in DpConstruct construct,
+        Instantiation instantiation)
+    {
+        if (instantiation.Target.IsCreated)
+        {
+            return;
+        }
+
+        context.Code.AppendLines(GenerateDeclareStatements(instantiation.Target, "this"));
+        AddReturnStatement(context, root, instantiation);
+        instantiation.Target.IsCreated = true;
+    }
+
     protected override void VisitOnCannotResolve(BuildContext context, Variable root, in DpConstruct construct, Instantiation instantiation)
     {
         if (instantiation.Target.IsCreated)

@@ -130,6 +130,12 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                     }
                 }
 
+                if (injection.Type.ToString() == setup.Name.FullName)
+                {
+                    var compositionBinding = CreateConstructBinding(setup, targetNode, injection, injection.Type, default, ++maxId, MdConstructKind.Composition);
+                    return CreateNodes(setup, compositionBinding, cancellationToken);
+                }
+
                 // Auto-binding
                 if (injection.Type is { IsAbstract: false, SpecialType: SpecialType.None })
                 {

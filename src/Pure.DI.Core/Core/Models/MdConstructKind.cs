@@ -6,5 +6,6 @@ internal enum MdConstructKind
     Enumerable,
     Array,
     Span,
+    Composition,
     OnCannotResolve
 }

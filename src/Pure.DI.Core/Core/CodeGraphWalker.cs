@@ -175,6 +175,10 @@ internal class CodeGraphWalker<TContext>
                                 VisitSpanConstruct(context, root, construct, instantiation);
                                 break;
                             
+                            case MdConstructKind.Composition:
+                                VisitCompositionConstruct(context, root, construct, instantiation);
+                                break;
+                            
                             case MdConstructKind.OnCannotResolve:
                                 VisitOnCannotResolve(context, root, construct, instantiation);
                                 break;
@@ -320,6 +324,14 @@ internal class CodeGraphWalker<TContext>
     }
 
     protected virtual void VisitSpanConstruct(
+        TContext context,
+        Variable root,
+        in DpConstruct construct,
+        Instantiation instantiation)
+    {
+    }
+    
+    protected virtual void VisitCompositionConstruct(
         TContext context,
         Variable root,
         in DpConstruct construct,
