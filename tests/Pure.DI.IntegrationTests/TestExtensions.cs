@@ -31,6 +31,10 @@ public static class TestExtensions
         var parseOptions = CSharpParseOptions.Default
             .WithLanguageVersion(runOptions.LanguageVersion);
 
+        parseOptions = runOptions.PreprocessorSymbols.IsDefaultOrEmpty 
+            ? parseOptions.WithPreprocessorSymbols("NET")
+            : parseOptions.WithPreprocessorSymbols(runOptions.PreprocessorSymbols);
+
         var generatedApiSources = Facade.GetApi(CancellationToken.None).ToArray();
         var compilation = CreateCompilation()
             .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication).WithNullableContextOptions(runOptions.NullableContextOptions))
@@ -41,7 +45,7 @@ public static class TestExtensions
         var globalOptions = new TestAnalyzerConfigOptions(new Dictionary<string, string>
         {
             { GlobalSettings.Severity, DiagnosticSeverity.Info.ToString() },
-            { GlobalSettings.LogFile, ".logs\\IntegrationTests.log" }
+            { GlobalSettings.LogFile, ".logs\\IntegrationTests.log" },
         });
 
         var generatedSources = new List<Source>();

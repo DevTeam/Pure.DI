@@ -105,7 +105,12 @@ namespace Sample
         }
     }                
 }
-""".Replace("###CollectionType###", collectionType).RunAsync(new Options { LanguageVersion = languageVersion, NullableContextOptions = NullableContextOptions.Disable});
+""".Replace("###CollectionType###", collectionType).RunAsync(
+            new Options
+            {
+                LanguageVersion = languageVersion,
+                NullableContextOptions = NullableContextOptions.Disable
+            });
 
         // Then
         result.Success.ShouldBeTrue(result.GeneratedCode);

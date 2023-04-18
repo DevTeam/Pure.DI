@@ -16,21 +16,13 @@ namespace Pure.DI
                         ctx.Inject<TT>(ctx.Tag, out value);
                         return value;
                     }))
+#if NETSTANDARD || NET || NETCOREAPP || NET40_OR_GREATER
                 .Bind<System.Lazy<TT>>()
                     .To(ctx =>
                     {
                         System.Func<TT> func;
                         ctx.Inject<System.Func<TT>>(ctx.Tag, out func);
                         return new System.Lazy<TT>(func, true);
-                    })
-                .Bind<System.Lazy<TT, TT1>>()
-                    .To(ctx =>
-                    {
-                        System.Func<TT> func;
-                        ctx.Inject<System.Func<TT>>(ctx.Tag, out func);
-                        TT1 metadata;
-                        ctx.Inject<TT1>(ctx.Tag, out metadata);
-                        return new System.Lazy<TT, TT1>(func, metadata, true);
                     })
                 .Bind<System.Threading.Tasks.Task<TT>>()
                     .To(ctx =>
@@ -39,8 +31,21 @@ namespace Pure.DI
                         ctx.Inject<System.Func<TT>>(ctx.Tag, out func);
                         return new System.Threading.Tasks.Task<TT>(func);
                     })
+#endif              
+#if NETSTANDARD || NET || NETCOREAPP                
+                .Bind<System.Lazy<TT, TT1>>()
+                .To(ctx =>
+                {
+                    System.Func<TT> func;
+                    ctx.Inject<System.Func<TT>>(ctx.Tag, out func);
+                    TT1 metadata;
+                    ctx.Inject<TT1>(ctx.Tag, out metadata);
+                    return new System.Lazy<TT, TT1>(func, metadata, true);
+                })
+#endif
 
                 // Collections
+#if NETSTANDARD2_1 || NETCOREAPP2_1_OR_GREATER                
                 .Bind<System.Memory<TT>>()
                     .To(ctx =>
                     {
@@ -53,6 +58,7 @@ namespace Pure.DI
                         ctx.Inject<TT[]>(out var arr);
                         return new System.ReadOnlyMemory<TT>(arr);
                     })
+#endif                
                 .Bind<System.Collections.Generic.ICollection<TT>>()
                 .Bind<System.Collections.Generic.IList<TT>>()
                 .Bind<System.Collections.Generic.List<TT>>()
@@ -61,6 +67,7 @@ namespace Pure.DI
                         ctx.Inject<TT[]>(out var arr);
                         return new System.Collections.Generic.List<TT>(arr);
                     })
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER                
                 .Bind<System.Collections.Generic.IReadOnlyCollection<TT>>()
                 .Bind<System.Collections.Generic.IReadOnlyList<TT>>()
                     .To(ctx =>
@@ -68,19 +75,26 @@ namespace Pure.DI
                         ctx.Inject<TT[]>(out var arr);
                         return arr;
                     })
+#endif
+#if NETSTANDARD || NET || NETCOREAPP || NET40_OR_GREATER
                 .Bind<System.Collections.Generic.ISet<TT>>()
+#endif
+#if NETSTANDARD || NET || NETCOREAPP || NET35_OR_GREATER
                 .Bind<System.Collections.Generic.HashSet<TT>>()
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
                         return new System.Collections.Generic.HashSet<TT>(arr);
                     })
+#endif
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
                 .Bind<System.Collections.Generic.SortedSet<TT>>()
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
                         return new System.Collections.Generic.SortedSet<TT>(arr);
                     })
+#endif                
                 .Bind<System.Collections.Generic.Queue<TT>>()
                     .To(ctx =>
                     {
@@ -93,6 +107,7 @@ namespace Pure.DI
                         ctx.Inject<TT[]>(out var arr);
                         return new System.Collections.Generic.Stack<TT>(arr);
                     })
+#if NET || NETCOREAPP                 
                 .Bind<System.Collections.Immutable.ImmutableArray<TT>>()
                     .To(ctx =>
                     {
@@ -132,7 +147,9 @@ namespace Pure.DI
                     {
                         ctx.Inject<TT[]>(out var arr);
                         return System.Collections.Immutable.ImmutableStack.Create<TT>(arr);
-                    });
+                    })
+#endif
+                    ;
         }
     }
 }
