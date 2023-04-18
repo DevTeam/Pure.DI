@@ -6,7 +6,7 @@
 
 ## Key features
 
-Pure.DI is __NOT__ a framework or library, but a code generator that generates static method code to create an object graph in a pure DI paradigm using a set of hints that are verified at compile time. Since all the work is done at compile time, at run time you only have efficient code that is ready to be used. This generated code does not depend on library calls or .NET reflection and is efficient in terms of performance and memory consumption.
+Pure.DI is __NOT__ a framework or library, but a source code generator. It generates a partial class for creating object graphs in a pure DI paradigm. To make this object graph accurate, it uses a set of hints that are checked at compile time. Since all the work is done at compile time, at run time you only have efficient code that is ready to be used. This resulting generated code does not depend on library calls or .NET reflection and is efficient in terms of performance and memory consumption since, like normal code, it is subject to optimization and is inserted into the application seamlessly, excluding delegates, boxing, etc..
 
 - [X] DI without any IoC/DI containers, frameworks, dependencies and therefore without any performance impact and side effects. 
   >_Pure.DI_ is actually a [.NET code generator](https://docs.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/source-generators-overview). It generates simple code as well as if you were doing it yourself: de facto just a bunch of nested constructors` calls. And you can see this code at any time.
