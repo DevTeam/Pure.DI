@@ -14,14 +14,11 @@ internal partial class Composition
         // View Models
         .Bind<IClockViewModel>().To<ClockViewModel>().Root<IClockViewModel>()
 
-        // Singletons:
-        .DefaultLifetime(Singleton)
-
         // Infrastructure
         .Bind<IDispatcher>().To<Dispatcher>()
         
         // Models
         .Bind<ILog<TT>>().To<Log<TT>>()
-        .Bind<ITimer>().To(_ => new Clock.Models.Timer(TimeSpan.FromSeconds(1)))
+        .Bind<ITimer>().As(Singleton).To(_ => new Clock.Models.Timer(TimeSpan.FromSeconds(1)))
         .Bind<IClock>().To<SystemClock>();
 }
