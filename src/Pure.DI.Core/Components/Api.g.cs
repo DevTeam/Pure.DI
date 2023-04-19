@@ -49,12 +49,12 @@ namespace Pure.DI
     internal enum Hint
     {
         /// <summary>
-        /// Determine whether to generate <c>Resolve</c> methods. <c>On</c> or <c>Off</c>. <c>On</c> by default.
+        /// <c>On</c> or <c>Off</c>. Determines whether to generate <c>Resolve</c> methods](#resolve-methods). <c>On</c> by default.
         /// </summary>
         Resolve,
         
         /// <summary>
-        /// Determine whether to generate <c>OnInstanceCreation</c> method.<c>On</c> or <c>Off</c>. <c>On</c> by default.
+        /// <c>On</c> or <c>Off</c>. Determines whether to generate partial <c>OnInstanceCreation</c> method. <c>Off</c> by default.
         /// </summary>
         OnInstanceCreation,
         
@@ -65,18 +65,16 @@ namespace Pure.DI
         
         /// <summary>
         /// The regular expression to filter OnInstanceCreation by the tag. ".+" by default.
-        /// ".+" by default. 
         /// </summary>
         OnInstanceCreationTagRegularExpression,
         
         /// <summary>
         /// The regular expression to filter OnInstanceCreation by the lifetime. ".+" by default.
-        /// ".+" by default. 
         /// </summary>
         OnInstanceCreationLifetimeRegularExpression,
         
         /// <summary>
-        /// Determine whether to generate partial <c>OnDependencyInjection</c> method to control of dependency injection. <c>On</c> or <c>Off</c>. <c>Off</c> by default.
+        /// <c>On</c> or <c>Off</c>. Determines whether to generate partial <c>OnDependencyInjection</c> method to control of dependency injection. <c>Off</c> by default.
         /// </summary>
         OnDependencyInjection,
         
@@ -92,18 +90,16 @@ namespace Pure.DI
         
         /// <summary>
         /// The regular expression to filter OnDependencyInjection by the tag. ".+" by default.
-        /// ".+" by default. 
         /// </summary>
         OnDependencyInjectionTagRegularExpression,
         
         /// <summary>
         /// The regular expression to filter OnDependencyInjection by the lifetime. ".+" by default.
-        /// ".+" by default. 
         /// </summary>
         OnDependencyInjectionLifetimeRegularExpression,
         
         /// <summary>
-        /// Determine whether to generate partial <c>OnCannotResolve</c> method to control of dependency injection. <c>On</c> or <c>Off</c>. <c>Off</c> by default.
+        /// <c>On</c> or <c>Off</c>. Determines whether to generate a partial <c>OnCannotResolve<T>(...)</c> method to handle a scenario where an instance which cannot be resolved. <c>Off</c> by default.
         /// </summary>
         OnCannotResolve,
         
@@ -114,72 +110,73 @@ namespace Pure.DI
         
         /// <summary>
         /// The regular expression to filter OnCannotResolve by the tag. ".+" by default.
-        /// ".+" by default. 
         /// </summary>
         OnCannotResolveTagRegularExpression,
         
         /// <summary>
         /// The regular expression to filter OnCannotResolve by the lifetime. ".+" by default.
-        /// ".+" by default. 
         /// </summary>
         OnCannotResolveLifetimeRegularExpression,
         
         /// <summary>
-        /// <c>On</c> or <c>Off</c>.
-        /// <c>Off</c> by default. 
+        /// <c>On</c> or <c>Off</c>. Determine if the <c>ToString()</c> method should be generated. This method provides a text-based class diagram in the format mermaid. <c>Off</c> by default. 
         /// </summary>
         ToString,
         
         /// <summary>
-        /// <c>On</c> or <c>Off</c>.
-        /// <c>On</c> by default. 
+        /// <c>On</c> or <c>Off</c>. This hint determines whether object composition will be created in a thread-safe manner. <c>On</c> by default. 
         /// </summary>
         ThreadSafe,
         
         /// <summary>
-        /// Determine Resolve method modifiers. "public" by default.
+        /// Overrides modifiers of the method <c>public T Resolve<T>()</c>. "public" by default.
         /// </summary>
         ResolveMethodModifiers,
         
         /// <summary>
-        /// Determine Resolve method modifiers. "Resolve" by default.
+        /// Overrides name of the method <c>public T Resolve<T>()</c>. "Resolve" by default.
         /// </summary>
         ResolveMethodName,
         
         /// <summary>
-        /// Determine Resolve by tag method modifiers. "public" by default.
+        /// Overrides modifiers of the method <c>public T Resolve<T>(object? tag)</c>. "public" by default.
         /// </summary>
         ResolveByTagMethodModifiers,
         
         /// <summary>
-        /// Determine Resolve by tag method modifiers. "Resolve" by default.
+        /// Overrides name of the method <c>public T Resolve<T>(object? tag)</c>. "Resolve" by default.
         /// </summary>
         ResolveByTagMethodName,
         
         /// <summary>
-        /// Determine object Resolve method modifiers. "public" by default.
+        /// Overrides modifiers of the method <c>public object Resolve(Type type)</c>. "public" by default.
         /// </summary>
         ObjectResolveMethodModifiers,
         
         /// <summary>
-        /// Determine object Resolve method modifiers. "Resolve" by default.
+        /// Overrides name of the method <c>public object Resolve(Type type)</c>. "Resolve" by default.
         /// </summary>
         ObjectResolveMethodName,
         
         /// <summary>
-        /// Determine object Resolve by tag method modifiers. "public" by default.
+        /// Overrides modifiers of the method <c>public object Resolve(Type type, object? tag)</c>. "public" by default.
         /// </summary>
         ObjectResolveByTagMethodModifiers,
         
         /// <summary>
-        /// Determine object Resolve by tag method modifiers. "Resolve" by default.
+        /// Overrides name of the method <c>public object Resolve(Type type, object? tag)</c>. "Resolve" by default.
         /// </summary>
         ObjectResolveByTagMethodName,
         
         /// <summary>
-        /// Determine Dispose method modifiers. "public" by default.
+        /// Overrides modifiers of the method <c>public void Dispose()</c>. "public" by default.
         /// </summary>
-        DisposeMethodModifiers
+        DisposeMethodModifiers,
+        
+        /// <summary>
+        /// <c>On</c> or <c>Off</c>. Specifies whether the generated code should be formatted. This option consumes a lot of CPU resources. <c>Off</c> by default.
+        /// </summary>
+        FormatCode
     }
 
     /// <summary>

@@ -21,7 +21,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
 
         var settings = composition.Source.Source.Hints;
         code.AppendLine("#region API");
-        if (settings.GetState(Hint.Resolve, SettingState.On) == SettingState.On)
+        if (settings.GetHint(Hint.Resolve, SettingState.On) == SettingState.On)
         {
             AddMethodHeader(code);
             code.AppendLine($"{settings.GetValueOrDefault(Hint.ResolveMethodModifiers, Constant.DefaultApiMethodModifiers)} T {settings.GetValueOrDefault(Hint.ResolveMethodName, Constant.ResolverMethodName)}<T>()");
@@ -75,21 +75,21 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             code.AppendLine();
         }
 
-        if (composition.Source.Source.Hints.GetState(Hint.OnInstanceCreation) == SettingState.On)
+        if (composition.Source.Source.Hints.GetHint(Hint.OnInstanceCreation) == SettingState.On)
         {
             code.AppendLine(Constant.MethodImplOptions);
             code.AppendLine($"partial void {Constant.OnInstanceCreationMethodName}<T>(ref T value, object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
 
-        if (composition.Source.Source.Hints.GetState(Hint.OnDependencyInjection) == SettingState.On)
+        if (composition.Source.Source.Hints.GetHint(Hint.OnDependencyInjection) == SettingState.On)
         {
             code.AppendLine(Constant.MethodImplOptions);
             code.AppendLine($"private partial T {Constant.OnDependencyInjectionMethodName}<T>(in T value, object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
         
-        if (composition.Source.Source.Hints.GetState(Hint.OnCannotResolve) == SettingState.On)
+        if (composition.Source.Source.Hints.GetHint(Hint.OnCannotResolve) == SettingState.On)
         {
             code.AppendLine(Constant.MethodImplOptions);
             code.AppendLine($"private partial T {Constant.OnCannotResolve}<T>(object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");

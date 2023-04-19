@@ -151,7 +151,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
 
                 bool TryCreateOnCannotResolve(MdSetup mdSetup, DependencyNode ownerNode, Injection unresolvedInjection)
                 {
-                    if (mdSetup.Hints.GetState(Hint.OnCannotResolve) == SettingState.On
+                    if (mdSetup.Hints.GetHint(Hint.OnCannotResolve) == SettingState.On
                         && _filter.IsMeetRegularExpression(
                             mdSetup,
                             (Hint.OnCannotResolveContractTypeNameRegularExpression, unresolvedInjection.Type.ToString()),

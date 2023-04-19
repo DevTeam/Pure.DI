@@ -235,41 +235,42 @@ DI.Setup("Composition")
     ...
 ```
 
-| Hint                                                                                                                               | Default | C# version |
-|------------------------------------------------------------------------------------------------------------------------------------|---------|------------|
-| [Resolve](#Resolve-Hint)                                                                                                           | On      |            |
-| [OnInstanceCreation](#OnInstanceCreation-Hint)                                                                                     | Off     | 9.0        |
-| [OnInstanceCreationImplementationTypeNameRegularExpression](#OnInstanceCreationImplementationTypeNameRegularExpression-Hint)       | .+      |            |
-| [OnInstanceCreationTagRegularExpression](#OnInstanceCreationTagRegularExpression-Hint)                                             | .+      |            |
-| [OnInstanceCreationLifetimeRegularExpression](#OnInstanceCreationLifetimeRegularExpression-Hint)                                   | .+      |            |
-| [OnDependencyInjection](#OnDependencyInjection-Hint)                                                                               | Off     | 9.0        |
-| [OnDependencyInjectionImplementationTypeNameRegularExpression](#OnDependencyInjectionImplementationTypeNameRegularExpression-Hint) | .+      |            |
-| [OnDependencyInjectionContractTypeNameRegularExpression](#OnDependencyInjectionContractTypeNameRegularExpression-Hint)             | .+      |            |
-| [OnDependencyInjectionTagRegularExpression](#OnDependencyInjectionTagRegularExpression-Hint)                                       | .+      |            |
-| [OnDependencyInjectionLifetimeRegularExpression](#OnDependencyInjectionLifetimeRegularExpression-Hint)                             | .+      |            |
-| [OnCannotResolve](#OnCannotResolve-Hint)                                                                                           | Off     | 9.0        |
-| [OnCannotResolveContractTypeNameRegularExpression](#OnCannotResolveContractTypeNameRegularExpression-Hint)                         | .+      |            |
-| [OnCannotResolveTagRegularExpression](#OnCannotResolveTagRegularExpression-Hint)                                                   | .+      |            |
-| [OnCannotResolveLifetimeRegularExpression](#OnCannotResolveLifetimeRegularExpression-Hint)                                         | .+      |            |
-| [ToString](#ToString-Hint)                                                                                                         | Off     |            |
-| [ThreadSafe](#ThreadSafe-Hint)                                                                                                     | On      |            |
-| [ResolveMethodModifiers](#ResolveMethodModifiers-Hint)                                                                             | public  |            |
-| [ResolveMethodName](#ResolveMethodName-Hint)                                                                                       | Resolve |            |
-| [ResolveByTagMethodModifiers](#ResolveByTagMethodModifiers-Hint)                                                                   | public  |            |
-| [ResolveByTagMethodName](#ResolveByTagMethodName-Hint)                                                                             | Resolve |            |
-| [ObjectResolveMethodModifiers](#ObjectResolveMethodModifiers-Hint)                                                                 | public  |            |
-| [ObjectResolveMethodName](#ObjectResolveMethodName-Hint)                                                                           | Resolve |            |
-| [ObjectResolveByTagMethodModifiers](#ObjectResolveByTagMethodModifiers-Hint)                                                       | public  |            |
-| [ObjectResolveByTagMethodName](#ObjectResolveByTagMethodName-Hint)                                                                 | Resolve |            |
-| [DisposeMethodModifiers](#DisposeMethodModifiers-Hint)                                                                             | public  |            |
+| Hint                                                                                                                               | Values             | Default   | C# version |
+|------------------------------------------------------------------------------------------------------------------------------------|--------------------|-----------|------------|
+| [Resolve](#Resolve-Hint)                                                                                                           | _On_ or _Off_      | _On_      |            |
+| [OnInstanceCreation](#OnInstanceCreation-Hint)                                                                                     | _On_ or _Off_      | _Off_     | 9.0        |
+| [OnInstanceCreationImplementationTypeNameRegularExpression](#OnInstanceCreationImplementationTypeNameRegularExpression-Hint)       | Regular expression | .+        |            |
+| [OnInstanceCreationTagRegularExpression](#OnInstanceCreationTagRegularExpression-Hint)                                             | Regular expression | .+        |            |
+| [OnInstanceCreationLifetimeRegularExpression](#OnInstanceCreationLifetimeRegularExpression-Hint)                                   | Regular expression | .+        |            |
+| [OnDependencyInjection](#OnDependencyInjection-Hint)                                                                               | _On_ or _Off_      | _Off_     | 9.0        |
+| [OnDependencyInjectionImplementationTypeNameRegularExpression](#OnDependencyInjectionImplementationTypeNameRegularExpression-Hint) | Regular expression | .+        |            |
+| [OnDependencyInjectionContractTypeNameRegularExpression](#OnDependencyInjectionContractTypeNameRegularExpression-Hint)             | Regular expression | .+        |            |
+| [OnDependencyInjectionTagRegularExpression](#OnDependencyInjectionTagRegularExpression-Hint)                                       | Regular expression | .+        |            |
+| [OnDependencyInjectionLifetimeRegularExpression](#OnDependencyInjectionLifetimeRegularExpression-Hint)                             | Regular expression | .+        |            |
+| [OnCannotResolve](#OnCannotResolve-Hint)                                                                                           | _On_ or _Off_      | _Off_     | 9.0        |
+| [OnCannotResolveContractTypeNameRegularExpression](#OnCannotResolveContractTypeNameRegularExpression-Hint)                         | Regular expression | .+        |            |
+| [OnCannotResolveTagRegularExpression](#OnCannotResolveTagRegularExpression-Hint)                                                   | Regular expression | .+        |            |
+| [OnCannotResolveLifetimeRegularExpression](#OnCannotResolveLifetimeRegularExpression-Hint)                                         | Regular expression | .+        |            |
+| [ToString](#ToString-Hint)                                                                                                         | _On_ or _Off_      | _Off_     |            |
+| [ThreadSafe](#ThreadSafe-Hint)                                                                                                     | _On_ or _Off_      | _On_      |            |
+| [ResolveMethodModifiers](#ResolveMethodModifiers-Hint)                                                                             | Method modifier    | _public_  |            |
+| [ResolveMethodName](#ResolveMethodName-Hint)                                                                                       | Method name        | _Resolve_ |            |
+| [ResolveByTagMethodModifiers](#ResolveByTagMethodModifiers-Hint)                                                                   | Method modifier    | _public_  |            |
+| [ResolveByTagMethodName](#ResolveByTagMethodName-Hint)                                                                             | Method name        | _Resolve_ |            |
+| [ObjectResolveMethodModifiers](#ObjectResolveMethodModifiers-Hint)                                                                 | Method modifier    | _public_  |            |
+| [ObjectResolveMethodName](#ObjectResolveMethodName-Hint)                                                                           | Method name        | _Resolve_ |            |
+| [ObjectResolveByTagMethodModifiers](#ObjectResolveByTagMethodModifiers-Hint)                                                       | Method modifier    | _public_  |            |
+| [ObjectResolveByTagMethodName](#ObjectResolveByTagMethodName-Hint)                                                                 | Method name        | _Resolve_ |            |
+| [DisposeMethodModifiers](#DisposeMethodModifiers-Hint)                                                                             | Method modifier    | _public_  |            |
+| [FormatCode](#FormatCode-Hint)                                                                                                     | _On_ or _Off_      | _Off_     |            |
 
 ### Resolve Hint
 
-Determine whether to generate [_Resolve_ methods](#resolve-methods). By default a set of four _Resolve_ methods are generated. Set this hint to _Off_ to disable the generation of resolve methods. This will reduce class composition generation time and no [private composition roots](#Private-Roots) will be generated in this case. The composition will be tiny and will only have [public roots](#Public-Roots). When the _Resolve_ hint is disabled, only the public root properties are available, so be sure to define them explicitly with the `Root<T>(...)` method.
+Determines whether to generate [_Resolve_ methods](#resolve-methods). By default a set of four _Resolve_ methods are generated. Set this hint to _Off_ to disable the generation of resolve methods. This will reduce class composition generation time and no [private composition roots](#Private-Roots) will be generated in this case. The composition will be tiny and will only have [public roots](#Public-Roots). When the _Resolve_ hint is disabled, only the public root properties are available, so be sure to define them explicitly with the `Root<T>(...)` method.
 
 ### OnInstanceCreation Hint
 
-Determine whether to generate partial _OnInstanceCreation_ method. This partial method is not generated by default. This can be useful, for example, for logging:
+Determines whether to generate partial _OnInstanceCreation_ method. This partial method is not generated by default. This can be useful, for example, for logging:
 
 ```c#
 internal partial class Composition
@@ -297,7 +298,7 @@ It is a regular expression to filter by the _lifetime_. This hint is useful also
 
 ### OnDependencyInjection Hint
 
-Determine whether to generate partial _OnDependencyInjection_ method to control of dependency injection. This partial method is not generated by default. It cannot have an empty body due to the return value. It must be overridden when generated. This can be useful, for example, for [interception](#Interception).
+Determines whether to generate partial _OnDependencyInjection_ method to control of dependency injection. This partial method is not generated by default. It cannot have an empty body due to the return value. It must be overridden when generated. This can be useful, for example, for [interception](#Interception).
 
 ```c#
 // OnDependencyInjection = On
@@ -327,7 +328,7 @@ It is a regular expression to filter by the _lifetime_. This hint is useful also
 
 ### OnCannotResolve Hint
 
-Determine whether to generate a partial `OnCannotResolve<T>(...)` method to handle a scenario where an instance which cannot be resolved. This partial method is not generated by default. It cannot have an empty body due to the return value. It must be overridden on creation.
+Determines whether to generate a partial `OnCannotResolve<T>(...)` method to handle a scenario where an instance which cannot be resolved. This partial method is not generated by default. It cannot have an empty body due to the return value. It must be overridden on creation.
 
 ```c#
 // OnCannotResolve = On
@@ -411,6 +412,10 @@ Overrides name of the method `public object Resolve(Type type, object? tag)`.
 ### DisposeMethodModifiers Hint
 
 Overrides modifiers of the method `public void Dispose()`.
+
+### FormatCode Hint
+
+Specifies whether the generated code should be formatted. This option consumes a lot of CPU resources. This hint can be useful for examining the generated code or for giving presentations, for example.
 
 </details>
 

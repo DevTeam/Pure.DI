@@ -30,7 +30,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
     {
         _roots.Clear();
         var variables = new Dictionary<MdBinding, Variable>();
-        var isThreadSafe = dependencyGraph.Source.Hints.GetState(Hint.ThreadSafe, SettingState.On) == SettingState.On;
+        var isThreadSafe = dependencyGraph.Source.Hints.GetHint(Hint.ThreadSafe, SettingState.On) == SettingState.On;
         var context = new BuildContext(isThreadSafe, ImmutableDictionary<MdBinding, Variable>.Empty, new LinesBuilder());
         VisitGraph(context, dependencyGraph, variables, cancellationToken);
         var fields = variables.Select(i => i.Value).ToImmutableArray();
@@ -479,7 +479,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             yield break;
         }
 
-        if (variable.Source.Source.Hints.GetState(Hint.OnInstanceCreation) != SettingState.On)
+        if (variable.Source.Source.Hints.GetHint(Hint.OnInstanceCreation) != SettingState.On)
         {
             yield break;
         }
@@ -515,7 +515,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
 
     private string Inject(BuildContext context, Variable variable)
     {
-        if (variable.Source.Source.Hints.GetState(Hint.OnDependencyInjection) != SettingState.On)
+        if (variable.Source.Source.Hints.GetHint(Hint.OnDependencyInjection) != SettingState.On)
         {
             return variable.Name;
         }

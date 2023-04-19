@@ -14,7 +14,7 @@ internal class ResolversFieldsBuilder: IBuilder<CompositionCode, CompositionCode
 
     public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
     {
-        if (composition.Source.Source.Hints.GetState(Hint.Resolve, SettingState.On) != SettingState.On)
+        if (composition.Source.Source.Hints.GetHint(Hint.Resolve, SettingState.On) != SettingState.On)
         {
             return composition;
         }

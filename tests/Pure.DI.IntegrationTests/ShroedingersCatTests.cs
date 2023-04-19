@@ -55,6 +55,7 @@ namespace Sample
         private static void Setup()
         {
             // Resolve = Off
+            // FormatCode = On
             DI.Setup(nameof(Composition))
                 // Models a random subatomic event that may or may not occur
                 .Bind<Random>().As(Singleton).To<Random>()

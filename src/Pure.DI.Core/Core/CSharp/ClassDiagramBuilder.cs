@@ -18,7 +18,7 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
         lines.AppendLine("classDiagram");
         using (lines.Indent())
         {
-            var hasResolveMethods = composition.Source.Source.Hints.GetState(Hint.Resolve, SettingState.On) == SettingState.On;
+            var hasResolveMethods = composition.Source.Source.Hints.GetHint(Hint.Resolve, SettingState.On) == SettingState.On;
             var publicRoots = composition.Roots.Where(i => i.IsPublic).ToDictionary(i => i.Injection, i => i);
             if (hasResolveMethods || publicRoots.Any())
             {

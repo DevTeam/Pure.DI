@@ -1,3 +1,4 @@
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.CSharp;
 
 internal class RootPropertiesBuilder: IBuilder<CompositionCode, CompositionCode>
@@ -15,7 +16,7 @@ internal class RootPropertiesBuilder: IBuilder<CompositionCode, CompositionCode>
             code.AppendLine();
         }
 
-        var generatePrivateRoots = composition.Source.Source.Hints.GetState(Hint.Resolve, SettingState.On) == SettingState.On;
+        var generatePrivateRoots = composition.Source.Source.Hints.GetHint(Hint.Resolve, SettingState.On) == SettingState.On;
         var membersCounter = composition.MembersCount;
         code.AppendLine("#region Composition Roots");
         var isFirst = true;
@@ -31,16 +32,16 @@ internal class RootPropertiesBuilder: IBuilder<CompositionCode, CompositionCode>
                 code.AppendLine();
             }
 
-            code.AppendLines(BuildProperty(root.Injection.Type, root));
+            BuildProperty(composition, root.Injection.Type, root);
             membersCounter++;
         }
         code.AppendLine("#endregion");
         return composition with { MembersCount = membersCounter };
     }
     
-    private static IEnumerable<Line> BuildProperty(ITypeSymbol type, Root root)
+    private static void BuildProperty(CompositionCode composition, ITypeSymbol type, Root root)
     {
-        var code = new LinesBuilder();
+        var code = composition.Code;
         code.AppendLine($"{(root.IsPublic ? "public" : "private")} {type} {root.PropertyName}");
         code.AppendLine("{");
         using (code.Indent())
@@ -50,13 +51,26 @@ internal class RootPropertiesBuilder: IBuilder<CompositionCode, CompositionCode>
             code.AppendLine("{");
             using (code.Indent())
             {
-                code.AppendLines(root.Lines);
+                if (composition.Source.Source.Hints.GetHint(Hint.FormatCode) == SettingState.On)
+                {
+                    var codeText = string.Join(Environment.NewLine, root.Lines);
+                    var syntaxTree = CSharpSyntaxTree.ParseText(codeText);
+                    codeText = syntaxTree.GetRoot().NormalizeWhitespace().ToString();
+                    var lines = codeText.Split(Environment.NewLine);
+                    foreach (var line in lines)
+                    {
+                        code.AppendLine(line);
+                    }
+                }
+                else
+                {
+                    code.AppendLines(root.Lines);   
+                }
             }
 
             code.AppendLine("}");
         }
 
         code.AppendLine("}");
-        return code.Lines;
     }
 }
