@@ -24,6 +24,8 @@ Pure.DI is __NOT__ a framework or library, but a source code generator. It gener
   >_Pure.DI_ offers special type markers instead of using open generic types. This allows you to more accurately build the object graph and take full advantage of generic types.
 - [X] Supports basic .NET BCL types out of the box.
   >_Pure.DI_ already [supports](#base-class-library) many of [BCL types](https://docs.microsoft.com/en-us/dotnet/standard/framework-libraries#base-class-libraries) like Array, IEnumerable, IList, ISet, Func, ThreadLocal, etc. without any extra effort.
+- [X] Well suited for writing libraries or frameworks and where resource consumption is critical.
+  >High performance, low memory consumption, minimal provisioning overhead and no dependencies make this solution ideal for building libraries and frameworks.
 
 ## Schrödinger's cat shows how it works [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](samples/ShroedingersCat)
 
