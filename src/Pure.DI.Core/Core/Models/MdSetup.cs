@@ -8,7 +8,7 @@ internal record MdSetup(
     CompositionName Name,
     in ImmutableArray<MdUsingDirectives> UsingDirectives,
     CompositionKind Kind,
-    ISettings Settings,
+    IHints Hints,
     in ImmutableArray<MdBinding> Bindings,
     in ImmutableArray<MdRoot> Roots,
     in ImmutableArray<MdDependsOn> DependsOn,

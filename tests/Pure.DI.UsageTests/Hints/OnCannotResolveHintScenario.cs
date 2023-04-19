@@ -70,9 +70,9 @@ public class Scenario
     {
         // ToString = On
 // {            
-        // OnCannotResolve = On
-        // OnCannotResolveContractTypeNameRegularExpression = string
         DI.Setup("Composition")
+            .Hint(Hint.OnCannotResolve, "On")
+            .Hint(Hint.OnCannotResolveContractTypeNameRegularExpression, "string")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
 

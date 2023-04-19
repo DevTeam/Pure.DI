@@ -9,7 +9,7 @@ internal class ToStringBuilder: IBuilder<CompositionCode, CompositionCode>
 
     public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
     {
-        if (composition.Source.Source.Settings.GetState(Setting.ToString) != SettingState.On)
+        if (composition.Source.Source.Hints.GetState(Hint.ToString) != SettingState.On)
         {
             return composition;
         }

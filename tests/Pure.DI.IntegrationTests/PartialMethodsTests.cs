@@ -39,8 +39,8 @@ namespace Sample
     {
         private static void SetupComposition()
         {
-            // ResolveMethodModifiers = internal override
             DI.Setup(nameof(Composition))
+                .Hint(Hint.ResolveMethodModifiers, "internal override")
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>()
                 .Root<IService>("Root");
@@ -110,8 +110,8 @@ namespace Sample
     {
         private static void SetupComposition()
         {
-            // OnInstanceCreation = On
             DI.Setup("Composition")
+                .Hint(Hint.OnInstanceCreation, "On")
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
                 .Bind<IService>().To<Service>()
                 .Root<IService>("Root");

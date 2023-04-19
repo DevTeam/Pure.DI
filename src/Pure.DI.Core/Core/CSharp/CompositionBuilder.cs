@@ -30,7 +30,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
     {
         _roots.Clear();
         var variables = new Dictionary<MdBinding, Variable>();
-        var isThreadSafe = dependencyGraph.Source.Settings.GetState(Setting.ThreadSafe, SettingState.On) == SettingState.On;
+        var isThreadSafe = dependencyGraph.Source.Hints.GetState(Hint.ThreadSafe, SettingState.On) == SettingState.On;
         var context = new BuildContext(isThreadSafe, ImmutableDictionary<MdBinding, Variable>.Empty, new LinesBuilder());
         VisitGraph(context, dependencyGraph, variables, cancellationToken);
         var fields = variables.Select(i => i.Value).ToImmutableArray();
@@ -491,16 +491,16 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             yield break;
         }
 
-        if (variable.Source.Source.Settings.GetState(Setting.OnInstanceCreation) != SettingState.On)
+        if (variable.Source.Source.Hints.GetState(Hint.OnInstanceCreation) != SettingState.On)
         {
             yield break;
         }
 
         if (!_filter.IsMeetRegularExpression(
                 variable.Source.Source,
-                (Setting.OnInstanceCreationImplementationTypeNameRegularExpression, variable.Node.Type.ToString()),
-                (Setting.OnInstanceCreationTagRegularExpression, variable.Injection.Tag.ValueToString()),
-                (Setting.OnInstanceCreationLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
+                (Hint.OnInstanceCreationImplementationTypeNameRegularExpression, variable.Node.Type.ToString()),
+                (Hint.OnInstanceCreationTagRegularExpression, variable.Injection.Tag.ValueToString()),
+                (Hint.OnInstanceCreationLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
         {
             yield break;
         }
@@ -527,17 +527,17 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
 
     private string Inject(BuildContext context, Variable variable)
     {
-        if (variable.Source.Source.Settings.GetState(Setting.OnDependencyInjection) != SettingState.On)
+        if (variable.Source.Source.Hints.GetState(Hint.OnDependencyInjection) != SettingState.On)
         {
             return variable.Name;
         }
 
         if (!_filter.IsMeetRegularExpression(
                 variable.Source.Source,
-                (Setting.OnDependencyInjectionImplementationTypeNameRegularExpression, variable.Node.Type.ToString()),
-                (Setting.OnDependencyInjectionContractTypeNameRegularExpression, variable.Injection.Type.ToString()),
-                (Setting.OnDependencyInjectionTagRegularExpression, variable.Injection.Tag.ValueToString()),
-                (Setting.OnDependencyInjectionLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
+                (Hint.OnDependencyInjectionImplementationTypeNameRegularExpression, variable.Node.Type.ToString()),
+                (Hint.OnDependencyInjectionContractTypeNameRegularExpression, variable.Injection.Type.ToString()),
+                (Hint.OnDependencyInjectionTagRegularExpression, variable.Injection.Tag.ValueToString()),
+                (Hint.OnDependencyInjectionLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
         {
             return variable.Name;
         }

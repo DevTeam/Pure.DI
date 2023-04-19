@@ -19,12 +19,12 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             code.AppendLine();
         }
 
-        var settings = composition.Source.Source.Settings;
+        var settings = composition.Source.Source.Hints;
         code.AppendLine("#region API");
-        if (settings.GetState(Setting.Resolve, SettingState.On) == SettingState.On)
+        if (settings.GetState(Hint.Resolve, SettingState.On) == SettingState.On)
         {
             AddMethodHeader(code);
-            code.AppendLine($"{settings.GetValueOrDefault(Setting.ResolveMethodModifiers, Constant.DefaultApiMethodModifiers)} T {settings.GetValueOrDefault(Setting.ResolveMethodName, Constant.ResolverMethodName)}<T>()");
+            code.AppendLine($"{settings.GetValueOrDefault(Hint.ResolveMethodModifiers, Constant.DefaultApiMethodModifiers)} T {settings.GetValueOrDefault(Hint.ResolveMethodName, Constant.ResolverMethodName)}<T>()");
             code.AppendLine("{");
             using (code.Indent())
             {
@@ -37,7 +37,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             membersCounter++;
 
             AddMethodHeader(code);
-            code.AppendLine($"{settings.GetValueOrDefault(Setting.ResolveByTagMethodModifiers, Constant.DefaultApiMethodModifiers)} T {settings.GetValueOrDefault(Setting.ResolveByTagMethodName, Constant.ResolverMethodName)}<T>(object? tag)");
+            code.AppendLine($"{settings.GetValueOrDefault(Hint.ResolveByTagMethodModifiers, Constant.DefaultApiMethodModifiers)} T {settings.GetValueOrDefault(Hint.ResolveByTagMethodName, Constant.ResolverMethodName)}<T>(object? tag)");
             code.AppendLine("{");
             using (code.Indent())
             {
@@ -51,8 +51,8 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
 
             var resolvers = _resolversBuilder.Build(composition.Roots, cancellationToken).ToArray();
             CreateObjectResolverMethod(
-                settings.GetValueOrDefault(Setting.ObjectResolveMethodModifiers, Constant.DefaultApiMethodModifiers),
-                settings.GetValueOrDefault(Setting.ObjectResolveMethodName, Constant.ResolverMethodName),
+                settings.GetValueOrDefault(Hint.ObjectResolveMethodModifiers, Constant.DefaultApiMethodModifiers),
+                settings.GetValueOrDefault(Hint.ObjectResolveMethodName, Constant.ResolverMethodName),
                 resolvers,
                 "System.Type type",
                 ResolverClassesBuilder.ResolveMethodName,
@@ -63,8 +63,8 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             code.AppendLine();
 
             CreateObjectResolverMethod(
-                settings.GetValueOrDefault(Setting.ObjectResolveByTagMethodModifiers, Constant.DefaultApiMethodModifiers),
-                settings.GetValueOrDefault(Setting.ObjectResolveByTagMethodName, Constant.ResolverMethodName),
+                settings.GetValueOrDefault(Hint.ObjectResolveByTagMethodModifiers, Constant.DefaultApiMethodModifiers),
+                settings.GetValueOrDefault(Hint.ObjectResolveByTagMethodName, Constant.ResolverMethodName),
                 resolvers,
                 "System.Type type, object? tag",
                 ResolverClassesBuilder.ResolveByTagMethodName,
@@ -75,21 +75,21 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             code.AppendLine();
         }
 
-        if (composition.Source.Source.Settings.GetState(Setting.OnInstanceCreation) == SettingState.On)
+        if (composition.Source.Source.Hints.GetState(Hint.OnInstanceCreation) == SettingState.On)
         {
             code.AppendLine(Constant.MethodImplOptions);
             code.AppendLine($"partial void {Constant.OnInstanceCreationMethodName}<T>(ref T value, object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
 
-        if (composition.Source.Source.Settings.GetState(Setting.OnDependencyInjection) == SettingState.On)
+        if (composition.Source.Source.Hints.GetState(Hint.OnDependencyInjection) == SettingState.On)
         {
             code.AppendLine(Constant.MethodImplOptions);
             code.AppendLine($"private partial T {Constant.OnDependencyInjectionMethodName}<T>(in T value, object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
         
-        if (composition.Source.Source.Settings.GetState(Setting.OnCannotResolve) == SettingState.On)
+        if (composition.Source.Source.Hints.GetState(Hint.OnCannotResolve) == SettingState.On)
         {
             code.AppendLine(Constant.MethodImplOptions);
             code.AppendLine($"private partial T {Constant.OnCannotResolve}<T>(object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");

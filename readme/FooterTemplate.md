@@ -215,13 +215,23 @@ using(var composition = new Composition())
 
 ## Setup hints
 
-Setup hints are comments before method _Setup_ in the form ```hint = value``` that are used to fine-tune code generation. For example:
+Hints are used to fine-tune code generation. Setup hints can be used as in the following example:
+
+```c#
+DI.Setup("Composition")
+    .Hint(Hint.Resolve, "Off")
+    .Hint(Hint.ThreadSafe, "Off")
+    .Hint(Hint.ToString, "On")
+    ...
+```
+
+In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example:
 
 ```c#
 // Resolve = Off
 // ThreadSafe = Off
-// ToString = On
 DI.Setup("Composition")
+    .Hint(Hint.ToString, "On")
     ...
 ```
 

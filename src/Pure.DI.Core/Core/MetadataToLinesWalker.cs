@@ -10,7 +10,7 @@ internal class MetadataToLinesWalker: MetadataWalkerBase, IEnumerable<string>
 
     public override void VisitSetup(in MdSetup setup)
     {
-        foreach (var setting in setup.Settings)
+        foreach (var setting in setup.Hints)
         {
             _lb.AppendLine($"// {setting.Key} = {setting.Value}{Environment.NewLine}");
         }

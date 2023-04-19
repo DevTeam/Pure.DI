@@ -45,6 +45,142 @@ namespace Pure.DI
         /// </summary>
         PerResolve
     }
+    
+    internal enum Hint
+    {
+        /// <summary>
+        /// Determine whether to generate <c>Resolve</c> methods. <c>On</c> or <c>Off</c>. <c>On</c> by default.
+        /// </summary>
+        Resolve,
+        
+        /// <summary>
+        /// Determine whether to generate <c>OnInstanceCreation</c> method.<c>On</c> or <c>Off</c>. <c>On</c> by default.
+        /// </summary>
+        OnInstanceCreation,
+        
+        /// <summary>
+        /// The regular expression to filter OnInstanceCreation by the instance type name. ".+" by default.
+        /// </summary>
+        OnInstanceCreationImplementationTypeNameRegularExpression,
+        
+        /// <summary>
+        /// The regular expression to filter OnInstanceCreation by the tag. ".+" by default.
+        /// ".+" by default. 
+        /// </summary>
+        OnInstanceCreationTagRegularExpression,
+        
+        /// <summary>
+        /// The regular expression to filter OnInstanceCreation by the lifetime. ".+" by default.
+        /// ".+" by default. 
+        /// </summary>
+        OnInstanceCreationLifetimeRegularExpression,
+        
+        /// <summary>
+        /// Determine whether to generate partial <c>OnDependencyInjection</c> method to control of dependency injection. <c>On</c> or <c>Off</c>. <c>Off</c> by default.
+        /// </summary>
+        OnDependencyInjection,
+        
+        /// <summary>
+        /// The regular expression to filter OnDependencyInjection by the instance type name. ".+" by default.
+        /// </summary>
+        OnDependencyInjectionImplementationTypeNameRegularExpression,
+        
+        /// <summary>
+        /// The regular expression to filter OnDependencyInjection by the resolving type name. ".+" by default.
+        /// </summary>
+        OnDependencyInjectionContractTypeNameRegularExpression,
+        
+        /// <summary>
+        /// The regular expression to filter OnDependencyInjection by the tag. ".+" by default.
+        /// ".+" by default. 
+        /// </summary>
+        OnDependencyInjectionTagRegularExpression,
+        
+        /// <summary>
+        /// The regular expression to filter OnDependencyInjection by the lifetime. ".+" by default.
+        /// ".+" by default. 
+        /// </summary>
+        OnDependencyInjectionLifetimeRegularExpression,
+        
+        /// <summary>
+        /// Determine whether to generate partial <c>OnCannotResolve</c> method to control of dependency injection. <c>On</c> or <c>Off</c>. <c>Off</c> by default.
+        /// </summary>
+        OnCannotResolve,
+        
+        /// <summary>
+        /// The regular expression to filter OnCannotResolve by the resolving type name. ".+" by default.
+        /// </summary>
+        OnCannotResolveContractTypeNameRegularExpression,
+        
+        /// <summary>
+        /// The regular expression to filter OnCannotResolve by the tag. ".+" by default.
+        /// ".+" by default. 
+        /// </summary>
+        OnCannotResolveTagRegularExpression,
+        
+        /// <summary>
+        /// The regular expression to filter OnCannotResolve by the lifetime. ".+" by default.
+        /// ".+" by default. 
+        /// </summary>
+        OnCannotResolveLifetimeRegularExpression,
+        
+        /// <summary>
+        /// <c>On</c> or <c>Off</c>.
+        /// <c>Off</c> by default. 
+        /// </summary>
+        ToString,
+        
+        /// <summary>
+        /// <c>On</c> or <c>Off</c>.
+        /// <c>On</c> by default. 
+        /// </summary>
+        ThreadSafe,
+        
+        /// <summary>
+        /// Determine Resolve method modifiers. "public" by default.
+        /// </summary>
+        ResolveMethodModifiers,
+        
+        /// <summary>
+        /// Determine Resolve method modifiers. "Resolve" by default.
+        /// </summary>
+        ResolveMethodName,
+        
+        /// <summary>
+        /// Determine Resolve by tag method modifiers. "public" by default.
+        /// </summary>
+        ResolveByTagMethodModifiers,
+        
+        /// <summary>
+        /// Determine Resolve by tag method modifiers. "Resolve" by default.
+        /// </summary>
+        ResolveByTagMethodName,
+        
+        /// <summary>
+        /// Determine object Resolve method modifiers. "public" by default.
+        /// </summary>
+        ObjectResolveMethodModifiers,
+        
+        /// <summary>
+        /// Determine object Resolve method modifiers. "Resolve" by default.
+        /// </summary>
+        ObjectResolveMethodName,
+        
+        /// <summary>
+        /// Determine object Resolve by tag method modifiers. "public" by default.
+        /// </summary>
+        ObjectResolveByTagMethodModifiers,
+        
+        /// <summary>
+        /// Determine object Resolve by tag method modifiers. "Resolve" by default.
+        /// </summary>
+        ObjectResolveByTagMethodName,
+        
+        /// <summary>
+        /// Determine Dispose method modifiers. "public" by default.
+        /// </summary>
+        DisposeMethodModifiers
+    }
 
     /// <summary>
     /// Represents the generic type arguments marker. It allows creating custom generic type arguments marker like <see cref="TTS"/>, <see cref="TTDictionary{TKey,TValue}"/> and etc. 
@@ -280,6 +416,14 @@ namespace Pure.DI
         /// <typeparam name="T">The composition root type.</typeparam>
         /// <returns>DI configuration.</returns>
         IConfiguration Root<T>(string name = "", object tag = null);
+
+        /// <summary>
+        /// Determines a hint
+        /// </summary>
+        /// <param name="hint">The hint name.</param>
+        /// <param name="value">The hint value.</param>
+        /// <returns>DI configuration.</returns>
+        IConfiguration Hint(Hint hint, string value);
     }
 
     /// <summary>
@@ -425,6 +569,7 @@ namespace Pure.DI
         /// <param name="compositionTypeName">This argument specifying a custom DI composition type name to generate. By default, it is a name of an owner class if the owner class is <c>static partial class</c> otherwise, it is a name of an owner plus the "DI" postfix. /// <param name="compositionTypeName">The optional argument specifying a custom DI composition type name to generate. By default, it is a name of an owner class if the owner class is <c>static partial class</c> otherwise, it is a name of an owner plus the "DI" postfix. For a top level statements application the name is <c>Composition</c> by default.</param></param>
         /// <param name="kind">This argument specifying a composition scope. By default, it is <c>Public</c> by default.</param></param>
         /// <returns>DI configuration API.</returns>
+        [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
         internal static IConfiguration Setup(string compositionTypeName, CompositionKind kind = CompositionKind.Public)
         {
             return Configuration.Shared;
@@ -437,51 +582,66 @@ namespace Pure.DI
             private Configuration() { }
 
             /// <inheritdoc />
+            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IBinding Bind<T>(params object[] tags)
             {
                 return Binding.Shared;
             }
 
             /// <inheritdoc />
+            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration DependsOn(params string[] baseConfigurationName)
             {
-                return this;
+                return Configuration.Shared;
             }
 
             /// <inheritdoc />
+            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration TypeAttribute<T>(int typeArgumentPosition = 0) where T : Attribute
             {
-                return this;
+                return Configuration.Shared;
             }
 
             /// <inheritdoc />
+            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration TagAttribute<T>(int tagArgumentPosition = 0) where T : Attribute
             {
-                return this;
+                return Configuration.Shared;
             }
 
             /// <inheritdoc />
+            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition = 0) where T : Attribute
             {
-                return this;
+                return Configuration.Shared;
             }
 
             /// <inheritdoc />
+            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration DefaultLifetime(Pure.DI.Lifetime lifetime)
             {
-                return this;
+                return Configuration.Shared;
             }
             
             /// <inheritdoc />
+            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration Arg<T>(string name, params object[] tags)
             {
-                return this;
+                return Configuration.Shared;
             }
 
             /// <inheritdoc />
+            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration Root<T>(string name, object tag)
             {
-                return this;
+                return Configuration.Shared;
+            }
+
+            /// <inheritdoc />
+            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            public IConfiguration Hint(Hint hint, string value)
+            {
+                return Configuration.Shared;
             }
         }
 
@@ -494,30 +654,35 @@ namespace Pure.DI
             }
 
             /// <inheritdoc />
+            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IBinding Bind<T>(params object[] tags)
             {
-                return this;
+                return Shared;
             }
 
             /// <inheritdoc />
+            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IBinding As(Pure.DI.Lifetime lifetime)
             {
-                return this;
+                return Shared;
             }
 
             /// <inheritdoc />
+            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IBinding Tags(params object[] tags)
             {
-                return this;
+                return Shared;
             }
 
             /// <inheritdoc />
+            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration To<T>()
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
+            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration To<T>(Func<IContext, T> factory)
             {
                 return Configuration.Shared;

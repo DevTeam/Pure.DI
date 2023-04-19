@@ -151,12 +151,12 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
 
                 bool TryCreateOnCannotResolve(MdSetup mdSetup, DependencyNode ownerNode, Injection unresolvedInjection)
                 {
-                    if (mdSetup.Settings.GetState(Setting.OnCannotResolve) == SettingState.On
+                    if (mdSetup.Hints.GetState(Hint.OnCannotResolve) == SettingState.On
                         && _filter.IsMeetRegularExpression(
                             mdSetup,
-                            (Setting.OnCannotResolveContractTypeNameRegularExpression, unresolvedInjection.Type.ToString()),
-                            (Setting.OnCannotResolveTagRegularExpression, unresolvedInjection.Tag.ValueToString()),
-                            (Setting.OnCannotResolveLifetimeRegularExpression, ownerNode.Lifetime.ValueToString())))
+                            (Hint.OnCannotResolveContractTypeNameRegularExpression, unresolvedInjection.Type.ToString()),
+                            (Hint.OnCannotResolveTagRegularExpression, unresolvedInjection.Tag.ValueToString()),
+                            (Hint.OnCannotResolveLifetimeRegularExpression, ownerNode.Lifetime.ValueToString())))
                     {
                         var onCannotResolveBinding = CreateConstructBinding(mdSetup, ownerNode, unresolvedInjection, unresolvedInjection.Type, unresolvedInjection.Tag, ++maxId, MdConstructKind.OnCannotResolve);
                         var onCannotResolveNodes = CreateNodes(mdSetup, onCannotResolveBinding, cancellationToken);

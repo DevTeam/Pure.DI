@@ -34,8 +34,8 @@ public class Scenario
     public void Run()
     {
 // {            
-        // ToString = On
         DI.Setup("Composition")
+            .Hint(Hint.ToString, "On")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>().Root<IService>("MyService");
 

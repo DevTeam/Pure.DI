@@ -2548,8 +2548,8 @@ internal class Service : IService
     }
 }
 
-// Resolve = Off
 DI.Setup("Composition")
+    .Hint(Hint.Resolve, "Off")
     .Bind<IDependency>().To<Dependency>().Root<IDependency>("DependencyRoot")
     .Bind<IService>().To<Service>().Root<IService>("Root");
 
@@ -2609,8 +2609,8 @@ internal class Service : IService
     }
 }
 
-// ThreadSafe = Off
 DI.Setup("Composition")
+    .Hint(Hint.ThreadSafe, "Off")
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>().Root<IService>("Root");
 
@@ -2698,9 +2698,9 @@ internal partial class Composition
     }
 }
 
-// OnDependencyInjection = On
-// OnDependencyInjectionContractTypeNameRegularExpression = IDependency
 DI.Setup("Composition")
+    .Hint(Hint.OnDependencyInjection, "On")
+    .Hint(Hint.OnDependencyInjectionContractTypeNameRegularExpression, nameof(IDependency))
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
 
@@ -2797,9 +2797,9 @@ internal partial class Composition
     }
 }
 
-// OnCannotResolve = On
-// OnCannotResolveContractTypeNameRegularExpression = string
 DI.Setup("Composition")
+    .Hint(Hint.OnCannotResolve, "On")
+    .Hint(Hint.OnCannotResolveContractTypeNameRegularExpression, "string")
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
 
@@ -2893,8 +2893,8 @@ internal partial class Composition
     }
 }
 
-// OnInstanceCreation = On
 DI.Setup("Composition")
+    .Hint(Hint.OnInstanceCreation, "On")
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
 
@@ -2956,8 +2956,8 @@ internal class Service : IService
     public Service(IDependency dependency) { }
 }
 
-// ToString = On
 DI.Setup("Composition")
+    .Hint(Hint.ToString, "On")
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>().Root<IService>("MyService");
 

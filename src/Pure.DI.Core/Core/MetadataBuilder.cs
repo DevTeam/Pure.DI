@@ -121,7 +121,7 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
         SyntaxNode? source = default;
         CompositionName? name = default;
         var kind = CompositionKind.Global;
-        var settings = new Settings();
+        var settings = new Hints();
         var bindingsBuilder = ImmutableArray.CreateBuilder<MdBinding>(64);
         var rootsBuilder = ImmutableArray.CreateBuilder<MdRoot>(64);
         var dependsOnBuilder = ImmutableArray.CreateBuilder<MdDependsOn>(2);
@@ -135,7 +135,7 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
             source = setup.Source;
             name = setup.Name;
             kind = setup.Kind;
-            foreach (var setting in setup.Settings)
+            foreach (var setting in setup.Hints)
             {
                 settings[setting.Key] = setting.Value;
             }

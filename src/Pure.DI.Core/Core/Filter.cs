@@ -15,15 +15,15 @@ internal class Filter : IFilter
         _regexCache = regexCache;
     }
 
-    public bool IsMeetRegularExpression(MdSetup setup, params (Setting setting, string value)[] settings) => 
+    public bool IsMeetRegularExpression(MdSetup setup, params (Hint setting, string value)[] settings) => 
         settings.All(i => IsMeetRegularExpression(setup, i.setting, i.value));
 
     private bool IsMeetRegularExpression(
         MdSetup setup,
-        Setting setting,
+        Hint hint,
         string value)
     {
-        if (!setup.Settings.TryGetValue(setting, out var regularExpression)
+        if (!setup.Hints.TryGetValue(hint, out var regularExpression)
             || string.IsNullOrWhiteSpace(regularExpression))
         {
             {

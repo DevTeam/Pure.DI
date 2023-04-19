@@ -17,7 +17,6 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
 {
     private const string DISetup = $"{nameof(DI)}.{nameof(DI.Setup)}";
     private static readonly Regex CommentRegex = new(@"//\s*(\w+)\s*=\s*(.+)\s*", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-    private static readonly Settings EmptySettings = new();
     private static readonly ImmutableHashSet<string> ApiMethods = ImmutableHashSet.Create(
         DISetup,
         nameof(IConfiguration.Arg),
@@ -25,6 +24,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         nameof(IConfiguration.DependsOn),
         nameof(IConfiguration.DefaultLifetime),
         nameof(IConfiguration.Root),
+        nameof(IConfiguration.Hint),
         nameof(IConfiguration.OrdinalAttribute),
         nameof(IConfiguration.TagAttribute),
         nameof(IConfiguration.TypeAttribute),
@@ -41,6 +41,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
     private readonly HashSet<string> _namespaces = new();
     private readonly Stack<InvocationExpressionSyntax> _invocations = new();
     private string _namespace = string.Empty;
+    private readonly Hints _hints = new();
 
     public MetadataSyntaxWalker(ILogger<MetadataSyntaxWalker> logger) => _logger = logger;
 
@@ -126,6 +127,14 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                         if (invocation.ArgumentList.Arguments is [{ Expression: { } lifetimeExpression }])
                         {
                             MetadataVisitor.VisitLifetime(new MdLifetime(SemanticModel, invocation, GetConstantValue<Lifetime>(lifetimeExpression)));
+                        }
+
+                        break;
+                    
+                    case nameof(IConfiguration.Hint):
+                        if (invocation.ArgumentList.Arguments is [{ Expression: { } hintNameExpression }, { Expression: { } hintValueExpression }])
+                        {
+                            _hints[GetConstantValue<Hint>(hintNameExpression)] = GetConstantValue<string>(hintValueExpression);
                         }
 
                         break;
@@ -441,13 +450,8 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                 hasContextTag));
     }
 
-    private static ISettings GetSettings(SyntaxNode node)
+    private IHints GetSettings(SyntaxNode node)
     {
-        if (!node.HasLeadingTrivia)
-        {
-            return EmptySettings;
-        }
-
         var comments = (
                 from trivia in node.GetLeadingTrivia()
                 where trivia.IsKind(SyntaxKind.SingleLineCommentTrivia)
@@ -459,23 +463,17 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                 select match)
             .ToArray();
 
-        if (!comments.Any())
-        {
-            return EmptySettings;
-        }
-
-        var settings = new Settings();
         foreach (var comment in comments)
         {
-            if (!Enum.TryParse(comment.Groups[1].Value, true, out Setting setting))
+            if (!Enum.TryParse(comment.Groups[1].Value, true, out Hint setting))
             {
                 continue;
             }
 
-            settings[setting] = comment.Groups[2].Value;
+            _hints[setting] = comment.Groups[2].Value;
         }
 
-        return settings;
+        return _hints;
     }
 
     private T GetTypeSymbol<T>(SyntaxNode node)

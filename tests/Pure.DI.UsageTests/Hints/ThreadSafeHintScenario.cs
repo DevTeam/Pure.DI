@@ -36,8 +36,8 @@ public class Scenario
     {
         // ToString = On
 // {            
-        // ThreadSafe = Off
         DI.Setup("Composition")
+            .Hint(Hint.ThreadSafe, "Off")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>().Root<IService>("Root");
 
