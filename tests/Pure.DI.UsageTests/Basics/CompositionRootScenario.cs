@@ -2,8 +2,8 @@
 $v=true
 $p=0
 $d=Composition root
-$h=This example demonstrates the most efficient way to obtain a composition root. The number of roots are not limited.
-$f=Actually, the property _Root_ looks like:
+$h=This example demonstrates the most efficient way to create a composition root. There is no limit to the number of roots, but consider limiting this number. Ideally, an application would like to have a single composition root.
+$f=The name of the composition root is arbitrarily chosen according to its purpose, but must be limited by C# property naming conventions. Actually, the property _Root_ looks like:
 $f=```c#
 $f=public IService Root
 $f={

@@ -2,6 +2,8 @@
 $v=true
 $p=0
 $d=Decorator
+$h=_Decorator_ is a well known and useful design pattern. To build a chain of nested decorators, it is convenient to use tagged dependencies, as in the example below:
+$f=Here the instance of type _Service_ is marked as _"base"_ is injected into the decorator _DecoratorService_.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

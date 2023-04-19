@@ -2,7 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/CompositionRootScenario.cs)
 
-This example demonstrates the most efficient way to obtain a composition root. The number of roots are not limited.
+This example demonstrates the most efficient way to create a composition root. There is no limit to the number of roots, but consider limiting this number. Ideally, an application would like to have a single composition root.
 
 ```c#
 internal interface IDependency { }
@@ -60,7 +60,7 @@ classDiagram
 </details>
 
 
-Actually, the property _Root_ looks like:
+The name of the composition root is arbitrarily chosen according to its purpose, but must be limited by C# property naming conventions. Actually, the property _Root_ looks like:
 ```c#
 public IService Root
 {
@@ -251,7 +251,7 @@ classDiagram
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/InjectScenario.cs)
 
-This example shows how to create and initialize an instance manually injecting required dependencies.
+This example shows how to manually create and initialize an instance by injecting the necessary dependencies.
 
 ```c#
 internal interface IDependency { }
@@ -319,6 +319,8 @@ classDiagram
 
 </details>
 
+
+In addition to the dependency type, you can specify the dependency tag in the first parameter. Then the overloaded method `void Inject<T>(object tag, out T value)` is used. Where the first argument is the tag, the second is the dependency instance.
 
 #### Generics
 
@@ -1022,6 +1024,8 @@ classDiagram
 
 </details>
 
+
+It can also be useful in a very simple scenario where, for example, the sequence of type arguments does not match the sequence of arguments of the contract that implements the type.
 
 #### Singleton
 
@@ -2193,6 +2197,8 @@ classDiagram
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Interception/DecoratorScenario.cs)
 
+_Decorator_ is a well known and useful design pattern. To build a chain of nested decorators, it is convenient to use tagged dependencies, as in the example below:
+
 ```c#
 internal interface IDependency { }
 
@@ -2269,6 +2275,8 @@ classDiagram
 
 </details>
 
+
+Here the instance of type _Service_ is marked as _"base"_ is injected into the decorator _DecoratorService_.
 
 #### Interception
 
