@@ -1,9 +1,11 @@
-﻿namespace Pure.DI.Core;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+namespace Pure.DI.Core;
 
 internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMetadataVisitor
 {
     private readonly ILogger<SetupsBuilder> _logger;
     private readonly IMetadataSyntaxWalker _metadataSyntaxWalker;
+    private readonly ICache<ImmutableArray<byte>, bool> _setupCache;
     private readonly List<MdSetup> _setups = new();
     private readonly List<MdBinding> _bindings = new();
     private readonly List<MdRoot> _roots = new();
@@ -19,10 +21,12 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
 
     public SetupsBuilder(
         ILogger<SetupsBuilder> logger,
-        IMetadataSyntaxWalker metadataSyntaxWalker)
+        IMetadataSyntaxWalker metadataSyntaxWalker,
+        ICache<ImmutableArray<byte>, bool> setupCache)
     {
         _logger = logger;
         _metadataSyntaxWalker = metadataSyntaxWalker;
+        _setupCache = setupCache;
     }
     
     private MdBinding Binding
@@ -43,7 +47,18 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
 
     public IEnumerable<MdSetup> Build(SyntaxUpdate update, CancellationToken cancellationToken)
     {
+        var checkSum = update.Node.SyntaxTree.GetText().GetChecksum();
+        if (!_setupCache.Get(checkSum))
+        {
+            return Array.Empty<MdSetup>();
+        }
+        
         _metadataSyntaxWalker.Visit(this, update, cancellationToken);
+        if (!_setups.Any())
+        {
+            _setupCache.Set(checkSum, false);
+        }
+        
         return _setups;
     }
 

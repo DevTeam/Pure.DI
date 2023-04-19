@@ -6,9 +6,17 @@ using System.Collections.Concurrent;
 internal class Cache<TKey, TValue> : ICache<TKey, TValue>
 {
     private readonly Func<TKey, TValue> _factory;
-    private readonly ConcurrentDictionary<TKey, TValue> _dictionary = new();
+    private readonly ConcurrentDictionary<TKey, TValue> _dictionary;
 
-    public Cache(Func<TKey, TValue> factory) => _factory = factory;
+    public Cache(
+        Func<TKey, TValue> factory,
+        IEqualityComparer<TKey> comparer)
+    {
+        _factory = factory;
+        _dictionary = new ConcurrentDictionary<TKey, TValue>(comparer);
+    }
 
     public TValue Get(in TKey key) => _dictionary.GetOrAdd(key, _factory);
+
+    public void Set(in TKey key, in TValue value) => _dictionary[key] = value;
 }
