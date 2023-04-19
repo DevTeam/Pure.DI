@@ -94,18 +94,6 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         }
     }
 
-    protected override void VisitInstantiation(BuildContext context, DependencyGraph dependencyGraph, Variable root, Instantiation instantiation, CancellationToken cancellationToken)
-    {
-        var injection = instantiation.Target.Injection.ToString();
-        using var logToken = _logger.TraceProcess($"processing {injection}");
-        if (!instantiation.Target.IsCreated)
-        {
-            context.Code.AppendLine($"//---{injection.PadRight(64, '-')}---//");
-        }
-
-        base.VisitInstantiation(context, dependencyGraph, root, instantiation, cancellationToken);
-    }
-
     protected override void VisitImplementation(
         BuildContext context,
         Variable root,
@@ -391,7 +379,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             ? lambda.Block
             : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);
 
-        var lines = syntaxNode.NormalizeWhitespace().ToString().Split('\n');
+        var lines = syntaxNode.ToString().Split('\n');
         
         // Replaces injection markers by injection code
         var factoryCodeBuilder = CreateChildBuilder();

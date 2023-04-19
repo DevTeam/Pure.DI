@@ -17,8 +17,8 @@
         <OutputPath>bin/$(Configuration)/roslyn$(AnalyzerRoslynVersion)</OutputPath>
     </PropertyGroup>
 
-   <!-- <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <DefineConstants>TRACE;DEBUG_MODE</DefineConstants>
+    <!--<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DefineConstants>TRACE;TRACE_MODE</DefineConstants>
     </PropertyGroup>-->
 
     <ItemGroup>
