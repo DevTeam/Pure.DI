@@ -435,6 +435,28 @@ Specifies whether the generated code should be formatted. This option consumes a
 - [Xamarin](https://dotnet.microsoft.com/apps/xamarin)
 - [.NET Multi-platform App UI (MAUI)](https://docs.microsoft.com/en-us/dotnet/maui/)
 
+## Project template
+
+Install the DI template [Pure.DI.Templates](https://www.nuget.org/packages/Pure.DI.Templates)
+
+```shell
+dotnet new -i Pure.DI.Templates
+```
+
+Create a "Sample" console application from the template *__di__*
+
+```shell
+dotnet new di -o ./Sample
+```
+
+And run it
+
+```shell
+dotnet run --project Sample
+```
+
+Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates) for more details about the template.
+
 ## Troubleshooting
 
 <details>

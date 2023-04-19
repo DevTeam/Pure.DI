@@ -21,12 +21,10 @@ DI.Setup("Composition")
         return (State)random.Next(2);
     })
     // Represents schrodinger's cat
-    // Represents schrodinger's cat
     .Bind<ICat>().To<ShroedingersCat>()
     // Represents a cardboard box with any content
     .Bind<IBox<TT>>().To<CardboardBox<TT>>()
     // Composition Root
-    // Here it is equivalent to Bind<Program>().To<Program>()
     .Root<Program>("Root");
 
 public interface IBox<out T>
