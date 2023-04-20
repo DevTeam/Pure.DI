@@ -347,7 +347,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             code.Append($"{instantiation.Target.Name} = ");
         }
 
-        RewriteFactory(factoryBuildContext, dependencyGraph, instantiation, factory, cancellationToken);
+        RewriteFactory(factoryBuildContext, context.IsRootContext, dependencyGraph, instantiation, factory, cancellationToken);
         code.AppendLines(GenerateOnInstanceCreatedStatements(context, instantiation.Target));
 
         var justReturn = context.IsRootContext && instantiation.Target == root && instantiation.Target.Node.Lifetime != Lifetime.Singleton;
@@ -362,6 +362,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
 
     private void RewriteFactory(
         BuildContext context,
+        bool isRootContext,
         DependencyGraph dependencyGraph,
         Instantiation instantiation,
         DpFactory factory,
@@ -413,7 +414,12 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
 
         if (factoryRewriter.IsFinishMarkRequired)
         {
-            code.AppendLine($"{finishLabel}: ;");
+            code.AppendLine($"{finishLabel}:");
+            if (isRootContext)
+            {
+                // The NOP statement is required due to the label is last statement in the block
+                code.AppendLine(";");
+            }
         }
     }
 
