@@ -9,7 +9,7 @@ namespace Pure.DI
                 .TypeAttribute<TypeAttribute>()
                 .TagAttribute<TagAttribute>()
                 .OrdinalAttribute<OrdinalAttribute>()
-                .Bind<System.Func<TT>>()
+                .Bind<System.Func<TT>>().As(Lifetime.PerResolve)
                     .To(ctx => new System.Func<TT>(() =>
                     {
                         TT value;

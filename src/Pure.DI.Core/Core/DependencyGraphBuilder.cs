@@ -106,9 +106,10 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                                 _ => default(MdConstructKind?)
                             };
 
+                            var lifetime = constructKind == MdConstructKind.Enumerable ? Lifetime.PerResolve : Lifetime.Transient;
                             if (constructKind.HasValue)
                             {
-                                var enumerableBinding = CreateConstructBinding(setup, targetNode, injection, constructType, default, ++maxId, constructKind.Value);
+                                var enumerableBinding = CreateConstructBinding(setup, targetNode, injection, constructType, default, lifetime, ++maxId, constructKind.Value);
                                 return CreateNodes(setup, enumerableBinding, cancellationToken);
                             }
                         }
@@ -125,14 +126,15 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                     // Array construct
                     case IArrayTypeSymbol arrayType:
                     {
-                        var arrayBinding = CreateConstructBinding(setup, targetNode, injection, arrayType.ElementType, default, ++maxId, MdConstructKind.Array);
+                        var arrayBinding = CreateConstructBinding(setup, targetNode, injection, arrayType.ElementType, default, Lifetime.Transient, ++maxId, MdConstructKind.Array);
                         return CreateNodes(setup, arrayBinding, cancellationToken);
                     }
                 }
 
                 if (injection.Type.ToString() == setup.Name.FullName)
                 {
-                    var compositionBinding = CreateConstructBinding(setup, targetNode, injection, injection.Type, default, ++maxId, MdConstructKind.Composition);
+                    // Composition
+                    var compositionBinding = CreateConstructBinding(setup, targetNode, injection, injection.Type, default, Lifetime.Transient, ++maxId, MdConstructKind.Composition);
                     return CreateNodes(setup, compositionBinding, cancellationToken);
                 }
 
@@ -158,7 +160,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                             (Hint.OnCannotResolveTagRegularExpression, unresolvedInjection.Tag.ValueToString()),
                             (Hint.OnCannotResolveLifetimeRegularExpression, ownerNode.Lifetime.ValueToString())))
                     {
-                        var onCannotResolveBinding = CreateConstructBinding(mdSetup, ownerNode, unresolvedInjection, unresolvedInjection.Type, unresolvedInjection.Tag, ++maxId, MdConstructKind.OnCannotResolve);
+                        var onCannotResolveBinding = CreateConstructBinding(mdSetup, ownerNode, unresolvedInjection, unresolvedInjection.Type, unresolvedInjection.Tag, ownerNode.Lifetime, ++maxId, MdConstructKind.OnCannotResolve);
                         var onCannotResolveNodes = CreateNodes(mdSetup, onCannotResolveBinding, cancellationToken);
                         foreach (var onCannotResolveNode in onCannotResolveNodes)
                         {
@@ -336,6 +338,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
         Injection injection,
         ITypeSymbol elementType,
         object? tag,
+        Lifetime lifetime,
         int newId,
         MdConstructKind constructKind)
     {
@@ -365,6 +368,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
             Id = newId,
             SemanticModel = targetNode.Binding.SemanticModel,
             Source = targetNode.Binding.Source,
+            Lifetime = new MdLifetime(targetNode.Binding.SemanticModel, targetNode.Binding.Source, lifetime),
             Construct = new MdConstruct(
                 targetNode.Binding.SemanticModel,
                 targetNode.Binding.Source,

@@ -131,7 +131,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Dependency '' Singleton created", "System.Func`1[Sample.IDependency] '' Transient created", "Sample.Service '' Transient created"), result.GeneratedCode);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Dependency '' Singleton created", "System.Func`1[Sample.IDependency] '' PerResolve created", "Sample.Service '' Transient created"), result.GeneratedCode);
     }
     
     [Fact]
@@ -204,7 +204,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.IDependency '' Singleton injected", "System.Func`1[Sample.IDependency] '' Transient injected", "Sample.IDependency '' Singleton injected", "Sample.IService '' Transient injected"), result.GeneratedCode);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.IDependency '' Singleton injected", "System.Func`1[Sample.IDependency] '' PerResolve injected", "Sample.IDependency '' Singleton injected", "Sample.IService '' Transient injected"), result.GeneratedCode);
     }
     
     [Fact]

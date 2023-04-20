@@ -1,3 +1,4 @@
+// ReSharper disable MemberCanBePrivate.Global
 namespace Pure.DI.Core;
 
 internal readonly struct ProcessingNode
@@ -35,4 +36,10 @@ internal readonly struct ProcessingNode
     public ImmutableArray<Injection> Injections => _injections.Value;
 
     public override string ToString() => Node.ToString();
+
+    public bool Equals(ProcessingNode other) => Node.Equals(other.Node);
+
+    public override bool Equals(object? obj) => obj is ProcessingNode other && Equals(other);
+
+    public override int GetHashCode() => Node.GetHashCode();
 }
