@@ -33,11 +33,11 @@ internal class PrimaryConstructorBuilder: IBuilder<CompositionCode, CompositionC
                     continue;
                 }
 
-                code.AppendLine($"if (System.Object.ReferenceEquals({arg.Node.Arg?.Source.ArgName}, null))");
+                code.AppendLine($"if ({Constant.SystemNamespace}Object.ReferenceEquals({arg.Node.Arg?.Source.ArgName}, null))");
                 code.AppendLine("{");
                 using (code.Indent())
                 {
-                    code.AppendLine($"throw new System.ArgumentNullException(\"{arg.Node.Arg?.Source.ArgName}\");");
+                    code.AppendLine($"throw new {Constant.SystemNamespace}ArgumentNullException(\"{arg.Node.Arg?.Source.ArgName}\");");
                 }
 
                 code.AppendLine("}");

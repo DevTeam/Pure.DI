@@ -54,7 +54,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
                 settings.GetValueOrDefault(Hint.ObjectResolveMethodModifiers, Constant.DefaultApiMethodModifiers),
                 settings.GetValueOrDefault(Hint.ObjectResolveMethodName, Constant.ResolverMethodName),
                 resolvers,
-                "System.Type type",
+                $"{Constant.SystemNamespace}Type type",
                 ResolverClassesBuilder.ResolveMethodName,
                 "this",
                 code);
@@ -66,7 +66,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
                 settings.GetValueOrDefault(Hint.ObjectResolveByTagMethodModifiers, Constant.DefaultApiMethodModifiers),
                 settings.GetValueOrDefault(Hint.ObjectResolveByTagMethodName, Constant.ResolverMethodName),
                 resolvers,
-                "System.Type type, object? tag",
+                $"{Constant.SystemNamespace}Type type, object? tag",
                 ResolverClassesBuilder.ResolveByTagMethodName,
                 "this, tag",
                 code);
@@ -117,7 +117,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             var divisor = Buckets<object, object>.GetDivisor((uint)resolvers.Count);
             if (resolvers.Any())
             {
-                code.AppendLine($"int index = (int)({ResolversFieldsBuilder.BucketSizeFieldName} * ((uint)System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % {divisor}));");
+                code.AppendLine($"int index = (int)({ResolversFieldsBuilder.BucketSizeFieldName} * ((uint){Constant.SystemNamespace}Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % {divisor}));");
                 code.AppendLine($"ref var pair = ref {ResolversFieldsBuilder.BucketsFieldName}[index];");
                 code.AppendLine("if (ReferenceEquals(pair.Key, type))");
                 code.AppendLine("{");
@@ -147,7 +147,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
                 code.AppendLine();
             }
 
-            code.AppendLine($"throw new System.InvalidOperationException($\"{Constant.CannotResolve} of type {{type}}.\");");
+            code.AppendLine($"throw new {Constant.SystemNamespace}InvalidOperationException($\"{Constant.CannotResolve} of type {{type}}.\");");
         }
         
         code.AppendLine("}");
@@ -156,7 +156,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
     private static void AddMethodHeader(LinesBuilder code)
     {
         code.AppendLine("#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER");
-        code.AppendLine("[System.Diagnostics.Contracts.Pure]");
+        code.AppendLine($"[{Constant.SystemNamespace}Diagnostics.Contracts.Pure]");
         code.AppendLine("#endif");
         code.AppendLine(Constant.MethodImplOptions);
     }

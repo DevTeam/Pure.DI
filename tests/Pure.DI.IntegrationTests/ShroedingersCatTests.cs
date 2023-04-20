@@ -84,11 +84,9 @@ namespace Sample
 
         public static void Main()
         {
-            using(var composition = new Composition())
-            {
-                composition.Root.Run();
-                Console.WriteLine(composition);                
-            }
+            var composition = new Composition();            
+            composition.Root.Run();
+            Console.WriteLine(composition);
         }
     }                
 }

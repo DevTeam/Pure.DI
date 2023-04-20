@@ -8,20 +8,20 @@ namespace Pure.DI
 {    
 <#
 var baseTypes = new Dictionary<string, string> { 
-    { "System.IDisposable", "TTDisposable#" },
-    { "System.IComparable", "TTComparable#" },
-    { "System.IComparable<T>", "TTComparable#<in T>" },
-    { "System.IEquatable<T>", "TTEquatable#<T>" },
-    { "System.Collections.Generic.IEnumerable<T>", "TTEnumerable#<out T>" },
-    { "System.Collections.Generic.IEnumerator<T>", "TTEnumerator#<out T>" },
-    { "System.Collections.Generic.ICollection<T>", "TTCollection#<T>" },
-    { "System.Collections.Generic.IList<T>", "TTList#<T>" },
-    { "System.Collections.Generic.ISet<T>", "TTSet#<T>" },
-    { "System.Collections.Generic.IComparer<T>", "TTComparer#<in T>" },
-    { "System.Collections.Generic.IEqualityComparer<T>", "TTEqualityComparer#<in T>" },
-    { "System.Collections.Generic.IDictionary<TKey, TValue>", "TTDictionary#<TKey, TValue>" },
-    { "System.IObservable<T>", "TTObservable#<out T>" },
-    { "System.IObserver<T>", "TTObserver#<in T>" }
+    { "global::System.IDisposable", "TTDisposable#" },
+    { "global::System.IComparable", "TTComparable#" },
+    { "global::System.IComparable<T>", "TTComparable#<in T>" },
+    { "global::System.IEquatable<T>", "TTEquatable#<T>" },
+    { "global::System.Collections.Generic.IEnumerable<T>", "TTEnumerable#<out T>" },
+    { "global::System.Collections.Generic.IEnumerator<T>", "TTEnumerator#<out T>" },
+    { "global::System.Collections.Generic.ICollection<T>", "TTCollection#<T>" },
+    { "global::System.Collections.Generic.IList<T>", "TTList#<T>" },
+    { "global::System.Collections.Generic.ISet<T>", "TTSet#<T>" },
+    { "global::System.Collections.Generic.IComparer<T>", "TTComparer#<in T>" },
+    { "global::System.Collections.Generic.IEqualityComparer<T>", "TTEqualityComparer#<in T>" },
+    { "global::System.Collections.Generic.IDictionary<TKey, TValue>", "TTDictionary#<TKey, TValue>" },
+    { "global::System.IObservable<T>", "TTObservable#<out T>" },
+    { "global::System.IObserver<T>", "TTObserver#<in T>" }
 };
 #>
 <#for(var i = 0; i <= 32; i++) {#>
@@ -29,14 +29,14 @@ var baseTypes = new Dictionary<string, string> {
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal abstract class TT<#=i == 0 ? "" : i.ToString()#> { }
 
     /// <summary>
     /// Represents the generic type arguments marker for a reference type with default constructor.
     /// </summary>
     [GenericTypeArgument]
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TTC<#=i == 0 ? "" : i.ToString()#> { }
 
     /// <summary>
@@ -49,7 +49,7 @@ var baseTypes = new Dictionary<string, string> {
     /// Represents the generic type arguments marker for a value type.
     /// </summary>
     [GenericTypeArgument]
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal struct TTS<#=i == 0 ? "" : i.ToString()#> { }
 
 <#

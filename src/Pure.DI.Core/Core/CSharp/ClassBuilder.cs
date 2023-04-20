@@ -55,8 +55,8 @@ internal class ClassBuilder : IBuilder<CompositionCode, CompositionCode>
             nsIndent = code.Indent();
         }
 
-        code.AppendLine("[System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]");
-        var implementingInterfaces = composition.Singletons.Any() ? $": {Constant.IDisposableInterfaceName}" : "";
+        code.AppendLine($"[{Constant.SystemNamespace}Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]");
+        var implementingInterfaces = composition.DisposableSingletonsCount > 0 ? $": {Constant.IDisposableInterfaceName}" : "";
         code.AppendLine($"partial class {composition.Name.ClassName}{implementingInterfaces}");
         code.AppendLine("{");
 

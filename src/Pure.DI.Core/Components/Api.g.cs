@@ -5,7 +5,7 @@
 namespace System.Diagnostics.CodeAnalysis
 {
     // ReSharper disable UnusedType.Global
-    [System.AttributeUsage(System.AttributeTargets.Assembly | System.AttributeTargets.Class | System.AttributeTargets.Constructor | System.AttributeTargets.Event | System.AttributeTargets.Method | System.AttributeTargets.Property | System.AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
+    [global::System.AttributeUsage(global::System.AttributeTargets.Assembly | global::System.AttributeTargets.Class | global::System.AttributeTargets.Constructor | global::System.AttributeTargets.Event | global::System.AttributeTargets.Method | global::System.AttributeTargets.Property | global::System.AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
     public sealed class ExcludeFromCodeCoverageAttribute : Attribute
     {
     }
@@ -23,7 +23,7 @@ namespace System
 namespace Pure.DI
 {
     using System;
-    using System.Diagnostics;
+    using global::System.Diagnostics;
 
     /// <summary>
     /// Binding lifetimes.
@@ -183,14 +183,14 @@ namespace Pure.DI
     /// Represents the generic type arguments marker. It allows creating custom generic type arguments marker like <see cref="TTS"/>, <see cref="TTDictionary{TKey,TValue}"/> and etc. 
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Struct)]
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal sealed class GenericTypeArgumentAttribute : Attribute { }
     
     /// <summary>
     /// Represents an ordinal attribute overriding an injection ordinal.
     /// </summary>
     [AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class OrdinalAttribute : Attribute
     {
         // ReSharper disable once MemberCanBePrivate.Global
@@ -213,7 +213,7 @@ namespace Pure.DI
     /// Represents a tag attribute overriding an injection tag.
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TagAttribute : Attribute
     {
         // ReSharper disable once MemberCanBePrivate.Global
@@ -236,7 +236,7 @@ namespace Pure.DI
     /// Represents a dependency type attribute overriding an injection type. 
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TypeAttribute : Attribute
     {
         // ReSharper disable once MemberCanBePrivate.Global
@@ -549,7 +549,7 @@ namespace Pure.DI
     /// </code>
     /// </example>
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal static class DI
     {
         /// <summary>
@@ -566,7 +566,7 @@ namespace Pure.DI
         /// <param name="compositionTypeName">This argument specifying a custom DI composition type name to generate. By default, it is a name of an owner class if the owner class is <c>static partial class</c> otherwise, it is a name of an owner plus the "DI" postfix. /// <param name="compositionTypeName">The optional argument specifying a custom DI composition type name to generate. By default, it is a name of an owner class if the owner class is <c>static partial class</c> otherwise, it is a name of an owner plus the "DI" postfix. For a top level statements application the name is <c>Composition</c> by default.</param></param>
         /// <param name="kind">This argument specifying a composition scope. By default, it is <c>Public</c> by default.</param></param>
         /// <returns>DI configuration API.</returns>
-        [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+        [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
         internal static IConfiguration Setup(string compositionTypeName, CompositionKind kind = CompositionKind.Public)
         {
             return Configuration.Shared;
@@ -579,63 +579,63 @@ namespace Pure.DI
             private Configuration() { }
 
             /// <inheritdoc />
-            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IBinding Bind<T>(params object[] tags)
             {
                 return Binding.Shared;
             }
 
             /// <inheritdoc />
-            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration DependsOn(params string[] baseConfigurationName)
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration TypeAttribute<T>(int typeArgumentPosition = 0) where T : Attribute
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration TagAttribute<T>(int tagArgumentPosition = 0) where T : Attribute
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition = 0) where T : Attribute
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration DefaultLifetime(Pure.DI.Lifetime lifetime)
             {
                 return Configuration.Shared;
             }
             
             /// <inheritdoc />
-            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration Arg<T>(string name, params object[] tags)
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration Root<T>(string name, object tag)
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration Hint(Hint hint, string value)
             {
                 return Configuration.Shared;
@@ -651,35 +651,35 @@ namespace Pure.DI
             }
 
             /// <inheritdoc />
-            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IBinding Bind<T>(params object[] tags)
             {
                 return Shared;
             }
 
             /// <inheritdoc />
-            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IBinding As(Pure.DI.Lifetime lifetime)
             {
                 return Shared;
             }
 
             /// <inheritdoc />
-            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IBinding Tags(params object[] tags)
             {
                 return Shared;
             }
 
             /// <inheritdoc />
-            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration To<T>()
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [System.Runtime.CompilerServices.MethodImpl((System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration To<T>(Func<IContext, T> factory)
             {
                 return Configuration.Shared;
@@ -687,8 +687,8 @@ namespace Pure.DI
         }
     }
     
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     internal struct Pair<TKey, TValue>
     {
         public readonly TKey Key;
@@ -706,7 +706,7 @@ namespace Pure.DI
         }
     }
     
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal static class Buckets<TKey, TValue>
     {
         public static uint GetDivisor(uint count)
@@ -723,7 +723,7 @@ namespace Pure.DI
             int[] bicketSizes = new int[divisor];
             for (int i = 0; i < pairs.Length; i++)
             {
-                uint bucket = ((uint)System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pairs[i].Key)) % divisor;
+                uint bucket = ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pairs[i].Key)) % divisor;
                 int size = bicketSizes[bucket] + 1;
                 bicketSizes[bucket] = size;
                 if (size > bucketSize)
@@ -735,7 +735,7 @@ namespace Pure.DI
             Pair<TKey, TValue>[] buckets = new Pair<TKey, TValue>[divisor * bucketSize];
             for (int i = 0; i < pairs.Length; i++)
             {
-                uint bucket = ((uint)System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pairs[i].Key)) % divisor;
+                uint bucket = ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pairs[i].Key)) % divisor;
                 var index = bicketSizes[bucket] - 1;
                 buckets[bucket * bucketSize + index] = pairs[i];
                 bicketSizes[bucket] = index;

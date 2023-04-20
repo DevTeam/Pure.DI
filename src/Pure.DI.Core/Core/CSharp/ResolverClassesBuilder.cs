@@ -105,7 +105,7 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
             }
             else
             {
-                code.AppendLine($"throw new System.InvalidOperationException($\"{Constant.CannotResolve} of type {resolver.Type}.\");");
+                code.AppendLine($"throw new {Constant.SystemNamespace}InvalidOperationException($\"{Constant.CannotResolve} of type {resolver.Type}.\");");
             }
         }
 
@@ -129,7 +129,7 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
                 code.AppendLine($"if (Equals(tag, null)) return composition.{defaultRoot.PropertyName};");
             }
 
-            code.AppendLine($"throw new System.InvalidOperationException($\"{Constant.CannotResolve} \\\"{{tag}}\\\" of type {resolver.Type}.\");");
+            code.AppendLine($"throw new {Constant.SystemNamespace}InvalidOperationException($\"{Constant.CannotResolve} \\\"{{tag}}\\\" of type {resolver.Type}.\");");
         }
 
         code.AppendLine("}");

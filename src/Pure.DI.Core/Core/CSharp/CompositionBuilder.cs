@@ -271,7 +271,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             && construct.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp7_3
             && !IsJustReturn(context, root, instantiation) 
                 ? $"stackalloc {createArray}"
-                : $"new System.Span<{construct.Source.ElementType}>(new {createArray})";
+                : $"new {Constant.SystemNamespace}Span<{construct.Source.ElementType}>(new {createArray})";
         context.Code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = {createInstance};");
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
@@ -422,7 +422,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         var checkExpression = variable.InstanceType.IsValueType switch
         {
             true => $"!{variable.Name}Created",
-            false => $"System.Object.ReferenceEquals({variable.Name}, null)"
+            false => $"{Constant.SystemNamespace}Object.ReferenceEquals({variable.Name}, null)"
         };
 
         var code = context.Code;

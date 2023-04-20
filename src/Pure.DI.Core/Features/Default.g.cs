@@ -17,59 +17,59 @@ namespace Pure.DI
                         return value;
                     }))
 #if NETSTANDARD || NET || NETCOREAPP || NET40_OR_GREATER
-                .Bind<System.Lazy<TT>>()
+                .Bind<global::System.Lazy<TT>>()
                     .To(ctx =>
                     {
-                        System.Func<TT> func;
-                        ctx.Inject<System.Func<TT>>(ctx.Tag, out func);
-                        return new System.Lazy<TT>(func, true);
+                        global::System.Func<TT> func;
+                        ctx.Inject<global::System.Func<TT>>(ctx.Tag, out func);
+                        return new global::System.Lazy<TT>(func, true);
                     })
-                .Bind<System.Threading.Tasks.Task<TT>>()
+                .Bind<global::System.Threading.Tasks.Task<TT>>()
                     .To(ctx =>
                     {
-                        System.Func<TT> func;
-                        ctx.Inject<System.Func<TT>>(ctx.Tag, out func);
-                        return new System.Threading.Tasks.Task<TT>(func);
+                        global::System.Func<TT> func;
+                        ctx.Inject<global::System.Func<TT>>(ctx.Tag, out func);
+                        return new global::System.Threading.Tasks.Task<TT>(func);
                     })
 #endif              
 #if NETSTANDARD || NET || NETCOREAPP                
-                .Bind<System.Lazy<TT, TT1>>()
+                .Bind<global::System.Lazy<TT, TT1>>()
                 .To(ctx =>
                 {
-                    System.Func<TT> func;
-                    ctx.Inject<System.Func<TT>>(ctx.Tag, out func);
+                    global::System.Func<TT> func;
+                    ctx.Inject<global::System.Func<TT>>(ctx.Tag, out func);
                     TT1 metadata;
                     ctx.Inject<TT1>(ctx.Tag, out metadata);
-                    return new System.Lazy<TT, TT1>(func, metadata, true);
+                    return new global::System.Lazy<TT, TT1>(func, metadata, true);
                 })
 #endif
 
                 // Collections
 #if NETSTANDARD2_1 || NETCOREAPP2_1_OR_GREATER                
-                .Bind<System.Memory<TT>>()
+                .Bind<global::System.Memory<TT>>()
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
-                        return new System.Memory<TT>(arr);
+                        return new global::System.Memory<TT>(arr);
                     })
-                .Bind<System.ReadOnlyMemory<TT>>()
+                .Bind<global::System.ReadOnlyMemory<TT>>()
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
-                        return new System.ReadOnlyMemory<TT>(arr);
+                        return new global::System.ReadOnlyMemory<TT>(arr);
                     })
 #endif                
-                .Bind<System.Collections.Generic.ICollection<TT>>()
-                .Bind<System.Collections.Generic.IList<TT>>()
-                .Bind<System.Collections.Generic.List<TT>>()
+                .Bind<global::System.Collections.Generic.ICollection<TT>>()
+                .Bind<global::System.Collections.Generic.IList<TT>>()
+                .Bind<global::System.Collections.Generic.List<TT>>()
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
-                        return new System.Collections.Generic.List<TT>(arr);
+                        return new global::System.Collections.Generic.List<TT>(arr);
                     })
 #if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER                
-                .Bind<System.Collections.Generic.IReadOnlyCollection<TT>>()
-                .Bind<System.Collections.Generic.IReadOnlyList<TT>>()
+                .Bind<global::System.Collections.Generic.IReadOnlyCollection<TT>>()
+                .Bind<global::System.Collections.Generic.IReadOnlyList<TT>>()
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
@@ -77,76 +77,76 @@ namespace Pure.DI
                     })
 #endif
 #if NETSTANDARD || NET || NETCOREAPP || NET40_OR_GREATER
-                .Bind<System.Collections.Generic.ISet<TT>>()
+                .Bind<global::System.Collections.Generic.ISet<TT>>()
 #endif
 #if NETSTANDARD || NET || NETCOREAPP || NET35_OR_GREATER
-                .Bind<System.Collections.Generic.HashSet<TT>>()
+                .Bind<global::System.Collections.Generic.HashSet<TT>>()
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
-                        return new System.Collections.Generic.HashSet<TT>(arr);
+                        return new global::System.Collections.Generic.HashSet<TT>(arr);
                     })
 #endif
 #if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
-                .Bind<System.Collections.Generic.SortedSet<TT>>()
+                .Bind<global::System.Collections.Generic.SortedSet<TT>>()
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
-                        return new System.Collections.Generic.SortedSet<TT>(arr);
+                        return new global::System.Collections.Generic.SortedSet<TT>(arr);
                     })
 #endif                
-                .Bind<System.Collections.Generic.Queue<TT>>()
+                .Bind<global::System.Collections.Generic.Queue<TT>>()
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
-                        return new System.Collections.Generic.Queue<TT>(arr);
+                        return new global::System.Collections.Generic.Queue<TT>(arr);
                     })
-                .Bind<System.Collections.Generic.Stack<TT>>()
+                .Bind<global::System.Collections.Generic.Stack<TT>>()
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
-                        return new System.Collections.Generic.Stack<TT>(arr);
+                        return new global::System.Collections.Generic.Stack<TT>(arr);
                     })
 #if NET || NETCOREAPP                 
-                .Bind<System.Collections.Immutable.ImmutableArray<TT>>()
+                .Bind<global::System.Collections.Immutable.ImmutableArray<TT>>()
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
-                        return System.Collections.Immutable.ImmutableArray.Create<TT>(arr);
+                        return global::System.Collections.Immutable.ImmutableArray.Create<TT>(arr);
                     })
-                .Bind<System.Collections.Immutable.IImmutableList<TT>>()
-                .Bind<System.Collections.Immutable.ImmutableList<TT>>()
+                .Bind<global::System.Collections.Immutable.IImmutableList<TT>>()
+                .Bind<global::System.Collections.Immutable.ImmutableList<TT>>()
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
-                        return System.Collections.Immutable.ImmutableList.Create<TT>(arr);
+                        return global::System.Collections.Immutable.ImmutableList.Create<TT>(arr);
                     })
-                .Bind<System.Collections.Immutable.IImmutableSet<TT>>()
-                .Bind<System.Collections.Immutable.ImmutableHashSet<TT>>()
+                .Bind<global::System.Collections.Immutable.IImmutableSet<TT>>()
+                .Bind<global::System.Collections.Immutable.ImmutableHashSet<TT>>()
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
-                        return System.Collections.Immutable.ImmutableHashSet.Create<TT>(arr);
+                        return global::System.Collections.Immutable.ImmutableHashSet.Create<TT>(arr);
                     })
-                .Bind<System.Collections.Immutable.ImmutableSortedSet<TT>>()
+                .Bind<global::System.Collections.Immutable.ImmutableSortedSet<TT>>()
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
-                        return System.Collections.Immutable.ImmutableSortedSet.Create<TT>(arr);
+                        return global::System.Collections.Immutable.ImmutableSortedSet.Create<TT>(arr);
                     })
-                .Bind<System.Collections.Immutable.IImmutableQueue<TT>>()
-                .Bind<System.Collections.Immutable.ImmutableQueue<TT>>()
+                .Bind<global::System.Collections.Immutable.IImmutableQueue<TT>>()
+                .Bind<global::System.Collections.Immutable.ImmutableQueue<TT>>()
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
-                        return System.Collections.Immutable.ImmutableQueue.Create<TT>(arr);
+                        return global::System.Collections.Immutable.ImmutableQueue.Create<TT>(arr);
                     })
-                .Bind<System.Collections.Immutable.IImmutableStack<TT>>()
-                .Bind<System.Collections.Immutable.ImmutableStack<TT>>()
+                .Bind<global::System.Collections.Immutable.IImmutableStack<TT>>()
+                .Bind<global::System.Collections.Immutable.ImmutableStack<TT>>()
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
-                        return System.Collections.Immutable.ImmutableStack.Create<TT>(arr);
+                        return global::System.Collections.Immutable.ImmutableStack.Create<TT>(arr);
                     })
 #endif
                     ;
