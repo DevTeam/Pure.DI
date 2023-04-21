@@ -373,7 +373,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         // Rewrites syntax tree
         var finishLabel = $"label{_idGenerator.NextId.ToString()}{Variable.Postfix}";
         var injections = new List<FactoryRewriter.Injection>();
-        var factoryRewriter = new FactoryRewriter(factory, instantiation.Target, finishLabel, injections);
+        var factoryRewriter = new FactoryRewriter(factory, instantiation.Target, context.ContextTag, finishLabel, injections);
         var lambda = factoryRewriter.Rewrite(factory.Source.Factory);
 
         SyntaxNode syntaxNode = lambda.Block is not null

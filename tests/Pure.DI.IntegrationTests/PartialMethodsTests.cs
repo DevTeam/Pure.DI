@@ -63,7 +63,7 @@ namespace Sample
     }
     
     [Fact]
-    public async Task ShouldTrackInstanceCreated()
+    public async Task ShouldTrackInstanceCreation()
     {
         // Given
 
@@ -135,7 +135,7 @@ namespace Sample
     }
     
     [Fact]
-    public async Task ShouldTrackInstanceInjected()
+    public async Task ShouldTrackInstanceInjection()
     {
         // Given
 
@@ -208,7 +208,7 @@ namespace Sample
     }
     
     [Fact]
-    public async Task ShouldTrackInstanceInjectedWhenFilterByImplementationType()
+    public async Task ShouldTrackInstanceInjectionWhenFilterByImplementationType()
     {
         // Given
 
@@ -282,7 +282,7 @@ namespace Sample
     }
     
     [Fact]
-    public async Task ShouldTrackInstanceInjectedWhenFilterByContractType()
+    public async Task ShouldTrackInstanceInjectionWhenFilterByContractType()
     {
         // Given
 
@@ -356,7 +356,7 @@ namespace Sample
     }
     
     [Fact]
-    public async Task ShouldTrackInstanceInjectedWhenFilterByTag()
+    public async Task ShouldTrackInstanceInjectionWhenFilterByTag()
     {
         // Given
 
@@ -654,12 +654,12 @@ namespace Sample
     {
         private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime)            
         {
-            if (typeof(T) == typeof(string))
+            if (typeof(T) == typeof(string) && lifetime == Lifetime.Transient)
             {
                 return (T)(object)"MyService";
             }            
 
-            if (typeof(T) == typeof(int) && Equals(tag, "some ID"))
+            if (typeof(T) == typeof(int) && Equals(tag, "some ID") && lifetime == Lifetime.Singleton)
             {
                 return (T)(object)99;
             }

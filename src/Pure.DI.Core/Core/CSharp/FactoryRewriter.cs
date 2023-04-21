@@ -7,6 +7,7 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
     private static readonly IdentifierNameSyntax InjectionMarkerExpression = SyntaxFactory.IdentifierName(Variable.InjectionMarker);
     private readonly DpFactory _factory;
     private readonly Variable _variable;
+    private readonly object? _contextTag;
     private readonly string _finishLabel;
     private readonly ICollection<Injection> _injections;
     private int _nestedLambdaCounter;
@@ -14,11 +15,13 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
     public FactoryRewriter(
         DpFactory factory,
         Variable variable,
+        object? contextTag,
         string finishLabel,
         ICollection<Injection> injections)
     {
         _factory = factory;
         _variable = variable;
+        _contextTag = contextTag;
         _finishLabel = finishLabel;
         _injections = injections;
     }
@@ -117,6 +120,32 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
         }
 
         return newNode;
+    }
+
+    public override SyntaxNode? VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
+    {
+        if (node.IsKind(SyntaxKind.SimpleMemberAccessExpression)
+            && node is { Expression: IdentifierNameSyntax identifierName, Name.Identifier.Text: nameof(IContext.Tag) } 
+            && identifierName.Identifier.Text == _factory.Source.Context.Identifier.Text)
+        {
+            var token = SyntaxFactory.ParseToken(_contextTag.ValueToString());
+            if (token.IsKind(SyntaxKind.NumericLiteralToken))
+            {
+                return SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, token);
+            }
+            
+            if (token.IsKind(SyntaxKind.CharacterLiteralToken))
+            {
+                return SyntaxFactory.LiteralExpression(SyntaxKind.CharacterLiteralExpression, token);
+            }
+            
+            if (token.IsKind(SyntaxKind.StringLiteralToken))
+            {
+                return SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, token);
+            }
+        }
+        
+        return base.VisitMemberAccessExpression(node);
     }
 
     internal record Injection(string VariableName, bool DeclarationRequired);
