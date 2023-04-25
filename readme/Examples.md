@@ -1767,7 +1767,7 @@ classDiagram
   class IDependency {
     <<abstract>>
   }
-  Service *--  FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ dependencyFactory
+  Service o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ dependencyFactory
   Composition ..> Service : IService Root
   FuncᐸIDependencyᐳ *--  Dependency : IDependency
 ```
@@ -1849,7 +1849,7 @@ classDiagram
   }
   IEnumerableᐸIDependencyᐳ *--  AbcDependency : 
   IEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  
-  Service *--  IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ dependencies
+  Service o--  "PerResolve" IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ dependencies
   Composition ..> Service : IService Root
 ```
 
@@ -2028,7 +2028,7 @@ classDiagram
   }
   Service *--  LazyᐸIDependencyᐳ : LazyᐸIDependencyᐳ dependency
   Composition ..> Service : IService Root
-  LazyᐸIDependencyᐳ *--  FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+  LazyᐸIDependencyᐳ o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
   FuncᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 
@@ -2200,38 +2200,26 @@ classDiagram
 _Decorator_ is a well known and useful design pattern. To build a chain of nested decorators, it is convenient to use tagged dependencies, as in the example below:
 
 ```c#
-internal interface IDependency { }
-
-internal class Dependency : IDependency { }
-
-internal interface IService
-{
-    string GetMessage();
-}
+internal interface IService { string GetMessage(); }
 
 internal class Service : IService
 {
-    public Service(IDependency dependency)
-    {
-    }
-
     public string GetMessage() => "Hello World";
 }
 
-internal class DecoratorService : IService
+internal class GreetingService : IService
 {
     private readonly IService _baseService;
 
-    public DecoratorService([Tag("base")] IService baseService) => _baseService = baseService;
+    public GreetingService([Tag("base")] IService baseService) => _baseService = baseService;
 
     public string GetMessage() => $"{_baseService.GetMessage()} !!!";
 }
 
 
 DI.Setup("Composition")
-    .Bind<IDependency>().To<Dependency>()
     .Bind<IService>("base").To<Service>()
-    .Bind<IService>().To<DecoratorService>().Root<IService>("Root");
+    .Bind<IService>().To<GreetingService>().Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;
@@ -2250,27 +2238,19 @@ classDiagram
     +object ResolveᐸTᐳ(Type type)
     +object ResolveᐸTᐳ(Type type, object? tag)
   }
+  GreetingService --|> IService : 
+  class GreetingService {
+    +GreetingService(IService baseService)
+  }
   Service --|> IService : "base" 
   class Service {
-    +Service(IDependency dependency)
-  }
-  DecoratorService --|> IService : 
-  class DecoratorService {
-    +DecoratorService(IService baseService)
-  }
-  Dependency --|> IDependency : 
-  class Dependency {
-    +Dependency()
+    +Service()
   }
   class IService {
     <<abstract>>
   }
-  class IDependency {
-    <<abstract>>
-  }
-  Service *--  Dependency : IDependency dependency
-  DecoratorService *--  Service : "base"  IService baseService
-  Composition ..> DecoratorService : IService Root
+  GreetingService *--  Service : "base"  IService baseService
+  Composition ..> GreetingService : IService Root
 ```
 
 </details>
