@@ -61,7 +61,7 @@ internal class BenchmarksTarget: ITarget<int>
 
             var reportFile = Path.Combine(logsDirectory, $"{index++:00} {reportName}.html");
             File.Copy(reportFileNameHtml, reportFile, true);
-            _teamCityWriter.PublishArtifact($"{reportFile} => .");
+            _teamCityWriter.PublishArtifact($"{reportFileNameHtml} => .");
         }
 
         return Task.FromResult(0);
