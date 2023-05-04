@@ -1,6 +1,7 @@
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable InvertIf
 // ReSharper disable UnusedParameter.Global
+// ReSharper disable VirtualMemberNeverOverridden.Global
 namespace Pure.DI.Core;
 
 internal class CodeGraphWalker<TContext>

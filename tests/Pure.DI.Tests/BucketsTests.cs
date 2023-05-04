@@ -1,5 +1,6 @@
 // ReSharper disable SuggestBaseTypeForParameter
 // ReSharper disable SuggestVarOrType_BuiltInTypes
+// ReSharper disable HeapView.PossibleBoxingAllocation
 namespace Pure.DI.Tests;
 
 using System.Runtime.CompilerServices;

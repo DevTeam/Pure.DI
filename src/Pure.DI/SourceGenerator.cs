@@ -1,3 +1,4 @@
+// ReSharper disable InvocationIsSkipped
 namespace Pure.DI;
 
 [Generator(LanguageNames.CSharp)]
