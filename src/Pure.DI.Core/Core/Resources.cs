@@ -12,14 +12,9 @@ internal class Resources: IResources
     {
         var filterRegex = _regexCache.Get(filter);
         var assembly = typeof(Resources).Assembly;
-        foreach (var name in assembly.GetManifestResourceNames())
-        {
-            if (!filterRegex.IsMatch(name))
-            {
-                continue;
-            }
-
-            yield return new Resource(name, assembly.GetManifestResourceStream(name) ?? throw new InvalidOperationException($"Cannot read the resource {name}."));
-        }
+        return assembly
+            .GetManifestResourceNames()
+            .Where(name => filterRegex.IsMatch(name))
+            .Select(name => new Resource(name, assembly.GetManifestResourceStream(name) ?? throw new InvalidOperationException($"Cannot read the resource {name}.")));
     }
 }

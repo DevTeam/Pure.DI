@@ -4,18 +4,25 @@ namespace Pure.DI.Core;
 
 internal class ApiBuilder : IBuilder<Unit, IEnumerable<Source>>
 {
-    private static readonly string[] ApiTemplates = {
-        "Api.g.cs",
-        "GenericTypeArguments.g.cs",
-        "Default.g.cs"
-    };
-
     private readonly IResources _resources;
 
     public ApiBuilder(IResources resources) => _resources = resources;
 
-    public IEnumerable<Source> Build(Unit data, CancellationToken cancellationToken) =>
-        from apiTemplate in ApiTemplates
-        from resource in _resources.GetResource(apiTemplate)
-        select new Source(resource.Name, SourceText.From(resource.Content, default, SourceHashAlgorithm.Sha1, false, true));
+    public IEnumerable<Source> Build(Unit data, CancellationToken cancellationToken)
+    {
+        foreach (var resource in _resources.GetResource("""^[\w\.]+\.g\.cs$"""))
+        {
+            using (resource)
+            {
+                yield return new Source(
+                    resource.Name,
+                    SourceText.From(
+                        resource.Content,
+                        default,
+                        SourceHashAlgorithm.Sha1,
+                        false,
+                        true));
+            }
+        }
+    }
 }
