@@ -670,6 +670,7 @@ Specifies whether the generated code should be formatted. This option consumes a
 - [UWP/XBOX](https://docs.microsoft.com/en-us/windows/uwp/index)
 - [.NET IoT](https://dotnet.microsoft.com/apps/iot)
 - [Xamarin](https://dotnet.microsoft.com/apps/xamarin)
+- [WPF](https://learn.microsoft.com/en-us/dotnet/desktop/wpf)
 - [.NET Multi-platform App UI (MAUI)](https://docs.microsoft.com/en-us/dotnet/maui/)
 
 ## Project template

@@ -1,7 +1,7 @@
 ﻿// ReSharper disable UnusedMember.Global
 namespace WpfAppNetCore.Views;
 
-internal partial class MainWindow : IMainWindowView
+internal partial class MainWindow
 {
     public MainWindow()
     {

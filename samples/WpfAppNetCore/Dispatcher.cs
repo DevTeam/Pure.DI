@@ -1,7 +1,6 @@
 ﻿namespace WpfAppNetCore;
 
 using System.Windows;
-using Clock.ViewModels;
 
 // ReSharper disable once ClassNeverInstantiated.Global
 internal class Dispatcher : IDispatcher

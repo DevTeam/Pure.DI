@@ -1,4 +1,9 @@
 ﻿<Application x:Class="WpfAppNetCore.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-             StartupUri="/Views/MainWindow.xaml"/>
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:wpfAppNetCore="clr-namespace:WpfAppNetCore"
+             StartupUri="/Views/MainWindow.xaml">
+    <Application.Resources>
+        <wpfAppNetCore:Composition x:Key="Composition"/>
+    </Application.Resources>
+</Application>

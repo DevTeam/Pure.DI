@@ -8,8 +8,6 @@
         <IsPackable>false</IsPackable>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
         <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
-        <!--<PureDISeverity>Hidden</PureDISeverity>
-        <PureDILogFile>.logs\WpfAppNetCore.log</PureDILogFile>-->
     </PropertyGroup>
 
     <ItemGroup>

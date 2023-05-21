@@ -9,7 +9,8 @@ internal class Timer : ITimer, IDisposable
     private readonly List<IObserver<Tick>> _observers = new();
 
     // ReSharper disable once MemberCanBePrivate.Global
-    public Timer(TimeSpan period) => _timer = new System.Threading.Timer(Tick!, null, TimeSpan.Zero, period);
+    public Timer(TimeSpan period) =>
+        _timer = new System.Threading.Timer(Tick!, null, TimeSpan.Zero, period);
 
     public IDisposable Subscribe(IObserver<Tick> observer)
     {
