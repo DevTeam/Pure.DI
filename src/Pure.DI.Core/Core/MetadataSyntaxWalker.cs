@@ -16,6 +16,7 @@ using Microsoft.CodeAnalysis.Operations;
 internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
 {
     private const string DISetup = $"{nameof(DI)}.{nameof(DI.Setup)}";
+    private static readonly char[] TypeNamePartsSeparators = { '.' };
     private static readonly Regex CommentRegex = new(@"//\s*(\w+)\s*=\s*(.+)\s*", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
     private static readonly ImmutableHashSet<string> ApiMethods = ImmutableHashSet.Create(
         DISetup,
@@ -321,9 +322,9 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         string newNamespace;
         if (!string.IsNullOrWhiteSpace(name))
         {
-            var compositionTypeNameParts = name.Split('.', StringSplitOptions.RemoveEmptyEntries);
+            var compositionTypeNameParts = name.Split(TypeNamePartsSeparators, StringSplitOptions.RemoveEmptyEntries);
             className = compositionTypeNameParts.Last();
-            newNamespace = string.Join('.', compositionTypeNameParts.Take(compositionTypeNameParts.Length - 1)).Trim();
+            newNamespace = string.Join(".", compositionTypeNameParts.Take(compositionTypeNameParts.Length - 1)).Trim();
         }
         else
         {
@@ -349,14 +350,16 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         
         var usingDirectives = _usingDirectives
             .Where(i => !i.StaticKeyword.IsKind(SyntaxKind.StaticKeyword))
-            .Select(i => i.Name.ToString())
+            .Select(i => i.Name?.ToString() ?? string.Empty)
             .Concat(namespaces)
+            .Where(i => !string.IsNullOrWhiteSpace(i))
             .Distinct()
             .ToImmutableArray();
         
         var staticUsingDirectives = _usingDirectives
             .Where(i => i.StaticKeyword.IsKind(SyntaxKind.StaticKeyword))
-            .Select(i => i.Name.ToString())
+            .Select(i => i.Name?.ToString() ?? string.Empty)
+            .Where(i => !string.IsNullOrWhiteSpace(i))
             .Distinct()
             .ToImmutableArray();
         

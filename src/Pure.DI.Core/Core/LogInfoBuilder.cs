@@ -1,8 +1,11 @@
 // ReSharper disable InvertIf
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
 internal class LogInfoBuilder: IBuilder<LogEntry, LogInfo>
 {
+    private static readonly string[] NewLineSeparators = { Environment.NewLine };
+
     private readonly IFormatting _formatting;
     private readonly IClock _clock;
 
@@ -47,7 +50,7 @@ internal class LogInfoBuilder: IBuilder<LogEntry, LogInfo>
         DiagnosticDescriptor? descriptor = default;
         if (!string.IsNullOrWhiteSpace(logEntry.Id))
         {
-            descriptor = new DiagnosticDescriptor(logEntry.Id, severityCode, firstLine, severityCode, logEntry.Severity, true);
+            descriptor = new DiagnosticDescriptor(logEntry.Id!, severityCode, firstLine, severityCode, logEntry.Severity, true);
         }
 
         return new LogInfo(
@@ -120,7 +123,7 @@ internal class LogInfoBuilder: IBuilder<LogEntry, LogInfo>
             yield break;
         }
 
-        var source = location.SourceTree.ToString().Split(Environment.NewLine).ToArray();
+        var source = location.SourceTree.ToString().Split(NewLineSeparators, StringSplitOptions.RemoveEmptyEntries).ToArray();
         var lineSpan= location.GetLineSpan();
         var startLine = lineSpan.StartLinePosition.Line;
         var endLine = lineSpan.EndLinePosition.Line;

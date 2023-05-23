@@ -121,9 +121,9 @@ internal class Generator : IGenerator
                     if (LoggerExtensions.IsTracing())
                     {
                         var trace = new List<string> { $"Setup {dependencyGraph.Source.Name.FullName}:", "---------- Map ----------" };
-                        foreach (var (injection, dependencyNode) in dependencyGraph.Map)
+                        foreach (var item in dependencyGraph.Map)
                         {
-                            trace.Add($"{injection} -> {dependencyNode}");
+                            trace.Add($"{item.Key} -> {item.Value}");
                         }
 
                         trace.Add("---------- Roots ----------");

@@ -280,7 +280,9 @@ public static class TestExtensions
 
         public TestAnalyzerConfigOptions(IDictionary<string, string> options) => _options = options;
 
-        public override bool TryGetValue(string key, [UnscopedRef, NotNullWhen(true)] out string? value)
+#pragma warning disable CS8765
+        public override bool TryGetValue(string key, [UnscopedRef] out string? value)
+#pragma warning restore CS8765
             => _options.TryGetValue(key, out value);
     }
     

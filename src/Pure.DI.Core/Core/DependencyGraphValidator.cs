@@ -1,3 +1,4 @@
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
 internal class DependencyGraphValidator: IValidator<DependencyGraph>
@@ -87,7 +88,7 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
             foreach (var cycle in cycles)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var hash = cycle.Path.Select(i => i.Binding.Id).ToHashSet();
+                var hash = new HashSet<int>(cycle.Path.Select(i => i.Binding.Id));
                 if (hashes.Any(i => hash.IsSubsetOf(i)))
                 {
                     continue;

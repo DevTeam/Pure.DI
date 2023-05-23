@@ -1,5 +1,6 @@
 // ReSharper disable LoopCanBeConvertedToQuery
 // ReSharper disable InvertIf
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
 using CSharp;
@@ -65,7 +66,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
         }
 
         var isValid = true;
-        var processed = new HashSet<ProcessingNode>(nodes.Count);
+        var processed = new HashSet<ProcessingNode>();
         var notProcessed = new HashSet<ProcessingNode>();
         while (queue.TryDequeue(out var node))
         {

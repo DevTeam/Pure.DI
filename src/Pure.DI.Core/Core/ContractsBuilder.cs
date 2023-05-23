@@ -23,7 +23,7 @@ internal class ContractsBuilder: IBuilder<ContractsBuildContext, ISet<Injection>
 
         var hasContextTag = binding.Factory is { HasContextTag: true };
         var contracts = new HashSet<Injection>();
-        var bindingTags = binding.Tags.Select(i => i.Value).ToHashSet();
+        var bindingTags = new HashSet<object>(binding.Tags.Select(i => i.Value));
         foreach (var contract in binding.Contracts)
         {
             var contractType = contract.ContractType;

@@ -13,9 +13,11 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
         IEqualityComparer<TVertex>? vertexEqualityComparer = default)
     {
         _vertexEqualityComparer = vertexEqualityComparer ?? EqualityComparer<TVertex>.Default;
-        _vertexEdges = new Dictionary<TVertex, GraphEntry<TVertex, TEdge>>(
-            entries.Select(i => new KeyValuePair<TVertex, GraphEntry<TVertex, TEdge>>(i.Target, i)),
-            _vertexEqualityComparer);
+        _vertexEdges = new Dictionary<TVertex, GraphEntry<TVertex, TEdge>>(_vertexEqualityComparer);
+        foreach (var entry in entries)
+        {
+            _vertexEdges.Add(entry.Target, entry);
+        }
     }
 
     public IEnumerable<TVertex> Vertices => _vertexEdges.Keys;

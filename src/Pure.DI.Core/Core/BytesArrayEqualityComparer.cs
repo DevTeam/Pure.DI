@@ -7,10 +7,10 @@ internal class BytesArrayEqualityComparer: IEqualityComparer<ImmutableArray<byte
 {
     public int GetHashCode(ImmutableArray<byte> value)
     {
-        var hashCode = 397;
+        var hashCode = 17;
         for (var i = 0; i < value.Length; i++)
         {
-            hashCode = HashCode.Combine(hashCode, value.ItemRef(i));
+            hashCode ^= 397 + value.ItemRef(i);
         }
 
         return hashCode;

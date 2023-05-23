@@ -3,6 +3,8 @@ namespace Pure.DI.Core.CSharp;
 
 internal class RootPropertiesBuilder: IBuilder<CompositionCode, CompositionCode>
 {
+    private static readonly string[] NewLineSeparators = { Environment.NewLine };
+    
     public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
     {
         if (!composition.Roots.Any())
@@ -56,7 +58,7 @@ internal class RootPropertiesBuilder: IBuilder<CompositionCode, CompositionCode>
                     var codeText = string.Join(Environment.NewLine, root.Lines);
                     var syntaxTree = CSharpSyntaxTree.ParseText(codeText);
                     codeText = syntaxTree.GetRoot().NormalizeWhitespace().ToString();
-                    var lines = codeText.Split(Environment.NewLine);
+                    var lines = codeText.Split(NewLineSeparators, StringSplitOptions.RemoveEmptyEntries);
                     foreach (var line in lines)
                     {
                         code.AppendLine(line);
