@@ -1,3 +1,4 @@
+## Basics
 #### Composition root
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/CompositionRootScenario.cs)
@@ -1027,6 +1028,7 @@ classDiagram
 
 It can also be useful in a very simple scenario where, for example, the sequence of type arguments does not match the sequence of arguments of the contract that implements the type.
 
+## Lifetimes
 #### Singleton
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/SingletonScenario.cs)
@@ -1539,6 +1541,7 @@ classDiagram
 </details>
 
 
+## Attributes
 #### Constructor Ordinal Attribute
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Attributes/ConstructorOrdinalAttributeScenario.cs)
@@ -1701,6 +1704,7 @@ classDiagram
 </details>
 
 
+## Base Class Library
 #### Func
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/FuncScenario.cs)
@@ -2193,6 +2197,7 @@ classDiagram
 </details>
 
 
+## Interception
 #### Decorator
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Interception/DecoratorScenario.cs)
@@ -2516,6 +2521,7 @@ classDiagram
 </details>
 
 
+## Hints
 #### Resolve Hint
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/ResolveHintScenario.cs)

@@ -208,6 +208,7 @@ internal class ReadmeTarget : ITarget<int>
             var groupTitle = new string(FormatTitle(groupName).ToArray());
             WriteLine($"Processing examples group \"{groupTitle}\"", Color.Details);
             await readmeWriter.WriteLineAsync($"### {groupTitle}");
+            await examplesWriter.WriteLineAsync($"## {groupTitle}");
             foreach (var vars in exampleItems)
             {
                 var description = vars[DescriptionKey];
