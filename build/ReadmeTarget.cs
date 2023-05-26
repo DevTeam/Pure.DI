@@ -229,7 +229,8 @@ internal class ReadmeTarget : ITarget<int>
                 await examplesWriter.WriteLineAsync(vars[BodyKey]);
                 await examplesWriter.WriteLineAsync("```");
 
-                var classDiagramFile = Path.Combine(logsDirectory, Path.GetFileNameWithoutExtension(vars[SourceKey]) + ".Mermaid");
+                var sampleName = Path.GetFileNameWithoutExtension(vars[SourceKey]);
+                var classDiagramFile = Path.Combine(logsDirectory, sampleName + ".Mermaid");
                 if (File.Exists(classDiagramFile))
                 {
                     await examplesWriter.WriteLineAsync("");
@@ -239,6 +240,32 @@ internal class ReadmeTarget : ITarget<int>
                     await examplesWriter.WriteLineAsync("```mermaid");
                     var classDiagram = await File.ReadAllTextAsync(classDiagramFile);
                     await examplesWriter.WriteLineAsync(classDiagram);
+                    await examplesWriter.WriteLineAsync("```");
+                    await examplesWriter.WriteLineAsync("");
+                    await examplesWriter.WriteLineAsync("</details>");
+                    await examplesWriter.WriteLineAsync("");
+                }
+
+                var generatedCodeFile = Directory.GetFiles(Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator"), $"*.{sampleName}.*.g.cs").Single();
+                if (File.Exists(generatedCodeFile))
+                {
+                    await examplesWriter.WriteLineAsync("<details>");
+                    await examplesWriter.WriteLineAsync("<summary>Generated Code</summary>");
+                    await examplesWriter.WriteLineAsync("");
+                    await examplesWriter.WriteLineAsync("```c#");
+                    var generatedCode = await File.ReadAllTextAsync(generatedCodeFile);
+                    generatedCode = string.Join(
+                        Environment.NewLine,
+                        generatedCode
+                            .Split(Environment.NewLine)
+                            .SkipWhile(i => i != "{")
+                            .Skip(2)
+                            .Reverse()
+                            .SkipWhile(i => i != "}")
+                            .Skip(1)
+                            .Reverse()
+                            .Select(i => i.Length > 2 ? i[2..] : i));
+                    await examplesWriter.WriteLineAsync(generatedCode);
                     await examplesWriter.WriteLineAsync("```");
                     await examplesWriter.WriteLineAsync("");
                     await examplesWriter.WriteLineAsync("</details>");

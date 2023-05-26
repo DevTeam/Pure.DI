@@ -60,6 +60,180 @@ classDiagram
 
 </details>
 
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Basics.CompositionRootScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Basics.CompositionRootScenario.Dependency v43Local8AFE6F = new Pure.DI.UsageTests.Basics.CompositionRootScenario.Dependency();
+      Pure.DI.UsageTests.Basics.CompositionRootScenario.Service v42Local8AFE6F = new Pure.DI.UsageTests.Basics.CompositionRootScenario.Service(v43Local8AFE6F);
+      return v42Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service *--  Dependency : IDependency dependency\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Basics.CompositionRootScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.CompositionRootScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.CompositionRootScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.CompositionRootScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.CompositionRootScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.CompositionRootScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
+```
+
+</details>
+
 
 The name of the composition root is arbitrarily chosen according to its purpose, but must be limited by C# property naming conventions. Actually, the property _Root_ looks like:
 ```c#
@@ -156,6 +330,197 @@ classDiagram
 
 </details>
 
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Basics.ResolveScenario.IService Service
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Basics.ResolveScenario.Dependency v62Local8AFE6F = new Pure.DI.UsageTests.Basics.ResolveScenario.Dependency();
+      Pure.DI.UsageTests.Basics.ResolveScenario.Service v61Local8AFE6F = new Pure.DI.UsageTests.Basics.ResolveScenario.Service(v62Local8AFE6F);
+      return v61Local8AFE6F;
+    }
+  }
+  
+  public Pure.DI.UsageTests.Basics.ResolveScenario.IService OtherService
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Basics.ResolveScenario.OtherService v63Local8AFE6F = new Pure.DI.UsageTests.Basics.ResolveScenario.OtherService();
+      return v63Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService OtherService\n" +
+          "    +IService Service\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  OtherService --|> IService : \"Other\" \n" +
+        "  class OtherService {\n" +
+          "    +OtherService()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service *--  Dependency : IDependency dependency\n" +
+        "  Composition ..> Service : IService Service\n" +
+        "  Composition ..> OtherService : \"Other\" IService OtherService";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Basics.ResolveScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.ResolveScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.ResolveScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.ResolveScenario.IService Resolve(Composition composition)
+    {
+      return composition.Service;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.ResolveScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, "Other")) return composition.OtherService;
+      if (Equals(tag, null)) return composition.Service;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.ResolveScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
+```
+
+</details>
+
 
 #### Factory
 
@@ -247,6 +612,184 @@ classDiagram
 
 </details>
 
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Basics.FactoryScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Basics.FactoryScenario.Dependency v45Local8AFE6F;
+      {
+                      var dependency = new Dependency(DateTimeOffset.Now);
+                      dependency.Initialize();
+                      { v45Local8AFE6F = dependency; goto label468AFE6F; }            }
+      label468AFE6F:
+      ;
+      Pure.DI.UsageTests.Basics.FactoryScenario.Service v44Local8AFE6F = new Pure.DI.UsageTests.Basics.FactoryScenario.Service(v45Local8AFE6F);
+      return v44Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service *--  Dependency : IDependency dependency\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Basics.FactoryScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.FactoryScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.FactoryScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.FactoryScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.FactoryScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.FactoryScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
+```
+
+</details>
+
 
 #### Injection
 
@@ -316,6 +859,184 @@ classDiagram
   }
   Composition ..> Service : IService Root
   Service *--  Dependency : IDependency
+```
+
+</details>
+
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Basics.InjectScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Basics.InjectScenario.Service v52Local8AFE6F;
+      {
+      
+      Pure.DI.UsageTests.Basics.InjectScenario.Dependency v55Local8AFE6F = new Pure.DI.UsageTests.Basics.InjectScenario.Dependency();
+      Pure.DI.UsageTests.Basics.InjectScenario.IDependency dependency = v55Local8AFE6F;
+                          { v52Local8AFE6F = new Service(dependency); goto label548AFE6F; }                }
+      label548AFE6F:
+      ;
+      return v52Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Composition ..> Service : IService Root\n" +
+        "  Service *--  Dependency : IDependency";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Basics.InjectScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.InjectScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.InjectScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.InjectScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.InjectScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.InjectScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
 ```
 
 </details>
@@ -404,6 +1125,189 @@ classDiagram
 
 </details>
 
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Basics.GenericsScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Basics.GenericsScenario.Dependency<int> v50Local8AFE6F = new Pure.DI.UsageTests.Basics.GenericsScenario.Dependency<int>();
+      Pure.DI.UsageTests.Basics.GenericsScenario.Dependency<string> v51Local8AFE6F = new Pure.DI.UsageTests.Basics.GenericsScenario.Dependency<string>();
+      Pure.DI.UsageTests.Basics.GenericsScenario.Service v49Local8AFE6F = new Pure.DI.UsageTests.Basics.GenericsScenario.Service(v50Local8AFE6F, v51Local8AFE6F);
+      return v49Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependencyᐸInt32ᐳ intDependency, IDependencyᐸStringᐳ stringDependency)\n" +
+        "  }\n" +
+        "  DependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : \n" +
+        "  class DependencyᐸInt32ᐳ {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  DependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : \n" +
+        "  class DependencyᐸStringᐳ {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependencyᐸInt32ᐳ {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependencyᐸStringᐳ {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service *--  DependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ intDependency\n" +
+        "  Service *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ stringDependency\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Basics.GenericsScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.GenericsScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.GenericsScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.GenericsScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.GenericsScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.GenericsScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
+```
+
+</details>
+
 
 Actually, the property _Root_ looks like:
 ```c#
@@ -480,6 +1384,191 @@ classDiagram
   Service o-- String : Argument "serviceName"
   Service *--  Dependency : IDependency dependency
   Composition ..> Service : IService Root
+```
+
+</details>
+
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  private readonly string _serviceNameArg8AFE6F;
+  
+  public Composition(string serviceName)
+  {
+    if (global::System.Object.ReferenceEquals(serviceName, null))
+    {
+      throw new global::System.ArgumentNullException("serviceName");
+    }
+    
+    _serviceNameArg8AFE6F = serviceName;
+  }
+  
+  internal Composition(Composition parent)
+  {
+    _serviceNameArg8AFE6F = parent._serviceNameArg8AFE6F;
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Basics.ArgumentsScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Basics.ArgumentsScenario.Dependency v34Local8AFE6F = new Pure.DI.UsageTests.Basics.ArgumentsScenario.Dependency();
+      Pure.DI.UsageTests.Basics.ArgumentsScenario.Service v33Local8AFE6F = new Pure.DI.UsageTests.Basics.ArgumentsScenario.Service(_serviceNameArg8AFE6F, v34Local8AFE6F);
+      return v33Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(String name, IDependency dependency)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class String\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service o-- String : Argument \"serviceName\"\n" +
+        "  Service *--  Dependency : IDependency dependency\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Basics.ArgumentsScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.ArgumentsScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.ArgumentsScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.ArgumentsScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.ArgumentsScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.ArgumentsScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
 ```
 
 </details>
@@ -570,6 +1659,186 @@ classDiagram
 
 </details>
 
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Basics.TagsScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency v65Local8AFE6F = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
+      Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency v66Local8AFE6F = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
+      Pure.DI.UsageTests.Basics.TagsScenario.Service v64Local8AFE6F = new Pure.DI.UsageTests.Basics.TagsScenario.Service(v65Local8AFE6F, v66Local8AFE6F);
+      return v64Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency1, IDependency dependency2)\n" +
+        "  }\n" +
+        "  AbcDependency --|> IDependency : \"Abc\" \n" +
+        "  class AbcDependency {\n" +
+          "    +AbcDependency()\n" +
+        "  }\n" +
+        "  XyzDependency --|> IDependency : \"Xyz\" \n" +
+        "  class XyzDependency {\n" +
+          "    +XyzDependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service *--  AbcDependency : \"Abc\"  IDependency dependency1\n" +
+        "  Service *--  XyzDependency : \"Xyz\"  IDependency dependency2\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Basics.TagsScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.TagsScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.TagsScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.TagsScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.TagsScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.TagsScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
+```
+
+</details>
+
 
 Sometimes it's important to take control of building a dependency graph. In this case, _tags_ help:
 
@@ -620,6 +1889,172 @@ classDiagram
   }
   Service *--  Dependency : Dependency dependency
   Composition ..> Service : Service Root
+```
+
+</details>
+
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Basics.AutoBindingScenario.Service Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Basics.AutoBindingScenario.Dependency v36Local8AFE6F = new Pure.DI.UsageTests.Basics.AutoBindingScenario.Dependency();
+      Pure.DI.UsageTests.Basics.AutoBindingScenario.Service v35Local8AFE6F = new Pure.DI.UsageTests.Basics.AutoBindingScenario.Service(v36Local8AFE6F);
+      return v35Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +Service Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class Service {\n" +
+          "    +Service(Dependency dependency)\n" +
+        "  }\n" +
+        "  Service *--  Dependency : Dependency dependency\n" +
+        "  Composition ..> Service : Service Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Basics.AutoBindingScenario.Service>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.AutoBindingScenario.Service), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.AutoBindingScenario.Service>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.AutoBindingScenario.Service Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.AutoBindingScenario.Service ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.AutoBindingScenario.Service.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
 ```
 
 </details>
@@ -713,6 +2148,222 @@ classDiagram
 
 </details>
 
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition: System.IDisposable
+{
+  private int _disposeIndex8AFE6F;
+  private readonly System.IDisposable[] _disposables8AFE6F;
+  private Pure.DI.UsageTests.Basics.ChildCompositionScenario.Dependency _f18Singleton8AFE6F;
+  
+  public Composition()
+  {
+    _disposables8AFE6F = new System.IDisposable[1];
+  }
+  
+  internal Composition(Composition parent)
+  {
+    lock (parent._disposables8AFE6F)
+    {
+      _disposables8AFE6F = new System.IDisposable[1 - parent._disposeIndex8AFE6F];
+      _f18Singleton8AFE6F = parent._f18Singleton8AFE6F;
+    }
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Basics.ChildCompositionScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      if (global::System.Object.ReferenceEquals(_f18Singleton8AFE6F, null))
+      {
+        lock (_disposables8AFE6F)
+        {
+          if (global::System.Object.ReferenceEquals(_f18Singleton8AFE6F, null))
+          {
+            _f18Singleton8AFE6F = new Pure.DI.UsageTests.Basics.ChildCompositionScenario.Dependency();
+            _disposables8AFE6F[_disposeIndex8AFE6F++] = _f18Singleton8AFE6F;
+          }
+        }
+      }
+      
+      Pure.DI.UsageTests.Basics.ChildCompositionScenario.Service v37Local8AFE6F = new Pure.DI.UsageTests.Basics.ChildCompositionScenario.Service(_f18Singleton8AFE6F);
+      return v37Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public void Dispose()
+  {
+    lock (_disposables8AFE6F)
+    {
+      while (_disposeIndex8AFE6F > 0)
+      {
+        try
+        {
+          _disposables8AFE6F[--_disposeIndex8AFE6F].Dispose();
+        }
+        catch
+        {
+          // ignored
+        }
+      }
+      
+      _f18Singleton8AFE6F = null;
+    }
+  }
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Composition --|> IDisposable\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service o--  \"Singleton\" Dependency : IDependency dependency\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Basics.ChildCompositionScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.ChildCompositionScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.ChildCompositionScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.ChildCompositionScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.ChildCompositionScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.ChildCompositionScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
+```
+
+</details>
+
 
 #### Multi-contract bindings
 
@@ -777,6 +2428,186 @@ classDiagram
   Service *--  Dependency : IDependency dependency
   Service *--  Dependency : IAdvancedDependency advancedDependency
   Composition ..> Service : IService Root
+```
+
+</details>
+
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency v57Local8AFE6F = new Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency();
+      Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency v58Local8AFE6F = new Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency();
+      Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Service v56Local8AFE6F = new Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Service(v57Local8AFE6F, v58Local8AFE6F);
+      return v56Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency, IAdvancedDependency advancedDependency)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  Dependency --|> IAdvancedDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IAdvancedDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service *--  Dependency : IDependency dependency\n" +
+        "  Service *--  Dependency : IAdvancedDependency advancedDependency\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
 ```
 
 </details>
@@ -848,6 +2679,182 @@ classDiagram
 
 </details>
 
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Basics.FieldInjectionScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Basics.FieldInjectionScenario.Dependency v48Local8AFE6F = new Pure.DI.UsageTests.Basics.FieldInjectionScenario.Dependency();
+      Pure.DI.UsageTests.Basics.FieldInjectionScenario.Service v47Local8AFE6F = new Pure.DI.UsageTests.Basics.FieldInjectionScenario.Service();
+      v47Local8AFE6F.DependencyVal = v48Local8AFE6F;
+      return v47Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service()\n" +
+          "    ~IDependency DependencyVal\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service *--  Dependency : ~IDependency DependencyVal\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Basics.FieldInjectionScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.FieldInjectionScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.FieldInjectionScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.FieldInjectionScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.FieldInjectionScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.FieldInjectionScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
+```
+
+</details>
+
 
 #### Property Injection
 
@@ -909,6 +2916,182 @@ classDiagram
   }
   Service *--  Dependency : +IDependency Dependency
   Composition ..> Service : IService Root
+```
+
+</details>
+
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Basics.PropertyInjectionScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Basics.PropertyInjectionScenario.Dependency v60Local8AFE6F = new Pure.DI.UsageTests.Basics.PropertyInjectionScenario.Dependency();
+      Pure.DI.UsageTests.Basics.PropertyInjectionScenario.Service v59Local8AFE6F = new Pure.DI.UsageTests.Basics.PropertyInjectionScenario.Service();
+      v59Local8AFE6F.Dependency = v60Local8AFE6F;
+      return v59Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service()\n" +
+          "    +IDependency Dependency\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service *--  Dependency : +IDependency Dependency\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Basics.PropertyInjectionScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.PropertyInjectionScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.PropertyInjectionScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.PropertyInjectionScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.PropertyInjectionScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.PropertyInjectionScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
 ```
 
 </details>
@@ -1025,6 +3208,194 @@ classDiagram
 
 </details>
 
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string> Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string> v40Local8AFE6F = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string>();
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int> v41Local8AFE6F = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int>();
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>> v39Local8AFE6F = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>>(v40Local8AFE6F, v41Local8AFE6F);
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string> v38Local8AFE6F = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>(v39Local8AFE6F);
+      return v38Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +ProgramᐸStringᐳ Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  class ProgramᐸStringᐳ {\n" +
+          "    +Program(IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ service)\n" +
+        "  }\n" +
+        "  ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ --|> IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ : \n" +
+        "  class ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ {\n" +
+          "    +Service(IDependencyᐸStringᐳ dependency1, IDependencyᐸInt32ᐳ dependency2)\n" +
+        "  }\n" +
+        "  DependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : \n" +
+        "  class DependencyᐸStringᐳ {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  DependencyStructᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : \"value type\" \n" +
+        "  class DependencyStructᐸInt32ᐳ {\n" +
+          "    +DependencyStruct()\n" +
+        "  }\n" +
+        "  class IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependencyᐸStringᐳ {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependencyᐸInt32ᐳ {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  ProgramᐸStringᐳ *--  ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ : IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ service\n" +
+        "  Composition ..> ProgramᐸStringᐳ : ProgramᐸStringᐳ Root\n" +
+        "  ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ dependency1\n" +
+        "  ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *--  DependencyStructᐸInt32ᐳ : \"value type\"  IDependencyᐸInt32ᐳ dependency2";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string> Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string> ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
+```
+
+</details>
+
 
 It can also be useful in a very simple scenario where, for example, the sequence of type arguments does not match the sequence of arguments of the contract that implements the type.
 
@@ -1098,6 +3469,200 @@ classDiagram
   Service o--  "Singleton" Dependency : IDependency dependency1
   Service o--  "Singleton" Dependency : IDependency dependency2
   Composition ..> Service : IService Root
+```
+
+</details>
+
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  private readonly System.IDisposable[] _disposables8AFE6F;
+  private Pure.DI.UsageTests.Lifetimes.SingletonScenario.Dependency _f18Singleton8AFE6F;
+  
+  public Composition()
+  {
+    _disposables8AFE6F = new System.IDisposable[0];
+  }
+  
+  internal Composition(Composition parent)
+  {
+    _disposables8AFE6F = new System.IDisposable[0];
+    lock (parent._disposables8AFE6F)
+    {
+      _f18Singleton8AFE6F = parent._f18Singleton8AFE6F;
+    }
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      if (global::System.Object.ReferenceEquals(_f18Singleton8AFE6F, null))
+      {
+        lock (_disposables8AFE6F)
+        {
+          if (global::System.Object.ReferenceEquals(_f18Singleton8AFE6F, null))
+          {
+            _f18Singleton8AFE6F = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Dependency();
+          }
+        }
+      }
+      
+      Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service v93Local8AFE6F = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service(_f18Singleton8AFE6F, _f18Singleton8AFE6F);
+      return v93Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency1, IDependency dependency2)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service o--  \"Singleton\" Dependency : IDependency dependency1\n" +
+        "  Service o--  \"Singleton\" Dependency : IDependency dependency2\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
 ```
 
 </details>
@@ -1176,6 +3741,181 @@ classDiagram
 
 </details>
 
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency v89PerResolve8AFE6F = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency();
+      Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service v88Local8AFE6F = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service(v89PerResolve8AFE6F, v89PerResolve8AFE6F);
+      return v88Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency1, IDependency dependency2)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service o--  \"PerResolve\" Dependency : IDependency dependency1\n" +
+        "  Service o--  \"PerResolve\" Dependency : IDependency dependency2\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
+```
+
+</details>
+
 
 #### Transient
 
@@ -1246,6 +3986,182 @@ classDiagram
   Service *--  Dependency : IDependency dependency1
   Service *--  Dependency : IDependency dependency2
   Composition ..> Service : IService Root
+```
+
+</details>
+
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Lifetimes.TransientScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency v95Local8AFE6F = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency();
+      Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency v96Local8AFE6F = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency();
+      Pure.DI.UsageTests.Lifetimes.TransientScenario.Service v94Local8AFE6F = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Service(v96Local8AFE6F, v95Local8AFE6F);
+      return v94Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency1, IDependency dependency2)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service *--  Dependency : IDependency dependency1\n" +
+        "  Service *--  Dependency : IDependency dependency2\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Lifetimes.TransientScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.TransientScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.TransientScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Lifetimes.TransientScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Lifetimes.TransientScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.TransientScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
 ```
 
 </details>
@@ -1331,6 +4247,222 @@ classDiagram
   }
   Service o--  "Singleton" Dependency : IDependency dependency
   Composition ..> Service : IService Root
+```
+
+</details>
+
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition: System.IDisposable
+{
+  private int _disposeIndex8AFE6F;
+  private readonly System.IDisposable[] _disposables8AFE6F;
+  private Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Dependency _f18Singleton8AFE6F;
+  
+  public Composition()
+  {
+    _disposables8AFE6F = new System.IDisposable[1];
+  }
+  
+  internal Composition(Composition parent)
+  {
+    lock (parent._disposables8AFE6F)
+    {
+      _disposables8AFE6F = new System.IDisposable[1 - parent._disposeIndex8AFE6F];
+      _f18Singleton8AFE6F = parent._f18Singleton8AFE6F;
+    }
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      if (global::System.Object.ReferenceEquals(_f18Singleton8AFE6F, null))
+      {
+        lock (_disposables8AFE6F)
+        {
+          if (global::System.Object.ReferenceEquals(_f18Singleton8AFE6F, null))
+          {
+            _f18Singleton8AFE6F = new Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Dependency();
+            _disposables8AFE6F[_disposeIndex8AFE6F++] = _f18Singleton8AFE6F;
+          }
+        }
+      }
+      
+      Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service v87Local8AFE6F = new Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service(_f18Singleton8AFE6F);
+      return v87Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public void Dispose()
+  {
+    lock (_disposables8AFE6F)
+    {
+      while (_disposeIndex8AFE6F > 0)
+      {
+        try
+        {
+          _disposables8AFE6F[--_disposeIndex8AFE6F].Dispose();
+        }
+        catch
+        {
+          // ignored
+        }
+      }
+      
+      _f18Singleton8AFE6F = null;
+    }
+  }
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Composition --|> IDisposable\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service o--  \"Singleton\" Dependency : IDependency dependency\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
 ```
 
 </details>
@@ -1465,6 +4597,263 @@ classDiagram
 
 </details>
 
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition: System.IDisposable
+{
+  private int _disposeIndex8AFE6F;
+  private readonly System.IDisposable[] _disposables8AFE6F;
+  private Pure.DI.UsageTests.Lifetimes.ScopeScenario.Dependency _f18Singleton8AFE6F;
+  
+  public Composition()
+  {
+    _disposables8AFE6F = new System.IDisposable[1];
+  }
+  
+  internal Composition(Composition parent)
+  {
+    lock (parent._disposables8AFE6F)
+    {
+      _disposables8AFE6F = new System.IDisposable[1 - parent._disposeIndex8AFE6F];
+      _f18Singleton8AFE6F = parent._f18Singleton8AFE6F;
+    }
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService Service
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      if (global::System.Object.ReferenceEquals(_f18Singleton8AFE6F, null))
+      {
+        lock (_disposables8AFE6F)
+        {
+          if (global::System.Object.ReferenceEquals(_f18Singleton8AFE6F, null))
+          {
+            _f18Singleton8AFE6F = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Dependency();
+            _disposables8AFE6F[_disposeIndex8AFE6F++] = _f18Singleton8AFE6F;
+          }
+        }
+      }
+      
+      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service v90Local8AFE6F = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service(_f18Singleton8AFE6F);
+      return v90Local8AFE6F;
+    }
+  }
+  
+  public Pure.DI.UsageTests.Lifetimes.ScopeScenario.ISession Session
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Composition v92Local8AFE6F = this;
+      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session v91Local8AFE6F = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session(v92Local8AFE6F);
+      return v91Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public void Dispose()
+  {
+    lock (_disposables8AFE6F)
+    {
+      while (_disposeIndex8AFE6F > 0)
+      {
+        try
+        {
+          _disposables8AFE6F[--_disposeIndex8AFE6F].Dispose();
+        }
+        catch
+        {
+          // ignored
+        }
+      }
+      
+      _f18Singleton8AFE6F = null;
+    }
+  }
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Service\n" +
+          "    +ISession Session\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Composition --|> IDisposable\n" +
+        "  class Composition\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency)\n" +
+        "  }\n" +
+        "  Session --|> ISession : \n" +
+        "  class Session {\n" +
+          "    +Session(Composition composition)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class ISession {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service o--  \"Singleton\" Dependency : IDependency dependency\n" +
+        "  Session *--  Composition : Composition composition\n" +
+        "  Composition ..> Service : IService Service\n" +
+        "  Composition ..> Session : ISession Session";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService>.Value = valResolver8AFE6F0;
+    Resolver8AFE6F1 valResolver8AFE6F1 = new Resolver8AFE6F1();
+    Resolver8AFE6F<Pure.DI.UsageTests.Lifetimes.ScopeScenario.ISession>.Value = valResolver8AFE6F1;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      4,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[2]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService), valResolver8AFE6F0)
+        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.ScopeScenario.ISession), valResolver8AFE6F1)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService Resolve(Composition composition)
+    {
+      return composition.Service;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Service;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService.");
+    }
+  }
+  
+  private sealed class Resolver8AFE6F1: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.ScopeScenario.ISession>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Lifetimes.ScopeScenario.ISession Resolve(Composition composition)
+    {
+      return composition.Session;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Lifetimes.ScopeScenario.ISession ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Session;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.ScopeScenario.ISession.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
+```
+
+</details>
+
 
 #### Default lifetime
 
@@ -1540,6 +4929,212 @@ classDiagram
 
 </details>
 
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  private readonly System.IDisposable[] _disposables8AFE6F;
+  private Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Dependency _f18Singleton8AFE6F;
+  private Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Service _f19Singleton8AFE6F;
+  
+  public Composition()
+  {
+    _disposables8AFE6F = new System.IDisposable[0];
+  }
+  
+  internal Composition(Composition parent)
+  {
+    _disposables8AFE6F = new System.IDisposable[0];
+    lock (parent._disposables8AFE6F)
+    {
+      _f18Singleton8AFE6F = parent._f18Singleton8AFE6F;
+      _f19Singleton8AFE6F = parent._f19Singleton8AFE6F;
+    }
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      if (global::System.Object.ReferenceEquals(_f18Singleton8AFE6F, null))
+      {
+        lock (_disposables8AFE6F)
+        {
+          if (global::System.Object.ReferenceEquals(_f18Singleton8AFE6F, null))
+          {
+            _f18Singleton8AFE6F = new Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Dependency();
+          }
+        }
+      }
+      
+      if (global::System.Object.ReferenceEquals(_f19Singleton8AFE6F, null))
+      {
+        lock (_disposables8AFE6F)
+        {
+          if (global::System.Object.ReferenceEquals(_f19Singleton8AFE6F, null))
+          {
+            _f19Singleton8AFE6F = new Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Service(_f18Singleton8AFE6F, _f18Singleton8AFE6F);
+          }
+        }
+      }
+      
+      return _f19Singleton8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency1, IDependency dependency2)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service o--  \"Singleton\" Dependency : IDependency dependency1\n" +
+        "  Service o--  \"Singleton\" Dependency : IDependency dependency2\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
+```
+
+</details>
+
 
 ## Attributes
 #### Constructor Ordinal Attribute
@@ -1610,6 +5205,189 @@ classDiagram
   }
   Service o-- String : Argument "serviceName"
   Composition ..> Service : IService Root
+```
+
+</details>
+
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  private readonly string _serviceNameArg8AFE6F;
+  
+  public Composition(string serviceName)
+  {
+    if (global::System.Object.ReferenceEquals(serviceName, null))
+    {
+      throw new global::System.ArgumentNullException("serviceName");
+    }
+    
+    _serviceNameArg8AFE6F = serviceName;
+  }
+  
+  internal Composition(Composition parent)
+  {
+    _serviceNameArg8AFE6F = parent._serviceNameArg8AFE6F;
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario.Service v0Local8AFE6F = new Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario.Service(_serviceNameArg8AFE6F);
+      return v0Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    ~Service(String name)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class String\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service o-- String : Argument \"serviceName\"\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
 ```
 
 </details>
@@ -1703,6 +5481,198 @@ classDiagram
 
 </details>
 
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class PersonComposition
+{
+  private readonly int _personIdArg8AFE6F;
+  private readonly string _personNameArg8AFE6F;
+  private readonly System.DateTime _personBirthdayArg8AFE6F;
+  
+  public PersonComposition(int personId, string personName, System.DateTime personBirthday)
+  {
+    if (global::System.Object.ReferenceEquals(personName, null))
+    {
+      throw new global::System.ArgumentNullException("personName");
+    }
+    
+    _personIdArg8AFE6F = personId;
+    _personNameArg8AFE6F = personName;
+    _personBirthdayArg8AFE6F = personBirthday;
+  }
+  
+  internal PersonComposition(PersonComposition parent)
+  {
+    _personIdArg8AFE6F = parent._personIdArg8AFE6F;
+    _personNameArg8AFE6F = parent._personNameArg8AFE6F;
+    _personBirthdayArg8AFE6F = parent._personBirthdayArg8AFE6F;
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson Person
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person v1Local8AFE6F = new Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person();
+      v1Local8AFE6F.Id = _personIdArg8AFE6F;
+      v1Local8AFE6F.FirstName = _personNameArg8AFE6F;
+      v1Local8AFE6F.Birthday = _personBirthdayArg8AFE6F;
+      return v1Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class PersonComposition {\n" +
+          "    +IPerson Person\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Person --|> IPerson : \n" +
+        "  class Person {\n" +
+          "    +Person()\n" +
+          "    ~Int32 Id\n" +
+          "    ~String FirstName\n" +
+          "    ~DateTime Birthday\n" +
+        "  }\n" +
+        "  class Int32\n" +
+        "  class String\n" +
+        "  class DateTime\n" +
+        "  class IPerson {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Person o-- Int32 : Argument \"personId\"\n" +
+        "  Person o-- String : Argument \"personName\"\n" +
+        "  Person o-- DateTime : Argument \"personBirthday\"\n" +
+        "  PersonComposition ..> Person : IPerson Person";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[] _buckets8AFE6F;
+  
+  static PersonComposition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>(typeof(Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<PersonComposition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<PersonComposition, Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson Resolve(PersonComposition composition)
+    {
+      return composition.Person;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson ResolveByTag(PersonComposition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Person;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
+```
+
+</details>
+
 
 ## Base Class Library
 #### Func
@@ -1774,6 +5744,190 @@ classDiagram
   Service o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ dependencyFactory
   Composition ..> Service : IService Root
   FuncᐸIDependencyᐳ *--  Dependency : IDependency
+```
+
+</details>
+
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.BCL.FuncScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency> v11PerResolve8AFE6F;
+      v11PerResolve8AFE6F = new System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>(() =>
+                          {
+                              Pure.DI.UsageTests.BCL.FuncScenario.IDependency value;
+      
+      Pure.DI.UsageTests.BCL.FuncScenario.Dependency v14Local8AFE6F = new Pure.DI.UsageTests.BCL.FuncScenario.Dependency();
+      value = v14Local8AFE6F;
+                              return value;
+                          });
+      Pure.DI.UsageTests.BCL.FuncScenario.Service v10Local8AFE6F = new Pure.DI.UsageTests.BCL.FuncScenario.Service(v11PerResolve8AFE6F);
+      return v10Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(FuncᐸIDependencyᐳ dependencyFactory)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class FuncᐸIDependencyᐳ\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service o--  \"PerResolve\" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ dependencyFactory\n" +
+        "  Composition ..> Service : IService Root\n" +
+        "  FuncᐸIDependencyᐳ *--  Dependency : IDependency";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.BCL.FuncScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.FuncScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.FuncScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.BCL.FuncScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.BCL.FuncScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.FuncScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
 ```
 
 </details>
@@ -1859,6 +6013,196 @@ classDiagram
 
 </details>
 
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.BCL.EnumerableScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableScenario.IDependency> LocalFunc_v7PerResolve8AFE6F()
+      {
+        Pure.DI.UsageTests.BCL.EnumerableScenario.AbcDependency v8Local8AFE6F = new Pure.DI.UsageTests.BCL.EnumerableScenario.AbcDependency();
+        yield return v8Local8AFE6F;
+        
+        Pure.DI.UsageTests.BCL.EnumerableScenario.XyzDependency v9Local8AFE6F = new Pure.DI.UsageTests.BCL.EnumerableScenario.XyzDependency();
+        yield return v9Local8AFE6F;
+      }
+      
+      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableScenario.IDependency> v7PerResolve8AFE6F = LocalFunc_v7PerResolve8AFE6F();
+      Pure.DI.UsageTests.BCL.EnumerableScenario.Service v6Local8AFE6F = new Pure.DI.UsageTests.BCL.EnumerableScenario.Service(v7PerResolve8AFE6F);
+      return v6Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  class IEnumerableᐸIDependencyᐳ\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IEnumerableᐸIDependencyᐳ dependencies)\n" +
+        "  }\n" +
+        "  AbcDependency --|> IDependency : \n" +
+        "  class AbcDependency {\n" +
+          "    +AbcDependency()\n" +
+        "  }\n" +
+        "  XyzDependency --|> IDependency : 2 \n" +
+        "  class XyzDependency {\n" +
+          "    +XyzDependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  IEnumerableᐸIDependencyᐳ *--  AbcDependency : \n" +
+        "  IEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  \n" +
+        "  Service o--  \"PerResolve\" IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ dependencies\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.BCL.EnumerableScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.EnumerableScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.EnumerableScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.BCL.EnumerableScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.BCL.EnumerableScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.EnumerableScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
+```
+
+</details>
+
 
 #### Array
 
@@ -1936,6 +6280,189 @@ classDiagram
   ArrayᐸIDependencyᐳ *--  XyzDependency : 2  
   Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ dependencies
   Composition ..> Service : IService Root
+```
+
+</details>
+
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.BCL.ArrayScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.BCL.ArrayScenario.AbcDependency v4Local8AFE6F = new Pure.DI.UsageTests.BCL.ArrayScenario.AbcDependency();
+      Pure.DI.UsageTests.BCL.ArrayScenario.XyzDependency v5Local8AFE6F = new Pure.DI.UsageTests.BCL.ArrayScenario.XyzDependency();
+      Pure.DI.UsageTests.BCL.ArrayScenario.IDependency[] v3Local8AFE6F = new Pure.DI.UsageTests.BCL.ArrayScenario.IDependency[2] { v4Local8AFE6F, v5Local8AFE6F };
+      Pure.DI.UsageTests.BCL.ArrayScenario.Service v2Local8AFE6F = new Pure.DI.UsageTests.BCL.ArrayScenario.Service(v3Local8AFE6F);
+      return v2Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  class ArrayᐸIDependencyᐳ\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(ArrayᐸIDependencyᐳ dependencies)\n" +
+        "  }\n" +
+        "  AbcDependency --|> IDependency : \n" +
+        "  class AbcDependency {\n" +
+          "    +AbcDependency()\n" +
+        "  }\n" +
+        "  XyzDependency --|> IDependency : 2 \n" +
+        "  class XyzDependency {\n" +
+          "    +XyzDependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  ArrayᐸIDependencyᐳ *--  AbcDependency : \n" +
+        "  ArrayᐸIDependencyᐳ *--  XyzDependency : 2  \n" +
+        "  Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ dependencies\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.BCL.ArrayScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.ArrayScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.ArrayScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.BCL.ArrayScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.BCL.ArrayScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.ArrayScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
 ```
 
 </details>
@@ -2038,6 +6565,200 @@ classDiagram
 
 </details>
 
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.BCL.LazyScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> v17PerResolve8AFE6F;
+      v17PerResolve8AFE6F = new System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(() =>
+                          {
+                              Pure.DI.UsageTests.BCL.LazyScenario.IDependency value;
+      
+      Pure.DI.UsageTests.BCL.LazyScenario.Dependency v20Local8AFE6F = new Pure.DI.UsageTests.BCL.LazyScenario.Dependency();
+      value = v20Local8AFE6F;
+                              return value;
+                          });
+      System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> v16Local8AFE6F;
+      {
+                              global::System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> func;
+      
+      func = v17PerResolve8AFE6F;
+                              { v16Local8AFE6F = new global::System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(func, true); goto label218AFE6F; }                    }
+      label218AFE6F:
+      ;
+      Pure.DI.UsageTests.BCL.LazyScenario.Service v15Local8AFE6F = new Pure.DI.UsageTests.BCL.LazyScenario.Service(v16Local8AFE6F);
+      return v15Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(LazyᐸIDependencyᐳ dependency)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class LazyᐸIDependencyᐳ\n" +
+        "  class FuncᐸIDependencyᐳ\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service *--  LazyᐸIDependencyᐳ : LazyᐸIDependencyᐳ dependency\n" +
+        "  Composition ..> Service : IService Root\n" +
+        "  LazyᐸIDependencyᐳ o--  \"PerResolve\" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ\n" +
+        "  FuncᐸIDependencyᐳ *--  Dependency : IDependency";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.BCL.LazyScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.LazyScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.LazyScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.BCL.LazyScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.BCL.LazyScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.LazyScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
+```
+
+</details>
+
 
 #### Span and ReadOnlySpan
 
@@ -2105,6 +6826,183 @@ classDiagram
   ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'c'  
   Service *--  ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ dependencies
   Composition ..> Service : IService Root
+```
+
+</details>
+
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.BCL.SpanScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.BCL.SpanScenario.Dependency v25Local8AFE6F = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
+      Pure.DI.UsageTests.BCL.SpanScenario.Dependency v26Local8AFE6F = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
+      Pure.DI.UsageTests.BCL.SpanScenario.Dependency v27Local8AFE6F = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
+      System.ReadOnlySpan<Pure.DI.UsageTests.BCL.SpanScenario.Dependency> v24Local8AFE6F = new global::System.Span<Pure.DI.UsageTests.BCL.SpanScenario.Dependency>(new Pure.DI.UsageTests.BCL.SpanScenario.Dependency[3] { v25Local8AFE6F, v26Local8AFE6F, v27Local8AFE6F });
+      Pure.DI.UsageTests.BCL.SpanScenario.Service v23Local8AFE6F = new Pure.DI.UsageTests.BCL.SpanScenario.Service(v24Local8AFE6F);
+      return v23Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  class ReadOnlySpanᐸDependencyᐳ\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(ReadOnlySpanᐸDependencyᐳ dependencies)\n" +
+        "  }\n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'a'  \n" +
+        "  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'b'  \n" +
+        "  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'c'  \n" +
+        "  Service *--  ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ dependencies\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.BCL.SpanScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.SpanScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.SpanScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.BCL.SpanScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.BCL.SpanScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.SpanScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
 ```
 
 </details>
@@ -2196,6 +7094,189 @@ classDiagram
 
 </details>
 
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.BCL.TupleScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.BCL.TupleScenario.Point v30Local8AFE6F;
+      v30Local8AFE6F = new Point(7, 9);
+      Pure.DI.UsageTests.BCL.TupleScenario.Dependency v31Local8AFE6F = new Pure.DI.UsageTests.BCL.TupleScenario.Dependency();
+      (Pure.DI.UsageTests.BCL.TupleScenario.Point Point, Pure.DI.UsageTests.BCL.TupleScenario.IDependency Dependency) v29Local8AFE6F = (v30Local8AFE6F, v31Local8AFE6F);
+      Pure.DI.UsageTests.BCL.TupleScenario.Service v28Local8AFE6F = new Pure.DI.UsageTests.BCL.TupleScenario.Service(v29Local8AFE6F);
+      return v28Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  class ValueTupleᐸPointˏIDependencyᐳ {\n" +
+          "    +ValueTuple(Point item1, IDependency item2)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(ValueTupleᐸPointˏIDependencyᐳ tuple)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class Point\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  ValueTupleᐸPointˏIDependencyᐳ *--  Point : Point item1\n" +
+        "  ValueTupleᐸPointˏIDependencyᐳ *--  Dependency : IDependency item2\n" +
+        "  Service *--  ValueTupleᐸPointˏIDependencyᐳ : ValueTupleᐸPointˏIDependencyᐳ tuple\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.BCL.TupleScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.TupleScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.TupleScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.BCL.TupleScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.BCL.TupleScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.TupleScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
+```
+
+</details>
+
 
 ## Interception
 #### Decorator
@@ -2256,6 +7337,177 @@ classDiagram
   }
   GreetingService *--  Service : "base"  IService baseService
   Composition ..> GreetingService : IService Root
+```
+
+</details>
+
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Interception.DecoratorScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Interception.DecoratorScenario.Service v84Local8AFE6F = new Pure.DI.UsageTests.Interception.DecoratorScenario.Service();
+      Pure.DI.UsageTests.Interception.DecoratorScenario.GreetingService v83Local8AFE6F = new Pure.DI.UsageTests.Interception.DecoratorScenario.GreetingService(v84Local8AFE6F);
+      return v83Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  GreetingService --|> IService : \n" +
+        "  class GreetingService {\n" +
+          "    +GreetingService(IService baseService)\n" +
+        "  }\n" +
+        "  Service --|> IService : \"base\" \n" +
+        "  class Service {\n" +
+          "    +Service()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  GreetingService *--  Service : \"base\"  IService baseService\n" +
+        "  Composition ..> GreetingService : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Interception.DecoratorScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Interception.DecoratorScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Interception.DecoratorScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Interception.DecoratorScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Interception.DecoratorScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Interception.DecoratorScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
 ```
 
 </details>
@@ -2378,6 +7630,182 @@ classDiagram
   }
   Service *--  Dependency : IDependency dependency
   Composition ..> Service : IService Root
+```
+
+</details>
+
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Interception.InterceptionScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Interception.InterceptionScenario.Dependency v86Local8AFE6F = new Pure.DI.UsageTests.Interception.InterceptionScenario.Dependency();
+      Pure.DI.UsageTests.Interception.InterceptionScenario.Service v85Local8AFE6F = new Pure.DI.UsageTests.Interception.InterceptionScenario.Service(OnDependencyInjection<Pure.DI.UsageTests.Interception.InterceptionScenario.IDependency>(v86Local8AFE6F, null, Pure.DI.Lifetime.Transient));
+      return OnDependencyInjection<Pure.DI.UsageTests.Interception.InterceptionScenario.IService>(v85Local8AFE6F, null, Pure.DI.Lifetime.Transient);
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  private partial T OnDependencyInjection<T>(in T value, object? tag, global::Pure.DI.Lifetime lifetime);
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service *--  Dependency : IDependency dependency\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Interception.InterceptionScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Interception.InterceptionScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Interception.InterceptionScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Interception.InterceptionScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Interception.InterceptionScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Interception.InterceptionScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
 ```
 
 </details>
@@ -2520,6 +7948,182 @@ classDiagram
 
 </details>
 
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Dependency v82Local8AFE6F = new Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Dependency();
+      Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Service v81Local8AFE6F = new Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Service(OnDependencyInjection<Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IDependency>(v82Local8AFE6F, null, Pure.DI.Lifetime.Transient));
+      return OnDependencyInjection<Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService>(v81Local8AFE6F, null, Pure.DI.Lifetime.Transient);
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  private partial T OnDependencyInjection<T>(in T value, object? tag, global::Pure.DI.Lifetime lifetime);
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service *--  Dependency : IDependency dependency\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
+```
+
+</details>
+
 
 ## Hints
 #### Resolve Hint
@@ -2582,6 +8186,77 @@ classDiagram
 
 </details>
 
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Hints.ResolveHintScenario.IDependency DependencyRoot
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency v74Local8AFE6F = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
+      return v74Local8AFE6F;
+    }
+  }
+  
+  public Pure.DI.UsageTests.Hints.ResolveHintScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency v76Local8AFE6F = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
+      Pure.DI.UsageTests.Hints.ResolveHintScenario.Service v75Local8AFE6F = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(v76Local8AFE6F);
+      return v75Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IDependency DependencyRoot\n" +
+          "    +IService Root\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service *--  Dependency : IDependency dependency\n" +
+        "  Composition ..> Dependency : IDependency DependencyRoot\n" +
+        "  Composition ..> Service : IService Root";
+  }
+}
+```
+
+</details>
+
 
 #### ThreadSafe Hint
 
@@ -2640,6 +8315,180 @@ classDiagram
   }
   Service *--  Dependency : IDependency dependency
   Composition ..> Service : IService Root
+```
+
+</details>
+
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Dependency v78Local8AFE6F = new Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Dependency();
+      Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Service v77Local8AFE6F = new Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Service(v78Local8AFE6F);
+      return v77Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service *--  Dependency : IDependency dependency\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
 ```
 
 </details>
@@ -2733,6 +8582,182 @@ classDiagram
   }
   Service *--  Dependency : IDependency dependency
   Composition ..> Service : IService Root
+```
+
+</details>
+
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.Dependency v71Local8AFE6F = new Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.Dependency();
+      Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.Service v70Local8AFE6F = new Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.Service(OnDependencyInjection<Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.IDependency>(v71Local8AFE6F, null, Pure.DI.Lifetime.Transient));
+      return v70Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  private partial T OnDependencyInjection<T>(in T value, object? tag, global::Pure.DI.Lifetime lifetime);
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service *--  Dependency : IDependency dependency\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
 ```
 
 </details>
@@ -2837,6 +8862,185 @@ classDiagram
 
 </details>
 
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      string v69Local8AFE6F = OnCannotResolve<string>(null, Pure.DI.Lifetime.Transient);
+      Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency v68Local8AFE6F = new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency(v69Local8AFE6F);
+      Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service v67Local8AFE6F = new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service(v68Local8AFE6F);
+      return v67Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  private partial T OnCannotResolve<T>(object? tag, global::Pure.DI.Lifetime lifetime);
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  class String\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency(String name)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency)\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Dependency *--  String : String name\n" +
+        "  Service *--  Dependency : IDependency dependency\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
+```
+
+</details>
+
 
 #### OnInstanceCreation Hint
 
@@ -2931,6 +9135,184 @@ classDiagram
 
 </details>
 
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService Root
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency v73Local8AFE6F = new Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency();
+      OnInstanceCreation<Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency>(ref v73Local8AFE6F, null, Pure.DI.Lifetime.Transient);
+      Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service v72Local8AFE6F = new Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service(v73Local8AFE6F);
+      OnInstanceCreation<Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service>(ref v72Local8AFE6F, null, Pure.DI.Lifetime.Transient);
+      return v72Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  partial void OnInstanceCreation<T>(ref T value, object? tag, global::Pure.DI.Lifetime lifetime);
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service *--  Dependency : IDependency dependency\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService Resolve(Composition composition)
+    {
+      return composition.Root;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.Root;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
+```
+
+</details>
+
 
 #### ToString Hint
 
@@ -2987,6 +9369,180 @@ classDiagram
   }
   Service *--  Dependency : IDependency dependency
   Composition ..> Service : IService MyService
+```
+
+</details>
+
+<details>
+<summary>Generated Code</summary>
+
+```c#
+partial class Composition
+{
+  public Composition()
+  {
+  }
+  
+  internal Composition(Composition parent)
+  {
+  }
+  
+  #region Composition Roots
+  public Pure.DI.UsageTests.Hints.ToStringHintScenario.IService MyService
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    get
+    {
+      Pure.DI.UsageTests.Hints.ToStringHintScenario.Dependency v80Local8AFE6F = new Pure.DI.UsageTests.Hints.ToStringHintScenario.Dependency();
+      Pure.DI.UsageTests.Hints.ToStringHintScenario.Service v79Local8AFE6F = new Pure.DI.UsageTests.Hints.ToStringHintScenario.Service(v80Local8AFE6F);
+      return v79Local8AFE6F;
+    }
+  }
+  #endregion
+  
+  #region API
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>()
+  {
+    return Resolver8AFE6F<T>.Value.Resolve(this);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public T Resolve<T>(object? tag)
+  {
+    return Resolver8AFE6F<T>.Value.ResolveByTag(this, tag);
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.Resolve(this);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.Resolve(this);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+  public object Resolve(global::System.Type type, object? tag)
+  {
+    int index = (int)(_bucketSize8AFE6F * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets8AFE6F[index];
+    if (ReferenceEquals(pair.Key, type))
+    {
+      return pair.Value.ResolveByTag(this, tag);
+    }
+    
+    int maxIndex = index + _bucketSize8AFE6F;
+    for (int i = index + 1; i < maxIndex; i++)
+    {
+      pair = ref _buckets8AFE6F[i];
+      if (ReferenceEquals(pair.Key, type))
+      {
+        return pair.Value.ResolveByTag(this, tag);
+      }
+    }
+    
+    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+  }
+  
+  #endregion
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService MyService\n" +
+          "    +T ResolveᐸTᐳ()\n" +
+          "    +T ResolveᐸTᐳ(object? tag)\n" +
+          "    +object ResolveᐸTᐳ(Type type)\n" +
+          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service *--  Dependency : IDependency dependency\n" +
+        "  Composition ..> Service : IService MyService";
+  }
+  
+  private readonly static int _bucketSize8AFE6F;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets8AFE6F;
+  
+  static Composition()
+  {
+    Resolver8AFE6F0 valResolver8AFE6F0 = new Resolver8AFE6F0();
+    Resolver8AFE6F<Pure.DI.UsageTests.Hints.ToStringHintScenario.IService>.Value = valResolver8AFE6F0;
+    _buckets8AFE6F = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+      1,
+      out _bucketSize8AFE6F,
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      {
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Hints.ToStringHintScenario.IService), valResolver8AFE6F0)
+      });
+  }
+  
+  #region Resolvers
+  #pragma warning disable CS0649
+  private class Resolver8AFE6F<T>
+  {
+    public static global::Pure.DI.IResolver<Composition, T> Value;
+  }
+  
+  private sealed class Resolver8AFE6F0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Hints.ToStringHintScenario.IService>
+  {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Hints.ToStringHintScenario.IService Resolve(Composition composition)
+    {
+      return composition.MyService;
+    }
+    
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    public Pure.DI.UsageTests.Hints.ToStringHintScenario.IService ResolveByTag(Composition composition, object tag)
+    {
+      if (Equals(tag, null)) return composition.MyService;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Hints.ToStringHintScenario.IService.");
+    }
+  }
+  #pragma warning restore CS0649
+  #endregion
+}
 ```
 
 </details>

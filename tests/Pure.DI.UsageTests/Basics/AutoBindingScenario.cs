@@ -32,6 +32,7 @@ public class Scenario
     public void Run()
     {
         // ToString = On
+        // FormatCode = Off
 // {            
         DI.Setup("Composition")
             .Root<Service>("Root");
