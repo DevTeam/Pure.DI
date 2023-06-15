@@ -3,7 +3,7 @@ $v=true
 $p=4
 $d=Span and ReadOnlySpan
 $h=Specifying `Span<T>` and `ReadOnlySpan<T>` work the same as with the array `T[]`.
-$f=This scenario is even more efficient when the `Span[]` or `ReadOnlySpan[]` element has a value type. In this case, there are no heap allocations, and the composition root `IService` looks like this:
+$f=This scenario is even more efficient in the case of `Span<T>` or `ReadOnlySpan<T>` when `T` is a value type. In this case, there is no heap allocation, and the composition root `IService` looks like this:
 $f=```c#
 $f=public IService Root
 $f={
@@ -24,7 +24,7 @@ using Shouldly;
 using Xunit;
 
 // {
-internal class Dependency
+internal struct Dependency
 {
 }
 
