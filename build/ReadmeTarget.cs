@@ -10,7 +10,6 @@ internal class ReadmeTarget : ITarget<int>
 {
     private readonly ITarget<int> _benchmarksTarget;
     private const string ReadmeDir = "readme";
-    private const string ExamplesReadmeFile = "Examples.md";
     private const string ReadmeTemplateFile = "ReadmeTemplate.md";
     private const string FooterTemplateFile = "FooterTemplate.md";
     private const string ReadmeFile = "README.md";
@@ -199,21 +198,30 @@ internal class ReadmeTarget : ITarget<int>
 
     private static async Task GenerateExamples(IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)> examples, TextWriter readmeWriter, string logsDirectory)
     {
+        foreach (var readmeFile in Directory.EnumerateFiles(Path.Combine(ReadmeDir), "*.md"))
+        {
+            if (readmeFile.EndsWith("Template.md", StringComparison.InvariantCultureIgnoreCase))
+            {
+                continue;
+            }
+            
+            File.Delete(readmeFile);
+        }
+
         await readmeWriter.WriteLineAsync("## Examples");
         await readmeWriter.WriteLineAsync("");
-        
-        await using var examplesWriter = File.CreateText(Path.Combine(ReadmeDir, ExamplesReadmeFile));
         foreach (var (groupName, exampleItems) in examples)
         {
             var groupTitle = new string(FormatTitle(groupName).ToArray());
             WriteLine($"Processing examples group \"{groupTitle}\"", Color.Details);
             await readmeWriter.WriteLineAsync($"### {groupTitle}");
-            await examplesWriter.WriteLineAsync($"## {groupTitle}");
             foreach (var vars in exampleItems)
             {
                 var description = vars[DescriptionKey];
+                var exampleFile = $"{CreateExampleFileName(description)}.md";
+                await using var examplesWriter = File.CreateText(Path.Combine(ReadmeDir, exampleFile));
                 WriteLine($"  · \"{description}\"", Color.Details);
-                await readmeWriter.WriteLineAsync($"- [{description}]({ReadmeDir}/{ExamplesReadmeFile}{CreateRef(description)})");
+                await readmeWriter.WriteLineAsync($"- [{description}]({ReadmeDir}/{exampleFile})");
                 await examplesWriter.WriteLineAsync($"#### {description}");
                 await examplesWriter.WriteLineAsync("");
                 await examplesWriter.WriteLineAsync($"[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../{vars[SourceKey].Replace('\\', '/')})");
@@ -279,11 +287,9 @@ internal class ReadmeTarget : ITarget<int>
                     await examplesWriter.WriteLineAsync(footer);
                 }
 
-                await examplesWriter.WriteLineAsync("");
+                await examplesWriter.FlushAsync();
             }
         }
-
-        await examplesWriter.FlushAsync();
     }
 
     private static async Task AddBenchmarks(string logsDirectory, TextWriter readmeWriter)
@@ -359,14 +365,14 @@ internal class ReadmeTarget : ITarget<int>
         }
     }
 
-    private static string CreateRef(string text) =>
-        "#" + text.Replace(" ", "-")
-            .Replace("_", string.Empty)
-            .Replace("'", string.Empty)
-            .Replace("/", string.Empty)
-            .Replace("`", string.Empty)
-            .Replace("\\", string.Empty)
-            .ToLowerInvariant();
+    private static string CreateExampleFileName(string text) => 
+        text.Replace(" ", "-")
+        .Replace("_", string.Empty)
+        .Replace("'", string.Empty)
+        .Replace("/", string.Empty)
+        .Replace("`", string.Empty)
+        .Replace("\\", string.Empty)
+        .ToLowerInvariant();
     
     private enum Part
     {

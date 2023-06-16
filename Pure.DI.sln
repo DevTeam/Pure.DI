@@ -54,7 +54,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "build", "build\build.csproj
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "readme", "readme", "{24E44980-FC88-4DA1-A2D2-C45296AF7D63}"
 	ProjectSection(SolutionItems) = preProject
-		readme\Examples.md = readme\Examples.md
 		readme\ReadmeTemplate.md = readme\ReadmeTemplate.md
 		README.md = README.md
 		readme\FooterTemplate.md = readme\FooterTemplate.md
