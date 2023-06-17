@@ -20,33 +20,33 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
         }
 
         var settings = composition.Source.Source.Hints;
-        code.AppendLine("#region API");
+        var apiCode = new LinesBuilder();
         if (settings.GetHint(Hint.Resolve, SettingState.On) == SettingState.On)
         {
-            AddMethodHeader(code);
-            code.AppendLine($"{settings.GetValueOrDefault(Hint.ResolveMethodModifiers, Constant.DefaultApiMethodModifiers)} T {settings.GetValueOrDefault(Hint.ResolveMethodName, Constant.ResolverMethodName)}<T>()");
-            code.AppendLine("{");
-            using (code.Indent())
+            AddMethodHeader(apiCode);
+            apiCode.AppendLine($"{settings.GetValueOrDefault(Hint.ResolveMethodModifiers, Constant.DefaultApiMethodModifiers)} T {settings.GetValueOrDefault(Hint.ResolveMethodName, Constant.ResolverMethodName)}<T>()");
+            apiCode.AppendLine("{");
+            using (apiCode.Indent())
             {
-                code.AppendLine($"return {ResolverInfo.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}.{ResolverClassesBuilder.ResolveMethodName}(this);");
+                apiCode.AppendLine($"return {ResolverInfo.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}.{ResolverClassesBuilder.ResolveMethodName}(this);");
             }
 
-            code.AppendLine("}");
+            apiCode.AppendLine("}");
 
-            code.AppendLine();
+            apiCode.AppendLine();
             membersCounter++;
 
-            AddMethodHeader(code);
-            code.AppendLine($"{settings.GetValueOrDefault(Hint.ResolveByTagMethodModifiers, Constant.DefaultApiMethodModifiers)} T {settings.GetValueOrDefault(Hint.ResolveByTagMethodName, Constant.ResolverMethodName)}<T>(object? tag)");
-            code.AppendLine("{");
-            using (code.Indent())
+            AddMethodHeader(apiCode);
+            apiCode.AppendLine($"{settings.GetValueOrDefault(Hint.ResolveByTagMethodModifiers, Constant.DefaultApiMethodModifiers)} T {settings.GetValueOrDefault(Hint.ResolveByTagMethodName, Constant.ResolverMethodName)}<T>(object? tag)");
+            apiCode.AppendLine("{");
+            using (apiCode.Indent())
             {
-                code.AppendLine($"return {ResolverInfo.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}.{ResolverClassesBuilder.ResolveByTagMethodName}(this, tag);");
+                apiCode.AppendLine($"return {ResolverInfo.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}.{ResolverClassesBuilder.ResolveByTagMethodName}(this, tag);");
             }
 
-            code.AppendLine("}");
+            apiCode.AppendLine("}");
 
-            code.AppendLine();
+            apiCode.AppendLine();
             membersCounter++;
 
             var resolvers = _resolversBuilder.Build(composition.Roots, cancellationToken).ToArray();
@@ -57,10 +57,10 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
                 $"{Constant.SystemNamespace}Type type",
                 ResolverClassesBuilder.ResolveMethodName,
                 "this",
-                code);
+                apiCode);
             
             membersCounter++;
-            code.AppendLine();
+            apiCode.AppendLine();
 
             CreateObjectResolverMethod(
                 settings.GetValueOrDefault(Hint.ObjectResolveByTagMethodModifiers, Constant.DefaultApiMethodModifiers),
@@ -69,34 +69,40 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
                 $"{Constant.SystemNamespace}Type type, object? tag",
                 ResolverClassesBuilder.ResolveByTagMethodName,
                 "this, tag",
-                code);
+                apiCode);
 
             membersCounter++;
-            code.AppendLine();
+            apiCode.AppendLine();
         }
 
         if (composition.Source.Source.Hints.GetHint(Hint.OnInstanceCreation) == SettingState.On)
         {
-            code.AppendLine(Constant.MethodImplOptions);
-            code.AppendLine($"partial void {Constant.OnInstanceCreationMethodName}<T>(ref T value, object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
+            apiCode.AppendLine(Constant.MethodImplOptions);
+            apiCode.AppendLine($"partial void {Constant.OnInstanceCreationMethodName}<T>(ref T value, object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
 
         if (composition.Source.Source.Hints.GetHint(Hint.OnDependencyInjection) == SettingState.On)
         {
-            code.AppendLine(Constant.MethodImplOptions);
-            code.AppendLine($"private partial T {Constant.OnDependencyInjectionMethodName}<T>(in T value, object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
+            apiCode.AppendLine(Constant.MethodImplOptions);
+            apiCode.AppendLine($"private partial T {Constant.OnDependencyInjectionMethodName}<T>(in T value, object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
         
         if (composition.Source.Source.Hints.GetHint(Hint.OnCannotResolve) == SettingState.On)
         {
-            code.AppendLine(Constant.MethodImplOptions);
-            code.AppendLine($"private partial T {Constant.OnCannotResolve}<T>(object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
+            apiCode.AppendLine(Constant.MethodImplOptions);
+            apiCode.AppendLine($"private partial T {Constant.OnCannotResolve}<T>(object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
-        
-        code.AppendLine("#endregion");
+
+        if (apiCode.Count > 0)
+        {
+            code.AppendLine("#region API");
+            code.AppendLines(apiCode.Lines);
+            code.AppendLine("#endregion");
+        }
+
         return composition with { MembersCount = membersCounter };
     }
 

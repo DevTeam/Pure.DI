@@ -23,6 +23,8 @@ internal class LinesBuilder: IEnumerable<string>
 
     public LinesBuilder() => _indent = new Indent(0);
 
+    public int Count => _sb.Length > 0 ? 1 : 0 + _lines.Count;
+
     public IEnumerable<Line> Lines
     {
         get

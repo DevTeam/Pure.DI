@@ -91,10 +91,10 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency v95Local2F5BCD = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency();
-      Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency v96Local2F5BCD = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency();
-      Pure.DI.UsageTests.Lifetimes.TransientScenario.Service v94Local2F5BCD = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Service(v96Local2F5BCD, v95Local2F5BCD);
-      return v94Local2F5BCD;
+      Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency v95Local73742A = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency();
+      Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency v96Local73742A = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency();
+      Pure.DI.UsageTests.Lifetimes.TransientScenario.Service v94Local73742A = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Service(v96Local73742A, v95Local73742A);
+      return v94Local73742A;
     }
   }
   #endregion
@@ -106,7 +106,7 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>()
   {
-    return Resolver2F5BCD<T>.Value.Resolve(this);
+    return Resolver73742A<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -115,7 +115,7 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>(object? tag)
   {
-    return Resolver2F5BCD<T>.Value.ResolveByTag(this, tag);
+    return Resolver73742A<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -124,17 +124,17 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type)
   {
-    int index = (int)(_bucketSize2F5BCD * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _buckets2F5BCD[index];
+    int index = (int)(_bucketSize73742A * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets73742A[index];
     if (ReferenceEquals(pair.Key, type))
     {
       return pair.Value.Resolve(this);
     }
     
-    int maxIndex = index + _bucketSize2F5BCD;
+    int maxIndex = index + _bucketSize73742A;
     for (int i = index + 1; i < maxIndex; i++)
     {
-      pair = ref _buckets2F5BCD[i];
+      pair = ref _buckets73742A[i];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -150,17 +150,17 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    int index = (int)(_bucketSize2F5BCD * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _buckets2F5BCD[index];
+    int index = (int)(_bucketSize73742A * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets73742A[index];
     if (ReferenceEquals(pair.Key, type))
     {
       return pair.Value.ResolveByTag(this, tag);
     }
     
-    int maxIndex = index + _bucketSize2F5BCD;
+    int maxIndex = index + _bucketSize73742A;
     for (int i = index + 1; i < maxIndex; i++)
     {
-      pair = ref _buckets2F5BCD[i];
+      pair = ref _buckets73742A[i];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -202,30 +202,30 @@ partial class Composition
         "  Composition ..> Service : IService Root";
   }
   
-  private readonly static int _bucketSize2F5BCD;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets2F5BCD;
+  private readonly static int _bucketSize73742A;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets73742A;
   
   static Composition()
   {
-    Resolver2F5BCD0 valResolver2F5BCD0 = new Resolver2F5BCD0();
-    Resolver2F5BCD<Pure.DI.UsageTests.Lifetimes.TransientScenario.IService>.Value = valResolver2F5BCD0;
-    _buckets2F5BCD = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    Resolver73742A0 valResolver73742A0 = new Resolver73742A0();
+    Resolver73742A<Pure.DI.UsageTests.Lifetimes.TransientScenario.IService>.Value = valResolver73742A0;
+    _buckets73742A = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSize2F5BCD,
+      out _bucketSize73742A,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.TransientScenario.IService), valResolver2F5BCD0)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.TransientScenario.IService), valResolver73742A0)
       });
   }
   
   #region Resolvers
   #pragma warning disable CS0649
-  private class Resolver2F5BCD<T>
+  private class Resolver73742A<T>
   {
     public static global::Pure.DI.IResolver<Composition, T> Value;
   }
   
-  private sealed class Resolver2F5BCD0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.TransientScenario.IService>
+  private sealed class Resolver73742A0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.TransientScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.Lifetimes.TransientScenario.IService Resolve(Composition composition)

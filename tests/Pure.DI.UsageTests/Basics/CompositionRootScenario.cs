@@ -52,6 +52,7 @@ public class Scenario
     public void Run()
     {
         // ToString = On
+        // Resolve = Off
         // FormatCode = Off
 // {            
         DI.Setup("Composition")
