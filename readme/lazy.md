@@ -90,25 +90,25 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> v17PerResolve73742A;
-      v17PerResolve73742A = new System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(() =>
+      System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> v17PerResolve882EFC;
+      v17PerResolve882EFC = new System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(() =>
                           {
                               Pure.DI.UsageTests.BCL.LazyScenario.IDependency value;
       
-      Pure.DI.UsageTests.BCL.LazyScenario.Dependency v20Local73742A = new Pure.DI.UsageTests.BCL.LazyScenario.Dependency();
-      value = v20Local73742A;
+      Pure.DI.UsageTests.BCL.LazyScenario.Dependency v20Local882EFC = new Pure.DI.UsageTests.BCL.LazyScenario.Dependency();
+      value = v20Local882EFC;
                               return value;
                           });
-      System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> v16Local73742A;
+      System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> v16Local882EFC;
       {
                               global::System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> func;
       
-      func = v17PerResolve73742A;
-                              { v16Local73742A = new global::System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(func, true); goto label2173742A; }                    }
-      label2173742A:
+      func = v17PerResolve882EFC;
+                              { v16Local882EFC = new global::System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(func, true); goto label21882EFC; }                    }
+      label21882EFC:
       ;
-      Pure.DI.UsageTests.BCL.LazyScenario.Service v15Local73742A = new Pure.DI.UsageTests.BCL.LazyScenario.Service(v16Local73742A);
-      return v15Local73742A;
+      Pure.DI.UsageTests.BCL.LazyScenario.Service v15Local882EFC = new Pure.DI.UsageTests.BCL.LazyScenario.Service(v16Local882EFC);
+      return v15Local882EFC;
     }
   }
   #endregion
@@ -120,7 +120,7 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>()
   {
-    return Resolver73742A<T>.Value.Resolve(this);
+    return Resolver882EFC<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -129,7 +129,7 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>(object? tag)
   {
-    return Resolver73742A<T>.Value.ResolveByTag(this, tag);
+    return Resolver882EFC<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -138,17 +138,17 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type)
   {
-    int index = (int)(_bucketSize73742A * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _buckets73742A[index];
+    int index = (int)(_bucketSize882EFC * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets882EFC[index];
     if (ReferenceEquals(pair.Key, type))
     {
       return pair.Value.Resolve(this);
     }
     
-    int maxIndex = index + _bucketSize73742A;
+    int maxIndex = index + _bucketSize882EFC;
     for (int i = index + 1; i < maxIndex; i++)
     {
-      pair = ref _buckets73742A[i];
+      pair = ref _buckets882EFC[i];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -164,17 +164,17 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    int index = (int)(_bucketSize73742A * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _buckets73742A[index];
+    int index = (int)(_bucketSize882EFC * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets882EFC[index];
     if (ReferenceEquals(pair.Key, type))
     {
       return pair.Value.ResolveByTag(this, tag);
     }
     
-    int maxIndex = index + _bucketSize73742A;
+    int maxIndex = index + _bucketSize882EFC;
     for (int i = index + 1; i < maxIndex; i++)
     {
-      pair = ref _buckets73742A[i];
+      pair = ref _buckets882EFC[i];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -219,30 +219,30 @@ partial class Composition
         "  FuncᐸIDependencyᐳ *--  Dependency : IDependency";
   }
   
-  private readonly static int _bucketSize73742A;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets73742A;
+  private readonly static int _bucketSize882EFC;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets882EFC;
   
   static Composition()
   {
-    Resolver73742A0 valResolver73742A0 = new Resolver73742A0();
-    Resolver73742A<Pure.DI.UsageTests.BCL.LazyScenario.IService>.Value = valResolver73742A0;
-    _buckets73742A = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    Resolver882EFC0 valResolver882EFC0 = new Resolver882EFC0();
+    Resolver882EFC<Pure.DI.UsageTests.BCL.LazyScenario.IService>.Value = valResolver882EFC0;
+    _buckets882EFC = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSize73742A,
+      out _bucketSize882EFC,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.LazyScenario.IService), valResolver73742A0)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.LazyScenario.IService), valResolver882EFC0)
       });
   }
   
   #region Resolvers
   #pragma warning disable CS0649
-  private class Resolver73742A<T>
+  private class Resolver882EFC<T>
   {
     public static global::Pure.DI.IResolver<Composition, T> Value;
   }
   
-  private sealed class Resolver73742A0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.LazyScenario.IService>
+  private sealed class Resolver882EFC0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.LazyScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.BCL.LazyScenario.IService Resolve(Composition composition)

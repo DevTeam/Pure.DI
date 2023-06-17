@@ -75,9 +75,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.CompositionRootScenario.Dependency v43Local73742A = new Pure.DI.UsageTests.Basics.CompositionRootScenario.Dependency();
-      Pure.DI.UsageTests.Basics.CompositionRootScenario.Service v42Local73742A = new Pure.DI.UsageTests.Basics.CompositionRootScenario.Service(v43Local73742A);
-      return v42Local73742A;
+      Pure.DI.UsageTests.Basics.CompositionRootScenario.Dependency v43Local882EFC = new Pure.DI.UsageTests.Basics.CompositionRootScenario.Dependency();
+      Pure.DI.UsageTests.Basics.CompositionRootScenario.Service v42Local882EFC = new Pure.DI.UsageTests.Basics.CompositionRootScenario.Service(v43Local882EFC);
+      return v42Local882EFC;
     }
   }
   #endregion

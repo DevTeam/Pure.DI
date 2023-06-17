@@ -2,6 +2,7 @@
 $v=true
 $p=8
 $d=Multi-contract bindings
+$h=An unlimited number of contracts can be attached to one implementation. Including their combinations with various tags.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

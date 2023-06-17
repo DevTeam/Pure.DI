@@ -2,7 +2,7 @@
 $v=true
 $p=4
 $d=Scope
-$h=A "scope" scenario can be easily implemented with singleton instances and child composition:
+$h=A _scope_ scenario can be easily implemented with singleton instances and child composition:
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

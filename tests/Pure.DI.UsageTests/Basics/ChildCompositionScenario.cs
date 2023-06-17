@@ -2,6 +2,7 @@
 $v=true
 $p=8
 $d=Child composition
+$h=Can use generated classes in hierarchy.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

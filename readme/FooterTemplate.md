@@ -1,4 +1,4 @@
-## Composition class
+## Generated Code
 
 Each generated class, hereinafter referred to as _composition_, needs to be configured. It starts with the `Setup(...)` method:
 

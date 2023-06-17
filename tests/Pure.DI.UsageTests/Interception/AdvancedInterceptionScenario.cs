@@ -2,6 +2,7 @@
 $v=true
 $p=2
 $d=Advanced interception
+$h=This approach of interception maximizes performance by precompiling the proxy object factory.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

@@ -2,7 +2,7 @@
 $v=true
 $p=1
 $d=Resolve methods
-$h=This example shows how to resolve the composition roots using the _Resolve_ methods.
+$h=This example shows how to resolve the composition roots using the _Resolve_ methods by _Service Locator_ approach. `Resolve` methods are generated automatically for each registered root.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

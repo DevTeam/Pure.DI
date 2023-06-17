@@ -2,8 +2,7 @@
 $v=true
 $p=6
 $d=Tags
-$h=This example demonstrates the most efficient way to get the root object of a composition without impacting memory consumption or performance.
-$f=Sometimes it's important to take control of building a dependency graph. In this case, _tags_ help: 
+$h=Sometimes it's important to take control of building a dependency graph. For example, when there are multiple implementations of the same contract. In this case, _tags_ will help:
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

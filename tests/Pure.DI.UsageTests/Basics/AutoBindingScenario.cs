@@ -39,7 +39,11 @@ public class Scenario
 
         var composition = new Composition();
         var service1 = composition.Root;
+        
+        // Or this way
         var service2 = composition.Resolve<Service>();
+        
+        // Or this way
         var service3 = composition.Resolve(typeof(Service));
 // }
         TestTools.SaveClassDiagram(composition, nameof(AutoBindingScenario));

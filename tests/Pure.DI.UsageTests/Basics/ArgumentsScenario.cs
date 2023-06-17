@@ -2,6 +2,7 @@
 $v=true
 $p=5
 $d=Arguments
+$h=Sometimes you need to pass some state to the composition class in order to use it when resolving dependencies. Just use the `Arg` method, specify the type of the argument and the name of the argument. A tag can also be specified for each argument. After that, they can be used as dependencies when building an object graph. If you have multiple arguments of the same type, just use tags to distinguish between them.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
