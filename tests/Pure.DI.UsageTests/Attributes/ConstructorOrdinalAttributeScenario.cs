@@ -48,8 +48,7 @@ public class Scenario
         DI.Setup("Composition")
             .Arg<string>("serviceName")
             .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>()
-            .Root<IService>("Root");
+            .Bind<IService>().To<Service>().Root<IService>("Root");
 
         var composition = new Composition("Xyz");
         var service = composition.Root;

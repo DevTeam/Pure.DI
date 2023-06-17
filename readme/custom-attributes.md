@@ -1,55 +1,60 @@
-#### Member Ordinal Attribute
+#### Custom Attributes
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Attributes/MemberOrdinalAttributeScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Attributes/CustomAttributesScenario.cs)
 
-When applied to a property or field, these type members will also participate in dependency injection in the appropriate order from smallest value to largest.
+It's very easy to use your attributes. To do this, you need to create a descendant of the `System.Attribute` class and register it using one of the appropriate methods:
+- `TagAttribute`
+- `OrdinalAttribute`
+- `TagAttribute`
 
 ```c#
+
+[AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field)]
+internal class MyOrdinalAttribute : Attribute
+{
+    public MyOrdinalAttribute(int ordinal) { }
+}
+
+[AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Field)]
+internal class MyTagAttribute : Attribute
+{
+    public MyTagAttribute(object tag) { }
+}
+
+[AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Field)]
+internal class MyTypeAttribute : Attribute
+{
+    public MyTypeAttribute(Type type) { }
+}
+
 internal interface IPerson
 {
-    string Name { get; }
 }
 
 internal class Person : IPerson
 {
-    private readonly StringBuilder _name = new();
+    private readonly string _name;
 
-    public string Name => _name.ToString();
+    public Person([MyTag("NikName")] string name) => _name = name;
 
-    [Ordinal(0)]
-    internal int Id;
+    [MyOrdinal(1)]
+    [MyType(typeof(int))]
+    internal object Id = "";
 
-    [Ordinal(1)]
-    internal string FirstName
-    {
-        set
-        {
-            _name.Append(Id);
-            _name.Append(' ');
-            _name.Append(value);
-        }
-    }
-
-    [Ordinal(2)]
-    internal DateTime Birthday
-    {
-        set
-        {
-            _name.Append(' ');
-            _name.Append($"{value:yyyy-MM-dd}");
-        }
-    }
+    public override string ToString() => $"{Id} {_name}";
 }
 
 DI.Setup("PersonComposition")
+    .TagAttribute<MyTagAttribute>()
+    .OrdinalAttribute<MyOrdinalAttribute>()
+    .TypeAttribute<MyTypeAttribute>()
     .Arg<int>("personId")
-    .Arg<string>("personName")
-    .Arg<DateTime>("personBirthday")
+    .Bind<string>("NikName").To(_ => "Nik")
     .Bind<IPerson>().To<Person>().Root<IPerson>("Person");
 
-var composition = new PersonComposition(123, "Nik", new DateTime(1977, 11, 16));
+var composition = new PersonComposition(123);
 var person = composition.Person;
-person.Name.ShouldBe("123 Nik 1977-11-16");
+person.ToString().ShouldBe("123 Nik");
 ```
 
 <details open>
@@ -66,20 +71,16 @@ classDiagram
   }
   Person --|> IPerson : 
   class Person {
-    +Person()
-    ~Int32 Id
-    ~String FirstName
-    ~DateTime Birthday
+    +Person(String name)
+    ~Object Id
   }
-  class Int32
   class String
-  class DateTime
+  class Int32
   class IPerson {
     <<abstract>>
   }
+  Person *--  String : "NikName"  String name
   Person o-- Int32 : Argument "personId"
-  Person o-- String : Argument "personName"
-  Person o-- DateTime : Argument "personBirthday"
   PersonComposition ..> Person : IPerson Person
 ```
 
@@ -92,39 +93,28 @@ classDiagram
 partial class PersonComposition
 {
   private readonly int _personIdArg3F4E1C;
-  private readonly string _personNameArg3F4E1C;
-  private readonly System.DateTime _personBirthdayArg3F4E1C;
   
-  public PersonComposition(int personId, string personName, System.DateTime personBirthday)
+  public PersonComposition(int personId)
   {
-    if (global::System.Object.ReferenceEquals(personName, null))
-    {
-      throw new global::System.ArgumentNullException("personName");
-    }
-    
     _personIdArg3F4E1C = personId;
-    _personNameArg3F4E1C = personName;
-    _personBirthdayArg3F4E1C = personBirthday;
   }
   
   internal PersonComposition(PersonComposition parent)
   {
     _personIdArg3F4E1C = parent._personIdArg3F4E1C;
-    _personNameArg3F4E1C = parent._personNameArg3F4E1C;
-    _personBirthdayArg3F4E1C = parent._personBirthdayArg3F4E1C;
   }
   
   #region Composition Roots
-  public Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson Person
+  public Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson Person
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person v4Local3F4E1C = new Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person();
-      v4Local3F4E1C.Id = _personIdArg3F4E1C;
-      v4Local3F4E1C.FirstName = _personNameArg3F4E1C;
-      v4Local3F4E1C.Birthday = _personBirthdayArg3F4E1C;
-      return v4Local3F4E1C;
+      string v2Local3F4E1C;
+      v2Local3F4E1C = "Nik";
+      Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person v1Local3F4E1C = new Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person(v2Local3F4E1C);
+      v1Local3F4E1C.Id = _personIdArg3F4E1C;
+      return v1Local3F4E1C;
     }
   }
   #endregion
@@ -215,20 +205,16 @@ partial class PersonComposition
         "  }\n" +
         "  Person --|> IPerson : \n" +
         "  class Person {\n" +
-          "    +Person()\n" +
-          "    ~Int32 Id\n" +
-          "    ~String FirstName\n" +
-          "    ~DateTime Birthday\n" +
+          "    +Person(String name)\n" +
+          "    ~Object Id\n" +
         "  }\n" +
-        "  class Int32\n" +
         "  class String\n" +
-        "  class DateTime\n" +
+        "  class Int32\n" +
         "  class IPerson {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
+        "  Person *--  String : \"NikName\"  String name\n" +
         "  Person o-- Int32 : Argument \"personId\"\n" +
-        "  Person o-- String : Argument \"personName\"\n" +
-        "  Person o-- DateTime : Argument \"personBirthday\"\n" +
         "  PersonComposition ..> Person : IPerson Person";
   }
   
@@ -238,13 +224,13 @@ partial class PersonComposition
   static PersonComposition()
   {
     Resolver3F4E1C0 valResolver3F4E1C0 = new Resolver3F4E1C0();
-    Resolver3F4E1C<Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson>.Value = valResolver3F4E1C0;
+    Resolver3F4E1C<Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson>.Value = valResolver3F4E1C0;
     _buckets3F4E1C = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>.Create(
       1,
       out _bucketSize3F4E1C,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>(typeof(Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson), valResolver3F4E1C0)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>(typeof(Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson), valResolver3F4E1C0)
       });
   }
   
@@ -255,19 +241,19 @@ partial class PersonComposition
     public static global::Pure.DI.IResolver<PersonComposition, T> Value;
   }
   
-  private sealed class Resolver3F4E1C0: global::Pure.DI.IResolver<PersonComposition, Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson>
+  private sealed class Resolver3F4E1C0: global::Pure.DI.IResolver<PersonComposition, Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson Resolve(PersonComposition composition)
+    public Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson Resolve(PersonComposition composition)
     {
       return composition.Person;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson ResolveByTag(PersonComposition composition, object tag)
+    public Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson ResolveByTag(PersonComposition composition, object tag)
     {
       if (Equals(tag, null)) return composition.Person;
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson.");
     }
   }
   #pragma warning restore CS0649

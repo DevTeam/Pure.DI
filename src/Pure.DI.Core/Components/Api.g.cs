@@ -193,19 +193,12 @@ namespace Pure.DI
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class OrdinalAttribute : Attribute
     {
-        // ReSharper disable once MemberCanBePrivate.Global
-        /// <summary>
-        /// The injection ordinal.
-        /// </summary>
-        public readonly int Ordinal;
-
         /// <summary>
         /// Creates an attribute instance.
         /// </summary>
         /// <param name="ordinal">The injection ordinal.</param>
         public OrdinalAttribute(int ordinal)
         {
-            Ordinal = ordinal;
         }
     }
 
@@ -216,19 +209,11 @@ namespace Pure.DI
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TagAttribute : Attribute
     {
-        // ReSharper disable once MemberCanBePrivate.Global
-        /// <summary>
-        /// The injection tag.
-        /// </summary>
-        public readonly object Tag;
-
-        /// <summary>
         /// Creates an attribute instance.
         /// </summary>
         /// <param name="tag">The injection tag. See also <see cref="IBinding.Tags"/></param>.
         public TagAttribute(object tag)
         {
-            Tag = tag;
         }
     }
 
@@ -239,19 +224,12 @@ namespace Pure.DI
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal class TypeAttribute : Attribute
     {
-        // ReSharper disable once MemberCanBePrivate.Global
-        /// <summary>
-        /// The injection type.
-        /// </summary>
-        public readonly Type Type;
-
         /// <summary>
         /// Creates an attribute instance.
         /// </summary>
         /// <param name="type">The injection type. See also <see cref="IConfiguration.Bind{T}"/> and <see cref="IBinding.Bind{T}"/>.</param>
         public TypeAttribute(Type type)
         {
-            Type = type;
         }
     }
     

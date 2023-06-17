@@ -1,62 +1,49 @@
-#### OnInstanceCreation Hint
+#### Tag Attribute
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/OnInstanceCreationHintScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Attributes/TagAttributeScenario.cs)
 
-The _OnInstanceCreation_ hint determines whether to generate partial _OnInstanceCreation_ method.
+Sometimes it's important to take control of building a dependency graph. For example, when there are multiple implementations of the same contract. In this case, _tags_ will help:
 
 ```c#
-public interface IDependency
+internal interface IDependency { }
+
+internal class AbcDependency : IDependency { }
+
+internal class XyzDependency : IDependency { }
+
+internal class Dependency : IDependency { }
+
+internal interface IService
 {
+    IDependency Dependency1 { get; }
+
+    IDependency Dependency2 { get; }
 }
 
-public class Dependency : IDependency
+internal class Service : IService
 {
-    public override string ToString() => "Dependency";
-}
-
-public interface IService
-{
-    IDependency Dependency { get; }
-}
-
-public class Service : IService
-{
-    public Service(IDependency dependency)
+    public Service(
+        [Tag("Abc")] IDependency dependency1,
+        [Tag("Xyz")] IDependency dependency2)
     {
-        Dependency = dependency;
+        Dependency1 = dependency1;
+        Dependency2 = dependency2;
     }
 
-    public IDependency Dependency { get; }
+    public IDependency Dependency1 { get; }
 
-    public override string ToString() => "Service";
-}
-
-internal partial class Composition
-{
-    private readonly List<string> _log;
-
-    public Composition(List<string> log)
-        : this()
-    {
-        _log = log;
-    }
-
-    partial void OnInstanceCreation<T>(ref T value, object? tag, Lifetime lifetime)
-    {
-        _log.Add(typeof(T).Name);
-    }
+    public IDependency Dependency2 { get; }
 }
 
 DI.Setup("Composition")
-    .Hint(Hint.OnInstanceCreation, "On")
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
+    .Bind<IDependency>("Abc").To<AbcDependency>()
+    .Bind<IDependency>("Xyz").To<XyzDependency>()
+    .Bind<IService>().To<Service>().Root<IService>("Root");
 
-var log = new List<string>();
-var composition = new Composition(log);
+var composition = new Composition();
 var service = composition.Root;
-        
-log.ShouldBe(ImmutableArray.Create("Dependency", "Service"));
+service.Dependency1.ShouldBeOfType<AbcDependency>();
+service.Dependency2.ShouldBeOfType<XyzDependency>();
 ```
 
 <details open>
@@ -73,11 +60,15 @@ classDiagram
   }
   Service --|> IService : 
   class Service {
-    +Service(IDependency dependency)
+    +Service(IDependency dependency1, IDependency dependency2)
   }
-  Dependency --|> IDependency : 
-  class Dependency {
-    +Dependency()
+  AbcDependency --|> IDependency : "Abc" 
+  class AbcDependency {
+    +AbcDependency()
+  }
+  XyzDependency --|> IDependency : "Xyz" 
+  class XyzDependency {
+    +XyzDependency()
   }
   class IService {
     <<abstract>>
@@ -85,7 +76,8 @@ classDiagram
   class IDependency {
     <<abstract>>
   }
-  Service *--  Dependency : IDependency dependency
+  Service *--  AbcDependency : "Abc"  IDependency dependency1
+  Service *--  XyzDependency : "Xyz"  IDependency dependency2
   Composition ..> Service : IService Root
 ```
 
@@ -106,16 +98,15 @@ partial class Composition
   }
   
   #region Composition Roots
-  public Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService Root
+  public Pure.DI.UsageTests.Basics.TagAttributeScenario.IService Root
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency v82Local3F4E1C = new Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency();
-      OnInstanceCreation<Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency>(ref v82Local3F4E1C, null, Pure.DI.Lifetime.Transient);
-      Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service v81Local3F4E1C = new Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service(v82Local3F4E1C);
-      OnInstanceCreation<Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service>(ref v81Local3F4E1C, null, Pure.DI.Lifetime.Transient);
-      return v81Local3F4E1C;
+      Pure.DI.UsageTests.Basics.TagAttributeScenario.AbcDependency v6Local3F4E1C = new Pure.DI.UsageTests.Basics.TagAttributeScenario.AbcDependency();
+      Pure.DI.UsageTests.Basics.TagAttributeScenario.XyzDependency v7Local3F4E1C = new Pure.DI.UsageTests.Basics.TagAttributeScenario.XyzDependency();
+      Pure.DI.UsageTests.Basics.TagAttributeScenario.Service v5Local3F4E1C = new Pure.DI.UsageTests.Basics.TagAttributeScenario.Service(v6Local3F4E1C, v7Local3F4E1C);
+      return v5Local3F4E1C;
     }
   }
   #endregion
@@ -191,8 +182,6 @@ partial class Composition
     throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
   
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-  partial void OnInstanceCreation<T>(ref T value, object? tag, global::Pure.DI.Lifetime lifetime);
   #endregion
   
   public override string ToString()
@@ -208,11 +197,15 @@ partial class Composition
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
-          "    +Service(IDependency dependency)\n" +
+          "    +Service(IDependency dependency1, IDependency dependency2)\n" +
         "  }\n" +
-        "  Dependency --|> IDependency : \n" +
-        "  class Dependency {\n" +
-          "    +Dependency()\n" +
+        "  AbcDependency --|> IDependency : \"Abc\" \n" +
+        "  class AbcDependency {\n" +
+          "    +AbcDependency()\n" +
+        "  }\n" +
+        "  XyzDependency --|> IDependency : \"Xyz\" \n" +
+        "  class XyzDependency {\n" +
+          "    +XyzDependency()\n" +
         "  }\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
@@ -220,7 +213,8 @@ partial class Composition
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  Service *--  Dependency : IDependency dependency\n" +
+        "  Service *--  AbcDependency : \"Abc\"  IDependency dependency1\n" +
+        "  Service *--  XyzDependency : \"Xyz\"  IDependency dependency2\n" +
         "  Composition ..> Service : IService Root";
   }
   
@@ -230,13 +224,13 @@ partial class Composition
   static Composition()
   {
     Resolver3F4E1C0 valResolver3F4E1C0 = new Resolver3F4E1C0();
-    Resolver3F4E1C<Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService>.Value = valResolver3F4E1C0;
+    Resolver3F4E1C<Pure.DI.UsageTests.Basics.TagAttributeScenario.IService>.Value = valResolver3F4E1C0;
     _buckets3F4E1C = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
       out _bucketSize3F4E1C,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService), valResolver3F4E1C0)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.TagAttributeScenario.IService), valResolver3F4E1C0)
       });
   }
   
@@ -247,19 +241,19 @@ partial class Composition
     public static global::Pure.DI.IResolver<Composition, T> Value;
   }
   
-  private sealed class Resolver3F4E1C0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService>
+  private sealed class Resolver3F4E1C0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.TagAttributeScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.Basics.TagAttributeScenario.IService Resolve(Composition composition)
     {
       return composition.Root;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Basics.TagAttributeScenario.IService ResolveByTag(Composition composition, object tag)
     {
       if (Equals(tag, null)) return composition.Root;
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.TagAttributeScenario.IService.");
     }
   }
   #pragma warning restore CS0649

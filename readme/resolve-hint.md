@@ -78,8 +78,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency v74Local882EFC = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
-      return v74Local882EFC;
+      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency v83Local3F4E1C = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
+      return v83Local3F4E1C;
     }
   }
   
@@ -88,9 +88,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency v76Local882EFC = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
-      Pure.DI.UsageTests.Hints.ResolveHintScenario.Service v75Local882EFC = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(v76Local882EFC);
-      return v75Local882EFC;
+      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency v85Local3F4E1C = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
+      Pure.DI.UsageTests.Hints.ResolveHintScenario.Service v84Local3F4E1C = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(v85Local3F4E1C);
+      return v84Local3F4E1C;
     }
   }
   #endregion
