@@ -3,6 +3,7 @@ $v=true
 $p=1
 $d=Member Ordinal Attribute
 $h=When applied to a property or field, these type members will also participate in dependency injection in the appropriate order from smallest value to largest.
+$f=The attribute `Ordinal` is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

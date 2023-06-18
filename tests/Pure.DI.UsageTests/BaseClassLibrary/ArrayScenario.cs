@@ -27,6 +27,7 @@ $f=- System.Collections.Immutable.ImmutableSortedSet<T>
 $f=- System.Collections.Immutable.IImmutableQueue<T>
 $f=- System.Collections.Immutable.ImmutableQueue<T>
 $f=- System.Collections.Immutable.IImmutableStack<T>
+$f=And of course this list can easily be supplemented on its own.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

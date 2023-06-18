@@ -2,7 +2,7 @@
 $v=true
 $p=2
 $d=Factory
-$h=This example demonstrates how to create and initialize an instance manually. 
+$h=This example demonstrates how to create and initialize an instance manually. This approach is more expensive to maintain, but allows you to create objects more flexibly by passing them some state and introducing dependencies. As in the case of automatic dependency embedding, objects give up control on embedding, and the whole process takes place when the object graph is created. 
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

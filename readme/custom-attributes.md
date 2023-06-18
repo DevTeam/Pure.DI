@@ -6,6 +6,7 @@ It's very easy to use your attributes. To do this, you need to create a descenda
 - `TagAttribute`
 - `OrdinalAttribute`
 - `TagAttribute`
+You can also use combined attributes, and each method in the list above has an optional parameter that defines the argument number (the default is 0) from where to get the appropriate metadata for _tag_, _ordinal_, or _type_.
 
 ```c#
 
@@ -92,16 +93,16 @@ classDiagram
 ```c#
 partial class PersonComposition
 {
-  private readonly int _personIdArg3F4E1C;
+  private readonly int _personIdArgAC4CF3;
   
   public PersonComposition(int personId)
   {
-    _personIdArg3F4E1C = personId;
+    _personIdArgAC4CF3 = personId;
   }
   
   internal PersonComposition(PersonComposition parent)
   {
-    _personIdArg3F4E1C = parent._personIdArg3F4E1C;
+    _personIdArgAC4CF3 = parent._personIdArgAC4CF3;
   }
   
   #region Composition Roots
@@ -110,11 +111,11 @@ partial class PersonComposition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      string v2Local3F4E1C;
-      v2Local3F4E1C = "Nik";
-      Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person v1Local3F4E1C = new Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person(v2Local3F4E1C);
-      v1Local3F4E1C.Id = _personIdArg3F4E1C;
-      return v1Local3F4E1C;
+      string v2LocalAC4CF3;
+      v2LocalAC4CF3 = "Nik";
+      Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person v1LocalAC4CF3 = new Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person(v2LocalAC4CF3);
+      v1LocalAC4CF3.Id = _personIdArgAC4CF3;
+      return v1LocalAC4CF3;
     }
   }
   #endregion
@@ -126,7 +127,7 @@ partial class PersonComposition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>()
   {
-    return Resolver3F4E1C<T>.Value.Resolve(this);
+    return ResolverAC4CF3<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -135,7 +136,7 @@ partial class PersonComposition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>(object? tag)
   {
-    return Resolver3F4E1C<T>.Value.ResolveByTag(this, tag);
+    return ResolverAC4CF3<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -144,17 +145,17 @@ partial class PersonComposition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type)
   {
-    int index = (int)(_bucketSize3F4E1C * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _buckets3F4E1C[index];
+    int index = (int)(_bucketSizeAC4CF3 * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _bucketsAC4CF3[index];
     if (ReferenceEquals(pair.Key, type))
     {
       return pair.Value.Resolve(this);
     }
     
-    int maxIndex = index + _bucketSize3F4E1C;
+    int maxIndex = index + _bucketSizeAC4CF3;
     for (int i = index + 1; i < maxIndex; i++)
     {
-      pair = ref _buckets3F4E1C[i];
+      pair = ref _bucketsAC4CF3[i];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -170,17 +171,17 @@ partial class PersonComposition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    int index = (int)(_bucketSize3F4E1C * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _buckets3F4E1C[index];
+    int index = (int)(_bucketSizeAC4CF3 * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _bucketsAC4CF3[index];
     if (ReferenceEquals(pair.Key, type))
     {
       return pair.Value.ResolveByTag(this, tag);
     }
     
-    int maxIndex = index + _bucketSize3F4E1C;
+    int maxIndex = index + _bucketSizeAC4CF3;
     for (int i = index + 1; i < maxIndex; i++)
     {
-      pair = ref _buckets3F4E1C[i];
+      pair = ref _bucketsAC4CF3[i];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -218,30 +219,30 @@ partial class PersonComposition
         "  PersonComposition ..> Person : IPerson Person";
   }
   
-  private readonly static int _bucketSize3F4E1C;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[] _buckets3F4E1C;
+  private readonly static int _bucketSizeAC4CF3;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[] _bucketsAC4CF3;
   
   static PersonComposition()
   {
-    Resolver3F4E1C0 valResolver3F4E1C0 = new Resolver3F4E1C0();
-    Resolver3F4E1C<Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson>.Value = valResolver3F4E1C0;
-    _buckets3F4E1C = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>.Create(
+    ResolverAC4CF30 valResolverAC4CF30 = new ResolverAC4CF30();
+    ResolverAC4CF3<Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson>.Value = valResolverAC4CF30;
+    _bucketsAC4CF3 = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>.Create(
       1,
-      out _bucketSize3F4E1C,
+      out _bucketSizeAC4CF3,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>(typeof(Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson), valResolver3F4E1C0)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>(typeof(Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson), valResolverAC4CF30)
       });
   }
   
   #region Resolvers
   #pragma warning disable CS0649
-  private class Resolver3F4E1C<T>
+  private class ResolverAC4CF3<T>
   {
     public static global::Pure.DI.IResolver<PersonComposition, T> Value;
   }
   
-  private sealed class Resolver3F4E1C0: global::Pure.DI.IResolver<PersonComposition, Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson>
+  private sealed class ResolverAC4CF30: global::Pure.DI.IResolver<PersonComposition, Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson Resolve(PersonComposition composition)

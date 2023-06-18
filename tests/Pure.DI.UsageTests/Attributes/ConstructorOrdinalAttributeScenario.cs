@@ -3,6 +3,7 @@ $v=true
 $p=0
 $d=Constructor Ordinal Attribute
 $h=When applied to any constructor in a type, automatic injection constructor selection is disabled. The selection will only focus on constructors marked with this attribute, in the appropriate order from smallest value to largest.
+$f=The attribute `Ordinal` is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

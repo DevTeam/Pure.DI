@@ -2,7 +2,8 @@
 $v=true
 $p=0
 $d=Func
-$h=_Func<T>_ helps when logic needs to inject instances of some type on demand and multiple times. 
+$h=_Func<T>_ helps when the logic must enter instances of some type on demand or more than once. This is a very handy mechanism for instance replication. For example it is used when implementing the `Lazy<T>` injection.
+$f=Be careful, replication takes into account the lifetime of the object. 
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

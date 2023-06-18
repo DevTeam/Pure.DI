@@ -10,7 +10,7 @@ $f=In addition to the dependency type, you can specify the dependency tag in the
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedVariable
 // ReSharper disable UnusedMemberInSuper.Global
-namespace Pure.DI.UsageTests.Basics.InjectScenario;
+namespace Pure.DI.UsageTests.Basics.InjectionScenario;
 
 using Xunit;
 
@@ -58,6 +58,6 @@ public class Scenario
         var composition = new Composition();
         var service = composition.Root;
 // }            
-        TestTools.SaveClassDiagram(composition, nameof(InjectScenario));
+        TestTools.SaveClassDiagram(composition, nameof(InjectionScenario));
     }
 }

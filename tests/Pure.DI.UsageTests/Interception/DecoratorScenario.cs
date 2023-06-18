@@ -2,8 +2,8 @@
 $v=true
 $p=0
 $d=Decorator
-$h=_Decorator_ is a well known and useful design pattern. To build a chain of nested decorators, it is convenient to use tagged dependencies, as in the example below:
-$f=Here the instance of type _Service_ is marked as _"base"_ is injected into the decorator _DecoratorService_.
+$h=_Decorator_ is a well-known and useful design pattern. It is convenient to use tagged dependencies to build a chain of nested decorators, as in the example below:
+$f=Here an instance of the _Service_ type, labeled _"base"_, is embedded in the decorator _DecoratorService_. You can use any tag that semantically reflects the feature of the abstraction being embedded. The tag can be a constant, a type, or a value of an enumerated type.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

@@ -2,7 +2,7 @@
 $v=true
 $p=1
 $d=IEnumerable
-$h=Specifying `IEnumerable<T>` as the injection type allows instances of all bindings that implement type `T` to be injected in a lazy manner - the instances will be provided one by one.
+$h=Specifying `IEnumerable<T>` as the injection type allows you to inject instances of all bindings that implement type `T` in a lazy fashion - the instances will be provided one by one, in order corresponding to the sequence of bindings.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

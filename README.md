@@ -205,6 +205,7 @@ dotnet run
 - [Child composition](readme/child-composition.md)
 - [Multi-contract bindings](readme/multi-contract-bindings.md)
 - [Field Injection](readme/field-injection.md)
+- [Method Injection](readme/method-injection.md)
 - [Property Injection](readme/property-injection.md)
 - [Complex Generics](readme/complex-generics.md)
 ### Lifetimes

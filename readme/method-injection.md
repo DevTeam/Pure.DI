@@ -1,39 +1,37 @@
-#### Span and ReadOnlySpan
+#### Method Injection
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/SpanScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/MethodInjectionScenario.cs)
 
-Specifying `Span<T>` and `ReadOnlySpan<T>` work the same as with the array `T[]`.
+To use dependency implementation for a method, simply add the _Ordinal_ attribute to that method, specifying the sequence number that will be used to define the call to that method:
 
 ```c#
-internal struct Dependency
-{
-}
+internal interface IDependency { }
+
+internal class Dependency : IDependency { }
 
 internal interface IService
 {
-    int Count { get; }
+    IDependency? Dependency { get; }
 }
 
 internal class Service : IService
 {
-    public Service(ReadOnlySpan<Dependency> dependencies)
+    [Ordinal(0)]
+    public void SetDependency(IDependency dependency)
     {
-        Count = dependencies.Length;
+        Dependency = dependency;
     }
 
-    public int Count { get; }
+    public IDependency? Dependency { get; private set; }
 }
 
 DI.Setup("Composition")
-    .Bind<Dependency>('a').To<Dependency>()
-    .Bind<Dependency>('b').To<Dependency>()
-    .Bind<Dependency>('c').To<Dependency>()
-    .Bind<IService>().To<Service>()
-    .Root<IService>("Root");
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>().Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;
-service.Count.ShouldBe(3);
+service.Dependency.ShouldBeOfType<Dependency>();
 ```
 
 <details open>
@@ -48,21 +46,22 @@ classDiagram
     +object ResolveᐸTᐳ(Type type)
     +object ResolveᐸTᐳ(Type type, object? tag)
   }
-  class ReadOnlySpanᐸDependencyᐳ
-  Service --|> IService : 
-  class Service {
-    +Service(ReadOnlySpanᐸDependencyᐳ dependencies)
-  }
+  Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
+  }
+  Service --|> IService : 
+  class Service {
+    +Service()
+    +SetDependency(IDependency dependency) : Void
+  }
+  class IDependency {
+    <<abstract>>
   }
   class IService {
     <<abstract>>
   }
-  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'a'  
-  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'b'  
-  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'c'  
-  Service *--  ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ dependencies
+  Service *--  Dependency : IDependency dependency
   Composition ..> Service : IService Root
 ```
 
@@ -83,17 +82,15 @@ partial class Composition
   }
   
   #region Composition Roots
-  public Pure.DI.UsageTests.BCL.SpanScenario.IService Root
+  public Pure.DI.UsageTests.Basics.MethodInjectionScenario.IService Root
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.BCL.SpanScenario.Dependency v34LocalAC4CF3 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
-      Pure.DI.UsageTests.BCL.SpanScenario.Dependency v35LocalAC4CF3 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
-      Pure.DI.UsageTests.BCL.SpanScenario.Dependency v36LocalAC4CF3 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
-      System.ReadOnlySpan<Pure.DI.UsageTests.BCL.SpanScenario.Dependency> v33LocalAC4CF3 = stackalloc Pure.DI.UsageTests.BCL.SpanScenario.Dependency[3] { v34LocalAC4CF3, v35LocalAC4CF3, v36LocalAC4CF3 };
-      Pure.DI.UsageTests.BCL.SpanScenario.Service v32LocalAC4CF3 = new Pure.DI.UsageTests.BCL.SpanScenario.Service(v33LocalAC4CF3);
-      return v32LocalAC4CF3;
+      Pure.DI.UsageTests.Basics.MethodInjectionScenario.Dependency v66LocalAC4CF3 = new Pure.DI.UsageTests.Basics.MethodInjectionScenario.Dependency();
+      Pure.DI.UsageTests.Basics.MethodInjectionScenario.Service v65LocalAC4CF3 = new Pure.DI.UsageTests.Basics.MethodInjectionScenario.Service();
+      v65LocalAC4CF3.SetDependency(v66LocalAC4CF3);
+      return v65LocalAC4CF3;
     }
   }
   #endregion
@@ -182,21 +179,22 @@ partial class Composition
           "    +object ResolveᐸTᐳ(Type type)\n" +
           "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
         "  }\n" +
-        "  class ReadOnlySpanᐸDependencyᐳ\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(ReadOnlySpanᐸDependencyᐳ dependencies)\n" +
-        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service()\n" +
+          "    +SetDependency(IDependency dependency) : Void\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
         "  }\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'a'  \n" +
-        "  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'b'  \n" +
-        "  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'c'  \n" +
-        "  Service *--  ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ dependencies\n" +
+        "  Service *--  Dependency : IDependency dependency\n" +
         "  Composition ..> Service : IService Root";
   }
   
@@ -206,13 +204,13 @@ partial class Composition
   static Composition()
   {
     ResolverAC4CF30 valResolverAC4CF30 = new ResolverAC4CF30();
-    ResolverAC4CF3<Pure.DI.UsageTests.BCL.SpanScenario.IService>.Value = valResolverAC4CF30;
+    ResolverAC4CF3<Pure.DI.UsageTests.Basics.MethodInjectionScenario.IService>.Value = valResolverAC4CF30;
     _bucketsAC4CF3 = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
       out _bucketSizeAC4CF3,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.SpanScenario.IService), valResolverAC4CF30)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.MethodInjectionScenario.IService), valResolverAC4CF30)
       });
   }
   
@@ -223,19 +221,19 @@ partial class Composition
     public static global::Pure.DI.IResolver<Composition, T> Value;
   }
   
-  private sealed class ResolverAC4CF30: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.SpanScenario.IService>
+  private sealed class ResolverAC4CF30: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.MethodInjectionScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.BCL.SpanScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.Basics.MethodInjectionScenario.IService Resolve(Composition composition)
     {
       return composition.Root;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.BCL.SpanScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Basics.MethodInjectionScenario.IService ResolveByTag(Composition composition, object tag)
     {
       if (Equals(tag, null)) return composition.Root;
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.SpanScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.MethodInjectionScenario.IService.");
     }
   }
   #pragma warning restore CS0649
@@ -245,15 +243,3 @@ partial class Composition
 
 </details>
 
-
-This scenario is even more efficient in the case of `Span<T>` or `ReadOnlySpan<T>` when `T` is a value type. In this case, there is no heap allocation, and the composition root `IService` looks like this:
-```c#
-public IService Root
-{
-  get
-  {
-    ReadOnlySpan<Dependency> dependencies = stackalloc Dependency[3] { new Dependency(), new Dependency(), new Dependency() };
-    return new Service(dependencies);
-  }
-}
-```

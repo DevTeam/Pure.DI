@@ -6,6 +6,7 @@ $h=It's very easy to use your attributes. To do this, you need to create a desce
 $h=- `TagAttribute`
 $h=- `OrdinalAttribute`
 $h=- `TagAttribute`
+$h=You can also use combined attributes, and each method in the list above has an optional parameter that defines the argument number (the default is 0) from where to get the appropriate metadata for _tag_, _ordinal_, or _type_.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

@@ -129,11 +129,11 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string> v49Local3F4E1C = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string>();
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int> v50Local3F4E1C = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int>();
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>> v48Local3F4E1C = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>>(v49Local3F4E1C, v50Local3F4E1C);
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string> v47Local3F4E1C = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>(v48Local3F4E1C);
-      return v47Local3F4E1C;
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string> v49LocalAC4CF3 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string>();
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int> v50LocalAC4CF3 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int>();
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>> v48LocalAC4CF3 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>>(v49LocalAC4CF3, v50LocalAC4CF3);
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string> v47LocalAC4CF3 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>(v48LocalAC4CF3);
+      return v47LocalAC4CF3;
     }
   }
   #endregion
@@ -145,7 +145,7 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>()
   {
-    return Resolver3F4E1C<T>.Value.Resolve(this);
+    return ResolverAC4CF3<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -154,7 +154,7 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>(object? tag)
   {
-    return Resolver3F4E1C<T>.Value.ResolveByTag(this, tag);
+    return ResolverAC4CF3<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -163,17 +163,17 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type)
   {
-    int index = (int)(_bucketSize3F4E1C * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _buckets3F4E1C[index];
+    int index = (int)(_bucketSizeAC4CF3 * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _bucketsAC4CF3[index];
     if (ReferenceEquals(pair.Key, type))
     {
       return pair.Value.Resolve(this);
     }
     
-    int maxIndex = index + _bucketSize3F4E1C;
+    int maxIndex = index + _bucketSizeAC4CF3;
     for (int i = index + 1; i < maxIndex; i++)
     {
-      pair = ref _buckets3F4E1C[i];
+      pair = ref _bucketsAC4CF3[i];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -189,17 +189,17 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    int index = (int)(_bucketSize3F4E1C * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _buckets3F4E1C[index];
+    int index = (int)(_bucketSizeAC4CF3 * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _bucketsAC4CF3[index];
     if (ReferenceEquals(pair.Key, type))
     {
       return pair.Value.ResolveByTag(this, tag);
     }
     
-    int maxIndex = index + _bucketSize3F4E1C;
+    int maxIndex = index + _bucketSizeAC4CF3;
     for (int i = index + 1; i < maxIndex; i++)
     {
-      pair = ref _buckets3F4E1C[i];
+      pair = ref _bucketsAC4CF3[i];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -252,30 +252,30 @@ partial class Composition
         "  ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *--  DependencyStructᐸInt32ᐳ : \"value type\"  IDependencyᐸInt32ᐳ dependency2";
   }
   
-  private readonly static int _bucketSize3F4E1C;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets3F4E1C;
+  private readonly static int _bucketSizeAC4CF3;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsAC4CF3;
   
   static Composition()
   {
-    Resolver3F4E1C0 valResolver3F4E1C0 = new Resolver3F4E1C0();
-    Resolver3F4E1C<Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>>.Value = valResolver3F4E1C0;
-    _buckets3F4E1C = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    ResolverAC4CF30 valResolverAC4CF30 = new ResolverAC4CF30();
+    ResolverAC4CF3<Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>>.Value = valResolverAC4CF30;
+    _bucketsAC4CF3 = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSize3F4E1C,
+      out _bucketSizeAC4CF3,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>), valResolver3F4E1C0)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>), valResolverAC4CF30)
       });
   }
   
   #region Resolvers
   #pragma warning disable CS0649
-  private class Resolver3F4E1C<T>
+  private class ResolverAC4CF3<T>
   {
     public static global::Pure.DI.IResolver<Composition, T> Value;
   }
   
-  private sealed class Resolver3F4E1C0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>>
+  private sealed class ResolverAC4CF30: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string> Resolve(Composition composition)

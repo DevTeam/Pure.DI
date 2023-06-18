@@ -2,6 +2,7 @@
 $v=true
 $p=5
 $d=Tuple 
+$h=The tuples feature provides concise syntax to group multiple data elements in a lightweight data structure. The following example shows how a type can ask to inject a tuple argument into it:
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
