@@ -2,4 +2,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Pure.DI.Core\Pure.DI.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.6.2" />
+    <PackageReference Update="Shouldly" Version="4.2.1" />
+  </ItemGroup>
 </Project>

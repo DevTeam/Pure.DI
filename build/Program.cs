@@ -1,7 +1,7 @@
 ﻿// Run this from the working directory where the solution or project to build is located.
 
 using System.CommandLine;
-using Build;
+using Build;using HostApi;
 using JetBrains.TeamCity.ServiceMessages.Write.Special;
 using NuGet.Versioning;
 using Pure.DI;
@@ -12,6 +12,8 @@ var settings = new Settings(
     VersionRange.Parse(Property.Get("version", "2.*-*", true)),
     Property.Get("NuGetKey", string.Empty),
     new BuildCase(new Version(4, 3, 1)));
+
+new DotNetBuildServerShutdown().Run();
 
 var composition = new Composition(settings);
 return await composition.Root.RunAsync();

@@ -1,1 +1,1 @@
-dotnet.exe run --project ./build -- "%1"
+dotnet.exe run --project ./build -- %*

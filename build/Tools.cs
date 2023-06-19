@@ -11,28 +11,33 @@ internal static partial class Tools
     
     public static NuGetVersion GetNextVersion(NuGetRestoreSettings settings, VersionRange versionRange) =>
         GetService<INuGet>()
-            .Restore(settings.WithHideWarningsAndErrors(true).WithVersionRange(versionRange))
+            .Restore(settings.WithHideWarningsAndErrors(true).WithVersionRange(versionRange).WithNoCache(true))
             .Where(i => i.Name == settings.PackageId)
             .Select(i => i.NuGetVersion)
             .Select(i => i.Release != string.Empty 
-                ? new NuGetVersion(i.Major, i.Minor, i.Patch, GetNextRelease(i.Release))
+                ? GetNextRelease(versionRange, i)
                 : new NuGetVersion(i.Major, i.Minor, i.Patch + 1))
             .Max() ?? new NuGetVersion(2, 0, 0, "dev");
 
-    private static string GetNextRelease(string release)
+    private static NuGetVersion GetNextRelease(VersionRangeBase versionRange, NuGetVersion version)
     {
-        var match = ReleaseRegex.Match(release);
+        if (versionRange.MinVersion.Release != "0" && versionRange.MinVersion.Release != version.Release)
+        {
+            return versionRange.MinVersion;
+        }
+        
+        var match = ReleaseRegex.Match(version.Release);
         if (!match.Success)
         {
-            return release;
+            return version;
         }
 
-        if (int.TryParse(match.Groups[2].Value, out var index))
+        if (!int.TryParse(match.Groups[2].Value, out var index))
         {
-            return match.Groups[1].Value + (index + 1);
+            return version;
         }
-
-        return release;
+        
+        return new NuGetVersion(version.Major, version.Minor, version.Patch, match.Groups[1].Value + (index + 1));
     }
     
     public static string GetSolutionDirectory()

@@ -8,7 +8,7 @@
     <ItemGroup>
         <PackageReference Include="CSharpInteractive" Version="1.*" />
         <PackageReference Include="Ninject" Version="3.3.6" />
-        <PackageReference Include="Pure.DI" Version="2.0.0-alpha2">
+        <PackageReference Include="Pure.DI" Version="2.0.0-beta1">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

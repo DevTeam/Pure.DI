@@ -4,6 +4,8 @@
     <ProjectReference Include="..\..\src\Pure.DI\Pure.DI.csproj" />
     <ProjectReference Include="..\..\src\Pure.DI.Core\Pure.DI.Core.csproj" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="$(AnalyzerRoslynPackageVersion)" PrivateAssets="all" />
+    <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.6.2" />
+    <PackageReference Update="Shouldly" Version="4.2.1" />
   </ItemGroup>
   
 </Project>
