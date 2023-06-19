@@ -122,6 +122,44 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldOverrideGlobalBindingWithoutWarning()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<string>().To(_ => "Abc")
+                .Bind<global::System.Collections.Generic.IComparer<TT>>().To(_ => global::System.Collections.Generic.Comparer<TT>.Default)                           
+                .Root<string>("Result");
+        }
+    }          
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            Console.WriteLine(composition.Result);                                           
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
+    }
+    
+    [Fact]
     public async Task ShouldOverrideBindingWhenDependsOn()
     {
         // Given

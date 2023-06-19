@@ -171,7 +171,7 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
         _setups.Add(
             _setup with
             {
-                Bindings = _bindings.ToImmutableArray(),
+                Bindings = _bindings.Select(i => i with { SourceSetup = _setup }).ToImmutableArray(),
                 Roots = _roots.ToImmutableArray(),
                 DependsOn = _dependsOn.ToImmutableArray(),
                 TypeAttributes = _typeAttributes.ToImmutableArray(),

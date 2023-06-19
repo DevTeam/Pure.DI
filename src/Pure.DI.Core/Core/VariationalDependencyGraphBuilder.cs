@@ -62,12 +62,15 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
                     }
                 }
 
-                foreach (var items in overriddenInjections)
+                foreach (var item in overriddenInjections)
                 {
-                    contracts.Remove(items.Key);
-                    if (allOverriddenInjections.Add(items.Key))
+                    contracts.Remove(item.Key);
+                    if (allOverriddenInjections.Add(item.Key))
                     {
-                        _logger.CompileWarning($"{items.Key.ToString()} has been overridden.", items.Value.Binding.Source.GetLocation(), LogId.WarningOverriddenBinding);
+                        if (node.Binding.SourceSetup.Kind != CompositionKind.Global)
+                        {
+                            _logger.CompileWarning($"{item.Key.ToString()} has been overridden.", item.Value.Binding.Source.GetLocation(), LogId.WarningOverriddenBinding);
+                        }
                     }
                 }
             }

@@ -325,6 +325,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
         var newBinding = new MdBinding(
             newId,
             targetNode.Binding.Source,
+            setup,
             semanticModel,
             newContracts,
             newTags,
@@ -364,20 +365,24 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
             ? ImmutableArray.Create(new MdTag(0, tag))
             : ImmutableArray<MdTag>.Empty;
         var newContracts = ImmutableArray.Create(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, injection.Type, newTags));
-        return new MdBinding(newId, targetNode.Binding.Source, targetNode.Binding.SemanticModel, newContracts, ImmutableArray<MdTag>.Empty)
-        {
-            Id = newId,
-            SemanticModel = targetNode.Binding.SemanticModel,
-            Source = targetNode.Binding.Source,
-            Lifetime = new MdLifetime(targetNode.Binding.SemanticModel, targetNode.Binding.Source, lifetime),
-            Construct = new MdConstruct(
+        return new MdBinding(
+            newId,
+            targetNode.Binding.Source,
+            setup,
+            targetNode.Binding.SemanticModel,
+            newContracts,
+            ImmutableArray<MdTag>.Empty,
+            new MdLifetime(targetNode.Binding.SemanticModel, targetNode.Binding.Source, lifetime),
+            default,
+            default,
+            default,
+            new MdConstruct(
                 targetNode.Binding.SemanticModel,
                 targetNode.Binding.Source,
                 injection.Type,
                 elementType,
                 constructKind,
-                dependencyContracts.ToImmutableArray())
-        };
+                dependencyContracts.ToImmutableArray()));
     }
     
     private ProcessingNode CreateNewProcessingNode(in Injection injection, DependencyNode dependencyNode)

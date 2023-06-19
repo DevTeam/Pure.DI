@@ -3,6 +3,7 @@ namespace Pure.DI.Core.Models;
 internal readonly record struct MdBinding(
     int Id,
     in SyntaxNode Source,
+    in MdSetup SourceSetup,
     in SemanticModel SemanticModel,
     in ImmutableArray<MdContract> Contracts,
     in ImmutableArray<MdTag> Tags,

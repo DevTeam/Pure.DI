@@ -10,6 +10,7 @@ internal class RootDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<Depende
             var rootBinding = new MdBinding(
                 id--,
                 root.Source,
+                setup,
                 root.SemanticModel,
                 ImmutableArray<MdContract>.Empty,
                 ImmutableArray<MdTag>.Empty);
