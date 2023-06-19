@@ -457,6 +457,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         
         if (variable.InstanceType.IsValueType)
         {
+            code.AppendLine($"{Constant.SystemNamespace}Threading.Thread.MemoryBarrier();");
             code.AppendLine($"{variable.Name}Created = true;");
         }
 
