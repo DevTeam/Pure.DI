@@ -16,6 +16,12 @@ namespace Pure.DI
                         ctx.Inject<TT>(ctx.Tag, out value);
                         return value;
                     }))
+                .Bind<global::System.Collections.Generic.IComparer<TT>>()
+                .Bind<global::System.Collections.Generic.Comparer<TT>>()
+                    .To(_ => global::System.Collections.Generic.Comparer<TT>.Default)
+                .Bind<global::System.Collections.Generic.IEqualityComparer<TT>>()
+                .Bind<global::System.Collections.Generic.EqualityComparer<TT>>()
+                    .To(_ => global::System.Collections.Generic.EqualityComparer<TT>.Default)
 #if NETSTANDARD || NET || NETCOREAPP || NET40_OR_GREATER
                 .Bind<global::System.Lazy<TT>>()
                     .To(ctx =>
@@ -34,14 +40,14 @@ namespace Pure.DI
 #endif              
 #if NETSTANDARD || NET || NETCOREAPP                
                 .Bind<global::System.Lazy<TT, TT1>>()
-                .To(ctx =>
-                {
-                    global::System.Func<TT> func;
-                    ctx.Inject<global::System.Func<TT>>(ctx.Tag, out func);
-                    TT1 metadata;
-                    ctx.Inject<TT1>(ctx.Tag, out metadata);
-                    return new global::System.Lazy<TT, TT1>(func, metadata, true);
-                })
+                    .To(ctx =>
+                    {
+                        global::System.Func<TT> func;
+                        ctx.Inject<global::System.Func<TT>>(ctx.Tag, out func);
+                        TT1 metadata;
+                        ctx.Inject<TT1>(ctx.Tag, out metadata);
+                        return new global::System.Lazy<TT, TT1>(func, metadata, true);
+                    })
 #endif
 
                 // Collections
