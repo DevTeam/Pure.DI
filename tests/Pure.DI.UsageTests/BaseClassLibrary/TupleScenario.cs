@@ -43,12 +43,12 @@ public class Scenario
     public void Run()
     {
         // ToString = On
+        // FormatCode = On
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<Point>().To(_ => new Point(7, 9))
-            .Bind<IService>().To<Service>()
-            .Root<IService>("Root");
+            .Bind<IService>().To<Service>().Root<IService>("Root");
 
         var composition = new Composition();
         var root = composition.Root;

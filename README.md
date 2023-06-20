@@ -23,7 +23,7 @@ Pure.DI is __NOT__ a framework or library, but a source code generator. It gener
 - [X] Ultra-fine tuning of generic types.
   >_Pure.DI_ offers special type markers instead of using open generic types. This allows you to more accurately build the object graph and take full advantage of generic types.
 - [X] Supports basic .NET BCL types out of the box.
-  >_Pure.DI_ already [supports](#base-class-library) many of [BCL types](https://docs.microsoft.com/en-us/dotnet/standard/framework-libraries#base-class-libraries) like Array, IEnumerable, IList, ISet, Func, ThreadLocal, etc. without any extra effort.
+  >_Pure.DI_ already [supports](#base-class-library) many of [BCL types](https://docs.microsoft.com/en-us/dotnet/standard/framework-libraries#base-class-libraries) like `Array`, `IEnumerable<T>`, `IList<T>`, `ISet<T>`, `Func<T>`, `ThreadLocal`, `Task<T>`, `MemoryPool<T>`, `ArrayPool<T>`, `ReadOnlyMemory<T>`, `Memory<T>`, `ReadOnlySpan<T>`, `Span<T>`, `IComparer<T>`, `IEqualityComparer<T>` and etc. without any extra effort.
 - [X] Well suited for creating libraries or frameworks, as well as where resource consumption is especially critical.
   >High performance, zero memory consumption/preparation overhead and no dependencies make it an ideal assistant for building libraries and frameworks.
 
@@ -228,6 +228,8 @@ dotnet run
 - [Lazy](readme/lazy.md)
 - [Span and ReadOnlySpan](readme/span-and-readonlyspan.md)
 - [Tuple](readme/tuple.md)
+- [Func with arguments](readme/func-with-arguments.md)
+- [Overriding the BCL binding](readme/overriding-the-bcl-binding.md)
 ### Interception
 - [Decorator](readme/decorator.md)
 - [Interception](readme/interception.md)
@@ -751,3 +753,108 @@ The _PureDISeverity_ property has several options available:
 
 </details>
 
+
+## Benchmarks
+
+<details>
+<summary>Transient</summary>
+
+<table>
+<thead><tr><th>                Method</th><th>    Mean</th><th>Error</th><th> StdDev</th><th>Ratio</th><th>RatioSD</th>
+</tr>
+</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>0.0000 ns</td><td>0.0000 ns</td><td>0.0000 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>6.8675 ns</td><td>0.2339 ns</td><td>0.2297 ns</td><td> </td><td> </td>
+</tr><tr><td>Pure.DI</td><td>8.7792 ns</td><td>0.2086 ns</td><td>0.1849 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>14.5828 ns</td><td>0.3931 ns</td><td>0.5381 ns</td><td> </td><td> </td>
+</tr><tr><td>LightInject</td><td>19.4300 ns</td><td>0.4348 ns</td><td>0.5007 ns</td><td> </td><td> </td>
+</tr><tr><td>DryIoc</td><td>35.3353 ns</td><td>0.7450 ns</td><td>1.2650 ns</td><td> </td><td> </td>
+</tr><tr><td>SimpleInjector</td><td>39.1478 ns</td><td>0.7552 ns</td><td>0.6306 ns</td><td> </td><td> </td>
+</tr><tr><td>MicrosoftDependencyInjection</td><td>45.4503 ns</td><td>0.9488 ns</td><td>0.8875 ns</td><td> </td><td> </td>
+</tr><tr><td>Autofac</td><td>15,105.4674 ns</td><td>379.9306 ns</td><td>1,007.5221 ns</td><td> </td><td> </td>
+</tr></tbody></table>
+
+</details>
+
+<details>
+<summary>Singleton</summary>
+
+<table>
+<thead><tr><th>                Method</th><th>    Mean</th><th>Error</th><th>StdDev</th><th>  Median</th><th>Ratio</th><th>RatioSD</th>
+</tr>
+</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>0.0171 ns</td><td>0.0215 ns</td><td>0.0191 ns</td><td>0.0135 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>9.9769 ns</td><td>1.0123 ns</td><td>2.9847 ns</td><td>8.1552 ns</td><td> </td><td> </td>
+</tr><tr><td>Pure.DI</td><td>10.0455 ns</td><td>0.2791 ns</td><td>0.5172 ns</td><td>9.9146 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>14.2446 ns</td><td>0.3790 ns</td><td>0.4055 ns</td><td>14.1887 ns</td><td> </td><td> </td>
+</tr><tr><td>DryIoc</td><td>33.8615 ns</td><td>0.7125 ns</td><td>0.5950 ns</td><td>34.1763 ns</td><td> </td><td> </td>
+</tr><tr><td>MicrosoftDependencyInjection</td><td>46.8315 ns</td><td>0.9693 ns</td><td>2.2848 ns</td><td>46.8788 ns</td><td> </td><td> </td>
+</tr><tr><td>LightInject</td><td>58.3402 ns</td><td>1.1001 ns</td><td>1.4686 ns</td><td>57.9097 ns</td><td> </td><td> </td>
+</tr><tr><td>SimpleInjector</td><td>59.6844 ns</td><td>3.8012 ns</td><td>11.2080 ns</td><td>53.5893 ns</td><td> </td><td> </td>
+</tr><tr><td>Autofac</td><td>11,372.3477 ns</td><td>305.3628 ns</td><td>809.7788 ns</td><td>11,099.8688 ns</td><td> </td><td> </td>
+</tr></tbody></table>
+
+</details>
+
+<details>
+<summary>Func</summary>
+
+<table>
+<thead><tr><th>                Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th>
+</tr>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>140.8 ns</td><td>2.81 ns</td><td>7.01 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>151.3 ns</td><td>3.12 ns</td><td>6.24 ns</td><td>1.07</td><td>0.08</td>
+</tr><tr><td>Pure.DI</td><td>156.0 ns</td><td>3.17 ns</td><td>5.29 ns</td><td>1.10</td><td>0.08</td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>157.6 ns</td><td>2.99 ns</td><td>7.73 ns</td><td>1.12</td><td>0.07</td>
+</tr><tr><td>DryIoc</td><td>187.8 ns</td><td>3.75 ns</td><td>5.94 ns</td><td>1.32</td><td>0.09</td>
+</tr><tr><td>LightInject</td><td>771.6 ns</td><td>13.55 ns</td><td>12.01 ns</td><td>5.61</td><td>0.19</td>
+</tr><tr><td>Autofac</td><td>13,204.9 ns</td><td>215.41 ns</td><td>190.96 ns</td><td>95.97</td><td>2.85</td>
+</tr></tbody></table>
+
+</details>
+
+<details>
+<summary>Array</summary>
+
+<table>
+<thead><tr><th>                Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
+</tr>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>144.4 ns</td><td>2.60 ns</td><td>2.89 ns</td><td>143.3 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>Pure.DI</td><td>165.5 ns</td><td>3.75 ns</td><td>10.01 ns</td><td>162.2 ns</td><td>1.16</td><td>0.07</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>181.6 ns</td><td>8.74 ns</td><td>25.77 ns</td><td>169.6 ns</td><td>1.24</td><td>0.17</td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>187.6 ns</td><td>9.98 ns</td><td>29.42 ns</td><td>172.7 ns</td><td>1.29</td><td>0.19</td>
+</tr><tr><td>DryIoc</td><td>199.0 ns</td><td>4.49 ns</td><td>11.75 ns</td><td>196.7 ns</td><td>1.44</td><td>0.10</td>
+</tr><tr><td>LightInject</td><td>217.8 ns</td><td>8.57 ns</td><td>25.28 ns</td><td>204.0 ns</td><td>1.63</td><td>0.21</td>
+</tr><tr><td>Autofac</td><td>16,941.7 ns</td><td>322.07 ns</td><td>316.32 ns</td><td>16,874.2 ns</td><td>117.29</td><td>2.37</td>
+</tr></tbody></table>
+
+</details>
+
+<details>
+<summary>Enum</summary>
+
+<table>
+<thead><tr><th>                Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th>
+</tr>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>321.5 ns</td><td>5.89 ns</td><td>6.55 ns</td><td>0.94</td><td>0.03</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>338.8 ns</td><td>6.79 ns</td><td>10.76 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>341.9 ns</td><td>6.96 ns</td><td>8.01 ns</td><td>1.00</td><td>0.03</td>
+</tr><tr><td>Pure.DI</td><td>349.4 ns</td><td>6.40 ns</td><td>9.78 ns</td><td>1.03</td><td>0.05</td>
+</tr><tr><td>LightInject</td><td>386.8 ns</td><td>5.97 ns</td><td>4.99 ns</td><td>1.13</td><td>0.03</td>
+</tr><tr><td>DryIoc</td><td>419.7 ns</td><td>8.40 ns</td><td>11.49 ns</td><td>1.24</td><td>0.05</td>
+</tr><tr><td>MicrosoftDependencyInjection</td><td>427.1 ns</td><td>8.57 ns</td><td>12.30 ns</td><td>1.26</td><td>0.04</td>
+</tr><tr><td>Autofac</td><td>17,147.3 ns</td><td>319.05 ns</td><td>282.83 ns</td><td>49.94</td><td>2.07</td>
+</tr></tbody></table>
+
+</details>
+
+<details>
+<summary>Benchmarks environment</summary>
+
+<pre><code>
+BenchmarkDotNet=v0.13.5, OS=Windows 11 (10.0.22000.1817/21H2/SunValley), VM=Hyper-V
+Intel Xeon Platinum 8171M CPU 2.60GHz, 1 CPU, 2 logical cores and 1 physical core
+.NET SDK=7.0.203
+  [Host]     : .NET 7.0.5 (7.0.523.17405), X64 RyuJIT AVX2
+  DefaultJob : .NET 7.0.5 (7.0.523.17405), X64 RyuJIT AVX2
+</code></pre>
+
+</details>

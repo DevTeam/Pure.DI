@@ -42,7 +42,7 @@ public class Scenario
     public void Run()
     {
         // ToString = On
-        // FormatCode = Off
+        // FormatCode = On
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()

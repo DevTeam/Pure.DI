@@ -30,7 +30,6 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
         }
         
         code.AppendLine("#region Resolvers");
-        code.AppendLine("#pragma warning disable CS0649");
         code.AppendLine($"private class {ResolverInfo.ResolverClassName}<T>");
         code.AppendLine("{");
         using (code.Indent())
@@ -85,7 +84,6 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
             }
         }
         
-        code.AppendLine("#pragma warning restore CS0649");
         code.AppendLine("#endregion");
         return composition with { MembersCount = composition.MembersCount + 1 };
     }

@@ -45,6 +45,7 @@ public class Scenario
     public void Run()
     {
         // ToString = On
+        // FormatCode = On
 // {            
         DI.Setup("Composition")
             .Arg<string>("serviceName")

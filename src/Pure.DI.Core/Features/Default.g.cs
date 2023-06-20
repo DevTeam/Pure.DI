@@ -64,6 +64,10 @@ namespace Pure.DI
                         ctx.Inject<TT[]>(out var arr);
                         return new global::System.ReadOnlyMemory<TT>(arr);
                     })
+                .Bind<global::System.Buffers.MemoryPool<TT>>()
+                    .To(_ => global::System.Buffers.MemoryPool<TT>.Shared)
+                .Bind<global::System.Buffers.ArrayPool<TT>>()
+                    .To(_ => global::System.Buffers.ArrayPool<TT>.Shared)
 #endif                
                 .Bind<global::System.Collections.Generic.ICollection<TT>>()
                 .Bind<global::System.Collections.Generic.IList<TT>>()

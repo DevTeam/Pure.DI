@@ -33,7 +33,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
-        // FormatCode = Off
+        // FormatCode = On
 // {            
         DI.Setup("Composition")
             .Hint(Hint.ToString, "On")

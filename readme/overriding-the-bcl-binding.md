@@ -1,8 +1,8 @@
-#### Tag Attribute
+#### Overriding the BCL binding
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Attributes/TagAttributeScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/OverridingBclBindingScenario.cs)
 
-Sometimes it's important to take control of building a dependency graph. For example, when there are multiple implementations of the same contract. In this case, _tags_ will help:
+At any time, the default binding to the BCL type can be changed to your own:
 
 ```c#
 internal interface IDependency { }
@@ -11,39 +11,36 @@ internal class AbcDependency : IDependency { }
 
 internal class XyzDependency : IDependency { }
 
-internal class Dependency : IDependency { }
-
 internal interface IService
 {
-    IDependency Dependency1 { get; }
-
-    IDependency Dependency2 { get; }
+    IDependency[] Dependencies { get; }
 }
 
 internal class Service : IService
 {
-    public Service(
-        [Tag("Abc")] IDependency dependency1,
-        [Tag("Xyz")] IDependency dependency2)
+    public Service(IDependency[] dependencies)
     {
-        Dependency1 = dependency1;
-        Dependency2 = dependency2;
+        Dependencies = dependencies;
     }
 
-    public IDependency Dependency1 { get; }
-
-    public IDependency Dependency2 { get; }
+    public IDependency[] Dependencies { get; }
 }
 
 DI.Setup("Composition")
-    .Bind<IDependency>("Abc").To<AbcDependency>()
-    .Bind<IDependency>("Xyz").To<XyzDependency>()
+    .Bind<IDependency[]>().To(_ => new IDependency[]
+    {
+        new AbcDependency(),
+        new XyzDependency(),
+        new AbcDependency()
+    })
     .Bind<IService>().To<Service>().Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;
-service.Dependency1.ShouldBeOfType<AbcDependency>();
-service.Dependency2.ShouldBeOfType<XyzDependency>();
+service.Dependencies.Length.ShouldBe(3);
+service.Dependencies[0].ShouldBeOfType<AbcDependency>();
+service.Dependencies[1].ShouldBeOfType<XyzDependency>();
+service.Dependencies[2].ShouldBeOfType<AbcDependency>();
 ```
 
 <details open>
@@ -60,24 +57,13 @@ classDiagram
   }
   Service --|> IService : 
   class Service {
-    +Service(IDependency dependency1, IDependency dependency2)
+    +Service(ArrayᐸIDependencyᐳ dependencies)
   }
-  AbcDependency --|> IDependency : "Abc" 
-  class AbcDependency {
-    +AbcDependency()
-  }
-  XyzDependency --|> IDependency : "Xyz" 
-  class XyzDependency {
-    +XyzDependency()
-  }
+  class ArrayᐸIDependencyᐳ
   class IService {
     <<abstract>>
   }
-  class IDependency {
-    <<abstract>>
-  }
-  Service *--  AbcDependency : "Abc"  IDependency dependency1
-  Service *--  XyzDependency : "Xyz"  IDependency dependency2
+  Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ dependencies
   Composition ..> Service : IService Root
 ```
 
@@ -98,15 +84,20 @@ partial class Composition
   }
   
   #region Composition Roots
-  public Pure.DI.UsageTests.Basics.TagAttributeScenario.IService Root
+  public Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.IService Root
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.TagAttributeScenario.AbcDependency v6Local12CAAA = new Pure.DI.UsageTests.Basics.TagAttributeScenario.AbcDependency();
-      Pure.DI.UsageTests.Basics.TagAttributeScenario.XyzDependency v7Local12CAAA = new Pure.DI.UsageTests.Basics.TagAttributeScenario.XyzDependency();
-      Pure.DI.UsageTests.Basics.TagAttributeScenario.Service v5Local12CAAA = new Pure.DI.UsageTests.Basics.TagAttributeScenario.Service(v6Local12CAAA, v7Local12CAAA);
-      return v5Local12CAAA;
+      Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.IDependency[] v38Local12CAAA;
+      v38Local12CAAA = new IDependency[]
+      {
+          new AbcDependency(),
+          new XyzDependency(),
+          new AbcDependency()
+      };
+      Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.Service v37Local12CAAA = new Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.Service(v38Local12CAAA);
+      return v37Local12CAAA;
     }
   }
   #endregion
@@ -197,24 +188,13 @@ partial class Composition
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
-          "    +Service(IDependency dependency1, IDependency dependency2)\n" +
+          "    +Service(ArrayᐸIDependencyᐳ dependencies)\n" +
         "  }\n" +
-        "  AbcDependency --|> IDependency : \"Abc\" \n" +
-        "  class AbcDependency {\n" +
-          "    +AbcDependency()\n" +
-        "  }\n" +
-        "  XyzDependency --|> IDependency : \"Xyz\" \n" +
-        "  class XyzDependency {\n" +
-          "    +XyzDependency()\n" +
-        "  }\n" +
+        "  class ArrayᐸIDependencyᐳ\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  class IDependency {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Service *--  AbcDependency : \"Abc\"  IDependency dependency1\n" +
-        "  Service *--  XyzDependency : \"Xyz\"  IDependency dependency2\n" +
+        "  Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ dependencies\n" +
         "  Composition ..> Service : IService Root";
   }
   
@@ -224,13 +204,13 @@ partial class Composition
   static Composition()
   {
     Resolver12CAAA0 valResolver12CAAA0 = new Resolver12CAAA0();
-    Resolver12CAAA<Pure.DI.UsageTests.Basics.TagAttributeScenario.IService>.Value = valResolver12CAAA0;
+    Resolver12CAAA<Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.IService>.Value = valResolver12CAAA0;
     _buckets12CAAA = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
       out _bucketSize12CAAA,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.TagAttributeScenario.IService), valResolver12CAAA0)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.IService), valResolver12CAAA0)
       });
   }
   
@@ -240,19 +220,19 @@ partial class Composition
     public static global::Pure.DI.IResolver<Composition, T> Value;
   }
   
-  private sealed class Resolver12CAAA0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.TagAttributeScenario.IService>
+  private sealed class Resolver12CAAA0: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Basics.TagAttributeScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.IService Resolve(Composition composition)
     {
       return composition.Root;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Basics.TagAttributeScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.IService ResolveByTag(Composition composition, object tag)
     {
       if (Equals(tag, null)) return composition.Root;
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.TagAttributeScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.IService.");
     }
   }
   #endregion
@@ -261,5 +241,3 @@ partial class Composition
 
 </details>
 
-
-The tag can be a constant, a type, or a value of an enumerated type. This attribute is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.

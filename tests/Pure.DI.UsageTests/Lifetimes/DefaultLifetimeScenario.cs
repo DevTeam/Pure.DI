@@ -43,7 +43,7 @@ public class Scenario
     public void Run()
     {
         // ToString = On
-        // FormatCode = Off
+        // FormatCode = On
 // {            
         DI.Setup("Composition")
             .DefaultLifetime(Lifetime.Singleton)

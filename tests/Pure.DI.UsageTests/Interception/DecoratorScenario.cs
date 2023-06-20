@@ -39,7 +39,7 @@ public class Scenario
     public void Run()
     {
         // ToString = On
-        // FormatCode = Off
+        // FormatCode = On
 // {            
         DI.Setup("Composition")
             .Bind<IService>("base").To<Service>()
