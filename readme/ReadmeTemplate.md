@@ -90,7 +90,7 @@ dotnet add package Pure.DI
 Bind abstractions to their implementations or factories, define lifetimes and other options in a class like the following:
 
 ```c#
-internal partial class Composition
+partial class Composition
 {
   // In fact, this code is never run, and the method can have any name or be a constructor, for example,
   // and can be in any part of the compiled code because this is just a hint to set up an object graph.
@@ -110,7 +110,6 @@ internal partial class Composition
       .Bind<IBox<TT>>().To<CardboardBox<TT>>()
       // Composition Root
       .Root<Program>("Root");
-  }
 }
 ```
 
@@ -186,6 +185,7 @@ git clone https://github.com/DevTeam/Pure.DI.Example.git
 And run it from solution root folder
 
 ```shell
+cd ./Pure.DI.Example
 dotnet run
 ```
 

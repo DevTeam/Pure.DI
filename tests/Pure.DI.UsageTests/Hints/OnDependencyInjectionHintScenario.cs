@@ -2,7 +2,8 @@
 $v=true
 $p=2
 $d=OnDependencyInjection Hint
-$h=The _OnDependencyInjection_ hint determines whether to generate partial _OnDependencyInjection_ method to control of dependency injection.
+$h=Hints are used to fine-tune code generation. The _OnDependencyInjection_ hint determines whether to generate partial _OnDependencyInjection_ method to control of dependency injection.
+$h=In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// OnDependencyInjection = On`.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -17,6 +18,8 @@ using Shouldly;
 using Xunit;
 
 // {
+using static Hint;
+
 public interface IDependency
 {
 }
@@ -66,9 +69,9 @@ public class Scenario
         // ToString = On
         // FormatCode = On
 // {            
+        // OnDependencyInjection = On
         DI.Setup("Composition")
-            .Hint(Hint.OnDependencyInjection, "On")
-            .Hint(Hint.OnDependencyInjectionContractTypeNameRegularExpression, nameof(IDependency))
+            .Hint(OnDependencyInjectionContractTypeNameRegularExpression, nameof(IDependency))
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
 

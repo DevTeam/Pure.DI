@@ -20,16 +20,24 @@ internal class Dependency : IDependency { }
 
 internal interface IService
 {
+    string Id { get; }
+
     string Name { get; }
 }
 
 internal class Service : IService
 {
-    public Service(string name, IDependency dependency)
+    public Service(
+        string id,
+        [Tag("name")] string name,
+        IDependency dependency)
     {
+        Id = id;
         Name = name;
     }
 
+    public string Id { get; }
+    
     public string Name { get; }
 }
 // }
@@ -45,11 +53,15 @@ public class Scenario
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>().Root<IService>("Root")
-            .Arg<string>("serviceName");
+            // The argument can be tagged to be available for injection by type and that tag
+            .Arg<string>("serviceName", "name")
+            // An untagged argument
+            .Arg<string>("id");
 
-        var composition = new Composition("Abc");
+        var composition = new Composition(serviceName: "Abc", id: "123");
         var service = composition.Root;
         service.Name.ShouldBe("Abc");
+        service.Id.ShouldBe("123");
 // }
         TestTools.SaveClassDiagram(composition, nameof(ArgumentsScenario));
     }

@@ -90,7 +90,7 @@ dotnet add package Pure.DI
 Bind abstractions to their implementations or factories, define lifetimes and other options in a class like the following:
 
 ```c#
-internal partial class Composition
+partial class Composition
 {
   // In fact, this code is never run, and the method can have any name or be a constructor, for example,
   // and can be in any part of the compiled code because this is just a hint to set up an object graph.
@@ -110,7 +110,6 @@ internal partial class Composition
       .Bind<IBox<TT>>().To<CardboardBox<TT>>()
       // Composition Root
       .Root<Program>("Root");
-  }
 }
 ```
 
@@ -186,6 +185,7 @@ git clone https://github.com/DevTeam/Pure.DI.Example.git
 And run it from solution root folder
 
 ```shell
+cd ./Pure.DI.Example
 dotnet run
 ```
 
@@ -208,6 +208,7 @@ dotnet run
 - [Method Injection](readme/method-injection.md)
 - [Property Injection](readme/property-injection.md)
 - [Complex Generics](readme/complex-generics.md)
+- [Partial class](readme/partial-class.md)
 ### Lifetimes
 - [Singleton](readme/singleton.md)
 - [PerResolve](readme/perresolve.md)
@@ -611,7 +612,7 @@ string classDiagram = composition.ToString();
 
 ### ThreadSafe Hint
 
-This hint determines whether object composition will be created in a thread-safe manner. This hint is _On_ by default. It is good practice not to use threads when creating an object graph, in which case this hint can be turned off, which will lead to a slight increase in performance.
+This hint determines whether the composition of objects will be created in a thread-safe manner. The default value of this hint is _On_. It is good practice not to use threads when creating an object graph, in which case the hint can be disabled, resulting in a slight performance gain.
 
 ```c#
 // ThreadSafe = Off

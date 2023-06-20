@@ -2,7 +2,8 @@
 $v=true
 $p=0
 $d=Resolve Hint
-$h=The _Resolve_ hint determines whether to generate _Resolve_ methods. By default a set of four _Resolve_ methods are generated. Set this hint to _Off_ to disable the generation of resolve methods. This will reduce class composition generation time and no private composition roots will be generated in this case. When the _Resolve_ hint is disabled, only the public root properties are available, so be sure to define them explicitly with the `Root<T>(...)` method.
+$h=Hints are used to fine-tune code generation. The _Resolve_ hint determines whether to generate _Resolve_ methods. By default a set of four _Resolve_ methods are generated. Set this hint to _Off_ to disable the generation of resolve methods. This will reduce class composition generation time and no private composition roots will be generated in this case. When the _Resolve_ hint is disabled, only the public root properties are available, so be sure to define them explicitly with the `Root<T>(...)` method.
+$h=In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// Resolve = Off`.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -15,6 +16,8 @@ namespace Pure.DI.UsageTests.Hints.ResolveHintScenario;
 using Xunit;
 
 // {
+using static Hint;
+
 internal interface IDependency { }
 
 internal class Dependency : IDependency { }
@@ -38,7 +41,7 @@ public class Scenario
         // FormatCode = On
 // {            
         DI.Setup("Composition")
-            .Hint(Hint.Resolve, "Off")
+            .Hint(Resolve, "Off")
             .Bind<IDependency>().To<Dependency>().Root<IDependency>("DependencyRoot")
             .Bind<IService>().To<Service>().Root<IService>("Root");
 

@@ -1,41 +1,34 @@
-#### IEnumerable
+#### Partial class
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/EnumerableScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/PartialClassScenario.cs)
 
-Specifying `IEnumerable<T>` as the injection type allows you to inject instances of all bindings that implement type `T` in a lazy fashion - the instances will be provided one by one, in order corresponding to the sequence of bindings.
+A partial class can contain setup code.
 
 ```c#
 internal interface IDependency { }
 
-internal class AbcDependency : IDependency { }
+internal class Dependency : IDependency { }
 
-internal class XyzDependency : IDependency { }
-
-internal interface IService
-{
-    ImmutableArray<IDependency> Dependencies { get; }
-}
+internal interface IService { }
 
 internal class Service : IService
 {
-    public Service(IEnumerable<IDependency> dependencies)
-    {
-        Dependencies = dependencies.ToImmutableArray();
-    }
-
-    public ImmutableArray<IDependency> Dependencies { get; }
+    public Service(IDependency dependency) { }
 }
 
-DI.Setup("Composition")
-    .Bind<IDependency>().To<AbcDependency>()
-    .Bind<IDependency>(2).To<XyzDependency>()
-    .Bind<IService>().To<Service>().Root<IService>("Root");
+// The partial class is also useful for specifying access modifiers to the generated class
+internal partial class Composition
+{
+    // This method will not be called in runtime
+    private void Setup() =>
+
+        DI.Setup(nameof(Composition))
+            .Bind<IDependency>().To<Dependency>()
+            .Bind<IService>().To<Service>().Root<IService>("Root");
+}
 
 var composition = new Composition();
 var service = composition.Root;
-service.Dependencies.Length.ShouldBe(2);
-service.Dependencies[0].ShouldBeOfType<AbcDependency>();
-service.Dependencies[1].ShouldBeOfType<XyzDependency>();
 ```
 
 <details open>
@@ -50,18 +43,13 @@ classDiagram
     +object ResolveᐸTᐳ(Type type)
     +object ResolveᐸTᐳ(Type type, object? tag)
   }
-  class IEnumerableᐸIDependencyᐳ
   Service --|> IService : 
   class Service {
-    +Service(IEnumerableᐸIDependencyᐳ dependencies)
+    +Service(IDependency dependency)
   }
-  AbcDependency --|> IDependency : 
-  class AbcDependency {
-    +AbcDependency()
-  }
-  XyzDependency --|> IDependency : 2 
-  class XyzDependency {
-    +XyzDependency()
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
   }
   class IService {
     <<abstract>>
@@ -69,9 +57,7 @@ classDiagram
   class IDependency {
     <<abstract>>
   }
-  IEnumerableᐸIDependencyᐳ *--  AbcDependency : 
-  IEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  
-  Service o--  "PerResolve" IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ dependencies
+  Service *--  Dependency : IDependency dependency
   Composition ..> Service : IService Root
 ```
 
@@ -92,21 +78,14 @@ partial class Composition
   }
   
   #region Composition Roots
-  public Pure.DI.UsageTests.BCL.EnumerableScenario.IService Root
+  public Pure.DI.UsageTests.Basics.PartialClassScenario.IService Root
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableScenario.IDependency> LocalFunc_v16PerResolve523744()
-      {
-          Pure.DI.UsageTests.BCL.EnumerableScenario.AbcDependency v17Local523744 = new Pure.DI.UsageTests.BCL.EnumerableScenario.AbcDependency();
-          yield return v17Local523744;
-          Pure.DI.UsageTests.BCL.EnumerableScenario.XyzDependency v18Local523744 = new Pure.DI.UsageTests.BCL.EnumerableScenario.XyzDependency();
-          yield return v18Local523744;
-      }
-      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableScenario.IDependency> v16PerResolve523744 = LocalFunc_v16PerResolve523744();
-      Pure.DI.UsageTests.BCL.EnumerableScenario.Service v15Local523744 = new Pure.DI.UsageTests.BCL.EnumerableScenario.Service(v16PerResolve523744);
-      return v15Local523744;
+      Pure.DI.UsageTests.Basics.PartialClassScenario.Dependency v79Local523744 = new Pure.DI.UsageTests.Basics.PartialClassScenario.Dependency();
+      Pure.DI.UsageTests.Basics.PartialClassScenario.Service v78Local523744 = new Pure.DI.UsageTests.Basics.PartialClassScenario.Service(v79Local523744);
+      return v78Local523744;
     }
   }
   #endregion
@@ -195,18 +174,13 @@ partial class Composition
           "    +object ResolveᐸTᐳ(Type type)\n" +
           "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
         "  }\n" +
-        "  class IEnumerableᐸIDependencyᐳ\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
-          "    +Service(IEnumerableᐸIDependencyᐳ dependencies)\n" +
+          "    +Service(IDependency dependency)\n" +
         "  }\n" +
-        "  AbcDependency --|> IDependency : \n" +
-        "  class AbcDependency {\n" +
-          "    +AbcDependency()\n" +
-        "  }\n" +
-        "  XyzDependency --|> IDependency : 2 \n" +
-        "  class XyzDependency {\n" +
-          "    +XyzDependency()\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
         "  }\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
@@ -214,9 +188,7 @@ partial class Composition
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  IEnumerableᐸIDependencyᐳ *--  AbcDependency : \n" +
-        "  IEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  \n" +
-        "  Service o--  \"PerResolve\" IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ dependencies\n" +
+        "  Service *--  Dependency : IDependency dependency\n" +
         "  Composition ..> Service : IService Root";
   }
   
@@ -226,13 +198,13 @@ partial class Composition
   static Composition()
   {
     Resolver5237440 valResolver5237440 = new Resolver5237440();
-    Resolver523744<Pure.DI.UsageTests.BCL.EnumerableScenario.IService>.Value = valResolver5237440;
+    Resolver523744<Pure.DI.UsageTests.Basics.PartialClassScenario.IService>.Value = valResolver5237440;
     _buckets523744 = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
       out _bucketSize523744,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.EnumerableScenario.IService), valResolver5237440)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.PartialClassScenario.IService), valResolver5237440)
       });
   }
   
@@ -242,19 +214,19 @@ partial class Composition
     public static global::Pure.DI.IResolver<Composition, T> Value;
   }
   
-  private sealed class Resolver5237440: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.EnumerableScenario.IService>
+  private sealed class Resolver5237440: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.PartialClassScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.BCL.EnumerableScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.Basics.PartialClassScenario.IService Resolve(Composition composition)
     {
       return composition.Root;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.BCL.EnumerableScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Basics.PartialClassScenario.IService ResolveByTag(Composition composition, object tag)
     {
       if (Equals(tag, null)) return composition.Root;
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.EnumerableScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.PartialClassScenario.IService.");
     }
   }
   #endregion
@@ -263,3 +235,5 @@ partial class Composition
 
 </details>
 
+
+The partial class is also useful for specifying access modifiers to the generated class.

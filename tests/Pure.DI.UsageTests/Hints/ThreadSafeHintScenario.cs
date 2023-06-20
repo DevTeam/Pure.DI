@@ -2,7 +2,8 @@
 $v=true
 $p=1
 $d=ThreadSafe Hint
-$h=The _ThreadSafe_ hint determines whether object composition will be created in a thread-safe manner. This hint is _On_ by default. It is good practice not to use threads when creating an object graph, in which case this hint can be turned off, which will lead to a slight increase in performance.
+$h=Hints are used to fine-tune code generation. The _ThreadSafe_ hint determines whether object composition will be created in a thread-safe manner. This hint is _On_ by default. It is good practice not to use threads when creating an object graph, in which case this hint can be turned off, which will lead to a slight increase in performance.
+$h=In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// ThreadSafe = Off`.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -15,6 +16,8 @@ namespace Pure.DI.UsageTests.Hints.ThreadSafeHintScenario;
 using Xunit;
 
 // {
+using static Hint;
+
 internal interface IDependency { }
 
 internal class Dependency : IDependency { }
@@ -38,7 +41,7 @@ public class Scenario
         // FormatCode = On
 // {            
         DI.Setup("Composition")
-            .Hint(Hint.ThreadSafe, "Off")
+            .Hint(ThreadSafe, "Off")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>().Root<IService>("Root");
 

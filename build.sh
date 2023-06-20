@@ -1,2 +1,2 @@
 #!/bin/bash
-dotnet run --project ./build -- "$1"
+dotnet run --project ./build -- "$@"

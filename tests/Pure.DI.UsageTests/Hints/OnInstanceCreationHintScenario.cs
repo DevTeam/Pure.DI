@@ -2,7 +2,8 @@
 $v=true
 $p=4
 $d=OnInstanceCreation Hint
-$h=The _OnInstanceCreation_ hint determines whether to generate partial _OnInstanceCreation_ method.
+$h=Hints are used to fine-tune code generation. The _OnInstanceCreation_ hint determines whether to generate partial _OnInstanceCreation_ method.
+$h=In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// OnInstanceCreation = On`.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -17,6 +18,8 @@ using Shouldly;
 using Xunit;
 
 // {
+using static Hint;
+
 public interface IDependency
 {
 }
@@ -69,7 +72,7 @@ public class Scenario
         // FormatCode = On
 // {
         DI.Setup("Composition")
-            .Hint(Hint.OnInstanceCreation, "On")
+            .Hint(OnInstanceCreation, "On")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
 

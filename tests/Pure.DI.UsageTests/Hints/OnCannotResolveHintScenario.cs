@@ -2,7 +2,8 @@
 $v=true
 $p=3
 $d=OnCannotResolve Hint
-$h=The _OnCannotResolve_ hint determines whether to generate a partial `OnCannotResolve<T>(...)` method to handle a scenario where an instance which cannot be resolved.
+$h=Hints are used to fine-tune code generation. The _OnCannotResolve_ hint determines whether to generate a partial `OnCannotResolve<T>(...)` method to handle a scenario where an instance which cannot be resolved.
+$h=In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// OnCannotResolveContractTypeNameRegularExpression = string`.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -16,6 +17,8 @@ using Shouldly;
 using Xunit;
 
 // {
+using static Hint;
+
 public interface IDependency
 {
 }
@@ -71,9 +74,9 @@ public class Scenario
         // ToString = On
         // FormatCode = On
 // {            
+        // OnCannotResolveContractTypeNameRegularExpression = string
         DI.Setup("Composition")
-            .Hint(Hint.OnCannotResolve, "On")
-            .Hint(Hint.OnCannotResolveContractTypeNameRegularExpression, "string")
+            .Hint(OnCannotResolve, "On")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
 
