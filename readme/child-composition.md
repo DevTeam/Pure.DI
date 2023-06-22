@@ -94,21 +94,21 @@ classDiagram
 ```c#
 partial class Composition: System.IDisposable
 {
-  private int _disposeIndex523744;
-  private readonly System.IDisposable[] _disposables523744;
-  private Pure.DI.UsageTests.Basics.ChildCompositionScenario.Dependency _f22Singleton523744;
+  private int _disposeIndex6435C6;
+  private readonly System.IDisposable[] _disposables6435C6;
+  private Pure.DI.UsageTests.Basics.ChildCompositionScenario.Dependency _f22Singleton6435C6;
   
   public Composition()
   {
-    _disposables523744 = new System.IDisposable[1];
+    _disposables6435C6 = new System.IDisposable[1];
   }
   
   internal Composition(Composition parent)
   {
-    lock (parent._disposables523744)
+    lock (parent._disposables6435C6)
     {
-      _disposables523744 = new System.IDisposable[1 - parent._disposeIndex523744];
-      _f22Singleton523744 = parent._f22Singleton523744;
+      _disposables6435C6 = new System.IDisposable[1 - parent._disposeIndex6435C6];
+      _f22Singleton6435C6 = parent._f22Singleton6435C6;
     }
   }
   
@@ -118,19 +118,19 @@ partial class Composition: System.IDisposable
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      if (global::System.Object.ReferenceEquals(_f22Singleton523744, null))
+      if (global::System.Object.ReferenceEquals(_f22Singleton6435C6, null))
       {
-          lock (_disposables523744)
+          lock (_disposables6435C6)
           {
-              if (global::System.Object.ReferenceEquals(_f22Singleton523744, null))
+              if (global::System.Object.ReferenceEquals(_f22Singleton6435C6, null))
               {
-                  _f22Singleton523744 = new Pure.DI.UsageTests.Basics.ChildCompositionScenario.Dependency();
-                  _disposables523744[_disposeIndex523744++] = _f22Singleton523744;
+                  _f22Singleton6435C6 = new Pure.DI.UsageTests.Basics.ChildCompositionScenario.Dependency();
+                  _disposables6435C6[_disposeIndex6435C6++] = _f22Singleton6435C6;
               }
           }
       }
-      Pure.DI.UsageTests.Basics.ChildCompositionScenario.Service v54Local523744 = new Pure.DI.UsageTests.Basics.ChildCompositionScenario.Service(_f22Singleton523744);
-      return v54Local523744;
+      Pure.DI.UsageTests.Basics.ChildCompositionScenario.Service v54Local6435C6 = new Pure.DI.UsageTests.Basics.ChildCompositionScenario.Service(_f22Singleton6435C6);
+      return v54Local6435C6;
     }
   }
   #endregion
@@ -142,7 +142,7 @@ partial class Composition: System.IDisposable
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>()
   {
-    return Resolver523744<T>.Value.Resolve(this);
+    return Resolver6435C6<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -151,7 +151,7 @@ partial class Composition: System.IDisposable
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>(object? tag)
   {
-    return Resolver523744<T>.Value.ResolveByTag(this, tag);
+    return Resolver6435C6<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -160,17 +160,17 @@ partial class Composition: System.IDisposable
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type)
   {
-    int index = (int)(_bucketSize523744 * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _buckets523744[index];
+    int index = (int)(_bucketSize6435C6 * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets6435C6[index];
     if (ReferenceEquals(pair.Key, type))
     {
       return pair.Value.Resolve(this);
     }
     
-    int maxIndex = index + _bucketSize523744;
+    int maxIndex = index + _bucketSize6435C6;
     for (int i = index + 1; i < maxIndex; i++)
     {
-      pair = ref _buckets523744[i];
+      pair = ref _buckets6435C6[i];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -186,17 +186,17 @@ partial class Composition: System.IDisposable
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    int index = (int)(_bucketSize523744 * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _buckets523744[index];
+    int index = (int)(_bucketSize6435C6 * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets6435C6[index];
     if (ReferenceEquals(pair.Key, type))
     {
       return pair.Value.ResolveByTag(this, tag);
     }
     
-    int maxIndex = index + _bucketSize523744;
+    int maxIndex = index + _bucketSize6435C6;
     for (int i = index + 1; i < maxIndex; i++)
     {
-      pair = ref _buckets523744[i];
+      pair = ref _buckets6435C6[i];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -210,13 +210,13 @@ partial class Composition: System.IDisposable
   
   public void Dispose()
   {
-    lock (_disposables523744)
+    lock (_disposables6435C6)
     {
-      while (_disposeIndex523744 > 0)
+      while (_disposeIndex6435C6 > 0)
       {
         try
         {
-          _disposables523744[--_disposeIndex523744].Dispose();
+          _disposables6435C6[--_disposeIndex6435C6].Dispose();
         }
         catch
         {
@@ -224,7 +224,7 @@ partial class Composition: System.IDisposable
         }
       }
       
-      _f22Singleton523744 = null;
+      _f22Singleton6435C6 = null;
     }
   }
   
@@ -258,29 +258,29 @@ partial class Composition: System.IDisposable
         "  Composition ..> Service : IService Root";
   }
   
-  private readonly static int _bucketSize523744;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets523744;
+  private readonly static int _bucketSize6435C6;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets6435C6;
   
   static Composition()
   {
-    Resolver5237440 valResolver5237440 = new Resolver5237440();
-    Resolver523744<Pure.DI.UsageTests.Basics.ChildCompositionScenario.IService>.Value = valResolver5237440;
-    _buckets523744 = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    Resolver6435C60 valResolver6435C60 = new Resolver6435C60();
+    Resolver6435C6<Pure.DI.UsageTests.Basics.ChildCompositionScenario.IService>.Value = valResolver6435C60;
+    _buckets6435C6 = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSize523744,
+      out _bucketSize6435C6,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.ChildCompositionScenario.IService), valResolver5237440)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.ChildCompositionScenario.IService), valResolver6435C60)
       });
   }
   
   #region Resolvers
-  private class Resolver523744<T>
+  private class Resolver6435C6<T>
   {
     public static global::Pure.DI.IResolver<Composition, T> Value;
   }
   
-  private sealed class Resolver5237440: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.ChildCompositionScenario.IService>
+  private sealed class Resolver6435C60: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.ChildCompositionScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.Basics.ChildCompositionScenario.IService Resolve(Composition composition)

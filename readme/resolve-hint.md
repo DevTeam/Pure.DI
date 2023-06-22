@@ -81,8 +81,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency v95Local523744 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
-      return v95Local523744;
+      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency v95Local6435C6 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
+      return v95Local6435C6;
     }
   }
   
@@ -91,9 +91,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency v97Local523744 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
-      Pure.DI.UsageTests.Hints.ResolveHintScenario.Service v96Local523744 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(v97Local523744);
-      return v96Local523744;
+      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency v97Local6435C6 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
+      Pure.DI.UsageTests.Hints.ResolveHintScenario.Service v96Local6435C6 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(v97Local6435C6);
+      return v96Local6435C6;
     }
   }
   #endregion
@@ -130,3 +130,5 @@ partial class Composition
 
 </details>
 
+
+For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/README.md#setup-hints) page.
