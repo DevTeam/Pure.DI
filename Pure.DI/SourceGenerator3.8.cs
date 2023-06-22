@@ -34,8 +34,24 @@ internal sealed class SourceGenerator : ISourceGenerator
             addSource(hintName, sourceText);
         }
 
-        public void ReportDiagnostic(Diagnostic diagnostic) =>
+        public void ReportDiagnostic(Diagnostic diagnostic)
+        {
+            var location = diagnostic.Location;
+            if (location.IsInSource)
+            {
+                try
+                {
+                    // Make sure that the semantic model is available
+                    Compilation.GetSemanticModel(location.SourceTree);
+                }
+                catch
+                {
+                    return;
+                }
+            }
+            
             _context.ReportDiagnostic(diagnostic);
+        }
 
         public bool TryGetOption(string optionName, out string value) => 
             _context.AnalyzerConfigOptions.GlobalOptions.TryGetValue(optionName, out value!);

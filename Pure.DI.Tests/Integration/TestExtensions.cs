@@ -188,7 +188,13 @@ public static class TestExtensions
         {
             if (File.Exists(assemblyPath))
             {
-                File.Delete(assemblyPath);
+                try
+                {
+                    File.Delete(assemblyPath);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                }
             }
 
             if (File.Exists(configPath))
