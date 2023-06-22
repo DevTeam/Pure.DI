@@ -7,9 +7,19 @@ internal class ObserversRegistry : IObserversRegistry, IObserversProvider
     public IDisposable Register<T>(IObserver<T> observer)
     {
         var observers = GetOfType<T>();
-        observers.Add(observer);
+        lock (observers)
+        {
+            observers.Add(observer);
+        }
 
-        void Remove() => observers.Remove(observer);
+        void Remove()
+        {
+            lock (observers)
+            {
+                observers.Remove(observer);
+            }
+        }
+
         return Disposables.Create(Remove);
     }
 
@@ -17,13 +27,16 @@ internal class ObserversRegistry : IObserversRegistry, IObserversProvider
 
     private ICollection<object> GetOfType<T>()
     {
-        if (_observers.TryGetValue(typeof(T), out var observers))
+        lock (_observers)
         {
+            if (_observers.TryGetValue(typeof(T), out var observers))
+            {
+                return observers;
+            }
+
+            observers = new List<object>();
+            _observers.Add(typeof(T), observers);
             return observers;
         }
-        
-        observers = new List<object>();
-        _observers.Add(typeof(T), observers);
-        return observers;
     }
 }
