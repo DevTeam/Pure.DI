@@ -10,7 +10,7 @@
     
     <ItemGroup>
         <CompilerVisibleProperty Include="PureDINamespace" />
-        <PackageReference Include="Pure.DI" Version="1.1.63">
+        <PackageReference Include="Pure.DI" Version="1.1.64">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

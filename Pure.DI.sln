@@ -5,7 +5,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution", "solution", "{9B70157B-B6AC-4033-AD22-1DC3D7B3A2AD}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		global.json = global.json
 		Directory.Build.props = Directory.Build.props
 		build.sh = build.sh
 		build.cmd = build.cmd
