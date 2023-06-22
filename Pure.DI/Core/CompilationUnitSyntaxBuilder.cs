@@ -46,7 +46,7 @@ internal sealed class CompilationUnitSyntaxBuilder : ICompilationUnitSyntaxBuild
     [Pure]
     private static UsingDirectiveSyntax[] GetUsingSet(IEnumerable<UsingDirectiveSyntax> usingSet, IEnumerable<UsingDirectiveSyntax> additionalUsingSet)
     {
-        var currentUsingSet = usingSet.Select(i => i.Name.ToString()).ToImmutableHashSet();
-        return additionalUsingSet.Where(i => !currentUsingSet.Contains(i.Name.ToString())).ToArray();
+        var currentUsingSet = usingSet.Select(i => i.Name?.ToString() ?? string.Empty).ToImmutableHashSet();
+        return additionalUsingSet.Where(i => !currentUsingSet.Contains(i.Name?.ToString() ?? string.Empty)).ToArray();
     }
 }

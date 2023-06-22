@@ -12,3 +12,4 @@ _ReSharper.Caches/
 out/
 .teamcity/target/
 BenchmarkDotNet.Artifacts/
+.logs
