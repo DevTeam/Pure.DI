@@ -6,17 +6,17 @@
 
 ## Key features
 
-Pure.DI is __NOT__ a framework or library, but a source code generator. It generates a partial class for creating object graphs in a pure DI paradigm. To make this object graph accurate, it uses a set of hints that are checked at compile time. Since all the work is done at compile time, at run time you only have efficient code that is ready to be used. This resulting generated code does not depend on library calls or .NET reflection and is efficient in terms of performance and memory consumption since, like normal code, it is subject to optimization and is inserted into the application seamlessly, excluding delegates, boxing, etc..
+Pure.DI is not a framework or library, but a source code generator. It generates a partial class to create object graphs in the Pure DI paradigm. To make this object graph accurate, it uses a set of hints that are checked at compile time. Since all the work is done at compile time, you only have effective code ready to use at run time. The generated code is independent of .NET library calls or reflection and is efficient in terms of performance and memory consumption because, like normal code, it is subject to all optimizations and integrates seamlessly into any application - without using delegates, extra method calls, boxing, type conversions, etc.
 
-- [X] DI without any IoC/DI containers, frameworks, dependencies and therefore without any performance impact and side effects. 
+- [X] DI without any IoC/DI containers, frameworks, dependencies and therefore without performance impact or side effects. 
   >_Pure.DI_ is actually a [.NET code generator](https://docs.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/source-generators-overview). It generates simple code as well as if you were doing it yourself: de facto just a bunch of nested constructors` calls. And you can see this code at any time.
-- [X] A predictable and verified dependency graph is built and verified on the fly while you write your code.
+- [X] A predictable and verifiable dependency graph is built and verified on the fly while you write the code.
   >All the logic for analyzing the graph of objects, constructors, methods happens at compile time. Thus, the _Pure.DI_ tool notifies the developer about missing or circular dependency, for cases when some dependencies are not suitable for injection, etc., at compile-time. Developers have no chance of getting a program that crashes at runtime due to these errors. All this magic happens simultaneously as the code is written, this way, you have instant feedback between the fact that you made some changes to your code and your code was already checked and ready for use.
 - [X] Does not add any dependencies to other assemblies.
   >Using a pure DI approach, you don't add runtime dependencies to your assemblies.
-- [X] High performance, including C# and JIT compilers optimizations.
+- [X] Highest performance, including compiler and JIT optimizations.
   >All generated code runs as fast as your own, in pure DI style, including compile-time and run-time optimizations. As mentioned above, graph analysis doing at compile-time, but at run-time, there are just a bunch of nested constructors, and that's it.
-- [X] Works everywhere.
+- [X] It works everywhere.
   >Since a pure DI approach does not use any dependencies or the [.NET reflection](https://docs.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/reflection) at runtime, it does not prevent your code from working as expected on any platform: Full .NET Framework 2.0+, .NET Core, .NET, UWP/XBOX, .NET IoT, Xamarin, Native AOT, etc.
 - [X] Ease of use.
   >The _Pure.DI_ API is very similar to the API of most IoC/DI libraries. And it was a deliberate decision: the main reason is that programmers do not need to learn a new API.
@@ -24,7 +24,7 @@ Pure.DI is __NOT__ a framework or library, but a source code generator. It gener
   >_Pure.DI_ offers special type markers instead of using open generic types. This allows you to more accurately build the object graph and take full advantage of generic types.
 - [X] Supports basic .NET BCL types out of the box.
   >_Pure.DI_ already [supports](#base-class-library) many of [BCL types](https://docs.microsoft.com/en-us/dotnet/standard/framework-libraries#base-class-libraries) like `Array`, `IEnumerable<T>`, `IList<T>`, `ISet<T>`, `Func<T>`, `ThreadLocal`, `Task<T>`, `MemoryPool<T>`, `ArrayPool<T>`, `ReadOnlyMemory<T>`, `Memory<T>`, `ReadOnlySpan<T>`, `Span<T>`, `IComparer<T>`, `IEqualityComparer<T>` and etc. without any extra effort.
-- [X] Well suited for creating libraries or frameworks, as well as where resource consumption is especially critical.
+- [X] Good for creating libraries or frameworks and where resource consumption is particularly critical.
   >High performance, zero memory consumption/preparation overhead and no dependencies make it an ideal assistant for building libraries and frameworks.
 
 ## Schrödinger's cat shows how it works [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](samples/ShroedingersCat)
@@ -43,7 +43,7 @@ interface ICat { State State { get; } }
 enum State { Alive, Dead }
 ```
 
-### Here is our implementation
+### Here's our implementation
 
 ```c#
 class CardboardBox<T> : IBox<T>
@@ -67,9 +67,9 @@ class ShroedingersCat : ICat
 }
 ```
 
-It is important to note that our abstraction and implementation do not know anything about DI magic or any frameworks. Also, please make attention that an instance of type *__Lazy<>__* was used here only as a sample. Still, using this type with nontrivial logic as a dependency is not recommended, so consider replacing it with some simple abstract type.
+It is important to note that our abstraction and implementation knows nothing about DI magic or any frameworks. Also, please note that an instance of type *__Lazy<>__* has been used here only as an example. However, using this type with non-trivial logic as a dependency is not recommended, so consider replacing it with some simple abstract type.
 
-### Let's glue all together
+### Let's glue it all together
 
 Add a package reference to
 
@@ -186,6 +186,9 @@ And run it from solution root folder
 
 ```shell
 cd ./Pure.DI.Example
+```
+
+```shell
 dotnet run
 ```
 
