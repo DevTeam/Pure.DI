@@ -56,13 +56,18 @@ public class Scenario
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>("Abc").To<AbcDependency>()
-            .Bind<IDependency>("Xyz").To<XyzDependency>()
+            .Bind<IDependency>("Xyz")
+                .As(Lifetime.Singleton)
+                .To<XyzDependency>()
+                // "XyzRoot" is root name, "Xyz" is tag
+                .Root<IDependency>("XyzRoot", "Xyz")
             .Bind<IService>().To<Service>().Root<IService>("Root");
 
         var composition = new Composition();
         var service = composition.Root;
         service.Dependency1.ShouldBeOfType<AbcDependency>();
         service.Dependency2.ShouldBeOfType<XyzDependency>();
+        service.Dependency2.ShouldBe(composition.XyzRoot);
 // }            
         TestTools.SaveClassDiagram(composition, nameof(TagsScenario));
     }

@@ -8,10 +8,10 @@ internal record Variable(
     DependencyNode Node,
     in Injection Injection)
 {
-    internal static readonly string Postfix = Guid.NewGuid().ToString().ToUpperInvariant().Replace("-", "")[..6];
-    internal static readonly string DisposeIndexFieldName = "_disposeIndex" + Postfix;
-    internal static readonly string DisposablesFieldName = "_disposables" + Postfix;
-    internal static readonly string InjectionMarker = "injection" + Postfix;
+    internal const string Postfix = "A1F7";
+    internal const string DisposeIndexFieldName = "_disposeIndex" + Postfix;
+    internal const string DisposablesFieldName = "_disposables" + Postfix;
+    internal const string InjectionMarker = "injection" + Postfix;
 
     public Variable CreateLinkedVariable(in Injection injection) => 
         new LinkedVariable(this, injection);

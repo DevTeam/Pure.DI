@@ -30,11 +30,31 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
         }
         
         code.AppendLine("#region Resolvers");
-        code.AppendLine($"private class {ResolverInfo.ResolverClassName}<T>");
+        code.AppendLine($"private sealed class {ResolverInfo.ResolverClassName}<T>: {ResolverInterfaceName}<{composition.Name.ClassName}, T>");
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine($"public static {ResolverInterfaceName}<{composition.Name.ClassName}, T> {ResolverPropertyName};");
+            code.AppendLine($"public static {ResolverInterfaceName}<{composition.Name.ClassName}, T> {ResolverPropertyName} = new {ResolverInfo.ResolverClassName}<T>();");
+
+            code.AppendLine();
+            code.AppendLine($"public T Resolve({composition.Name.ClassName} composite)");
+            code.AppendLine("{");
+            using (code.Indent())
+            {
+                code.AppendLine($"throw new {Constant.SystemNamespace}InvalidOperationException($\"{Constant.CannotResolve} of type {{typeof(T)}}.\");");
+            }
+            
+            code.AppendLine("}");
+            
+            code.AppendLine();
+            code.AppendLine($"public T ResolveByTag({composition.Name.ClassName} composite, object tag)");
+            code.AppendLine("{");
+            using (code.Indent())
+            {
+                code.AppendLine($"throw new {Constant.SystemNamespace}InvalidOperationException($\"{Constant.CannotResolve} \\\"{{tag}}\\\" of type {{typeof(T)}}.\");");
+            }
+            
+            code.AppendLine("}");
         }
         code.AppendLine("}");
         

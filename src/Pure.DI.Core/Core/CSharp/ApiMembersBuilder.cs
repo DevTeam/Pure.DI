@@ -57,11 +57,12 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
                 $"{Constant.SystemNamespace}Type type",
                 ResolverClassesBuilder.ResolveMethodName,
                 "this",
+                false,
                 apiCode);
             
             membersCounter++;
+            
             apiCode.AppendLine();
-
             CreateObjectResolverMethod(
                 settings.GetValueOrDefault(Hint.ObjectResolveByTagMethodModifiers, Constant.DefaultApiMethodModifiers),
                 settings.GetValueOrDefault(Hint.ObjectResolveByTagMethodName, Constant.ResolverMethodName),
@@ -69,14 +70,15 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
                 $"{Constant.SystemNamespace}Type type, object? tag",
                 ResolverClassesBuilder.ResolveByTagMethodName,
                 "this, tag",
+                true,
                 apiCode);
 
             membersCounter++;
-            apiCode.AppendLine();
         }
 
         if (composition.Source.Source.Hints.GetHint(Hint.OnInstanceCreation) == SettingState.On)
         {
+            apiCode.AppendLine();
             apiCode.AppendLine(Constant.MethodImplOptions);
             apiCode.AppendLine($"partial void {Constant.OnInstanceCreationMethodName}<T>(ref T value, object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
@@ -84,6 +86,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
 
         if (composition.Source.Source.Hints.GetHint(Hint.OnDependencyInjection) == SettingState.On)
         {
+            apiCode.AppendLine();
             apiCode.AppendLine(Constant.MethodImplOptions);
             apiCode.AppendLine($"private partial T {Constant.OnDependencyInjectionMethodName}<T>(in T value, object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
@@ -91,6 +94,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
         
         if (composition.Source.Source.Hints.GetHint(Hint.OnCannotResolve) == SettingState.On)
         {
+            apiCode.AppendLine();
             apiCode.AppendLine(Constant.MethodImplOptions);
             apiCode.AppendLine($"private partial T {Constant.OnCannotResolve}<T>(object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
@@ -113,6 +117,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
         string methodArgs,
         string resolveMethodName,
         string resolveMethodArgs,
+        bool byTag,
         LinesBuilder code)
     {
         AddMethodHeader(code);
@@ -153,7 +158,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
                 code.AppendLine();
             }
 
-            code.AppendLine($"throw new {Constant.SystemNamespace}InvalidOperationException($\"{Constant.CannotResolve} of type {{type}}.\");");
+            code.AppendLine($"throw new {Constant.SystemNamespace}InvalidOperationException($\"{Constant.CannotResolve} {(byTag ? "\\\"{tag}\\\" " : "")}of type {{type}}.\");");
         }
         
         code.AppendLine("}");
