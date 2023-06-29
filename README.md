@@ -6,17 +6,17 @@
 
 ## Key features
 
-Pure.DI is __NOT__ a framework or library, but a source code generator. It generates a partial class for creating object graphs in a pure DI paradigm. To make this object graph accurate, it uses a set of hints that are checked at compile time. Since all the work is done at compile time, at run time you only have efficient code that is ready to be used. This resulting generated code does not depend on library calls or .NET reflection and is efficient in terms of performance and memory consumption since, like normal code, it is subject to optimization and is inserted into the application seamlessly, excluding delegates, boxing, etc..
+Pure.DI is not a framework or library, but a source code generator. It generates a partial class to create object graphs in the Pure DI paradigm. To make this object graph accurate, it uses a set of hints that are checked at compile time. Since all the work is done at compile time, you only have effective code ready to use at run time. The generated code is independent of .NET library calls or reflection and is efficient in terms of performance and memory consumption because, like normal code, it is subject to all optimizations and integrates seamlessly into any application - without using delegates, extra method calls, boxing, type conversions, etc.
 
-- [X] DI without any IoC/DI containers, frameworks, dependencies and therefore without any performance impact and side effects. 
+- [X] DI without any IoC/DI containers, frameworks, dependencies and therefore without performance impact or side effects. 
   >_Pure.DI_ is actually a [.NET code generator](https://docs.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/source-generators-overview). It generates simple code as well as if you were doing it yourself: de facto just a bunch of nested constructors` calls. And you can see this code at any time.
-- [X] A predictable and verified dependency graph is built and verified on the fly while you write your code.
+- [X] A predictable and verifiable dependency graph is built and verified on the fly while you write the code.
   >All the logic for analyzing the graph of objects, constructors, methods happens at compile time. Thus, the _Pure.DI_ tool notifies the developer about missing or circular dependency, for cases when some dependencies are not suitable for injection, etc., at compile-time. Developers have no chance of getting a program that crashes at runtime due to these errors. All this magic happens simultaneously as the code is written, this way, you have instant feedback between the fact that you made some changes to your code and your code was already checked and ready for use.
 - [X] Does not add any dependencies to other assemblies.
   >Using a pure DI approach, you don't add runtime dependencies to your assemblies.
-- [X] High performance, including C# and JIT compilers optimizations.
+- [X] Highest performance, including compiler and JIT optimizations.
   >All generated code runs as fast as your own, in pure DI style, including compile-time and run-time optimizations. As mentioned above, graph analysis doing at compile-time, but at run-time, there are just a bunch of nested constructors, and that's it.
-- [X] Works everywhere.
+- [X] It works everywhere.
   >Since a pure DI approach does not use any dependencies or the [.NET reflection](https://docs.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/reflection) at runtime, it does not prevent your code from working as expected on any platform: Full .NET Framework 2.0+, .NET Core, .NET, UWP/XBOX, .NET IoT, Xamarin, Native AOT, etc.
 - [X] Ease of use.
   >The _Pure.DI_ API is very similar to the API of most IoC/DI libraries. And it was a deliberate decision: the main reason is that programmers do not need to learn a new API.
@@ -24,7 +24,7 @@ Pure.DI is __NOT__ a framework or library, but a source code generator. It gener
   >_Pure.DI_ offers special type markers instead of using open generic types. This allows you to more accurately build the object graph and take full advantage of generic types.
 - [X] Supports basic .NET BCL types out of the box.
   >_Pure.DI_ already [supports](#base-class-library) many of [BCL types](https://docs.microsoft.com/en-us/dotnet/standard/framework-libraries#base-class-libraries) like `Array`, `IEnumerable<T>`, `IList<T>`, `ISet<T>`, `Func<T>`, `ThreadLocal`, `Task<T>`, `MemoryPool<T>`, `ArrayPool<T>`, `ReadOnlyMemory<T>`, `Memory<T>`, `ReadOnlySpan<T>`, `Span<T>`, `IComparer<T>`, `IEqualityComparer<T>` and etc. without any extra effort.
-- [X] Well suited for creating libraries or frameworks, as well as where resource consumption is especially critical.
+- [X] Good for creating libraries or frameworks and where resource consumption is particularly critical.
   >High performance, zero memory consumption/preparation overhead and no dependencies make it an ideal assistant for building libraries and frameworks.
 
 ## Schrödinger's cat shows how it works [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](samples/ShroedingersCat)
@@ -43,7 +43,7 @@ interface ICat { State State { get; } }
 enum State { Alive, Dead }
 ```
 
-### Here is our implementation
+### Here's our implementation
 
 ```c#
 class CardboardBox<T> : IBox<T>
@@ -67,9 +67,9 @@ class ShroedingersCat : ICat
 }
 ```
 
-It is important to note that our abstraction and implementation do not know anything about DI magic or any frameworks. Also, please make attention that an instance of type *__Lazy<>__* was used here only as a sample. Still, using this type with nontrivial logic as a dependency is not recommended, so consider replacing it with some simple abstract type.
+It is important to note that our abstraction and implementation knows nothing about DI magic or any frameworks. Also, please note that an instance of type *__Lazy<>__* has been used here only as an example. However, using this type with non-trivial logic as a dependency is not recommended, so consider replacing it with some simple abstract type.
 
-### Let's glue all together
+### Let's glue it all together
 
 Add a package reference to
 
@@ -186,6 +186,9 @@ And run it from solution root folder
 
 ```shell
 cd ./Pure.DI.Example
+```
+
+```shell
 dotnet run
 ```
 
@@ -761,17 +764,17 @@ The _PureDISeverity_ property has several options available:
 <summary>Transient</summary>
 
 <table>
-<thead><tr><th>                Method</th><th>    Mean</th><th>Error</th><th> StdDev</th><th>Ratio</th><th>RatioSD</th>
+<thead><tr><th>                Method</th><th>   Mean</th><th>Error</th><th>StdDev</th><th> Median</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>0.0000 ns</td><td>0.0000 ns</td><td>0.0000 ns</td><td> </td><td> </td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>6.8675 ns</td><td>0.2339 ns</td><td>0.2297 ns</td><td> </td><td> </td>
-</tr><tr><td>Pure.DI</td><td>8.7792 ns</td><td>0.2086 ns</td><td>0.1849 ns</td><td> </td><td> </td>
-</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>14.5828 ns</td><td>0.3931 ns</td><td>0.5381 ns</td><td> </td><td> </td>
-</tr><tr><td>LightInject</td><td>19.4300 ns</td><td>0.4348 ns</td><td>0.5007 ns</td><td> </td><td> </td>
-</tr><tr><td>DryIoc</td><td>35.3353 ns</td><td>0.7450 ns</td><td>1.2650 ns</td><td> </td><td> </td>
-</tr><tr><td>SimpleInjector</td><td>39.1478 ns</td><td>0.7552 ns</td><td>0.6306 ns</td><td> </td><td> </td>
-</tr><tr><td>MicrosoftDependencyInjection</td><td>45.4503 ns</td><td>0.9488 ns</td><td>0.8875 ns</td><td> </td><td> </td>
-</tr><tr><td>Autofac</td><td>15,105.4674 ns</td><td>379.9306 ns</td><td>1,007.5221 ns</td><td> </td><td> </td>
+</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>0.0063 ns</td><td>0.0115 ns</td><td>0.0108 ns</td><td>0.0000 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>4.4660 ns</td><td>0.1950 ns</td><td>0.5719 ns</td><td>4.2801 ns</td><td> </td><td> </td>
+</tr><tr><td>Pure.DI</td><td>5.5845 ns</td><td>0.1709 ns</td><td>0.4791 ns</td><td>5.4228 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>8.1735 ns</td><td>0.2219 ns</td><td>0.4113 ns</td><td>8.1184 ns</td><td> </td><td> </td>
+</tr><tr><td>LightInject</td><td>11.0895 ns</td><td>0.2444 ns</td><td>0.2400 ns</td><td>11.0578 ns</td><td> </td><td> </td>
+</tr><tr><td>DryIoc</td><td>20.7087 ns</td><td>0.4088 ns</td><td>0.7875 ns</td><td>20.4419 ns</td><td> </td><td> </td>
+</tr><tr><td>SimpleInjector</td><td>22.6579 ns</td><td>0.4750 ns</td><td>0.8065 ns</td><td>22.2762 ns</td><td> </td><td> </td>
+</tr><tr><td>MicrosoftDependencyInjection</td><td>25.0480 ns</td><td>0.5255 ns</td><td>0.9997 ns</td><td>24.8042 ns</td><td> </td><td> </td>
+</tr><tr><td>Autofac</td><td>8,670.0316 ns</td><td>165.7194 ns</td><td>285.8577 ns</td><td>8,604.1817 ns</td><td> </td><td> </td>
 </tr></tbody></table>
 
 </details>
@@ -780,17 +783,17 @@ The _PureDISeverity_ property has several options available:
 <summary>Singleton</summary>
 
 <table>
-<thead><tr><th>                Method</th><th>    Mean</th><th>Error</th><th>StdDev</th><th>  Median</th><th>Ratio</th><th>RatioSD</th>
+<thead><tr><th>                Method</th><th>   Mean</th><th>Error</th><th>StdDev</th><th> Median</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>0.0171 ns</td><td>0.0215 ns</td><td>0.0191 ns</td><td>0.0135 ns</td><td> </td><td> </td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>9.9769 ns</td><td>1.0123 ns</td><td>2.9847 ns</td><td>8.1552 ns</td><td> </td><td> </td>
-</tr><tr><td>Pure.DI</td><td>10.0455 ns</td><td>0.2791 ns</td><td>0.5172 ns</td><td>9.9146 ns</td><td> </td><td> </td>
-</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>14.2446 ns</td><td>0.3790 ns</td><td>0.4055 ns</td><td>14.1887 ns</td><td> </td><td> </td>
-</tr><tr><td>DryIoc</td><td>33.8615 ns</td><td>0.7125 ns</td><td>0.5950 ns</td><td>34.1763 ns</td><td> </td><td> </td>
-</tr><tr><td>MicrosoftDependencyInjection</td><td>46.8315 ns</td><td>0.9693 ns</td><td>2.2848 ns</td><td>46.8788 ns</td><td> </td><td> </td>
-</tr><tr><td>LightInject</td><td>58.3402 ns</td><td>1.1001 ns</td><td>1.4686 ns</td><td>57.9097 ns</td><td> </td><td> </td>
-</tr><tr><td>SimpleInjector</td><td>59.6844 ns</td><td>3.8012 ns</td><td>11.2080 ns</td><td>53.5893 ns</td><td> </td><td> </td>
-</tr><tr><td>Autofac</td><td>11,372.3477 ns</td><td>305.3628 ns</td><td>809.7788 ns</td><td>11,099.8688 ns</td><td> </td><td> </td>
+</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>0.0001 ns</td><td>0.0006 ns</td><td>0.0005 ns</td><td>0.0000 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>4.8040 ns</td><td>0.1708 ns</td><td>0.5010 ns</td><td>4.6079 ns</td><td> </td><td> </td>
+</tr><tr><td>Pure.DI</td><td>5.7804 ns</td><td>0.1711 ns</td><td>0.4685 ns</td><td>5.6802 ns</td><td> </td><td> </td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>8.7073 ns</td><td>0.2324 ns</td><td>0.4070 ns</td><td>8.5809 ns</td><td> </td><td> </td>
+</tr><tr><td>DryIoc</td><td>20.8388 ns</td><td>0.4426 ns</td><td>0.7021 ns</td><td>20.7204 ns</td><td> </td><td> </td>
+</tr><tr><td>MicrosoftDependencyInjection</td><td>23.4689 ns</td><td>0.4610 ns</td><td>0.4087 ns</td><td>23.5006 ns</td><td> </td><td> </td>
+</tr><tr><td>SimpleInjector</td><td>23.7643 ns</td><td>0.5054 ns</td><td>0.8162 ns</td><td>23.6571 ns</td><td> </td><td> </td>
+</tr><tr><td>LightInject</td><td>33.2899 ns</td><td>0.4249 ns</td><td>0.3548 ns</td><td>33.2420 ns</td><td> </td><td> </td>
+</tr><tr><td>Autofac</td><td>6,549.2346 ns</td><td>128.8804 ns</td><td>215.3302 ns</td><td>6,450.7675 ns</td><td> </td><td> </td>
 </tr></tbody></table>
 
 </details>
@@ -799,15 +802,15 @@ The _PureDISeverity_ property has several options available:
 <summary>Func</summary>
 
 <table>
-<thead><tr><th>                Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th>
+<thead><tr><th>                Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>140.8 ns</td><td>2.81 ns</td><td>7.01 ns</td><td>1.00</td><td>0.00</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>151.3 ns</td><td>3.12 ns</td><td>6.24 ns</td><td>1.07</td><td>0.08</td>
-</tr><tr><td>Pure.DI</td><td>156.0 ns</td><td>3.17 ns</td><td>5.29 ns</td><td>1.10</td><td>0.08</td>
-</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>157.6 ns</td><td>2.99 ns</td><td>7.73 ns</td><td>1.12</td><td>0.07</td>
-</tr><tr><td>DryIoc</td><td>187.8 ns</td><td>3.75 ns</td><td>5.94 ns</td><td>1.32</td><td>0.09</td>
-</tr><tr><td>LightInject</td><td>771.6 ns</td><td>13.55 ns</td><td>12.01 ns</td><td>5.61</td><td>0.19</td>
-</tr><tr><td>Autofac</td><td>13,204.9 ns</td><td>215.41 ns</td><td>190.96 ns</td><td>95.97</td><td>2.85</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>87.06 ns</td><td>2.211 ns</td><td>6.485 ns</td><td>85.52 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>Pure.DI</td><td>89.65 ns</td><td>2.017 ns</td><td>5.852 ns</td><td>87.95 ns</td><td>1.03</td><td>0.10</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>90.22 ns</td><td>2.448 ns</td><td>7.218 ns</td><td>88.63 ns</td><td>1.04</td><td>0.12</td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>91.25 ns</td><td>2.461 ns</td><td>7.062 ns</td><td>89.26 ns</td><td>1.05</td><td>0.11</td>
+</tr><tr><td>DryIoc</td><td>112.53 ns</td><td>4.912 ns</td><td>13.612 ns</td><td>107.30 ns</td><td>1.30</td><td>0.19</td>
+</tr><tr><td>LightInject</td><td>452.32 ns</td><td>9.007 ns</td><td>23.571 ns</td><td>445.44 ns</td><td>5.23</td><td>0.49</td>
+</tr><tr><td>Autofac</td><td>9,562.44 ns</td><td>330.649 ns</td><td>953.997 ns</td><td>9,341.47 ns</td><td>110.47</td><td>14.03</td>
 </tr></tbody></table>
 
 </details>
@@ -816,15 +819,15 @@ The _PureDISeverity_ property has several options available:
 <summary>Array</summary>
 
 <table>
-<thead><tr><th>                Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
+<thead><tr><th>                Method</th><th>  Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>144.4 ns</td><td>2.60 ns</td><td>2.89 ns</td><td>143.3 ns</td><td>1.00</td><td>0.00</td>
-</tr><tr><td>Pure.DI</td><td>165.5 ns</td><td>3.75 ns</td><td>10.01 ns</td><td>162.2 ns</td><td>1.16</td><td>0.07</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>181.6 ns</td><td>8.74 ns</td><td>25.77 ns</td><td>169.6 ns</td><td>1.24</td><td>0.17</td>
-</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>187.6 ns</td><td>9.98 ns</td><td>29.42 ns</td><td>172.7 ns</td><td>1.29</td><td>0.19</td>
-</tr><tr><td>DryIoc</td><td>199.0 ns</td><td>4.49 ns</td><td>11.75 ns</td><td>196.7 ns</td><td>1.44</td><td>0.10</td>
-</tr><tr><td>LightInject</td><td>217.8 ns</td><td>8.57 ns</td><td>25.28 ns</td><td>204.0 ns</td><td>1.63</td><td>0.21</td>
-</tr><tr><td>Autofac</td><td>16,941.7 ns</td><td>322.07 ns</td><td>316.32 ns</td><td>16,874.2 ns</td><td>117.29</td><td>2.37</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>90.47 ns</td><td>3.214 ns</td><td>9.426 ns</td><td>89.13 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>101.86 ns</td><td>4.122 ns</td><td>11.958 ns</td><td>99.43 ns</td><td>1.13</td><td>0.15</td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>109.79 ns</td><td>5.308 ns</td><td>14.971 ns</td><td>107.73 ns</td><td>1.23</td><td>0.22</td>
+</tr><tr><td>LightInject</td><td>118.17 ns</td><td>9.104 ns</td><td>25.828 ns</td><td>114.41 ns</td><td>1.32</td><td>0.32</td>
+</tr><tr><td>DryIoc</td><td>121.66 ns</td><td>5.319 ns</td><td>15.176 ns</td><td>120.47 ns</td><td>1.36</td><td>0.21</td>
+</tr><tr><td>Pure.DI</td><td>134.70 ns</td><td>12.995 ns</td><td>37.493 ns</td><td>123.27 ns</td><td>1.51</td><td>0.46</td>
+</tr><tr><td>Autofac</td><td>10,846.14 ns</td><td>272.389 ns</td><td>798.870 ns</td><td>10,664.03 ns</td><td>120.81</td><td>12.20</td>
 </tr></tbody></table>
 
 </details>
@@ -833,16 +836,16 @@ The _PureDISeverity_ property has several options available:
 <summary>Enum</summary>
 
 <table>
-<thead><tr><th>                Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th>
+<thead><tr><th>                Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>321.5 ns</td><td>5.89 ns</td><td>6.55 ns</td><td>0.94</td><td>0.03</td>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>338.8 ns</td><td>6.79 ns</td><td>10.76 ns</td><td>1.00</td><td>0.00</td>
-</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>341.9 ns</td><td>6.96 ns</td><td>8.01 ns</td><td>1.00</td><td>0.03</td>
-</tr><tr><td>Pure.DI</td><td>349.4 ns</td><td>6.40 ns</td><td>9.78 ns</td><td>1.03</td><td>0.05</td>
-</tr><tr><td>LightInject</td><td>386.8 ns</td><td>5.97 ns</td><td>4.99 ns</td><td>1.13</td><td>0.03</td>
-</tr><tr><td>DryIoc</td><td>419.7 ns</td><td>8.40 ns</td><td>11.49 ns</td><td>1.24</td><td>0.05</td>
-</tr><tr><td>MicrosoftDependencyInjection</td><td>427.1 ns</td><td>8.57 ns</td><td>12.30 ns</td><td>1.26</td><td>0.04</td>
-</tr><tr><td>Autofac</td><td>17,147.3 ns</td><td>319.05 ns</td><td>282.83 ns</td><td>49.94</td><td>2.07</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>218.4 ns</td><td>6.26 ns</td><td>18.17 ns</td><td>215.7 ns</td><td>1.00</td><td>0.10</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>218.6 ns</td><td>6.11 ns</td><td>17.72 ns</td><td>215.7 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>220.6 ns</td><td>5.64 ns</td><td>16.46 ns</td><td>217.4 ns</td><td>1.01</td><td>0.12</td>
+</tr><tr><td>Pure.DI</td><td>225.6 ns</td><td>9.58 ns</td><td>27.65 ns</td><td>219.6 ns</td><td>1.04</td><td>0.15</td>
+</tr><tr><td>LightInject</td><td>270.8 ns</td><td>14.15 ns</td><td>40.38 ns</td><td>259.7 ns</td><td>1.25</td><td>0.22</td>
+</tr><tr><td>DryIoc</td><td>338.0 ns</td><td>31.13 ns</td><td>91.79 ns</td><td>309.6 ns</td><td>1.55</td><td>0.37</td>
+</tr><tr><td>MicrosoftDependencyInjection</td><td>353.6 ns</td><td>28.00 ns</td><td>82.12 ns</td><td>315.8 ns</td><td>1.61</td><td>0.39</td>
+</tr><tr><td>Autofac</td><td>11,278.1 ns</td><td>387.58 ns</td><td>1,067.51 ns</td><td>11,095.5 ns</td><td>51.53</td><td>6.37</td>
 </tr></tbody></table>
 
 </details>
@@ -851,11 +854,11 @@ The _PureDISeverity_ property has several options available:
 <summary>Benchmarks environment</summary>
 
 <pre><code>
-BenchmarkDotNet=v0.13.5, OS=Windows 11 (10.0.22000.1817/21H2/SunValley), VM=Hyper-V
-Intel Xeon Platinum 8171M CPU 2.60GHz, 1 CPU, 2 logical cores and 1 physical core
-.NET SDK=7.0.203
-  [Host]     : .NET 7.0.5 (7.0.523.17405), X64 RyuJIT AVX2
-  DefaultJob : .NET 7.0.5 (7.0.523.17405), X64 RyuJIT AVX2
+BenchmarkDotNet=v0.13.5, OS=Windows 10 (10.0.19045.3086/22H2/2022Update)
+Intel Core i7-10850H CPU 2.70GHz, 1 CPU, 12 logical and 6 physical cores
+.NET SDK=7.0.304
+  [Host]     : .NET 7.0.7 (7.0.723.27404), X64 RyuJIT AVX2
+  DefaultJob : .NET 7.0.7 (7.0.723.27404), X64 RyuJIT AVX2
 </code></pre>
 
 </details>

@@ -77,20 +77,20 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly System.IDisposable[] _disposables6435C6;
-  private Pure.DI.UsageTests.Lifetimes.SingletonScenario.Dependency _f22Singleton6435C6;
+  private readonly System.IDisposable[] _disposables95CB90;
+  private Pure.DI.UsageTests.Lifetimes.SingletonScenario.Dependency _f22Singleton95CB90;
   
   public Composition()
   {
-    _disposables6435C6 = new System.IDisposable[0];
+    _disposables95CB90 = new System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposables6435C6 = new System.IDisposable[0];
-    lock (parent._disposables6435C6)
+    _disposables95CB90 = new System.IDisposable[0];
+    lock (parent._disposables95CB90)
     {
-      _f22Singleton6435C6 = parent._f22Singleton6435C6;
+      _f22Singleton95CB90 = parent._f22Singleton95CB90;
     }
   }
   
@@ -100,18 +100,18 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      if (global::System.Object.ReferenceEquals(_f22Singleton6435C6, null))
+      if (global::System.Object.ReferenceEquals(_f22Singleton95CB90, null))
       {
-          lock (_disposables6435C6)
+          lock (_disposables95CB90)
           {
-              if (global::System.Object.ReferenceEquals(_f22Singleton6435C6, null))
+              if (global::System.Object.ReferenceEquals(_f22Singleton95CB90, null))
               {
-                  _f22Singleton6435C6 = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Dependency();
+                  _f22Singleton95CB90 = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Dependency();
               }
           }
       }
-      Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service v114Local6435C6 = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service(_f22Singleton6435C6, _f22Singleton6435C6);
-      return v114Local6435C6;
+      Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service v114Local95CB90 = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service(_f22Singleton95CB90, _f22Singleton95CB90);
+      return v114Local95CB90;
     }
   }
   #endregion
@@ -123,7 +123,7 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>()
   {
-    return Resolver6435C6<T>.Value.Resolve(this);
+    return Resolver95CB90<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -132,7 +132,7 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>(object? tag)
   {
-    return Resolver6435C6<T>.Value.ResolveByTag(this, tag);
+    return Resolver95CB90<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -141,17 +141,17 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type)
   {
-    int index = (int)(_bucketSize6435C6 * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _buckets6435C6[index];
+    int index = (int)(_bucketSize95CB90 * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets95CB90[index];
     if (ReferenceEquals(pair.Key, type))
     {
       return pair.Value.Resolve(this);
     }
     
-    int maxIndex = index + _bucketSize6435C6;
+    int maxIndex = index + _bucketSize95CB90;
     for (int i = index + 1; i < maxIndex; i++)
     {
-      pair = ref _buckets6435C6[i];
+      pair = ref _buckets95CB90[i];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -167,17 +167,17 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    int index = (int)(_bucketSize6435C6 * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _buckets6435C6[index];
+    int index = (int)(_bucketSize95CB90 * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets95CB90[index];
     if (ReferenceEquals(pair.Key, type))
     {
       return pair.Value.ResolveByTag(this, tag);
     }
     
-    int maxIndex = index + _bucketSize6435C6;
+    int maxIndex = index + _bucketSize95CB90;
     for (int i = index + 1; i < maxIndex; i++)
     {
-      pair = ref _buckets6435C6[i];
+      pair = ref _buckets95CB90[i];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -219,29 +219,29 @@ partial class Composition
         "  Composition ..> Service : IService Root";
   }
   
-  private readonly static int _bucketSize6435C6;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets6435C6;
+  private readonly static int _bucketSize95CB90;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _buckets95CB90;
   
   static Composition()
   {
-    Resolver6435C60 valResolver6435C60 = new Resolver6435C60();
-    Resolver6435C6<Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService>.Value = valResolver6435C60;
-    _buckets6435C6 = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    Resolver95CB900 valResolver95CB900 = new Resolver95CB900();
+    Resolver95CB90<Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService>.Value = valResolver95CB900;
+    _buckets95CB90 = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSize6435C6,
+      out _bucketSize95CB90,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService), valResolver6435C60)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService), valResolver95CB900)
       });
   }
   
   #region Resolvers
-  private class Resolver6435C6<T>
+  private class Resolver95CB90<T>
   {
     public static global::Pure.DI.IResolver<Composition, T> Value;
   }
   
-  private sealed class Resolver6435C60: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService>
+  private sealed class Resolver95CB900: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService Resolve(Composition composition)
