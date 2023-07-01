@@ -14,15 +14,16 @@ public partial class Enum : BenchmarkBase
 {
     private static void SetupDI() =>
         // ThreadSafe = Off
+        // FormatCode = On
         DI.Setup(nameof(Enum))
-        .Bind<ICompositionRoot>().To<CompositionRoot>()
-        .Bind<IService1>().To<Service1>()
-        .Bind<IService2>().To<Service2Enum>()
-        .Bind<IService3>().To<Service3>()
-        .Bind<IService3>().Tags(2).To<Service3v2>()
-        .Bind<IService3>().Tags(3).To<Service3v3>()
-        .Bind<IService3>().Tags(4).To<Service3v4>()
-        .Root<ICompositionRoot>("Root");
+            .Bind<ICompositionRoot>().To<CompositionRoot>()
+            .Bind<IService1>().To<Service1>()
+            .Bind<IService2>().To<Service2Enum>()
+            .Bind<IService3>().To<Service3>()
+            .Bind<IService3>().Tags(2).To<Service3v2>()
+            .Bind<IService3>().Tags(3).To<Service3v3>()
+            .Bind<IService3>().Tags(4).To<Service3v4>()
+            .Root<ICompositionRoot>("Root");
     
     protected override TActualContainer? CreateContainer<TActualContainer, TAbstractContainer>()
         where TActualContainer : class
@@ -48,12 +49,7 @@ public partial class Enum : BenchmarkBase
     public ICompositionRoot PureDIByCR() => Root;
 
     [Benchmark(Description = "Hand Coded", Baseline = true)]
-    public void HandCoded() => NewInstance();
-
-    private static readonly Func<IService3> Service3Factory = () => new Service3();
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    private static ICompositionRoot NewInstance() =>
+    public void HandCoded() =>
         new CompositionRoot(
             new Service1(
                 new Service2Enum(EnumerableOfIService3())),
@@ -61,6 +57,8 @@ public partial class Enum : BenchmarkBase
             new Service2Enum(EnumerableOfIService3()),
             new Service2Enum(EnumerableOfIService3()),
             new Service3());
+
+    private static readonly Func<IService3> Service3Factory = () => new Service3();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private static IEnumerable<IService3> EnumerableOfIService3()

@@ -14,12 +14,13 @@ public partial class Func : BenchmarkBase
 {
     private static void SetupDI() =>
         // ThreadSafe = Off
+        // FormatCode = On
         DI.Setup(nameof(Func))
-        .Bind<ICompositionRoot>().To<CompositionRoot>()
-        .Bind<IService1>().To<Service1>()
-        .Bind<IService2>().To<Service2Func>()
-        .Bind<IService3>().To<Service3>()
-        .Root<ICompositionRoot>("Root");
+            .Bind<ICompositionRoot>().To<CompositionRoot>()
+            .Bind<IService1>().To<Service1>()
+            .Bind<IService2>().To<Service2Func>()
+            .Bind<IService3>().To<Service3>()
+            .Root<ICompositionRoot>("Root");
 
     protected override TActualContainer? CreateContainer<TActualContainer, TAbstractContainer>()
         where TActualContainer : class
@@ -42,12 +43,7 @@ public partial class Func : BenchmarkBase
     public ICompositionRoot PureDIByCR() => Root;
 
     [Benchmark(Description = "Hand Coded", Baseline = true)]
-    public void HandCoded() => NewInstance();
-
-    private static readonly Func<IService3> Service3Factory = () => new Service3();
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    private static ICompositionRoot NewInstance() =>
+    public void HandCoded() =>
         new CompositionRoot(
             new Service1(
                 new Service2Func(() => new Service3())),
@@ -55,5 +51,7 @@ public partial class Func : BenchmarkBase
             new Service2Func(() => new Service3()),
             new Service2Func(() => new Service3()),
             new Service3());
+
+    private static readonly Func<IService3> Service3Factory = () => new Service3();
 }
 #pragma warning restore CA1822

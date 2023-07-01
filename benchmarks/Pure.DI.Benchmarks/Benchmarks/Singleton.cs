@@ -16,12 +16,13 @@ public partial class Singleton : BenchmarkBase
 {
     private static void SetupDI() =>
         // ThreadSafe = Off
+        // FormatCode = On
         DI.Setup(nameof(Singleton))
-        .Bind<ICompositionRoot>().To<CompositionRoot>()
-        .Bind<IService1>().As(Lifetime.Singleton).To<Service1>()
-        .Bind<IService2>().To<Service2>()
-        .Bind<IService3>().To<Service3>()
-        .Root<ICompositionRoot>("Root");
+            .Bind<ICompositionRoot>().To<CompositionRoot>()
+            .Bind<IService1>().As(Lifetime.Singleton).To<Service1>()
+            .Bind<IService2>().To<Service2>()
+            .Bind<IService3>().To<Service3>()
+            .Root<ICompositionRoot>("Root");
     
     protected override TActualContainer? CreateContainer<TActualContainer, TAbstractContainer>()
         where TActualContainer : class
@@ -44,10 +45,7 @@ public partial class Singleton : BenchmarkBase
     public ICompositionRoot PureDIByCR() => Root;
 
     [Benchmark(Description = "Hand Coded", Baseline = true)]
-    public void HandCoded() => NewInstance();
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    private static ICompositionRoot NewInstance() =>
+    public void HandCoded() =>
         new CompositionRoot(
             SingletonService1.Shared,
             new Service2(

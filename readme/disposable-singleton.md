@@ -123,8 +123,8 @@ partial class Composition: System.IDisposable
               }
           }
       }
-      Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service v107LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service(_f22SingletonA1F7);
-      return v107LocalA1F7;
+      Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service v106LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service(_f22SingletonA1F7);
+      return v106LocalA1F7;
     }
   }
   #endregion

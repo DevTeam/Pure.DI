@@ -2,52 +2,19 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Interception/InterceptionScenario.cs)
 
-Interception allows you to enrich or change the behavior of a certain set of objects from the object graph being created without changing the code of the corresponding types. This example demonstrates how to log calls to objects:
+Interception allows you to enrich or change the behavior of a certain set of objects from the object graph being created without changing the code of the corresponding types.
 
 ```c#
-public interface IDependency
+public interface IService { string GetMessage(); }
+
+internal class Service : IService
 {
-    void DependencyCall();
-}
-
-public class Dependency : IDependency
-{
-    public void DependencyCall()
-    {
-    }
-}
-
-public interface IService
-{
-    IDependency Dependency { get; }
-
-    void ServiceCall();
-}
-
-public class Service : IService
-{
-    public Service(IDependency dependency)
-    {
-        Dependency = dependency;
-    }
-
-    public IDependency Dependency { get; }
-
-    public void ServiceCall()
-    {
-    }
+    public string GetMessage() => "Hello World";
 }
 
 internal partial class Composition: IInterceptor
 {
-    private readonly List<string> _log;
     private static readonly ProxyGenerator ProxyGenerator = new();
-
-    public Composition(List<string> log)
-        : this()
-    {
-        _log = log;
-    }
 
     private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)
     {
@@ -64,27 +31,23 @@ internal partial class Composition: IInterceptor
 
     public void Intercept(IInvocation invocation)
     {
-        _log.Add(invocation.Method.Name);
         invocation.Proceed();
+        if (invocation.Method.Name == nameof(IService.GetMessage)
+            && invocation.ReturnValue is string message)
+        {
+            invocation.ReturnValue = $"{message} !!!";
+        }
     }
 }
 
 // OnDependencyInjection = On
+// OnDependencyInjectionContractTypeNameRegularExpression = IService
 DI.Setup("Composition")
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
+    .Bind<IService>().To<Service>().Root<IService>("Root");
 
-var log = new List<string>();
-var composition = new Composition(log);
+var composition = new Composition();
 var service = composition.Root;
-service.ServiceCall();
-service.Dependency.DependencyCall();
-
-log.ShouldBe(
-    ImmutableArray.Create(
-        "ServiceCall",
-        "get_Dependency",
-        "DependencyCall"));
+service.GetMessage().ShouldBe("Hello World !!!");
 ```
 
 <details open>
@@ -101,19 +64,11 @@ classDiagram
   }
   Service --|> IService : 
   class Service {
-    +Service(IDependency dependency)
-  }
-  Dependency --|> IDependency : 
-  class Dependency {
-    +Dependency()
+    +Service()
   }
   class IService {
     <<abstract>>
   }
-  class IDependency {
-    <<abstract>>
-  }
-  Service *--  Dependency : IDependency dependency
   Composition ..> Service : IService Root
 ```
 
@@ -139,8 +94,7 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Interception.InterceptionScenario.Dependency v106LocalA1F7 = new Pure.DI.UsageTests.Interception.InterceptionScenario.Dependency();
-      Pure.DI.UsageTests.Interception.InterceptionScenario.Service v105LocalA1F7 = new Pure.DI.UsageTests.Interception.InterceptionScenario.Service(OnDependencyInjection<Pure.DI.UsageTests.Interception.InterceptionScenario.IDependency>(v106LocalA1F7, null, Pure.DI.Lifetime.Transient));
+      Pure.DI.UsageTests.Interception.InterceptionScenario.Service v105LocalA1F7 = new Pure.DI.UsageTests.Interception.InterceptionScenario.Service();
       return OnDependencyInjection<Pure.DI.UsageTests.Interception.InterceptionScenario.IService>(v105LocalA1F7, null, Pure.DI.Lifetime.Transient);
     }
   }
@@ -234,19 +188,11 @@ partial class Composition
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
-          "    +Service(IDependency dependency)\n" +
-        "  }\n" +
-        "  Dependency --|> IDependency : \n" +
-        "  class Dependency {\n" +
-          "    +Dependency()\n" +
+          "    +Service()\n" +
         "  }\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  class IDependency {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Service *--  Dependency : IDependency dependency\n" +
         "  Composition ..> Service : IService Root";
   }
   

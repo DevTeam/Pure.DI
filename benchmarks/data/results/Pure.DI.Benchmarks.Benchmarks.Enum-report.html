@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>Pure.DI.Benchmarks.Benchmarks.Enum-20230622-161828</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet=v0.13.5, OS=Windows 10 (10.0.19045.3086/22H2/2022Update)
+Intel Core i7-10850H CPU 2.70GHz, 1 CPU, 12 logical and 6 physical cores
+.NET SDK=7.0.304
+  [Host]     : .NET 7.0.7 (7.0.723.27404), X64 RyuJIT AVX2
+  DefaultJob : .NET 7.0.7 (7.0.723.27404), X64 RyuJIT AVX2
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>                Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
+</tr>
+</thead><tbody><tr><td>SimpleInjector</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>218.4 ns</td><td>6.26 ns</td><td>18.17 ns</td><td>215.7 ns</td><td>1.00</td><td>0.10</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>218.6 ns</td><td>6.11 ns</td><td>17.72 ns</td><td>215.7 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>220.6 ns</td><td>5.64 ns</td><td>16.46 ns</td><td>217.4 ns</td><td>1.01</td><td>0.12</td>
+</tr><tr><td>Pure.DI</td><td>225.6 ns</td><td>9.58 ns</td><td>27.65 ns</td><td>219.6 ns</td><td>1.04</td><td>0.15</td>
+</tr><tr><td>LightInject</td><td>270.8 ns</td><td>14.15 ns</td><td>40.38 ns</td><td>259.7 ns</td><td>1.25</td><td>0.22</td>
+</tr><tr><td>DryIoc</td><td>338.0 ns</td><td>31.13 ns</td><td>91.79 ns</td><td>309.6 ns</td><td>1.55</td><td>0.37</td>
+</tr><tr><td>MicrosoftDependencyInjection</td><td>353.6 ns</td><td>28.00 ns</td><td>82.12 ns</td><td>315.8 ns</td><td>1.61</td><td>0.39</td>
+</tr><tr><td>Autofac</td><td>11,278.1 ns</td><td>387.58 ns</td><td>1,067.51 ns</td><td>11,095.5 ns</td><td>51.53</td><td>6.37</td>
+</tr></tbody></table>
+</body>
+</html>

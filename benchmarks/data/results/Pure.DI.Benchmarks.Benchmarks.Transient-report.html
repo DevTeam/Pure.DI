@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>Pure.DI.Benchmarks.Benchmarks.Transient-20230622-164509</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; text-align: right; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet=v0.13.5, OS=Windows 10 (10.0.19045.3086/22H2/2022Update)
+Intel Core i7-10850H CPU 2.70GHz, 1 CPU, 12 logical and 6 physical cores
+.NET SDK=7.0.304
+  [Host]     : .NET 7.0.7 (7.0.723.27404), X64 RyuJIT AVX2
+  DefaultJob : .NET 7.0.7 (7.0.723.27404), X64 RyuJIT AVX2
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>                Method</th><th>   Mean</th><th>Error</th><th>StdDev</th><th> Median</th><th>Ratio</th><th>RatioSD</th>
+</tr>
+</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>0.0063 ns</td><td>0.0115 ns</td><td>0.0108 ns</td><td>0.0000 ns</td><td>?</td><td>?</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>4.4660 ns</td><td>0.1950 ns</td><td>0.5719 ns</td><td>4.2801 ns</td><td>?</td><td>?</td>
+</tr><tr><td>Pure.DI</td><td>5.5845 ns</td><td>0.1709 ns</td><td>0.4791 ns</td><td>5.4228 ns</td><td>?</td><td>?</td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>8.1735 ns</td><td>0.2219 ns</td><td>0.4113 ns</td><td>8.1184 ns</td><td>?</td><td>?</td>
+</tr><tr><td>LightInject</td><td>11.0895 ns</td><td>0.2444 ns</td><td>0.2400 ns</td><td>11.0578 ns</td><td>?</td><td>?</td>
+</tr><tr><td>DryIoc</td><td>20.7087 ns</td><td>0.4088 ns</td><td>0.7875 ns</td><td>20.4419 ns</td><td>?</td><td>?</td>
+</tr><tr><td>SimpleInjector</td><td>22.6579 ns</td><td>0.4750 ns</td><td>0.8065 ns</td><td>22.2762 ns</td><td>?</td><td>?</td>
+</tr><tr><td>MicrosoftDependencyInjection</td><td>25.0480 ns</td><td>0.5255 ns</td><td>0.9997 ns</td><td>24.8042 ns</td><td>?</td><td>?</td>
+</tr><tr><td>Autofac</td><td>8,670.0316 ns</td><td>165.7194 ns</td><td>285.8577 ns</td><td>8,604.1817 ns</td><td>?</td><td>?</td>
+</tr></tbody></table>
+</body>
+</html>

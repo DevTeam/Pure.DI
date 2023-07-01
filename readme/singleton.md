@@ -110,8 +110,8 @@ partial class Composition
               }
           }
       }
-      Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service v113LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service(_f22SingletonA1F7, _f22SingletonA1F7);
-      return v113LocalA1F7;
+      Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service v112LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service(_f22SingletonA1F7, _f22SingletonA1F7);
+      return v112LocalA1F7;
     }
   }
   #endregion
