@@ -117,46 +117,52 @@ namespace Pure.DI
                         ctx.Inject<TT[]>(out var arr);
                         return new global::System.Collections.Generic.Stack<TT>(arr);
                     })
-#if NET || NETCOREAPP                 
+#if NET || NETCOREAPP                
                 .Bind<global::System.Collections.Immutable.ImmutableArray<TT>>()
                     .To(ctx =>
-                    {
-                        ctx.Inject<TT[]>(out var arr);
-                        return global::System.Collections.Immutable.ImmutableArray.Create<TT>(arr);
+                {
+                        TT[] arr;
+                        ctx.Inject<TT[]>(out arr);
+                        return global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableArray<TT>>(ref arr);
                     })
                 .Bind<global::System.Collections.Immutable.IImmutableList<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableList<TT>>()
                     .To(ctx =>
                     {
-                        ctx.Inject<TT[]>(out var arr);
-                        return global::System.Collections.Immutable.ImmutableList.Create<TT>(arr);
+                        TT[] arr;
+                        ctx.Inject<TT[]>(out arr);
+                        return global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableList<TT>>(ref arr);
                     })
                 .Bind<global::System.Collections.Immutable.IImmutableSet<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableHashSet<TT>>()
                     .To(ctx =>
                     {
-                        ctx.Inject<TT[]>(out var arr);
-                        return global::System.Collections.Immutable.ImmutableHashSet.Create<TT>(arr);
+                        TT[] arr;
+                        ctx.Inject<TT[]>(out arr);
+                        return global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableHashSet<TT>>(ref arr);
                     })
                 .Bind<global::System.Collections.Immutable.ImmutableSortedSet<TT>>()
                     .To(ctx =>
                     {
-                        ctx.Inject<TT[]>(out var arr);
-                        return global::System.Collections.Immutable.ImmutableSortedSet.Create<TT>(arr);
+                        TT[] arr;
+                        ctx.Inject<TT[]>(out arr);
+                        return global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableSortedSet<TT>>(ref arr);
                     })
                 .Bind<global::System.Collections.Immutable.IImmutableQueue<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableQueue<TT>>()
                     .To(ctx =>
                     {
-                        ctx.Inject<TT[]>(out var arr);
-                        return global::System.Collections.Immutable.ImmutableQueue.Create<TT>(arr);
+                        TT[] arr;
+                        ctx.Inject<TT[]>(out arr);
+                        return global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableQueue<TT>>(ref arr);
                     })
                 .Bind<global::System.Collections.Immutable.IImmutableStack<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableStack<TT>>()
                     .To(ctx =>
                     {
-                        ctx.Inject<TT[]>(out var arr);
-                        return global::System.Collections.Immutable.ImmutableStack.Create<TT>(arr);
+                        TT[] arr;
+                        ctx.Inject<TT[]>(out arr);
+                        return global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableStack<TT>>(ref arr);
                     })
 #endif
                     ;
