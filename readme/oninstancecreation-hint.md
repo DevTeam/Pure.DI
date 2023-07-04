@@ -83,6 +83,7 @@ classDiagram
   class Dependency {
     +Dependency()
   }
+  class DateTime
   class IService {
     <<abstract>>
   }
@@ -96,7 +97,7 @@ classDiagram
 </details>
 
 <details>
-<summary>Generated Code</summary>
+<summary>Composition Code</summary>
 
 ```c#
 partial class Composition
@@ -115,11 +116,11 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency v93LocalA1F7 = new Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency();
-      OnInstanceCreation<Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency>(ref v93LocalA1F7, null, Pure.DI.Lifetime.Transient);
-      Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service v92LocalA1F7 = new Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service(v93LocalA1F7);
-      OnInstanceCreation<Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service>(ref v92LocalA1F7, null, Pure.DI.Lifetime.Transient);
-      return v92LocalA1F7;
+      Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency v106LocalA1F7 = new Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency();
+      OnInstanceCreation<Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency>(ref v106LocalA1F7, null, Pure.DI.Lifetime.Transient);
+      Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service v105LocalA1F7 = new Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service(v106LocalA1F7);
+      OnInstanceCreation<Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service>(ref v105LocalA1F7, null, Pure.DI.Lifetime.Transient);
+      return v105LocalA1F7;
     }
   }
   #endregion
@@ -218,6 +219,7 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
+        "  class DateTime\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

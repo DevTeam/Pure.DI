@@ -75,6 +75,7 @@ classDiagram
     +Person(String name)
     ~Object Id
   }
+  class DateTime
   class String
   class Int32
   class IPerson {
@@ -88,7 +89,7 @@ classDiagram
 </details>
 
 <details>
-<summary>Generated Code</summary>
+<summary>PersonComposition Code</summary>
 
 ```c#
 partial class PersonComposition
@@ -208,6 +209,7 @@ partial class PersonComposition
           "    +Person(String name)\n" +
           "    ~Object Id\n" +
         "  }\n" +
+        "  class DateTime\n" +
         "  class String\n" +
         "  class Int32\n" +
         "  class IPerson {\n" +

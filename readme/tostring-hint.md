@@ -46,6 +46,7 @@ classDiagram
   class Dependency {
     +Dependency()
   }
+  class DateTime
   class IService {
     <<abstract>>
   }
@@ -59,7 +60,7 @@ classDiagram
 </details>
 
 <details>
-<summary>Generated Code</summary>
+<summary>Composition Code</summary>
 
 ```c#
 partial class Composition
@@ -78,9 +79,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.ToStringHintScenario.Dependency v100LocalA1F7 = new Pure.DI.UsageTests.Hints.ToStringHintScenario.Dependency();
-      Pure.DI.UsageTests.Hints.ToStringHintScenario.Service v99LocalA1F7 = new Pure.DI.UsageTests.Hints.ToStringHintScenario.Service(v100LocalA1F7);
-      return v99LocalA1F7;
+      Pure.DI.UsageTests.Hints.ToStringHintScenario.Dependency v113LocalA1F7 = new Pure.DI.UsageTests.Hints.ToStringHintScenario.Dependency();
+      Pure.DI.UsageTests.Hints.ToStringHintScenario.Service v112LocalA1F7 = new Pure.DI.UsageTests.Hints.ToStringHintScenario.Service(v113LocalA1F7);
+      return v112LocalA1F7;
     }
   }
   #endregion
@@ -176,6 +177,7 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
+        "  class DateTime\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

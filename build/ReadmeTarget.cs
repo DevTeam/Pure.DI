@@ -45,6 +45,9 @@ internal class ReadmeTarget : ITarget<int>
         // Run benchmarks
         await _benchmarksTarget.RunAsync(ctx);
         
+        // Delete generated files
+        Directory.Delete(Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator"), true);
+
         // Run tests for Class Diagrams
         var testProject = Path.Combine(solutionDirectory, "tests", "Pure.DI.UsageTests", "Pure.DI.UsageTests.csproj");
         await new DotNetClean().WithProject(testProject).BuildAsync();
@@ -254,11 +257,11 @@ internal class ReadmeTarget : ITarget<int>
                     await examplesWriter.WriteLineAsync("");
                 }
 
-                var generatedCodeFile = Directory.GetFiles(Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator"), $"*.{sampleName}.*.g.cs").Single();
-                if (File.Exists(generatedCodeFile))
+                foreach (var generatedCodeFile in Directory.GetFiles(Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator"), $"*.{sampleName}.*.g.cs").OrderBy(i => i))
                 {
+                    var name = Path.GetFileName(generatedCodeFile).Split('.').Reverse().Skip(2).FirstOrDefault() ?? "Generated";
                     await examplesWriter.WriteLineAsync("<details>");
-                    await examplesWriter.WriteLineAsync("<summary>Generated Code</summary>");
+                    await examplesWriter.WriteLineAsync($"<summary>{name} Code</summary>");
                     await examplesWriter.WriteLineAsync("");
                     await examplesWriter.WriteLineAsync("```c#");
                     var generatedCode = await File.ReadAllTextAsync(generatedCodeFile);

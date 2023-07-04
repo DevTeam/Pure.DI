@@ -55,6 +55,7 @@ classDiagram
   class Service {
     +Service(IDependencyᐸInt32ᐳ intDependency, IDependencyᐸStringᐳ stringDependency)
   }
+  class DateTime
   DependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : 
   class DependencyᐸInt32ᐳ {
     +Dependency()
@@ -80,7 +81,7 @@ classDiagram
 </details>
 
 <details>
-<summary>Generated Code</summary>
+<summary>Composition Code</summary>
 
 ```c#
 partial class Composition
@@ -99,10 +100,10 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.GenericsScenario.Dependency<int> v67LocalA1F7 = new Pure.DI.UsageTests.Basics.GenericsScenario.Dependency<int>();
-      Pure.DI.UsageTests.Basics.GenericsScenario.Dependency<string> v68LocalA1F7 = new Pure.DI.UsageTests.Basics.GenericsScenario.Dependency<string>();
-      Pure.DI.UsageTests.Basics.GenericsScenario.Service v66LocalA1F7 = new Pure.DI.UsageTests.Basics.GenericsScenario.Service(v67LocalA1F7, v68LocalA1F7);
-      return v66LocalA1F7;
+      Pure.DI.UsageTests.Basics.GenericsScenario.Dependency<int> v80LocalA1F7 = new Pure.DI.UsageTests.Basics.GenericsScenario.Dependency<int>();
+      Pure.DI.UsageTests.Basics.GenericsScenario.Dependency<string> v81LocalA1F7 = new Pure.DI.UsageTests.Basics.GenericsScenario.Dependency<string>();
+      Pure.DI.UsageTests.Basics.GenericsScenario.Service v79LocalA1F7 = new Pure.DI.UsageTests.Basics.GenericsScenario.Service(v80LocalA1F7, v81LocalA1F7);
+      return v79LocalA1F7;
     }
   }
   #endregion
@@ -194,6 +195,7 @@ partial class Composition
         "  class Service {\n" +
           "    +Service(IDependencyᐸInt32ᐳ intDependency, IDependencyᐸStringᐳ stringDependency)\n" +
         "  }\n" +
+        "  class DateTime\n" +
         "  DependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : \n" +
         "  class DependencyᐸInt32ᐳ {\n" +
           "    +Dependency()\n" +

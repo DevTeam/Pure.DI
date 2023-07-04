@@ -48,6 +48,7 @@ classDiagram
   class Dependency {
     +Dependency()
   }
+  class DateTime
   class IService {
     <<abstract>>
   }
@@ -62,7 +63,7 @@ classDiagram
 </details>
 
 <details>
-<summary>Generated Code</summary>
+<summary>Composition Code</summary>
 
 ```c#
 partial class Composition
@@ -81,8 +82,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency v94LocalA1F7 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
-      return v94LocalA1F7;
+      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency v107LocalA1F7 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
+      return v107LocalA1F7;
     }
   }
   
@@ -91,9 +92,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency v96LocalA1F7 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
-      Pure.DI.UsageTests.Hints.ResolveHintScenario.Service v95LocalA1F7 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(v96LocalA1F7);
-      return v95LocalA1F7;
+      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency v109LocalA1F7 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
+      Pure.DI.UsageTests.Hints.ResolveHintScenario.Service v108LocalA1F7 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(v109LocalA1F7);
+      return v108LocalA1F7;
     }
   }
   #endregion
@@ -115,6 +116,7 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
+        "  class DateTime\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

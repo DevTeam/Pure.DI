@@ -53,6 +53,7 @@ classDiagram
   class Dependency {
     +Dependency()
   }
+  class DateTime
   class LazyᐸIDependencyᐳ
   class FuncᐸIDependencyᐳ
   class IService {
@@ -70,7 +71,7 @@ classDiagram
 </details>
 
 <details>
-<summary>Generated Code</summary>
+<summary>Composition Code</summary>
 
 ```c#
 partial class Composition
@@ -205,6 +206,7 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
+        "  class DateTime\n" +
         "  class LazyᐸIDependencyᐳ\n" +
         "  class FuncᐸIDependencyᐳ\n" +
         "  class IService {\n" +

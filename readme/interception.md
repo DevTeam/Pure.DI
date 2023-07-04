@@ -66,6 +66,7 @@ classDiagram
   class Service {
     +Service()
   }
+  class DateTime
   class IService {
     <<abstract>>
   }
@@ -75,7 +76,7 @@ classDiagram
 </details>
 
 <details>
-<summary>Generated Code</summary>
+<summary>Composition Code</summary>
 
 ```c#
 partial class Composition
@@ -94,8 +95,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Interception.InterceptionScenario.Service v105LocalA1F7 = new Pure.DI.UsageTests.Interception.InterceptionScenario.Service();
-      return OnDependencyInjection<Pure.DI.UsageTests.Interception.InterceptionScenario.IService>(v105LocalA1F7, null, Pure.DI.Lifetime.Transient);
+      Pure.DI.UsageTests.Interception.InterceptionScenario.Service v118LocalA1F7 = new Pure.DI.UsageTests.Interception.InterceptionScenario.Service();
+      return OnDependencyInjection<Pure.DI.UsageTests.Interception.InterceptionScenario.IService>(v118LocalA1F7, null, Pure.DI.Lifetime.Transient);
     }
   }
   #endregion
@@ -190,6 +191,7 @@ partial class Composition
         "  class Service {\n" +
           "    +Service()\n" +
         "  }\n" +
+        "  class DateTime\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

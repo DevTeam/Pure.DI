@@ -60,6 +60,7 @@ classDiagram
   class Dependency {
     +Dependency()
   }
+  class DateTime
   class IService {
     <<abstract>>
   }
@@ -74,7 +75,7 @@ classDiagram
 </details>
 
 <details>
-<summary>Generated Code</summary>
+<summary>Composition Code</summary>
 
 ```c#
 partial class Composition
@@ -93,10 +94,10 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency v114LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency();
-      Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency v115LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency();
-      Pure.DI.UsageTests.Lifetimes.TransientScenario.Service v113LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Service(v115LocalA1F7, v114LocalA1F7);
-      return v113LocalA1F7;
+      Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency v127LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency();
+      Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency v128LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency();
+      Pure.DI.UsageTests.Lifetimes.TransientScenario.Service v126LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Service(v128LocalA1F7, v127LocalA1F7);
+      return v126LocalA1F7;
     }
   }
   #endregion
@@ -192,6 +193,7 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
+        "  class DateTime\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

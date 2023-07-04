@@ -51,6 +51,7 @@ classDiagram
   class Dependency {
     +Dependency()
   }
+  class DateTime
   class IService {
     <<abstract>>
   }
@@ -68,7 +69,7 @@ classDiagram
 </details>
 
 <details>
-<summary>Generated Code</summary>
+<summary>Composition Code</summary>
 
 ```c#
 partial class Composition
@@ -87,10 +88,10 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency v76LocalA1F7 = new Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency();
-      Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency v77LocalA1F7 = new Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency();
-      Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Service v75LocalA1F7 = new Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Service(v76LocalA1F7, v77LocalA1F7);
-      return v75LocalA1F7;
+      Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency v89LocalA1F7 = new Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency();
+      Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency v90LocalA1F7 = new Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency();
+      Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Service v88LocalA1F7 = new Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Service(v89LocalA1F7, v90LocalA1F7);
+      return v88LocalA1F7;
     }
   }
   #endregion
@@ -187,6 +188,7 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
+        "  class DateTime\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

@@ -56,6 +56,7 @@ classDiagram
   class Dependency {
     +Dependency()
   }
+  class DateTime
   Service --|> IService : 
   class Service
   class IDependency {
@@ -71,7 +72,7 @@ classDiagram
 </details>
 
 <details>
-<summary>Generated Code</summary>
+<summary>Composition Code</summary>
 
 ```c#
 partial class Composition
@@ -90,18 +91,18 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.InjectionScenario.Service v69LocalA1F7;
+      Pure.DI.UsageTests.Basics.InjectionScenario.Service v82LocalA1F7;
       {
-          Pure.DI.UsageTests.Basics.InjectionScenario.Dependency v72LocalA1F7 = new Pure.DI.UsageTests.Basics.InjectionScenario.Dependency();
-          Pure.DI.UsageTests.Basics.InjectionScenario.IDependency dependency = v72LocalA1F7;
+          Pure.DI.UsageTests.Basics.InjectionScenario.Dependency v85LocalA1F7 = new Pure.DI.UsageTests.Basics.InjectionScenario.Dependency();
+          Pure.DI.UsageTests.Basics.InjectionScenario.IDependency dependency = v85LocalA1F7;
           {
-              v69LocalA1F7 = new Service(dependency);
-              goto label71A1F7;
+              v82LocalA1F7 = new Service(dependency);
+              goto label84A1F7;
           }
       }
-      label71A1F7:
+      label84A1F7:
           ;
-      return v69LocalA1F7;
+      return v82LocalA1F7;
     }
   }
   #endregion
@@ -193,6 +194,7 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
+        "  class DateTime\n" +
         "  Service --|> IService : \n" +
         "  class Service\n" +
         "  class IDependency {\n" +

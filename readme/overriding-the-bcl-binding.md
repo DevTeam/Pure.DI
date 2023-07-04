@@ -59,6 +59,7 @@ classDiagram
   class Service {
     +Service(ArrayᐸIDependencyᐳ dependencies)
   }
+  class DateTime
   class ArrayᐸIDependencyᐳ
   class IService {
     <<abstract>>
@@ -70,7 +71,7 @@ classDiagram
 </details>
 
 <details>
-<summary>Generated Code</summary>
+<summary>Composition Code</summary>
 
 ```c#
 partial class Composition
@@ -189,6 +190,7 @@ partial class Composition
         "  class Service {\n" +
           "    +Service(ArrayᐸIDependencyᐳ dependencies)\n" +
         "  }\n" +
+        "  class DateTime\n" +
         "  class ArrayᐸIDependencyᐳ\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +

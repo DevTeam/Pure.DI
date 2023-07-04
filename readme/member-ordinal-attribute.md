@@ -86,7 +86,7 @@ classDiagram
 </details>
 
 <details>
-<summary>Generated Code</summary>
+<summary>PersonComposition Code</summary>
 
 ```c#
 partial class PersonComposition
