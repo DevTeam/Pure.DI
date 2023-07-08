@@ -1,33 +1,39 @@
-#### Multi-contract bindings
+#### Required properties or fields
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/MultiContractBindingsScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/RequiredPropertiesOrFieldsScenario.cs)
 
-An unlimited number of contracts can be attached to one implementation. Including their combinations with various tags.
+All properties or fields marked with the _required_ keyword automatically become injected dependencies.
 
 ```c#
 internal interface IDependency { }
 
-internal interface IAdvancedDependency { }
+internal class Dependency : IDependency { }
 
-internal class Dependency : IDependency, IAdvancedDependency { }
+internal interface IService
+{
+    string Name { get;}
 
-internal interface IService { }
+    IDependency Dependency { get;}
+}
 
 internal class Service : IService
 {
-    public Service(
-        IDependency dependency,
-        IAdvancedDependency advancedDependency)
-    {
-    }
+    public required string ServiceNameField;
+
+    public string Name => ServiceNameField;
+
+    public required IDependency Dependency { get; init; }
 }
 
 DI.Setup("Composition")
-    .Bind<IDependency>().Bind<IAdvancedDependency>().To<Dependency>()
+    .Arg<string>("name")
+    .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>().Root<IService>("Root");
 
-var composition = new Composition();
+var composition = new Composition(name: "My Service");
 var service = composition.Root;
+service.Dependency.ShouldBeOfType<Dependency>();
+service.Name.ShouldBe("My Service");
 ```
 
 <details open>
@@ -42,26 +48,25 @@ classDiagram
     +object ResolveᐸTᐳ(Type type)
     +object ResolveᐸTᐳ(Type type, object? tag)
   }
-  Service --|> IService : 
-  class Service {
-    +Service(IDependency dependency, IAdvancedDependency advancedDependency)
-  }
   Dependency --|> IDependency : 
-  Dependency --|> IAdvancedDependency : 
   class Dependency {
     +Dependency()
+  }
+  Service --|> IService : 
+  class Service {
+    +Service()
+    +String ServiceNameField
+    +IDependency Dependency
+  }
+  class String
+  class IDependency {
+    <<abstract>>
   }
   class IService {
     <<abstract>>
   }
-  class IDependency {
-    <<abstract>>
-  }
-  class IAdvancedDependency {
-    <<abstract>>
-  }
-  Service *--  Dependency : IDependency dependency
-  Service *--  Dependency : IAdvancedDependency advancedDependency
+  Service o-- String : Argument "name"
+  Service *--  Dependency : +IDependency Dependency
   Composition ..> Service : IService Root
 ```
 
@@ -73,24 +78,36 @@ classDiagram
 ```c#
 partial class Composition
 {
-  public Composition()
+  private readonly string _nameArgA1F7;
+  
+  public Composition(string name)
   {
+    if (global::System.Object.ReferenceEquals(name, null))
+    {
+      throw new global::System.ArgumentNullException("name");
+    }
+    
+    _nameArgA1F7 = name;
   }
   
   internal Composition(Composition parent)
   {
+    _nameArgA1F7 = parent._nameArgA1F7;
   }
   
   #region Composition Roots
-  public Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.IService Root
+  public Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.IService Root
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency v83LocalA1F7 = new Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency();
-      Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency v84LocalA1F7 = new Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency();
-      Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Service v82LocalA1F7 = new Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Service(v83LocalA1F7, v84LocalA1F7);
-      return v82LocalA1F7;
+      Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Dependency v90LocalA1F7 = new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Dependency();
+      Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Service v89LocalA1F7 = new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Service()
+      {
+          ServiceNameField = _nameArgA1F7,
+          Dependency = v90LocalA1F7
+      };
+      return v89LocalA1F7;
     }
   }
   #endregion
@@ -178,26 +195,25 @@ partial class Composition
           "    +object ResolveᐸTᐳ(Type type)\n" +
           "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
         "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(IDependency dependency, IAdvancedDependency advancedDependency)\n" +
-        "  }\n" +
         "  Dependency --|> IDependency : \n" +
-        "  Dependency --|> IAdvancedDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service()\n" +
+          "    +String ServiceNameField\n" +
+          "    +IDependency Dependency\n" +
+        "  }\n" +
+        "  class String\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
         "  }\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  class IDependency {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IAdvancedDependency {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Service *--  Dependency : IDependency dependency\n" +
-        "  Service *--  Dependency : IAdvancedDependency advancedDependency\n" +
+        "  Service o-- String : Argument \"name\"\n" +
+        "  Service *--  Dependency : +IDependency Dependency\n" +
         "  Composition ..> Service : IService Root";
   }
   
@@ -207,13 +223,13 @@ partial class Composition
   static Composition()
   {
     ResolverA1F70 valResolverA1F70 = new ResolverA1F70();
-    ResolverA1F7<Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.IService>.Value = valResolverA1F70;
+    ResolverA1F7<Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.IService>.Value = valResolverA1F70;
     _bucketsA1F7 = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
       out _bucketSizeA1F7,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.IService), valResolverA1F70)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.IService), valResolverA1F70)
       });
   }
   
@@ -233,19 +249,19 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverA1F70: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.IService>
+  private sealed class ResolverA1F70: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.IService Resolve(Composition composition)
     {
       return composition.Root;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.IService ResolveByTag(Composition composition, object tag)
     {
       if (Equals(tag, null)) return composition.Root;
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.IService.");
     }
   }
   #endregion

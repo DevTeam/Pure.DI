@@ -50,7 +50,6 @@ classDiagram
   class Dependency {
     +Dependency()
   }
-  class DateTime
   class IService {
     <<abstract>>
   }
@@ -83,9 +82,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Dependency v111LocalA1F7 = new Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Dependency();
-      Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Service v110LocalA1F7 = new Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Service(v111LocalA1F7);
-      return v110LocalA1F7;
+      Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Dependency v107LocalA1F7 = new Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Dependency();
+      Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Service v106LocalA1F7 = new Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Service(v107LocalA1F7);
+      return v106LocalA1F7;
     }
   }
   #endregion
@@ -181,7 +180,6 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class DateTime\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

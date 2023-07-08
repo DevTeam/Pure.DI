@@ -213,6 +213,7 @@ dotnet run
 - [Complex Generics](readme/complex-generics.md)
 - [Partial class](readme/partial-class.md)
 - [Dependent compositions](readme/dependent-compositions.md)
+- [Required properties or fields](readme/required-properties-or-fields.md)
 ### Lifetimes
 - [Singleton](readme/singleton.md)
 - [PerResolve](readme/perresolve.md)

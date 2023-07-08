@@ -112,9 +112,10 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         in DpImplementation implementation,
         in DpMethod constructor,
         in ImmutableArray<Variable> constructorArguments,
-        in ImmutableArray<(Variable InitOnlyVariable, DpProperty InitOnlyProperty)> initOnlyProperties)
+        in ImmutableArray<(Variable RequiredVariable, DpField RequiredField)> requiredFields,
+        in ImmutableArray<(Variable RequiredVariable, DpProperty RequiredProperty)> requiredProperties)
     {
-        base.VisitConstructor(context, instantiation, implementation, constructor, constructorArguments, initOnlyProperties);
+        base.VisitConstructor(context, instantiation, implementation, constructor, constructorArguments, requiredFields, requiredProperties);
         
         string InjectVar(Variable variable) => Inject(context, variable);
         var args = string.Join(", ", constructorArguments.Select(InjectVar));
@@ -128,16 +129,21 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             newStatement = $"({args})";
         }
 
-        context.Code.AppendLines(GenerateDeclareStatements(instantiation.Target, newStatement, initOnlyProperties.Any() ? "" : ";"));
-        if (initOnlyProperties.Any())
+        var required = requiredFields.Select(i => (Variable: i.RequiredVariable, i.RequiredField.Field.Name))
+            .Concat(requiredProperties.Select(i => (Variable: i.RequiredVariable, i.RequiredProperty.Property.Name)))
+            .ToArray();
+            
+        var hasRequired = required.Any();
+        context.Code.AppendLines(GenerateDeclareStatements(instantiation.Target, newStatement, hasRequired ? "" : ";"));
+        if (hasRequired)
         {
             context.Code.AppendLine("{");
             using (context.Code.Indent())
             {
-                for (var index = 0; index < initOnlyProperties.Length; index++)
+                for (var index = 0; index < required.Length; index++)
                 {
-                    var property = initOnlyProperties[index];
-                    context.Code.AppendLine($"{property.InitOnlyProperty.Property.Name} = {Inject(context, property.InitOnlyVariable)}{(index < initOnlyProperties.Length - 1 ? "," : "")}");
+                    var (variable, name) = required[index];
+                    context.Code.AppendLine($"{name} = {Inject(context, variable)}{(index < required.Length - 1 ? "," : "")}");
                 }
             }
 

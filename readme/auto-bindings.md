@@ -47,7 +47,6 @@ classDiagram
   class Service {
     +Service(Dependency dependency)
   }
-  class DateTime
   Service *--  Dependency : Dependency dependency
   Composition ..> Service : Service Root
 ```
@@ -170,7 +169,6 @@ partial class Composition
         "  class Service {\n" +
           "    +Service(Dependency dependency)\n" +
         "  }\n" +
-        "  class DateTime\n" +
         "  Service *--  Dependency : Dependency dependency\n" +
         "  Composition ..> Service : Service Root";
   }

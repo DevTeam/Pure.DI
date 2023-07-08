@@ -87,7 +87,6 @@ classDiagram
   class Service {
     +Service(IDependency dependency)
   }
-  class DateTime
   class IDependency {
     <<abstract>>
   }
@@ -121,10 +120,10 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      string v102LocalA1F7 = OnCannotResolve<string>(null, Pure.DI.Lifetime.Transient);
-      Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency v101LocalA1F7 = new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency(v102LocalA1F7);
-      Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service v100LocalA1F7 = new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service(v101LocalA1F7);
-      return v100LocalA1F7;
+      string v98LocalA1F7 = OnCannotResolve<string>(null, Pure.DI.Lifetime.Transient);
+      Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency v97LocalA1F7 = new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency(v98LocalA1F7);
+      Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service v96LocalA1F7 = new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service(v97LocalA1F7);
+      return v96LocalA1F7;
     }
   }
   #endregion
@@ -224,7 +223,6 @@ partial class Composition
         "  class Service {\n" +
           "    +Service(IDependency dependency)\n" +
         "  }\n" +
-        "  class DateTime\n" +
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

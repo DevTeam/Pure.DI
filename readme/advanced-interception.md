@@ -125,7 +125,6 @@ classDiagram
   class Dependency {
     +Dependency()
   }
-  class DateTime
   class IService {
     <<abstract>>
   }
@@ -158,9 +157,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Dependency v115LocalA1F7 = new Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Dependency();
-      Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Service v114LocalA1F7 = new Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Service(OnDependencyInjection<Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IDependency>(v115LocalA1F7, null, Pure.DI.Lifetime.Transient));
-      return OnDependencyInjection<Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService>(v114LocalA1F7, null, Pure.DI.Lifetime.Transient);
+      Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Dependency v111LocalA1F7 = new Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Dependency();
+      Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Service v110LocalA1F7 = new Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Service(OnDependencyInjection<Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IDependency>(v111LocalA1F7, null, Pure.DI.Lifetime.Transient));
+      return OnDependencyInjection<Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService>(v110LocalA1F7, null, Pure.DI.Lifetime.Transient);
     }
   }
   #endregion
@@ -259,7 +258,6 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class DateTime\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

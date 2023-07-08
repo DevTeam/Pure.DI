@@ -16,7 +16,7 @@ internal interface IService { }
 
 internal class Service : IService
 {
-    public Service(IDependency dependency, DateTime now)
+    public Service(IDependency dependency)
     {
     }
 }
@@ -31,11 +31,6 @@ internal class Program
     public IService Service { get; }
 }
 
-// This setup affects all compositions created
-// and does not require the use of the "DependsOn" call to add it as a dependency
-DI.Setup("MyGlobal", CompositionKind.Global)
-    .Bind<DateTime>().To(_ => DateTime.Now);
-        
 // This setup does not generate code, but can be used as a dependency
 // and requires the use of the "DependsOn" call to add it as a dependency
 DI.Setup("BaseComposition", CompositionKind.Internal)
@@ -78,13 +73,12 @@ classDiagram
   }
   Service --|> IService : 
   class Service {
-    +Service(IDependency dependency, DateTime now)
+    +Service(IDependency dependency)
   }
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
   }
-  class DateTime
   class IService {
     <<abstract>>
   }
@@ -93,7 +87,6 @@ classDiagram
   }
   Program *--  Service : IService service
   Service *--  Dependency : IDependency dependency
-  Service *--  DateTime : DateTime now
   OtherComposition ..> Service : IService Root
   OtherComposition ..> Program : Program Program
 ```
@@ -121,9 +114,7 @@ partial class Composition
     get
     {
       Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency v62LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
-      System.DateTime v63LocalA1F7;
-      v63LocalA1F7 = DateTime.Now;
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service v61LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(v62LocalA1F7, v63LocalA1F7);
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service v61LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(v62LocalA1F7);
       return v61LocalA1F7;
     }
   }
@@ -214,13 +205,12 @@ partial class Composition
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
-          "    +Service(IDependency dependency, DateTime now)\n" +
+          "    +Service(IDependency dependency)\n" +
         "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class DateTime\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
@@ -228,7 +218,6 @@ partial class Composition
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service *--  Dependency : IDependency dependency\n" +
-        "  Service *--  DateTime : DateTime now\n" +
         "  Composition ..> Service : IService Root";
   }
   
@@ -305,11 +294,9 @@ partial class OtherComposition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency v66LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
-      System.DateTime v67LocalA1F7;
-      v67LocalA1F7 = DateTime.Now;
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service v65LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(v66LocalA1F7, v67LocalA1F7);
-      return v65LocalA1F7;
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency v64LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service v63LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(v64LocalA1F7);
+      return v63LocalA1F7;
     }
   }
   
@@ -318,12 +305,10 @@ partial class OtherComposition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency v71LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
-      System.DateTime v72LocalA1F7;
-      v72LocalA1F7 = DateTime.Now;
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service v70LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(v71LocalA1F7, v72LocalA1F7);
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program v69LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program(v70LocalA1F7);
-      return v69LocalA1F7;
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency v67LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service v66LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(v67LocalA1F7);
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program v65LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program(v66LocalA1F7);
+      return v65LocalA1F7;
     }
   }
   #endregion
@@ -417,13 +402,12 @@ partial class OtherComposition
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
-          "    +Service(IDependency dependency, DateTime now)\n" +
+          "    +Service(IDependency dependency)\n" +
         "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class DateTime\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
@@ -432,7 +416,6 @@ partial class OtherComposition
         "  }\n" +
         "  Program *--  Service : IService service\n" +
         "  Service *--  Dependency : IDependency dependency\n" +
-        "  Service *--  DateTime : DateTime now\n" +
         "  OtherComposition ..> Service : IService Root\n" +
         "  OtherComposition ..> Program : Program Program";
   }

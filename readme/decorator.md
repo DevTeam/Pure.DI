@@ -51,7 +51,6 @@ classDiagram
   class Service {
     +Service()
   }
-  class DateTime
   class IService {
     <<abstract>>
   }
@@ -81,9 +80,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Interception.DecoratorScenario.Service v117LocalA1F7 = new Pure.DI.UsageTests.Interception.DecoratorScenario.Service();
-      Pure.DI.UsageTests.Interception.DecoratorScenario.GreetingService v116LocalA1F7 = new Pure.DI.UsageTests.Interception.DecoratorScenario.GreetingService(v117LocalA1F7);
-      return v116LocalA1F7;
+      Pure.DI.UsageTests.Interception.DecoratorScenario.Service v113LocalA1F7 = new Pure.DI.UsageTests.Interception.DecoratorScenario.Service();
+      Pure.DI.UsageTests.Interception.DecoratorScenario.GreetingService v112LocalA1F7 = new Pure.DI.UsageTests.Interception.DecoratorScenario.GreetingService(v113LocalA1F7);
+      return v112LocalA1F7;
     }
   }
   #endregion
@@ -179,7 +178,6 @@ partial class Composition
         "  class Service {\n" +
           "    +Service()\n" +
         "  }\n" +
-        "  class DateTime\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

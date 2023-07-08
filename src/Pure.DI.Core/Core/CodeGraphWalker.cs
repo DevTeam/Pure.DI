@@ -207,11 +207,18 @@ internal class CodeGraphWalker<TContext>
         argsWalker.VisitConstructor(implementation.Constructor);
         var ctorArgs = argsWalker.GetResult();
 
-        var initOnlyProperties = ImmutableArray.CreateBuilder<(Variable InitOnlyVariable, DpProperty InitOnlyProperty)>();
-        foreach (var initOnlyProperty in implementation.Properties.Where(i => i.Property.SetMethod?.IsInitOnly == true).OrderBy(i => i.Ordinal ?? int.MaxValue))
+        var requiredFields = ImmutableArray.CreateBuilder<(Variable RequiredVariable, DpField RequiredField)>();
+        foreach (var requiredField in implementation.Fields.Where(i => i.Field.IsRequired).OrderBy(i => i.Ordinal ?? int.MaxValue - 1))
         {
-            argsWalker.VisitProperty(initOnlyProperty);
-            initOnlyProperties.Add((argsWalker.GetResult().Single(), initOnlyProperty));
+            argsWalker.VisitField(requiredField);
+            requiredFields.Add((argsWalker.GetResult().Single(), requiredField));
+        }
+            
+        var requiredProperties = ImmutableArray.CreateBuilder<(Variable RequiredVariable, DpProperty RequiredProperty)>();
+        foreach (var requiredProperty in implementation.Properties.Where(i => i.Property.IsRequired || i.Property.SetMethod?.IsInitOnly == true).OrderBy(i => i.Ordinal ?? int.MaxValue))
+        {
+            argsWalker.VisitProperty(requiredProperty);
+            requiredProperties.Add((argsWalker.GetResult().Single(), requiredProperty));
         }
 
         VisitConstructor(
@@ -220,10 +227,11 @@ internal class CodeGraphWalker<TContext>
             implementation,
             implementation.Constructor,
             ctorArgs,
-            initOnlyProperties.ToImmutableArray());
+            requiredFields.ToImmutableArray(),
+            requiredProperties.ToImmutableArray());
 
         var visits = new List<(Action Run, int? Ordinal)>();
-        foreach (var field in implementation.Fields)
+        foreach (var field in implementation.Fields.Where(i => i.Field.IsRequired != true))
         {
             argsWalker.VisitField(field);
             var fieldVariable = argsWalker.GetResult().Single();
@@ -231,7 +239,7 @@ internal class CodeGraphWalker<TContext>
             visits.Add((VisitFieldAction, field.Ordinal));
         }
         
-        foreach (var property in implementation.Properties.Where(i => i.Property.SetMethod?.IsInitOnly != true))
+        foreach (var property in implementation.Properties.Where(i => !i.Property.IsRequired && i.Property.SetMethod?.IsInitOnly != true))
         {
             argsWalker.VisitProperty(property);
             var propertyVariable = argsWalker.GetResult().Single();
@@ -254,13 +262,13 @@ internal class CodeGraphWalker<TContext>
         }
     }
 
-    protected virtual void VisitConstructor(
-        TContext context,
+    protected virtual void VisitConstructor(TContext context,
         Instantiation instantiation,
         in DpImplementation implementation,
         in DpMethod constructor,
         in ImmutableArray<Variable> constructorArguments,
-        in ImmutableArray<(Variable InitOnlyVariable, DpProperty InitOnlyProperty)> initOnlyProperties)
+        in ImmutableArray<(Variable RequiredVariable, DpField RequiredField)> requiredFields,
+        in ImmutableArray<(Variable RequiredVariable, DpProperty RequiredProperty)> requiredProperties)
     {
     }
 

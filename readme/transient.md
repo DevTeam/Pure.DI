@@ -60,7 +60,6 @@ classDiagram
   class Dependency {
     +Dependency()
   }
-  class DateTime
   class IService {
     <<abstract>>
   }
@@ -94,10 +93,10 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency v127LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency();
-      Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency v128LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency();
-      Pure.DI.UsageTests.Lifetimes.TransientScenario.Service v126LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Service(v128LocalA1F7, v127LocalA1F7);
-      return v126LocalA1F7;
+      Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency v123LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency();
+      Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency v124LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Dependency();
+      Pure.DI.UsageTests.Lifetimes.TransientScenario.Service v122LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.TransientScenario.Service(v124LocalA1F7, v123LocalA1F7);
+      return v122LocalA1F7;
     }
   }
   #endregion
@@ -193,7 +192,6 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class DateTime\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

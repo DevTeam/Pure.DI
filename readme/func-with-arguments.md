@@ -86,7 +86,6 @@ classDiagram
   class Clock {
     +Clock()
   }
-  class DateTime
   class FuncᐸInt32ˏIDependencyᐳ
   class IService {
     <<abstract>>
@@ -109,7 +108,7 @@ classDiagram
 partial class Composition
 {
   private readonly System.IDisposable[] _disposablesA1F7;
-  private Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock _f23SingletonA1F7;
+  private Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock _f22SingletonA1F7;
   
   public Composition()
   {
@@ -121,7 +120,7 @@ partial class Composition
     _disposablesA1F7 = new System.IDisposable[0];
     lock (parent._disposablesA1F7)
     {
-      _f23SingletonA1F7 = parent._f23SingletonA1F7;
+      _f22SingletonA1F7 = parent._f22SingletonA1F7;
     }
   }
   
@@ -134,17 +133,17 @@ partial class Composition
       System.Func<int, Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.IDependency> v25LocalA1F7;
       v25LocalA1F7 = new Func<int, IDependency>(id =>
       {
-          if (global::System.Object.ReferenceEquals(_f23SingletonA1F7, null))
+          if (global::System.Object.ReferenceEquals(_f22SingletonA1F7, null))
           {
               lock (_disposablesA1F7)
               {
-                  if (global::System.Object.ReferenceEquals(_f23SingletonA1F7, null))
+                  if (global::System.Object.ReferenceEquals(_f22SingletonA1F7, null))
                   {
-                      _f23SingletonA1F7 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock();
+                      _f22SingletonA1F7 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock();
                   }
               }
           }
-          Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Dependency v28LocalA1F7 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Dependency(_f23SingletonA1F7);
+          Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Dependency v28LocalA1F7 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Dependency(_f22SingletonA1F7);
           Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Dependency dependency = v28LocalA1F7;
           dependency.Id = id;
           return dependency;
@@ -249,7 +248,6 @@ partial class Composition
         "  class Clock {\n" +
           "    +Clock()\n" +
         "  }\n" +
-        "  class DateTime\n" +
         "  class FuncᐸInt32ˏIDependencyᐳ\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +

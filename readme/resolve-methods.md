@@ -61,7 +61,6 @@ classDiagram
   class OtherService {
     +OtherService()
   }
-  class DateTime
   class IService {
     <<abstract>>
   }
@@ -95,9 +94,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.ResolveScenario.Dependency v96LocalA1F7 = new Pure.DI.UsageTests.Basics.ResolveScenario.Dependency();
-      Pure.DI.UsageTests.Basics.ResolveScenario.Service v95LocalA1F7 = new Pure.DI.UsageTests.Basics.ResolveScenario.Service(v96LocalA1F7);
-      return v95LocalA1F7;
+      Pure.DI.UsageTests.Basics.ResolveScenario.Dependency v92LocalA1F7 = new Pure.DI.UsageTests.Basics.ResolveScenario.Dependency();
+      Pure.DI.UsageTests.Basics.ResolveScenario.Service v91LocalA1F7 = new Pure.DI.UsageTests.Basics.ResolveScenario.Service(v92LocalA1F7);
+      return v91LocalA1F7;
     }
   }
   
@@ -106,8 +105,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.ResolveScenario.OtherService v97LocalA1F7 = new Pure.DI.UsageTests.Basics.ResolveScenario.OtherService();
-      return v97LocalA1F7;
+      Pure.DI.UsageTests.Basics.ResolveScenario.OtherService v93LocalA1F7 = new Pure.DI.UsageTests.Basics.ResolveScenario.OtherService();
+      return v93LocalA1F7;
     }
   }
   #endregion
@@ -208,7 +207,6 @@ partial class Composition
         "  class OtherService {\n" +
           "    +OtherService()\n" +
         "  }\n" +
-        "  class DateTime\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

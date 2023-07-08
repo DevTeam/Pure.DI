@@ -56,7 +56,6 @@ classDiagram
   class Dependency {
     +Dependency()
   }
-  class DateTime
   class FuncᐸIDependencyᐳ
   class IService {
     <<abstract>>
@@ -196,7 +195,6 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class DateTime\n" +
         "  class FuncᐸIDependencyᐳ\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +

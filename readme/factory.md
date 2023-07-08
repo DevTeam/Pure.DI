@@ -74,7 +74,6 @@ classDiagram
   class Service {
     +Service(IDependency dependency)
   }
-  class DateTime
   Dependency --|> IDependency : 
   class Dependency
   class IService {
@@ -109,19 +108,19 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.FactoryScenario.Dependency v75LocalA1F7;
+      Pure.DI.UsageTests.Basics.FactoryScenario.Dependency v69LocalA1F7;
       {
           var dependency = new Dependency(DateTimeOffset.Now);
           dependency.Initialize();
           {
-              v75LocalA1F7 = dependency;
-              goto label76A1F7;
+              v69LocalA1F7 = dependency;
+              goto label70A1F7;
           }
       }
-      label76A1F7:
+      label70A1F7:
           ;
-      Pure.DI.UsageTests.Basics.FactoryScenario.Service v74LocalA1F7 = new Pure.DI.UsageTests.Basics.FactoryScenario.Service(v75LocalA1F7);
-      return v74LocalA1F7;
+      Pure.DI.UsageTests.Basics.FactoryScenario.Service v68LocalA1F7 = new Pure.DI.UsageTests.Basics.FactoryScenario.Service(v69LocalA1F7);
+      return v68LocalA1F7;
     }
   }
   #endregion
@@ -213,7 +212,6 @@ partial class Composition
         "  class Service {\n" +
           "    +Service(IDependency dependency)\n" +
         "  }\n" +
-        "  class DateTime\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency\n" +
         "  class IService {\n" +

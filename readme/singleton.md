@@ -58,7 +58,6 @@ classDiagram
   class Dependency {
     +Dependency()
   }
-  class DateTime
   class IService {
     <<abstract>>
   }
@@ -79,7 +78,7 @@ classDiagram
 partial class Composition
 {
   private readonly System.IDisposable[] _disposablesA1F7;
-  private Pure.DI.UsageTests.Lifetimes.SingletonScenario.Dependency _f23SingletonA1F7;
+  private Pure.DI.UsageTests.Lifetimes.SingletonScenario.Dependency _f22SingletonA1F7;
   
   public Composition()
   {
@@ -91,7 +90,7 @@ partial class Composition
     _disposablesA1F7 = new System.IDisposable[0];
     lock (parent._disposablesA1F7)
     {
-      _f23SingletonA1F7 = parent._f23SingletonA1F7;
+      _f22SingletonA1F7 = parent._f22SingletonA1F7;
     }
   }
   
@@ -101,18 +100,18 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      if (global::System.Object.ReferenceEquals(_f23SingletonA1F7, null))
+      if (global::System.Object.ReferenceEquals(_f22SingletonA1F7, null))
       {
           lock (_disposablesA1F7)
           {
-              if (global::System.Object.ReferenceEquals(_f23SingletonA1F7, null))
+              if (global::System.Object.ReferenceEquals(_f22SingletonA1F7, null))
               {
-                  _f23SingletonA1F7 = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Dependency();
+                  _f22SingletonA1F7 = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Dependency();
               }
           }
       }
-      Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service v125LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service(_f23SingletonA1F7, _f23SingletonA1F7);
-      return v125LocalA1F7;
+      Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service v121LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service(_f22SingletonA1F7, _f22SingletonA1F7);
+      return v121LocalA1F7;
     }
   }
   #endregion
@@ -208,7 +207,6 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class DateTime\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

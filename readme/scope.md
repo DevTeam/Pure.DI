@@ -110,7 +110,6 @@ classDiagram
   class Dependency {
     +Dependency()
   }
-  class DateTime
   class IService {
     <<abstract>>
   }
@@ -136,7 +135,7 @@ partial class Composition: System.IDisposable
 {
   private int _disposeIndexA1F7;
   private readonly System.IDisposable[] _disposablesA1F7;
-  private Pure.DI.UsageTests.Lifetimes.ScopeScenario.Dependency _f23SingletonA1F7;
+  private Pure.DI.UsageTests.Lifetimes.ScopeScenario.Dependency _f22SingletonA1F7;
   
   public Composition()
   {
@@ -148,7 +147,7 @@ partial class Composition: System.IDisposable
     lock (parent._disposablesA1F7)
     {
       _disposablesA1F7 = new System.IDisposable[1 - parent._disposeIndexA1F7];
-      _f23SingletonA1F7 = parent._f23SingletonA1F7;
+      _f22SingletonA1F7 = parent._f22SingletonA1F7;
     }
   }
   
@@ -158,19 +157,19 @@ partial class Composition: System.IDisposable
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      if (global::System.Object.ReferenceEquals(_f23SingletonA1F7, null))
+      if (global::System.Object.ReferenceEquals(_f22SingletonA1F7, null))
       {
           lock (_disposablesA1F7)
           {
-              if (global::System.Object.ReferenceEquals(_f23SingletonA1F7, null))
+              if (global::System.Object.ReferenceEquals(_f22SingletonA1F7, null))
               {
-                  _f23SingletonA1F7 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Dependency();
-                  _disposablesA1F7[_disposeIndexA1F7++] = _f23SingletonA1F7;
+                  _f22SingletonA1F7 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Dependency();
+                  _disposablesA1F7[_disposeIndexA1F7++] = _f22SingletonA1F7;
               }
           }
       }
-      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service v122LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service(_f23SingletonA1F7);
-      return v122LocalA1F7;
+      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service v118LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service(_f22SingletonA1F7);
+      return v118LocalA1F7;
     }
   }
   
@@ -179,9 +178,9 @@ partial class Composition: System.IDisposable
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Composition v124LocalA1F7 = this;
-      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session v123LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session(v124LocalA1F7);
-      return v123LocalA1F7;
+      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Composition v120LocalA1F7 = this;
+      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session v119LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session(v120LocalA1F7);
+      return v119LocalA1F7;
     }
   }
   #endregion
@@ -274,7 +273,7 @@ partial class Composition: System.IDisposable
         }
       }
       
-      _f23SingletonA1F7 = null;
+      _f22SingletonA1F7 = null;
     }
   }
   
@@ -304,7 +303,6 @@ partial class Composition: System.IDisposable
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class DateTime\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

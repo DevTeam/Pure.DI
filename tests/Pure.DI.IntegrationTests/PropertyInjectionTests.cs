@@ -188,4 +188,84 @@ namespace Sample
         result.Success.ShouldBeTrue(result.GeneratedCode);
         result.StdOut.ShouldBe(ImmutableArray.Create("OtherDep1", "True", "OtherDep0", "True"), result.GeneratedCode);
     }
+    
+    [Fact]
+    public async Task ShouldSupportRequiredPropertyInjection()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency
+    {        
+    }
+
+    interface IService
+    {
+        IDependency Dep { get; }        
+    }
+
+    class Service: IService 
+    {
+        private IDependency _dep;
+        public Service(IDependency dep)
+        { 
+            _dep = dep;           
+        }
+
+        public IDependency Dep => _dep;
+        
+        public required IDependency OtherDep1
+        {
+            init 
+            {
+                Console.WriteLine("OtherDep1");
+                Console.WriteLine(value != Dep);
+            }
+        }        
+
+        [Ordinal(0)]
+        public IDependency OtherDep0
+        {
+            init
+            {
+                Console.WriteLine("OtherDep0");
+                Console.WriteLine(value != Dep);
+            }
+        }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>()
+                .Bind<IService>().To<Service>()
+                .Root<IService>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service = composition.Service;                                           
+        }
+    }                
+}
+""".RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.StdOut.ShouldBe(ImmutableArray.Create("OtherDep0", "True", "OtherDep1", "True"), result.GeneratedCode);
+    }
 }

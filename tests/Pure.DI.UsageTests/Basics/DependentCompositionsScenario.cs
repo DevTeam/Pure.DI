@@ -28,7 +28,7 @@ internal interface IService { }
 
 internal class Service : IService
 {
-    public Service(IDependency dependency, DateTime now)
+    public Service(IDependency dependency)
     {
     }
 }
@@ -52,11 +52,6 @@ public class Scenario
         // ToString = On
         // FormatCode = On
 // {    
-        // This setup affects all compositions created
-        // and does not require the use of the "DependsOn" call to add it as a dependency
-        DI.Setup("MyGlobal", CompositionKind.Global)
-            .Bind<DateTime>().To(_ => DateTime.Now);
-        
         // This setup does not generate code, but can be used as a dependency
         // and requires the use of the "DependsOn" call to add it as a dependency
         DI.Setup("BaseComposition", CompositionKind.Internal)
