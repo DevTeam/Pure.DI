@@ -33,10 +33,10 @@ var service = composition.Root;
 classDiagram
   class Composition {
     +IService Root
-    +T ResolveᐸTᐳ()
-    +T ResolveᐸTᐳ(object? tag)
-    +object ResolveᐸTᐳ(Type type)
-    +object ResolveᐸTᐳ(Type type, object? tag)
+    + T ResolveᐸTᐳ()
+    + T ResolveᐸTᐳ(object? tag)
+    + object Resolve(Type type)
+    + object Resolve(Type type, object? tag)
   }
   Service --|> IService : 
   class Service {
@@ -78,9 +78,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.CompositionRootScenario.Dependency v60LocalA1F7 = new Pure.DI.UsageTests.Basics.CompositionRootScenario.Dependency();
-      Pure.DI.UsageTests.Basics.CompositionRootScenario.Service v59LocalA1F7 = new Pure.DI.UsageTests.Basics.CompositionRootScenario.Service(v60LocalA1F7);
-      return v59LocalA1F7;
+      Pure.DI.UsageTests.Basics.CompositionRootScenario.Dependency v61LocalA1F7 = new Pure.DI.UsageTests.Basics.CompositionRootScenario.Dependency();
+      Pure.DI.UsageTests.Basics.CompositionRootScenario.Service v60LocalA1F7 = new Pure.DI.UsageTests.Basics.CompositionRootScenario.Service(v61LocalA1F7);
+      return v60LocalA1F7;
     }
   }
   #endregion
@@ -163,10 +163,10 @@ partial class Composition
       "classDiagram\n" +
         "  class Composition {\n" +
           "    +IService Root\n" +
-          "    +T ResolveᐸTᐳ()\n" +
-          "    +T ResolveᐸTᐳ(object? tag)\n" +
-          "    +object ResolveᐸTᐳ(Type type)\n" +
-          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +

@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
 $p=9
-$d=Property Injection
+$d=Property injection
 $h=To use dependency injection on a property, make sure the property is writable and simply add the _Ordinal_ attribute to that property, specifying the ordinal that will be used to determine the injection order:
 */
 

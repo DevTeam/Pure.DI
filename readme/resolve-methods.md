@@ -44,10 +44,10 @@ classDiagram
   class Composition {
     +IService OtherService
     +IService Service
-    +T ResolveᐸTᐳ()
-    +T ResolveᐸTᐳ(object? tag)
-    +object ResolveᐸTᐳ(Type type)
-    +object ResolveᐸTᐳ(Type type, object? tag)
+    + T ResolveᐸTᐳ()
+    + T ResolveᐸTᐳ(object? tag)
+    + object Resolve(Type type)
+    + object Resolve(Type type, object? tag)
   }
   Service --|> IService : 
   class Service {
@@ -94,9 +94,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.ResolveScenario.Dependency v92LocalA1F7 = new Pure.DI.UsageTests.Basics.ResolveScenario.Dependency();
-      Pure.DI.UsageTests.Basics.ResolveScenario.Service v91LocalA1F7 = new Pure.DI.UsageTests.Basics.ResolveScenario.Service(v92LocalA1F7);
-      return v91LocalA1F7;
+      Pure.DI.UsageTests.Basics.ResolveScenario.Dependency v93LocalA1F7 = new Pure.DI.UsageTests.Basics.ResolveScenario.Dependency();
+      Pure.DI.UsageTests.Basics.ResolveScenario.Service v92LocalA1F7 = new Pure.DI.UsageTests.Basics.ResolveScenario.Service(v93LocalA1F7);
+      return v92LocalA1F7;
     }
   }
   
@@ -105,8 +105,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.ResolveScenario.OtherService v93LocalA1F7 = new Pure.DI.UsageTests.Basics.ResolveScenario.OtherService();
-      return v93LocalA1F7;
+      Pure.DI.UsageTests.Basics.ResolveScenario.OtherService v94LocalA1F7 = new Pure.DI.UsageTests.Basics.ResolveScenario.OtherService();
+      return v94LocalA1F7;
     }
   }
   #endregion
@@ -190,10 +190,10 @@ partial class Composition
         "  class Composition {\n" +
           "    +IService OtherService\n" +
           "    +IService Service\n" +
-          "    +T ResolveᐸTᐳ()\n" +
-          "    +T ResolveᐸTᐳ(object? tag)\n" +
-          "    +object ResolveᐸTᐳ(Type type)\n" +
-          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +

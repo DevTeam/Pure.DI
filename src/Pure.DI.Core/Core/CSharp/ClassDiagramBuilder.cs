@@ -7,10 +7,8 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
     private readonly IBuilder<ContractsBuildContext, ISet<Injection>> _injectionsBuilder;
     private static readonly FormatOptions DefaultFormatOptions = new();
     
-    public ClassDiagramBuilder(IBuilder<ContractsBuildContext, ISet<Injection>> injectionsBuilder)
-    {
+    public ClassDiagramBuilder(IBuilder<ContractsBuildContext, ISet<Injection>> injectionsBuilder) =>
         _injectionsBuilder = injectionsBuilder;
-    }
 
     public LinesBuilder Build(CompositionCode composition, CancellationToken cancellationToken)
     {
@@ -19,8 +17,8 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
         using (lines.Indent())
         {
             var hasResolveMethods = composition.Source.Source.Hints.GetHint(Hint.Resolve, SettingState.On) == SettingState.On;
-            var publicRoots = composition.Roots.Where(i => i.IsPublic).ToDictionary(i => i.Injection, i => i);
-            if (hasResolveMethods || publicRoots.Any())
+            var roots = composition.Roots.ToDictionary(i => i.Injection, i => i);
+            if (hasResolveMethods || roots.Any())
             {
                 lines.AppendLine($"class {composition.Name.ClassName} {{");
                 using (lines.Indent())
@@ -32,11 +30,12 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
                     
                     if (hasResolveMethods)
                     {
+                        var hints = composition.Source.Source.Hints;
                         var genericParameterT = $"{DefaultFormatOptions.StartGenericArgsSymbol}T{DefaultFormatOptions.FinishGenericArgsSymbol}";
-                        lines.AppendLine($"+T {Constant.ResolverMethodName}{genericParameterT}()");
-                        lines.AppendLine($"+T {Constant.ResolverMethodName}{genericParameterT}(object? tag)");
-                        lines.AppendLine($"+object {Constant.ResolverMethodName}{genericParameterT}(Type type)");
-                        lines.AppendLine($"+object {Constant.ResolverMethodName}{genericParameterT}(Type type, object? tag)");
+                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ResolveMethodModifiers, "") == "" ? "+ " : "")}T {hints.GetValueOrDefault(Hint.ResolveMethodName, Constant.ResolverMethodName)}{genericParameterT}()");
+                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ResolveByTagMethodModifiers, "") == "" ? "+ " : "")}T {hints.GetValueOrDefault(Hint.ResolveByTagMethodName, Constant.ResolverMethodName)}{genericParameterT}(object? tag)");
+                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ObjectResolveMethodModifiers, "") == "" ? "+ " : "")}object {hints.GetValueOrDefault(Hint.ObjectResolveMethodName, Constant.ResolverMethodName)}(Type type)");
+                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ObjectResolveByTagMethodModifiers, "") == "" ? "+ " : "")}object {hints.GetValueOrDefault(Hint.ObjectResolveByTagMethodName, Constant.ResolverMethodName)}(Type type, object? tag)");
                     }
                 }
 
@@ -116,7 +115,7 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
             foreach (var dependency in graph.Edges)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                if (dependency.Target.Root is not null && publicRoots.TryGetValue(dependency.Injection, out var root))
+                if (dependency.Target.Root is not null && roots.TryGetValue(dependency.Injection, out var root))
                 {
                     lines.AppendLine($"{composition.Name.ClassName} ..> {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatInjection(root.Injection, DefaultFormatOptions)} {root.PropertyName}");
                 }

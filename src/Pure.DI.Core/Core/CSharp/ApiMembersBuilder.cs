@@ -19,12 +19,12 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             code.AppendLine();
         }
 
-        var settings = composition.Source.Source.Hints;
+        var hints = composition.Source.Source.Hints;
         var apiCode = new LinesBuilder();
-        if (settings.GetHint(Hint.Resolve, SettingState.On) == SettingState.On)
+        if (hints.GetHint(Hint.Resolve, SettingState.On) == SettingState.On)
         {
             AddMethodHeader(apiCode);
-            apiCode.AppendLine($"{settings.GetValueOrDefault(Hint.ResolveMethodModifiers, Constant.DefaultApiMethodModifiers)} T {settings.GetValueOrDefault(Hint.ResolveMethodName, Constant.ResolverMethodName)}<T>()");
+            apiCode.AppendLine($"{hints.GetValueOrDefault(Hint.ResolveMethodModifiers, Constant.DefaultApiMethodModifiers)} T {hints.GetValueOrDefault(Hint.ResolveMethodName, Constant.ResolverMethodName)}<T>()");
             apiCode.AppendLine("{");
             using (apiCode.Indent())
             {
@@ -37,7 +37,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             membersCounter++;
 
             AddMethodHeader(apiCode);
-            apiCode.AppendLine($"{settings.GetValueOrDefault(Hint.ResolveByTagMethodModifiers, Constant.DefaultApiMethodModifiers)} T {settings.GetValueOrDefault(Hint.ResolveByTagMethodName, Constant.ResolverMethodName)}<T>(object? tag)");
+            apiCode.AppendLine($"{hints.GetValueOrDefault(Hint.ResolveByTagMethodModifiers, Constant.DefaultApiMethodModifiers)} T {hints.GetValueOrDefault(Hint.ResolveByTagMethodName, Constant.ResolverMethodName)}<T>(object? tag)");
             apiCode.AppendLine("{");
             using (apiCode.Indent())
             {
@@ -51,8 +51,8 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
 
             var resolvers = _resolversBuilder.Build(composition.Roots, cancellationToken).ToArray();
             CreateObjectResolverMethod(
-                settings.GetValueOrDefault(Hint.ObjectResolveMethodModifiers, Constant.DefaultApiMethodModifiers),
-                settings.GetValueOrDefault(Hint.ObjectResolveMethodName, Constant.ResolverMethodName),
+                hints.GetValueOrDefault(Hint.ObjectResolveMethodModifiers, Constant.DefaultApiMethodModifiers),
+                hints.GetValueOrDefault(Hint.ObjectResolveMethodName, Constant.ResolverMethodName),
                 resolvers,
                 $"{Constant.SystemNamespace}Type type",
                 ResolverClassesBuilder.ResolveMethodName,
@@ -64,8 +64,8 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             
             apiCode.AppendLine();
             CreateObjectResolverMethod(
-                settings.GetValueOrDefault(Hint.ObjectResolveByTagMethodModifiers, Constant.DefaultApiMethodModifiers),
-                settings.GetValueOrDefault(Hint.ObjectResolveByTagMethodName, Constant.ResolverMethodName),
+                hints.GetValueOrDefault(Hint.ObjectResolveByTagMethodModifiers, Constant.DefaultApiMethodModifiers),
+                hints.GetValueOrDefault(Hint.ObjectResolveByTagMethodName, Constant.ResolverMethodName),
                 resolvers,
                 $"{Constant.SystemNamespace}Type type, object? tag",
                 ResolverClassesBuilder.ResolveByTagMethodName,

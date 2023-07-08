@@ -91,10 +91,10 @@ classDiagram
   class Composition {
     +IService Service
     +ISession Session
-    +T ResolveᐸTᐳ()
-    +T ResolveᐸTᐳ(object? tag)
-    +object ResolveᐸTᐳ(Type type)
-    +object ResolveᐸTᐳ(Type type, object? tag)
+    + T ResolveᐸTᐳ()
+    + T ResolveᐸTᐳ(object? tag)
+    + object Resolve(Type type)
+    + object Resolve(Type type, object? tag)
   }
   Composition --|> IDisposable
   class Composition
@@ -168,8 +168,8 @@ partial class Composition: System.IDisposable
               }
           }
       }
-      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service v118LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service(_f22SingletonA1F7);
-      return v118LocalA1F7;
+      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service v119LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service(_f22SingletonA1F7);
+      return v119LocalA1F7;
     }
   }
   
@@ -178,9 +178,9 @@ partial class Composition: System.IDisposable
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Composition v120LocalA1F7 = this;
-      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session v119LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session(v120LocalA1F7);
-      return v119LocalA1F7;
+      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Composition v121LocalA1F7 = this;
+      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session v120LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session(v121LocalA1F7);
+      return v120LocalA1F7;
     }
   }
   #endregion
@@ -284,10 +284,10 @@ partial class Composition: System.IDisposable
         "  class Composition {\n" +
           "    +IService Service\n" +
           "    +ISession Session\n" +
-          "    +T ResolveᐸTᐳ()\n" +
-          "    +T ResolveᐸTᐳ(object? tag)\n" +
-          "    +object ResolveᐸTᐳ(Type type)\n" +
-          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  Composition --|> IDisposable\n" +
         "  class Composition\n" +

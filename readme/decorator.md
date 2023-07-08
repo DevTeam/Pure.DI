@@ -38,10 +38,10 @@ service.GetMessage().ShouldBe("Hello World !!!");
 classDiagram
   class Composition {
     +IService Root
-    +T ResolveᐸTᐳ()
-    +T ResolveᐸTᐳ(object? tag)
-    +object ResolveᐸTᐳ(Type type)
-    +object ResolveᐸTᐳ(Type type, object? tag)
+    + T ResolveᐸTᐳ()
+    + T ResolveᐸTᐳ(object? tag)
+    + object Resolve(Type type)
+    + object Resolve(Type type, object? tag)
   }
   GreetingService --|> IService : 
   class GreetingService {
@@ -80,9 +80,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Interception.DecoratorScenario.Service v113LocalA1F7 = new Pure.DI.UsageTests.Interception.DecoratorScenario.Service();
-      Pure.DI.UsageTests.Interception.DecoratorScenario.GreetingService v112LocalA1F7 = new Pure.DI.UsageTests.Interception.DecoratorScenario.GreetingService(v113LocalA1F7);
-      return v112LocalA1F7;
+      Pure.DI.UsageTests.Interception.DecoratorScenario.Service v114LocalA1F7 = new Pure.DI.UsageTests.Interception.DecoratorScenario.Service();
+      Pure.DI.UsageTests.Interception.DecoratorScenario.GreetingService v113LocalA1F7 = new Pure.DI.UsageTests.Interception.DecoratorScenario.GreetingService(v114LocalA1F7);
+      return v113LocalA1F7;
     }
   }
   #endregion
@@ -165,10 +165,10 @@ partial class Composition
       "classDiagram\n" +
         "  class Composition {\n" +
           "    +IService Root\n" +
-          "    +T ResolveᐸTᐳ()\n" +
-          "    +T ResolveᐸTᐳ(object? tag)\n" +
-          "    +object ResolveᐸTᐳ(Type type)\n" +
-          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  GreetingService --|> IService : \n" +
         "  class GreetingService {\n" +

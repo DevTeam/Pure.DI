@@ -59,10 +59,10 @@ classDiagram
   class Composition {
     +IService Root
     +IDependency XyzRoot
-    +T ResolveᐸTᐳ()
-    +T ResolveᐸTᐳ(object? tag)
-    +object ResolveᐸTᐳ(Type type)
-    +object ResolveᐸTᐳ(Type type, object? tag)
+    + T ResolveᐸTᐳ()
+    + T ResolveᐸTᐳ(object? tag)
+    + object Resolve(Type type)
+    + object Resolve(Type type, object? tag)
   }
   Service --|> IService : 
   class Service {
@@ -148,9 +148,9 @@ partial class Composition
               }
           }
       }
-      Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency v95LocalA1F7 = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
-      Pure.DI.UsageTests.Basics.TagsScenario.Service v94LocalA1F7 = new Pure.DI.UsageTests.Basics.TagsScenario.Service(v95LocalA1F7, _f23SingletonA1F7);
-      return v94LocalA1F7;
+      Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency v96LocalA1F7 = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
+      Pure.DI.UsageTests.Basics.TagsScenario.Service v95LocalA1F7 = new Pure.DI.UsageTests.Basics.TagsScenario.Service(v96LocalA1F7, _f23SingletonA1F7);
+      return v95LocalA1F7;
     }
   }
   #endregion
@@ -234,10 +234,10 @@ partial class Composition
         "  class Composition {\n" +
           "    +IService Root\n" +
           "    +IDependency XyzRoot\n" +
-          "    +T ResolveᐸTᐳ()\n" +
-          "    +T ResolveᐸTᐳ(object? tag)\n" +
-          "    +object ResolveᐸTᐳ(Type type)\n" +
-          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +

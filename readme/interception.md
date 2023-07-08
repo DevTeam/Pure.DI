@@ -57,10 +57,10 @@ service.GetMessage().ShouldBe("Hello World !!!");
 classDiagram
   class Composition {
     +IService Root
-    +T ResolveᐸTᐳ()
-    +T ResolveᐸTᐳ(object? tag)
-    +object ResolveᐸTᐳ(Type type)
-    +object ResolveᐸTᐳ(Type type, object? tag)
+    + T ResolveᐸTᐳ()
+    + T ResolveᐸTᐳ(object? tag)
+    + object Resolve(Type type)
+    + object Resolve(Type type, object? tag)
   }
   Service --|> IService : 
   class Service {
@@ -94,8 +94,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Interception.InterceptionScenario.Service v114LocalA1F7 = new Pure.DI.UsageTests.Interception.InterceptionScenario.Service();
-      return OnDependencyInjection<Pure.DI.UsageTests.Interception.InterceptionScenario.IService>(v114LocalA1F7, null, Pure.DI.Lifetime.Transient);
+      Pure.DI.UsageTests.Interception.InterceptionScenario.Service v115LocalA1F7 = new Pure.DI.UsageTests.Interception.InterceptionScenario.Service();
+      return OnDependencyInjection<Pure.DI.UsageTests.Interception.InterceptionScenario.IService>(v115LocalA1F7, null, Pure.DI.Lifetime.Transient);
     }
   }
   #endregion
@@ -181,10 +181,10 @@ partial class Composition
       "classDiagram\n" +
         "  class Composition {\n" +
           "    +IService Root\n" +
-          "    +T ResolveᐸTᐳ()\n" +
-          "    +T ResolveᐸTᐳ(object? tag)\n" +
-          "    +object ResolveᐸTᐳ(Type type)\n" +
-          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +

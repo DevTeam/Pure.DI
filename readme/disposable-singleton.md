@@ -1,4 +1,4 @@
-#### Disposable Singleton
+#### Disposable singleton
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/DisposableSingletonScenario.cs)
 
@@ -56,10 +56,10 @@ dependency.IsDisposed.ShouldBeTrue();
 classDiagram
   class Composition {
     +IService Root
-    +T ResolveᐸTᐳ()
-    +T ResolveᐸTᐳ(object? tag)
-    +object ResolveᐸTᐳ(Type type)
-    +object ResolveᐸTᐳ(Type type, object? tag)
+    + T ResolveᐸTᐳ()
+    + T ResolveᐸTᐳ(object? tag)
+    + object Resolve(Type type)
+    + object Resolve(Type type, object? tag)
   }
   Composition --|> IDisposable
   Service --|> IService : 
@@ -123,8 +123,8 @@ partial class Composition: System.IDisposable
               }
           }
       }
-      Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service v115LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service(_f22SingletonA1F7);
-      return v115LocalA1F7;
+      Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service v116LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service(_f22SingletonA1F7);
+      return v116LocalA1F7;
     }
   }
   #endregion
@@ -227,10 +227,10 @@ partial class Composition: System.IDisposable
       "classDiagram\n" +
         "  class Composition {\n" +
           "    +IService Root\n" +
-          "    +T ResolveᐸTᐳ()\n" +
-          "    +T ResolveᐸTᐳ(object? tag)\n" +
-          "    +object ResolveᐸTᐳ(Type type)\n" +
-          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  Composition --|> IDisposable\n" +
         "  Service --|> IService : \n" +

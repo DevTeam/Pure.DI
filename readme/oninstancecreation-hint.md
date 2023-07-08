@@ -1,4 +1,4 @@
-#### OnInstanceCreation Hint
+#### OnInstanceCreation hint
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/OnInstanceCreationHintScenario.cs)
 
@@ -70,10 +70,10 @@ log.ShouldBe(ImmutableArray.Create("Dependency", "Service"));
 classDiagram
   class Composition {
     +IService Root
-    +T ResolveᐸTᐳ()
-    +T ResolveᐸTᐳ(object? tag)
-    +object ResolveᐸTᐳ(Type type)
-    +object ResolveᐸTᐳ(Type type, object? tag)
+    + T ResolveᐸTᐳ()
+    + T ResolveᐸTᐳ(object? tag)
+    + object Resolve(Type type)
+    + object Resolve(Type type, object? tag)
   }
   Service --|> IService : 
   class Service {
@@ -115,11 +115,11 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency v102LocalA1F7 = new Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency();
-      OnInstanceCreation<Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency>(ref v102LocalA1F7, null, Pure.DI.Lifetime.Transient);
-      Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service v101LocalA1F7 = new Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service(v102LocalA1F7);
-      OnInstanceCreation<Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service>(ref v101LocalA1F7, null, Pure.DI.Lifetime.Transient);
-      return v101LocalA1F7;
+      Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency v103LocalA1F7 = new Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency();
+      OnInstanceCreation<Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency>(ref v103LocalA1F7, null, Pure.DI.Lifetime.Transient);
+      Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service v102LocalA1F7 = new Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service(v103LocalA1F7);
+      OnInstanceCreation<Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service>(ref v102LocalA1F7, null, Pure.DI.Lifetime.Transient);
+      return v102LocalA1F7;
     }
   }
   #endregion
@@ -205,10 +205,10 @@ partial class Composition
       "classDiagram\n" +
         "  class Composition {\n" +
           "    +IService Root\n" +
-          "    +T ResolveᐸTᐳ()\n" +
-          "    +T ResolveᐸTᐳ(object? tag)\n" +
-          "    +object ResolveᐸTᐳ(Type type)\n" +
-          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +

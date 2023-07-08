@@ -1,4 +1,4 @@
-#### Complex Generics
+#### Complex generics
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/ComplexGenericsScenario.cs)
 
@@ -72,10 +72,10 @@ service.Dependency2.ShouldBeOfType<DependencyStruct<int>>();
 classDiagram
   class Composition {
     +ProgramᐸStringᐳ Root
-    +T ResolveᐸTᐳ()
-    +T ResolveᐸTᐳ(object? tag)
-    +object ResolveᐸTᐳ(Type type)
-    +object ResolveᐸTᐳ(Type type, object? tag)
+    + T ResolveᐸTᐳ()
+    + T ResolveᐸTᐳ(object? tag)
+    + object Resolve(Type type)
+    + object Resolve(Type type, object? tag)
   }
   class ProgramᐸStringᐳ {
     +Program(IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ service)
@@ -129,11 +129,11 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string> v57LocalA1F7 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string>();
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int> v58LocalA1F7 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int>();
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>> v56LocalA1F7 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>>(v57LocalA1F7, v58LocalA1F7);
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string> v55LocalA1F7 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>(v56LocalA1F7);
-      return v55LocalA1F7;
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string> v58LocalA1F7 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string>();
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int> v59LocalA1F7 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int>();
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>> v57LocalA1F7 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>>(v58LocalA1F7, v59LocalA1F7);
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string> v56LocalA1F7 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>(v57LocalA1F7);
+      return v56LocalA1F7;
     }
   }
   #endregion
@@ -216,10 +216,10 @@ partial class Composition
       "classDiagram\n" +
         "  class Composition {\n" +
           "    +ProgramᐸStringᐳ Root\n" +
-          "    +T ResolveᐸTᐳ()\n" +
-          "    +T ResolveᐸTᐳ(object? tag)\n" +
-          "    +object ResolveᐸTᐳ(Type type)\n" +
-          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  class ProgramᐸStringᐳ {\n" +
           "    +Program(IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ service)\n" +

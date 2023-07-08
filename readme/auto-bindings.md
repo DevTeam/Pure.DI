@@ -36,10 +36,10 @@ var service3 = composition.Resolve(typeof(Service));
 classDiagram
   class Composition {
     +Service Root
-    +T ResolveᐸTᐳ()
-    +T ResolveᐸTᐳ(object? tag)
-    +object ResolveᐸTᐳ(Type type)
-    +object ResolveᐸTᐳ(Type type, object? tag)
+    + T ResolveᐸTᐳ()
+    + T ResolveᐸTᐳ(object? tag)
+    + object Resolve(Type type)
+    + object Resolve(Type type, object? tag)
   }
   class Dependency {
     +Dependency()
@@ -73,9 +73,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.AutoBindingScenario.Dependency v53LocalA1F7 = new Pure.DI.UsageTests.Basics.AutoBindingScenario.Dependency();
-      Pure.DI.UsageTests.Basics.AutoBindingScenario.Service v52LocalA1F7 = new Pure.DI.UsageTests.Basics.AutoBindingScenario.Service(v53LocalA1F7);
-      return v52LocalA1F7;
+      Pure.DI.UsageTests.Basics.AutoBindingScenario.Dependency v54LocalA1F7 = new Pure.DI.UsageTests.Basics.AutoBindingScenario.Dependency();
+      Pure.DI.UsageTests.Basics.AutoBindingScenario.Service v53LocalA1F7 = new Pure.DI.UsageTests.Basics.AutoBindingScenario.Service(v54LocalA1F7);
+      return v53LocalA1F7;
     }
   }
   #endregion
@@ -158,10 +158,10 @@ partial class Composition
       "classDiagram\n" +
         "  class Composition {\n" +
           "    +Service Root\n" +
-          "    +T ResolveᐸTᐳ()\n" +
-          "    +T ResolveᐸTᐳ(object? tag)\n" +
-          "    +object ResolveᐸTᐳ(Type type)\n" +
-          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +

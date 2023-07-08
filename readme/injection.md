@@ -47,10 +47,10 @@ var service = composition.Root;
 classDiagram
   class Composition {
     +IService Root
-    +T ResolveᐸTᐳ()
-    +T ResolveᐸTᐳ(object? tag)
-    +object ResolveᐸTᐳ(Type type)
-    +object ResolveᐸTᐳ(Type type, object? tag)
+    + T ResolveᐸTᐳ()
+    + T ResolveᐸTᐳ(object? tag)
+    + object Resolve(Type type)
+    + object Resolve(Type type, object? tag)
   }
   Dependency --|> IDependency : 
   class Dependency {
@@ -90,18 +90,18 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.InjectionScenario.Service v76LocalA1F7;
+      Pure.DI.UsageTests.Basics.InjectionScenario.Service v77LocalA1F7;
       {
-          Pure.DI.UsageTests.Basics.InjectionScenario.Dependency v79LocalA1F7 = new Pure.DI.UsageTests.Basics.InjectionScenario.Dependency();
-          Pure.DI.UsageTests.Basics.InjectionScenario.IDependency dependency = v79LocalA1F7;
+          Pure.DI.UsageTests.Basics.InjectionScenario.Dependency v80LocalA1F7 = new Pure.DI.UsageTests.Basics.InjectionScenario.Dependency();
+          Pure.DI.UsageTests.Basics.InjectionScenario.IDependency dependency = v80LocalA1F7;
           {
-              v76LocalA1F7 = new Service(dependency);
-              goto label78A1F7;
+              v77LocalA1F7 = new Service(dependency);
+              goto label79A1F7;
           }
       }
-      label78A1F7:
+      label79A1F7:
           ;
-      return v76LocalA1F7;
+      return v77LocalA1F7;
     }
   }
   #endregion
@@ -184,10 +184,10 @@ partial class Composition
       "classDiagram\n" +
         "  class Composition {\n" +
           "    +IService Root\n" +
-          "    +T ResolveᐸTᐳ()\n" +
-          "    +T ResolveᐸTᐳ(object? tag)\n" +
-          "    +object ResolveᐸTᐳ(Type type)\n" +
-          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +

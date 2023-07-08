@@ -42,10 +42,10 @@ service.Count.ShouldBe(3);
 classDiagram
   class Composition {
     +IService Root
-    +T ResolveᐸTᐳ()
-    +T ResolveᐸTᐳ(object? tag)
-    +object ResolveᐸTᐳ(Type type)
-    +object ResolveᐸTᐳ(Type type, object? tag)
+    + T ResolveᐸTᐳ()
+    + T ResolveᐸTᐳ(object? tag)
+    + object Resolve(Type type)
+    + object Resolve(Type type, object? tag)
   }
   class ReadOnlySpanᐸDependencyᐳ
   Service --|> IService : 
@@ -87,17 +87,17 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.BCL.SpanScenario.Dependency v42LocalA1F7 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
       Pure.DI.UsageTests.BCL.SpanScenario.Dependency v43LocalA1F7 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
       Pure.DI.UsageTests.BCL.SpanScenario.Dependency v44LocalA1F7 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
-      System.ReadOnlySpan<Pure.DI.UsageTests.BCL.SpanScenario.Dependency> v41LocalA1F7 = stackalloc Pure.DI.UsageTests.BCL.SpanScenario.Dependency[3]
+      Pure.DI.UsageTests.BCL.SpanScenario.Dependency v45LocalA1F7 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
+      System.ReadOnlySpan<Pure.DI.UsageTests.BCL.SpanScenario.Dependency> v42LocalA1F7 = stackalloc Pure.DI.UsageTests.BCL.SpanScenario.Dependency[3]
       {
-          v42LocalA1F7,
           v43LocalA1F7,
-          v44LocalA1F7
+          v44LocalA1F7,
+          v45LocalA1F7
       };
-      Pure.DI.UsageTests.BCL.SpanScenario.Service v40LocalA1F7 = new Pure.DI.UsageTests.BCL.SpanScenario.Service(v41LocalA1F7);
-      return v40LocalA1F7;
+      Pure.DI.UsageTests.BCL.SpanScenario.Service v41LocalA1F7 = new Pure.DI.UsageTests.BCL.SpanScenario.Service(v42LocalA1F7);
+      return v41LocalA1F7;
     }
   }
   #endregion
@@ -180,10 +180,10 @@ partial class Composition
       "classDiagram\n" +
         "  class Composition {\n" +
           "    +IService Root\n" +
-          "    +T ResolveᐸTᐳ()\n" +
-          "    +T ResolveᐸTᐳ(object? tag)\n" +
-          "    +object ResolveᐸTᐳ(Type type)\n" +
-          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  class ReadOnlySpanᐸDependencyᐳ\n" +
         "  Service --|> IService : \n" +

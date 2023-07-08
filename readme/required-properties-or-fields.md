@@ -43,10 +43,10 @@ service.Name.ShouldBe("My Service");
 classDiagram
   class Composition {
     +IService Root
-    +T ResolveᐸTᐳ()
-    +T ResolveᐸTᐳ(object? tag)
-    +object ResolveᐸTᐳ(Type type)
-    +object ResolveᐸTᐳ(Type type, object? tag)
+    + T ResolveᐸTᐳ()
+    + T ResolveᐸTᐳ(object? tag)
+    + object Resolve(Type type)
+    + object Resolve(Type type, object? tag)
   }
   Dependency --|> IDependency : 
   class Dependency {
@@ -101,13 +101,13 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Dependency v90LocalA1F7 = new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Dependency();
-      Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Service v89LocalA1F7 = new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Service()
+      Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Dependency v91LocalA1F7 = new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Dependency();
+      Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Service v90LocalA1F7 = new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Service()
       {
           ServiceNameField = _nameArgA1F7,
-          Dependency = v90LocalA1F7
+          Dependency = v91LocalA1F7
       };
-      return v89LocalA1F7;
+      return v90LocalA1F7;
     }
   }
   #endregion
@@ -190,10 +190,10 @@ partial class Composition
       "classDiagram\n" +
         "  class Composition {\n" +
           "    +IService Root\n" +
-          "    +T ResolveᐸTᐳ()\n" +
-          "    +T ResolveᐸTᐳ(object? tag)\n" +
-          "    +object ResolveᐸTᐳ(Type type)\n" +
-          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +

@@ -37,7 +37,7 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
             code.AppendLine($"public static {ResolverInterfaceName}<{composition.Name.ClassName}, T> {ResolverPropertyName} = new {ResolverInfo.ResolverClassName}<T>();");
 
             code.AppendLine();
-            code.AppendLine($"public T Resolve({composition.Name.ClassName} composite)");
+            code.AppendLine($"public T {ResolveMethodName}({composition.Name.ClassName} composite)");
             code.AppendLine("{");
             using (code.Indent())
             {
@@ -47,7 +47,7 @@ internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode
             code.AppendLine("}");
             
             code.AppendLine();
-            code.AppendLine($"public T ResolveByTag({composition.Name.ClassName} composite, object tag)");
+            code.AppendLine($"public T {ResolveByTagMethodName}({composition.Name.ClassName} composite, object tag)");
             code.AppendLine("{");
             using (code.Indent())
             {

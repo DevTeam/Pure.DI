@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
 $p=9
-$d=Method Injection
+$d=Method injection
 $h=To use dependency implementation for a method, simply add the _Ordinal_ attribute to that method, specifying the sequence number that will be used to define the call to that method:
 */
 

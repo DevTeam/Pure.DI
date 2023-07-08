@@ -63,10 +63,10 @@ classDiagram
   class OtherComposition {
     +Program Program
     +IService Root
-    +T ResolveᐸTᐳ()
-    +T ResolveᐸTᐳ(object? tag)
-    +object ResolveᐸTᐳ(Type type)
-    +object ResolveᐸTᐳ(Type type, object? tag)
+    + T ResolveᐸTᐳ()
+    + T ResolveᐸTᐳ(object? tag)
+    + object Resolve(Type type)
+    + object Resolve(Type type, object? tag)
   }
   class Program {
     +Program(IService service)
@@ -113,9 +113,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency v62LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service v61LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(v62LocalA1F7);
-      return v61LocalA1F7;
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency v63LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service v62LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(v63LocalA1F7);
+      return v62LocalA1F7;
     }
   }
   #endregion
@@ -198,10 +198,10 @@ partial class Composition
       "classDiagram\n" +
         "  class Composition {\n" +
           "    +IService Root\n" +
-          "    +T ResolveᐸTᐳ()\n" +
-          "    +T ResolveᐸTᐳ(object? tag)\n" +
-          "    +object ResolveᐸTᐳ(Type type)\n" +
-          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
@@ -294,9 +294,9 @@ partial class OtherComposition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency v64LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service v63LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(v64LocalA1F7);
-      return v63LocalA1F7;
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency v65LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service v64LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(v65LocalA1F7);
+      return v64LocalA1F7;
     }
   }
   
@@ -305,10 +305,10 @@ partial class OtherComposition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency v67LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service v66LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(v67LocalA1F7);
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program v65LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program(v66LocalA1F7);
-      return v65LocalA1F7;
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency v68LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service v67LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(v68LocalA1F7);
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program v66LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program(v67LocalA1F7);
+      return v66LocalA1F7;
     }
   }
   #endregion
@@ -392,10 +392,10 @@ partial class OtherComposition
         "  class OtherComposition {\n" +
           "    +Program Program\n" +
           "    +IService Root\n" +
-          "    +T ResolveᐸTᐳ()\n" +
-          "    +T ResolveᐸTᐳ(object? tag)\n" +
-          "    +object ResolveᐸTᐳ(Type type)\n" +
-          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  class Program {\n" +
           "    +Program(IService service)\n" +

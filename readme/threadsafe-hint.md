@@ -1,4 +1,4 @@
-#### ThreadSafe Hint
+#### ThreadSafe hint
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/ThreadSafeHintScenario.cs)
 
@@ -37,10 +37,10 @@ var service = composition.Root;
 classDiagram
   class Composition {
     +IService Root
-    +T ResolveᐸTᐳ()
-    +T ResolveᐸTᐳ(object? tag)
-    +object ResolveᐸTᐳ(Type type)
-    +object ResolveᐸTᐳ(Type type, object? tag)
+    + T ResolveᐸTᐳ()
+    + T ResolveᐸTᐳ(object? tag)
+    + object Resolve(Type type)
+    + object Resolve(Type type, object? tag)
   }
   Service --|> IService : 
   class Service {
@@ -82,9 +82,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Dependency v107LocalA1F7 = new Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Dependency();
-      Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Service v106LocalA1F7 = new Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Service(v107LocalA1F7);
-      return v106LocalA1F7;
+      Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Dependency v108LocalA1F7 = new Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Dependency();
+      Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Service v107LocalA1F7 = new Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Service(v108LocalA1F7);
+      return v107LocalA1F7;
     }
   }
   #endregion
@@ -167,10 +167,10 @@ partial class Composition
       "classDiagram\n" +
         "  class Composition {\n" +
           "    +IService Root\n" +
-          "    +T ResolveᐸTᐳ()\n" +
-          "    +T ResolveᐸTᐳ(object? tag)\n" +
-          "    +object ResolveᐸTᐳ(Type type)\n" +
-          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +

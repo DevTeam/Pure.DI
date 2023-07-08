@@ -1,4 +1,4 @@
-#### Custom Attributes
+#### Custom attributes
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Attributes/CustomAttributesScenario.cs)
 
@@ -65,10 +65,10 @@ person.ToString().ShouldBe("123 Nik");
 classDiagram
   class PersonComposition {
     +IPerson Person
-    +T ResolveᐸTᐳ()
-    +T ResolveᐸTᐳ(object? tag)
-    +object ResolveᐸTᐳ(Type type)
-    +object ResolveᐸTᐳ(Type type, object? tag)
+    + T ResolveᐸTᐳ()
+    + T ResolveᐸTᐳ(object? tag)
+    + object Resolve(Type type)
+    + object Resolve(Type type, object? tag)
   }
   Person --|> IPerson : 
   class Person {
@@ -198,10 +198,10 @@ partial class PersonComposition
       "classDiagram\n" +
         "  class PersonComposition {\n" +
           "    +IPerson Person\n" +
-          "    +T ResolveᐸTᐳ()\n" +
-          "    +T ResolveᐸTᐳ(object? tag)\n" +
-          "    +object ResolveᐸTᐳ(Type type)\n" +
-          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  Person --|> IPerson : \n" +
         "  class Person {\n" +

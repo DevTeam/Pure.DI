@@ -1,4 +1,4 @@
-#### Resolve Hint
+#### Resolve hint
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/ResolveHintScenario.cs)
 
@@ -81,8 +81,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency v103LocalA1F7 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
-      return v103LocalA1F7;
+      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency v104LocalA1F7 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
+      return v104LocalA1F7;
     }
   }
   
@@ -91,9 +91,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency v105LocalA1F7 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
-      Pure.DI.UsageTests.Hints.ResolveHintScenario.Service v104LocalA1F7 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(v105LocalA1F7);
-      return v104LocalA1F7;
+      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency v106LocalA1F7 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
+      Pure.DI.UsageTests.Hints.ResolveHintScenario.Service v105LocalA1F7 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(v106LocalA1F7);
+      return v105LocalA1F7;
     }
   }
   #endregion

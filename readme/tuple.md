@@ -42,10 +42,10 @@ var root = composition.Root;
 classDiagram
   class Composition {
     +IService Root
-    +T ResolveᐸTᐳ()
-    +T ResolveᐸTᐳ(object? tag)
-    +object ResolveᐸTᐳ(Type type)
-    +object ResolveᐸTᐳ(Type type, object? tag)
+    + T ResolveᐸTᐳ()
+    + T ResolveᐸTᐳ(object? tag)
+    + object Resolve(Type type)
+    + object Resolve(Type type, object? tag)
   }
   class ValueTupleᐸPointˏIDependencyᐳ {
     +ValueTuple(Point item1, IDependency item2)
@@ -93,12 +93,12 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.BCL.TupleScenario.Point v47LocalA1F7;
-      v47LocalA1F7 = new Point(7, 9);
-      Pure.DI.UsageTests.BCL.TupleScenario.Dependency v48LocalA1F7 = new Pure.DI.UsageTests.BCL.TupleScenario.Dependency();
-      (Pure.DI.UsageTests.BCL.TupleScenario.Point Point, Pure.DI.UsageTests.BCL.TupleScenario.IDependency Dependency) v46LocalA1F7 = (v47LocalA1F7, v48LocalA1F7);
-      Pure.DI.UsageTests.BCL.TupleScenario.Service v45LocalA1F7 = new Pure.DI.UsageTests.BCL.TupleScenario.Service(v46LocalA1F7);
-      return v45LocalA1F7;
+      Pure.DI.UsageTests.BCL.TupleScenario.Point v48LocalA1F7;
+      v48LocalA1F7 = new Point(7, 9);
+      Pure.DI.UsageTests.BCL.TupleScenario.Dependency v49LocalA1F7 = new Pure.DI.UsageTests.BCL.TupleScenario.Dependency();
+      (Pure.DI.UsageTests.BCL.TupleScenario.Point Point, Pure.DI.UsageTests.BCL.TupleScenario.IDependency Dependency) v47LocalA1F7 = (v48LocalA1F7, v49LocalA1F7);
+      Pure.DI.UsageTests.BCL.TupleScenario.Service v46LocalA1F7 = new Pure.DI.UsageTests.BCL.TupleScenario.Service(v47LocalA1F7);
+      return v46LocalA1F7;
     }
   }
   #endregion
@@ -181,10 +181,10 @@ partial class Composition
       "classDiagram\n" +
         "  class Composition {\n" +
           "    +IService Root\n" +
-          "    +T ResolveᐸTᐳ()\n" +
-          "    +T ResolveᐸTᐳ(object? tag)\n" +
-          "    +object ResolveᐸTᐳ(Type type)\n" +
-          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  class ValueTupleᐸPointˏIDependencyᐳ {\n" +
           "    +ValueTuple(Point item1, IDependency item2)\n" +

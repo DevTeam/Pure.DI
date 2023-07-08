@@ -1,4 +1,4 @@
-#### Property Injection
+#### Property injection
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/PropertyInjectionScenario.cs)
 
@@ -36,10 +36,10 @@ service.Dependency.ShouldBeOfType<Dependency>();
 classDiagram
   class Composition {
     +IService Root
-    +T ResolveᐸTᐳ()
-    +T ResolveᐸTᐳ(object? tag)
-    +object ResolveᐸTᐳ(Type type)
-    +object ResolveᐸTᐳ(Type type, object? tag)
+    + T ResolveᐸTᐳ()
+    + T ResolveᐸTᐳ(object? tag)
+    + object Resolve(Type type)
+    + object Resolve(Type type, object? tag)
   }
   Dependency --|> IDependency : 
   class Dependency {
@@ -82,10 +82,10 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.PropertyInjectionScenario.Dependency v88LocalA1F7 = new Pure.DI.UsageTests.Basics.PropertyInjectionScenario.Dependency();
-      Pure.DI.UsageTests.Basics.PropertyInjectionScenario.Service v87LocalA1F7 = new Pure.DI.UsageTests.Basics.PropertyInjectionScenario.Service();
-      v87LocalA1F7.Dependency = v88LocalA1F7;
-      return v87LocalA1F7;
+      Pure.DI.UsageTests.Basics.PropertyInjectionScenario.Dependency v89LocalA1F7 = new Pure.DI.UsageTests.Basics.PropertyInjectionScenario.Dependency();
+      Pure.DI.UsageTests.Basics.PropertyInjectionScenario.Service v88LocalA1F7 = new Pure.DI.UsageTests.Basics.PropertyInjectionScenario.Service();
+      v88LocalA1F7.Dependency = v89LocalA1F7;
+      return v88LocalA1F7;
     }
   }
   #endregion
@@ -168,10 +168,10 @@ partial class Composition
       "classDiagram\n" +
         "  class Composition {\n" +
           "    +IService Root\n" +
-          "    +T ResolveᐸTᐳ()\n" +
-          "    +T ResolveᐸTᐳ(object? tag)\n" +
-          "    +object ResolveᐸTᐳ(Type type)\n" +
-          "    +object ResolveᐸTᐳ(Type type, object? tag)\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +

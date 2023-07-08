@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
 $p=10
-$d=Custom Attributes
+$d=Custom attributes
 $h=It's very easy to use your attributes. To do this, you need to create a descendant of the `System.Attribute` class and register it using one of the appropriate methods:
 $h=- `TagAttribute`
 $h=- `OrdinalAttribute`
