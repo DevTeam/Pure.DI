@@ -248,6 +248,11 @@ dotnet run
 - [OnCannotResolve hint](readme/oncannotresolve-hint.md)
 - [OnInstanceCreation hint](readme/oninstancecreation-hint.md)
 - [ToString hint](readme/tostring-hint.md)
+### Applications
+- [Console application](readme/ConsoleTemplate.md)
+- [WPF application](readme/WpfTemplate.md)
+- [Top level statements console application](readme/ConsoleTopLevelStatementsTemplate.md)
+
 ## Generated Code
 
 Each generated class, hereinafter referred to as _composition_, needs to be configured. It starts with the `Setup(...)` method:

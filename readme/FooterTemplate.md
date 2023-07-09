@@ -1,3 +1,8 @@
+### Applications
+- [Console application](readme/ConsoleTemplate.md)
+- [WPF application](readme/WpfTemplate.md)
+- [Top level statements console application](readme/ConsoleTopLevelStatementsTemplate.md)
+
 ## Generated Code
 
 Each generated class, hereinafter referred to as _composition_, needs to be configured. It starts with the `Setup(...)` method:
