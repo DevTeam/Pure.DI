@@ -100,7 +100,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        partial void OnInstanceCreation<T>(ref T value, object? tag, Lifetime lifetime)            
+        partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime)            
         {
             Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} created");            
         }
@@ -111,7 +111,7 @@ namespace Sample
         private static void SetupComposition()
         {
             DI.Setup("Composition")
-                .Hint(Hint.OnInstanceCreation, "On")
+                .Hint(Hint.OnNewInstance, "On")
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
                 .Bind<IService>().To<Service>()
                 .Root<IService>("Root");

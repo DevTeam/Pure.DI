@@ -54,24 +54,24 @@ namespace Pure.DI
         Resolve,
         
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to generate partial <c>OnInstanceCreation</c> method. <c>Off</c> by default.
+        /// <c>On</c> or <c>Off</c>. Determines whether to generate partial <c>OnNewInstance</c> method. <c>Off</c> by default.
         /// </summary>
-        OnInstanceCreation,
+        OnNewInstance,
         
         /// <summary>
-        /// The regular expression to filter OnInstanceCreation by the instance type name. ".+" by default.
+        /// The regular expression to filter OnNewInstance by the instance type name. ".+" by default.
         /// </summary>
-        OnInstanceCreationImplementationTypeNameRegularExpression,
+        OnNewInstanceImplementationTypeNameRegularExpression,
         
         /// <summary>
-        /// The regular expression to filter OnInstanceCreation by the tag. ".+" by default.
+        /// The regular expression to filter OnNewInstance by the tag. ".+" by default.
         /// </summary>
-        OnInstanceCreationTagRegularExpression,
+        OnNewInstanceTagRegularExpression,
         
         /// <summary>
-        /// The regular expression to filter OnInstanceCreation by the lifetime. ".+" by default.
+        /// The regular expression to filter OnNewInstance by the lifetime. ".+" by default.
         /// </summary>
-        OnInstanceCreationLifetimeRegularExpression,
+        OnNewInstanceLifetimeRegularExpression,
         
         /// <summary>
         /// <c>On</c> or <c>Off</c>. Determines whether to generate partial <c>OnDependencyInjection</c> method to control of dependency injection. <c>Off</c> by default.

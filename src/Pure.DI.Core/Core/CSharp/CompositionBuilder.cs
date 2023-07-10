@@ -492,22 +492,22 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             yield break;
         }
 
-        if (variable.Source.Source.Hints.GetHint(Hint.OnInstanceCreation) != SettingState.On)
+        if (variable.Source.Source.Hints.GetHint(Hint.OnNewInstance) != SettingState.On)
         {
             yield break;
         }
 
         if (!_filter.IsMeetRegularExpression(
                 variable.Source.Source,
-                (Hint.OnInstanceCreationImplementationTypeNameRegularExpression, variable.Node.Type.ToString()),
-                (Hint.OnInstanceCreationTagRegularExpression, variable.Injection.Tag.ValueToString()),
-                (Hint.OnInstanceCreationLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
+                (Hint.OnNewInstanceImplementationTypeNameRegularExpression, variable.Node.Type.ToString()),
+                (Hint.OnNewInstanceTagRegularExpression, variable.Injection.Tag.ValueToString()),
+                (Hint.OnNewInstanceLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
         {
             yield break;
         }
 
         var tag = GetTag(context, variable);
-        yield return new Line(0, $"{Constant.OnInstanceCreationMethodName}<{variable.InstanceType}>(ref {variable.Name}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})" + ";");
+        yield return new Line(0, $"{Constant.OnNewInstanceMethodName}<{variable.InstanceType}>(ref {variable.Name}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})" + ";");
     }
 
     private static object? GetTag(BuildContext context, Variable variable)

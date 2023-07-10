@@ -76,11 +76,11 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             membersCounter++;
         }
 
-        if (composition.Source.Source.Hints.GetHint(Hint.OnInstanceCreation) == SettingState.On)
+        if (composition.Source.Source.Hints.GetHint(Hint.OnNewInstance) == SettingState.On)
         {
             apiCode.AppendLine();
             apiCode.AppendLine(Constant.MethodImplOptions);
-            apiCode.AppendLine($"partial void {Constant.OnInstanceCreationMethodName}<T>(ref T value, object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
+            apiCode.AppendLine($"partial void {Constant.OnNewInstanceMethodName}<T>(ref T value, object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
 

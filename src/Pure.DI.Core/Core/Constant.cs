@@ -10,7 +10,7 @@ internal static class Constant
     public const string DefaultApiMethodModifiers = "public";
     public const string ResolverMethodName = "Resolve";
     public const string IDisposableInterfaceName = "System.IDisposable";
-    public const string OnInstanceCreationMethodName = "OnInstanceCreation";
+    public const string OnNewInstanceMethodName = "OnNewInstance";
     public const string OnDependencyInjectionMethodName = "OnDependencyInjection";
     public const string OnCannotResolve = "OnCannotResolve";
 }
