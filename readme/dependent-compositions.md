@@ -113,9 +113,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency v63LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service v62LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(v63LocalA1F7);
-      return v62LocalA1F7;
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency v64LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service v63LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(v64LocalA1F7);
+      return v63LocalA1F7;
     }
   }
   #endregion
@@ -294,9 +294,9 @@ partial class OtherComposition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency v65LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service v64LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(v65LocalA1F7);
-      return v64LocalA1F7;
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency v66LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service v65LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(v66LocalA1F7);
+      return v65LocalA1F7;
     }
   }
   
@@ -305,10 +305,10 @@ partial class OtherComposition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency v68LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service v67LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(v68LocalA1F7);
-      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program v66LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program(v67LocalA1F7);
-      return v66LocalA1F7;
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency v69LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service v68LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(v69LocalA1F7);
+      Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program v67LocalA1F7 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program(v68LocalA1F7);
+      return v67LocalA1F7;
     }
   }
   #endregion

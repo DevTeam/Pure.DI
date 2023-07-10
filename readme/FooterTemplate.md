@@ -243,10 +243,10 @@ DI.Setup("Composition")
 | Hint                                                                                                                               | Values             | Default   | C# version |
 |------------------------------------------------------------------------------------------------------------------------------------|--------------------|-----------|------------|
 | [Resolve](#Resolve-Hint)                                                                                                           | _On_ or _Off_      | _On_      |            |
-| [OnNewInstance](#OnNewInstance-Hint)                                                                                     | _On_ or _Off_      | _Off_     | 9.0        |
-| [OnNewInstanceImplementationTypeNameRegularExpression](#OnNewInstanceImplementationTypeNameRegularExpression-Hint)       | Regular expression | .+        |            |
-| [OnNewInstanceTagRegularExpression](#OnNewInstanceTagRegularExpression-Hint)                                             | Regular expression | .+        |            |
-| [OnNewInstanceLifetimeRegularExpression](#OnNewInstanceLifetimeRegularExpression-Hint)                                   | Regular expression | .+        |            |
+| [OnNewInstance](#OnNewInstance-Hint)                                                                                               | _On_ or _Off_      | _Off_     | 9.0        |
+| [OnNewInstanceImplementationTypeNameRegularExpression](#OnNewInstanceImplementationTypeNameRegularExpression-Hint)                 | Regular expression | .+        |            |
+| [OnNewInstanceTagRegularExpression](#OnNewInstanceTagRegularExpression-Hint)                                                       | Regular expression | .+        |            |
+| [OnNewInstanceLifetimeRegularExpression](#OnNewInstanceLifetimeRegularExpression-Hint)                                             | Regular expression | .+        |            |
 | [OnDependencyInjection](#OnDependencyInjection-Hint)                                                                               | _On_ or _Off_      | _Off_     | 9.0        |
 | [OnDependencyInjectionImplementationTypeNameRegularExpression](#OnDependencyInjectionImplementationTypeNameRegularExpression-Hint) | Regular expression | .+        |            |
 | [OnDependencyInjectionContractTypeNameRegularExpression](#OnDependencyInjectionContractTypeNameRegularExpression-Hint)             | Regular expression | .+        |            |
@@ -256,6 +256,7 @@ DI.Setup("Composition")
 | [OnCannotResolveContractTypeNameRegularExpression](#OnCannotResolveContractTypeNameRegularExpression-Hint)                         | Regular expression | .+        |            |
 | [OnCannotResolveTagRegularExpression](#OnCannotResolveTagRegularExpression-Hint)                                                   | Regular expression | .+        |            |
 | [OnCannotResolveLifetimeRegularExpression](#OnCannotResolveLifetimeRegularExpression-Hint)                                         | Regular expression | .+        |            |
+| [OnNewRoot](#OnNewRoot-Hint)                                                                                                       | _On_ or _Off_      | _Off_     |            |
 | [ToString](#ToString-Hint)                                                                                                         | _On_ or _Off_      | _Off_     |            |
 | [ThreadSafe](#ThreadSafe-Hint)                                                                                                     | _On_ or _Off_      | _On_      |            |
 | [ResolveMethodModifiers](#ResolveMethodModifiers-Hint)                                                                             | Method modifier    | _public_  |            |
@@ -344,6 +345,16 @@ DI.Setup("Composition")
 ```
 
 To avoid missing bindings by mistake, use the two related hints below.
+
+### OnNewRoot Hint
+
+Determines whether to generate a static partial `OnNewRoot<TContract, T>(...)` method to handle the new composition root registration event.
+
+```c#
+// OnNewRoot = On
+DI.Setup("Composition")
+    ...
+```
 
 ### OnCannotResolveContractTypeNameRegularExpression Hint
 

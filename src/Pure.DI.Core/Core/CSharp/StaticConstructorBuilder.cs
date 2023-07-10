@@ -29,6 +29,9 @@ internal class StaticConstructorBuilder: IBuilder<CompositionCode, CompositionCo
             code.AppendLine();
         }
 
+        var hasOnNewRoot = composition.Source.Source.Hints.GetHint(Hint.OnNewRoot) == SettingState.On;
+        
+        var membersCounter = 0;
         code.AppendLine($"static {composition.Name.ClassName}()");
         code.AppendLine("{");
         using (code.Indent())
@@ -37,6 +40,14 @@ internal class StaticConstructorBuilder: IBuilder<CompositionCode, CompositionCo
             {
                 var className = resolver.ClassName;
                 code.AppendLine($"{className} val{className} = new {className}();");
+                if (hasOnNewRoot)
+                {
+                    foreach (var root in resolver.Roots)
+                    {
+                        code.AppendLine($"{Constant.OnNewRootMethodName}<{root.Injection.Type.Name}, {root.Node.Type.Name}>(val{className}, \"{root.PropertyName}\", {root.Injection.Tag.ValueToString()}, {root.Node.Lifetime.ValueToString()});");
+                    }
+                }
+                
                 code.AppendLine($"{ResolverInfo.ResolverClassName}<{resolver.Type}>.{ResolverClassesBuilder.ResolverPropertyName} = val{className};");
             }
             
@@ -67,6 +78,16 @@ internal class StaticConstructorBuilder: IBuilder<CompositionCode, CompositionCo
         }
         
         code.AppendLine("}");
-        return composition with { MembersCount = composition.MembersCount + 1 };
+        membersCounter++;
+        
+        if (hasOnNewRoot)
+        {
+            code.AppendLine();
+            code.AppendLine(Constant.MethodImplOptions);
+            code.AppendLine($"private static partial void {Constant.OnNewRootMethodName}<TContract, T>({ResolverClassesBuilder.ResolverInterfaceName}<{composition.Name.ClassName}, TContract> resolver, string name, object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
+            membersCounter++;
+        }
+        
+        return composition with { MembersCount = composition.MembersCount + membersCounter };
     }
 }

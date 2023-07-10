@@ -129,11 +129,11 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string> v58LocalA1F7 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string>();
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int> v59LocalA1F7 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int>();
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>> v57LocalA1F7 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>>(v58LocalA1F7, v59LocalA1F7);
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string> v56LocalA1F7 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>(v57LocalA1F7);
-      return v56LocalA1F7;
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string> v59LocalA1F7 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string>();
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int> v60LocalA1F7 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int>();
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>> v58LocalA1F7 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>>(v59LocalA1F7, v60LocalA1F7);
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string> v57LocalA1F7 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>(v58LocalA1F7);
+      return v57LocalA1F7;
     }
   }
   #endregion

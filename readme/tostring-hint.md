@@ -78,9 +78,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.ToStringHintScenario.Dependency v110LocalA1F7 = new Pure.DI.UsageTests.Hints.ToStringHintScenario.Dependency();
-      Pure.DI.UsageTests.Hints.ToStringHintScenario.Service v109LocalA1F7 = new Pure.DI.UsageTests.Hints.ToStringHintScenario.Service(v110LocalA1F7);
-      return v109LocalA1F7;
+      Pure.DI.UsageTests.Hints.ToStringHintScenario.Dependency v111LocalA1F7 = new Pure.DI.UsageTests.Hints.ToStringHintScenario.Dependency();
+      Pure.DI.UsageTests.Hints.ToStringHintScenario.Service v110LocalA1F7 = new Pure.DI.UsageTests.Hints.ToStringHintScenario.Service(v111LocalA1F7);
+      return v110LocalA1F7;
     }
   }
   #endregion

@@ -101,13 +101,13 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Dependency v91LocalA1F7 = new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Dependency();
-      Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Service v90LocalA1F7 = new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Service()
+      Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Dependency v92LocalA1F7 = new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Dependency();
+      Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Service v91LocalA1F7 = new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Service()
       {
           ServiceNameField = _nameArgA1F7,
-          Dependency = v91LocalA1F7
+          Dependency = v92LocalA1F7
       };
-      return v90LocalA1F7;
+      return v91LocalA1F7;
     }
   }
   #endregion

@@ -108,19 +108,19 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.FactoryScenario.Dependency v70LocalA1F7;
+      Pure.DI.UsageTests.Basics.FactoryScenario.Dependency v71LocalA1F7;
       {
           var dependency = new Dependency(DateTimeOffset.Now);
           dependency.Initialize();
           {
-              v70LocalA1F7 = dependency;
-              goto label71A1F7;
+              v71LocalA1F7 = dependency;
+              goto label72A1F7;
           }
       }
-      label71A1F7:
+      label72A1F7:
           ;
-      Pure.DI.UsageTests.Basics.FactoryScenario.Service v69LocalA1F7 = new Pure.DI.UsageTests.Basics.FactoryScenario.Service(v70LocalA1F7);
-      return v69LocalA1F7;
+      Pure.DI.UsageTests.Basics.FactoryScenario.Service v70LocalA1F7 = new Pure.DI.UsageTests.Basics.FactoryScenario.Service(v71LocalA1F7);
+      return v70LocalA1F7;
     }
   }
   #endregion

@@ -1,9 +1,9 @@
-#### OnInstanceCreation hint
+#### OnNewInstance hint
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/OnInstanceCreationHintScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/OnNewInstanceHintScenario.cs)
 
-Hints are used to fine-tune code generation. The _OnInstanceCreation_ hint determines whether to generate partial _OnInstanceCreation_ method.
-In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// OnInstanceCreation = On`.
+Hints are used to fine-tune code generation. The _OnNewInstance_ hint determines whether to generate partial _OnNewInstance_ method.
+In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// OnNewInstance = On`.
 
 ```c#
 using static Hint;
@@ -44,15 +44,15 @@ internal partial class Composition
         _log = log;
     }
 
-    partial void OnInstanceCreation<T>(ref T value, object? tag, Lifetime lifetime)
+    partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime)
     {
         _log.Add(typeof(T).Name);
     }
 }
 
 DI.Setup("Composition")
-    .Hint(OnInstanceCreation, "On")
-    .Hint(OnInstanceCreationLifetimeRegularExpression, nameof(Lifetime.Transient))
+    .Hint(OnNewInstance, "On")
+    .Hint(OnNewInstanceLifetimeRegularExpression, nameof(Lifetime.Transient))
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
 
@@ -110,16 +110,16 @@ partial class Composition
   }
   
   #region Composition Roots
-  public Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService Root
+  public Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService Root
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency v103LocalA1F7 = new Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency();
-      OnInstanceCreation<Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Dependency>(ref v103LocalA1F7, null, Pure.DI.Lifetime.Transient);
-      Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service v102LocalA1F7 = new Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service(v103LocalA1F7);
-      OnInstanceCreation<Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.Service>(ref v102LocalA1F7, null, Pure.DI.Lifetime.Transient);
-      return v102LocalA1F7;
+      Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency v104LocalA1F7 = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency();
+      OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency>(ref v104LocalA1F7, null, Pure.DI.Lifetime.Transient);
+      Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service v103LocalA1F7 = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service(v104LocalA1F7);
+      OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service>(ref v103LocalA1F7, null, Pure.DI.Lifetime.Transient);
+      return v103LocalA1F7;
     }
   }
   #endregion
@@ -196,7 +196,7 @@ partial class Composition
   }
   
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-  partial void OnInstanceCreation<T>(ref T value, object? tag, global::Pure.DI.Lifetime lifetime);
+  partial void OnNewInstance<T>(ref T value, object? tag, global::Pure.DI.Lifetime lifetime);
   #endregion
   
   public override string ToString()
@@ -234,13 +234,13 @@ partial class Composition
   static Composition()
   {
     ResolverA1F70 valResolverA1F70 = new ResolverA1F70();
-    ResolverA1F7<Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService>.Value = valResolverA1F70;
+    ResolverA1F7<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService>.Value = valResolverA1F70;
     _bucketsA1F7 = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
       out _bucketSizeA1F7,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService), valResolverA1F70)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService), valResolverA1F70)
       });
   }
   
@@ -260,19 +260,19 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverA1F70: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService>
+  private sealed class ResolverA1F70: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService Resolve(Composition composition)
     {
       return composition.Root;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService ResolveByTag(Composition composition, object tag)
     {
       if (Equals(tag, null)) return composition.Root;
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Hints.OnInstanceCreationHintScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService.");
     }
   }
   #endregion
@@ -282,5 +282,5 @@ partial class Composition
 </details>
 
 
-The `OnInstanceCreationLifetimeRegularExpression` hint helps you define a set of lifetimes that require instance creation control. You can use it to specify a regular expression to filter bindings by lifetime name.
+The `OnNewInstanceLifetimeRegularExpression` hint helps you define a set of lifetimes that require instance creation control. You can use it to specify a regular expression to filter bindings by lifetime name.
 For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/README.md#setup-hints) page.

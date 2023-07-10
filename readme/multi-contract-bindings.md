@@ -87,10 +87,10 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency v84LocalA1F7 = new Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency();
       Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency v85LocalA1F7 = new Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency();
-      Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Service v83LocalA1F7 = new Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Service(v84LocalA1F7, v85LocalA1F7);
-      return v83LocalA1F7;
+      Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency v86LocalA1F7 = new Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Dependency();
+      Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Service v84LocalA1F7 = new Pure.DI.UsageTests.Basics.MultiContractBindingsScenario.Service(v85LocalA1F7, v86LocalA1F7);
+      return v84LocalA1F7;
     }
   }
   #endregion

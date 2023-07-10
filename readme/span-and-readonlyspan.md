@@ -87,17 +87,17 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.BCL.SpanScenario.Dependency v43LocalA1F7 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
       Pure.DI.UsageTests.BCL.SpanScenario.Dependency v44LocalA1F7 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
       Pure.DI.UsageTests.BCL.SpanScenario.Dependency v45LocalA1F7 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
-      System.ReadOnlySpan<Pure.DI.UsageTests.BCL.SpanScenario.Dependency> v42LocalA1F7 = stackalloc Pure.DI.UsageTests.BCL.SpanScenario.Dependency[3]
+      Pure.DI.UsageTests.BCL.SpanScenario.Dependency v46LocalA1F7 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
+      System.ReadOnlySpan<Pure.DI.UsageTests.BCL.SpanScenario.Dependency> v43LocalA1F7 = stackalloc Pure.DI.UsageTests.BCL.SpanScenario.Dependency[3]
       {
-          v43LocalA1F7,
           v44LocalA1F7,
-          v45LocalA1F7
+          v45LocalA1F7,
+          v46LocalA1F7
       };
-      Pure.DI.UsageTests.BCL.SpanScenario.Service v41LocalA1F7 = new Pure.DI.UsageTests.BCL.SpanScenario.Service(v42LocalA1F7);
-      return v41LocalA1F7;
+      Pure.DI.UsageTests.BCL.SpanScenario.Service v42LocalA1F7 = new Pure.DI.UsageTests.BCL.SpanScenario.Service(v43LocalA1F7);
+      return v42LocalA1F7;
     }
   }
   #endregion

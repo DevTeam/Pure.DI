@@ -148,9 +148,9 @@ partial class Composition
               }
           }
       }
-      Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency v96LocalA1F7 = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
-      Pure.DI.UsageTests.Basics.TagsScenario.Service v95LocalA1F7 = new Pure.DI.UsageTests.Basics.TagsScenario.Service(v96LocalA1F7, _f23SingletonA1F7);
-      return v95LocalA1F7;
+      Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency v97LocalA1F7 = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
+      Pure.DI.UsageTests.Basics.TagsScenario.Service v96LocalA1F7 = new Pure.DI.UsageTests.Basics.TagsScenario.Service(v97LocalA1F7, _f23SingletonA1F7);
+      return v96LocalA1F7;
     }
   }
   #endregion

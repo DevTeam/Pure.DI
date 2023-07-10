@@ -129,8 +129,8 @@ partial class Composition: System.IDisposable
               }
           }
       }
-      Pure.DI.UsageTests.Basics.ChildCompositionScenario.Service v55LocalA1F7 = new Pure.DI.UsageTests.Basics.ChildCompositionScenario.Service(_f22SingletonA1F7);
-      return v55LocalA1F7;
+      Pure.DI.UsageTests.Basics.ChildCompositionScenario.Service v56LocalA1F7 = new Pure.DI.UsageTests.Basics.ChildCompositionScenario.Service(_f22SingletonA1F7);
+      return v56LocalA1F7;
     }
   }
   #endregion

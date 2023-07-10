@@ -56,8 +56,6 @@ public class Scenario
     [Fact]
     public void Run()
     {
-        // ToString = On
-        // FormatCode = On
 // {            
         var serviceProvider = new ServiceProvider();
         var service = (IService)serviceProvider.GetService(typeof(IService));

@@ -80,9 +80,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Interception.DecoratorScenario.Service v114LocalA1F7 = new Pure.DI.UsageTests.Interception.DecoratorScenario.Service();
-      Pure.DI.UsageTests.Interception.DecoratorScenario.GreetingService v113LocalA1F7 = new Pure.DI.UsageTests.Interception.DecoratorScenario.GreetingService(v114LocalA1F7);
-      return v113LocalA1F7;
+      Pure.DI.UsageTests.Interception.DecoratorScenario.Service v115LocalA1F7 = new Pure.DI.UsageTests.Interception.DecoratorScenario.Service();
+      Pure.DI.UsageTests.Interception.DecoratorScenario.GreetingService v114LocalA1F7 = new Pure.DI.UsageTests.Interception.DecoratorScenario.GreetingService(v115LocalA1F7);
+      return v114LocalA1F7;
     }
   }
   #endregion

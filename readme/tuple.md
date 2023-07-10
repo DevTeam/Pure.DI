@@ -93,12 +93,12 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.BCL.TupleScenario.Point v48LocalA1F7;
-      v48LocalA1F7 = new Point(7, 9);
-      Pure.DI.UsageTests.BCL.TupleScenario.Dependency v49LocalA1F7 = new Pure.DI.UsageTests.BCL.TupleScenario.Dependency();
-      (Pure.DI.UsageTests.BCL.TupleScenario.Point Point, Pure.DI.UsageTests.BCL.TupleScenario.IDependency Dependency) v47LocalA1F7 = (v48LocalA1F7, v49LocalA1F7);
-      Pure.DI.UsageTests.BCL.TupleScenario.Service v46LocalA1F7 = new Pure.DI.UsageTests.BCL.TupleScenario.Service(v47LocalA1F7);
-      return v46LocalA1F7;
+      Pure.DI.UsageTests.BCL.TupleScenario.Point v49LocalA1F7;
+      v49LocalA1F7 = new Point(7, 9);
+      Pure.DI.UsageTests.BCL.TupleScenario.Dependency v50LocalA1F7 = new Pure.DI.UsageTests.BCL.TupleScenario.Dependency();
+      (Pure.DI.UsageTests.BCL.TupleScenario.Point Point, Pure.DI.UsageTests.BCL.TupleScenario.IDependency Dependency) v48LocalA1F7 = (v49LocalA1F7, v50LocalA1F7);
+      Pure.DI.UsageTests.BCL.TupleScenario.Service v47LocalA1F7 = new Pure.DI.UsageTests.BCL.TupleScenario.Service(v48LocalA1F7);
+      return v47LocalA1F7;
     }
   }
   #endregion

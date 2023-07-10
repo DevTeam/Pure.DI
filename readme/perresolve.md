@@ -91,9 +91,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency v118PerResolveA1F7 = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency();
-      Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service v117LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service(v118PerResolveA1F7, v118PerResolveA1F7);
-      return v117LocalA1F7;
+      Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency v119PerResolveA1F7 = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency();
+      Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service v118LocalA1F7 = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service(v119PerResolveA1F7, v119PerResolveA1F7);
+      return v118LocalA1F7;
     }
   }
   #endregion

@@ -766,4 +766,77 @@ namespace Sample
         result.Success.ShouldBeTrue(result.GeneratedCode);
         result.StdOut.ShouldBe(ImmutableArray.Create("Service with Sample.Dependency`1[System.String] created"), result.GeneratedCode);
     }
+    
+    [Fact]
+    public async Task ShouldTrackNewRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    internal interface IDependency { }
+
+    internal class Dependency : IDependency { }
+
+    internal interface IService
+    {
+        public IDependency Dependency1 { get; }
+                
+        public IDependency Dependency2 { get; }
+    }
+
+    internal class Service : IService
+    {
+        public Service(IDependency dependency1, Func<IDependency> dependencyFactory)
+        {
+            Dependency1 = dependency1;
+            Dependency2 = dependencyFactory();
+        }
+
+        public IDependency Dependency1 { get; }
+                
+        public IDependency Dependency2 { get; }
+    }
+
+    internal partial class Composition
+    {
+        private static partial void OnNewRoot<TContract, T>(global::Pure.DI.IResolver<Composition, TContract> resolver, string name, object? tag, global::Pure.DI.Lifetime lifetime)            
+        {
+            Console.WriteLine($"New composition root \"{name}\" {typeof(TContract)} -> {typeof(T)} '{tag}' {lifetime}");            
+        }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Hint(Hint.OnNewRoot, "On")
+                .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+                .Root<IDependency>("Dependency")
+                .Bind<IService>().To<Service>()
+                .Root<IService>("Root");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service = composition.Root;            
+        }
+    }                
+}
+""".RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.StdOut.ShouldBe(ImmutableArray.Create("New composition root \"Dependency\" Sample.IDependency -> Sample.Dependency '' Singleton", "New composition root \"Root\" Sample.IService -> Sample.Service '' Transient"), result.GeneratedCode);
+    }
 }

@@ -94,9 +94,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.ResolveScenario.Dependency v93LocalA1F7 = new Pure.DI.UsageTests.Basics.ResolveScenario.Dependency();
-      Pure.DI.UsageTests.Basics.ResolveScenario.Service v92LocalA1F7 = new Pure.DI.UsageTests.Basics.ResolveScenario.Service(v93LocalA1F7);
-      return v92LocalA1F7;
+      Pure.DI.UsageTests.Basics.ResolveScenario.Dependency v94LocalA1F7 = new Pure.DI.UsageTests.Basics.ResolveScenario.Dependency();
+      Pure.DI.UsageTests.Basics.ResolveScenario.Service v93LocalA1F7 = new Pure.DI.UsageTests.Basics.ResolveScenario.Service(v94LocalA1F7);
+      return v93LocalA1F7;
     }
   }
   
@@ -105,8 +105,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.ResolveScenario.OtherService v94LocalA1F7 = new Pure.DI.UsageTests.Basics.ResolveScenario.OtherService();
-      return v94LocalA1F7;
+      Pure.DI.UsageTests.Basics.ResolveScenario.OtherService v95LocalA1F7 = new Pure.DI.UsageTests.Basics.ResolveScenario.OtherService();
+      return v95LocalA1F7;
     }
   }
   #endregion

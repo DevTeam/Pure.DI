@@ -13,4 +13,5 @@ internal static class Constant
     public const string OnNewInstanceMethodName = "OnNewInstance";
     public const string OnDependencyInjectionMethodName = "OnDependencyInjection";
     public const string OnCannotResolve = "OnCannotResolve";
+    public const string OnNewRootMethodName = "OnNewRoot";
 }

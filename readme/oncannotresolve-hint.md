@@ -120,10 +120,10 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      string v99LocalA1F7 = OnCannotResolve<string>(null, Pure.DI.Lifetime.Transient);
-      Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency v98LocalA1F7 = new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency(v99LocalA1F7);
-      Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service v97LocalA1F7 = new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service(v98LocalA1F7);
-      return v97LocalA1F7;
+      string v100LocalA1F7 = OnCannotResolve<string>(null, Pure.DI.Lifetime.Transient);
+      Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency v99LocalA1F7 = new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency(v100LocalA1F7);
+      Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service v98LocalA1F7 = new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service(v99LocalA1F7);
+      return v98LocalA1F7;
     }
   }
   #endregion

@@ -119,6 +119,11 @@ namespace Pure.DI
         OnCannotResolveLifetimeRegularExpression,
         
         /// <summary>
+        /// <c>On</c> or <c>Off</c>. Determines whether to generate a static partial <c>OnNewRoot<T>(...)</c> method to handle the new composition root registration event. <c>Off</c> by default.
+        /// </summary>
+        OnNewRoot,
+        
+        /// <summary>
         /// <c>On</c> or <c>Off</c>. Determine if the <c>ToString()</c> method should be generated. This method provides a text-based class diagram in the format mermaid. <c>Off</c> by default. 
         /// </summary>
         ToString,

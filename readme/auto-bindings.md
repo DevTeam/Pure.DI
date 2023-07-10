@@ -73,9 +73,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.AutoBindingScenario.Dependency v54LocalA1F7 = new Pure.DI.UsageTests.Basics.AutoBindingScenario.Dependency();
-      Pure.DI.UsageTests.Basics.AutoBindingScenario.Service v53LocalA1F7 = new Pure.DI.UsageTests.Basics.AutoBindingScenario.Service(v54LocalA1F7);
-      return v53LocalA1F7;
+      Pure.DI.UsageTests.Basics.AutoBindingScenario.Dependency v55LocalA1F7 = new Pure.DI.UsageTests.Basics.AutoBindingScenario.Dependency();
+      Pure.DI.UsageTests.Basics.AutoBindingScenario.Service v54LocalA1F7 = new Pure.DI.UsageTests.Basics.AutoBindingScenario.Service(v55LocalA1F7);
+      return v54LocalA1F7;
     }
   }
   #endregion
