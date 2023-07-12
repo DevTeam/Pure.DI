@@ -5,18 +5,18 @@
 Sometimes you need to pass some state to the composition class in order to use it when resolving dependencies. Just use the `Arg` method, specify the type of the argument and the name of the argument. A tag can also be specified for each argument. After that, they can be used as dependencies when building an object graph. If you have multiple arguments of the same type, just use tags to distinguish between them.
 
 ```c#
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     string Id { get; }
 
     string Name { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
     public Service(
         string id,

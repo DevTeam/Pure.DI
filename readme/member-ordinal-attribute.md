@@ -5,22 +5,22 @@
 When applied to a property or field, these type members will also participate in dependency injection in the appropriate order from smallest value to largest.
 
 ```c#
-internal interface IPerson
+interface IPerson
 {
     string Name { get; }
 }
 
-internal class Person : IPerson
+class Person : IPerson
 {
     private readonly StringBuilder _name = new();
 
     public string Name => _name.ToString();
 
     [Ordinal(0)]
-    internal int Id;
+    public int Id;
 
     [Ordinal(1)]
-    internal string FirstName
+    public string FirstName
     {
         set
         {
@@ -31,7 +31,7 @@ internal class Person : IPerson
     }
 
     [Ordinal(2)]
-    internal DateTime Birthday
+    public DateTime Birthday
     {
         set
         {
@@ -67,9 +67,9 @@ classDiagram
   Person --|> IPerson : 
   class Person {
     +Person()
-    ~Int32 Id
-    ~String FirstName
-    ~DateTime Birthday
+    +Int32 Id
+    +String FirstName
+    +DateTime Birthday
   }
   class Int32
   class String
@@ -215,9 +215,9 @@ partial class PersonComposition
         "  Person --|> IPerson : \n" +
         "  class Person {\n" +
           "    +Person()\n" +
-          "    ~Int32 Id\n" +
-          "    ~String FirstName\n" +
-          "    ~DateTime Birthday\n" +
+          "    +Int32 Id\n" +
+          "    +String FirstName\n" +
+          "    +DateTime Birthday\n" +
         "  }\n" +
         "  class Int32\n" +
         "  class String\n" +

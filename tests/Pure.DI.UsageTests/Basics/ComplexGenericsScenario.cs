@@ -9,20 +9,21 @@ $f=It can also be useful in a very simple scenario where, for example, the seque
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedTypeParameter
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Basics.ComplexGenericsScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-internal interface IDependency<T> { }
+interface IDependency<T> { }
 
-internal class Dependency<T> : IDependency<T> { }
+class Dependency<T> : IDependency<T> { }
 
-internal readonly record struct DependencyStruct<T> : IDependency<T> 
+readonly record struct DependencyStruct<T> : IDependency<T> 
     where T: struct;
 
-internal interface IService<T1, T2, TList, TDictionary>
+interface IService<T1, T2, TList, TDictionary>
     where T2: struct
     where TList: IList<T1>
     where TDictionary: IDictionary<T1, T2>
@@ -32,7 +33,7 @@ internal interface IService<T1, T2, TList, TDictionary>
     IDependency<T2> Dependency2 { get; }
 }
 
-internal class Service<T1, T2, TList, TDictionary> : IService<T1, T2, TList, TDictionary>
+class Service<T1, T2, TList, TDictionary> : IService<T1, T2, TList, TDictionary>
     where T2: struct
     where TList: IList<T1>
     where TDictionary: IDictionary<T1, T2>
@@ -50,14 +51,12 @@ internal class Service<T1, T2, TList, TDictionary> : IService<T1, T2, TList, TDi
     public IDependency<T2> Dependency2 { get; }
 }
 
-internal class Program<T> where T : notnull
+class Program<T> where T : notnull
 {
     public IService<T, int, List<T>, Dictionary<T, int>> Service { get; }
 
-    public Program(IService<T, int, List<T>, Dictionary<T, int>> service)
-    {
+    public Program(IService<T, int, List<T>, Dictionary<T, int>> service) => 
         Service = service;
-    }
 }
 // }
 

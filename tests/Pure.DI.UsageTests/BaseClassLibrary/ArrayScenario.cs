@@ -32,29 +32,28 @@ $f=And of course this list can easily be supplemented on its own.
 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.BCL.ArrayScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-internal interface IDependency { }
+interface IDependency { }
 
-internal class AbcDependency : IDependency { }
+class AbcDependency : IDependency { }
 
-internal class XyzDependency : IDependency { }
+class XyzDependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     IDependency[] Dependencies { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(IDependency[] dependencies)
-    {
+    public Service(IDependency[] dependencies) => 
         Dependencies = dependencies;
-    }
 
     public IDependency[] Dependencies { get; }
 }

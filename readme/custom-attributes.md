@@ -9,34 +9,44 @@ It's very easy to use your attributes. To do this, you need to create a descenda
 You can also use combined attributes, and each method in the list above has an optional parameter that defines the argument number (the default is 0) from where to get the appropriate metadata for _tag_, _ordinal_, or _type_.
 
 ```c#
-
-[AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field)]
-internal class MyOrdinalAttribute : Attribute
+[AttributeUsage(
+    AttributeTargets.Constructor
+    | AttributeTargets.Method |
+    AttributeTargets.Property |
+    AttributeTargets.Field)]
+class MyOrdinalAttribute : Attribute
 {
     public MyOrdinalAttribute(int ordinal) { }
 }
 
-[AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Field)]
-internal class MyTagAttribute : Attribute
+[AttributeUsage(
+    AttributeTargets.Parameter
+    | AttributeTargets.Property
+    | AttributeTargets.Field)]
+class MyTagAttribute : Attribute
 {
     public MyTagAttribute(object tag) { }
 }
 
-[AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Field)]
-internal class MyTypeAttribute : Attribute
+[AttributeUsage(
+    AttributeTargets.Parameter
+    | AttributeTargets.Property
+    | AttributeTargets.Field)]
+class MyTypeAttribute : Attribute
 {
     public MyTypeAttribute(Type type) { }
 }
 
-internal interface IPerson
+interface IPerson
 {
 }
 
-internal class Person : IPerson
+class Person : IPerson
 {
     private readonly string _name;
 
-    public Person([MyTag("NikName")] string name) => _name = name;
+    public Person([MyTag("NikName")] string name) =>
+        _name = name;
 
     [MyOrdinal(1)]
     [MyType(typeof(int))]

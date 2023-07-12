@@ -5,16 +5,16 @@
 The `// OnNewRoot = On` hint specifies to create a static method that will be called for each registered composition root. This method can be used, for example, to create an _IServiceCollection_ object:
 
 ```c#
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     IDependency Dependency { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
     public Service(IDependency dependency) =>
         Dependency = dependency;
@@ -22,7 +22,7 @@ internal class Service : IService
     public IDependency Dependency { get; }
 }
 
-internal partial class Composition
+partial class Composition
 {
     private void Setup() =>
 
@@ -42,7 +42,9 @@ internal partial class Composition
         var serviceCollection = new ServiceCollection();
         foreach (var (serviceType, factory) in Factories)
         {
-            serviceCollection.AddTransient(serviceType, serviceProvider => factory(this)!);
+            serviceCollection.AddTransient(
+                serviceType,
+                serviceProvider => factory(this)!);
         }
 
         return serviceCollection;

@@ -12,6 +12,7 @@ $f=For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/REA
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable UnusedVariable
 // ReSharper disable UnusedParameter.Local
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Hints.ThreadSafeHintScenario;
 
 using Xunit;
@@ -19,17 +20,15 @@ using Xunit;
 // {
 using static Hint;
 
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService { }
+interface IService { }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(IDependency dependency)
-    {
-    }
+    public Service(IDependency dependency) { }
 }
 // }
 

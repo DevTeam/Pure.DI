@@ -15,18 +15,19 @@ using Shouldly;
 using Xunit;
 
 // {
-internal interface IService { string GetMessage(); }
+interface IService { string GetMessage(); }
 
-internal class Service : IService 
+class Service : IService 
 {
     public string GetMessage() => "Hello World";
 }
 
-internal class GreetingService : IService
+class GreetingService : IService
 {
     private readonly IService _baseService;
 
-    public GreetingService([Tag("base")] IService baseService) => _baseService = baseService;
+    public GreetingService([Tag("base")] IService baseService) =>
+        _baseService = baseService;
 
     public string GetMessage() => $"{_baseService.GetMessage()} !!!";
 }

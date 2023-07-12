@@ -5,16 +5,16 @@
 The `// ObjectResolveMethodName = GetService` hint overrides the _object Resolve(Type type)_ method name in _GetService_, allowing the _IServiceProvider_ interface to be implemented in a partial class.
 
 ```c#
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     IDependency Dependency { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
     public Service(IDependency dependency) =>
         Dependency = dependency;
@@ -22,7 +22,7 @@ internal class Service : IService
     public IDependency Dependency { get; }
 }
 
-internal partial class ServiceProvider: IServiceProvider
+partial class ServiceProvider: IServiceProvider
 {
     private void Setup() =>
 

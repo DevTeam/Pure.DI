@@ -5,22 +5,22 @@
 Sometimes it's important to take control of building a dependency graph. For example, when there are multiple implementations of the same contract. In this case, _tags_ will help:
 
 ```c#
-internal interface IDependency { }
+interface IDependency { }
 
-internal class AbcDependency : IDependency { }
+class AbcDependency : IDependency { }
 
-internal class XyzDependency : IDependency { }
+class XyzDependency : IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     IDependency Dependency1 { get; }
 
     IDependency Dependency2 { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
     public Service(
         [Tag("Abc")] IDependency dependency1,

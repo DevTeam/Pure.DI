@@ -26,23 +26,22 @@ $f=This can be done if these methods are not needed, in case only certain compos
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Basics.CompositionRootScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService { }
+interface IService { }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(IDependency dependency)
-    {
-    }
+    public Service(IDependency dependency) { }
 }
 // }
 

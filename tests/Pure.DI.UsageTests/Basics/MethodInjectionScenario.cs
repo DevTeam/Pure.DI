@@ -8,28 +8,27 @@ $h=To use dependency implementation for a method, simply add the _Ordinal_ attri
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Basics.MethodInjectionScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     IDependency? Dependency { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
     [Ordinal(0)]
-    public void SetDependency(IDependency dependency)
-    {
+    public void SetDependency(IDependency dependency) =>
         Dependency = dependency;
-    }
 
     public IDependency? Dependency { get; private set; }
 }

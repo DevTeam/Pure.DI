@@ -5,32 +5,27 @@
 Can use generated classes in hierarchy.
 
 ```c#
-internal interface IDependency
+interface IDependency
 {
     bool IsDisposed { get; }
 }
 
-internal class Dependency : IDependency, IDisposable
+class Dependency : IDependency, IDisposable
 {
     public bool IsDisposed { get; private set; }
 
-    public void Dispose()
-    {
-        IsDisposed = true;
-    }
+    public void Dispose() => IsDisposed = true;
 }
 
-internal interface IService
+interface IService
 {
     IDependency Dependency { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(IDependency dependency)
-    {
+    public Service(IDependency dependency) =>
         Dependency = dependency;
-    }
 
     public IDependency Dependency { get; }
 }

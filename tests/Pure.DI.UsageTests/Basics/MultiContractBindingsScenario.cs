@@ -9,26 +9,25 @@ $h=An unlimited number of contracts can be attached to one implementation. Inclu
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable UnusedVariable
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Basics.MultiContractBindingsScenario;
 
 using Xunit;
 
 // {
-internal interface IDependency { }
+interface IDependency { }
 
-internal interface IAdvancedDependency { }
+interface IAdvancedDependency { }
 
-internal class Dependency : IDependency, IAdvancedDependency { }
+class Dependency : IDependency, IAdvancedDependency { }
 
-internal interface IService { }
+interface IService { }
 
-internal class Service : IService
+class Service : IService
 {
     public Service(
         IDependency dependency,
-        IAdvancedDependency advancedDependency)
-    {
-    }
+        IAdvancedDependency advancedDependency) { }
 }
 // }
 

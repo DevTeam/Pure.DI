@@ -5,18 +5,19 @@
 When applied to any constructor in a type, automatic injection constructor selection is disabled. The selection will only focus on constructors marked with this attribute, in the appropriate order from smallest value to largest.
 
 ```c#
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService { }
+interface IService { }
 
-internal class Service : IService
+class Service : IService
 {
     private readonly string _name;
 
     [Ordinal(1)]
-    public Service(IDependency dependency) => _name = "with dependency";
+    public Service(IDependency dependency) =>
+        _name = "with dependency";
 
     [Ordinal(0)]
     internal Service(string name) => _name = name;

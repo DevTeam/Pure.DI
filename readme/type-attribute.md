@@ -5,20 +5,20 @@
 The injection type can be defined manually using the `Type` attribute. This attribute explicitly overrides an injected type, otherwise it would be determined automatically based on the type of the constructor/method, property, or field parameter.
 
 ```c#
-internal interface IDependency { }
+interface IDependency { }
 
-internal class AbcDependency : IDependency { }
+class AbcDependency : IDependency { }
 
-internal class XyzDependency : IDependency { }
+class XyzDependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     IDependency Dependency1 { get; }
 
     IDependency Dependency2 { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
     public Service(
         [Type(typeof(AbcDependency))] IDependency dependency1,

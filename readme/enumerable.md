@@ -5,23 +5,21 @@
 Specifying `IEnumerable<T>` as the injection type allows you to inject instances of all bindings that implement type `T` in a lazy fashion - the instances will be provided one by one, in order corresponding to the sequence of bindings.
 
 ```c#
-internal interface IDependency { }
+interface IDependency { }
 
-internal class AbcDependency : IDependency { }
+class AbcDependency : IDependency { }
 
-internal class XyzDependency : IDependency { }
+class XyzDependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     ImmutableArray<IDependency> Dependencies { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(IEnumerable<IDependency> dependencies)
-    {
+    public Service(IEnumerable<IDependency> dependencies) =>
         Dependencies = dependencies.ToImmutableArray();
-    }
 
     public ImmutableArray<IDependency> Dependencies { get; }
 }

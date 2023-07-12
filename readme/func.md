@@ -5,24 +5,22 @@
 _Func<T>_ helps when the logic must enter instances of some type on demand or more than once. This is a very handy mechanism for instance replication. For example it is used when implementing the `Lazy<T>` injection.
 
 ```c#
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     ImmutableArray<IDependency> Dependencies { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(Func<IDependency> dependencyFactory)
-    {
+    public Service(Func<IDependency> dependencyFactory) =>
         Dependencies = Enumerable
             .Range(0, 10)
             .Select(_ => dependencyFactory())
             .ToImmutableArray();
-    }
 
     public ImmutableArray<IDependency> Dependencies { get; }
 }

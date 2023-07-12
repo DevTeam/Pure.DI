@@ -15,7 +15,7 @@ public interface IBox<out T>
 
 public interface ICat
 {
-    State State { get; }
+    State State { get; }[DebugHelper.cs](..%2Fsrc%2FPure.DI%2FDebugHelper.cs)
 }
 
 public enum State

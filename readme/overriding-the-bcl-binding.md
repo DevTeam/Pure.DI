@@ -5,23 +5,21 @@
 At any time, the default binding to the BCL type can be changed to your own:
 
 ```c#
-internal interface IDependency { }
+interface IDependency { }
 
-internal class AbcDependency : IDependency { }
+class AbcDependency : IDependency { }
 
-internal class XyzDependency : IDependency { }
+class XyzDependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     IDependency[] Dependencies { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(IDependency[] dependencies)
-    {
+    public Service(IDependency[] dependencies) =>
         Dependencies = dependencies;
-    }
 
     public IDependency[] Dependencies { get; }
 }

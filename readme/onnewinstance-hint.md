@@ -8,26 +8,24 @@ In addition, setup hints can be comments before the _Setup_ method in the form `
 ```c#
 using static Hint;
 
-public interface IDependency
+interface IDependency
 {
 }
 
-public class Dependency : IDependency
+class Dependency : IDependency
 {
     public override string ToString() => "Dependency";
 }
 
-public interface IService
+interface IService
 {
     IDependency Dependency { get; }
 }
 
-public class Service : IService
+class Service : IService
 {
-    public Service(IDependency dependency)
-    {
+    public Service(IDependency dependency) =>
         Dependency = dependency;
-    }
 
     public IDependency Dependency { get; }
 
@@ -38,13 +36,13 @@ internal partial class Composition
 {
     private readonly List<string> _log;
 
-    public Composition(List<string> log)
-        : this()
-    {
+    public Composition(List<string> log) : this() =>
         _log = log;
-    }
 
-    partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime)
+    partial void OnNewInstance<T>(
+        ref T value,
+        object? tag,
+        Lifetime lifetime)
     {
         _log.Add(typeof(T).Name);
     }

@@ -11,26 +11,27 @@ $f=This attribute is part of the API, but you can use your own attribute at any 
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedMember.Global
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Attributes.TypeAttributeScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-internal interface IDependency { }
+interface IDependency { }
 
-internal class AbcDependency : IDependency { }
+class AbcDependency : IDependency { }
 
-internal class XyzDependency : IDependency { }
+class XyzDependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     IDependency Dependency1 { get; }
     
     IDependency Dependency2 { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
     public Service(
         [Type(typeof(AbcDependency))] IDependency dependency1,

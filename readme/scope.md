@@ -5,42 +5,37 @@
 A _scope_ scenario can be easily implemented with singleton instances and child composition:
 
 ```c#
-internal interface IDependency
+interface IDependency
 {
     bool IsDisposed { get; }
 }
 
-internal class Dependency : IDependency, IDisposable
+class Dependency : IDependency, IDisposable
 {
     public bool IsDisposed { get; private set; }
 
-    public void Dispose()
-    {
-        IsDisposed = true;
-    }
+    public void Dispose() => IsDisposed = true;
 }
 
-internal interface IService
+interface IService
 {
     public IDependency Dependency { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(IDependency dependency)
-    {
+    public Service(IDependency dependency) =>
         Dependency = dependency;
-    }
 
     public IDependency Dependency { get; }
 }
 
-internal interface ISession: IDisposable
+interface ISession: IDisposable
 {
     IService Service { get; }
 }
 
-internal class Session : ISession
+class Session : ISession
 {
     private readonly Composition _composition;
 
@@ -60,7 +55,7 @@ internal class Session : ISession
     public void Dispose() => _composition.Dispose();
 }
 
-internal partial class Composition
+partial class Composition
 {
 }
 

@@ -13,18 +13,19 @@ $f=For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/REA
 // ReSharper disable UnusedVariable
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable SuggestVarOrType_BuiltInTypes
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Hints.ToStringHintScenario;
 
 using Xunit;
 
 // {
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService { }
+interface IService { }
 
-internal class Service : IService
+class Service : IService
 {
     public Service(IDependency dependency) { }
 }

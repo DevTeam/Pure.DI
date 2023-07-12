@@ -5,21 +5,19 @@
 An unlimited number of contracts can be attached to one implementation. Including their combinations with various tags.
 
 ```c#
-internal interface IDependency { }
+interface IDependency { }
 
-internal interface IAdvancedDependency { }
+interface IAdvancedDependency { }
 
-internal class Dependency : IDependency, IAdvancedDependency { }
+class Dependency : IDependency, IAdvancedDependency { }
 
-internal interface IService { }
+interface IService { }
 
-internal class Service : IService
+class Service : IService
 {
     public Service(
         IDependency dependency,
-        IAdvancedDependency advancedDependency)
-    {
-    }
+        IAdvancedDependency advancedDependency) { }
 }
 
 DI.Setup("Composition")

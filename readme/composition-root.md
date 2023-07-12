@@ -5,17 +5,15 @@
 This example demonstrates the most efficient way to create a composition root. There is no limit to the number of roots, but consider limiting this number. Ideally, an application would like to have a single composition root.
 
 ```c#
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService { }
+interface IService { }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(IDependency dependency)
-    {
-    }
+    public Service(IDependency dependency) { }
 }
 
 DI.Setup("Composition")

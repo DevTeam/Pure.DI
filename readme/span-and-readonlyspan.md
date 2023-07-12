@@ -5,21 +5,19 @@
 Specifying `Span<T>` and `ReadOnlySpan<T>` work the same as with the array `T[]`.
 
 ```c#
-internal struct Dependency
+struct Dependency
 {
 }
 
-internal interface IService
+interface IService
 {
     int Count { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(ReadOnlySpan<Dependency> dependencies)
-    {
+    public Service(ReadOnlySpan<Dependency> dependencies) =>
         Count = dependencies.Length;
-    }
 
     public int Count { get; }
 }

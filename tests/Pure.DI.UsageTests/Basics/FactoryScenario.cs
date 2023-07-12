@@ -8,47 +8,42 @@ $h=This example demonstrates how to create and initialize an instance manually. 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedMemberInSuper.Global
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Basics.FactoryScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-internal interface IDependency
+interface IDependency
 {
     DateTimeOffset Time { get; }
 
     bool IsInitialized { get; }
 }
 
-internal class Dependency : IDependency
+class Dependency : IDependency
 {
-    public Dependency(DateTimeOffset time)
-    {
+    public Dependency(DateTimeOffset time) => 
         Time = time;
-    }
 
     public DateTimeOffset Time { get; }
 
     public bool IsInitialized { get; private set; }
 
-    public void Initialize()
-    {
+    public void Initialize() =>
         IsInitialized = true;
-    }
 }
 
-internal interface IService
+interface IService
 {
     IDependency Dependency { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(IDependency dependency)
-    {
+    public Service(IDependency dependency) =>
         Dependency = dependency;
-    }
 
     public IDependency Dependency { get; }
 }

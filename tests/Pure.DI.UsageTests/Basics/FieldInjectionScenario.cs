@@ -8,22 +8,23 @@ $h=To use dependency injection for a field, make sure the field is writable and 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Basics.FieldInjectionScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     IDependency? Dependency { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
     [Ordinal(0)]
     internal IDependency? DependencyVal;

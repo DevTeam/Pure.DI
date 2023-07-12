@@ -3,23 +3,21 @@
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/LazyScenario.cs)
 
 ```c#
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     IDependency Dependency { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
     private readonly Lazy<IDependency> _dependency;
 
-    public Service(Lazy<IDependency> dependency)
-    {
+    public Service(Lazy<IDependency> dependency) =>
         _dependency = dependency;
-    }
 
     public IDependency Dependency => _dependency.Value;
 }

@@ -5,20 +5,18 @@
 This example shows how to resolve the composition roots using the _Resolve_ methods by _Service Locator_ approach. `Resolve` methods are generated automatically for each registered root.
 
 ```c#
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService { }
+interface IService { }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(IDependency dependency)
-    {
-    }
+    public Service(IDependency dependency) { }
 }
 
-internal class OtherService : IService
+class OtherService : IService
 {
 }
 

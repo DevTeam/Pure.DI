@@ -8,6 +8,9 @@ $h=The `// OnNewRoot = On` hint specifies to create a static method that will be
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
+// ReSharper disable ArrangeTypeModifiers
+// ReSharper disable UnusedTypeParameter
+// ReSharper disable UnusedParameterInPartialMethod
 namespace Pure.DI.UsageTests.BCL.ServiceCollectionScenario;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -15,16 +18,16 @@ using Shouldly;
 using Xunit;
 
 // {
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     IDependency Dependency { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
     public Service(IDependency dependency) => 
         Dependency = dependency;
@@ -32,7 +35,7 @@ internal class Service : IService
     public IDependency Dependency { get; }
 }
 
-internal partial class Composition
+partial class Composition
 {
     private void Setup() =>
 // }        
@@ -55,7 +58,9 @@ internal partial class Composition
         var serviceCollection = new ServiceCollection();
         foreach (var (serviceType, factory) in Factories)
         {
-            serviceCollection.AddTransient(serviceType, serviceProvider => factory(this)!);
+            serviceCollection.AddTransient(
+                serviceType,
+                serviceProvider => factory(this)!);
         }
 
         return serviceCollection;

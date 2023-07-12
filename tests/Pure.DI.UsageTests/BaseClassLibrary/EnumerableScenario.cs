@@ -7,6 +7,7 @@ $h=Specifying `IEnumerable<T>` as the injection type allows you to inject instan
 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.BCL.EnumerableScenario;
 
 using System.Collections.Immutable;
@@ -14,23 +15,21 @@ using Shouldly;
 using Xunit;
 
 // {
-internal interface IDependency { }
+interface IDependency { }
 
-internal class AbcDependency : IDependency { }
+class AbcDependency : IDependency { }
 
-internal class XyzDependency : IDependency { }
+class XyzDependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     ImmutableArray<IDependency> Dependencies { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(IEnumerable<IDependency> dependencies)
-    {
+    public Service(IEnumerable<IDependency> dependencies) => 
         Dependencies = dependencies.ToImmutableArray();
-    }
 
     public ImmutableArray<IDependency> Dependencies { get; }
 }

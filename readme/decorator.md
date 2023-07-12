@@ -5,18 +5,19 @@
 _Decorator_ is a well-known and useful design pattern. It is convenient to use tagged dependencies to build a chain of nested decorators, as in the example below:
 
 ```c#
-internal interface IService { string GetMessage(); }
+interface IService { string GetMessage(); }
 
-internal class Service : IService
+class Service : IService
 {
     public string GetMessage() => "Hello World";
 }
 
-internal class GreetingService : IService
+class GreetingService : IService
 {
     private readonly IService _baseService;
 
-    public GreetingService([Tag("base")] IService baseService) => _baseService = baseService;
+    public GreetingService([Tag("base")] IService baseService) =>
+        _baseService = baseService;
 
     public string GetMessage() => $"{_baseService.GetMessage()} !!!";
 }

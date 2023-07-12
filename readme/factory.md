@@ -5,41 +5,35 @@
 This example demonstrates how to create and initialize an instance manually. This approach is more expensive to maintain, but allows you to create objects more flexibly by passing them some state and introducing dependencies. As in the case of automatic dependency embedding, objects give up control on embedding, and the whole process takes place when the object graph is created.
 
 ```c#
-internal interface IDependency
+interface IDependency
 {
     DateTimeOffset Time { get; }
 
     bool IsInitialized { get; }
 }
 
-internal class Dependency : IDependency
+class Dependency : IDependency
 {
-    public Dependency(DateTimeOffset time)
-    {
+    public Dependency(DateTimeOffset time) =>
         Time = time;
-    }
 
     public DateTimeOffset Time { get; }
 
     public bool IsInitialized { get; private set; }
 
-    public void Initialize()
-    {
+    public void Initialize() =>
         IsInitialized = true;
-    }
 }
 
-internal interface IService
+interface IService
 {
     IDependency Dependency { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(IDependency dependency)
-    {
+    public Service(IDependency dependency) =>
         Dependency = dependency;
-    }
 
     public IDependency Dependency { get; }
 }

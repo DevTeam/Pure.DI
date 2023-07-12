@@ -5,20 +5,22 @@
 Generic types are also supported, this is easy to do by binding generic types and specifying generic markers like `TT`, `TT1` etc. as generic type parameters:
 
 ```c#
-internal interface IDependency<T> { }
+interface IDependency<T> { }
 
-internal class Dependency<T> : IDependency<T> { }
+class Dependency<T> : IDependency<T> { }
 
-internal interface IService
+interface IService
 {
     IDependency<int> IntDependency { get; }
 
     IDependency<string> StringDependency { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(IDependency<int> intDependency, IDependency<string> stringDependency)
+    public Service(
+        IDependency<int> intDependency,
+        IDependency<string> stringDependency)
     {
         IntDependency = intDependency;
         StringDependency = stringDependency;

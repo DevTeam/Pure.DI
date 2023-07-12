@@ -13,6 +13,7 @@ $f=For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/REA
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable UnusedVariable
 // ReSharper disable UnusedMemberInSuper.Global
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario;
 
 using System.Collections.Immutable;
@@ -22,26 +23,24 @@ using Xunit;
 // {
 using static Hint;
 
-public interface IDependency
+interface IDependency
 {
 }
 
-public class Dependency : IDependency
+class Dependency : IDependency
 {
     public override string ToString() => "Dependency";
 }
 
-public interface IService
+interface IService
 {
     IDependency Dependency { get; }
 }
 
-public class Service : IService
+class Service : IService
 {
-    public Service(IDependency dependency)
-    {
+    public Service(IDependency dependency) =>
         Dependency = dependency;
-    }
 
     public IDependency Dependency { get; }
     
@@ -52,13 +51,13 @@ internal partial class Composition
 {
     private readonly List<string> _log;
 
-    public Composition(List<string> log)
-        : this()
-    {
+    public Composition(List<string> log) : this() =>
         _log = log;
-    }
 
-    partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime)
+    partial void OnNewInstance<T>(
+        ref T value,
+        object? tag,
+        Lifetime lifetime)
     {
         _log.Add(typeof(T).Name);
     }

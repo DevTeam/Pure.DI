@@ -6,25 +6,28 @@ $d=Singleton
 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Lifetimes.SingletonScenario;
 
 using Xunit;
 
 // {
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     public IDependency Dependency1 { get; }
             
     public IDependency Dependency2 { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(IDependency dependency1, IDependency dependency2)
+    public Service(
+        IDependency dependency1,
+        IDependency dependency2)
     {
         Dependency1 = dependency1;
         Dependency2 = dependency2;

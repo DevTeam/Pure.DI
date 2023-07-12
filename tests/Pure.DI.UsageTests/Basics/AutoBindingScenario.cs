@@ -9,16 +9,17 @@ $h=This approach works great even if DI doesn't have the appropriate bindings. :
 // ReSharper disable UnusedVariable
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Basics.AutoBindingScenario;
 
 using Xunit;
 
 // {
-internal class Dependency
+class Dependency
 {
 }
 
-internal class Service
+class Service
 {
     public Service(Dependency dependency)
     {

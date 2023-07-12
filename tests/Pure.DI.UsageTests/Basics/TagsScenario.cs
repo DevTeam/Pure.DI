@@ -9,28 +9,29 @@ $f=The tag can be a constant, a type, or a value of an enumerated type.
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedType.Global
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Basics.TagsScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-internal interface IDependency { }
+interface IDependency { }
 
-internal class AbcDependency : IDependency { }
+class AbcDependency : IDependency { }
         
-internal class XyzDependency : IDependency { }
+class XyzDependency : IDependency { }
         
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     IDependency Dependency1 { get; }
 
     IDependency Dependency2 { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
     public Service(
         [Tag("Abc")] IDependency dependency1,

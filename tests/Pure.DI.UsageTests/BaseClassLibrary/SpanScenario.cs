@@ -18,27 +18,26 @@ $f=```
 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.BCL.SpanScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-internal struct Dependency
+struct Dependency
 {
 }
 
-internal interface IService
+interface IService
 {
     int Count { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(ReadOnlySpan<Dependency> dependencies)
-    {
+    public Service(ReadOnlySpan<Dependency> dependencies) => 
         Count = dependencies.Length;
-    }
 
     public int Count { get; }
 }

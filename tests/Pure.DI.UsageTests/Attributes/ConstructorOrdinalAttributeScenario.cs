@@ -11,24 +11,26 @@ $f=The attribute `Ordinal` is part of the API, but you can use your own attribut
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedMember.Global
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService { }
+interface IService { }
 
-internal class Service : IService
+class Service : IService
 {
     private readonly string _name;
 
     [Ordinal(1)]
-    public Service(IDependency dependency) => _name = "with dependency";
+    public Service(IDependency dependency) =>
+        _name = "with dependency";
     
     [Ordinal(0)]
     internal Service(string name) => _name = name;

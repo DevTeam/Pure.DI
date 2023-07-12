@@ -10,25 +10,26 @@ $f=The partial class is also useful for specifying access modifiers to the gener
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Basics.PartialClassScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService { }
+interface IService { }
 
-internal class Service : IService
+class Service : IService
 {
     public Service(IDependency dependency) { }
 }
 
 // The partial class is also useful for specifying access modifiers to the generated class
-internal partial class Composition
+partial class Composition
 {
     // This method will not be called in runtime
     private void Setup() =>

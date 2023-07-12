@@ -18,26 +18,29 @@ $f=```
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedTypeParameter
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Basics.GenericsScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-internal interface IDependency<T> { }
+interface IDependency<T> { }
 
-internal class Dependency<T> : IDependency<T> { }
+class Dependency<T> : IDependency<T> { }
 
-internal interface IService
+interface IService
 {
     IDependency<int> IntDependency { get; }
     
     IDependency<string> StringDependency { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(IDependency<int> intDependency, IDependency<string> stringDependency)
+    public Service(
+        IDependency<int> intDependency,
+        IDependency<string> stringDependency)
     {
         IntDependency = intDependency;
         StringDependency = stringDependency;

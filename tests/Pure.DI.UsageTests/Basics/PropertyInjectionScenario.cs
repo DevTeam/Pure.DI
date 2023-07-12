@@ -8,22 +8,23 @@ $h=To use dependency injection on a property, make sure the property is writable
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Basics.PropertyInjectionScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     IDependency? Dependency { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
     [Ordinal(0)]
     public IDependency? Dependency { get; set; }

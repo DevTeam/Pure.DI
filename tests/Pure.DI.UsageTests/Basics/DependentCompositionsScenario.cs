@@ -12,6 +12,7 @@ $h=- _CompositionKind.Global_ - the composition class will also not be created, 
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable RedundantAssignment
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Basics.DependentCompositionsScenario;
 
 using Pure.DI;
@@ -20,25 +21,21 @@ using Shouldly;
 using Xunit;
 
 // {
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService { }
+interface IService { }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(IDependency dependency)
-    {
-    }
+    public Service(IDependency dependency) { }
 }
 
-internal class Program
+class Program
 {
-    public Program(IService service)
-    {
+    public Program(IService service) =>
         Service = service;
-    }
 
     public IService Service { get; }
 }

@@ -5,22 +5,20 @@
 To use dependency implementation for a method, simply add the _Ordinal_ attribute to that method, specifying the sequence number that will be used to define the call to that method:
 
 ```c#
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     IDependency? Dependency { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
     [Ordinal(0)]
-    public void SetDependency(IDependency dependency)
-    {
+    public void SetDependency(IDependency dependency) =>
         Dependency = dependency;
-    }
 
     public IDependency? Dependency { get; private set; }
 }

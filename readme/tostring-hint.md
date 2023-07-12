@@ -6,13 +6,13 @@ Hints are used to fine-tune code generation. The _ToString_ hint determines if t
 In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// ToString = On`.
 
 ```c#
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService { }
+interface IService { }
 
-internal class Service : IService
+class Service : IService
 {
     public Service(IDependency dependency) { }
 }

@@ -8,6 +8,7 @@ $f=Be careful, replication takes into account the lifetime of the object.
 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.BCL.FuncScenario;
 
 using System.Collections.Immutable;
@@ -15,24 +16,22 @@ using Shouldly;
 using Xunit;
 
 // {
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     ImmutableArray<IDependency> Dependencies { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(Func<IDependency> dependencyFactory)
-    {
+    public Service(Func<IDependency> dependencyFactory) =>
         Dependencies = Enumerable
             .Range(0, 10)
             .Select(_ => dependencyFactory())
             .ToImmutableArray();
-    }
 
     public ImmutableArray<IDependency> Dependencies { get; }
 }

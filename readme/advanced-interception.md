@@ -10,11 +10,9 @@ public interface IDependency
     void DependencyCall();
 }
 
-public class Dependency : IDependency
+class Dependency : IDependency
 {
-    public void DependencyCall()
-    {
-    }
+    public void DependencyCall() { }
 }
 
 public interface IService
@@ -24,18 +22,14 @@ public interface IService
     void ServiceCall();
 }
 
-public class Service : IService
+class Service : IService
 {
-    public Service(IDependency dependency)
-    {
+    public Service(IDependency dependency) =>
         Dependency = dependency;
-    }
 
     public IDependency Dependency { get; }
 
-    public void ServiceCall()
-    {
-    }
+    public void ServiceCall() { }
 }
 
 internal partial class Composition: IInterceptor
@@ -51,14 +45,19 @@ internal partial class Composition: IInterceptor
         _interceptors = new IInterceptor[]{ this };
     }
 
-    private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)
+    private partial T OnDependencyInjection<T>(
+        in T value,
+        object? tag,
+        Lifetime lifetime)
     {
         if (typeof(T).IsValueType)
         {
             return value;
         }
 
-        return ProxyFactory<T>.GetFactory(ProxyBuilder)(value, _interceptors);
+        return ProxyFactory<T>.GetFactory(ProxyBuilder)(
+            value,
+            _interceptors);
     }
 
     public void Intercept(IInvocation invocation)
@@ -77,12 +76,20 @@ internal partial class Composition: IInterceptor
         private static Func<T, IInterceptor[], T> CreateFactory(IProxyBuilder proxyBuilder)
         {
             // Compiles a delegate to create a proxy for the performance boost
-            var proxyType = proxyBuilder.CreateInterfaceProxyTypeWithTargetInterface(typeof(T), Type.EmptyTypes, ProxyGenerationOptions.Default);
-            var ctor = proxyType.GetConstructors().Single(i => i.GetParameters().Length == 2);
+            var proxyType = proxyBuilder.CreateInterfaceProxyTypeWithTargetInterface(
+                typeof(T),
+                Type.EmptyTypes,
+                ProxyGenerationOptions.Default);
+            var ctor = proxyType.GetConstructors()
+                .Single(i => i.GetParameters().Length == 2);
             var instance = Expression.Parameter(typeof(T));
             var interceptors = Expression.Parameter(typeof(IInterceptor[]));
             var newProxyExpression = Expression.New(ctor, interceptors, instance);
-            return _factory = Expression.Lambda<Func<T, IInterceptor[], T>>(newProxyExpression, instance, interceptors).Compile();
+            return _factory = Expression.Lambda<Func<T, IInterceptor[], T>>(
+                newProxyExpression,
+                instance,
+                interceptors)
+                .Compile();
         }
     }
 }

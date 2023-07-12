@@ -5,23 +5,21 @@
 The tuples feature provides concise syntax to group multiple data elements in a lightweight data structure. The following example shows how a type can ask to inject a tuple argument into it:
 
 ```c#
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal readonly record struct Point(int X, int Y);
+readonly record struct Point(int X, int Y);
 
-internal interface IService
+interface IService
 {
     IDependency Dependency { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service((Point Point, IDependency Dependency) tuple)
-    {
+    public Service((Point Point, IDependency Dependency) tuple) =>
         Dependency = tuple.Dependency;
-    }
 
     public IDependency Dependency { get; }
 }

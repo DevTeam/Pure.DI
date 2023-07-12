@@ -8,6 +8,7 @@ $h=At any time a BCL type binding can be added manually:
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario;
 
 using System.Collections.Immutable;
@@ -15,44 +16,40 @@ using Shouldly;
 using Xunit;
 
 // {
-internal interface IClock
+interface IClock
 {
     DateTimeOffset Now { get; }
 }
 
-internal class Clock : IClock
+class Clock : IClock
 {
     public DateTimeOffset Now => DateTimeOffset.Now;
 }
 
-internal interface IDependency
+interface IDependency
 {
     int Id { get; }
 }
 
-internal class Dependency : IDependency
+class Dependency : IDependency
 {
-    public Dependency(IClock clock)
-    {
-    }
+    public Dependency(IClock clock) { }
 
     public int Id { get; set; }
 }
 
-internal interface IService
+interface IService
 {
     ImmutableArray<IDependency> Dependencies { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(Func<int, IDependency> dependencyFactory)
-    {
+    public Service(Func<int, IDependency> dependencyFactory) =>
         Dependencies = Enumerable
             .Range(0, 10)
             .Select((_, index) => dependencyFactory(index))
             .ToImmutableArray();
-    }
 
     public ImmutableArray<IDependency> Dependencies { get; }
 }
@@ -68,12 +65,13 @@ public class Scenario
 // {            
         DI.Setup("Composition")
             .Bind<IClock>().As(Lifetime.Singleton).To<Clock>()
-            .Bind<Func<int, IDependency>>().To(ctx => new Func<int, IDependency>(id =>
-            {
-                ctx.Inject<Dependency>(out var dependency);
-                dependency.Id = id;
-                return dependency;
-            }))
+            .Bind<Func<int, IDependency>>().To(ctx =>
+                new Func<int, IDependency>(id =>
+                {
+                    ctx.Inject<Dependency>(out var dependency);
+                    dependency.Id = id;
+                    return dependency;
+                }))
             .Bind<IService>().To<Service>().Root<IService>("Root");
 
         var composition = new Composition();

@@ -8,24 +8,25 @@ $h=All properties or fields marked with the _required_ keyword automatically bec
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     string Name { get;}
     
     IDependency Dependency { get;}
 }
 
-internal class Service : IService
+class Service : IService
 {
     public required string ServiceNameField;
 

@@ -9,6 +9,7 @@ $f=The attribute `Ordinal` is part of the API, but you can use your own attribut
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario;
 
 using System.Text;
@@ -16,22 +17,22 @@ using Shouldly;
 using Xunit;
 
 // {
-internal interface IPerson
+interface IPerson
 {
     string Name { get; }
 }
 
-internal class Person : IPerson
+class Person : IPerson
 {
     private readonly StringBuilder _name = new();
 
     public string Name => _name.ToString();
 
     [Ordinal(0)]
-    internal int Id;
+    public int Id;
 
     [Ordinal(1)]
-    internal string FirstName
+    public string FirstName
     {
         set
         {
@@ -42,7 +43,7 @@ internal class Person : IPerson
     }
     
     [Ordinal(2)]
-    internal DateTime Birthday
+    public DateTime Birthday
     {
         set
         {

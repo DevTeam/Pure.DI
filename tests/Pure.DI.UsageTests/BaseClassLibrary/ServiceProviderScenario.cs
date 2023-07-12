@@ -8,22 +8,23 @@ $h=The `// ObjectResolveMethodName = GetService` hint overrides the _object Reso
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.BCL.ServiceProviderScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     IDependency Dependency { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
     public Service(IDependency dependency) => 
         Dependency = dependency;
@@ -31,7 +32,7 @@ internal class Service : IService
     public IDependency Dependency { get; }
 }
 
-internal partial class ServiceProvider: IServiceProvider
+partial class ServiceProvider: IServiceProvider
 {
     private void Setup() =>
 // }        

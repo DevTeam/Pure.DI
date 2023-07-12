@@ -6,29 +6,28 @@ $d=Lazy
 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.BCL.LazyScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService
+interface IService
 {
     IDependency Dependency { get; }
 }
 
-internal class Service : IService
+class Service : IService
 {
     private readonly Lazy<IDependency> _dependency;
 
-    public Service(Lazy<IDependency> dependency)
-    {
+    public Service(Lazy<IDependency> dependency) => 
         _dependency = dependency;
-    }
 
     public IDependency Dependency => _dependency.Value;
 }

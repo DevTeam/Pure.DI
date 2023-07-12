@@ -8,17 +8,15 @@ In addition, setup hints can be comments before the _Setup_ method in the form `
 ```c#
 using static Hint;
 
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService { }
+interface IService { }
 
-internal class Service : IService
+class Service : IService
 {
-    public Service(IDependency dependency)
-    {
-    }
+    public Service(IDependency dependency) { }
 }
 
 DI.Setup("Composition")

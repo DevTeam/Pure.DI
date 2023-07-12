@@ -5,19 +5,19 @@
 A partial class can contain setup code.
 
 ```c#
-internal interface IDependency { }
+interface IDependency { }
 
-internal class Dependency : IDependency { }
+class Dependency : IDependency { }
 
-internal interface IService { }
+interface IService { }
 
-internal class Service : IService
+class Service : IService
 {
     public Service(IDependency dependency) { }
 }
 
 // The partial class is also useful for specifying access modifiers to the generated class
-internal partial class Composition
+partial class Composition
 {
     // This method will not be called in runtime
     private void Setup() =>

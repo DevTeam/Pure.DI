@@ -7,16 +7,19 @@ Interception allows you to enrich or change the behavior of a certain set of obj
 ```c#
 public interface IService { string GetMessage(); }
 
-internal class Service : IService
+class Service : IService
 {
     public string GetMessage() => "Hello World";
 }
 
-internal partial class Composition: IInterceptor
+partial class Composition: IInterceptor
 {
     private static readonly ProxyGenerator ProxyGenerator = new();
 
-    private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)
+    private partial T OnDependencyInjection<T>(
+        in T value,
+        object? tag,
+        Lifetime lifetime)
     {
         if (typeof(T).IsValueType)
         {
