@@ -5,7 +5,7 @@ internal record ResolverInfo(
     ITypeSymbol Type,
     ImmutableArray<Root> Roots)
 {
-    internal static readonly string ResolverClassName = $"Resolver{Variable.Postfix}";
+    internal static readonly string ResolverClassName = $"Resolver{Variable.Salt}";
 
-    public string ClassName => $"{ResolverClassName}{Id.ToString()}";
+    public string ClassName => $"{ResolverClassName}_{Id:0000}";
 }

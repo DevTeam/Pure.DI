@@ -4,12 +4,8 @@
 // ReSharper disable VirtualMemberNeverOverridden.Global
 namespace Pure.DI.Core;
 
-internal class CodeGraphWalker<TContext>
+internal abstract class CodeGraphWalker<TContext>
 {
-    private readonly IVarIdGenerator _idGenerator;
-
-    protected CodeGraphWalker(IVarIdGenerator idGenerator) => _idGenerator = idGenerator;
-
     protected void VisitGraph(
         TContext context,
         DependencyGraph dependencyGraph, 
@@ -30,7 +26,7 @@ internal class CodeGraphWalker<TContext>
         Root root,
         CancellationToken cancellationToken)
     {
-        var rootVariable = CreateVariable(dependencyGraph, variables, root.Node, root.Injection);
+        var rootVariable = CreateVariable(context, dependencyGraph, variables, root.Node, root.Injection);
         VisitRootVariable(context, dependencyGraph, variables, rootVariable, cancellationToken);
         
         var keysToRemove = variables
@@ -74,7 +70,7 @@ internal class CodeGraphWalker<TContext>
                     foreach (var dependency in dependencies)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        ProcessVariable(CreateVariable(dependencyGraph, variables, dependency.Source, dependency.Injection));
+                        ProcessVariable(CreateVariable(context, dependencyGraph, variables, dependency.Source, dependency.Injection));
                     }
                 }
 
@@ -357,6 +353,7 @@ internal class CodeGraphWalker<TContext>
     }
     
     protected Variable CreateVariable(
+        TContext context,
         DependencyGraph source,
         IDictionary<MdBinding, Variable> variables,
         DependencyNode node,
@@ -400,13 +397,15 @@ internal class CodeGraphWalker<TContext>
                     return perResolveVar.CreateLinkedVariable(injection);
                 }
 
-                perResolveVar = new Variable(source, _idGenerator.NextId, node, injection);
+                perResolveVar = new Variable(source, GenerateId(context), node, injection);
                 variables.Add(node.Binding, perResolveVar);
                 return perResolveVar;
 
             default:
-                var transientVar = new Variable(source, _idGenerator.NextId, node, injection);
+                var transientVar = new Variable(source, GenerateId(context), node, injection);
                 return transientVar;
         }
     }
+
+    protected abstract int GenerateId(TContext context);
 }

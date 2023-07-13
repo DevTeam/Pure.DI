@@ -8,10 +8,10 @@ internal record Variable(
     DependencyNode Node,
     in Injection Injection)
 {
-    internal const string Postfix = "A1F7";
-    internal const string DisposeIndexFieldName = "_disposeIndex" + Postfix;
-    internal const string DisposablesFieldName = "_disposables" + Postfix;
-    internal const string InjectionMarker = "injection" + Postfix;
+    internal static readonly string Salt = $"M{DateTime.Now.Month:00}D{DateTime.Now.Day:00}di";
+    internal static readonly string DisposeIndexFieldName = "_disposeIndex" + Salt;
+    internal static readonly string DisposablesFieldName = "_disposableSingletons" + Salt;
+    internal static readonly string InjectionMarker = "injection" + Salt;
 
     public Variable CreateLinkedVariable(in Injection injection) => 
         new LinkedVariable(this, injection);
@@ -25,17 +25,17 @@ internal record Variable(
                 case { Lifetime: Lifetime.Singleton }:
                 {
                     var binding = Node.Binding;
-                    return $"_f{binding.Id.ToString()}Singleton{Postfix}";
+                    return $"_singleton{Salt}_{binding.Id:0000}";
                 }
 
                 case { Lifetime: Lifetime.PerResolve }:
-                    return $"v{Id.ToString()}PerResolve{Postfix}";
+                    return $"perResolve{Salt}_{Id:0000}";
                 
                 case { Arg: {} arg }:
-                    return $"_{arg.Source.ArgName}Arg{Postfix}";
+                    return $"_arg{Salt}_{arg.Source.ArgName}";
 
                 default:
-                    return $"v{Id.ToString()}Local{Postfix}";
+                    return $"local{Salt}_{Id:0000}";
             }
         }
     }

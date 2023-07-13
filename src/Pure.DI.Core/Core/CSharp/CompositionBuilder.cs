@@ -6,23 +6,22 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
 {
     private static readonly string InjectionStatement = $"{Variable.InjectionMarker};";
     private readonly ILogger<CompositionBuilder> _logger;
-    private readonly IVarIdGenerator _idGenerator;
+    private readonly Func<IVarIdGenerator> _idGeneratorFactory;
     private readonly IFilter _filter;
     private readonly Dictionary<Compilation, INamedTypeSymbol?> _disposableTypes = new();
     private readonly Dictionary<Root, ImmutableArray<Line>> _roots = new();
 
     public CompositionBuilder(
         ILogger<CompositionBuilder> logger,
-        IVarIdGenerator idGenerator,
+        Func<IVarIdGenerator> idGeneratorFactory,
         IFilter filter)
-        : base(idGenerator)
     {
         _logger = logger;
-        _idGenerator = idGenerator;
+        _idGeneratorFactory = idGeneratorFactory;
         _filter = filter;
     }
     
-    private CompositionBuilder CreateChildBuilder() => new(_logger, _idGenerator, _filter);
+    private CompositionBuilder CreateChildBuilder(BuildContext context) => new(_logger, () => context.IdGenerator, _filter);
 
     public CompositionCode Build(
         DependencyGraph dependencyGraph,
@@ -31,7 +30,11 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         _roots.Clear();
         var variables = new Dictionary<MdBinding, Variable>();
         var isThreadSafe = dependencyGraph.Source.Hints.GetHint(Hint.ThreadSafe, SettingState.On) == SettingState.On;
-        var context = new BuildContext(isThreadSafe, ImmutableDictionary<MdBinding, Variable>.Empty, new LinesBuilder());
+        var context = new BuildContext(
+            isThreadSafe,
+            ImmutableDictionary<MdBinding, Variable>.Empty,
+            new LinesBuilder(),
+            _idGeneratorFactory());
         VisitGraph(context, dependencyGraph, variables, cancellationToken);
         var fields = variables.Select(i => i.Value).ToImmutableArray();
         return new CompositionCode(
@@ -377,7 +380,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         var code = context.Code;
 
         // Rewrites syntax tree
-        var finishLabel = $"label{_idGenerator.NextId.ToString()}{Variable.Postfix}";
+        var finishLabel = $"label{GenerateId(context).ToString()}";
         var injections = new List<FactoryRewriter.Injection>();
         var factoryRewriter = new FactoryRewriter(factory, instantiation.Target, context.ContextTag, finishLabel, injections);
         var lambda = factoryRewriter.Rewrite(factory.Source.Factory);
@@ -389,7 +392,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         var lines = syntaxNode.ToString().Split('\n');
         
         // Replaces injection markers by injection code
-        var factoryCodeBuilder = CreateChildBuilder();
+        var factoryCodeBuilder = CreateChildBuilder(context);
         using var resolvers = injections.Zip(instantiation.Arguments, (injection, argument) => (injection, argument)).GetEnumerator();
         var indent = new Indent(0);
         foreach (var line in lines)
@@ -398,7 +401,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             {
                 // When an injection marker
                 var resolver = resolvers.Current;
-                var injectedVariable = CreateVariable(dependencyGraph, context.Variables, resolver.argument.Node, resolver.argument.Injection);
+                var injectedVariable = CreateVariable(context, dependencyGraph, context.Variables, resolver.argument.Node, resolver.argument.Injection);
                 using (code.Indent(indent.Value))
                 {
                     factoryCodeBuilder.VisitRootVariable(context, dependencyGraph, context.Variables, injectedVariable, cancellationToken);
@@ -558,7 +561,10 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         
         return disposableType is not null && variable.Node.Type.AllInterfaces.Any(i => disposableType.Equals(i, SymbolEqualityComparer.Default));
     }
-    
+
+    protected override int GenerateId(BuildContext context) => 
+        context.IdGenerator.NextId;
+
     private static ImmutableArray<Variable> GetSingletons(in ImmutableArray<Variable> fields) =>
         fields
             .Where(i => Equals(i.Node.Lifetime, Lifetime.Singleton))

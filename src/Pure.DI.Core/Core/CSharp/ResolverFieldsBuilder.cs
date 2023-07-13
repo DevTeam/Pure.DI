@@ -3,8 +3,8 @@ namespace Pure.DI.Core.CSharp;
 internal class ResolversFieldsBuilder: IBuilder<CompositionCode, CompositionCode>
 {
     private readonly IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
-    internal static readonly string BucketsFieldName = $"_buckets{Variable.Postfix}";
-    internal static readonly string BucketSizeFieldName = $"_bucketSize{Variable.Postfix}";
+    internal static readonly string BucketsFieldName = $"_buckets{Variable.Salt}";
+    internal static readonly string BucketSizeFieldName = $"_bucketSize{Variable.Salt}";
 
     public ResolversFieldsBuilder(
         IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
