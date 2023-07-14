@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>Pure.DI.Benchmarks.Benchmarks.Func-20230622-162919</title>
+<title>Pure.DI.Benchmarks.Benchmarks.Func-20230714-221043</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -13,9 +13,9 @@
 </head>
 <body>
 <pre><code>
-BenchmarkDotNet=v0.13.5, OS=Windows 10 (10.0.19045.3086/22H2/2022Update)
+BenchmarkDotNet v0.13.6, Windows 10 (10.0.19045.3208/22H2/2022Update)
 Intel Core i7-10850H CPU 2.70GHz, 1 CPU, 12 logical and 6 physical cores
-.NET SDK=7.0.304
+.NET SDK 7.0.304
   [Host]     : .NET 7.0.7 (7.0.723.27404), X64 RyuJIT AVX2
   DefaultJob : .NET 7.0.7 (7.0.723.27404), X64 RyuJIT AVX2
 </code></pre>
@@ -26,13 +26,13 @@ Intel Core i7-10850H CPU 2.70GHz, 1 CPU, 12 logical and 6 physical cores
 </tr>
 </thead><tbody><tr><td>SimpleInjector</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td>
 </tr><tr><td>MicrosoftDependencyInjection</td><td>NA</td><td>NA</td><td>NA</td><td>NA</td><td>?</td><td>?</td>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>87.06 ns</td><td>2.211 ns</td><td>6.485 ns</td><td>85.52 ns</td><td>1.00</td><td>0.00</td>
-</tr><tr><td>Pure.DI</td><td>89.65 ns</td><td>2.017 ns</td><td>5.852 ns</td><td>87.95 ns</td><td>1.03</td><td>0.10</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>90.22 ns</td><td>2.448 ns</td><td>7.218 ns</td><td>88.63 ns</td><td>1.04</td><td>0.12</td>
-</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>91.25 ns</td><td>2.461 ns</td><td>7.062 ns</td><td>89.26 ns</td><td>1.05</td><td>0.11</td>
-</tr><tr><td>DryIoc</td><td>112.53 ns</td><td>4.912 ns</td><td>13.612 ns</td><td>107.30 ns</td><td>1.30</td><td>0.19</td>
-</tr><tr><td>LightInject</td><td>452.32 ns</td><td>9.007 ns</td><td>23.571 ns</td><td>445.44 ns</td><td>5.23</td><td>0.49</td>
-</tr><tr><td>Autofac</td><td>9,562.44 ns</td><td>330.649 ns</td><td>953.997 ns</td><td>9,341.47 ns</td><td>110.47</td><td>14.03</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>79.40 ns</td><td>2.333 ns</td><td>6.842 ns</td><td>76.23 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>83.99 ns</td><td>2.211 ns</td><td>6.483 ns</td><td>80.88 ns</td><td>1.07</td><td>0.12</td>
+</tr><tr><td>Pure.DI</td><td>84.28 ns</td><td>2.507 ns</td><td>7.314 ns</td><td>81.52 ns</td><td>1.07</td><td>0.11</td>
+</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>91.09 ns</td><td>3.432 ns</td><td>10.011 ns</td><td>88.74 ns</td><td>1.16</td><td>0.17</td>
+</tr><tr><td>DryIoc</td><td>109.17 ns</td><td>3.266 ns</td><td>9.579 ns</td><td>106.92 ns</td><td>1.38</td><td>0.16</td>
+</tr><tr><td>LightInject</td><td>441.57 ns</td><td>8.785 ns</td><td>21.877 ns</td><td>431.23 ns</td><td>5.56</td><td>0.58</td>
+</tr><tr><td>Autofac</td><td>8,645.17 ns</td><td>170.212 ns</td><td>319.699 ns</td><td>8,604.62 ns</td><td>109.90</td><td>10.55</td>
 </tr></tbody></table>
 </body>
 </html>

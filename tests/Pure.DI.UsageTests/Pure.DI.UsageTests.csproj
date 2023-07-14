@@ -13,9 +13,14 @@
         <ProjectReference Include="..\..\src\Pure.DI.Core\Pure.DI.Core.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <ProjectReference Include="..\..\src\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="Castle.Core" Version="5.1.1" />
-        <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.6.2" />
+        <PackageReference Update="Microsoft.NET.Test.Sdk" Version="17.6.3" />
         <PackageReference Update="Shouldly" Version="4.2.1" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+        <PackageReference Update="xunit" Version="2.5.0" />
+        <PackageReference Update="xunit.runner.visualstudio" Version="2.5.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
 </Project>
