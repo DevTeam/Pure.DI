@@ -4,6 +4,7 @@ using NuGet.Versioning;
 // ReSharper disable NotAccessedPositionalProperty.Global
 
 record Settings(
+    bool BuildServer,
     string Configuration,
     VersionRange VersionRange,
     string NuGetKey,

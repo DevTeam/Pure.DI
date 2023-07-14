@@ -29,8 +29,9 @@ internal class BenchmarksTarget: ITarget<int>
     {
         var solutionDirectory = Tools.GetSolutionDirectory();
         var logsDirectory = Path.Combine(solutionDirectory, ".logs");
+        Directory.CreateDirectory(logsDirectory);
         var artifactsDirectory = Path.Combine(solutionDirectory, "benchmarks", "data");
-        if (Directory.Exists(artifactsDirectory))
+        if (!_settings.BuildServer && Directory.Exists(artifactsDirectory))
         {
             Warning($"The directory \"{artifactsDirectory}\" exists, benchmarks are skipped. Delete this directory to re-run the benchmarks.");
         }

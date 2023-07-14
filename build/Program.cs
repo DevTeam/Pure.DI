@@ -8,6 +8,7 @@ using Pure.DI;
 
 Directory.SetCurrentDirectory(Tools.GetSolutionDirectory());
 var settings = new Settings(
+    Environment.GetEnvironmentVariable("TEAMCITY_VERSION") is not null,
     "Release",
     VersionRange.Parse(Property.Get("version", "2.*-*", true)),
     Property.Get("NuGetKey", string.Empty),
