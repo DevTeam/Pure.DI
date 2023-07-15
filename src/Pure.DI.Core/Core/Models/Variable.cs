@@ -35,7 +35,7 @@ internal record Variable(
                     return $"_arg{Salt}_{arg.Source.ArgName}";
 
                 default:
-                    return $"local{Salt}_{Id:0000}";
+                    return $"transient{Salt}_{Id:0000}";
             }
         }
     }

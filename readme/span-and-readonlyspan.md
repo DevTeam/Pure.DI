@@ -85,17 +85,17 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.BCL.SpanScenario.Dependency localM07D15di_0002 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
-      Pure.DI.UsageTests.BCL.SpanScenario.Dependency localM07D15di_0003 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
-      Pure.DI.UsageTests.BCL.SpanScenario.Dependency localM07D15di_0004 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
-      System.ReadOnlySpan<Pure.DI.UsageTests.BCL.SpanScenario.Dependency> localM07D15di_0001 = stackalloc Pure.DI.UsageTests.BCL.SpanScenario.Dependency[3]
+      Pure.DI.UsageTests.BCL.SpanScenario.Dependency transientM07D15di_0002 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
+      Pure.DI.UsageTests.BCL.SpanScenario.Dependency transientM07D15di_0003 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
+      Pure.DI.UsageTests.BCL.SpanScenario.Dependency transientM07D15di_0004 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
+      System.ReadOnlySpan<Pure.DI.UsageTests.BCL.SpanScenario.Dependency> transientM07D15di_0001 = stackalloc Pure.DI.UsageTests.BCL.SpanScenario.Dependency[3]
       {
-          localM07D15di_0002,
-          localM07D15di_0003,
-          localM07D15di_0004
+          transientM07D15di_0002,
+          transientM07D15di_0003,
+          transientM07D15di_0004
       };
-      Pure.DI.UsageTests.BCL.SpanScenario.Service localM07D15di_0000 = new Pure.DI.UsageTests.BCL.SpanScenario.Service(localM07D15di_0001);
-      return localM07D15di_0000;
+      Pure.DI.UsageTests.BCL.SpanScenario.Service transientM07D15di_0000 = new Pure.DI.UsageTests.BCL.SpanScenario.Service(transientM07D15di_0001);
+      return transientM07D15di_0000;
     }
   }
   #endregion

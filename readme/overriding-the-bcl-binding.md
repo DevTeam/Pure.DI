@@ -87,15 +87,15 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.IDependency[] localM07D15di_0001;
-      localM07D15di_0001 = new IDependency[]
+      Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.IDependency[] transientM07D15di_0001;
+      transientM07D15di_0001 = new IDependency[]
       {
           new AbcDependency(),
           new XyzDependency(),
           new AbcDependency()
       };
-      Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.Service localM07D15di_0000 = new Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.Service(localM07D15di_0001);
-      return localM07D15di_0000;
+      Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.Service transientM07D15di_0000 = new Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.Service(transientM07D15di_0001);
+      return transientM07D15di_0000;
     }
   }
   #endregion

@@ -112,8 +112,8 @@ partial class Composition
               }
           }
       }
-      Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service localM07D15di_0000 = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service(_singletonM07D15di_0022, _singletonM07D15di_0022);
-      return localM07D15di_0000;
+      Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service transientM07D15di_0000 = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service(_singletonM07D15di_0022, _singletonM07D15di_0022);
+      return transientM07D15di_0000;
     }
   }
   #endregion

@@ -92,9 +92,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.ResolveScenario.Dependency localM07D15di_0001 = new Pure.DI.UsageTests.Basics.ResolveScenario.Dependency();
-      Pure.DI.UsageTests.Basics.ResolveScenario.Service localM07D15di_0000 = new Pure.DI.UsageTests.Basics.ResolveScenario.Service(localM07D15di_0001);
-      return localM07D15di_0000;
+      Pure.DI.UsageTests.Basics.ResolveScenario.Dependency transientM07D15di_0001 = new Pure.DI.UsageTests.Basics.ResolveScenario.Dependency();
+      Pure.DI.UsageTests.Basics.ResolveScenario.Service transientM07D15di_0000 = new Pure.DI.UsageTests.Basics.ResolveScenario.Service(transientM07D15di_0001);
+      return transientM07D15di_0000;
     }
   }
   
@@ -103,8 +103,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.ResolveScenario.OtherService localM07D15di_0002 = new Pure.DI.UsageTests.Basics.ResolveScenario.OtherService();
-      return localM07D15di_0002;
+      Pure.DI.UsageTests.Basics.ResolveScenario.OtherService transientM07D15di_0002 = new Pure.DI.UsageTests.Basics.ResolveScenario.OtherService();
+      return transientM07D15di_0002;
     }
   }
   #endregion

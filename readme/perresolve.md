@@ -94,8 +94,8 @@ partial class Composition
     get
     {
       Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency perResolveM07D15di_0001 = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency();
-      Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service localM07D15di_0000 = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service(perResolveM07D15di_0001, perResolveM07D15di_0001);
-      return localM07D15di_0000;
+      Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service transientM07D15di_0000 = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service(perResolveM07D15di_0001, perResolveM07D15di_0001);
+      return transientM07D15di_0000;
     }
   }
   #endregion

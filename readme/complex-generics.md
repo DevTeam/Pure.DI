@@ -127,11 +127,11 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string> localM07D15di_0002 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string>();
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int> localM07D15di_0003 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int>();
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>> localM07D15di_0001 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>>(localM07D15di_0002, localM07D15di_0003);
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string> localM07D15di_0000 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>(localM07D15di_0001);
-      return localM07D15di_0000;
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string> transientM07D15di_0002 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string>();
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int> transientM07D15di_0003 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int>();
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>> transientM07D15di_0001 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>>(transientM07D15di_0002, transientM07D15di_0003);
+      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string> transientM07D15di_0000 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>(transientM07D15di_0001);
+      return transientM07D15di_0000;
     }
   }
   #endregion

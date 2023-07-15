@@ -164,9 +164,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Dependency localM07D15di_0001 = new Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Dependency();
-      Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Service localM07D15di_0000 = new Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Service(OnDependencyInjection<Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IDependency>(localM07D15di_0001, null, Pure.DI.Lifetime.Transient));
-      return OnDependencyInjection<Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService>(localM07D15di_0000, null, Pure.DI.Lifetime.Transient);
+      Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Dependency transientM07D15di_0001 = new Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Dependency();
+      Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Service transientM07D15di_0000 = new Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Service(OnDependencyInjection<Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IDependency>(transientM07D15di_0001, null, Pure.DI.Lifetime.Transient));
+      return OnDependencyInjection<Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService>(transientM07D15di_0000, null, Pure.DI.Lifetime.Transient);
     }
   }
   #endregion

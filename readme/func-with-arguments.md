@@ -127,8 +127,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      System.Func<int, Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.IDependency> localM07D15di_0001;
-      localM07D15di_0001 = new Func<int, IDependency>(id =>
+      System.Func<int, Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.IDependency> transientM07D15di_0001;
+      transientM07D15di_0001 = new Func<int, IDependency>(id =>
       {
           if (global::System.Object.ReferenceEquals(_singletonM07D15di_0022, null))
           {
@@ -140,13 +140,13 @@ partial class Composition
                   }
               }
           }
-          Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Dependency localM07D15di_0004 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Dependency(_singletonM07D15di_0022);
-          Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Dependency dependency = localM07D15di_0004;
+          Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Dependency transientM07D15di_0004 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Dependency(_singletonM07D15di_0022);
+          Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Dependency dependency = transientM07D15di_0004;
           dependency.Id = id;
           return dependency;
       });
-      Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Service localM07D15di_0000 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Service(localM07D15di_0001);
-      return localM07D15di_0000;
+      Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Service transientM07D15di_0000 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Service(transientM07D15di_0001);
+      return transientM07D15di_0000;
     }
   }
   #endregion

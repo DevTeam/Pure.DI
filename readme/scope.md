@@ -163,8 +163,8 @@ partial class Composition: System.IDisposable
               }
           }
       }
-      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service localM07D15di_0000 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service(_singletonM07D15di_0022);
-      return localM07D15di_0000;
+      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service transientM07D15di_0000 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service(_singletonM07D15di_0022);
+      return transientM07D15di_0000;
     }
   }
   
@@ -173,9 +173,9 @@ partial class Composition: System.IDisposable
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Composition localM07D15di_0002 = this;
-      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session localM07D15di_0001 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session(localM07D15di_0002);
-      return localM07D15di_0001;
+      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Composition transientM07D15di_0002 = this;
+      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session transientM07D15di_0001 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session(transientM07D15di_0002);
+      return transientM07D15di_0001;
     }
   }
   #endregion

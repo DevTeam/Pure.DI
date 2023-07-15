@@ -94,10 +94,10 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Attributes.TypeAttributeScenario.AbcDependency localM07D15di_0001 = new Pure.DI.UsageTests.Attributes.TypeAttributeScenario.AbcDependency();
-      Pure.DI.UsageTests.Attributes.TypeAttributeScenario.XyzDependency localM07D15di_0002 = new Pure.DI.UsageTests.Attributes.TypeAttributeScenario.XyzDependency();
-      Pure.DI.UsageTests.Attributes.TypeAttributeScenario.Service localM07D15di_0000 = new Pure.DI.UsageTests.Attributes.TypeAttributeScenario.Service(localM07D15di_0001, localM07D15di_0002);
-      return localM07D15di_0000;
+      Pure.DI.UsageTests.Attributes.TypeAttributeScenario.AbcDependency transientM07D15di_0001 = new Pure.DI.UsageTests.Attributes.TypeAttributeScenario.AbcDependency();
+      Pure.DI.UsageTests.Attributes.TypeAttributeScenario.XyzDependency transientM07D15di_0002 = new Pure.DI.UsageTests.Attributes.TypeAttributeScenario.XyzDependency();
+      Pure.DI.UsageTests.Attributes.TypeAttributeScenario.Service transientM07D15di_0000 = new Pure.DI.UsageTests.Attributes.TypeAttributeScenario.Service(transientM07D15di_0001, transientM07D15di_0002);
+      return transientM07D15di_0000;
     }
   }
   #endregion

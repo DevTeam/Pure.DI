@@ -117,10 +117,10 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      string localM07D15di_0002 = OnCannotResolve<string>(null, Pure.DI.Lifetime.Transient);
-      Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency localM07D15di_0001 = new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency(localM07D15di_0002);
-      Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service localM07D15di_0000 = new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service(localM07D15di_0001);
-      return localM07D15di_0000;
+      string transientM07D15di_0002 = OnCannotResolve<string>(null, Pure.DI.Lifetime.Transient);
+      Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency transientM07D15di_0001 = new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency(transientM07D15di_0002);
+      Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service transientM07D15di_0000 = new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service(transientM07D15di_0001);
+      return transientM07D15di_0000;
     }
   }
   #endregion

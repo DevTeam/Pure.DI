@@ -113,11 +113,11 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency localM07D15di_0001 = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency();
-      OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency>(ref localM07D15di_0001, null, Pure.DI.Lifetime.Transient);
-      Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service localM07D15di_0000 = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service(localM07D15di_0001);
-      OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service>(ref localM07D15di_0000, null, Pure.DI.Lifetime.Transient);
-      return localM07D15di_0000;
+      Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency transientM07D15di_0001 = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency();
+      OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency>(ref transientM07D15di_0001, null, Pure.DI.Lifetime.Transient);
+      Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service transientM07D15di_0000 = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service(transientM07D15di_0001);
+      OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service>(ref transientM07D15di_0000, null, Pure.DI.Lifetime.Transient);
+      return transientM07D15di_0000;
     }
   }
   #endregion

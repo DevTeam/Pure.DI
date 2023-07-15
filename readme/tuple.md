@@ -91,12 +91,12 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.BCL.TupleScenario.Point localM07D15di_0002;
-      localM07D15di_0002 = new Point(7, 9);
-      Pure.DI.UsageTests.BCL.TupleScenario.Dependency localM07D15di_0003 = new Pure.DI.UsageTests.BCL.TupleScenario.Dependency();
-      (Pure.DI.UsageTests.BCL.TupleScenario.Point Point, Pure.DI.UsageTests.BCL.TupleScenario.IDependency Dependency) localM07D15di_0001 = (localM07D15di_0002, localM07D15di_0003);
-      Pure.DI.UsageTests.BCL.TupleScenario.Service localM07D15di_0000 = new Pure.DI.UsageTests.BCL.TupleScenario.Service(localM07D15di_0001);
-      return localM07D15di_0000;
+      Pure.DI.UsageTests.BCL.TupleScenario.Point transientM07D15di_0002;
+      transientM07D15di_0002 = new Point(7, 9);
+      Pure.DI.UsageTests.BCL.TupleScenario.Dependency transientM07D15di_0003 = new Pure.DI.UsageTests.BCL.TupleScenario.Dependency();
+      (Pure.DI.UsageTests.BCL.TupleScenario.Point Point, Pure.DI.UsageTests.BCL.TupleScenario.IDependency Dependency) transientM07D15di_0001 = (transientM07D15di_0002, transientM07D15di_0003);
+      Pure.DI.UsageTests.BCL.TupleScenario.Service transientM07D15di_0000 = new Pure.DI.UsageTests.BCL.TupleScenario.Service(transientM07D15di_0001);
+      return transientM07D15di_0000;
     }
   }
   #endregion

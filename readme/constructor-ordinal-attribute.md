@@ -99,8 +99,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario.Service localM07D15di_0000 = new Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario.Service(_argM07D15di_serviceName);
-      return localM07D15di_0000;
+      Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario.Service transientM07D15di_0000 = new Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario.Service(_argM07D15di_serviceName);
+      return transientM07D15di_0000;
     }
   }
   #endregion

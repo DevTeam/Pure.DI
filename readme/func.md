@@ -92,12 +92,12 @@ partial class Composition
       perResolveM07D15di_0001 = new System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>(() =>
       {
           Pure.DI.UsageTests.BCL.FuncScenario.IDependency value;
-          Pure.DI.UsageTests.BCL.FuncScenario.Dependency localM07D15di_0004 = new Pure.DI.UsageTests.BCL.FuncScenario.Dependency();
-          value = localM07D15di_0004;
+          Pure.DI.UsageTests.BCL.FuncScenario.Dependency transientM07D15di_0004 = new Pure.DI.UsageTests.BCL.FuncScenario.Dependency();
+          value = transientM07D15di_0004;
           return value;
       });
-      Pure.DI.UsageTests.BCL.FuncScenario.Service localM07D15di_0000 = new Pure.DI.UsageTests.BCL.FuncScenario.Service(perResolveM07D15di_0001);
-      return localM07D15di_0000;
+      Pure.DI.UsageTests.BCL.FuncScenario.Service transientM07D15di_0000 = new Pure.DI.UsageTests.BCL.FuncScenario.Service(perResolveM07D15di_0001);
+      return transientM07D15di_0000;
     }
   }
   #endregion

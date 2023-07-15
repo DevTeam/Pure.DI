@@ -97,14 +97,14 @@ partial class Composition
     {
       System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableScenario.IDependency> LocalFunc_perResolveM07D15di_0001()
       {
-          Pure.DI.UsageTests.BCL.EnumerableScenario.AbcDependency localM07D15di_0002 = new Pure.DI.UsageTests.BCL.EnumerableScenario.AbcDependency();
-          yield return localM07D15di_0002;
-          Pure.DI.UsageTests.BCL.EnumerableScenario.XyzDependency localM07D15di_0003 = new Pure.DI.UsageTests.BCL.EnumerableScenario.XyzDependency();
-          yield return localM07D15di_0003;
+          Pure.DI.UsageTests.BCL.EnumerableScenario.AbcDependency transientM07D15di_0002 = new Pure.DI.UsageTests.BCL.EnumerableScenario.AbcDependency();
+          yield return transientM07D15di_0002;
+          Pure.DI.UsageTests.BCL.EnumerableScenario.XyzDependency transientM07D15di_0003 = new Pure.DI.UsageTests.BCL.EnumerableScenario.XyzDependency();
+          yield return transientM07D15di_0003;
       }
       System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableScenario.IDependency> perResolveM07D15di_0001 = LocalFunc_perResolveM07D15di_0001();
-      Pure.DI.UsageTests.BCL.EnumerableScenario.Service localM07D15di_0000 = new Pure.DI.UsageTests.BCL.EnumerableScenario.Service(perResolveM07D15di_0001);
-      return localM07D15di_0000;
+      Pure.DI.UsageTests.BCL.EnumerableScenario.Service transientM07D15di_0000 = new Pure.DI.UsageTests.BCL.EnumerableScenario.Service(perResolveM07D15di_0001);
+      return transientM07D15di_0000;
     }
   }
   #endregion

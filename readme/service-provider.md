@@ -136,8 +136,8 @@ partial class ServiceProvider
               }
           }
       }
-      Pure.DI.UsageTests.BCL.ServiceProviderScenario.Service localM07D15di_0000 = new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Service(_singletonM07D15di_0022);
-      return localM07D15di_0000;
+      Pure.DI.UsageTests.BCL.ServiceProviderScenario.Service transientM07D15di_0000 = new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Service(_singletonM07D15di_0022);
+      return transientM07D15di_0000;
     }
   }
   #endregion

@@ -157,10 +157,10 @@ partial class Composition
               }
           }
       }
-      Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency localM07D15di_0001 = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
-      Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency localM07D15di_0002 = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
-      Pure.DI.UsageTests.Basics.TagsScenario.Service localM07D15di_0000 = new Pure.DI.UsageTests.Basics.TagsScenario.Service(localM07D15di_0001, _singletonM07D15di_0023, localM07D15di_0002);
-      return localM07D15di_0000;
+      Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency transientM07D15di_0001 = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
+      Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency transientM07D15di_0002 = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
+      Pure.DI.UsageTests.Basics.TagsScenario.Service transientM07D15di_0000 = new Pure.DI.UsageTests.Basics.TagsScenario.Service(transientM07D15di_0001, _singletonM07D15di_0023, transientM07D15di_0002);
+      return transientM07D15di_0000;
     }
   }
   #endregion

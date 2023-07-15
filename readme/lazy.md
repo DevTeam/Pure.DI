@@ -91,23 +91,23 @@ partial class Composition
       perResolveM07D15di_0002 = new System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(() =>
       {
           Pure.DI.UsageTests.BCL.LazyScenario.IDependency value;
-          Pure.DI.UsageTests.BCL.LazyScenario.Dependency localM07D15di_0005 = new Pure.DI.UsageTests.BCL.LazyScenario.Dependency();
-          value = localM07D15di_0005;
+          Pure.DI.UsageTests.BCL.LazyScenario.Dependency transientM07D15di_0005 = new Pure.DI.UsageTests.BCL.LazyScenario.Dependency();
+          value = transientM07D15di_0005;
           return value;
       });
-      System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> localM07D15di_0001;
+      System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> transientM07D15di_0001;
       {
           global::System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> func;
           func = perResolveM07D15di_0002;
           {
-              localM07D15di_0001 = new global::System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(func, true);
+              transientM07D15di_0001 = new global::System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(func, true);
               goto label6;
           }
       }
       label6:
           ;
-      Pure.DI.UsageTests.BCL.LazyScenario.Service localM07D15di_0000 = new Pure.DI.UsageTests.BCL.LazyScenario.Service(localM07D15di_0001);
-      return localM07D15di_0000;
+      Pure.DI.UsageTests.BCL.LazyScenario.Service transientM07D15di_0000 = new Pure.DI.UsageTests.BCL.LazyScenario.Service(transientM07D15di_0001);
+      return transientM07D15di_0000;
     }
   }
   #endregion

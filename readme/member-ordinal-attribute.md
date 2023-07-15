@@ -120,11 +120,11 @@ partial class PersonComposition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person localM07D15di_0000 = new Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person();
-      localM07D15di_0000.Id = _argM07D15di_personId;
-      localM07D15di_0000.FirstName = _argM07D15di_personName;
-      localM07D15di_0000.Birthday = _argM07D15di_personBirthday;
-      return localM07D15di_0000;
+      Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person transientM07D15di_0000 = new Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person();
+      transientM07D15di_0000.Id = _argM07D15di_personId;
+      transientM07D15di_0000.FirstName = _argM07D15di_personName;
+      transientM07D15di_0000.Birthday = _argM07D15di_personBirthday;
+      return transientM07D15di_0000;
     }
   }
   #endregion
