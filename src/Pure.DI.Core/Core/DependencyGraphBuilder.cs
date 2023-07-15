@@ -249,13 +249,8 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
         {
             return tag;
         }
-        
-        if (injection.Tag is { } newTag)
-        {
-            return new MdTag(0, newTag);
-        }
 
-        return default;
+        return new MdTag(0, injection.Tag);
     }
 
     private MdBinding CreateGenericBinding(

@@ -127,7 +127,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                     case nameof(IBinding.As):
                         if (invocation.ArgumentList.Arguments is [{ Expression: { } lifetimeExpression }])
                         {
-                            MetadataVisitor.VisitLifetime(new MdLifetime(SemanticModel, invocation, GetConstantValue<Lifetime>(lifetimeExpression)));
+                            MetadataVisitor.VisitLifetime(new MdLifetime(SemanticModel, invocation, GetRequiredConstantValue<Lifetime>(lifetimeExpression)!));
                         }
 
                         break;
@@ -135,7 +135,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                     case nameof(IConfiguration.Hint):
                         if (invocation.ArgumentList.Arguments is [{ Expression: { } hintNameExpression }, { Expression: { } hintValueExpression }])
                         {
-                            _hints[GetConstantValue<Hint>(hintNameExpression)] = GetConstantValue<string>(hintValueExpression);
+                            _hints[GetConstantValue<Hint>(hintNameExpression)] = GetRequiredConstantValue<string>(hintValueExpression)!;
                         }
 
                         break;
@@ -155,7 +155,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                                 MetadataVisitor.VisitSetup(
                                     new MdSetup(
                                         invocation,
-                                        CreateCompositionName(GetConstantValue<string>(publicCompositionType), _namespace),
+                                        CreateCompositionName(GetRequiredConstantValue<string>(publicCompositionType), _namespace),
                                         GetUsingDirectives(invocation),
                                         CompositionKind.Public,
                                         GetSettings(invocation),
@@ -171,9 +171,9 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                                 MetadataVisitor.VisitSetup(
                                     new MdSetup(
                                         invocation,
-                                        CreateCompositionName(GetConstantValue<string>(publicCompositionType), _namespace),
+                                        CreateCompositionName(GetRequiredConstantValue<string>(publicCompositionType), _namespace),
                                         GetUsingDirectives(invocation),
-                                        GetConstantValue<CompositionKind>(kindExpression),
+                                        GetRequiredConstantValue<CompositionKind>(kindExpression),
                                         GetSettings(invocation),
                                         ImmutableArray<MdBinding>.Empty,
                                         ImmutableArray<MdRoot>.Empty,
@@ -193,7 +193,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                     case nameof(IConfiguration.DefaultLifetime):
                         if (invocation.ArgumentList.Arguments is [{ Expression: { } defaultLifetimeSyntax }])
                         {
-                            MetadataVisitor.VisitDefaultLifetime(new MdDefaultLifetime(new MdLifetime(SemanticModel, invocation, GetConstantValue<Lifetime>(defaultLifetimeSyntax))));
+                            MetadataVisitor.VisitDefaultLifetime(new MdDefaultLifetime(new MdLifetime(SemanticModel, invocation, GetRequiredConstantValue<Lifetime>(defaultLifetimeSyntax))));
                         }
 
                         break;
@@ -250,7 +250,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                         if (genericName.TypeArgumentList.Arguments is [{ } argTypeSyntax]
                             && invocation.ArgumentList.Arguments is [{ Expression: { } nameArgExpression }, ..] args)
                         {
-                            var name = GetConstantValue<string>(nameArgExpression).Trim();
+                            var name = GetRequiredConstantValue<string>(nameArgExpression).Trim();
                             var tags = new List<MdTag>(args.Count - 1);
                             for (var index = 1; index < args.Count; index++)
                             {
@@ -273,7 +273,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                             var name = "";
                             if (rootArgs.Count >= 1)
                             {
-                                name = GetConstantValue<string>(rootArgs[0].Expression);
+                                name = GetRequiredConstantValue<string>(rootArgs[0].Expression);
                             }
 
                             MdTag? tag = default;
@@ -282,7 +282,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                                 tag = new MdTag(0, GetConstantValue<object>(rootArgs[1].Expression));
                             }
 
-                            MetadataVisitor.VisitRoot(new MdRoot(invocation, SemanticModel, rootSymbol, name, tag));
+                            MetadataVisitor.VisitRoot(new MdRoot(invocation, SemanticModel, rootSymbol, name!, tag));
                         }
 
                         break;
@@ -512,12 +512,32 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         throw HandledException.Shared;
     }
 
-    private T GetConstantValue<T>(SyntaxNode node)
+    private T GetRequiredConstantValue<T>(SyntaxNode node)
+    {
+        var value = GetConstantValue<T>(node);
+        if (value is not null)
+        {
+            return value;
+        }
+        
+        _logger.CompileError($"{node} must be a non-null value of type {typeof(T)}.", node.GetLocation(), LogId.ErrorInvalidMetadata);
+        throw HandledException.Shared;
+    }
+
+    private T? GetConstantValue<T>(SyntaxNode node)
     {
         switch (node)
         {
-            case LiteralExpressionSyntax { Token.Value: T val }:
-                return val;
+            case LiteralExpressionSyntax literalExpression:
+            {
+                if (literalExpression.IsKind(SyntaxKind.DefaultLiteralExpression)
+                    || literalExpression.IsKind(SyntaxKind.NullLiteralExpression))
+                {
+                    return default;
+                }
+                
+                return (T?)literalExpression.Token.Value;
+            }
             
             case MemberAccessExpressionSyntax memberAccessExpressionSyntax 
                 when memberAccessExpressionSyntax.IsKind(SyntaxKind.SimpleMemberAccessExpression):
@@ -573,7 +593,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
         foreach (var argument in arguments)
         {
-            values.Add(GetConstantValue<T>(argument.Expression));
+            values.Add(GetRequiredConstantValue<T>(argument.Expression));
         }
 
         return values;

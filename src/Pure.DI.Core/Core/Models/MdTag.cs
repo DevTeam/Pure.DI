@@ -3,7 +3,7 @@ namespace Pure.DI.Core.Models;
 
 internal readonly record struct MdTag(
     int Position,
-    object Value)
+    object? Value)
 {
     public static readonly object ContextTag = new ContextTagObject();
     

@@ -38,7 +38,7 @@ internal class RootsBuilder: IBuilder<DependencyGraph, IReadOnlyDictionary<Injec
             }
 
             // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var injection in _contractsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag), cancellationToken))
+            foreach (var injection in _contractsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag), cancellationToken).Take(1))
             {
                 rootsPairs.Add(new KeyValuePair<Injection, Root>(
                     injection,

@@ -18,25 +18,31 @@ interface IService
     IDependency Dependency1 { get; }
 
     IDependency Dependency2 { get; }
+
+    IDependency Dependency3 { get; }
 }
 
 class Service : IService
 {
     public Service(
         [Tag("Abc")] IDependency dependency1,
-        [Tag("Xyz")] IDependency dependency2)
+        [Tag("Xyz")] IDependency dependency2,
+        IDependency dependency3)
     {
         Dependency1 = dependency1;
         Dependency2 = dependency2;
+        Dependency3 = dependency3;
     }
 
     public IDependency Dependency1 { get; }
 
     public IDependency Dependency2 { get; }
+
+    public IDependency Dependency3 { get; }
 }
 
 DI.Setup("Composition")
-    .Bind<IDependency>("Abc").To<AbcDependency>()
+    .Bind<IDependency>("Abc", default).To<AbcDependency>()
     .Bind<IDependency>("Xyz")
         .As(Lifetime.Singleton)
         .To<XyzDependency>()
@@ -49,6 +55,7 @@ var service = composition.Root;
 service.Dependency1.ShouldBeOfType<AbcDependency>();
 service.Dependency2.ShouldBeOfType<XyzDependency>();
 service.Dependency2.ShouldBe(composition.XyzRoot);
+service.Dependency3.ShouldBeOfType<AbcDependency>();
 ```
 
 <details open>
@@ -66,9 +73,10 @@ classDiagram
   }
   Service --|> IService : 
   class Service {
-    +Service(IDependency dependency1, IDependency dependency2)
+    +Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
   }
   AbcDependency --|> IDependency : "Abc" 
+  AbcDependency --|> IDependency : 
   class AbcDependency {
     +AbcDependency()
   }
@@ -84,6 +92,7 @@ classDiagram
   }
   Service *--  AbcDependency : "Abc"  IDependency dependency1
   Service o--  "Singleton" XyzDependency : "Xyz"  IDependency dependency2
+  Service *--  AbcDependency : IDependency dependency3
   Composition ..> XyzDependency : "Xyz" IDependency XyzRoot
   Composition ..> Service : IService Root
 ```
@@ -96,20 +105,20 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly System.IDisposable[] _disposableSingletonsM07D14di;
-  private Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency _singletonM07D14di_0023;
+  private readonly System.IDisposable[] _disposableSingletonsM07D15di;
+  private Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency _singletonM07D15di_0023;
   
   public Composition()
   {
-    _disposableSingletonsM07D14di = new System.IDisposable[0];
+    _disposableSingletonsM07D15di = new System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM07D14di = new System.IDisposable[0];
-    lock (parent._disposableSingletonsM07D14di)
+    _disposableSingletonsM07D15di = new System.IDisposable[0];
+    lock (parent._disposableSingletonsM07D15di)
     {
-      _singletonM07D14di_0023 = parent._singletonM07D14di_0023;
+      _singletonM07D15di_0023 = parent._singletonM07D15di_0023;
     }
   }
   
@@ -119,17 +128,17 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      if (global::System.Object.ReferenceEquals(_singletonM07D14di_0023, null))
+      if (global::System.Object.ReferenceEquals(_singletonM07D15di_0023, null))
       {
-          lock (_disposableSingletonsM07D14di)
+          lock (_disposableSingletonsM07D15di)
           {
-              if (global::System.Object.ReferenceEquals(_singletonM07D14di_0023, null))
+              if (global::System.Object.ReferenceEquals(_singletonM07D15di_0023, null))
               {
-                  _singletonM07D14di_0023 = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
+                  _singletonM07D15di_0023 = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
               }
           }
       }
-      return _singletonM07D14di_0023;
+      return _singletonM07D15di_0023;
     }
   }
   
@@ -138,19 +147,20 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      if (global::System.Object.ReferenceEquals(_singletonM07D14di_0023, null))
+      if (global::System.Object.ReferenceEquals(_singletonM07D15di_0023, null))
       {
-          lock (_disposableSingletonsM07D14di)
+          lock (_disposableSingletonsM07D15di)
           {
-              if (global::System.Object.ReferenceEquals(_singletonM07D14di_0023, null))
+              if (global::System.Object.ReferenceEquals(_singletonM07D15di_0023, null))
               {
-                  _singletonM07D14di_0023 = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
+                  _singletonM07D15di_0023 = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
               }
           }
       }
-      Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency localM07D14di_0001 = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
-      Pure.DI.UsageTests.Basics.TagsScenario.Service localM07D14di_0000 = new Pure.DI.UsageTests.Basics.TagsScenario.Service(localM07D14di_0001, _singletonM07D14di_0023);
-      return localM07D14di_0000;
+      Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency localM07D15di_0001 = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
+      Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency localM07D15di_0002 = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
+      Pure.DI.UsageTests.Basics.TagsScenario.Service localM07D15di_0000 = new Pure.DI.UsageTests.Basics.TagsScenario.Service(localM07D15di_0001, _singletonM07D15di_0023, localM07D15di_0002);
+      return localM07D15di_0000;
     }
   }
   #endregion
@@ -162,7 +172,7 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>()
   {
-    return ResolverM07D14di<T>.Value.Resolve(this);
+    return ResolverM07D15di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -171,7 +181,7 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>(object? tag)
   {
-    return ResolverM07D14di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM07D15di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -180,17 +190,17 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type)
   {
-    int index = (int)(_bucketSizeM07D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    ref var pair = ref _bucketsM07D14di[index];
+    int index = (int)(_bucketSizeM07D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    ref var pair = ref _bucketsM07D15di[index];
     if (ReferenceEquals(pair.Key, type))
     {
       return pair.Value.Resolve(this);
     }
     
-    int maxIndex = index + _bucketSizeM07D14di;
+    int maxIndex = index + _bucketSizeM07D15di;
     for (int i = index + 1; i < maxIndex; i++)
     {
-      pair = ref _bucketsM07D14di[i];
+      pair = ref _bucketsM07D15di[i];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -206,17 +216,17 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    int index = (int)(_bucketSizeM07D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    ref var pair = ref _bucketsM07D14di[index];
+    int index = (int)(_bucketSizeM07D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    ref var pair = ref _bucketsM07D15di[index];
     if (ReferenceEquals(pair.Key, type))
     {
       return pair.Value.ResolveByTag(this, tag);
     }
     
-    int maxIndex = index + _bucketSizeM07D14di;
+    int maxIndex = index + _bucketSizeM07D15di;
     for (int i = index + 1; i < maxIndex; i++)
     {
-      pair = ref _bucketsM07D14di[i];
+      pair = ref _bucketsM07D15di[i];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -241,9 +251,10 @@ partial class Composition
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
-          "    +Service(IDependency dependency1, IDependency dependency2)\n" +
+          "    +Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)\n" +
         "  }\n" +
         "  AbcDependency --|> IDependency : \"Abc\" \n" +
+        "  AbcDependency --|> IDependency : \n" +
         "  class AbcDependency {\n" +
           "    +AbcDependency()\n" +
         "  }\n" +
@@ -259,33 +270,34 @@ partial class Composition
         "  }\n" +
         "  Service *--  AbcDependency : \"Abc\"  IDependency dependency1\n" +
         "  Service o--  \"Singleton\" XyzDependency : \"Xyz\"  IDependency dependency2\n" +
+        "  Service *--  AbcDependency : IDependency dependency3\n" +
         "  Composition ..> XyzDependency : \"Xyz\" IDependency XyzRoot\n" +
         "  Composition ..> Service : IService Root";
   }
   
-  private readonly static int _bucketSizeM07D14di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM07D14di;
+  private readonly static int _bucketSizeM07D15di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM07D15di;
   
   static Composition()
   {
-    ResolverM07D14di_0000 valResolverM07D14di_0000 = new ResolverM07D14di_0000();
-    ResolverM07D14di<Pure.DI.UsageTests.Basics.TagsScenario.IDependency>.Value = valResolverM07D14di_0000;
-    ResolverM07D14di_0001 valResolverM07D14di_0001 = new ResolverM07D14di_0001();
-    ResolverM07D14di<Pure.DI.UsageTests.Basics.TagsScenario.IService>.Value = valResolverM07D14di_0001;
-    _bucketsM07D14di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    ResolverM07D15di_0000 valResolverM07D15di_0000 = new ResolverM07D15di_0000();
+    ResolverM07D15di<Pure.DI.UsageTests.Basics.TagsScenario.IDependency>.Value = valResolverM07D15di_0000;
+    ResolverM07D15di_0001 valResolverM07D15di_0001 = new ResolverM07D15di_0001();
+    ResolverM07D15di<Pure.DI.UsageTests.Basics.TagsScenario.IService>.Value = valResolverM07D15di_0001;
+    _bucketsM07D15di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       4,
-      out _bucketSizeM07D14di,
+      out _bucketSizeM07D15di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[2]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.TagsScenario.IDependency), valResolverM07D14di_0000)
-        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.TagsScenario.IService), valResolverM07D14di_0001)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.TagsScenario.IDependency), valResolverM07D15di_0000)
+        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.TagsScenario.IService), valResolverM07D15di_0001)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM07D14di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM07D15di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM07D14di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM07D15di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -298,7 +310,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM07D14di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.TagsScenario.IDependency>
+  private sealed class ResolverM07D15di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.TagsScenario.IDependency>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.Basics.TagsScenario.IDependency Resolve(Composition composition)
@@ -314,7 +326,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM07D14di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.TagsScenario.IService>
+  private sealed class ResolverM07D15di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.TagsScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.Basics.TagsScenario.IService Resolve(Composition composition)
@@ -336,4 +348,4 @@ partial class Composition
 </details>
 
 
-The tag can be a constant, a type, or a value of an enumerated type.
+The tag can be a constant, a type, or a value of an enumerated type. The _default_ and _null_ tags are also supported.
