@@ -33,17 +33,17 @@ public partial class Func : BenchmarkBase
         return abstractContainer.TryCreate();
     }
 
-    [Benchmark(Description = "Pure.DI")]
+    [Benchmark(Description = "Pure.DI Resolve<T>()")]
     public ICompositionRoot PureDI() => Resolve<ICompositionRoot>();
     
-    [Benchmark(Description = "Pure.DI non-generic")]
+    [Benchmark(Description = "Pure.DI Resolve(Type)")]
     public object PureDINonGeneric() => Resolve(typeof(ICompositionRoot));
 
     [Benchmark(Description = "Pure.DI composition root")]
     public ICompositionRoot PureDIByCR() => Root;
 
     [Benchmark(Description = "Hand Coded", Baseline = true)]
-    public void HandCoded() =>
+    public ICompositionRoot HandCoded() =>
         new CompositionRoot(
             new Service1(
                 new Service2Func(() => new Service3())),

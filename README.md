@@ -133,10 +133,7 @@ class Program
 }
 ```
 
-*__Root__* - here [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) is the only place in the application where the composition of the object graph for the application takes place. Each instance is resolved by a strongly typed block of operators like operator [*__new__*](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/new-operator), which compile with all optimizations with minimal impact on performance or memory consumption. The generated _Composition_ class contains a property called _Root_, which is the root of the composition and allows an instance of type _Program_ to be resolved. There can be many such properties, per registered composition root. Therefore, each composition root must have its own name and will be represented by a separate property.
-
-<details>
-<summary>Root property</summary>
+*__Root__* - here [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) is the only place in the application where object graph composition for the application takes place. Each instance is resolved by a strongly typed block of operators like operator [*__new__*](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/new-operator), which compile with all optimizations with minimal impact on performance and memory consumption. In general, applications may have several composition roots and, accordingly, such properties. Each composition root must have its own unique name, which is defined when the _Root(string rootName)_ method is called, as shown in the code above. Therefore, the generated _Composition_ class in the example contains only one property_Root_, which is the root of the composition and allows resolving an instance of type _Program_:
 
 ```c#
 public Sample.Program Root
@@ -168,11 +165,11 @@ public Sample.Program Root
 }
 ```
 
-</details>
+The full analog of this application with top-level statements can be found [here](Samples/ShroedingersCatTopLevelStatements).
 
-The full analog of this application with top-level statements can be found [here] (Samples/ShroedingersCatTopLevelStatements).
+## To summarize
 
-_Pure.DI_ creates efficient code in a pure DI paradigm, using only basic language constructs as if you were writing code by hand. This makes it possible to take full advantage of Dependency Injection everywhere and always, without any compromise!
+_Pure.DI_ creates efficient code in a pure DI paradigm, using only basic language constructs as if you were writing code by hand. This allows you to take full advantage of Dependency Injection everywhere and always, without any compromise!
 
 <details>
 <summary>Just try!</summary>
@@ -787,17 +784,17 @@ The _PureDISeverity_ property can take on multiple values:
 <summary>Transient</summary>
 
 <table>
-<thead><tr><th>                Method</th><th>   Mean</th><th>Error</th><th>StdDev</th><th> Median</th><th>Ratio</th><th>RatioSD</th>
+<thead><tr><th>                Method</th><th>   Mean</th><th>Error</th><th> StdDev</th><th> Median</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>0.0128 ns</td><td>0.0166 ns</td><td>0.0238 ns</td><td>0.0000 ns</td><td> </td><td> </td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>3.9792 ns</td><td>0.1370 ns</td><td>0.3998 ns</td><td>3.8511 ns</td><td> </td><td> </td>
-</tr><tr><td>Pure.DI</td><td>4.8851 ns</td><td>0.1555 ns</td><td>0.2375 ns</td><td>4.8104 ns</td><td> </td><td> </td>
-</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>7.9274 ns</td><td>0.2154 ns</td><td>0.5364 ns</td><td>7.7121 ns</td><td> </td><td> </td>
-</tr><tr><td>LightInject</td><td>11.0228 ns</td><td>0.2509 ns</td><td>0.6249 ns</td><td>10.8849 ns</td><td> </td><td> </td>
-</tr><tr><td>DryIoc</td><td>20.5335 ns</td><td>0.4306 ns</td><td>0.6954 ns</td><td>20.4471 ns</td><td> </td><td> </td>
-</tr><tr><td>SimpleInjector</td><td>22.7638 ns</td><td>0.4747 ns</td><td>0.8799 ns</td><td>22.6135 ns</td><td> </td><td> </td>
-</tr><tr><td>MicrosoftDependencyInjection</td><td>23.4549 ns</td><td>0.4783 ns</td><td>0.9328 ns</td><td>23.4470 ns</td><td> </td><td> </td>
-</tr><tr><td>Autofac</td><td>8,924.6020 ns</td><td>178.0725 ns</td><td>277.2375 ns</td><td>8,920.4597 ns</td><td> </td><td> </td>
+</thead><tbody><tr><td>&#39;Pure.DI composition root&#39;</td><td>3.644 ns</td><td>0.1301 ns</td><td>0.2278 ns</td><td>3.618 ns</td><td>0.95</td><td>0.08</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>3.866 ns</td><td>0.1410 ns</td><td>0.2470 ns</td><td>3.826 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>5.021 ns</td><td>0.1567 ns</td><td>0.3961 ns</td><td>4.893 ns</td><td>1.32</td><td>0.12</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>8.258 ns</td><td>0.2282 ns</td><td>0.3124 ns</td><td>8.227 ns</td><td>2.12</td><td>0.17</td>
+</tr><tr><td>LightInject</td><td>11.880 ns</td><td>0.2369 ns</td><td>0.2216 ns</td><td>11.855 ns</td><td>3.09</td><td>0.19</td>
+</tr><tr><td>DryIoc</td><td>20.525 ns</td><td>0.4440 ns</td><td>0.8765 ns</td><td>20.342 ns</td><td>5.36</td><td>0.43</td>
+</tr><tr><td>MicrosoftDependencyInjection</td><td>24.907 ns</td><td>0.3146 ns</td><td>0.2627 ns</td><td>24.797 ns</td><td>6.50</td><td>0.44</td>
+</tr><tr><td>SimpleInjector</td><td>25.713 ns</td><td>0.5057 ns</td><td>0.4730 ns</td><td>25.839 ns</td><td>6.68</td><td>0.42</td>
+</tr><tr><td>Autofac</td><td>11,836.198 ns</td><td>787.2618 ns</td><td>2,321.2591 ns</td><td>11,580.115 ns</td><td>3,192.58</td><td>703.84</td>
 </tr></tbody></table>
 
 </details>
@@ -806,17 +803,17 @@ The _PureDISeverity_ property can take on multiple values:
 <summary>Singleton</summary>
 
 <table>
-<thead><tr><th>                Method</th><th>   Mean</th><th>Error</th><th>StdDev</th><th> Median</th><th>Ratio</th><th>RatioSD</th>
+<thead><tr><th>                Method</th><th>  Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>0.0175 ns</td><td>0.0208 ns</td><td>0.0223 ns</td><td>0.0025 ns</td><td> </td><td> </td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>4.4046 ns</td><td>0.1675 ns</td><td>0.4913 ns</td><td>4.2524 ns</td><td> </td><td> </td>
-</tr><tr><td>Pure.DI</td><td>5.4675 ns</td><td>0.1651 ns</td><td>0.4867 ns</td><td>5.2425 ns</td><td> </td><td> </td>
-</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>7.8375 ns</td><td>0.2136 ns</td><td>0.3262 ns</td><td>7.7274 ns</td><td> </td><td> </td>
-</tr><tr><td>DryIoc</td><td>19.3453 ns</td><td>0.4133 ns</td><td>0.7964 ns</td><td>19.0213 ns</td><td> </td><td> </td>
-</tr><tr><td>SimpleInjector</td><td>21.9625 ns</td><td>0.4665 ns</td><td>0.5900 ns</td><td>21.9175 ns</td><td> </td><td> </td>
-</tr><tr><td>MicrosoftDependencyInjection</td><td>23.4351 ns</td><td>0.3397 ns</td><td>0.2837 ns</td><td>23.3851 ns</td><td> </td><td> </td>
-</tr><tr><td>LightInject</td><td>31.4078 ns</td><td>0.6519 ns</td><td>1.0150 ns</td><td>30.9192 ns</td><td> </td><td> </td>
-</tr><tr><td>Autofac</td><td>6,292.0519 ns</td><td>123.0989 ns</td><td>184.2486 ns</td><td>6,275.1659 ns</td><td> </td><td> </td>
+</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>3.786 ns</td><td>0.1347 ns</td><td>0.1752 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>4.313 ns</td><td>0.1508 ns</td><td>0.1961 ns</td><td>1.14</td><td>0.07</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>5.427 ns</td><td>0.1716 ns</td><td>0.3095 ns</td><td>1.43</td><td>0.09</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>8.801 ns</td><td>0.2395 ns</td><td>0.2851 ns</td><td>2.34</td><td>0.15</td>
+</tr><tr><td>DryIoc</td><td>22.165 ns</td><td>0.4642 ns</td><td>0.5701 ns</td><td>5.88</td><td>0.31</td>
+</tr><tr><td>SimpleInjector</td><td>26.368 ns</td><td>0.3747 ns</td><td>0.3505 ns</td><td>6.96</td><td>0.35</td>
+</tr><tr><td>MicrosoftDependencyInjection</td><td>27.638 ns</td><td>0.5711 ns</td><td>0.7818 ns</td><td>7.33</td><td>0.36</td>
+</tr><tr><td>LightInject</td><td>40.876 ns</td><td>0.6849 ns</td><td>0.7612 ns</td><td>10.82</td><td>0.51</td>
+</tr><tr><td>Autofac</td><td>7,092.382 ns</td><td>138.9567 ns</td><td>194.7978 ns</td><td>1,879.76</td><td>116.88</td>
 </tr></tbody></table>
 
 </details>
@@ -825,15 +822,15 @@ The _PureDISeverity_ property can take on multiple values:
 <summary>Func</summary>
 
 <table>
-<thead><tr><th>                Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
+<thead><tr><th>                Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>79.40 ns</td><td>2.333 ns</td><td>6.842 ns</td><td>76.23 ns</td><td>1.00</td><td>0.00</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>83.99 ns</td><td>2.211 ns</td><td>6.483 ns</td><td>80.88 ns</td><td>1.07</td><td>0.12</td>
-</tr><tr><td>Pure.DI</td><td>84.28 ns</td><td>2.507 ns</td><td>7.314 ns</td><td>81.52 ns</td><td>1.07</td><td>0.11</td>
-</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>91.09 ns</td><td>3.432 ns</td><td>10.011 ns</td><td>88.74 ns</td><td>1.16</td><td>0.17</td>
-</tr><tr><td>DryIoc</td><td>109.17 ns</td><td>3.266 ns</td><td>9.579 ns</td><td>106.92 ns</td><td>1.38</td><td>0.16</td>
-</tr><tr><td>LightInject</td><td>441.57 ns</td><td>8.785 ns</td><td>21.877 ns</td><td>431.23 ns</td><td>5.56</td><td>0.58</td>
-</tr><tr><td>Autofac</td><td>8,645.17 ns</td><td>170.212 ns</td><td>319.699 ns</td><td>8,604.62 ns</td><td>109.90</td><td>10.55</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>83.26 ns</td><td>1.705 ns</td><td>2.030 ns</td><td>0.95</td><td>0.06</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>85.94 ns</td><td>1.628 ns</td><td>1.444 ns</td><td>0.99</td><td>0.05</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>86.77 ns</td><td>1.785 ns</td><td>4.412 ns</td><td>0.99</td><td>0.07</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>87.80 ns</td><td>1.798 ns</td><td>3.754 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>DryIoc</td><td>105.83 ns</td><td>2.060 ns</td><td>2.606 ns</td><td>1.20</td><td>0.07</td>
+</tr><tr><td>LightInject</td><td>432.29 ns</td><td>5.690 ns</td><td>5.322 ns</td><td>4.98</td><td>0.19</td>
+</tr><tr><td>Autofac</td><td>8,546.73 ns</td><td>163.729 ns</td><td>175.188 ns</td><td>97.73</td><td>4.80</td>
 </tr></tbody></table>
 
 </details>
@@ -846,8 +843,8 @@ The _PureDISeverity_ property can take on multiple values:
 </tr>
 </tr><tr><td>&#39;Hand Coded&#39;</td><td>79.99 ns</td><td>2.698 ns</td><td>7.954 ns</td><td>76.70 ns</td><td>1.00</td><td>0.00</td>
 </tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>88.79 ns</td><td>2.717 ns</td><td>7.884 ns</td><td>86.02 ns</td><td>1.12</td><td>0.15</td>
-</tr><tr><td>Pure.DI</td><td>92.69 ns</td><td>3.242 ns</td><td>9.509 ns</td><td>88.42 ns</td><td>1.17</td><td>0.15</td>
-</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>93.28 ns</td><td>2.674 ns</td><td>7.884 ns</td><td>90.48 ns</td><td>1.18</td><td>0.14</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>92.69 ns</td><td>3.242 ns</td><td>9.509 ns</td><td>88.42 ns</td><td>1.17</td><td>0.15</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>93.28 ns</td><td>2.674 ns</td><td>7.884 ns</td><td>90.48 ns</td><td>1.18</td><td>0.14</td>
 </tr><tr><td>LightInject</td><td>99.37 ns</td><td>3.547 ns</td><td>10.347 ns</td><td>97.70 ns</td><td>1.25</td><td>0.18</td>
 </tr><tr><td>DryIoc</td><td>108.40 ns</td><td>3.156 ns</td><td>9.257 ns</td><td>104.45 ns</td><td>1.37</td><td>0.17</td>
 </tr><tr><td>Autofac</td><td>10,368.08 ns</td><td>203.428 ns</td><td>429.098 ns</td><td>10,342.65 ns</td><td>130.12</td><td>15.68</td>
@@ -859,16 +856,16 @@ The _PureDISeverity_ property can take on multiple values:
 <summary>Enum</summary>
 
 <table>
-<thead><tr><th>                Method</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
+<thead><tr><th>                Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>188.5 ns</td><td>3.90 ns</td><td>11.51 ns</td><td>183.6 ns</td><td>1.00</td><td>0.00</td>
-</tr><tr><td>Pure.DI</td><td>188.7 ns</td><td>3.82 ns</td><td>10.12 ns</td><td>184.9 ns</td><td>1.00</td><td>0.08</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>199.6 ns</td><td>4.25 ns</td><td>12.52 ns</td><td>195.1 ns</td><td>1.06</td><td>0.09</td>
-</tr><tr><td>&#39;Pure.DI non-generic&#39;</td><td>207.1 ns</td><td>4.17 ns</td><td>11.06 ns</td><td>203.2 ns</td><td>1.10</td><td>0.07</td>
-</tr><tr><td>LightInject</td><td>213.0 ns</td><td>4.65 ns</td><td>13.71 ns</td><td>206.0 ns</td><td>1.13</td><td>0.10</td>
-</tr><tr><td>DryIoc</td><td>222.9 ns</td><td>4.56 ns</td><td>13.38 ns</td><td>217.4 ns</td><td>1.19</td><td>0.11</td>
-</tr><tr><td>MicrosoftDependencyInjection</td><td>234.3 ns</td><td>5.20 ns</td><td>15.17 ns</td><td>228.7 ns</td><td>1.25</td><td>0.10</td>
-</tr><tr><td>Autofac</td><td>9,865.7 ns</td><td>196.14 ns</td><td>240.87 ns</td><td>9,755.9 ns</td><td>51.19</td><td>4.06</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>196.2 ns</td><td>2.54 ns</td><td>2.38 ns</td><td>0.99</td><td>0.03</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>198.0 ns</td><td>3.95 ns</td><td>4.85 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>202.2 ns</td><td>3.56 ns</td><td>3.33 ns</td><td>1.02</td><td>0.03</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>205.5 ns</td><td>2.19 ns</td><td>2.05 ns</td><td>1.04</td><td>0.03</td>
+</tr><tr><td>DryIoc</td><td>224.1 ns</td><td>2.27 ns</td><td>2.12 ns</td><td>1.13</td><td>0.04</td>
+</tr><tr><td>LightInject</td><td>243.4 ns</td><td>4.83 ns</td><td>5.17 ns</td><td>1.23</td><td>0.04</td>
+</tr><tr><td>MicrosoftDependencyInjection</td><td>248.3 ns</td><td>3.94 ns</td><td>3.69 ns</td><td>1.25</td><td>0.05</td>
+</tr><tr><td>Autofac</td><td>10,481.5 ns</td><td>29.76 ns</td><td>26.38 ns</td><td>52.50</td><td>0.95</td>
 </tr></tbody></table>
 
 </details>
@@ -877,11 +874,11 @@ The _PureDISeverity_ property can take on multiple values:
 <summary>Benchmarks environment</summary>
 
 <pre><code>
-BenchmarkDotNet v0.13.6, Windows 10 (10.0.19045.3208/22H2/2022Update)
-Intel Core i7-10850H CPU 2.70GHz, 1 CPU, 12 logical and 6 physical cores
-.NET SDK 7.0.304
-  [Host]     : .NET 7.0.7 (7.0.723.27404), X64 RyuJIT AVX2
-  DefaultJob : .NET 7.0.7 (7.0.723.27404), X64 RyuJIT AVX2
+BenchmarkDotNet v0.13.6, Windows 11 (10.0.22621.1992/22H2/2022Update/SunValley2)
+Intel Core i7-10875H CPU 2.30GHz, 1 CPU, 16 logical and 8 physical cores
+.NET SDK 7.0.306
+  [Host]     : .NET 7.0.9 (7.0.923.32018), X64 RyuJIT AVX2
+  DefaultJob : .NET 7.0.9 (7.0.923.32018), X64 RyuJIT AVX2
 </code></pre>
 
 </details>

@@ -133,10 +133,7 @@ class Program
 }
 ```
 
-*__Root__* - here [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) is the only place in the application where the composition of the object graph for the application takes place. Each instance is resolved by a strongly typed block of operators like operator [*__new__*](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/new-operator), which compile with all optimizations with minimal impact on performance or memory consumption. The generated _Composition_ class contains a property called _Root_, which is the root of the composition and allows an instance of type _Program_ to be resolved. There can be many such properties, per registered composition root. Therefore, each composition root must have its own name and will be represented by a separate property.
-
-<details>
-<summary>Root property</summary>
+*__Root__* - here [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) is the only place in the application where object graph composition for the application takes place. Each instance is resolved by a strongly typed block of operators like operator [*__new__*](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/new-operator), which compile with all optimizations with minimal impact on performance and memory consumption. In general, applications may have several composition roots and, accordingly, such properties. Each composition root must have its own unique name, which is defined when the _Root(string rootName)_ method is called, as shown in the code above. Therefore, the generated _Composition_ class in the example contains only one property_Root_, which is the root of the composition and allows resolving an instance of type _Program_:
 
 ```c#
 public Sample.Program Root
@@ -168,11 +165,11 @@ public Sample.Program Root
 }
 ```
 
-</details>
+The full analog of this application with top-level statements can be found [here](Samples/ShroedingersCatTopLevelStatements).
 
-The full analog of this application with top-level statements can be found [here] (Samples/ShroedingersCatTopLevelStatements).
+## To summarize
 
-_Pure.DI_ creates efficient code in a pure DI paradigm, using only basic language constructs as if you were writing code by hand. This makes it possible to take full advantage of Dependency Injection everywhere and always, without any compromise!
+_Pure.DI_ creates efficient code in a pure DI paradigm, using only basic language constructs as if you were writing code by hand. This allows you to take full advantage of Dependency Injection everywhere and always, without any compromise!
 
 <details>
 <summary>Just try!</summary>
