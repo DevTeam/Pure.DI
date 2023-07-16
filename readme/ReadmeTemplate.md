@@ -6,30 +6,30 @@
 
 ## Key features
 
-Pure.DI is not a framework or library, but a source code generator. It generates a partial class to create object graphs in the Pure DI paradigm. To make this object graph accurate, it uses a set of hints that are checked at compile time. Since all the work is done at compile time, you only have effective code ready to use at run time. The generated code is independent of .NET library calls or reflection and is efficient in terms of performance and memory consumption because, like normal code, it is subject to all optimizations and integrates seamlessly into any application - without using delegates, extra method calls, boxing, type conversions, etc.
+Pure.DI is not a framework or library, but a source code generator. It generates a partial class to create object graphs in the Pure DI paradigm. To make this object graph accurate, it uses a set of hints that are checked at compile time. Since all the work is done at compile time, the efficient code is ready to use only at runtime. The generated code does not depend on .NET library calls or reflections and is efficient in terms of performance and memory consumption because, like regular code, it is subject to all optimizations and can be easily integrated into any application - without the use of delegates, additional method calls, boxes, type conversions, etc.
 
-- [X] DI without any IoC/DI containers, frameworks, dependencies and therefore without performance impact or side effects. 
-  >_Pure.DI_ is actually a [.NET code generator](https://docs.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/source-generators-overview). It generates simple code as well as if you were doing it yourself: de facto just a bunch of nested constructors` calls. And you can see this code at any time.
-- [X] A predictable and verifiable dependency graph is built and verified on the fly while you write the code.
-  >All the logic for analyzing the graph of objects, constructors, methods happens at compile time. Thus, the _Pure.DI_ tool notifies the developer about missing or circular dependency, for cases when some dependencies are not suitable for injection, etc., at compile-time. Developers have no chance of getting a program that crashes at runtime due to these errors. All this magic happens simultaneously as the code is written, this way, you have instant feedback between the fact that you made some changes to your code and your code was already checked and ready for use.
+- [X] DI without any IoC/DI containers, frameworks, dependencies and hence no performance impact or side effects. 
+  >_Pure.DI_ is actually a [.NET code generator](https://docs.microsoft.com/en-us/dotnet/csharp/roslyn-sdk/source-generators-overview). It generates simple code as well as if you were doing it yourself: de facto it's just a bunch of nested constructor calls. And that code can be viewed at any time.
+- [X] A predictable and verified dependency graph is built and validated on the fly while writing code.
+  >All the logic of analyzing the graph of objects, constructors, and methods takes place at compile time. Thus, _Pure.DI_ notifies the developer about missing or circular dependencies, cases when some dependencies are not suitable for injection, etc. at the compilation time. There is no chance for the developer to get a program that crashes at runtime because of these errors. All this magic happens at the same time as you write your code, so you have instant feedback between the fact that you have made changes to your code and the fact that your code is already tested and ready to use.
 - [X] Does not add any dependencies to other assemblies.
-  >Using a pure DI approach, you don't add runtime dependencies to your assemblies.
-- [X] Highest performance, including compiler and JIT optimizations.
-  >All generated code runs as fast as your own, in pure DI style, including compile-time and run-time optimizations. As mentioned above, graph analysis doing at compile-time, but at run-time, there are just a bunch of nested constructors, and that's it.
+  >When using pure DI, no runtime dependencies are added to assemblies because only basic language constructs and nothing more are used.
+- [X] Highest performance, including compiler and JIT optimization and minimal memory consumption.
+  >All generated code runs as fast as your own, in pure DI style, including compile-time and run-time optimization. As mentioned above, graph analysis is done at compile time, and at runtime there are only a bunch of nested constructors, and that's it. Memory is spent only on the object graph being created.
 - [X] It works everywhere.
-  >Since a pure DI approach does not use any dependencies or the [.NET reflection](https://docs.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/reflection) at runtime, it does not prevent your code from working as expected on any platform: Full .NET Framework 2.0+, .NET Core, .NET, UWP/XBOX, .NET IoT, Xamarin, Native AOT, etc.
-- [X] Ease of use.
-  >The _Pure.DI_ API is very similar to the API of most IoC/DI libraries. And it was a deliberate decision: the main reason is that programmers do not need to learn a new API.
-- [X] Ultra-fine tuning of generic types.
-  >_Pure.DI_ offers special type markers instead of using open generic types. This allows you to more accurately build the object graph and take full advantage of generic types.
-- [X] Supports basic .NET BCL types out of the box.
+  >Since the pure DI approach does not use any dependencies or [.NET reflection](https://docs.microsoft.com/en-us/dotnet/framework/reflection-and-codedom/reflection) at runtime, it does not prevent the code from running as expected on any platform: Full .NET Framework 2.0+, .NET Core, .NET, UWP/XBOX, .NET IoT, Xamarin, Native AOT, etc.
+- [X] Ease of Use.
+  >The _Pure.DI_ API is very similar to the API of most IoC/DI libraries. And this was a conscious decision: the main reason is that programmers don't need to learn a new API.
+- [X] Superfine customization of generic types.
+  >In _Pure.DI_ it is proposed to use special marker types instead of using open generic types. This allows you to build the object graph more accurately and take full advantage of generic types.
+- [X] Supports the major .NET BCL types out of the box.
   >_Pure.DI_ already [supports](#base-class-library) many of [BCL types](https://docs.microsoft.com/en-us/dotnet/standard/framework-libraries#base-class-libraries) like `Array`, `IEnumerable<T>`, `IList<T>`, `ISet<T>`, `Func<T>`, `ThreadLocal`, `Task<T>`, `MemoryPool<T>`, `ArrayPool<T>`, `ReadOnlyMemory<T>`, `Memory<T>`, `ReadOnlySpan<T>`, `Span<T>`, `IComparer<T>`, `IEqualityComparer<T>` and etc. without any extra effort.
-- [X] Good for creating libraries or frameworks and where resource consumption is particularly critical.
-  >High performance, zero memory consumption/preparation overhead and no dependencies make it an ideal assistant for building libraries and frameworks.
+- [X] Good for building libraries or frameworks where resource consumption is particularly critical.
+  >Its high performance, zero memory consumption/preparation overhead, and lack of dependencies make it ideal for building libraries and frameworks.
 
 ## Schrödinger's cat shows how it works [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](samples/ShroedingersCat)
 
-### The reality is that
+### The reality is
 
 ![Cat](readme/cat.png?raw=true)
 
@@ -43,7 +43,7 @@ interface ICat { State State { get; } }
 enum State { Alive, Dead }
 ```
 
-### Here's our implementation
+### Here is our implementation variant
 
 ```c#
 class CardboardBox<T> : IBox<T>
@@ -67,34 +67,35 @@ class ShroedingersCat : ICat
 }
 ```
 
-It is important to note that our abstraction and implementation knows nothing about DI magic or any frameworks. Also, please note that an instance of type *__Lazy<>__* has been used here only as an example. However, using this type with non-trivial logic as a dependency is not recommended, so consider replacing it with some simple abstract type.
+It is important to note that our abstraction and implementation knows nothing about the magic of DI or any frameworks. Also note that an instance of type *__Lazy<>__* is used here only as an example. However, using this type with non-trivial logic as a dependency is not recommended, so consider replacing it with some simple abstract type.
 
 ### Let's glue it all together
 
-Add a package reference to
+Add a link to the package
 
 [![NuGet](https://buildstats.info/nuget/Pure.DI?includePreReleases=true)](https://www.nuget.org/packages/Pure.DI)
 
-Package Manager
+For use in the Package Manager
 
 ```shell
 Install-Package Pure.DI
 ```
 
-.NET CLI
+For use in the .NET CLI
   
 ```shell
 dotnet add package Pure.DI
 ```
 
-Bind abstractions to their implementations or factories, define lifetimes and other options in a class like the following:
+Let's bind abstractions to their realizations or factories, define their lifetime and other options:
 
 ```c#
 partial class Composition
 {
   // In fact, this code is never run, and the method can have any name or be a constructor, for example,
   // and can be in any part of the compiled code because this is just a hint to set up an object graph.
-  // Here the setup is part of the generated class, just as an example.
+  // Here the customization is part of the generated class, just as an example.
+  // But in general it can be done anywhere in the code.
   private static void Setup() => DI.Setup(nameof(Composition))
       // Models a random subatomic event that may or may not occur
       .Bind<Random>().As(Singleton).To<Random>()
@@ -113,7 +114,7 @@ partial class Composition
 }
 ```
 
-The code above is just a chain of hints to define the dependency graph used to create a *__Composition__* class with a *__Root__* property that creates the *__Program__* composition root below. It doesn't really make sense to run this code because it doesn't do anything at runtime. So it can be placed anywhere in the class (in methods, constructors or properties) and preferably where it will not be called. Its purpose is only to check the dependency syntax and help build the dependency graph at compile time to create the *__Composition__* class. The first argument to the _Setup_ method specifies the name of the class to be generated.
+The above code is just a chain of hints to define the dependency graph used to create a *__Composition__* class with a *__Root__* property that creates the root of the *__Program__* composition below. This code is only useful at compile time, so it can be placed anywhere in the class (in methods, constructors or properties) and preferably where it will not be called at runtime. Its purpose is to check the dependency syntax and help build a compile-time dependency graph to create the *__Composition__* class. The first argument of the _Setup_ method specifies the name of the class to be generated.
 
 ### Time to open boxes!
 
@@ -132,7 +133,7 @@ class Program
 }
 ```
 
-*__Root__* is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) here, a single place in an application where the composition of the object graphs for an application takes place. Each instance is resolved by a strongly-typed block of statements like the operator [*__new__*](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/new-operator), which are compiling with all optimizations with minimal impact on performance or memory consumption. The generated _Composition_ class contains a _Root_ property that allows you to resolve an instance of the _Program_ type.
+*__Root__* - here [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) is the only place in the application where the composition of the object graph for the application takes place. Each instance is resolved by a strongly typed block of operators like operator [*__new__*](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/new-operator), which compile with all optimizations with minimal impact on performance or memory consumption. The generated _Composition_ class contains a property called _Root_, which is the root of the composition and allows an instance of type _Program_ to be resolved. There can be many such properties, per registered composition root. Therefore, each composition root must have its own name and will be represented by a separate property.
 
 <details>
 <summary>Root property</summary>
@@ -169,14 +170,14 @@ public Sample.Program Root
 
 </details>
 
-You can find a complete analogue of this application with top level statements [here](Samples/ShroedingersCatTopLevelStatements). For a top level statements application the name of generated composer is "Composer" by default if it was not override in the Setup call.
+The full analog of this application with top-level statements can be found [here] (Samples/ShroedingersCatTopLevelStatements).
 
-_Pure.DI_ works the same as calling a set of nested constructors, but allows dependency injection. And that's a reason to take full advantage of Dependency Injection everywhere, every time, without any compromise!
+_Pure.DI_ creates efficient code in a pure DI paradigm, using only basic language constructs as if you were writing code by hand. This makes it possible to take full advantage of Dependency Injection everywhere and always, without any compromise!
 
 <details>
 <summary>Just try!</summary>
 
-Download the example project code
+Download a sample project
 
 ```shell
 git clone https://github.com/DevTeam/Pure.DI.Example.git

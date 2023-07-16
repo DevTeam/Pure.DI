@@ -27,6 +27,7 @@ $f=This can be done if these methods are not needed, in case only certain compos
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.UsageTests.Basics.CompositionRootScenario;
 
 using Shouldly;
@@ -43,6 +44,10 @@ class Service : IService
 {
     public Service(IDependency dependency) { }
 }
+
+class OtherService : IService
+{
+}
 // }
 
 public class Scenario
@@ -55,10 +60,19 @@ public class Scenario
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>().Root<IService>("Root");
+                // Creates a private root that is only accessible from _Resolve_ methods:
+                .Root<IDependency>()
+            .Bind<IService>().To<Service>()
+                // Creates a regular public root named _Root_
+                .Root<IService>("Root")
+            .Bind<IService>("Other").To<OtherService>()
+                // Creates a public root named _OtherService_ using the _Other_ tag:
+                .Root<IService>("OtherService", "Other");
 
         var composition = new Composition();
         var service = composition.Root;
+        var otherService = composition.OtherService;
+        var dependency = composition.Resolve<IDependency>();
 // }            
         service.ShouldBeOfType<Service>();
         TestTools.SaveClassDiagram(composition, nameof(CompositionRootScenario));

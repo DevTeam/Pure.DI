@@ -5,7 +5,7 @@
 
 ## Generated Code
 
-Each generated class, hereinafter referred to as _composition_, needs to be configured. It starts with the `Setup(...)` method:
+Each generated class, hereafter called a _composition_, must be customized. It starts with the `Setup(...)` method:
 
 ```c#
 DI.Setup("Composition")
@@ -47,7 +47,7 @@ partial class Composition
 <details>
 <summary>Setup arguments</summary>
 
-The first parameter is used to specify the name of the composition class. All setups with the same name will be combined to create one composition class. In addition, this name may contain a namespace, for example for `Sample.Composition` the composition class is generated:
+The first parameter is used to specify the name of the composition class. All sets with the same name will be combined to create one composition class. Alternatively, this name may contain a namespace, e.g. a composition class is generated for `Sample.Composition`:
 
 ```c#
 namespace Sample
@@ -59,15 +59,15 @@ namespace Sample
 }
 ```
 
-The second optional parameter can have several values to determine the kind of composition.
+The second optional parameter may have multiple values to determine the kind of composition.
 
 ### CompositionKind.Public
 
-This is the default value. If this value is specified, a composition class will be created.
+This value is used by default. If this value is specified, a normal composition class will be created.
 
 ### CompositionKind.Internal
 
-If this value is specified, the class will not be generated, but this setup can be used for others as a base. For example:
+If you specify this value, the class will not be generated, but this setup can be used by others as a baseline. For example:
 
 ```c#
 DI.Setup("BaseComposition", CompositionKind.Internal)
@@ -77,11 +77,11 @@ DI.Setup("Composition").DependsOn("BaseComposition")
     .Bind<IService>().To<Service>();    
 ```
 
-When the composition _CompositionKind.Public_ flag is set in the composition setup, it can also be the base composition for others like in the example above.
+If the _CompositionKind.Public_ flag is set in the composition setup, it can also be the base for other compositions, as in the example above.
 
 ### CompositionKind.Global
 
-If this value is specified, no composition class will be created, but this setup is the base for all setups in the current project, and `DependsOn(...)` is not required.
+No composition class will be created when this value is specified, but this setup is the baseline for all installations in the current project, and `DependsOn(...)` is not required.
 
 </details>
 
@@ -90,11 +90,11 @@ If this value is specified, no composition class will be created, but this setup
 
 ### Default constructor
 
-Everything is quite banal, this constructor simply initializes the internal state.
+It's quite trivial, this constructor simply initializes the internal state.
 
 ### Argument constructor
 
-It replaces the default constructor and is only created if at least one argument is provided. For example:
+It replaces the default constructor and is only created if at least one argument is specified. For example:
 
 ```c#
 DI.Setup("Composition")
@@ -103,13 +103,13 @@ DI.Setup("Composition")
     ...
 ```
 
-In this case, the argument constructor looks like this:
+In this case, the constructor with arguments is as follows:
 
 ```c#
 public Composition(string name, int id) { ... }
 ```
 
-and default constructor is missing.
+and there is no default constructor.
 
 ### Child constructor
 
@@ -120,18 +120,18 @@ var parentComposition = new Composition();
 var childComposition = new Composition(parentComposition); 
 ```
 
-The child composition inherits the state of the parent composition in the form of arguments and singleton objects. States are copied, and compositions are completely independent, except when calling the _Dispose()_ method on the parent container before disposing of the child container, because the child container can use singleton objects created before it was created.
+The child composition inherits the state of the parent composition in the form of arguments and singleton objects. The states are copied, and the compositions are completely independent. All singleton objects previously created in the parent composition are also made available in the child composition.
 
 </details>
 
 <details>
 <summary>Properties</summary>
 
-To be able to quickly and conveniently create an object graph, a set of properties is generated. These properties are called compositions roots here. The type of the property is the type of a root object created by the composition. Accordingly, each access to the property leads to the creation of a composition with the root element of this type.
+To create an object graph quickly and conveniently, a set of properties is formed. These properties are here called roots of compositions. The type of a property is the type of the root object created by the composition. Accordingly, each invocation of a property leads to the creation of a composition with a root element of this type.
 
 ### Public Composition Roots
 
-To be able to use a specific composition root, that root must be explicitly defined by the _Root_ method with a specific name and type:
+To create an object graph quickly and conveniently, a set of properties is formed. These properties are here called roots of compositions. The type of a property is the type of the root object created by the composition. Each invocation of a property results in the creation of a composition with a root element of this type.
 
 ```c#
 DI.Setup("Composition")
@@ -139,7 +139,7 @@ DI.Setup("Composition")
     .Root<IService>("MyService");
 ```
 
-In this case, the property for type _IService_ will be named _MyService_ and will be available for direct use. The result of its use will be the creation of a composition of objects with a root of type _IService_:
+In this case, the property for the _IService_ type will be named _MyService_ and will be available for direct use. The result of its use will be the creation of a composition of objects with the root of _IService_ type:
 
 ```c#
 public IService MyService
@@ -156,7 +156,16 @@ This is [recommended way](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) to 
 
 ### Private Composition Roots
 
-When the root name is empty, a private composition root is created. This root is used in these _Resolve_ methods in the same way as public roots. For example:
+If the root name is empty, a private composition root with a random name is created:
+
+```c#
+private IService RootM07D16di_0001
+{
+    get { ... }
+}
+```
+
+This root is available in _Resolve_ methods in the same way as public roots. For example:
 
 ```c#
 DI.Setup("Composition")
@@ -164,14 +173,7 @@ DI.Setup("Composition")
     .Root<IService>();
 ```
 
-```c#
-private IService Root1ABB3D0
-{
-    get { ... }
-}
-```
-
-These properties have a random name and a private accessor and cannot be used directly from code. Don't try to use them. Private composition roots can be resolved by the _Resolve_ methods.
+These properties have an arbitrary name and private accessor and cannot be used directly from the code. Do not attempt to use them, as their names change arbitrarily. Private composition roots can be resolved by _Resolve_ methods.
 
 </details>
 
@@ -180,7 +182,7 @@ These properties have a random name and a private accessor and cannot be used di
 
 ### Resolve
 
-By default a set of four _Resolve_ methods are generated:
+By default, a set of four _Resolve_ methods is generated:
 
 ```c#
 public T Resolve<T>() { ... }
@@ -192,7 +194,7 @@ public object Resolve(Type type) { ... }
 public object Resolve(Type type, object? tag) { ... }
 ```
 
-These methods can resolve public composition roots as well as private roots and are useful when using the [Service Locator](https://martinfowler.com/articles/injection.html) approach when the code resolves composition roots in place:
+These methods can resolve both public and private composition roots, and are useful when using the [Service Locator](https://martinfowler.com/articles/injection.html) approach, where the code resolves composition roots in place:
 
 ```c#
 var composition = new Composition();
@@ -200,11 +202,11 @@ var composition = new Composition();
 composition.Resolve<IService>();
 ```
 
-This is [not recommended](https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/) way to create composition roots. To control the generation of these methods, see the _Resolve_ hint.
+This is a [not recommended](https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/) way to create composition roots. To control the generation of these methods, see the [Resolve](#Resolve-Hint) hint.
 
 ### Dispose
 
-Provides a mechanism for releasing unmanaged resources. This method is only generated if the composition contains at least one singleton instance that implements the [IDisposable](https://learn.microsoft.com/en-us/dotnet/api/system.idisposable) interface. To dispose of all created singleton objects, call the composition `Dispose()` method:
+Provides a mechanism to release unmanaged resources. This method is generated only if the composition contains at least one singleton instance that implements the [IDisposable](https://learn.microsoft.com/en-us/dotnet/api/system.idisposable) interface. To dispose of all created singleton objects, the `Dispose()` method of the composition should be called:
 
 ```c#
 using(var composition = new Composition())
@@ -220,7 +222,7 @@ using(var composition = new Composition())
 
 ## Setup hints
 
-Hints are used to fine-tune code generation. Setup hints can be used as in the following example:
+Hints are used to fine-tune code generation. Setup hints can be used as shown in the following example:
 
 ```c#
 DI.Setup("Composition")
@@ -230,7 +232,7 @@ DI.Setup("Composition")
     ...
 ```
 
-In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example:
+In addition, setup hints can be comments before the _Setup_ method, for example, in the form `hint = value`:
 
 ```c#
 // Resolve = Off
@@ -272,11 +274,11 @@ DI.Setup("Composition")
 
 ### Resolve Hint
 
-Determines whether to generate [_Resolve_ methods](#resolve-methods). By default a set of four _Resolve_ methods are generated. Set this hint to _Off_ to disable the generation of resolve methods. This will reduce class composition generation time and no [private composition roots](#Private-Roots) will be generated in this case. The composition will be tiny and will only have [public roots](#Public-Roots). When the _Resolve_ hint is disabled, only the public root properties are available, so be sure to define them explicitly with the `Root<T>(...)` method.
+Determines whether to generate [_Resolve_ methods](#resolve-methods). By default, a set of four _Resolve_ methods are generated. Set this hint to _Off_ to disable the generation of resolve methods. This will reduce the generation time of the class composition, and in this case no [private composition roots](#Private-Roots) will be generated. The class composition will be smaller and will only have [public roots](#Public-Roots). When the _Resolve_ hint is disabled, only the public roots properties are available, so be sure to explicitly define them using the `Root<T>(string name)` method with an explicit composition root name.
 
 ### OnNewInstance Hint
 
-Determines whether to generate partial _OnNewInstance_ method. This partial method is not generated by default. This can be useful, for example, for logging:
+Determines whether to generate the _OnNewInstance_ partial method. By default, this partial method is not generated. This can be useful, for example, for logging purposes:
 
 ```c#
 internal partial class Composition
@@ -288,23 +290,23 @@ internal partial class Composition
 }
 ```
 
-You can also replace the created instance of type `T`, where `T` is actually type of created instance. To minimize the performance penalty when calling _OnNewInstance_, use the three related hints below.
+You can also replace the created instance with a `T` type, where `T` is the actual type of the created instance. To minimize performance loss when calling _OnNewInstance_, use the three hints below.
 
 ### OnNewInstanceImplementationTypeNameRegularExpression Hint
 
-It is a regular expression to filter by the instance type name. This hint is useful when _OnNewInstance_ is in the _On_ state and you want to limit the set of types for which the method _OnNewInstance_ will be called.
+This is a regular expression for filtering by instance type name. This hint is useful when _OnNewInstance_ is in _On_ state and it is necessary to limit the set of types for which the _OnNewInstance_ method will be called.
 
 ### OnNewInstanceTagRegularExpression Hint
 
-It is a regular expression to filter by the _tag_. This hint is useful also when _OnNewInstance_ is in the _On_ state and you want to limit the set of _tag_ for which the method _OnNewInstance_ will be called.
+This is a regular expression for filtering by _tag_. This hint is also useful when _OnNewInstance_ is in _On_ state and it is necessary to limit the set of _tags_ for which the _OnNewInstance_ method will be called.
 
 ### OnNewInstanceLifetimeRegularExpression Hint
 
-It is a regular expression to filter by the _lifetime_. This hint is useful also when _OnNewInstance_ is in the _On_ state and you want to limit the set of _lifetime_ for which the method _OnNewInstance_ will be called.
+This is a regular expression for filtering by _lifetime_. This hint is also useful when _OnNewInstance_ is in _On_ state and it is necessary to restrict the set of _life_ times for which the _OnNewInstance_ method will be called.
 
 ### OnDependencyInjection Hint
 
-Determines whether to generate partial _OnDependencyInjection_ method to control of dependency injection. This partial method is not generated by default. It cannot have an empty body due to the return value. It must be overridden when generated. This can be useful, for example, for [interception](#Interception).
+Determines whether to generate the _OnDependencyInjection_ partial method to control dependency injection. By default, this partial method is not generated. It cannot have an empty body because of the return value. It must be overridden when it is generated. This may be useful, for example, for [Interception Scenario](readme/interception.md).
 
 ```c#
 // OnDependencyInjection = On
@@ -314,27 +316,27 @@ DI.Setup("Composition")
     ...
 ```
 
-To minimize the performance penalty when calling _OnDependencyInjection_, use the three related hints below.
+To minimize performance loss when calling _OnDependencyInjection_, use the three tips below.
 
 ### OnDependencyInjectionImplementationTypeNameRegularExpression Hint
 
-It is a regular expression to filter by the instance type name. This hint is useful when _OnDependencyInjection_ is in the _On_ state and you want to limit the set of types for which the method _OnDependencyInjection_ will be called.
+This is a regular expression for filtering by instance type name. This hint is useful when _OnDependencyInjection_ is in _On_ state and it is necessary to restrict the set of types for which the _OnDependencyInjection_ method will be called.
 
 ### OnDependencyInjectionContractTypeNameRegularExpression Hint
 
-It is a regular expression to filter by the resolving type name. This hint is useful also when _OnDependencyInjection_ is in the _On_ state and you want to limit the set of resolving types for which the method _OnDependencyInjection_ will be called.
+This is a regular expression for filtering by the name of the resolving type. This hint is also useful when _OnDependencyInjection_ is in _On_ state and it is necessary to limit the set of permissive types for which the _OnDependencyInjection_ method will be called.
 
 ### OnDependencyInjectionTagRegularExpression Hint
 
-It is a regular expression to filter by the _tag_. This hint is useful also when _OnDependencyInjection_ is in the _On_ state and you want to limit the set of _tag_ for which the method _OnDependencyInjection_ will be called.
+This is a regular expression for filtering by _tag_. This hint is also useful when _OnDependencyInjection_ is in the _On_ state and you want to limit the set of _tags_ for which the _OnDependencyInjection_ method will be called.
 
 ### OnDependencyInjectionLifetimeRegularExpression Hint
 
-It is a regular expression to filter by the _lifetime_. This hint is useful also when _OnDependencyInjection_ is in the _On_ state and you want to limit the set of _lifetime_ for which the method _OnDependencyInjection_ will be called.
+This is a regular expression for filtering by _lifetime_. This hint is also useful when _OnDependencyInjection_ is in _On_ state and it is necessary to restrict the set of _lifetime_ for which the _OnDependencyInjection_ method will be called.
 
 ### OnCannotResolve Hint
 
-Determines whether to generate a partial `OnCannotResolve<T>(...)` method to handle a scenario where an instance which cannot be resolved. This partial method is not generated by default. It cannot have an empty body due to the return value. It must be overridden on creation.
+Determines whether to generate the `OnCannotResolve<T>(...)` partial method to handle a scenario in which an instance cannot be resolved. By default, this partial method is not generated. Because of the return value, it cannot have an empty body and must be overridden at creation.
 
 ```c#
 // OnCannotResolve = On
@@ -344,11 +346,11 @@ DI.Setup("Composition")
     ...
 ```
 
-To avoid missing bindings by mistake, use the two related hints below.
+To avoid missing failed bindings by mistake, use the two relevant hints below.
 
 ### OnNewRoot Hint
 
-Determines whether to generate a static partial `OnNewRoot<TContract, T>(...)` method to handle the new composition root registration event.
+Determines whether to generate a static partial method `OnNewRoot<TContract, T>(...)` to handle the new composition root registration event.
 
 ```c#
 // OnNewRoot = On
@@ -358,19 +360,19 @@ DI.Setup("Composition")
 
 ### OnCannotResolveContractTypeNameRegularExpression Hint
 
-It is a regular expression to filter by the resolving type name. This hint is useful also when _OnCannotResolve_ is in the _On_ state and you want to limit the set of resolving types for which the method _OnCannotResolve_ will be called.
+This is a regular expression for filtering by the name of the resolving type. This hint is also useful when _OnCannotResolve_ is in _On_ state and it is necessary to limit the set of resolving types for which the _OnCannotResolve_ method will be called.
 
 ### OnCannotResolveTagRegularExpression Hint
 
-It is a regular expression to filter by the _tag_. This hint is useful also when _OnCannotResolve_ is in the _On_ state and you want to limit the set of _tag_ for which the method _OnCannotResolve_ will be called.
+This is a regular expression for filtering by _tag_. This hint is also useful when _OnCannotResolve_ is in _On_ state and it is necessary to limit the set of _tags_ for which the _OnCannotResolve_ method will be called.
 
 ### OnCannotResolveLifetimeRegularExpression Hint
 
-It is a regular expression to filter by the _lifetime_. This hint is useful also when _OnCannotResolve_ is in the _On_ state and you want to limit the set of _lifetime_ for which the method _OnCannotResolve_ will be called.
+This is a regular expression for filtering by _lifetime_. This hint is also useful when _OnCannotResolve_ is in the _On_ state and it is necessary to restrict the set of _lives_ for which the _OnCannotResolve_ method will be called.
 
 ### ToString Hint
 
-Determine if the _ToString()_ method should be generated. This method provides a text-based class diagram in the format [mermaid](https://mermaid.js.org/). To see this diagram, just call the ToString method and copy the text to [this site](https://mermaid.live/).
+Determines whether to generate the _ToString()_ method. This method provides a textual class diagram in [mermaid](https://mermaid.js.org/) format. To see this diagram, just call the ToString method and copy the text to [this site](https://mermaid.live/).
 
 ```c#
 // ToString = On
@@ -384,7 +386,7 @@ string classDiagram = composition.ToString();
 
 ### ThreadSafe Hint
 
-This hint determines whether the composition of objects will be created in a thread-safe manner. The default value of this hint is _On_. It is good practice not to use threads when creating an object graph, in which case the hint can be disabled, resulting in a slight performance gain.
+This hint determines whether the composition of objects will be created in a thread-safe way. The default value of this hint is _On_. It is a good practice not to use threads when creating an object graph, in this case the hint can be disabled, which will result in a small performance gain. For example:
 
 ```c#
 // ThreadSafe = Off
@@ -395,47 +397,47 @@ DI.Setup("Composition")
 
 ### ResolveMethodModifiers Hint
 
-Overrides modifiers of the method `public T Resolve<T>()`.
+Overrides the modifiers of the `public T Resolve<T>()` method.
 
 ### ResolveMethodName Hint
 
-Overrides name of the method `public T Resolve<T>()`.
+Overrides the method name for `public T Resolve<T>()`.
 
 ### ResolveByTagMethodModifiers Hint
 
-Overrides modifiers of the method `public T Resolve<T>(object? tag)`.
+Overrides the modifiers of the `public T Resolve<T>(object? tag)` method.
 
 ### ResolveByTagMethodName Hint
 
-Overrides name of the method `public T Resolve<T>(object? tag)`.
+Overrides the method name for `public T Resolve<T>(object? tag)`.
 
 ### ObjectResolveMethodModifiers Hint
 
-Overrides modifiers of the method `public object Resolve(Type type)`.
+Overrides the modifiers of the `public object Resolve(Type type)` method.
 
 ### ObjectResolveMethodName Hint
 
-Overrides name of the method `public object Resolve(Type type)`.
+Overrides the method name for `public object Resolve(Type type)`.
 
 ### ObjectResolveByTagMethodModifiers Hint
 
-Overrides modifiers of the method `public object Resolve(Type type, object? tag)`.
+Overrides the modifiers of the `public object Resolve(Type type, object? tag)` method.
 
 ### ObjectResolveByTagMethodName Hint
 
-Overrides name of the method `public object Resolve(Type type, object? tag)`.
+Overrides the method name for `public object Resolve(Type type, object? tag)`.
 
 ### DisposeMethodModifiers Hint
 
-Overrides modifiers of the method `public void Dispose()`.
+Overrides the modifiers of the `public void Dispose()` method.
 
 ### FormatCode Hint
 
-Specifies whether the generated code should be formatted. This option consumes a lot of CPU resources. This hint can be useful for examining the generated code or for giving presentations, for example.
+Specifies whether the generated code should be formatted. This option consumes a lot of CPU resources. This hint may be useful when studying the generated code or, for example, when making presentations.
 
 </details>
 
-## Development environment requirements
+## Requirements for development environments
 
 - [.NET SDK 6.0.4xx or newer](https://dotnet.microsoft.com/download/dotnet/6.0)
 - [C# 8 or newer](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-version-history#c-version-80)
@@ -472,14 +474,14 @@ And run it
 dotnet run --project Sample
 ```
 
-Please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates) for more details about the template.
+For more information about the template, see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates).
 
 ## Troubleshooting
 
 <details>
 <summary>Generated files</summary>
 
-You can set build properties to save the generated file and control where the generated files are stored. In a project file, add the <EmitCompilerGeneratedFiles> element to a <PropertyGroup>, and set its value to true. Build your project again. Now, the generated files are created under obj/Debug/netX.X/generated/Pure.DI/Pure.DI.SourceGenerator. The components of the path map to the build configuration, target framework, source generator project name, and fully qualified type name of the generator. You can choose a more convenient output folder by adding the <CompilerGeneratedFilesOutputPath> element to the application's project file. For example:
+You can set project properties to save generated files and control their storage location. In the project file, add the `<EmitCompilerGeneratedFiles>` element to the `<PropertyGroup>` group and set its value to `true`. Build the project again. The generated files are now created in the _obj/Debug/netX.X/generated/Pure.DI/Pure.DI/Pure.DI.SourceGenerator_ directory. The path components correspond to the build configuration, the target framework, the source generator project name, and the full name of the generator type. You can choose a more convenient output folder by adding the `<CompilerGeneratedFilesOutputPath>` element to the application project file. For example:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -497,7 +499,7 @@ You can set build properties to save the generated file and control where the ge
 <details>
 <summary>Log files</summary>
 
-You can set build properties to save the log file. In the project file, add a <PureDILogFile> element to the <PropertyGroup> and set the path to the log directory, and add the related element `<CompilerVisibleProperty Include="PureDILogFile" />` to the <ItemGroup> to make this property visible in the source generator. To change the log level, specify the same with the _PureDISeverity_ property, as in the example below:
+To save the log file, you need to add additional project properties. In the project file, add the `<PureDILogFile>` item to `<PropertyGroup>` and specify the path to the log directory, and add the associated `<CompilerVisibleProperty Include="PureDILogFile" />` item to `<ItemGroup>` to make this property visible in the source code generator. To change the log level, specify it using the _PureDISeverity_ property as shown in the example below:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -515,7 +517,7 @@ You can set build properties to save the log file. In the project file, add a <P
 </Project>
 ```
 
-The _PureDISeverity_ property has several options available:
+The _PureDISeverity_ property can take on multiple values:
 
 | Severity | Description                                                            |
 |----------|------------------------------------------------------------------------|
