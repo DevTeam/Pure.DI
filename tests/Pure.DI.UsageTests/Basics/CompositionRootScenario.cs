@@ -2,8 +2,8 @@
 $v=true
 $p=0
 $d=Composition root
-$h=This example demonstrates the most efficient way to create a composition root. There is no limit to the number of roots, but consider limiting this number. Ideally, an application would like to have a single composition root.
-$f=The name of the composition root is arbitrarily chosen according to its purpose, but must be limited by C# property naming conventions. Actually, the property _Root_ looks like:
+$h=This example demonstrates several ways to create the roots of a composition. There is no limit to the number of roots, but you should consider limiting the number of roots. Ideally, an application should have a single composition root.
+$f=The name of the root of a composition is arbitrarily chosen depending on its purpose, but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the _Root_ property has the form:
 $f=```c#
 $f=public IService Root
 $f={
@@ -60,13 +60,13 @@ public class Scenario
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
-                // Creates a private root that is only accessible from _Resolve_ methods:
+                // Creates a private root that is only accessible from "Resolve()" methods:
                 .Root<IDependency>()
             .Bind<IService>().To<Service>()
                 // Creates a regular public root named _Root_
                 .Root<IService>("Root")
             .Bind<IService>("Other").To<OtherService>()
-                // Creates a public root named _OtherService_ using the _Other_ tag:
+                // Creates a public root named "OtherService" using the "Other" tag:
                 .Root<IService>("OtherService", "Other");
 
         var composition = new Composition();
