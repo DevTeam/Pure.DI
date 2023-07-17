@@ -398,26 +398,23 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         var hasContextTag = false;
         var resolvers = resolversWalker.Select(invocation =>
         {
-            if (invocation.Expression is MemberAccessExpressionSyntax
-                {
-                    Name: GenericNameSyntax
-                    {
-                        Identifier.Text: nameof(IContext.Inject),
-                        TypeArgumentList.Arguments: [{ } resolverContractType]
-                    }
-                }
-                && invocation.ArgumentList.Arguments is var arguments)
+            if (invocation.ArgumentList.Arguments is { Count: > 0 } arguments)
             {
                 switch (arguments)
                 {
                     case [{ RefOrOutKeyword.IsMissing: false } targetValue]:
-                        return new MdResolver(
-                            SemanticModel,
-                            invocation,
-                            position++,
-                            GetTypeSymbol<ITypeSymbol>(resolverContractType),
-                            default,
-                            targetValue.Expression);
+                        if (SemanticModel.GetOperation(arguments[0]) is IArgumentOperation argumentOperation)
+                        {
+                            return new MdResolver(
+                                SemanticModel,
+                                invocation,
+                                position++,
+                                argumentOperation.Value.Type!,
+                                default,
+                                targetValue.Expression);
+                        }
+
+                        break;
 
                     case [{ RefOrOutKeyword.IsMissing: false } tag, { RefOrOutKeyword.IsMissing: false } targetValue]:
                         hasContextTag = 
@@ -428,19 +425,25 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                             && identifierName.Identifier.Text == lambdaExpression.Parameter.Identifier.Text;
                         
                         var resolverTag = new MdTag(0, hasContextTag ? MdTag.ContextTag : GetConstantValue<object>(tag.Expression));
+                        if (arguments.Count > 0 && SemanticModel.GetOperation(arguments[1]) is IArgumentOperation argumentOperation2)
+                        {
+                            return new MdResolver(
+                                SemanticModel,
+                                invocation,
+                                position++,
+                                argumentOperation2.Value.Type!,
+                                resolverTag,
+                                targetValue.Expression);
+                        }
 
-                        return new MdResolver(
-                            SemanticModel,
-                            invocation,
-                            position++,
-                            GetTypeSymbol<ITypeSymbol>(resolverContractType),
-                            resolverTag,
-                            targetValue.Expression);
+                        break;
                 }
             }
 
             return default;
-        });
+        })
+            .Where(i => i != default)
+            .ToImmutableArray();
 
         MetadataVisitor.VisitFactory(
             new MdFactory(
@@ -449,7 +452,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                 resultType,
                 lambdaExpression,
                 lambdaExpression.Parameter,
-                resolvers.ToImmutableArray(),
+                resolvers,
                 hasContextTag));
     }
 

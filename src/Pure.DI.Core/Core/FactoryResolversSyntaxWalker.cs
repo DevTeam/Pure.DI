@@ -41,9 +41,33 @@ internal class FactoryResolversSyntaxWalker : CSharpSyntaxWalker, IEnumerable<In
                 }
                 
                 break;
+            
+            case IdentifierNameSyntax identifierName:
+                switch (identifierName.Identifier.Text)
+                {
+                    case nameof(IContext.Inject):
+                        if (
+                            invocation.ArgumentList.Arguments.Count is 1 or 2
+                            && invocation.Expression is MemberAccessExpressionSyntax
+                            {
+                                Name: IdentifierNameSyntax
+                                {
+                                    Identifier.Text: nameof(IContext.Inject)
+                                },
+                                Expression: IdentifierNameSyntax contextIdentifierName
+                            } contextMemberAccess
+                            && contextMemberAccess.IsKind(SyntaxKind.SimpleMemberAccessExpression)
+                            && contextIdentifierName.IsKind(SyntaxKind.IdentifierName))
+                        {
+                            _resolvers.Add(invocation);
+                        }
+
+                        break;
+                }
+                
+                break;
         }
-        
-        
+
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

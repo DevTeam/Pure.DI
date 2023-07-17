@@ -81,31 +81,64 @@ internal class FactoryRewriter : CSharpSyntaxRewriter
     
     public override SyntaxNode? VisitInvocationExpression(InvocationExpressionSyntax invocation)
     {
-        if (invocation.ArgumentList.Arguments.Count > 0 
-            && invocation.Expression is MemberAccessExpressionSyntax
-            {
-                Name: GenericNameSyntax
-                {
-                    Identifier.Text: nameof(IContext.Inject),
-                    TypeArgumentList.Arguments: [not null]
-                },
-                Expression: IdentifierNameSyntax ctx
-            }
-            && ctx.Identifier.Text == _factory.Source.Context.Identifier.Text)
+        if (invocation.ArgumentList.Arguments.Count > 0)
         {
-            switch (invocation.ArgumentList.Arguments.Last().Expression)
+            if (invocation.Expression is MemberAccessExpressionSyntax
+                {
+                    Name: GenericNameSyntax
+                    {
+                        Identifier.Text: nameof(IContext.Inject),
+                        TypeArgumentList.Arguments: [not null]
+                    },
+                    Expression: IdentifierNameSyntax ctx
+                }
+                && ctx.Identifier.Text == _factory.Source.Context.Identifier.Text
+                && TryInject(invocation, out var visitInvocationExpression))
             {
-                case IdentifierNameSyntax identifierName:
-                    _injections.Add(new Injection(identifierName.Identifier.Text, false));
-                    return InjectionMarkerExpression;
-                
-                case DeclarationExpressionSyntax { Designation: SingleVariableDesignationSyntax singleVariableDesignationSyntax }:
-                    _injections.Add(new Injection(singleVariableDesignationSyntax.Identifier.Text, true));
-                    return InjectionMarkerExpression;
+                return visitInvocationExpression;
+            }
+            
+            if (invocation.Expression is MemberAccessExpressionSyntax
+                {
+                    Name: IdentifierNameSyntax
+                    {
+                        Identifier.Text: nameof(IContext.Inject)
+                    },
+                    Expression: IdentifierNameSyntax ctx2
+                }
+                && ctx2.Identifier.Text == _factory.Source.Context.Identifier.Text
+                && TryInject(invocation, out visitInvocationExpression))
+            {
+                return visitInvocationExpression;
             }
         }
 
         return base.VisitInvocationExpression(invocation);
+    }
+
+    private bool TryInject(
+        InvocationExpressionSyntax invocation,
+        [NotNullWhen(true)] out SyntaxNode? visitInvocationExpression)
+    {
+        switch (invocation.ArgumentList.Arguments.Last().Expression)
+        {
+            case IdentifierNameSyntax identifierName:
+                _injections.Add(new Injection(identifierName.Identifier.Text, false));
+            {
+                visitInvocationExpression = InjectionMarkerExpression;
+                return true;
+            }
+
+            case DeclarationExpressionSyntax { Designation: SingleVariableDesignationSyntax singleVariableDesignationSyntax }:
+                _injections.Add(new Injection(singleVariableDesignationSyntax.Identifier.Text, true));
+            {
+                visitInvocationExpression = InjectionMarkerExpression;
+                return true;
+            }
+        }
+
+        visitInvocationExpression = default;
+        return false;
     }
 
     public override SyntaxNode VisitExpressionStatement(ExpressionStatementSyntax node)
