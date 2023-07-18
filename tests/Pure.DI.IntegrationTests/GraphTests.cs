@@ -447,12 +447,13 @@ namespace Sample
 
     internal class Dependency : IDependency
     {
-        public Dependency(string abc) {}
+        public Dependency(int id, string abc) {}
     }
 
     internal partial class Composition
     {                   
         private static void Setup() => Pure.DI.DI.Setup("Composition")
+            .Bind<int>().To(_ => 99)
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>(); 
     }
@@ -466,11 +467,12 @@ namespace Sample
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result.GeneratedCode);
         graphs[0].ConvertToString().ShouldBe("""
-Dependency(string abc<--string))
-  -[Dependency(string abc<--string))]<--[string]--[unresolved]
+Dependency(int id<--int), string abc<--string))
+  +[Dependency(int id<--int), string abc<--string))]<--[int]--[99]
+  -[Dependency(int id<--int), string abc<--string))]<--[string]--[unresolved]
 """);
 
-        var errors = result.Logs.Where(i => i.Id == LogId.ErrorUnresolved).ToImmutableArray();
+        var errors = result.Logs.Where(i => i.Id == LogId.ErrorUnresolvedDependency).ToImmutableArray();
         errors.Length.ShouldBe(1);
     }
     

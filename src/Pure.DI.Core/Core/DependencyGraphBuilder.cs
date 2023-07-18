@@ -226,7 +226,10 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                 symbols.VisitDependencyNode(node.Node);
                 foreach (var (injection, symbol) in node.Injections.Zip(symbols, (injection, symbol) => (injection, symbol)))
                 {
-                    edges.Add(new Dependency(false, unresolvedSource, injection, node.Node, symbol));
+                    var dependency = map.TryGetValue(injection, out var sourceNode)
+                        ? new Dependency(true, sourceNode, injection, node.Node, symbol)
+                        : new Dependency(false, unresolvedSource, injection, node.Node, symbol);
+                    edges.Add(dependency);
                 }
 
                 entries.Add(new GraphEntry<DependencyNode, Dependency>(node.Node, edges.ToImmutableArray()));
