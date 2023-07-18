@@ -75,7 +75,7 @@
       "type": "parameter",
       "datatype": "string",
       "description": "Version of Pure.DI that will be referenced.",
-      "defaultValue": "2.*-*",
+      "defaultValue": "2.0.*",
       "replaces": "$(PureDIVersion)"
     }
   },

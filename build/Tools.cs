@@ -17,7 +17,7 @@ internal static partial class Tools
             .Select(i => i.Release != string.Empty 
                 ? GetNextRelease(versionRange, i)
                 : new NuGetVersion(i.Major, i.Minor, i.Patch + 1))
-            .Max() ?? new NuGetVersion(2, 0, 0, "dev");
+            .Max() ?? new NuGetVersion(2, 0, 0);
 
     private static NuGetVersion GetNextRelease(VersionRangeBase versionRange, NuGetVersion version)
     {
