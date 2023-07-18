@@ -63,7 +63,7 @@ public class Scenario
                 // Creates a private root that is only accessible from "Resolve()" methods:
                 .Root<IDependency>()
             .Bind<IService>().To<Service>()
-                // Creates a regular public root named _Root_
+                // Creates a regular public root named "Root"
                 .Root<IService>("Root")
             .Bind<IService>("Other").To<OtherService>()
                 // Creates a public root named "OtherService" using the "Other" tag:
