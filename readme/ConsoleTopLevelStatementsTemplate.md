@@ -89,10 +89,11 @@ The [project file](/samples/ShroedingersCatTopLevelStatements/ShroedingersCatTop
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.x.x"/>
+        <PackageReference Include="Pure.DI" Version="2.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
 </Project>
 ```
-
-Where _2.x.x_ is the latest version of the code generator _Pure.DI_.

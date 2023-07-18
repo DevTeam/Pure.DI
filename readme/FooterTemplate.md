@@ -1,6 +1,7 @@
 ### Applications
 - [Console application](readme/ConsoleTemplate.md)
 - [WPF application](readme/WpfTemplate.md)
+- [Web API](readme/WebAPITemplate.md)
 - [Top level statements console application](readme/ConsoleTopLevelStatementsTemplate.md)
 
 ## Generated Code
@@ -357,6 +358,8 @@ DI.Setup("Composition")
     ...
 ```
 
+Be careful, this hint disables checks for the ability to resolve dependencies!
+
 ### OnCannotResolveContractTypeNameRegularExpression Hint
 
 This is a regular expression for filtering by the name of the resolving type. This hint is also useful when _OnCannotResolve_ is in _On_ state and it is necessary to limit the set of resolving types for which the _OnCannotResolve_ method will be called.
@@ -451,7 +454,10 @@ Specifies whether the generated code should be formatted. This option consumes a
 - [.NET IoT](https://dotnet.microsoft.com/apps/iot)
 - [Xamarin](https://dotnet.microsoft.com/apps/xamarin)
 - [WPF](https://learn.microsoft.com/en-us/dotnet/desktop/wpf)
+- [ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/)
 - [.NET Multi-platform App UI (MAUI)](https://docs.microsoft.com/en-us/dotnet/maui/)
+
+And others
 
 ## Project template
 
