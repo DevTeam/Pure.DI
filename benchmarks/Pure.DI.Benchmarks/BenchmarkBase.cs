@@ -1,5 +1,7 @@
 ﻿// ReSharper disable RedundantUsingDirective
 // ReSharper disable UnusedMember.Global
+#pragma warning disable CS8604
+#pragma warning disable CS8602
 #pragma warning disable CS0169
 namespace Pure.DI.Benchmarks;
 
@@ -54,19 +56,19 @@ public abstract class BenchmarkBase
 
 #if !DEBUG
     [Benchmark]
-    public void Autofac() => _autofacContainer!.Resolve<ICompositionRoot>();
+    public void Autofac() => _autofacContainer.Resolve<ICompositionRoot>();
     
     [Benchmark]
     public void DryIoc() => _dryIocContainer.Resolve<ICompositionRoot>();
 
     [Benchmark]
-    public void SimpleInjector() => _simpleInjectorContainer!.GetInstance<ICompositionRoot>();
+    public void SimpleInjector() => _simpleInjectorContainer.GetInstance<ICompositionRoot>();
 
     [Benchmark]
     public void LightInject() => _lightInjectContainer.GetInstance<ICompositionRoot>();
     
     [Benchmark]
-    public void MicrosoftDependencyInjection() => _microsoftContainer!.GetService<ICompositionRoot>();
+    public void MicrosoftDependencyInjection() => _microsoftContainer.GetService<ICompositionRoot>();
     
 #if LEGACY
     [Benchmark(Description = "IoC.Container")]
@@ -74,13 +76,13 @@ public abstract class BenchmarkBase
 
     [Benchmark(Description = "IoC.Container composition root")]
     // ReSharper disable once InconsistentNaming
-    public void IoCContainerByCR() => _iocRootResolver!();
+    public void IoCContainerByCR() => _iocRootResolver();
 
     [Benchmark]
-    public void CastleWindsor() => _windsorContainerContainer!.Resolve<ICompositionRoot>();
+    public void CastleWindsor() => _windsorContainerContainer.Resolve<ICompositionRoot>();
 
     [Benchmark]
-    public void Ninject() => _ninjectContainer!.Get<ICompositionRoot>();
+    public void Ninject() => _ninjectContainer.Get<ICompositionRoot>();
 
     [Benchmark]
     public void Unity() => _unityContainer.Resolve<ICompositionRoot>();
