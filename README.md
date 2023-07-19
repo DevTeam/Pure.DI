@@ -210,6 +210,7 @@ dotnet run
 - [Property injection](readme/property-injection.md)
 - [Complex generics](readme/complex-generics.md)
 - [Partial class](readme/partial-class.md)
+- [A few partial classes](readme/a-few-partial-classes.md)
 - [Dependent compositions](readme/dependent-compositions.md)
 - [Required properties or fields](readme/required-properties-or-fields.md)
 ### Lifetimes
