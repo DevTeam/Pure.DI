@@ -26,6 +26,6 @@
         <PackageReference Include="Autofac" Version="7.0.1" />
         <PackageReference Include="LightInject" Version="6.6.4" />
         <PackageReference Include="Ninject" Version="3.3.6" />
-        <PackageReference Include="Castle.Windsor" Version="5.1.2" />
+        <PackageReference Include="Castle.Windsor" Version="6.0.0" />
     </ItemGroup>
 </Project>
