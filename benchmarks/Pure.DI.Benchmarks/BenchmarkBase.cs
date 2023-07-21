@@ -41,16 +41,18 @@ public abstract class BenchmarkBase
     public void Setup()
     {
 #if !DEBUG
-        _iocContainer = CreateContainer<Container, IoCContainer>();
-        _iocRootResolver = CreateContainer<Func<ICompositionRoot>, IoCContainerByCompositionRoot<ICompositionRoot>>();
         _autofacContainer = CreateContainer<IContainer, Autofac>();
-        _windsorContainerContainer = CreateContainer<WindsorContainer, CastleWindsor>();
         _dryIocContainer = CreateContainer<global::DryIoc.Container, DryIoc>();
         _lightInjectContainer = CreateContainer<ServiceContainer, LightInject>();
-        _ninjectContainer = CreateContainer<StandardKernel, Ninject>();
-        _unityContainer = CreateContainer<UnityContainer, Unity>();
         _microsoftContainer = CreateContainer<ServiceProvider, MicrosoftDependencyInjection>();
         _simpleInjectorContainer = CreateContainer<global::SimpleInjector.Container, SimpleInjector>();
+#if LEGACY
+        _iocContainer = CreateContainer<Container, IoCContainer>();
+        _iocRootResolver = CreateContainer<Func<ICompositionRoot>, IoCContainerByCompositionRoot<ICompositionRoot>>();
+        _windsorContainerContainer = CreateContainer<WindsorContainer, CastleWindsor>();
+        _ninjectContainer = CreateContainer<StandardKernel, Ninject>();
+        _unityContainer = CreateContainer<UnityContainer, Unity>();
+#endif
 #endif
     }
 
@@ -61,13 +63,13 @@ public abstract class BenchmarkBase
     [Benchmark]
     public void DryIoc() => _dryIocContainer.Resolve<ICompositionRoot>();
 
-    [Benchmark]
+    [Benchmark(Description = "Simple Injector")]
     public void SimpleInjector() => _simpleInjectorContainer.GetInstance<ICompositionRoot>();
 
     [Benchmark]
     public void LightInject() => _lightInjectContainer.GetInstance<ICompositionRoot>();
     
-    [Benchmark]
+    [Benchmark(Description = "Microsoft DI")]
     public void MicrosoftDependencyInjection() => _microsoftContainer.GetService<ICompositionRoot>();
     
 #if LEGACY
@@ -78,7 +80,7 @@ public abstract class BenchmarkBase
     // ReSharper disable once InconsistentNaming
     public void IoCContainerByCR() => _iocRootResolver();
 
-    [Benchmark]
+    [Benchmark(Description = "Castle Windsor")]
     public void CastleWindsor() => _windsorContainerContainer.Resolve<ICompositionRoot>();
 
     [Benchmark]
