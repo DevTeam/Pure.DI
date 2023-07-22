@@ -54,10 +54,11 @@ public class Scenario
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>().Root<IService>("Root")
-            // The argument can be tagged to be available for injection by type and that tag
-            .Arg<string>("serviceName", "name")
-            // An untagged argument
-            .Arg<string>("id");
+            // Some argument
+            .Arg<string>("id")
+            // An argument can be tagged (e.g., tag "name")
+            // to be injectable by type and this tag
+            .Arg<string>("serviceName", "name");
 
         var composition = new Composition(serviceName: "Abc", id: "123");
         var service = composition.Root;

@@ -82,7 +82,7 @@ public class Scenario
             .Bind<string>("NikName").To(_ => "Nik")
             .Bind<IPerson>().To<Person>().Root<IPerson>("Person");
 
-        var composition = new PersonComposition(123);
+        var composition = new PersonComposition(personId: 123);
         var person = composition.Person;
         person.ToString().ShouldBe("123 Nik");
 // }            

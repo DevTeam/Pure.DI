@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
 $p=0
-$d=Composition root
+$d=Composition roots
 $h=This example demonstrates several ways to create the roots of a composition. There is no limit to the number of roots, but you should consider limiting the number of roots. Ideally, an application should have a single composition root.
 $f=The name of the root of a composition is arbitrarily chosen depending on its purpose, but should be restricted by the property naming conventions in C# since it is the same name as a property in the composition class. In reality, the _Root_ property has the form:
 $f=```c#
@@ -28,7 +28,8 @@ $f=This can be done if these methods are not needed, in case only certain compos
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.UsageTests.Basics.CompositionRootScenario;
+// ReSharper disable UnusedVariable
+namespace Pure.DI.UsageTests.Basics.CompositionRootsScenario;
 
 using Shouldly;
 using Xunit;
@@ -59,15 +60,17 @@ public class Scenario
         // FormatCode = On
 // {            
         DI.Setup("Composition")
-            .Bind<IDependency>().To<Dependency>()
-                // Creates a private root that is only accessible from "Resolve()" methods:
-                .Root<IDependency>()
             .Bind<IService>().To<Service>()
                 // Creates a regular public root named "Root"
                 .Root<IService>("Root")
             .Bind<IService>("Other").To<OtherService>()
-                // Creates a public root named "OtherService" using the "Other" tag:
-                .Root<IService>("OtherService", "Other");
+                // Creates a public root named "OtherService"
+                // using the "Other" tag:
+                .Root<IService>("OtherService", "Other")
+            .Bind<IDependency>().To<Dependency>()
+                // Creates a private root
+                // that is only accessible from "Resolve()" methods:
+                .Root<IDependency>();
 
         var composition = new Composition();
         var service = composition.Root;
@@ -75,6 +78,6 @@ public class Scenario
         var dependency = composition.Resolve<IDependency>();
 // }            
         service.ShouldBeOfType<Service>();
-        TestTools.SaveClassDiagram(composition, nameof(CompositionRootScenario));
+        TestTools.SaveClassDiagram(composition, nameof(CompositionRootsScenario));
     }
 }

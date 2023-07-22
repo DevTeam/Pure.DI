@@ -54,7 +54,7 @@ public class Scenario
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>().Root<IService>("Root");
 
-        var composition = new Composition("Xyz");
+        var composition = new Composition(serviceName: "Xyz");
         var service = composition.Root;
         service.ToString().ShouldBe("Xyz");
 // }            

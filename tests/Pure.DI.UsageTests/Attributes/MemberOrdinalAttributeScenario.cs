@@ -68,7 +68,11 @@ public class Scenario
             .Arg<DateTime>("personBirthday")
             .Bind<IPerson>().To<Person>().Root<IPerson>("Person");
 
-        var composition = new PersonComposition(123, "Nik", new DateTime(1977, 11, 16));
+        var composition = new PersonComposition(
+            personId: 123,
+            personName: "Nik",
+            personBirthday: new DateTime(1977, 11, 16));
+
         var person = composition.Person;
         person.Name.ShouldBe("123 Nik 1977-11-16");
 // }            

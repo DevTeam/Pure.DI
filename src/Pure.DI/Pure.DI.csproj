@@ -3,7 +3,7 @@
     <PropertyGroup>
         <IsPackable>true</IsPackable>
         <PackageId>Pure.DI</PackageId>
-        <Description>Pure DI for .NET without frameworks!</Description>
+        <Description>Pure.DI is not a framework or library, but a source code generator for creating object graphs. To make them accurate, the developer uses a set of intuitive hints from the Pure.DI API. During the compilation phase, Pure.DI determines the optimal graph structure, checks its correctness, and generates partial class code to create object graphs in the Pure DI paradigm using only basic language constructs. The resulting generated code is robust, works everywhere, throws no exceptions, does not depend on .NET library calls or .NET reflections, is efficient in terms of performance and memory consumption, and is subject to all optimizations. This code can be easily integrated into an application because it does not use unnecessary delegates, additional calls to any methods, type conversions, boxing/unboxing, etc.</Description>
         <PackageTags>ioc;solid;dotnet;dependency-injection;inversion-of-control;di;injection-container;injection-framework;dip;csharp-sourcegenerator</PackageTags>
         <PackageProjectUrl>https://github.com/DevTeam/Pure.DI/</PackageProjectUrl>
         <PackageIcon>common\icon.png</PackageIcon>

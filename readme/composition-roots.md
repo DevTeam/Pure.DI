@@ -1,6 +1,6 @@
-#### Composition root
+#### Composition roots
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/CompositionRootScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/CompositionRootsScenario.cs)
 
 This example demonstrates several ways to create the roots of a composition. There is no limit to the number of roots, but you should consider limiting the number of roots. Ideally, an application should have a single composition root.
 
@@ -21,15 +21,17 @@ class OtherService : IService
 }
 
 DI.Setup("Composition")
-    .Bind<IDependency>().To<Dependency>()
-        // Creates a private root that is only accessible from "Resolve()" methods:
-        .Root<IDependency>()
     .Bind<IService>().To<Service>()
         // Creates a regular public root named "Root"
         .Root<IService>("Root")
     .Bind<IService>("Other").To<OtherService>()
-        // Creates a public root named "OtherService" using the "Other" tag:
-        .Root<IService>("OtherService", "Other");
+        // Creates a public root named "OtherService"
+        // using the "Other" tag:
+        .Root<IService>("OtherService", "Other")
+    .Bind<IDependency>().To<Dependency>()
+        // Creates a private root
+        // that is only accessible from "Resolve()" methods:
+        .Root<IDependency>();
 
 var composition = new Composition();
 var service = composition.Root;
@@ -45,7 +47,7 @@ classDiagram
   class Composition {
     +IService OtherService
     +IService Root
-    -IDependency RootM07D19di_0001
+    -IDependency RootM07D23di_0003
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object Resolve(Type type)
@@ -55,13 +57,13 @@ classDiagram
   class Service {
     +Service(IDependency dependency)
   }
-  Dependency --|> IDependency : 
-  class Dependency {
-    +Dependency()
-  }
   OtherService --|> IService : "Other" 
   class OtherService {
     +OtherService()
+  }
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
   }
   class IService {
     <<abstract>>
@@ -70,9 +72,9 @@ classDiagram
     <<abstract>>
   }
   Service *--  Dependency : IDependency dependency
-  Composition ..> Dependency : IDependency RootM07D19di_0001
   Composition ..> Service : IService Root
   Composition ..> OtherService : "Other" IService OtherService
+  Composition ..> Dependency : IDependency RootM07D23di_0003
 ```
 
 </details>
@@ -92,34 +94,34 @@ partial class Composition
   }
   
   #region Composition Roots
-  public Pure.DI.UsageTests.Basics.CompositionRootScenario.IService Root
+  public Pure.DI.UsageTests.Basics.CompositionRootsScenario.IService Root
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.CompositionRootScenario.Dependency transientM07D19di_0002 = new Pure.DI.UsageTests.Basics.CompositionRootScenario.Dependency();
-      Pure.DI.UsageTests.Basics.CompositionRootScenario.Service transientM07D19di_0001 = new Pure.DI.UsageTests.Basics.CompositionRootScenario.Service(transientM07D19di_0002);
-      return transientM07D19di_0001;
+      Pure.DI.UsageTests.Basics.CompositionRootsScenario.Dependency transientM07D23di_0001 = new Pure.DI.UsageTests.Basics.CompositionRootsScenario.Dependency();
+      Pure.DI.UsageTests.Basics.CompositionRootsScenario.Service transientM07D23di_0000 = new Pure.DI.UsageTests.Basics.CompositionRootsScenario.Service(transientM07D23di_0001);
+      return transientM07D23di_0000;
     }
   }
   
-  public Pure.DI.UsageTests.Basics.CompositionRootScenario.IService OtherService
+  public Pure.DI.UsageTests.Basics.CompositionRootsScenario.IService OtherService
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.CompositionRootScenario.OtherService transientM07D19di_0003 = new Pure.DI.UsageTests.Basics.CompositionRootScenario.OtherService();
-      return transientM07D19di_0003;
+      Pure.DI.UsageTests.Basics.CompositionRootsScenario.OtherService transientM07D23di_0002 = new Pure.DI.UsageTests.Basics.CompositionRootsScenario.OtherService();
+      return transientM07D23di_0002;
     }
   }
   
-  private Pure.DI.UsageTests.Basics.CompositionRootScenario.IDependency RootM07D19di_0001
+  private Pure.DI.UsageTests.Basics.CompositionRootsScenario.IDependency RootM07D23di_0003
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.CompositionRootScenario.Dependency transientM07D19di_0000 = new Pure.DI.UsageTests.Basics.CompositionRootScenario.Dependency();
-      return transientM07D19di_0000;
+      Pure.DI.UsageTests.Basics.CompositionRootsScenario.Dependency transientM07D23di_0003 = new Pure.DI.UsageTests.Basics.CompositionRootsScenario.Dependency();
+      return transientM07D23di_0003;
     }
   }
   #endregion
@@ -131,7 +133,7 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>()
   {
-    return ResolverM07D19di<T>.Value.Resolve(this);
+    return ResolverM07D23di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -140,7 +142,7 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>(object? tag)
   {
-    return ResolverM07D19di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM07D23di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -149,17 +151,17 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type)
   {
-    int index = (int)(_bucketSizeM07D19di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    ref var pair = ref _bucketsM07D19di[index];
+    int index = (int)(_bucketSizeM07D23di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    ref var pair = ref _bucketsM07D23di[index];
     if (ReferenceEquals(pair.Key, type))
     {
       return pair.Value.Resolve(this);
     }
     
-    int maxIndex = index + _bucketSizeM07D19di;
+    int maxIndex = index + _bucketSizeM07D23di;
     for (int i = index + 1; i < maxIndex; i++)
     {
-      pair = ref _bucketsM07D19di[i];
+      pair = ref _bucketsM07D23di[i];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -175,17 +177,17 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    int index = (int)(_bucketSizeM07D19di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    ref var pair = ref _bucketsM07D19di[index];
+    int index = (int)(_bucketSizeM07D23di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    ref var pair = ref _bucketsM07D23di[index];
     if (ReferenceEquals(pair.Key, type))
     {
       return pair.Value.ResolveByTag(this, tag);
     }
     
-    int maxIndex = index + _bucketSizeM07D19di;
+    int maxIndex = index + _bucketSizeM07D23di;
     for (int i = index + 1; i < maxIndex; i++)
     {
-      pair = ref _bucketsM07D19di[i];
+      pair = ref _bucketsM07D23di[i];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -203,7 +205,7 @@ partial class Composition
         "  class Composition {\n" +
           "    +IService OtherService\n" +
           "    +IService Root\n" +
-          "    -IDependency RootM07D19di_0001\n" +
+          "    -IDependency RootM07D23di_0003\n" +
           "    + T ResolveᐸTᐳ()\n" +
           "    + T ResolveᐸTᐳ(object? tag)\n" +
           "    + object Resolve(Type type)\n" +
@@ -213,13 +215,13 @@ partial class Composition
         "  class Service {\n" +
           "    +Service(IDependency dependency)\n" +
         "  }\n" +
-        "  Dependency --|> IDependency : \n" +
-        "  class Dependency {\n" +
-          "    +Dependency()\n" +
-        "  }\n" +
         "  OtherService --|> IService : \"Other\" \n" +
         "  class OtherService {\n" +
           "    +OtherService()\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
         "  }\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
@@ -228,34 +230,34 @@ partial class Composition
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service *--  Dependency : IDependency dependency\n" +
-        "  Composition ..> Dependency : IDependency RootM07D19di_0001\n" +
         "  Composition ..> Service : IService Root\n" +
-        "  Composition ..> OtherService : \"Other\" IService OtherService";
+        "  Composition ..> OtherService : \"Other\" IService OtherService\n" +
+        "  Composition ..> Dependency : IDependency RootM07D23di_0003";
   }
   
-  private readonly static int _bucketSizeM07D19di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM07D19di;
+  private readonly static int _bucketSizeM07D23di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM07D23di;
   
   static Composition()
   {
-    ResolverM07D19di_0000 valResolverM07D19di_0000 = new ResolverM07D19di_0000();
-    ResolverM07D19di<Pure.DI.UsageTests.Basics.CompositionRootScenario.IService>.Value = valResolverM07D19di_0000;
-    ResolverM07D19di_0001 valResolverM07D19di_0001 = new ResolverM07D19di_0001();
-    ResolverM07D19di<Pure.DI.UsageTests.Basics.CompositionRootScenario.IDependency>.Value = valResolverM07D19di_0001;
-    _bucketsM07D19di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    ResolverM07D23di_0000 valResolverM07D23di_0000 = new ResolverM07D23di_0000();
+    ResolverM07D23di<Pure.DI.UsageTests.Basics.CompositionRootsScenario.IService>.Value = valResolverM07D23di_0000;
+    ResolverM07D23di_0001 valResolverM07D23di_0001 = new ResolverM07D23di_0001();
+    ResolverM07D23di<Pure.DI.UsageTests.Basics.CompositionRootsScenario.IDependency>.Value = valResolverM07D23di_0001;
+    _bucketsM07D23di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       4,
-      out _bucketSizeM07D19di,
+      out _bucketSizeM07D23di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[2]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.CompositionRootScenario.IService), valResolverM07D19di_0000)
-        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.CompositionRootScenario.IDependency), valResolverM07D19di_0001)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.CompositionRootsScenario.IService), valResolverM07D23di_0000)
+        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.CompositionRootsScenario.IDependency), valResolverM07D23di_0001)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM07D19di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM07D23di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM07D19di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM07D23di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -268,36 +270,36 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM07D19di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.CompositionRootScenario.IService>
+  private sealed class ResolverM07D23di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.CompositionRootsScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Basics.CompositionRootScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.Basics.CompositionRootsScenario.IService Resolve(Composition composition)
     {
       return composition.Root;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Basics.CompositionRootScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Basics.CompositionRootsScenario.IService ResolveByTag(Composition composition, object tag)
     {
       if (Equals(tag, "Other")) return composition.OtherService;
       if (Equals(tag, null)) return composition.Root;
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.CompositionRootScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.CompositionRootsScenario.IService.");
     }
   }
   
-  private sealed class ResolverM07D19di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.CompositionRootScenario.IDependency>
+  private sealed class ResolverM07D23di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.CompositionRootsScenario.IDependency>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Basics.CompositionRootScenario.IDependency Resolve(Composition composition)
+    public Pure.DI.UsageTests.Basics.CompositionRootsScenario.IDependency Resolve(Composition composition)
     {
-      return composition.RootM07D19di_0001;
+      return composition.RootM07D23di_0003;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Basics.CompositionRootScenario.IDependency ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Basics.CompositionRootsScenario.IDependency ResolveByTag(Composition composition, object tag)
     {
-      if (Equals(tag, null)) return composition.RootM07D19di_0001;
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.CompositionRootScenario.IDependency.");
+      if (Equals(tag, null)) return composition.RootM07D23di_0003;
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.CompositionRootsScenario.IDependency.");
     }
   }
   #endregion
