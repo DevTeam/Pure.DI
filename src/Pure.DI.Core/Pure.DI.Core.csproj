@@ -3,14 +3,12 @@
     <PropertyGroup>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
         <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
-        <PureDINamespace>IoC</PureDINamespace>
         <RootNamespace>Pure.DI</RootNamespace>
         <OutputPath>bin/$(Configuration)/roslyn$(AnalyzerRoslynVersion)</OutputPath>
         <DefineConstants>PUREDI_API_SUPPRESSION;PUREDI_API_V2</DefineConstants>
     </PropertyGroup>
     
     <ItemGroup>
-        <CompilerVisibleProperty Include="PureDINamespace" />
         <PackageReference Include="Pure.DI" Version="2.0.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
