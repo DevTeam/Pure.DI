@@ -483,10 +483,27 @@ For more information about the template, see [this page](https://github.com/DevT
 
 ## Troubleshooting
 
-<details>
-<summary>Generated files</summary>
+### Disabling API generation
 
-You can set project properties to save generated files and control their storage location. In the project file, add the `<EmitCompilerGeneratedFiles>` element to the `<PropertyGroup>` group and set its value to `true`. Build the project again. The generated files are now created in the _obj/Debug/netX.X/generated/Pure.DI/Pure.DI/Pure.DI.SourceGenerator_ directory. The path components correspond to the build configuration, the target framework, the source generator project name, and the full name of the generator type. You can choose a more convenient output folder by adding the `<CompilerGeneratedFilesOutputPath>` element to the application project file. For example:
+_Pure.DI_ automatically generates its API. If an application module already has the _Pure.DI_ API, its automatic generation for some other modules sometimes needs to be disabled. To do this, add the _DefineConstants_ element to the project files of these modules.
+
+<details>
+<summary>For example</summary>
+
+```xml
+<PropertyGroup>
+    <DefineConstants>$(DefineConstants);PUREDI_API_SUPPRESSION</DefineConstants>
+</PropertyGroup>
+```
+
+</details>
+
+### Generated files
+
+You can set project properties to save generated files and control their storage location. In the project file, add the `<EmitCompilerGeneratedFiles>` element to the `<PropertyGroup>` group and set its value to `true`. Build the project again. The generated files are now created in the _obj/Debug/netX.X/generated/Pure.DI/Pure.DI/Pure.DI.SourceGenerator_ directory. The path components correspond to the build configuration, the target framework, the source generator project name, and the full name of the generator type. You can choose a more convenient output folder by adding the `<CompilerGeneratedFilesOutputPath>` element to the application project file.
+
+<details>
+<summary>For example</summary>
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -501,10 +518,12 @@ You can set project properties to save generated files and control their storage
 
 </details>
 
-<details>
-<summary>Log files</summary>
+### Log files
 
-To save the log file, you need to add additional project properties. In the project file, add the `<PureDILogFile>` item to `<PropertyGroup>` and specify the path to the log directory, and add the associated `<CompilerVisibleProperty Include="PureDILogFile" />` item to `<ItemGroup>` to make this property visible in the source code generator. To change the log level, specify it using the _PureDISeverity_ property as shown in the example below:
+To save the log file, you need to add additional project properties. In the project file, add the `<PureDILogFile>` item to `<PropertyGroup>` and specify the path to the log directory, and add the associated `<CompilerVisibleProperty Include="PureDILogFile" />` item to `<ItemGroup>` to make this property visible in the source code generator. To change the log level, specify it using the _PureDISeverity_ property.
+
+<details>
+<summary>For example</summary>
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">

@@ -14,7 +14,7 @@ var settings = new Settings(
     Property.Get("NuGetKey", string.Empty),
     new BuildCase(new Version(4, 3, 1)));
 
-new DotNetBuildServerShutdown().Run();
+new DotNetBuildServerShutdown().AddVars(("Abc", "Xyz")).Run();
 
 var composition = new Composition(settings);
 return await composition.Root.RunAsync();

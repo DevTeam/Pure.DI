@@ -35,7 +35,8 @@ public static class TestExtensions
             ? parseOptions.WithPreprocessorSymbols("NET")
             : parseOptions.WithPreprocessorSymbols(runOptions.PreprocessorSymbols);
 
-        var generatedApiSources = Facade.GetApi(CancellationToken.None).ToArray();
+        var baseComposition = new CompositionBase();
+        var generatedApiSources = baseComposition.ApiBuilder.Build(Unit.Shared, CancellationToken.None);
         var compilation = CreateCompilation()
             .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication).WithNullableContextOptions(runOptions.NullableContextOptions))
             .AddSyntaxTrees(generatedApiSources.Select(api => CSharpSyntaxTree.ParseText(api.SourceText, parseOptions)))
@@ -58,15 +59,15 @@ public static class TestExtensions
 
         var compilationCopy = compilation;
         var updates = compilationCopy.SyntaxTrees.Select(i => CreateUpdate(i, compilationCopy));
-        var facade = Facade.Create(contextOptions.Object, contextProducer.Object, contextDiagnostic.Object);
-
+        var composition = new Composition(contextOptions.Object, contextProducer.Object, contextDiagnostic.Object);
+        
         var dependencyGraphObserver = new Observer<DependencyGraph>();
-        using var dependencyGraphObserverToken = facade.ObserversRegistry.Register(dependencyGraphObserver);
+        using var dependencyGraphObserverToken = composition.ObserversRegistry.Register(dependencyGraphObserver);
 
         var logEntryObserver = new Observer<LogEntry>();
-        using var logEntryObserverToken = facade.ObserversRegistry.Register(logEntryObserver);
+        using var logEntryObserverToken = composition.ObserversRegistry.Register(logEntryObserver);
         
-        facade.Generator.Generate(updates, CancellationToken.None);
+        composition.Generator.Build(updates, CancellationToken.None);
         
         var logs = logEntryObserver.Values;
         var errors = logs.Where(i => i.Severity == DiagnosticSeverity.Error).ToImmutableArray();
@@ -216,7 +217,7 @@ public static class TestExtensions
                 MetadataReference.CreateFromFile(typeof(SortedSet<object>).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Uri).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(IGenerator).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(IContextOptions).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(SourceGenerator).Assembly.Location));
     
     private static CSharpCompilation Check(this CSharpCompilation compilation, List<string> output, Options? options)

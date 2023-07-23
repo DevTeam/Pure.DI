@@ -7,19 +7,19 @@ internal class ClassBuilder : IBuilder<CompositionCode, CompositionCode>
     private readonly ImmutableArray<IBuilder<CompositionCode, CompositionCode>> _codeBuilders;
     
     public ClassBuilder(
-        [IoC.Tag(WellknownTag.CSharpUsingDeclarationsBuilder)] IBuilder<CompositionCode, CompositionCode> usingDeclarationsBuilder,
-        [IoC.Tag(WellknownTag.CSharpSingletonFieldsBuilder)] IBuilder<CompositionCode, CompositionCode> singletonFieldsBuilder,
-        [IoC.Tag(WellknownTag.CSharpArgFieldsBuilder)] IBuilder<CompositionCode, CompositionCode> argFieldsBuilder,
-        [IoC.Tag(WellknownTag.CSharpPrimaryConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> primaryConstructorBuilder,
-        [IoC.Tag(WellknownTag.CSharpDefaultConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> defaultConstructorBuilder,
-        [IoC.Tag(WellknownTag.CSharpChildConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> childConstructorBuilder,
-        [IoC.Tag(WellknownTag.CSharpRootPropertiesBuilder)] IBuilder<CompositionCode, CompositionCode> rootPropertiesBuilder,
-        [IoC.Tag(WellknownTag.CSharpApiMembersBuilder)] IBuilder<CompositionCode, CompositionCode> apiMembersBuilder,
-        [IoC.Tag(WellknownTag.CSharpDisposeMethodBuilder)] IBuilder<CompositionCode, CompositionCode> disposeMethodBuilder,
-        [IoC.Tag(WellknownTag.CSharpToStringBuilder)] IBuilder<CompositionCode, CompositionCode> toStringBuilder,
-        [IoC.Tag(WellknownTag.CSharpResolversFieldsBuilder)] IBuilder<CompositionCode, CompositionCode> resolversFieldsBuilder,
-        [IoC.Tag(WellknownTag.CSharpStaticConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> staticConstructorBuilder,
-        [IoC.Tag(WellknownTag.CSharpResolverClassesBuilder)] IBuilder<CompositionCode, CompositionCode> resolversClassesBuilder)
+        [Tag(WellknownTag.CSharpUsingDeclarationsBuilder)] IBuilder<CompositionCode, CompositionCode> usingDeclarationsBuilder,
+        [Tag(WellknownTag.CSharpSingletonFieldsBuilder)] IBuilder<CompositionCode, CompositionCode> singletonFieldsBuilder,
+        [Tag(WellknownTag.CSharpArgFieldsBuilder)] IBuilder<CompositionCode, CompositionCode> argFieldsBuilder,
+        [Tag(WellknownTag.CSharpPrimaryConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> primaryConstructorBuilder,
+        [Tag(WellknownTag.CSharpDefaultConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> defaultConstructorBuilder,
+        [Tag(WellknownTag.CSharpChildConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> childConstructorBuilder,
+        [Tag(WellknownTag.CSharpRootPropertiesBuilder)] IBuilder<CompositionCode, CompositionCode> rootPropertiesBuilder,
+        [Tag(WellknownTag.CSharpApiMembersBuilder)] IBuilder<CompositionCode, CompositionCode> apiMembersBuilder,
+        [Tag(WellknownTag.CSharpDisposeMethodBuilder)] IBuilder<CompositionCode, CompositionCode> disposeMethodBuilder,
+        [Tag(WellknownTag.CSharpToStringBuilder)] IBuilder<CompositionCode, CompositionCode> toStringBuilder,
+        [Tag(WellknownTag.CSharpResolversFieldsBuilder)] IBuilder<CompositionCode, CompositionCode> resolversFieldsBuilder,
+        [Tag(WellknownTag.CSharpStaticConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> staticConstructorBuilder,
+        [Tag(WellknownTag.CSharpResolverClassesBuilder)] IBuilder<CompositionCode, CompositionCode> resolversClassesBuilder)
     {
         _usingDeclarationsBuilder = usingDeclarationsBuilder;
         _codeBuilders = ImmutableArray.Create(

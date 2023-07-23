@@ -6,7 +6,7 @@ namespace Pure.DI.Core;
 using System.Diagnostics;
 using Models;
 
-internal class Generator : IGenerator
+internal class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
 {
     private readonly ILogger<Generator> _logger;
     private readonly IGlobalOptions _globalOptions;
@@ -32,8 +32,8 @@ internal class Generator : IGenerator
         IBuilder<MdSetup, DependencyGraph> dependencyGraphBuilder,
         IValidator<DependencyGraph> dependencyGraphValidator,
         IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>> rootsBuilder,
-        [IoC.Tag(WellknownTag.CSharpCompositionBuilder)] IBuilder<DependencyGraph, CompositionCode> compositionBuilder,
-        [IoC.Tag(WellknownTag.CSharpClassBuilder)] IBuilder<CompositionCode, CompositionCode> classBuilder,
+        [Tag(WellknownTag.CSharpCompositionBuilder)] IBuilder<DependencyGraph, CompositionCode> compositionBuilder,
+        [Tag(WellknownTag.CSharpClassBuilder)] IBuilder<CompositionCode, CompositionCode> classBuilder,
         IValidator<MdSetup> metadataValidator,
         IContextProducer contextProducer)
     {
@@ -52,7 +52,7 @@ internal class Generator : IGenerator
         _contextProducer = contextProducer;
     }
 
-    public void Generate(IEnumerable<SyntaxUpdate> updates, CancellationToken cancellationToken)
+    public Unit Build(IEnumerable<SyntaxUpdate> updates, CancellationToken cancellationToken)
     {
         var stopwatch = new Stopwatch();
         stopwatch.Start();
@@ -185,6 +185,8 @@ internal class Generator : IGenerator
                 // ignored
             }
         }
+        
+        return Unit.Shared;
     }
 
     private void OnHandledException(Exception handledException)

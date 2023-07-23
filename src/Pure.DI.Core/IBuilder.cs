@@ -1,6 +1,6 @@
-namespace Pure.DI.Core;
+namespace Pure.DI;
 
-internal interface IBuilder<in TData, out T>
+public interface IBuilder<in TData, out T>
 {
     public T Build(TData data, CancellationToken cancellationToken);
 }
