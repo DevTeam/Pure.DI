@@ -1,3 +1,4 @@
+// ReSharper disable UnusedMember.Local
 namespace WebAPI;
 
 using Controllers;

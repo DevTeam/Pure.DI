@@ -13,7 +13,6 @@ public partial class CompositionBase
 {
     private static void Setup() => DI.Setup(nameof(CompositionBase))
         .Bind<ICache<TT1, TT2>>().As(Lifetime.Singleton).To<Cache<TT1, TT2>>()
-        .DefaultLifetime(Lifetime.PerResolve)
         .Bind<IResources>().To<Resources>()
         .Bind<Func<string, System.Text.RegularExpressions.Regex>>().To(_ => new Func<string, System.Text.RegularExpressions.Regex>(value => new System.Text.RegularExpressions.Regex(value, System.Text.RegularExpressions.RegexOptions.Compiled | System.Text.RegularExpressions.RegexOptions.CultureInvariant | System.Text.RegularExpressions.RegexOptions.Singleline | System.Text.RegularExpressions.RegexOptions.IgnoreCase)))
         .Bind<IBuilder<Unit, IEnumerable<Source>>>().To<ApiBuilder>()

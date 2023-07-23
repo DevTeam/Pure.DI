@@ -127,7 +127,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                     case nameof(IBinding.As):
                         if (invocation.ArgumentList.Arguments is [{ Expression: { } lifetimeExpression }])
                         {
-                            MetadataVisitor.VisitLifetime(new MdLifetime(SemanticModel, invocation, GetRequiredConstantValue<Lifetime>(lifetimeExpression)!));
+                            MetadataVisitor.VisitLifetime(new MdLifetime(SemanticModel, invocation, GetRequiredConstantValue<Lifetime>(lifetimeExpression)));
                         }
 
                         break;
@@ -135,7 +135,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                     case nameof(IConfiguration.Hint):
                         if (invocation.ArgumentList.Arguments is [{ Expression: { } hintNameExpression }, { Expression: { } hintValueExpression }])
                         {
-                            _hints[GetConstantValue<Hint>(hintNameExpression)] = GetRequiredConstantValue<string>(hintValueExpression)!;
+                            _hints[GetConstantValue<Hint>(hintNameExpression)] = GetRequiredConstantValue<string>(hintValueExpression);
                         }
 
                         break;
@@ -282,7 +282,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                                 tag = new MdTag(0, GetConstantValue<object>(rootArgs[1].Expression));
                             }
 
-                            MetadataVisitor.VisitRoot(new MdRoot(invocation, SemanticModel, rootSymbol, name!, tag));
+                            MetadataVisitor.VisitRoot(new MdRoot(invocation, SemanticModel, rootSymbol, name, tag));
                         }
 
                         break;
@@ -350,7 +350,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         
         var usingDirectives = _usingDirectives
             .Where(i => !i.StaticKeyword.IsKind(SyntaxKind.StaticKeyword))
-            .Select(i => i.Name?.ToString() ?? string.Empty)
+            .Select(i => i.Name.ToString())
             .Concat(namespaces)
             .Where(i => !string.IsNullOrWhiteSpace(i))
             .Distinct()
@@ -358,7 +358,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         
         var staticUsingDirectives = _usingDirectives
             .Where(i => i.StaticKeyword.IsKind(SyntaxKind.StaticKeyword))
-            .Select(i => i.Name?.ToString() ?? string.Empty)
+            .Select(i => i.Name.ToString())
             .Where(i => !string.IsNullOrWhiteSpace(i))
             .Distinct()
             .ToImmutableArray();

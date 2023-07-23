@@ -1,4 +1,5 @@
 // ReSharper disable once CheckNamespace
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace System.Diagnostics.CodeAnalysis;
 
 internal sealed class NotNullWhenAttribute : Attribute

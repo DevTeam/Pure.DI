@@ -20,7 +20,6 @@ public partial class Composition
         .Arg<IContextDiagnostic>("diagnostic")
 
         // Transients
-        .DefaultLifetime(Lifetime.Transient)
         .Bind<IGlobalOptions>().To<GlobalOptions>()
         .Bind<ILogger<TT>>().To<Logger<TT>>()
         .Bind<ILogObserver>().To<LogObserver>()
@@ -62,9 +61,8 @@ public partial class Composition
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpResolversFieldsBuilder).To<ResolversFieldsBuilder>()
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.CSharpToStringBuilder).To<ToStringBuilder>()
         
-        // Singletons
+        // PerResolve
         .DefaultLifetime(Lifetime.Singleton)
-        .Bind<IObserversRegistry>().Bind<IObserversProvider>().To<ObserversRegistry>().Root<IObserversRegistry>("ObserversRegistry")
         .Bind<IClock>().To<Clock>()
         .Bind<IFormatting>().To<Formatting>()
         .Bind<IMarker>().To<Marker>()
@@ -76,6 +74,8 @@ public partial class Composition
         .Bind<IEqualityComparer<string>>().To(_ => StringComparer.InvariantCultureIgnoreCase)
         .Bind<IEqualityComparer<ImmutableArray<byte>>>().To<BytesArrayEqualityComparer>()
         .Bind<Func<ImmutableArray<byte>, bool>>().To(_ => new Func<ImmutableArray<byte>, bool>(_ => true))
-    
+        .Bind<IObserversRegistry>().Bind<IObserversProvider>().To<ObserversRegistry>()
+        
+        .Root<IObserversRegistry>("ObserversRegistry")
         .Root<IBuilder<IEnumerable<SyntaxUpdate>, Unit>>("Generator");
 }

@@ -9,6 +9,7 @@ $h=The `// ObjectResolveMethodName = GetService` hint overrides the _object Reso
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable UnusedMember.Local
 namespace Pure.DI.UsageTests.BCL.ServiceProviderScenario;
 
 using Shouldly;

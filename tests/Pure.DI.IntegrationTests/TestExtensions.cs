@@ -36,7 +36,7 @@ public static class TestExtensions
             : parseOptions.WithPreprocessorSymbols(runOptions.PreprocessorSymbols);
 
         var baseComposition = new CompositionBase();
-        var generatedApiSources = baseComposition.ApiBuilder.Build(Unit.Shared, CancellationToken.None);
+        var generatedApiSources = baseComposition.ApiBuilder.Build(Unit.Shared, CancellationToken.None).ToArray();
         var compilation = CreateCompilation()
             .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication).WithNullableContextOptions(runOptions.NullableContextOptions))
             .AddSyntaxTrees(generatedApiSources.Select(api => CSharpSyntaxTree.ParseText(api.SourceText, parseOptions)))

@@ -32,6 +32,7 @@ internal static partial class Tools
             return version;
         }
 
+        // ReSharper disable once ConvertIfStatementToReturnStatement
         if (!int.TryParse(match.Groups[2].Value, out var index))
         {
             return version;

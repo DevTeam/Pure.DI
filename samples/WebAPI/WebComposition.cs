@@ -1,3 +1,6 @@
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedParameterInPartialMethod
+// ReSharper disable UnusedTypeParameter
 namespace WebAPI;
 
 using Pure.DI;

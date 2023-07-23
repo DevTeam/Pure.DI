@@ -80,6 +80,7 @@ internal class StaticConstructorBuilder: IBuilder<CompositionCode, CompositionCo
         code.AppendLine("}");
         membersCounter++;
         
+        // ReSharper disable once InvertIf
         if (hasOnNewRoot)
         {
             code.AppendLine();

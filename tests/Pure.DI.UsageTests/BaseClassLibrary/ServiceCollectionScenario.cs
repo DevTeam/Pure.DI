@@ -11,6 +11,7 @@ $h=The `// OnNewRoot = On` hint specifies to create a static method that will be
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable UnusedParameterInPartialMethod
+// ReSharper disable UnusedMember.Local
 namespace Pure.DI.UsageTests.BCL.ServiceCollectionScenario;
 
 using Microsoft.Extensions.DependencyInjection;

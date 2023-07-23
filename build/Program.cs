@@ -1,8 +1,5 @@
-﻿// Run this from the working directory where the solution or project to build is located.
-
-using System.CommandLine;
+﻿using System.CommandLine;
 using Build;using HostApi;
-using JetBrains.TeamCity.ServiceMessages.Write.Special;
 using NuGet.Versioning;
 using Pure.DI;
 
@@ -14,23 +11,11 @@ var settings = new Settings(
     Property.Get("NuGetKey", string.Empty),
     new BuildCase(new Version(4, 3, 1)));
 
-new DotNetBuildServerShutdown().AddVars(("Abc", "Xyz")).Run();
+new DotNetBuildServerShutdown().Run();
 
 var composition = new Composition(settings);
 return await composition.Root.RunAsync();
 
-#pragma warning disable CS0162
-// ReSharper disable once HeuristicUnreachableCode
-DI.Setup("Composition")
-    .Arg<Settings>("settings")
-    .Bind<ITeamCityWriter>().As(Lifetime.PerResolve).To(_ => GetService<ITeamCityWriter>())
-    .Bind<ITarget<int>>("readme").To<ReadmeTarget>()
-    .Bind<ITarget<string>>("pack").To<PackTarget>()
-    .Bind<ITarget<int>>("benchmarks").To<BenchmarksTarget>()
-    .Bind<ITarget<int>>("deploy").To<DeployTarget>()
-    .Bind<ITarget<string>>("template").To<TemplateTarget>()
-    .Root<Program>("Root");
-    
 internal partial class Program
 {
     private readonly RootCommand _rootCommand;

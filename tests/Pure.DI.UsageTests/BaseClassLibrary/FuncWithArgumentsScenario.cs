@@ -9,6 +9,8 @@ $h=At any time a BCL type binding can be added manually:
 // ReSharper disable CheckNamespace
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable UnusedParameter.Local
+// ReSharper disable UnusedMember.Global
 namespace Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario;
 
 using System.Collections.Immutable;

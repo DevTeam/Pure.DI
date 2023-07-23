@@ -100,6 +100,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             membersCounter++;
         }
 
+        // ReSharper disable once InvertIf
         if (apiCode.Count > 0)
         {
             code.AppendLine("#region API");
