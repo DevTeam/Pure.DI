@@ -1,6 +1,7 @@
+// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable IdentifierTypo
 namespace Pure.DI.Core;
 
-// ReSharper disable once IdentifierTypo
 internal class Variator<T> : IVariator<T>
 {
     public bool TryGetNextVariants(

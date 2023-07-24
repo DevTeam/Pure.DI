@@ -1,7 +1,4 @@
-// ReSharper disable HeapView.ObjectAllocation
-// ReSharper disable HeapView.ClosureAllocation
-// ReSharper disable HeapView.ObjectAllocation.Evident
-// ReSharper disable HeapView.DelegateAllocation
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
 internal class Formatting : IFormatting

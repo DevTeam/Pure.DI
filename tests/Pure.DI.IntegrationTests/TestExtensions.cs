@@ -22,7 +22,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 using Moq;
-using Generator = Pure.DI.Generator;
+using Generator = Generator;
 
 public static class TestExtensions
 {

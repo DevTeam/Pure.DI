@@ -1,3 +1,4 @@
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
 internal class ContractsBuilder: IBuilder<ContractsBuildContext, ISet<Injection>>

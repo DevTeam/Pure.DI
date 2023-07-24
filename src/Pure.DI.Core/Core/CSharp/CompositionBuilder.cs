@@ -11,6 +11,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
     private readonly Dictionary<Compilation, INamedTypeSymbol?> _disposableTypes = new();
     private readonly Dictionary<Root, ImmutableArray<Line>> _roots = new();
 
+    // ReSharper disable once MemberCanBePrivate.Global
     public CompositionBuilder(
         ILogger<CompositionBuilder> logger,
         Func<IVarIdGenerator> idGeneratorFactory,

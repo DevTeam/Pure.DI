@@ -1,3 +1,4 @@
+// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable IdentifierTypo
 namespace Pure.DI.Core;
 

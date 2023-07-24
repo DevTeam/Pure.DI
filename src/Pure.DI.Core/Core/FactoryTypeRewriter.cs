@@ -1,3 +1,4 @@
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
 internal class FactoryTypeRewriter: CSharpSyntaxRewriter, IBuilder<RewriterContext<MdFactory>, MdFactory>

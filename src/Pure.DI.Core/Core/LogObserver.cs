@@ -1,3 +1,4 @@
+// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable InvertIf
 namespace Pure.DI.Core;
 

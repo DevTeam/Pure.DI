@@ -1,4 +1,5 @@
 // ReSharper disable HeapView.BoxingAllocation
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.CSharp;
 
 internal class UsingDeclarationsBuilder: IBuilder<CompositionCode, CompositionCode>

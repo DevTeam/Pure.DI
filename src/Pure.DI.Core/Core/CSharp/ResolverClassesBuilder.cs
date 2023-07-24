@@ -1,5 +1,6 @@
 // ReSharper disable ConvertIfStatementToConditionalTernaryExpression
 // ReSharper disable InvertIf
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.CSharp;
 
 internal class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode>

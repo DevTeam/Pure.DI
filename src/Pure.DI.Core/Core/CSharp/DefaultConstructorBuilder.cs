@@ -1,3 +1,4 @@
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.CSharp;
 
 internal class DefaultConstructorBuilder: IBuilder<CompositionCode, CompositionCode>
