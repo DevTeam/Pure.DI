@@ -10,6 +10,7 @@ internal class ReadmeTarget : ITarget<int>
 {
     private readonly ITarget<int> _benchmarksTarget;
     private const string ReadmeDir = "readme";
+    private const string ReadmeHeaderFile = "README.md";
     private const string ReadmeTemplateFile = "ReadmeTemplate.md";
     private const string FooterTemplateFile = "FooterTemplate.md";
     private const string ReadmeFile = "README.md";
@@ -56,6 +57,8 @@ internal class ReadmeTarget : ITarget<int>
         
         await using var readmeWriter = File.CreateText(ReadmeFile);
         
+        await AddContent(ReadmeHeaderFile, readmeWriter, "docs");
+        
         await AddContent(ReadmeTemplateFile, readmeWriter);
         
         await readmeWriter.WriteLineAsync("");
@@ -73,10 +76,10 @@ internal class ReadmeTarget : ITarget<int>
         return 0;
     }
 
-    private static async Task AddContent(string sourceFile, TextWriter readmeWriter)
+    private static async Task AddContent(string sourceFile, TextWriter readmeWriter, string readmeDir = ReadmeDir)
     {
         WriteLine($"Adding a content from \"{sourceFile}\"", Color.Details);
-        foreach (var line in await File.ReadAllLinesAsync(Path.Combine(ReadmeDir, sourceFile)))
+        foreach (var line in await File.ReadAllLinesAsync(Path.Combine(readmeDir, sourceFile)))
         {
             await readmeWriter.WriteLineAsync(line);
         }
