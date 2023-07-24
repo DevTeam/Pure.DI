@@ -14,19 +14,18 @@ internal class NamespacesSyntaxWalker: CSharpSyntaxWalker, IEnumerable<string>
 
     public override void VisitIdentifierName(IdentifierNameSyntax node)
     {
-        TryAddNamespace(node);
+        AddNamespace(_semanticModel.GetSymbolInfo(node).Symbol);
         base.VisitIdentifierName(node);
     }
 
     public override void VisitGenericName(GenericNameSyntax node)
     {
-        TryAddNamespace(node);
+        AddNamespace(_semanticModel.GetSymbolInfo(node).Symbol);
         base.VisitGenericName(node);
     }
 
-    private void TryAddNamespace(ExpressionSyntax node)
+    private void AddNamespace(ISymbol? symbol)
     {
-        var symbol = _semanticModel.GetSymbolInfo(node).Symbol;
         if (symbol is not INamedTypeSymbol type)
         {
             return;
@@ -38,6 +37,15 @@ internal class NamespacesSyntaxWalker: CSharpSyntaxWalker, IEnumerable<string>
         }
 
         _namespaces.Add(type.ContainingNamespace.ToString());
+        if (!type.IsGenericType)
+        {
+            return;
+        }
+        
+        foreach (var typeSymbol in type.TypeArguments)
+        {
+            AddNamespace(typeSymbol);
+        }
     }
 
     public IEnumerator<string> GetEnumerator() => _namespaces.GetEnumerator();

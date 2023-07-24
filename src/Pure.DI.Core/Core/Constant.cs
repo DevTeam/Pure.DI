@@ -3,7 +3,8 @@ namespace Pure.DI.Core;
 
 internal static class Constant
 {
-    public const string ApiNamespace = "global::Pure.DI.";
+    public const string GeneratorName = "Pure.DI";
+    public const string ApiNamespace = $"global::{GeneratorName}.";
     public const string CannotResolve = "Cannot resolve composition root";
     public const string SystemNamespace = "global::System.";
     public const string MethodImplOptions = $"[{SystemNamespace}Runtime.CompilerServices.MethodImpl(({SystemNamespace}Runtime.CompilerServices.MethodImplOptions)0x300)]";

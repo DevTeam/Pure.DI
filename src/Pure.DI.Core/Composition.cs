@@ -63,6 +63,7 @@ public partial class Composition
         
         // PerResolve
         .DefaultLifetime(Lifetime.Singleton)
+        .Bind<IInformation>().To<Information>()
         .Bind<IClock>().To<Clock>()
         .Bind<IFormatting>().To<Formatting>()
         .Bind<IMarker>().To<Marker>()

@@ -14,6 +14,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using Core;
 using Core.Models;
 using Microsoft.CodeAnalysis;
@@ -218,7 +219,8 @@ public static class TestExtensions
                 MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Uri).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(IContextOptions).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(SourceGenerator).Assembly.Location));
+                MetadataReference.CreateFromFile(typeof(SourceGenerator).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(Regex).Assembly.Location));
     
     private static CSharpCompilation Check(this CSharpCompilation compilation, List<string> output, Options? options)
     {

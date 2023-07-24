@@ -364,7 +364,6 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                     case [{ RefOrOutKeyword.IsMissing: false } targetValue]:
                         if (SemanticModel.GetOperation(arguments[0]) is IArgumentOperation argumentOperation)
                         {
-                            VisitUsingDirectives(lambdaExpression);
                             return new MdResolver(
                                 SemanticModel,
                                 invocation,
@@ -387,7 +386,6 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                         var resolverTag = new MdTag(0, hasContextTag ? MdTag.ContextTag : GetConstantValue<object>(tag.Expression));
                         if (arguments.Count > 0 && SemanticModel.GetOperation(arguments[1]) is IArgumentOperation argumentOperation2)
                         {
-                            VisitUsingDirectives(lambdaExpression);
                             return new MdResolver(
                                 SemanticModel,
                                 invocation,
@@ -406,6 +404,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
             .Where(i => i != default)
             .ToImmutableArray();
 
+        VisitUsingDirectives(lambdaExpression);
         MetadataVisitor.VisitFactory(
             new MdFactory(
                 SemanticModel,
