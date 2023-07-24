@@ -35,7 +35,11 @@ internal class MetadataWalkerBase: IMetadataVisitor
             VisitOrdinalAttribute(md);
         }
     }
-    
+
+    public virtual void VisitUsingDirectives(in MdUsingDirectives usingDirectives)
+    {
+    }
+
     public virtual void VisitBinding(in MdBinding binding)
     {
         foreach (var md in binding.Contracts)

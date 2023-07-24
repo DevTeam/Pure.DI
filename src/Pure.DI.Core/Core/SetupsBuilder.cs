@@ -4,7 +4,7 @@ namespace Pure.DI.Core;
 internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMetadataVisitor
 {
     private readonly ILogger<SetupsBuilder> _logger;
-    private readonly IMetadataSyntaxWalker _metadataSyntaxWalker;
+    private readonly Func<IMetadataSyntaxWalker> _metadataSyntaxWalkerFactory;
     private readonly ICache<ImmutableArray<byte>, bool> _setupCache;
     private readonly List<MdSetup> _setups = new();
     private readonly List<MdBinding> _bindings = new();
@@ -15,17 +15,18 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
     private readonly List<MdOrdinalAttribute> _ordinalAttributes = new();
     private readonly List<MdContract> _contracts = new();
     private readonly List<MdTag> _tags = new();
+    private readonly List<MdUsingDirectives> _usingDirectives = new();
     private MdSetup? _setup;
     private MdBinding? _binding;
     private MdDefaultLifetime? _defaultLifetime;
 
     public SetupsBuilder(
         ILogger<SetupsBuilder> logger,
-        IMetadataSyntaxWalker metadataSyntaxWalker,
+        Func<IMetadataSyntaxWalker> metadataSyntaxWalkerFactory,
         ICache<ImmutableArray<byte>, bool> setupCache)
     {
         _logger = logger;
-        _metadataSyntaxWalker = metadataSyntaxWalker;
+        _metadataSyntaxWalkerFactory = metadataSyntaxWalkerFactory;
         _setupCache = setupCache;
     }
     
@@ -53,7 +54,7 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
             return Array.Empty<MdSetup>();
         }
         
-        _metadataSyntaxWalker.Visit(this, update, cancellationToken);
+        _metadataSyntaxWalkerFactory().Visit(this, update, cancellationToken);
         if (!_setups.Any())
         {
             _setupCache.Set(checkSum, false);
@@ -67,6 +68,9 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
         FinishSetup();
         _setup = setup;
     }
+
+    public void VisitUsingDirectives(in MdUsingDirectives usingDirectives) =>
+        _usingDirectives.Add(usingDirectives);
 
     public void VisitBinding(in MdBinding binding) => _binding = binding;
 
@@ -176,8 +180,9 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
                 DependsOn = _dependsOn.ToImmutableArray(),
                 TypeAttributes = _typeAttributes.ToImmutableArray(),
                 TagAttributes = _tagAttributes.ToImmutableArray(),
-                OrdinalAttributes = _ordinalAttributes.ToImmutableArray()
-            });
+                OrdinalAttributes = _ordinalAttributes.ToImmutableArray(),
+                UsingDirectives = _usingDirectives.ToImmutableArray()
+        });
             
         _bindings.Clear();
         _roots.Clear();
@@ -185,6 +190,7 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
         _typeAttributes.Clear();
         _tags.Clear();
         _ordinalAttributes.Clear();
+        _usingDirectives.Clear();
         _setup = default;
     }
 }

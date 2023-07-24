@@ -5,6 +5,8 @@ internal interface IMetadataVisitor
 {
     void VisitSetup(in MdSetup setup);
     
+    void VisitUsingDirectives(in MdUsingDirectives usingDirectives);
+    
     void VisitBinding(in MdBinding binding);
 
     void VisitContract(in MdContract contract);

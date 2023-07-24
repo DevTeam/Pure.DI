@@ -44,7 +44,7 @@ internal class StaticConstructorBuilder: IBuilder<CompositionCode, CompositionCo
                 {
                     foreach (var root in resolver.Roots)
                     {
-                        code.AppendLine($"{Constant.OnNewRootMethodName}<{root.Injection.Type.Name}, {root.Node.Type.Name}>(val{className}, \"{root.PropertyName}\", {root.Injection.Tag.ValueToString()}, {root.Node.Lifetime.ValueToString()});");
+                        code.AppendLine($"{Constant.OnNewRootMethodName}<{root.Injection.Type}, {root.Node.Type}>(val{className}, \"{root.PropertyName}\", {root.Injection.Tag.ValueToString()}, {root.Node.Lifetime.ValueToString()});");
                     }
                 }
                 

@@ -38,8 +38,6 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
     private IMetadataVisitor? _metadataVisitor;
     private CancellationToken _cancellationToken = CancellationToken.None;
     private SemanticModel? _semanticModel;
-    private readonly List<UsingDirectiveSyntax> _usingDirectives = new();
-    private readonly HashSet<string> _namespaces = new();
     private readonly Stack<InvocationExpressionSyntax> _invocations = new();
     private string _namespace = string.Empty;
     private readonly Hints _hints = new();
@@ -56,7 +54,6 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         _metadataVisitor = metadataVisitor;
         _semanticModel = update.SemanticModel;
         _cancellationToken = cancellationToken;
-        _usingDirectives.Clear();
         Visit(update.Node);
         var invocations = new Stack<InvocationExpressionSyntax>();
         while (_invocations.TryPop(out var invocation))
@@ -156,7 +153,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                                     new MdSetup(
                                         invocation,
                                         CreateCompositionName(GetRequiredConstantValue<string>(publicCompositionType), _namespace),
-                                        GetUsingDirectives(invocation),
+                                        ImmutableArray<MdUsingDirectives>.Empty,
                                         CompositionKind.Public,
                                         GetSettings(invocation),
                                         ImmutableArray<MdBinding>.Empty,
@@ -172,7 +169,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                                     new MdSetup(
                                         invocation,
                                         CreateCompositionName(GetRequiredConstantValue<string>(publicCompositionType), _namespace),
-                                        GetUsingDirectives(invocation),
+                                        ImmutableArray<MdUsingDirectives>.Empty,
                                         GetRequiredConstantValue<CompositionKind>(kindExpression),
                                         GetSettings(invocation),
                                         ImmutableArray<MdBinding>.Empty,
@@ -340,53 +337,15 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         return new CompositionName(className, newNamespace);
     }
     
-
-    private ImmutableArray<MdUsingDirectives> GetUsingDirectives(SyntaxNode syntaxNode)
-    {
-        var namespaces = SemanticModel.LookupNamespacesAndTypes(syntaxNode.Span.Start)
-            .OfType<INamespaceSymbol>()
-            .Where(i => !i.IsGlobalNamespace)
-            .Select(i => i.ToString());
-        
-        var usingDirectives = _usingDirectives
-            .Where(i => !i.StaticKeyword.IsKind(SyntaxKind.StaticKeyword))
-            .Select(i => i.Name.ToString())
-            .Concat(namespaces)
-            .Where(i => !string.IsNullOrWhiteSpace(i))
-            .Distinct()
-            .ToImmutableArray();
-        
-        var staticUsingDirectives = _usingDirectives
-            .Where(i => i.StaticKeyword.IsKind(SyntaxKind.StaticKeyword))
-            .Select(i => i.Name.ToString())
-            .Where(i => !string.IsNullOrWhiteSpace(i))
-            .Distinct()
-            .ToImmutableArray();
-        
-        return ImmutableArray.Create(new MdUsingDirectives(usingDirectives, staticUsingDirectives));
-    }
-
-    public override void VisitUsingDirective(UsingDirectiveSyntax usingDirective)
-    {
-        if (!_namespaces.Any())
-        {
-            _usingDirectives.Add(usingDirective);
-        }
-
-        base.VisitUsingDirective(usingDirective);
-    }
-
     public override void VisitFileScopedNamespaceDeclaration(FileScopedNamespaceDeclarationSyntax namespaceDeclaration)
     {
         _namespace = namespaceDeclaration.Name.ToString().Trim();
-        _namespaces.Add(_namespace);
         base.VisitFileScopedNamespaceDeclaration(namespaceDeclaration);
     }
 
     public override void VisitNamespaceDeclaration(NamespaceDeclarationSyntax namespaceDeclaration)
     {
         _namespace = namespaceDeclaration.Name.ToString().Trim();
-        _namespaces.Add(_namespace);
         base.VisitNamespaceDeclaration(namespaceDeclaration);
     }
 
@@ -405,6 +364,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                     case [{ RefOrOutKeyword.IsMissing: false } targetValue]:
                         if (SemanticModel.GetOperation(arguments[0]) is IArgumentOperation argumentOperation)
                         {
+                            VisitUsingDirectives(lambdaExpression);
                             return new MdResolver(
                                 SemanticModel,
                                 invocation,
@@ -427,6 +387,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                         var resolverTag = new MdTag(0, hasContextTag ? MdTag.ContextTag : GetConstantValue<object>(tag.Expression));
                         if (arguments.Count > 0 && SemanticModel.GetOperation(arguments[1]) is IArgumentOperation argumentOperation2)
                         {
+                            VisitUsingDirectives(lambdaExpression);
                             return new MdResolver(
                                 SemanticModel,
                                 invocation,
@@ -454,6 +415,17 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
                 lambdaExpression.Parameter,
                 resolvers,
                 hasContextTag));
+    }
+
+    private void VisitUsingDirectives(SyntaxNode node)
+    {
+        var namespacesSyntaxWalker = new NamespacesSyntaxWalker(SemanticModel);
+        namespacesSyntaxWalker.Visit(node);
+        var namespaces = namespacesSyntaxWalker.ToArray();
+        if (namespaces.Any())
+        {
+            MetadataVisitor.VisitUsingDirectives(new MdUsingDirectives(namespaces.ToImmutableArray(), ImmutableArray<string>.Empty));
+        }
     }
 
     private IHints GetSettings(SyntaxNode node)
