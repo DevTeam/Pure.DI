@@ -6,6 +6,7 @@
 // ReSharper disable HeapView.BoxingAllocation
 namespace Pure.DI;
 
+using System.Text.RegularExpressions;
 using Core;
 
 // ReSharper disable once PartialTypeWithSinglePart
@@ -13,8 +14,8 @@ public partial class CompositionBase
 {
     private static void Setup() => DI.Setup(nameof(CompositionBase))
         .Bind<ICache<TT1, TT2>>().As(Lifetime.Singleton).To<Cache<TT1, TT2>>()
-        .Bind<IResources>().To<Resources>()
-        .Bind<Func<string, System.Text.RegularExpressions.Regex>>().To(_ => new Func<string, System.Text.RegularExpressions.Regex>(value => new System.Text.RegularExpressions.Regex(value, System.Text.RegularExpressions.RegexOptions.Compiled | System.Text.RegularExpressions.RegexOptions.CultureInvariant | System.Text.RegularExpressions.RegexOptions.Singleline | System.Text.RegularExpressions.RegexOptions.IgnoreCase)))
+        .Bind<IResources>().As(Lifetime.PerResolve).To<Resources>()
+        .Bind<Func<string, Regex>>().As(Lifetime.PerResolve).To(_ => new Func<string, Regex>(value => new Regex(value, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase)))
         .Bind<IBuilder<Unit, IEnumerable<Source>>>().To<ApiBuilder>()
         .Root<IBuilder<Unit, IEnumerable<Source>>>("ApiBuilder");
 }
