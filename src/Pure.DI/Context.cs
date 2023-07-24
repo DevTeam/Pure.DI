@@ -1,6 +1,6 @@
 namespace Pure.DI;
 
-internal class Context: IContextOptions, IContextProducer, IContextDiagnostic
+internal class Context: IOptions, ISourcesRegistry, IDiagnostic
 {
     private readonly SourceProductionContext _sourceProductionContext;
     private readonly AnalyzerConfigOptionsProvider _analyzerConfigOptionsProvider;

@@ -1,7 +1,7 @@
 // ReSharper disable HeapView.ObjectAllocation.Evident
-namespace Pure.DI;
+namespace Pure.DI.Core.Models;
 
-public class Unit
+internal class Unit
 {
     public static readonly Unit Shared = new();
     

@@ -22,6 +22,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 using Moq;
+using Generator = Pure.DI.Generator;
 
 public static class TestExtensions
 {
@@ -36,8 +37,7 @@ public static class TestExtensions
             ? parseOptions.WithPreprocessorSymbols("NET")
             : parseOptions.WithPreprocessorSymbols(runOptions.PreprocessorSymbols);
 
-        var baseComposition = new CompositionBase();
-        var generatedApiSources = baseComposition.ApiBuilder.Build(Unit.Shared, CancellationToken.None).ToArray();
+        var generatedApiSources = Generator.GetApi(CancellationToken.None).ToArray();
         var compilation = CreateCompilation()
             .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication).WithNullableContextOptions(runOptions.NullableContextOptions))
             .AddSyntaxTrees(generatedApiSources.Select(api => CSharpSyntaxTree.ParseText(api.SourceText, parseOptions)))
@@ -51,24 +51,24 @@ public static class TestExtensions
         });
 
         var generatedSources = new List<Source>();
-        var contextOptions = new Mock<IContextOptions>();
+        var contextOptions = new Mock<IOptions>();
         contextOptions.SetupGet(i => i.GlobalOptions).Returns(() => globalOptions);
-        var contextProducer = new Mock<IContextProducer>();
-        var contextDiagnostic = new Mock<IContextDiagnostic>();
+        var contextProducer = new Mock<ISourcesRegistry>();
+        var contextDiagnostic = new Mock<IDiagnostic>();
         contextProducer.Setup(i => i.AddSource(It.IsAny<string>(), It.IsAny<SourceText>()))
             .Callback<string, SourceText>((hintName, sourceText) => { generatedSources.Add(new Source(hintName, sourceText)); });
 
         var compilationCopy = compilation;
         var updates = compilationCopy.SyntaxTrees.Select(i => CreateUpdate(i, compilationCopy));
-        var composition = new Composition(contextOptions.Object, contextProducer.Object, contextDiagnostic.Object);
+        var generator = new Generator(contextOptions.Object, contextProducer.Object, contextDiagnostic.Object);
         
         var dependencyGraphObserver = new Observer<DependencyGraph>();
-        using var dependencyGraphObserverToken = composition.ObserversRegistry.Register(dependencyGraphObserver);
+        using var dependencyGraphObserverToken = generator.RegisterObserver(dependencyGraphObserver);
 
         var logEntryObserver = new Observer<LogEntry>();
-        using var logEntryObserverToken = composition.ObserversRegistry.Register(logEntryObserver);
+        using var logEntryObserverToken = generator.RegisterObserver(logEntryObserver);
         
-        composition.Generator.Build(updates, CancellationToken.None);
+        generator.Generate(updates, CancellationToken.None);
         
         var logs = logEntryObserver.Values;
         var errors = logs.Where(i => i.Severity == DiagnosticSeverity.Error).ToImmutableArray();
@@ -218,7 +218,7 @@ public static class TestExtensions
                 MetadataReference.CreateFromFile(typeof(SortedSet<object>).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Uri).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(IContextOptions).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(IOptions).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(SourceGenerator).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Regex).Assembly.Location));
     

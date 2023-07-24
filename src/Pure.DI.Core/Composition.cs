@@ -11,13 +11,13 @@ using Core.CSharp;
 using Core.Models;
 
 // ReSharper disable once PartialTypeWithSinglePart
-public partial class Composition
+internal partial class Composition
 {
     private static void Setup() => DI.Setup(nameof(Composition))
         .DependsOn(nameof(CompositionBase))
-        .Arg<IContextOptions>("options")
-        .Arg<IContextProducer>("producer")
-        .Arg<IContextDiagnostic>("diagnostic")
+        .Arg<IOptions>("options")
+        .Arg<ISourcesRegistry>("producer")
+        .Arg<IDiagnostic>("diagnostic")
 
         // Transients
         .DefaultLifetime(Lifetime.Transient)
@@ -27,7 +27,7 @@ public partial class Composition
         .Bind<IMetadataSyntaxWalker>().To<MetadataSyntaxWalker>()
         .Bind<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>>().To<SetupsBuilder>()
         .Bind<IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>>>().To<MetadataBuilder>()
-        .Bind<IBuilder<IEnumerable<SyntaxUpdate>, Unit>>().To<Generator>()
+        .Bind<IBuilder<IEnumerable<SyntaxUpdate>, Unit>>().To<Core.Generator>()
         .Bind<IDependencyGraphBuilder>().To<DependencyGraphBuilder>()
         .Bind<IBuilder<MdSetup, DependencyGraph>>().To<VariationalDependencyGraphBuilder>()
         .Bind<IBuilder<MdSetup, IEnumerable<DependencyNode>>>(typeof(RootDependencyNodeBuilder)).To<RootDependencyNodeBuilder>()

@@ -2,7 +2,7 @@
 // ReSharper disable UnusedMemberInSuper.Global
 namespace Pure.DI;
 
-public interface IContextOptions
+public interface IOptions
 {
     ParseOptions ParseOptions { get; }
 

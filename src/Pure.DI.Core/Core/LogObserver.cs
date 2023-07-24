@@ -5,14 +5,14 @@ internal class LogObserver: ILogObserver
 {
     private readonly DiagnosticSeverity _severity;
     private readonly IBuilder<LogEntry, LogInfo> _logInfoBuilder;
-    private readonly IContextDiagnostic _diagnostic;
+    private readonly IDiagnostic _diagnostic;
     private readonly HashSet<DiagnosticInfo> _diagnostics = new();
     private readonly bool _hasLogFile;
 
     public LogObserver(
         IGlobalOptions globalOptions,
         IBuilder<LogEntry, LogInfo> logInfoBuilder,
-        IContextDiagnostic diagnostic)
+        IDiagnostic diagnostic)
     {
         _logInfoBuilder = logInfoBuilder;
         _diagnostic = diagnostic;

@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using Core;
 
 // ReSharper disable once PartialTypeWithSinglePart
-public partial class CompositionBase
+internal partial class CompositionBase
 {
     private static void Setup() => DI.Setup(nameof(CompositionBase))
         .Bind<ICache<TT1, TT2>>().As(Lifetime.Singleton).To<Cache<TT1, TT2>>()

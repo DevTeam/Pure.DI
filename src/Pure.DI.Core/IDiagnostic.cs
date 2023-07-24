@@ -1,6 +1,6 @@
 namespace Pure.DI;
 
-public interface IContextDiagnostic
+public interface IDiagnostic
 {
     public void ReportDiagnostic(Diagnostic diagnostic);
 }

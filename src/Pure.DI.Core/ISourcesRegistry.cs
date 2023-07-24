@@ -1,6 +1,6 @@
 namespace Pure.DI;
 
-public interface IContextProducer
+public interface ISourcesRegistry
 {
     void AddSource(string hintName, SourceText sourceText);
 }

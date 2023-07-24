@@ -17,7 +17,7 @@ internal class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
     private readonly IBuilder<DependencyGraph, CompositionCode> _compositionBuilder;
     private readonly IBuilder<CompositionCode, CompositionCode> _classBuilder;
     private readonly IValidator<MdSetup> _metadataValidator;
-    private readonly IContextProducer _contextProducer;
+    private readonly ISourcesRegistry _sourcesRegistry;
     private readonly IObserversRegistry _observersRegistry;
     private readonly ILogObserver _logObserver;
     private readonly IObserversProvider _observersProvider;
@@ -35,7 +35,7 @@ internal class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
         [Tag(WellknownTag.CSharpCompositionBuilder)] IBuilder<DependencyGraph, CompositionCode> compositionBuilder,
         [Tag(WellknownTag.CSharpClassBuilder)] IBuilder<CompositionCode, CompositionCode> classBuilder,
         IValidator<MdSetup> metadataValidator,
-        IContextProducer contextProducer)
+        ISourcesRegistry sourcesRegistry)
     {
         _logger = logger;
         _globalOptions = globalOptions;
@@ -49,7 +49,7 @@ internal class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
         _compositionBuilder = compositionBuilder;
         _classBuilder = classBuilder;
         _metadataValidator = metadataValidator;
-        _contextProducer = contextProducer;
+        _sourcesRegistry = sourcesRegistry;
     }
 
     public Unit Build(IEnumerable<SyntaxUpdate> updates, CancellationToken cancellationToken)
@@ -115,7 +115,7 @@ internal class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
                     {
                         cancellationToken.ThrowIfCancellationRequested();
                         var classCode = string.Join(Environment.NewLine, composition.Code);
-                        _contextProducer.AddSource($"{setup.Name.FullName}.g.cs", SourceText.From(classCode, Encoding.UTF8));
+                        _sourcesRegistry.AddSource($"{setup.Name.FullName}.g.cs", SourceText.From(classCode, Encoding.UTF8));
                     }
 
                     if (LoggerExtensions.IsTracing())
