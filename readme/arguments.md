@@ -5,46 +5,53 @@
 Sometimes you need to pass some state to the composition class in order to use it when resolving dependencies. Just use the `Arg` method, specify the type of the argument and the name of the argument. A tag can also be specified for each argument. After that, they can be used as dependencies when building an object graph. If you have multiple arguments of the same type, just use tags to distinguish between them.
 
 ```c#
-interface IDependency { }
+interface IDependency
+{
+    int Id { get; }
+}
 
-class Dependency : IDependency { }
+class Dependency : IDependency
+{
+    public Dependency(int id) => Id = id;
+
+    public int Id { get; }
+}
 
 interface IService
 {
-    string Id { get; }
-
     string Name { get; }
+
+    IDependency Dependency { get; }
 }
 
 class Service : IService
 {
     public Service(
-        string id,
         [Tag("name")] string name,
         IDependency dependency)
     {
-        Id = id;
         Name = name;
+        Dependency = dependency;
     }
 
-    public string Id { get; }
-
     public string Name { get; }
+
+    public IDependency Dependency { get; }
 }
 
 DI.Setup("Composition")
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>().Root<IService>("Root")
     // Some argument
-    .Arg<string>("id")
+    .Arg<int>("id")
     // An argument can be tagged (e.g., tag "name")
     // to be injectable by type and this tag
     .Arg<string>("serviceName", "name");
 
-var composition = new Composition(serviceName: "Abc", id: "123");
+var composition = new Composition(serviceName: "Abc", id: 123);
 var service = composition.Root;
 service.Name.ShouldBe("Abc");
-service.Id.ShouldBe("123");
+service.Dependency.Id.ShouldBe(123);
 ```
 
 <details open>
@@ -61,12 +68,13 @@ classDiagram
   }
   Service --|> IService : 
   class Service {
-    +Service(String id, String name, IDependency dependency)
+    +Service(String name, IDependency dependency)
   }
   Dependency --|> IDependency : 
   class Dependency {
-    +Dependency()
+    +Dependency(Int32 id)
   }
+  class Int32
   class String
   class IService {
     <<abstract>>
@@ -74,9 +82,9 @@ classDiagram
   class IDependency {
     <<abstract>>
   }
-  Service o-- String : Argument "id"
   Service o-- String : "name"  Argument "serviceName"
   Service *--  Dependency : IDependency dependency
+  Dependency o-- Int32 : Argument "id"
   Composition ..> Service : IService Root
 ```
 
@@ -88,16 +96,11 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly string _argM07D24di_id;
+  private readonly int _argM07D24di_id;
   private readonly string _argM07D24di_serviceName;
   
-  public Composition(string id, string serviceName)
+  public Composition(int id, string serviceName)
   {
-    if (global::System.Object.ReferenceEquals(id, null))
-    {
-      throw new global::System.ArgumentNullException("id");
-    }
-    
     if (global::System.Object.ReferenceEquals(serviceName, null))
     {
       throw new global::System.ArgumentNullException("serviceName");
@@ -119,8 +122,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.ArgumentsScenario.Dependency transientM07D24di_0001 = new Pure.DI.UsageTests.Basics.ArgumentsScenario.Dependency();
-      Pure.DI.UsageTests.Basics.ArgumentsScenario.Service transientM07D24di_0000 = new Pure.DI.UsageTests.Basics.ArgumentsScenario.Service(_argM07D24di_id, _argM07D24di_serviceName, transientM07D24di_0001);
+      Pure.DI.UsageTests.Basics.ArgumentsScenario.Dependency transientM07D24di_0001 = new Pure.DI.UsageTests.Basics.ArgumentsScenario.Dependency(_argM07D24di_id);
+      Pure.DI.UsageTests.Basics.ArgumentsScenario.Service transientM07D24di_0000 = new Pure.DI.UsageTests.Basics.ArgumentsScenario.Service(_argM07D24di_serviceName, transientM07D24di_0001);
       return transientM07D24di_0000;
     }
   }
@@ -211,12 +214,13 @@ partial class Composition
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
-          "    +Service(String id, String name, IDependency dependency)\n" +
+          "    +Service(String name, IDependency dependency)\n" +
         "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
-          "    +Dependency()\n" +
+          "    +Dependency(Int32 id)\n" +
         "  }\n" +
+        "  class Int32\n" +
         "  class String\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
@@ -224,9 +228,9 @@ partial class Composition
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  Service o-- String : Argument \"id\"\n" +
         "  Service o-- String : \"name\"  Argument \"serviceName\"\n" +
         "  Service *--  Dependency : IDependency dependency\n" +
+        "  Dependency o-- Int32 : Argument \"id\"\n" +
         "  Composition ..> Service : IService Root";
   }
   

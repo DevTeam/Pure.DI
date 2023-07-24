@@ -15,31 +15,38 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency { }
+interface IDependency
+{
+    int Id { get; }
+}
 
-class Dependency : IDependency { }
+class Dependency : IDependency
+{
+    public Dependency(int id) => Id = id;
+
+    public int Id { get; }
+}
 
 interface IService
 {
-    string Id { get; }
-
     string Name { get; }
+    
+    IDependency Dependency { get; }
 }
 
 class Service : IService
 {
     public Service(
-        string id,
         [Tag("name")] string name,
         IDependency dependency)
     {
-        Id = id;
         Name = name;
+        Dependency = dependency;
     }
 
-    public string Id { get; }
-    
     public string Name { get; }
+    
+    public IDependency Dependency { get; }
 }
 // }
 
@@ -55,15 +62,15 @@ public class Scenario
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>().Root<IService>("Root")
             // Some argument
-            .Arg<string>("id")
+            .Arg<int>("id")
             // An argument can be tagged (e.g., tag "name")
             // to be injectable by type and this tag
             .Arg<string>("serviceName", "name");
 
-        var composition = new Composition(serviceName: "Abc", id: "123");
+        var composition = new Composition(serviceName: "Abc", id: 123);
         var service = composition.Root;
         service.Name.ShouldBe("Abc");
-        service.Id.ShouldBe("123");
+        service.Dependency.Id.ShouldBe(123);
 // }
         TestTools.SaveClassDiagram(composition, nameof(ArgumentsScenario));
     }
