@@ -99,7 +99,7 @@ The [project file](/samples/ShroedingersCat/ShroedingersCat.csproj) looks like t
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.0.1">
+        <PackageReference Include="Pure.DI" Version="2.0.2">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
