@@ -249,10 +249,10 @@ dotnet run
 - [OnNewInstance hint](readme/onnewinstance-hint.md)
 - [ToString hint](readme/tostring-hint.md)
 ### Applications
-- [Console application](readme/ConsoleTemplate.md)
-- [WPF application](readme/WpfTemplate.md)
-- [Web API](readme/WebAPITemplate.md)
-- [Top level statements console application](readme/ConsoleTopLevelStatementsTemplate.md)
+- [Console application](readme/Console.md)
+- [WPF application](readme/Wpf.md)
+- [Web API](readme/WebAPI.md)
+- [Top level statements console application](readme/ConsoleTopLevelStatements.md)
 
 ## Generated Code
 

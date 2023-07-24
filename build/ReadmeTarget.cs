@@ -8,6 +8,7 @@ using Pure.DI;
 
 internal class ReadmeTarget : ITarget<int>
 {
+    private readonly Settings _settings;
     private readonly ITarget<int> _benchmarksTarget;
     private const string ReadmeDir = "readme";
     private const string ReadmeHeaderFile = "README.md";
@@ -33,8 +34,11 @@ internal class ReadmeTarget : ITarget<int>
         "Hints"
     };
 
-    public ReadmeTarget([Tag("benchmarks")] ITarget<int> benchmarksTarget)
+    public ReadmeTarget(
+        Settings settings,
+        [Tag("benchmarks")] ITarget<int> benchmarksTarget)
     {
+        _settings = settings;
         _benchmarksTarget = benchmarksTarget;
     }
 
@@ -202,12 +206,20 @@ internal class ReadmeTarget : ITarget<int>
         return examples;
     }
 
-    private static async Task GenerateExamples(IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)> examples, TextWriter readmeWriter, string logsDirectory)
+    private async Task GenerateExamples(IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)> examples, TextWriter readmeWriter, string logsDirectory)
     {
+        var packageVersion = Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI"), _settings.VersionRange).ToString();
         foreach (var readmeFile in Directory.EnumerateFiles(Path.Combine(ReadmeDir), "*.md"))
         {
             if (readmeFile.EndsWith("Template.md", StringComparison.InvariantCultureIgnoreCase))
             {
+                if (readmeFile.EndsWith("PageTemplate.md"))
+                {
+                    var content = await File.ReadAllTextAsync(readmeFile);
+                    content = content.Replace($"$(version)", packageVersion);
+                    await File.WriteAllTextAsync(readmeFile.Replace("PageTemplate.md", ".md"), content);
+                }
+                
                 continue;
             }
             
