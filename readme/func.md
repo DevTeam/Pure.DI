@@ -89,7 +89,7 @@ partial class Composition
     get
     {
       System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency> perResolveM07D25di_0001;
-      perResolveM07D25di_0001 = new System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>(() =>
+      perResolveM07D25di_0001 = new global::System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>(() =>
       {
           Pure.DI.UsageTests.BCL.FuncScenario.IDependency value;
           Pure.DI.UsageTests.BCL.FuncScenario.Dependency transientM07D25di_0004 = new Pure.DI.UsageTests.BCL.FuncScenario.Dependency();

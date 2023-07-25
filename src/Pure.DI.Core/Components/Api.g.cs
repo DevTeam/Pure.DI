@@ -6,8 +6,8 @@
 namespace System.Diagnostics.CodeAnalysis
 {
     // ReSharper disable UnusedType.Global
-    [global::System.AttributeUsage(global::System.AttributeTargets.Assembly | global::System.AttributeTargets.Class | global::System.AttributeTargets.Constructor | global::System.AttributeTargets.Event | global::System.AttributeTargets.Method | global::System.AttributeTargets.Property | global::System.AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
-    public sealed class ExcludeFromCodeCoverageAttribute : Attribute
+    [global::SystemAttributeUsage(global::SystemAttributeTargets.Assembly | global::SystemAttributeTargets.Class | global::SystemAttributeTargets.Constructor | global::SystemAttributeTargets.Event | global::SystemAttributeTargets.Method | global::SystemAttributeTargets.Property | global::SystemAttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
+    public sealed class ExcludeFromCodeCoverageAttribute : global::SystemAttribute
     {
     }
 }
@@ -23,7 +23,7 @@ namespace System
 
 namespace Pure.DI
 {
-    using System;
+    using global::System;
     using global::System.Diagnostics;
 
     /// <summary>
@@ -120,7 +120,7 @@ namespace Pure.DI
         OnCannotResolveLifetimeRegularExpression,
         
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to generate a static partial <c>OnNewRoot<T>(...)</c> method to handle the new composition root registration event. <c>Off</c> by default.
+        /// <c>On</c> or <c>Off</c>. Determines whether to generate a static partial <c>OnNewRoot<T>(...)</c> method to handle the new Composition root registration event. <c>Off</c> by default.
         /// </summary>
         OnNewRoot,
         
@@ -130,7 +130,7 @@ namespace Pure.DI
         ToString,
         
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. This hint determines whether object composition will be created in a thread-safe manner. <c>On</c> by default. 
+        /// <c>On</c> or <c>Off</c>. This hint determines whether object Composition will be created in a thread-safe manner. <c>On</c> by default. 
         /// </summary>
         ThreadSafe,
         
@@ -186,63 +186,71 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// Represents the generic type arguments marker. It allows creating custom generic type arguments marker like <see cref="TTS"/>, <see cref="TTDictionary{TKey,TValue}"/> and etc. 
+    /// Represents a generic type argument marker. It allows you to create custom generic argument tokens such as <see cref="TTS"/>, <see cref="TTDictionary{TKey,TValue}"/>, etc. 
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Struct)]
+    [global::System.AttributeUsage(global::System.AttributeTargets.Class | global::System.AttributeTargets.Interface | global::System.AttributeTargets.Struct)]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal sealed class GenericTypeArgumentAttribute : Attribute { }
+    internal sealed class GenericTypeArgumentAttribute : global::System.Attribute { }
     
     /// <summary>
-    /// Represents an ordinal attribute overriding an injection ordinal.
+    /// Represents an ordinal attribute. For constructors, it defines the sequence of attempts to use a particular constructor to create an object. For fields, properties and methods, it specifies to perform dependency injection and defines the sequence.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
+    [global::System.AttributeUsage(global::System.AttributeTargets.Constructor | global::System.AttributeTargets.Method | global::System.AttributeTargets.Property | global::System.AttributeTargets.Field, AllowMultiple = false)]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class OrdinalAttribute : Attribute
+    internal class OrdinalAttribute : global::System.Attribute
     {
         /// <summary>
         /// Creates an attribute instance.
         /// </summary>
         /// <param name="ordinal">The injection ordinal.</param>
-        public OrdinalAttribute(int ordinal)
-        {
-        }
+        public OrdinalAttribute(int ordinal) { }
     }
 
     /// <summary>
     /// Represents a tag attribute overriding an injection tag.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
+    [global::System.AttributeUsage(global::System.AttributeTargets.Parameter | global::System.AttributeTargets.Property | global::System.AttributeTargets.Field, AllowMultiple = false)]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TagAttribute : Attribute
+    internal class TagAttribute : global::System.Attribute
     {
         /// Creates an attribute instance.
         /// </summary>
         /// <param name="tag">The injection tag. See also <see cref="IBinding.Tags"/></param>.
-        public TagAttribute(object tag)
-        {
-        }
+        public TagAttribute(object tag) { }
     }
 
     /// <summary>
     /// Represents a dependency type attribute overriding an injection type. 
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
+    [global::System.AttributeUsage(global::System.AttributeTargets.Parameter | global::System.AttributeTargets.Property | global::System.AttributeTargets.Field, AllowMultiple = false)]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TypeAttribute : Attribute
+    internal class TypeAttribute : global::System.Attribute
     {
         /// <summary>
         /// Creates an attribute instance.
         /// </summary>
         /// <param name="type">The injection type. See also <see cref="IConfiguration.Bind{T}"/> and <see cref="IBinding.Bind{T}"/>.</param>
-        public TypeAttribute(Type type)
-        {
-        }
+        public TypeAttribute(global::System.Type type) { }
     }
-    
+
+    /// <summary>
+    /// Determines the kind of Composition.
+    /// </summary>
     internal enum CompositionKind
     {
+        /// <summary>
+        /// This value is used by default. If this value is specified, a normal Composition class will be created.
+        /// </summary>
         Public,
+        
+        /// <summary>
+        /// If you specify this value, the class will not be generated, but this setup can be used by others as a baseline. `DependsOn(...)` is required
+        /// </summary>
         Internal,
+        
+        /// <summary>
+        /// No Composition class will be created when this value is specified, but this setup is the baseline for all installations in the current project, and `DependsOn(...)` is not required.
+        /// </summary>
         Global
     }
     
@@ -252,156 +260,73 @@ namespace Pure.DI
     internal interface IConfiguration
     {
         /// <summary>
-        /// Starts a binding.
-        /// <example>
-        /// <code>
-        /// static partial class Composition
-        /// {
-        ///   static Composition() =&gt; DI.Setup()
-        ///     .Bind&lt;IBox&lt;TT&gt;&gt;().To&gt;CardboardBox&lt;TT&gt;&gt;()
-        /// }
-        /// </code>
-        /// </example>
+        /// Starts defining a binding.
         /// </summary>
-        /// <typeparam name="T">The type of dependency to bind. Also supports generic type markers like <see cref="TT"/>, <see cref="TTList{T}"/> and others.</typeparam>
-        /// <param name="tags">The optional argument specifying the tags for the specific dependency type of binding.</param>
+        /// <typeparam name="T">The type of dependency to be bound. Common type markers such as <see cref="TT"/>, <see cref="TTList{T}"/> and others are also supported.</typeparam>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Binding configuration API.</returns>
         IBinding Bind<T>(params object[] tags);
 
         /// <summary>
-        /// Use some DI configuration as a base by its name.
-        /// <example>
-        /// <code>
-        /// static partial class Composition
-        /// {
-        ///   static Composition() =&gt; DI.Setup()
-        ///     .DependsOn("MyBaseComposition");
-        /// }
-        /// </code>
-        /// </example>
+        /// Specifies to use some DI configuration as the base configuration by its name.
         /// </summary>
         /// <param name="baseConfigurationNames">The name of a base DI configuration.</param>
         /// <returns>DI configuration API.</returns>
         IConfiguration DependsOn(params string[] baseConfigurationNames);
 
         /// <summary>
-        /// Determines a custom attribute overriding an injection type.
-        /// <example>
-        /// <code>
-        /// [AttributeUsage(
-        ///   AttributeTargets.Parameter
-        ///   | AttributeTargets.Property
-        ///   | AttributeTargets.Field)]
-        /// public class MyTypeAttribute : Attribute
-        /// {
-        ///   public readonly Type Type;
-        ///   public MyTypeAttribute(Type type) => Type = type;
-        /// }
-        /// static partial class Composition
-        /// {
-        ///   static Composition() =&gt; DI.Setup()
-        ///     .TypeAttribute&lt;MyTypeAttribute&gt;();
-        /// }
-        /// </code>
-        /// </example>
+        /// Specifies a custom attribute that overrides the injection type.
         /// </summary>
-        /// <param name="typeArgumentPosition">The optional position of a type parameter in the attribute constructor. See the predefined <see cref="TypeAttribute{T}"/> attribute.</param>
+        /// <param name="typeArgumentPosition">The optional parameter that specifies the position of the type parameter in the attribute constructor. 0 by default. See predefined attribute <see cref="TypeAttribute{T}"/>.</param>
         /// <typeparam name="T">The attribute type.</typeparam>
         /// <returns>DI configuration API.</returns>
-        IConfiguration TypeAttribute<T>(int typeArgumentPosition = 0) where T : Attribute;
+        IConfiguration TypeAttribute<T>(int typeArgumentPosition = 0) where T : global::System.Attribute;
 
         /// <summary>
-        /// Determines a tag attribute overriding an injection tag.
-        /// <example>
-        /// <code>
-        /// [AttributeUsage(
-        ///   AttributeTargets.Parameter
-        ///   | AttributeTargets.Property
-        ///   | AttributeTargets.Field)]
-        /// public class MyTagAttribute : Attribute
-        /// {
-        ///   public readonly object Tag;
-        ///   public MyTagAttribute(object tag) => Tag = tag;
-        /// }
-        /// static partial class Composition
-        /// {
-        ///   static Composition() =&gt; DI.Setup()
-        ///     .TagAttribute&lt;MyTagAttribute&gt;();
-        /// }
-        /// </code>
-        /// </example>
+        /// Specifies a tag attribute that overrides the injected tag.
         /// </summary>
-        /// <param name="tagArgumentPosition">The optional position of a tag parameter in the attribute constructor. See the predefined <see cref="TagAttribute{T}"/> attribute.</param>
+        /// <param name="tagArgumentPosition">The optional parameter that specifies the position of the tag parameter in the attribute constructor. 0 by default. See the predefined <see cref="TagAttribute{T}"/> attribute.</param>
         /// <typeparam name="T">The attribute type.</typeparam>
         /// <returns>DI configuration API.</returns>
-        IConfiguration TagAttribute<T>(int tagArgumentPosition = 0) where T : Attribute;
+        IConfiguration TagAttribute<T>(int tagArgumentPosition = 0) where T : global::System.Attribute;
 
         /// <summary>
-        /// Determines a custom attribute overriding an injection Ordinal.
-        /// <example>
-        /// <code>
-        /// [AttributeUsage(
-        ///   AttributeTargets.Constructor
-        ///   | AttributeTargets.Method
-        ///   | AttributeTargets.Property
-        ///   | AttributeTargets.Field)]
-        /// public class MyOrdinalAttribute : Attribute
-        /// {
-        ///   public readonly int Ordinal;
-        ///   public MyOrdinalAttribute(int ordinal) => Ordinal = ordinal;
-        /// }
-        /// static partial class Composition
-        /// {
-        ///   static Composition() =&gt; DI.Setup()
-        ///     .OrdinalAttribute&lt;MyOrdinalAttribute&gt;();
-        /// }
-        /// </code>
-        /// </example> 
+        /// Specifies a custom attribute that overrides the injection ordinal.
         /// </summary>
-        /// <param name="ordinalArgumentPosition">The optional position of parameter in the attribute constructor. 0 by default. See the predefined <see cref="OrdinalAttribute{T}"/> attribute.</param>
+        /// <param name="ordinalArgumentPosition">The optional parameter that specifies the position of the ordinal parameter in the attribute constructor. 0 by default. See the predefined <see cref="OrdinalAttribute{T}"/> attribute.</param>
         /// <typeparam name="T">The attribute type.</typeparam>
         /// <returns>DI configuration API.</returns>
-        IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition = 0) where T : Attribute;
+        IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition = 0) where T : global::System.Attribute;
 
         /// <summary>
-        /// Overrides a default <see cref="Lifetime"/>. <see cref="Lifetime.Transient"/> is default lifetime.
-        /// <example>
-        /// <code>
-        /// static partial class Composition
-        /// {
-        ///   static Composition() =&gt; DI.Setup()
-        ///     .Default(Lifetime.Singleton)
-        ///     .Bind&lt;ICat&gt;().To&lt;ShroedingersCat&gt;();
-        /// }
-        /// </code>
-        /// </example>
+        /// Overrides the default <see cref="Lifetime"/> for all bindings further down the chain. If not specified, the <see cref="Lifetime.Transient"/> lifetime is used.
         /// </summary>
-        /// <param name="lifetime">The new default lifetime.</param>
+        /// <param name="lifetime">The default lifetime.</param>
         /// <returns>DI configuration API.</returns>
         IConfiguration DefaultLifetime(Pure.DI.Lifetime lifetime);
         
         /// <summary>
-        /// Adds a resolution argument  
+        /// Adds a Composition argument.  
         /// </summary>
         /// <param name="name">The argument name.</param>
-        /// <param name="tags">The optional argument specifying the tags for the argument.</param>
+        /// <param name="tags">The optional argument that specifies the tags for the argument.</param>
         /// <typeparam name="T">The argument type.</typeparam>
         /// <returns>DI configuration.</returns>
         IConfiguration Arg<T>(string name, params object[] tags);
         
         /// <summary>
-        /// Specifies a composition root
+        /// Specifying the root of the Composition.
         /// </summary>
-        /// <param name="name">The name of the root.</param>
-        /// <param name="tag">Optional argument indicating the tag for the root of the composition.</param>
-        /// <typeparam name="T">The composition root type.</typeparam>
+        /// <param name="name">Specifies the unique name of the root of the composition. If the value is empty, a private root will be created, which can be used when calling <c>Resolve</c> methods.</param>
+        /// <param name="tag">Optional argument specifying the tag for the root of the Composition.</param>
+        /// <typeparam name="T">The Composition root type.</typeparam>
         /// <returns>DI configuration.</returns>
         IConfiguration Root<T>(string name = "", object tag = null);
 
         /// <summary>
-        /// Determines a hint
+        /// Defines a hint for fine-tuning code generation.
         /// </summary>
-        /// <param name="hint">The hint name.</param>
+        /// <param name="hint">The hint type.</param>
         /// <param name="value">The hint value.</param>
         /// <returns>DI configuration.</returns>
         IConfiguration Hint(Hint hint, string value);
@@ -413,97 +338,51 @@ namespace Pure.DI
     internal interface IBinding
     {
         /// <summary>
-        /// Continue a binding configuration chain, determining an additional dependency type.
-        /// <example>
-        /// <code>
-        /// static partial class Composition
-        /// {
-        ///   static Composition() =&gt; DI.Setup()
-        ///     .Bind&lt;ICat&gt;().To&lt;ShroedingersCat&gt;();
-        /// }
-        /// </code>
-        /// </example>
+        /// Starts defining a binding.
         /// </summary>
-        /// <typeparam name="T">The type of dependency to bind. Also supports generic type markers like <see cref="TT"/>, <see cref="TTList{T}"/> and others.</typeparam>
-        /// <param name="tags">The optional argument specifying the tags for the specific dependency type of binding.</param>
+        /// <typeparam name="T">The type of dependency to be bound. Common type markers such as <see cref="TT"/>, <see cref="TTList{T}"/> and others are also supported.</typeparam>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Binding configuration API.</returns>
         IBinding Bind<T>(params object[] tags);
 
         /// <summary>
-        /// Determines a binding <see cref="Lifetime"/>.
-        /// <example>
-        /// <code>
-        /// static partial class Composition
-        /// {
-        ///   static Composition() =&gt; DI.Setup()
-        ///     .Bind&lt;ICat&gt;().As(Lifetime.Singleton).To&lt;ShroedingersCat&gt;();
-        /// }
-        /// </code>
-        /// </example>
+        /// Determines the <see cref="Lifetime"/> of a binding.
         /// </summary>
-        /// <param name="lifetime">The binding <see cref="Lifetime"/>.</param>
+        /// <param name="lifetime">The <see cref="Lifetime"/> of a binding</param>
         /// <returns>Binding configuration API.</returns>
         IBinding As(Pure.DI.Lifetime lifetime);
 
         /// <summary>
-        /// Determines a binding tag.
-        /// <example>
-        /// <code>
-        /// static partial class Composition
-        /// {
-        ///   static Composition() =&gt; DI.Setup()
-        ///     .Bind&lt;ICat&gt;().Tag("MyCat").To&lt;ShroedingersCat&gt;();
-        /// }
-        /// </code>
-        /// </example>
+        /// Defines the binding tags.
         /// </summary>
-        /// <param name="tags">Tags for all dependency types of binding.</param>
+        /// <param name="tags">The binding tags.</param>
         /// <returns>Binding configuration API.</returns>
         IBinding Tags(params object[] tags);
 
         /// <summary>
-        /// Finish a binding configuration chain by determining a binding implementation.
-        /// <example>
-        /// <code>
-        /// static partial class Composition
-        /// {
-        ///   static Composition() =&gt; DI.Setup()
-        ///     .Bind&lt;ICat&gt;().To&lt;ShroedingersCat&gt;();
-        /// }
-        /// </code>
-        /// </example>
+        /// Completes the binding chain by specifying the implementation.
         /// </summary>
-        /// <typeparam name="T">The type of binding implementation. Also supports generic type markers like <see cref="TT"/>, <see cref="TTList{T}"/> and others.</typeparam>
+        /// <typeparam name="T">The implementation type. Also supports generic type markers such as <see cref="TT"/>, <see cref="TTList{T}"/>, and others.</typeparam>
         /// <returns>DI configuration API.</returns>
         IConfiguration To<T>();
 
         /// <summary>
-        /// Finish a binding configuration chain by determining a binding implementation using a factory method. It allows to resole an instance manually, invoke required methods, initialize properties, fields and etc.
-        /// <example>
-        /// <code>
-        /// DI.Setup()
-        ///  .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;()
-        ///  .Bind&lt;INamedService&gt;().To(
-        ///    ctx =&gt;
-        ///    {
-        ///      var service = new InitializingNamedService(ctx.Resolve&lt;IDependency&gt;());
-        ///      service.Initialize("Initialized!", ctx.Resolve&lt;IDependency&gt;());
-        ///      return service;
-        ///    });
-        /// </code>
-        /// </example>
+        /// Completes the binding chain by specifying the implementation using a factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc.
         /// </summary>
-        /// <param name="factory">The method providing an dependency implementation.</param>
-        /// <typeparam name="T">The type of binding implementation. Also supports generic type markers like <see cref="TT"/>, <see cref="TTList{T}"/> and others.</typeparam>
-        /// <returns>DI configuration.</returns>
-        IConfiguration To<T>(Func<IContext, T> factory);
+        /// <param name="factory">Lambda expression that provides dependency creation.</param>
+        /// <typeparam name="T">The implementation type. Also supports generic type markers such as <see cref="TT"/>, <see cref="TTList{T}"/>, and others.</typeparam>
+        /// <returns>DI configuration API.</returns>
+        IConfiguration To<T>(global::System.Func<IContext, T> factory);
     }
 
     /// <summary>
-    /// The abstraction to inject a DI dependency via <see cref="IBinding.To{T}(System.Func{IContext,T})"/>.
+    /// Abstract injection context./>.
     /// </summary>
     internal interface IContext
     {
+        /// <summary>
+        /// The tag that was used to inject the current object in the object graph.
+        /// </summary>
         object Tag { get; }
             
         /// <summary>
@@ -518,37 +397,16 @@ namespace Pure.DI
     }
     
     /// <summary>
-    /// Provides API to configure a DI composition.
-    /// <example>
-    /// <code>
-    /// static partial class Composition
-    /// {
-    ///   private static readonly Random Indeterminacy = new();
-    ///   static Composition() =&gt; DI.Setup()
-    ///     .Bind&lt;State&gt;().To(_ =&gt; (State)Indeterminacy.Next(2))
-    ///     .Bind&lt;ICat&gt;().To&lt;ShroedingersCat&gt;()
-    ///     .Bind&lt;IBox&lt;TT&gt;&gt;().To&gt;CardboardBox&lt;TT&gt;&gt;()
-    ///     .Bind&lt;Program&gt;().As(Lifetime.Singleton).To&lt;Program&gt;();
-    /// }
-    /// </code>
-    /// </example>
+    /// Provides API to setup a DI Composition.
     /// </summary>
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal static class DI
     {
         /// <summary>
-        /// Starts a new or continues an existing DI configuration chain.
-        /// <example>
-        /// <code>
-        /// static partial class Composition
-        /// {
-        ///   static Composition() =&gt; DI.Setup("MyComposition");
-        /// }
-        /// </code>
-        /// </example>
+        /// Begins the definitions of the DI setup chain.
         /// </summary>
-        /// <param name="compositionTypeName">This argument specifying a custom DI composition type name to generate. By default, it is a name of an owner class if the owner class is <c>static partial class</c> otherwise, it is a name of an owner plus the "DI" postfix. /// <param name="compositionTypeName">The optional argument specifying a custom DI composition type name to generate. By default, it is a name of an owner class if the owner class is <c>static partial class</c> otherwise, it is a name of an owner plus the "DI" postfix. For a top level statements application the name is <c>Composition</c> by default.</param></param>
-        /// <param name="kind">This argument specifying a composition scope. By default, it is <c>Public</c> by default.</param></param>
+        /// <param name="compositionTypeName">This argument specifying a custom DI Composition type name to generate. By default, it is a name of an owner class if the owner class is <c>static partial class</c> otherwise, it is a name of an owner plus the "DI" postfix. /// <param name="compositionTypeName">The optional argument specifying a custom DI Composition type name to generate. By default, it is a name of an owner class if the owner class is <c>static partial class</c> otherwise, it is a name of an owner plus the "DI" postfix. For a top level statements application the name is <c>Composition</c> by default.</param></param>
+        /// <param name="kind">This argument specifying a Composition scope. By default, it is <c>Public</c> by default.</param></param>
         /// <returns>DI configuration API.</returns>
         [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
         internal static IConfiguration Setup(string compositionTypeName, CompositionKind kind = CompositionKind.Public)
@@ -578,21 +436,21 @@ namespace Pure.DI
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-            public IConfiguration TypeAttribute<T>(int typeArgumentPosition = 0) where T : Attribute
+            public IConfiguration TypeAttribute<T>(int typeArgumentPosition = 0) where T : global::System.Attribute
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-            public IConfiguration TagAttribute<T>(int tagArgumentPosition = 0) where T : Attribute
+            public IConfiguration TagAttribute<T>(int tagArgumentPosition = 0) where T : global::System.Attribute
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-            public IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition = 0) where T : Attribute
+            public IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition = 0) where T : global::System.Attribute
             {
                 return Configuration.Shared;
             }
@@ -630,9 +488,7 @@ namespace Pure.DI
         {
             public static readonly IBinding Shared = new Binding();
 
-            private Binding()
-            {
-            }
+            private Binding() { }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
@@ -664,13 +520,16 @@ namespace Pure.DI
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-            public IConfiguration To<T>(Func<IContext, T> factory)
+            public IConfiguration To<T>(global::System.Func<IContext, T> factory)
             {
                 return Configuration.Shared;
             }
         }
     }
     
+    /// <summary>
+    /// For internal use.
+    /// </summary>
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     [global::System.Runtime.InteropServices.StructLayout(global::System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 1)]
     internal struct Pair<TKey, TValue>
@@ -690,6 +549,9 @@ namespace Pure.DI
         }
     }
     
+    /// <summary>
+    /// For internal use. 
+    /// </summary>
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal static class Buckets<TKey, TValue>
     {
@@ -704,12 +566,12 @@ namespace Pure.DI
             Pair<TKey, TValue>[] pairs)
         {
             bucketSize = 0;
-            int[] bicketSizes = new int[divisor];
+            int[] bucketSizes = new int[divisor];
             for (int i = 0; i < pairs.Length; i++)
             {
                 uint bucket = ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pairs[i].Key)) % divisor;
-                int size = bicketSizes[bucket] + 1;
-                bicketSizes[bucket] = size;
+                int size = bucketSizes[bucket] + 1;
+                bucketSizes[bucket] = size;
                 if (size > bucketSize)
                 {
                     bucketSize = size;
@@ -720,19 +582,35 @@ namespace Pure.DI
             for (int i = 0; i < pairs.Length; i++)
             {
                 uint bucket = ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pairs[i].Key)) % divisor;
-                var index = bicketSizes[bucket] - 1;
+                var index = bucketSizes[bucket] - 1;
                 buckets[bucket * bucketSize + index] = pairs[i];
-                bicketSizes[bucket] = index;
+                bucketSizes[bucket] = index;
             }
             
             return buckets;
         }
     }
 
+    /// <summary>
+    /// The abstract dependency resolver for internal use.
+    /// </summary>
+    /// <typeparam name="TComposite">The Composition instance.</typeparam>
+    /// <typeparam name="T">The type of the Composition root.</typeparam>
     internal interface IResolver<TComposite, out T>
     {
+        /// <summary>
+        /// Resolves a Composition root.
+        /// </summary>
+        /// <param name="composite">The Composition instance.</param>
+        /// <returns>Compositional root.</returns>
         T Resolve(TComposite composite);
         
+        /// <summary>
+        /// Resolves a Composition root.
+        /// </summary>
+        /// <param name="composite">The Composition instance.</param>
+        /// <param name="tag">The tag of a Composition root.</param>
+        /// <returns>Compositional root.</returns>
         T ResolveByTag(TComposite composite, object tag);
     }
 }

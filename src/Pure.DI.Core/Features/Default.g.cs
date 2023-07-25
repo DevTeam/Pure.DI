@@ -12,9 +12,9 @@ namespace Pure.DI
                 .TypeAttribute<TypeAttribute>()
                 .TagAttribute<TagAttribute>()
                 .OrdinalAttribute<OrdinalAttribute>()
-                .Bind<System.Func<TT>>()
+                .Bind<global::System.Func<TT>>()
                     .As(Lifetime.PerResolve)
-                    .To(ctx => new System.Func<TT>(() =>
+                    .To(ctx => new global::System.Func<TT>(() =>
                     {
                         TT value;
                         ctx.Inject<TT>(ctx.Tag, out value);
