@@ -360,7 +360,7 @@ In this case, the constructor with arguments is as follows:
 public Composition(string name, int id) { ... }
 ```
 
-and there is no default constructor.
+and there is no default constructor. It is important to remember that only those arguments that are used in the object graph will appear in the constructor. Arguments that are not involved cannot be defined, as they are omitted from the constructor parameters to save resources.
 
 ### Child constructor
 
