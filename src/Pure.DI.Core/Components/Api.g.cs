@@ -566,10 +566,10 @@ namespace Pure.DI
             Pair<TKey, TValue>[] pairs)
         {
             bucketSize = 0;
-            int[] bucketSizes = new int[divisor];
+            Span<int> bucketSizes = divisor < 1024 ? stackalloc int[(int)divisor] : new int[divisor];
             for (int i = 0; i < pairs.Length; i++)
             {
-                uint bucket = ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pairs[i].Key)) % divisor;
+                int bucket = (int)(((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pairs[i].Key)) % divisor);
                 int size = bucketSizes[bucket] + 1;
                 bucketSizes[bucket] = size;
                 if (size > bucketSize)
@@ -581,7 +581,7 @@ namespace Pure.DI
             Pair<TKey, TValue>[] buckets = new Pair<TKey, TValue>[divisor * bucketSize];
             for (int i = 0; i < pairs.Length; i++)
             {
-                uint bucket = ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pairs[i].Key)) % divisor;
+                int bucket = (int)(((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(pairs[i].Key)) % divisor);
                 var index = bucketSizes[bucket] - 1;
                 buckets[bucket * bucketSize + index] = pairs[i];
                 bucketSizes[bucket] = index;
