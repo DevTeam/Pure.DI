@@ -1,4 +1,5 @@
 // ReSharper disable SuggestVarOrType_BuiltInTypes
+#pragma warning disable CS8500
 namespace Pure.DI.Benchmarks;
 
 using System.Diagnostics.CodeAnalysis;
@@ -7,6 +8,7 @@ using BenchmarkDotNet.Attributes;
 
 public class GetBenchmark
 {
+    private const int MaxItems = 10;
     private static readonly Pair<Type, string>[] Pairs;
     private static readonly uint Divisor;
     private static readonly int BucketSize;
@@ -30,15 +32,15 @@ public class GetBenchmark
             out BucketSize,
             data);
 
-        Key1 = data[10].Key;
-        Key2 = data[20].Key;
-        Key3 = data[30].Key;
-        Key4 = data[40].Key;
-        Key5 = data[50].Key;
-        Key6 = data[60].Key;
-        Key7 = data[70].Key;
-        Key8 = data[80].Key;
-        Key9 = data[90].Key;
+        Key1 = data[1].Key;
+        Key2 = data[2].Key;
+        Key3 = data[3].Key;
+        Key4 = data[4].Key;
+        Key5 = data[5].Key;
+        Key6 = data[6].Key;
+        Key7 = data[7].Key;
+        Key8 = data[8].Key;
+        Key9 = data[9].Key;
         Key10 = data[0].Key;
     }
 
@@ -55,6 +57,22 @@ public class GetBenchmark
         GetFor(Key7);
         GetFor(Key8);
         GetFor(Key9);
+        return GetFor(Key10);
+    }
+    
+    [Benchmark(OperationsPerInvoke = 10)]
+    [SuppressMessage("Performance", "CA1822:Mark members as static")]
+    public string GetForeach()
+    {
+        GetForeach(Key1);
+        GetForeach(Key2);
+        GetForeach(Key3);
+        GetForeach(Key4);
+        GetForeach(Key5);
+        GetForeach(Key6);
+        GetForeach(Key7);
+        GetForeach(Key8);
+        GetForeach(Key9);
         return GetFor(Key10);
     }
     
@@ -76,7 +94,7 @@ public class GetBenchmark
     
     [Benchmark(OperationsPerInvoke = 10)]
     [SuppressMessage("Performance", "CA1822:Mark members as static")]
-    public string Get2()
+    public string GetWhile()
     {
         GetWhile(Key1);
         GetWhile(Key2);
@@ -89,13 +107,43 @@ public class GetBenchmark
         GetWhile(Key9);
         return GetWhile(Key10);
     }
-
+    
+    [Benchmark(OperationsPerInvoke = 10)]
+    [SuppressMessage("Performance", "CA1822:Mark members as static")]
+    public string GetUnsafe()
+    {
+        GetUnsafe(Key1);
+        GetUnsafe(Key2);
+        GetUnsafe(Key3);
+        GetUnsafe(Key4);
+        GetUnsafe(Key5);
+        GetUnsafe(Key6);
+        GetUnsafe(Key7);
+        GetUnsafe(Key8);
+        GetUnsafe(Key9);
+        return GetUnsafe(Key10);
+    }
+    
     private static string GetFor(Type key)
     {
         int index = (int)(BucketSize * ((uint)RuntimeHelpers.GetHashCode(key) % Divisor));
         for (int i = index; i < index + BucketSize; i++)
         {
             ref var pair = ref Pairs[i];
+            if (ReferenceEquals(pair.Key, key))
+            {
+                return pair.Value;
+            }
+        }
+
+        throw new InvalidOperationException();
+    }
+    
+    private static string GetForeach(Type key)
+    {
+        int index = (int)(BucketSize * ((uint)RuntimeHelpers.GetHashCode(key) % Divisor));
+        foreach (ref var pair in Pairs.AsSpan(index, BucketSize))
+        {
             if (ReferenceEquals(pair.Key, key))
             {
                 return pair.Value;
@@ -114,8 +162,7 @@ public class GetBenchmark
             return pair.Value;
         }
 
-        int maxIndex = index + BucketSize;
-        for (int i = index + 1; i < maxIndex; i++)
+        for (int i = index + 1; i < index + BucketSize; i++)
         {
             pair = ref Pairs[i];
             if (ReferenceEquals(pair.Key, key))
@@ -130,6 +177,7 @@ public class GetBenchmark
     private static string GetWhile(Type key)
     {
         int index = (int)(BucketSize * ((uint)RuntimeHelpers.GetHashCode(key) % Divisor));
+        var finish = index + BucketSize;
         do
         {
             ref var pair = ref Pairs[index];
@@ -137,14 +185,32 @@ public class GetBenchmark
             {
                 return pair.Value;
             }
-        } while(++index < index + BucketSize);
+        } while(++index < finish);
 
         throw new InvalidOperationException();
     }
 
-    
+    private static unsafe string GetUnsafe(Type key)
+    {
+        fixed (Pair<Type, string>* pairsPtr = Pairs)
+        {
+            var pairPtr = pairsPtr + BucketSize * ((uint)RuntimeHelpers.GetHashCode(key) % Divisor);
+            var finishPtr = pairPtr + BucketSize;
+            do
+            {
+                if (ReferenceEquals(pairPtr->Key, key))
+                {
+                    return pairPtr->Value;
+                }
+            } while (++pairPtr < finishPtr);
+        }
+
+        throw new InvalidOperationException();
+    }
+
     private static Pair<Type, string>[] CreatePairs() =>
         Assembly.GetExecutingAssembly().GetTypes()
+            .Take(MaxItems)
             .Select(i => new Pair<Type, string>(i, i.ToString()))
             .ToArray();
 }

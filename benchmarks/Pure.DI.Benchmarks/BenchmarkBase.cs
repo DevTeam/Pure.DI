@@ -1,5 +1,8 @@
 ﻿// ReSharper disable RedundantUsingDirective
 // ReSharper disable UnusedMember.Global
+#pragma warning disable CS8601
+#pragma warning disable CS0649
+#pragma warning disable CS8618
 #pragma warning disable CS8604
 #pragma warning disable CS8602
 #pragma warning disable CS0169
@@ -22,15 +25,15 @@ using IContainer = Autofac.IContainer;
 
 public abstract class BenchmarkBase
 {
-    private Container? _iocContainer;
-    private Func<ICompositionRoot>? _iocRootResolver;
-    private IContainer? _autofacContainer;
-    private WindsorContainer? _windsorContainerContainer;
-    private global::DryIoc.Container? _dryIocContainer;
-    private ServiceContainer? _lightInjectContainer;
-    private StandardKernel? _ninjectContainer;
-    private UnityContainer? _unityContainer;
-    private ServiceProvider? _microsoftContainer;
+    private Container _iocContainer;
+    private Func<ICompositionRoot> _iocRootResolver;
+    private IContainer _autofacContainer;
+    private WindsorContainer _windsorContainerContainer;
+    private global::DryIoc.Container _dryIocContainer;
+    private ServiceContainer _lightInjectContainer;
+    private StandardKernel _ninjectContainer;
+    private UnityContainer _unityContainer;
+    private ServiceProvider _microsoftContainer;
     private global::SimpleInjector.Container? _simpleInjectorContainer;
 
     protected abstract TContainer? CreateContainer<TContainer, TAbstractContainer>()
@@ -46,15 +49,15 @@ public abstract class BenchmarkBase
         _lightInjectContainer = CreateContainer<ServiceContainer, LightInject>();
         _microsoftContainer = CreateContainer<ServiceProvider, MicrosoftDependencyInjection>();
         _simpleInjectorContainer = CreateContainer<global::SimpleInjector.Container, SimpleInjector>();
-#if LEGACY
-        _iocContainer = CreateContainer<Container, IoCContainer>();
-        _iocRootResolver = CreateContainer<Func<ICompositionRoot>, IoCContainerByCompositionRoot<ICompositionRoot>>();
         _windsorContainerContainer = CreateContainer<WindsorContainer, CastleWindsor>();
         _ninjectContainer = CreateContainer<StandardKernel, Ninject>();
         _unityContainer = CreateContainer<UnityContainer, Unity>();
+#if LEGACY
+        _iocContainer = CreateContainer<Container, IoCContainer>();
+        _iocRootResolver = CreateContainer<Func<ICompositionRoot>, IoCContainerByCompositionRoot<ICompositionRoot>>();
 #endif
 #endif
-    }
+    } 
 
 #if !DEBUG
     [Benchmark]
@@ -72,14 +75,6 @@ public abstract class BenchmarkBase
     [Benchmark(Description = "Microsoft DI")]
     public void MicrosoftDependencyInjection() => _microsoftContainer.GetService<ICompositionRoot>();
     
-#if LEGACY
-    [Benchmark(Description = "IoC.Container")]
-    public void IoCContainer() => _iocContainer.Resolve<ICompositionRoot>();
-
-    [Benchmark(Description = "IoC.Container composition root")]
-    // ReSharper disable once InconsistentNaming
-    public void IoCContainerByCR() => _iocRootResolver();
-
     [Benchmark(Description = "Castle Windsor")]
     public void CastleWindsor() => _windsorContainerContainer.Resolve<ICompositionRoot>();
 
@@ -88,6 +83,14 @@ public abstract class BenchmarkBase
 
     [Benchmark]
     public void Unity() => _unityContainer.Resolve<ICompositionRoot>();
+    
+#if LEGACY
+    [Benchmark(Description = "IoC.Container")]
+    public void IoCContainer() => _iocContainer.Resolve<ICompositionRoot>();
+
+    [Benchmark(Description = "IoC.Container composition root")]
+    // ReSharper disable once InconsistentNaming
+    public void IoCContainerByCR() => _iocRootResolver();
 #endif
 #endif
 }
