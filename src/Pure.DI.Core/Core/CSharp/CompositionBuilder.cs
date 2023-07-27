@@ -233,8 +233,12 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
                         context.Code.AppendLine();
                     }
 
-                    arg.IsCreated = false;
-                    VisitRootVariable(context with { IsRootContext = false }, dependencyGraph, context.Variables, arg, cancellationToken);
+                    if (arg.Node.Lifetime != Lifetime.PerResolve)
+                    {
+                        arg.IsCreated = false;
+                        VisitRootVariable(context with { IsRootContext = false }, dependencyGraph, context.Variables, arg, cancellationToken);
+                    }
+
                     context.Code.AppendLine($"yield return {Inject(context, arg)};");
                     isFirst = false;
                 }

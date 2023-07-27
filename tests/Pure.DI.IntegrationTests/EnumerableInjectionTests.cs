@@ -204,4 +204,70 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(ImmutableArray.Create("Service creating"), result);
     }
+    
+    [Fact]
+    public async Task ShouldSupportEnumerableWhenPerResolve()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency
+    {        
+        public Dependency()
+        {
+            Console.WriteLine("Dependency created");
+        }
+    }
+
+    interface IService
+    {                    
+    }
+
+    class Service: IService 
+    {
+        public Service(System.Collections.Generic.IEnumerable<IDependency> deps)
+        { 
+            Console.WriteLine("Service creating");
+            foreach (var dep in deps)
+            {
+            }
+        }                            
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<IDependency>(1).To<Dependency>()
+                .Bind<IDependency>(2).As(Lifetime.PerResolve).To<Dependency>()
+                .Bind<IDependency>(3).To<Dependency>()
+                .Bind<IService>().To<Service>()
+                .Root<IService>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service = composition.Service;                                                     
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency created", "Service creating", "Dependency created", "Dependency created"), result);
+    }
 }

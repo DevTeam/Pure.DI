@@ -101,8 +101,8 @@ internal abstract class CodeGraphWalker<TContext>
 
                     if (targetVariable.Node.Construct is { Source.Kind: MdConstructKind.Enumerable })
                     {
-                        // Will be created in a Func
-                        var.IsCreated = true;
+                        // Will be created lazy in a local function
+                        var.IsCreated = var.Node.Lifetime != Lifetime.PerResolve;
                     }
                         
                     arguments.Add(var);   
