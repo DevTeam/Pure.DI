@@ -141,8 +141,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
 
                 code.AppendLine("}");
                 code.AppendLine();
-                code.AppendLine($"int maxIndex = index + {ResolversFieldsBuilder.BucketSizeFieldName};");
-                code.AppendLine("for (int i = index + 1; i < maxIndex; i++)");
+                code.AppendLine($"for (int i = index + 1; i < index + {ResolversFieldsBuilder.BucketSizeFieldName}; i++)");
                 code.AppendLine("{");
                 using (code.Indent())
                 {

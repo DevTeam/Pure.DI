@@ -73,7 +73,7 @@ public class GetBenchmark
         GetForeach(Key7);
         GetForeach(Key8);
         GetForeach(Key9);
-        return GetFor(Key10);
+        return GetForeach(Key10);
     }
     
     [Benchmark(OperationsPerInvoke = 10, Baseline = true)]
@@ -161,7 +161,7 @@ public class GetBenchmark
         {
             return pair.Value;
         }
-
+    
         for (int i = index + 1; i < index + BucketSize; i++)
         {
             pair = ref Pairs[i];
