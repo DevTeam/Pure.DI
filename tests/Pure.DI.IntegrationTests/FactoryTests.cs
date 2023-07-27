@@ -59,8 +59,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
     }
     
     [Fact]
@@ -123,8 +123,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
     }
     
     [Fact]
@@ -183,8 +183,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
     }
     
     [Fact]
@@ -246,8 +246,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
     }
     
     [Fact]
@@ -316,7 +316,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
     }
     
     [Fact]
@@ -386,8 +386,8 @@ namespace Sample
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Created"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Created"), result);
     }
     
     [Fact]
@@ -454,8 +454,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
     }
     
     [Fact]
@@ -526,8 +526,8 @@ namespace Sample
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("123", "Created"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("123", "Created"), result);
     }
     
     [Fact]
@@ -589,7 +589,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
     }
 }

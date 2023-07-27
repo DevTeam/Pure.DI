@@ -39,8 +39,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
     }
     
     [Fact]
@@ -79,8 +79,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
     }
     
     [Fact]
@@ -146,8 +146,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True"), result);
     }
     
     [Fact]
@@ -209,8 +209,8 @@ namespace Sample
 """.RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp10 });
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency Created"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency Created"), result);
     }
     
     [Fact]
@@ -317,8 +317,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True", "True", "True", "True"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True", "True", "True", "True"), result);
     }
     
     [Fact]
@@ -435,8 +435,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency2", "Dependency3", "Dispose3", "Dispose2"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency2", "Dependency3", "Dispose3", "Dispose2"), result);
     }
     
     [Fact]
@@ -475,8 +475,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
     }
     
     [Fact]
@@ -552,8 +552,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
     }
     
     [Fact]
@@ -634,8 +634,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True"), result);
     }
     
     [Fact]
@@ -715,7 +715,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
     }
 }

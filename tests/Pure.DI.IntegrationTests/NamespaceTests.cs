@@ -57,8 +57,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("MyNs.Abc.Composition"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("MyNs.Abc.Composition"), result);
     }
     
     [Fact]
@@ -115,8 +115,8 @@ namespace My.Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("My.Sample.Composition"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("My.Sample.Composition"), result);
     }
     
     [Fact]
@@ -173,8 +173,8 @@ public class Program
 """.RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp10 });
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("My.Sample.Composition"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("My.Sample.Composition"), result);
     }
     
     [Fact]
@@ -225,7 +225,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create(".+"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create(".+"), result);
     }
 }

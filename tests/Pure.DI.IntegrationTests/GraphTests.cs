@@ -52,9 +52,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() 
   +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
@@ -109,10 +109,10 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeFalse(result.GeneratedCode);
+        result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(0);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Dependency()
 Service(Sample.IDependency dependency<--Sample.IDependency))
@@ -166,9 +166,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() MyService
   +[Sample.IService() MyService]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
@@ -229,9 +229,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() 
   +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
@@ -286,9 +286,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() 
   +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
@@ -343,9 +343,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() 
   +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
@@ -405,9 +405,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() 
   +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
@@ -463,9 +463,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeFalse(result.GeneratedCode);
+        result.Success.ShouldBeFalse(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Dependency(int id<--int), string abc<--string))
   +[Dependency(int id<--int), string abc<--string))]<--[int]--[99]
@@ -524,9 +524,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() 
   +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
@@ -583,9 +583,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() 
   +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
@@ -645,9 +645,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(2, result.GeneratedCode);
+        graphs.Length.ShouldBe(2, result);
         graphs[1].ConvertToString().ShouldBe("""
 Sample.IService() 
   +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
@@ -738,9 +738,9 @@ namespace Sample
         var result = await setupCode.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() 
   +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency0 dependency<--Sample.IDependency0))]
@@ -796,9 +796,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() 
   +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
@@ -853,9 +853,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() 
   +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]
@@ -910,9 +910,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() 
   +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]
@@ -973,9 +973,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() 
   +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]
@@ -1059,9 +1059,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() 
   +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>> dependency<--Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>))]
@@ -1113,9 +1113,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() 
   +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.Dependency dependency<--Sample.Dependency))]
@@ -1175,9 +1175,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() 
   +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.Dependency dependency<--Sample.Dependency))]
@@ -1229,9 +1229,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() 
   +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.Dependency<string> dependency<--Sample.Dependency<string>))]
@@ -1295,9 +1295,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeFalse(result.GeneratedCode);
+        result.Success.ShouldBeFalse(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() Service
   +[Sample.IService() Service]<--[Sample.IService]--[Service(Sample.IDependency1 dep<--Sample.IDependency1))]
@@ -1389,9 +1389,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() Service
   +[Sample.IService() Service]<--[Sample.IService]--[Service(Sample.IDependency dep<--Sample.IDependency), int id<--int(99)), string name<--string))]
@@ -1464,9 +1464,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(2, result.GeneratedCode);
+        graphs.Length.ShouldBe(2, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService1() 
   +[Sample.IService1() ]<--[Sample.IService1]--[Service1(Sample.IDependency1 dependency<--Sample.IDependency1))]
@@ -1536,9 +1536,9 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() Service
   +[Sample.IService() Service]<--[Sample.IService]--[Service(System.Collections.Generic.IEnumerable<Sample.IDependency> deps<--System.Collections.Generic.IEnumerable<Sample.IDependency>))]
@@ -1618,11 +1618,11 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeFalse(result.GeneratedCode);
+        result.Success.ShouldBeFalse(result);
         result.Warnings.Count.ShouldBe(1);
         result.Errors.Count.ShouldBe(0);
         var graphs = GetGraphs(result);
-        graphs.Length.ShouldBe(1, result.GeneratedCode);
+        graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() Root
   +[Sample.IService() Root]<--[Sample.IService]--[SimpleService()]

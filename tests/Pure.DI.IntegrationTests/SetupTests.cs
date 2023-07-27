@@ -37,7 +37,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeFalse(result.GeneratedCode);
+        result.Success.ShouldBeFalse(result);
         result.Warnings.Count.ShouldBe(1);
     }
     
@@ -76,7 +76,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeFalse(result.GeneratedCode);
+        result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(2);
     }
     
@@ -115,8 +115,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeFalse(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Xyz"), result.GeneratedCode);
+        result.Success.ShouldBeFalse(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Xyz"), result);
         result.Warnings.Count.ShouldBe(1);
         result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1);
     }
@@ -156,7 +156,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
     }
     
     [Fact]
@@ -199,8 +199,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeFalse(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Xyz"), result.GeneratedCode);
+        result.Success.ShouldBeFalse(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Xyz"), result);
         result.Warnings.Count.ShouldBe(1);
         result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1);
     }
@@ -258,8 +258,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeFalse(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Xyz"), result.GeneratedCode);
+        result.Success.ShouldBeFalse(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Xyz"), result);
         result.Warnings.Count.ShouldBe(1);
         result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1);
     }
@@ -326,8 +326,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("MyNs.Abc.Composition"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("MyNs.Abc.Composition"), result);
     }
     
     [Fact]
@@ -383,8 +383,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Service", "Sample.OtherService"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Service", "Sample.OtherService"), result);
     }
     
     [Fact]
@@ -442,6 +442,118 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+    }
+    
+    [Fact]
+    public async Task ShouldGenerateSpecifiedRootType()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+internal interface IDependency { }
+
+    internal class Dependency : IDependency { }
+
+    internal interface IService1 { }
+
+    internal interface IService2 { }
+
+    internal interface IService3 { }
+
+    internal class Service : IService1, IService2, IService3
+    {
+        public Service(IDependency dependency)
+        {
+        }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>()
+                .Bind<IService1>().Bind<IService2>().Bind<IService3>().To<Service>()
+                .Root<IService2>("Service");
+        }
+    }          
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();  
+            IService2 service2 = composition.Service;                                                  
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportMultRoots()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+internal interface IDependency { }
+
+    internal class Dependency : IDependency { }
+
+    internal interface IService1 { }
+
+    internal interface IService2 { }
+
+    internal interface IService3 { }
+
+    internal class Service : IService1, IService2, IService3
+    {
+        public Service(IDependency dependency)
+        {
+        }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>()
+                .Bind<IService1>().Bind<IService2>().Bind<IService3>().To<Service>()
+                .Root<IService2>("Service2")
+                .Root<IService3>("Service3");
+        }
+    }          
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();  
+            IService2 service2 = composition.Service2;
+            IService3 service3 = composition.Service3;                                                  
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
     }
 }

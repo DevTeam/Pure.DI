@@ -63,7 +63,7 @@ namespace Sample
 """.RunAsync(new Options(LanguageVersion.CSharp10));
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("(Sample.Service, Point { X = 7, Y = 9 }, Sample.Dependency)"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("(Sample.Service, Point { X = 7, Y = 9 }, Sample.Dependency)"), result);
     }
 }

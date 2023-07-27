@@ -59,7 +59,7 @@ namespace Sample
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
     }
     
     [Fact]
@@ -130,8 +130,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Dependency '' Singleton created", "System.Func`1[Sample.IDependency] '' PerResolve created", "Sample.Service '' Transient created"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Dependency '' Singleton created", "System.Func`1[Sample.IDependency] '' PerResolve created", "Sample.Service '' Transient created"), result);
     }
     
     [Fact]
@@ -203,8 +203,8 @@ namespace Sample
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.IDependency '' Singleton injected", "System.Func`1[Sample.IDependency] '' PerResolve injected", "Sample.IDependency '' Singleton injected", "Sample.IService '' Transient injected"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.IDependency '' Singleton injected", "System.Func`1[Sample.IDependency] '' PerResolve injected", "Sample.IDependency '' Singleton injected", "Sample.IService '' Transient injected"), result);
     }
     
     [Fact]
@@ -277,8 +277,8 @@ namespace Sample
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.IDependency '' Singleton injected", "Sample.IDependency '' Singleton injected"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.IDependency '' Singleton injected", "Sample.IDependency '' Singleton injected"), result);
     }
     
     [Fact]
@@ -351,8 +351,8 @@ namespace Sample
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.IService '' Transient injected"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.IService '' Transient injected"), result);
     }
     
     [Fact]
@@ -425,8 +425,8 @@ namespace Sample
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.IDependency 'Abc' Singleton injected", "Sample.IDependency 'Abc' Singleton injected"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.IDependency 'Abc' Singleton injected", "Sample.IDependency 'Abc' Singleton injected"), result);
     }
     
     [Fact]
@@ -514,8 +514,8 @@ namespace Sample
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency 99 created", "Service 'MyService' created"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency 99 created", "Service 'MyService' created"), result);
     }
     
     [Fact]
@@ -604,7 +604,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeFalse(result.GeneratedCode);
+        result.Success.ShouldBeFalse(result);
     }
     
     [Fact]
@@ -693,7 +693,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeFalse(result.GeneratedCode);
+        result.Success.ShouldBeFalse(result);
     }
     
     [Fact]
@@ -763,8 +763,8 @@ namespace Sample
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Service with Sample.Dependency`1[System.String] created"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Service with Sample.Dependency`1[System.String] created"), result);
     }
     
     [Fact]
@@ -790,7 +790,11 @@ namespace Sample
         public IDependency Dependency2 { get; }
     }
 
-    internal class Service : IService
+    internal interface IService2
+    {
+    }
+
+    internal class Service : IService, IService2
     {
         public Service(IDependency dependency1, Func<IDependency> dependencyFactory)
         {
@@ -819,7 +823,8 @@ namespace Sample
                 .Hint(Hint.OnNewRoot, "On")
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
                 .Root<IDependency>("Dependency")
-                .Bind<IService>().To<Service>()
+                .Bind<IService>().Bind<IService2>().To<Service>()
+                .Root<IService2>("Service2")
                 .Root<IService>("Root");
         }
     }
@@ -829,14 +834,20 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Root;            
+            var service = composition.Root;
+            var service2 = composition.Service2;            
         }
     }                
 }
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("New composition root \"Dependency\" Sample.IDependency -> Sample.Dependency '' Singleton", "New composition root \"Root\" Sample.IService -> Sample.Service '' Transient"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(
+            ImmutableArray.Create(
+                "New composition root \"Dependency\" Sample.IDependency -> Sample.Dependency '' Singleton",
+                "New composition root \"Root\" Sample.IService -> Sample.Service '' Transient",
+                "New composition root \"Service2\" Sample.IService2 -> Sample.Service '' Transient"),
+            result);
     }
 }

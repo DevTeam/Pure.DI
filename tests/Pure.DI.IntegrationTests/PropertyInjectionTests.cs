@@ -92,8 +92,8 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("OtherDep0", "True", "OtherDep1", "True"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("OtherDep0", "True", "OtherDep1", "True"), result);
     }
     
     [Fact]
@@ -185,8 +185,8 @@ namespace Sample
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("OtherDep1", "True", "OtherDep0", "True"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("OtherDep1", "True", "OtherDep0", "True"), result);
     }
     
     [Fact]
@@ -265,7 +265,7 @@ namespace Sample
 """.RunAsync(new Options(LanguageVersion.Preview));
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("OtherDep0", "True", "OtherDep1", "True"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("OtherDep0", "True", "OtherDep1", "True"), result);
     }
 }

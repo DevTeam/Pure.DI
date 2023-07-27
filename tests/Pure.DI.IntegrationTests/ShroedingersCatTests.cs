@@ -93,7 +93,7 @@ namespace Sample
 """.RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp8, NullableContextOptions = NullableContextOptions.Disable } );
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        (result.StdOut.Contains("[Dead cat]") || result.StdOut.Contains("[Alive cat]")).ShouldBeTrue(result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        (result.StdOut.Contains("[Dead cat]") || result.StdOut.Contains("[Alive cat]")).ShouldBeTrue(result);
     }
 }

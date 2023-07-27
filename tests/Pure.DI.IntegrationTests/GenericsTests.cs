@@ -61,7 +61,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Dependency`1[System.Int32]", "Sample.Dependency`1[System.String]"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Dependency`1[System.Int32]", "Sample.Dependency`1[System.String]"), result);
     }
 }

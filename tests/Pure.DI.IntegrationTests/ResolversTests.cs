@@ -41,7 +41,7 @@ namespace Sample
 """.RunAsync();
 
         // Then
-        result.Success.ShouldBeTrue(result.GeneratedCode);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Service", "Sample.Service", "Sample.Service", "Sample.Service"), result.GeneratedCode);
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Service", "Sample.Service", "Sample.Service", "Sample.Service"), result);
     }
 }
