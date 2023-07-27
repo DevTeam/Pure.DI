@@ -18,7 +18,7 @@ internal class LogObserver: ILogObserver
         _logInfoBuilder = logInfoBuilder;
         _diagnostic = diagnostic;
         _severity = globalOptions.Severity;
-        _hasLogFile = string.IsNullOrWhiteSpace(globalOptions.LogFile);
+        _hasLogFile = !string.IsNullOrWhiteSpace(globalOptions.LogFile);
     }
 
     public StringBuilder Log { get; } = new();
@@ -46,13 +46,11 @@ internal class LogObserver: ILogObserver
                 }
             }
         }
-        else
+        
+        if (_hasLogFile && logEntry.IsOutcome)
         {
-            if (_hasLogFile && logEntry.IsOutcome)
-            {
-                var logInfo = _logInfoBuilder.Build(logEntry, CancellationToken.None);
-                Outcome.AppendLine(logInfo.Outcome);
-            }
+            var logInfo = _logInfoBuilder.Build(logEntry, CancellationToken.None);
+            Outcome.AppendLine(logInfo.Outcome);
         }
     }
 

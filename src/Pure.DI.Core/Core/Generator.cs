@@ -177,7 +177,7 @@ internal class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
                     var log = _logObserver.Log;
                     log.Append(_logObserver.Outcome);
                     log.AppendLine($"{stopwatch.Elapsed.TotalMilliseconds,8:#####0.0} ms");
-                    File.WriteAllText(logFile, log.ToString());
+                    File.AppendAllText(logFile, log.ToString());
                 }
             }
             catch (Exception)

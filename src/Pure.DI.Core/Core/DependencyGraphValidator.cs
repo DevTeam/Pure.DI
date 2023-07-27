@@ -10,10 +10,10 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
         _logger = logger;
     }
 
-    public void Validate(in DependencyGraph data, CancellationToken cancellationToken)
+    public void Validate(in DependencyGraph dependencyGraph, CancellationToken cancellationToken)
     {
-        var graph = data.Graph;
-        var isValid = data.IsValid;
+        var graph = dependencyGraph.Graph;
+        var isValid = dependencyGraph.IsValid;
         var isErrorReported = false;
         using (_logger.TraceProcess("search for unresolved nodes"))
         {
@@ -34,7 +34,7 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
         var cycles = new List<(Dependency CyclicDependency, ImmutableArray<DependencyNode> Path)>();
         using (_logger.TraceProcess("search for cycles"))
         {
-            foreach (var rootNode in data.Roots.Select(i => i.Value.Node))
+            foreach (var rootNode in dependencyGraph.Roots.Select(i => i.Value.Node))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 if (!graph.TryGetInEdges(rootNode, out var dependencies))
@@ -83,31 +83,12 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
         if (cycles.Any())
         {
             isValid = false;
-            var hashes = new List<HashSet<int>>();
-            var locations = new HashSet<Location>();
             foreach (var cycle in cycles)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var hash = new HashSet<int>(cycle.Path.Select(i => i.Binding.Id));
-                if (hashes.Any(i => hash.IsSubsetOf(i)))
-                {
-                    continue;
-                }
-                
-                var locationsWalker = new DependencyGraphLocationsWalker(cycle.CyclicDependency.Injection);
-                locationsWalker.VisitDependencyNode(cycle.CyclicDependency.Target);
-                if (!locationsWalker.Locations.Any())
-                {
-                    continue;
-                }
-                
-                hashes.Add(hash);
-                foreach (var location in locationsWalker.Locations.Take(1).Where(i => locations.Add(i)))
-                {
-                    var pathDescription = string.Join(" <-- ", cycle.Path.Select(i => $"{i.Type}"));
-                    _logger.CompileError($"A cyclic dependency has been found {pathDescription}.", location, LogId.ErrorCyclicDependency);
-                    isErrorReported = true;    
-                }
+                var pathDescription = string.Join(" <-- ", cycle.Path.Select(i => $"{i.Type}"));
+                _logger.CompileError($"A cyclic dependency has been found {pathDescription}.", dependencyGraph.Source.Source.GetLocation(), LogId.ErrorCyclicDependency);
+                isErrorReported = true;
             }
         }
 
@@ -118,7 +99,7 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
 
         if (!isErrorReported)
         {
-            _logger.CompileError("Cannot build a dependency graph.", data.Source.Source.GetLocation(), LogId.ErrorUnresolvedDependency);
+            _logger.CompileError("Cannot build a dependency graph.", dependencyGraph.Source.Source.GetLocation(), LogId.ErrorUnresolvedDependency);
         }
 
         throw HandledException.Shared;
