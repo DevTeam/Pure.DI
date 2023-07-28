@@ -6,8 +6,8 @@
 namespace System.Diagnostics.CodeAnalysis
 {
     // ReSharper disable UnusedType.Global
-    [global::SystemAttributeUsage(global::SystemAttributeTargets.Assembly | global::SystemAttributeTargets.Class | global::SystemAttributeTargets.Constructor | global::SystemAttributeTargets.Event | global::SystemAttributeTargets.Method | global::SystemAttributeTargets.Property | global::SystemAttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
-    public sealed class ExcludeFromCodeCoverageAttribute : global::SystemAttribute
+    [global::System.AttributeUsage(global::System.AttributeTargets.Assembly | global::System.AttributeTargets.Class | global::System.AttributeTargets.Constructor | global::System.AttributeTargets.Event | global::System.AttributeTargets.Method | global::System.AttributeTargets.Property | global::System.AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
+    public sealed class ExcludeFromCodeCoverageAttribute : global::System.Attribute
     {
     }
 }
