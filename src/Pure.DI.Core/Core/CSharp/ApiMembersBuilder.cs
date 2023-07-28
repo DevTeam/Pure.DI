@@ -130,22 +130,12 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             var divisor = Buckets<object, object>.GetDivisor((uint)resolvers.Count);
             if (resolvers.Any())
             {
-                code.AppendLine($"int index = (int)({ResolversFieldsBuilder.BucketSizeFieldName} * ((uint){Constant.SystemNamespace}Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % {divisor}));");
-                code.AppendLine($"ref var pair = ref {ResolversFieldsBuilder.BucketsFieldName}[index];");
-                code.AppendLine("if (ReferenceEquals(pair.Key, type))");
-                code.AppendLine("{");
+                code.AppendLine($"var index = (int)({ResolversFieldsBuilder.BucketSizeFieldName} * ((uint){Constant.SystemNamespace}Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % {divisor}));");
+                code.AppendLine($"var finish = index + {ResolversFieldsBuilder.BucketSizeFieldName};");
+                code.AppendLine("do {");
                 using (code.Indent())
                 {
-                    code.AppendLine($"return pair.Value.{resolveMethodName}({resolveMethodArgs});");
-                }
-
-                code.AppendLine("}");
-                code.AppendLine();
-                code.AppendLine($"for (int i = index + 1; i < index + {ResolversFieldsBuilder.BucketSizeFieldName}; i++)");
-                code.AppendLine("{");
-                using (code.Indent())
-                {
-                    code.AppendLine($"pair = ref {ResolversFieldsBuilder.BucketsFieldName}[i];");
+                    code.AppendLine($"ref var pair = ref {ResolversFieldsBuilder.BucketsFieldName}[index];");
                     code.AppendLine("if (ReferenceEquals(pair.Key, type))");
                     code.AppendLine("{");
                     using (code.Indent())
@@ -155,7 +145,8 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
                     
                     code.AppendLine("}");
                 }
-                code.AppendLine("}");
+
+                code.AppendLine("} while (++index < finish);");
                 code.AppendLine();
             }
 

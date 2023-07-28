@@ -177,15 +177,14 @@ public class GetBenchmark
     private static string GetWhile(Type key)
     {
         int index = (int)(BucketSize * ((uint)RuntimeHelpers.GetHashCode(key) % Divisor));
-        var finish = index + BucketSize;
-        do
-        {
+        int finish = index + BucketSize;
+        do {
             ref var pair = ref Pairs[index];
             if (ReferenceEquals(pair.Key, key))
             {
                 return pair.Value;
             }
-        } while(++index < finish);
+        } while (++index < finish);
 
         throw new InvalidOperationException();
     }

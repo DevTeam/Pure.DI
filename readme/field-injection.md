@@ -117,21 +117,15 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type)
   {
-    int index = (int)(_bucketSizeM07D28di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _bucketsM07D28di[index];
-    if (ReferenceEquals(pair.Key, type))
-    {
-      return pair.Value.Resolve(this);
-    }
-    
-    for (int i = index + 1; i < index + _bucketSizeM07D28di; i++)
-    {
-      pair = ref _bucketsM07D28di[i];
+    var index = (int)(_bucketSizeM07D28di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM07D28di;
+    do {
+      ref var pair = ref _bucketsM07D28di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
       }
-    }
+    } while (++index < finish);
     
     throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
@@ -142,21 +136,15 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    int index = (int)(_bucketSizeM07D28di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _bucketsM07D28di[index];
-    if (ReferenceEquals(pair.Key, type))
-    {
-      return pair.Value.ResolveByTag(this, tag);
-    }
-    
-    for (int i = index + 1; i < index + _bucketSizeM07D28di; i++)
-    {
-      pair = ref _bucketsM07D28di[i];
+    var index = (int)(_bucketSizeM07D28di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM07D28di;
+    do {
+      ref var pair = ref _bucketsM07D28di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
       }
-    }
+    } while (++index < finish);
     
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
