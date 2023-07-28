@@ -26,25 +26,36 @@ internal class NamespacesSyntaxWalker: CSharpSyntaxWalker, IEnumerable<string>
 
     private void AddNamespace(ISymbol? symbol)
     {
-        if (symbol is not INamedTypeSymbol type)
+        var depth = 256;
+        while (depth-- > 0)
         {
-            return;
-        }
+            switch (symbol)
+            {
+                case INamedTypeSymbol type when type.ContainingNamespace.IsGlobalNamespace:
+                    return;
 
-        if (type.ContainingNamespace.IsGlobalNamespace)
-        {
-            return;
-        }
+                case INamedTypeSymbol type:
+                {
+                    _namespaces.Add(type.ContainingNamespace.ToString());
+                    if (!type.IsGenericType)
+                    {
+                        return;
+                    }
 
-        _namespaces.Add(type.ContainingNamespace.ToString());
-        if (!type.IsGenericType)
-        {
-            return;
-        }
-        
-        foreach (var typeSymbol in type.TypeArguments)
-        {
-            AddNamespace(typeSymbol);
+                    foreach (var typeSymbol in type.TypeArguments)
+                    {
+                        AddNamespace(typeSymbol);
+                    }
+
+                    break;
+                }
+
+                case IMethodSymbol methodSymbol:
+                    symbol = methodSymbol.ContainingSymbol;
+                    continue;
+            }
+
+            break;
         }
     }
 

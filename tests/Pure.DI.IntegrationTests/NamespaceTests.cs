@@ -228,4 +228,70 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(ImmutableArray.Create(".+"), result);
     }
+    
+    [Fact]
+    public async Task ShouldSupportNamespaceFromExtensionMethod()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace OtherNamespace
+{
+    static class Utils
+    {
+        public static Sample.IDependency DoSomething(this Sample.IDependency dep) => dep;
+    }
+}
+
+namespace Sample
+{
+    using OtherNamespace;
+
+    interface IDependency {}
+
+    class Dependency: IDependency {}
+
+    interface IService
+    {
+        IDependency Dep { get; }
+    }
+
+    class Service: IService 
+    {
+        public Service(IDependency dep)
+        { 
+            Dep = dep;
+        }
+
+        public IDependency Dep { get; }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<IDependency>(_ => new Dependency().DoSomething())
+                .Bind<IService>().To<Service>()    
+                .Root<IService>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();                                                       
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
 }
