@@ -6,7 +6,7 @@
 
 ## Generated Code
 
-Each generated class, hereafter called a _composition_, must be customized. It starts with the `Setup(...)` method:
+Each generated class, hereafter called a _composition_, must be customized. Setup starts with a call to the `Setup(string compositionTypeName)` method:
 
 ```c#
 DI.Setup("Composition")
@@ -37,9 +37,9 @@ partial class Composition
 
     public T Resolve<T>(object? tag)  { ... }
 
-    public object Resolve(System.Type type) { ... }
+    public object Resolve(Type type) { ... }
 
-    public object Resolve(System.Type type, object? tag) { ... }
+    public object Resolve(Type type, object? tag) { ... }
 }
 ```
 
@@ -128,11 +128,9 @@ The child composition inherits the state of the parent composition in the form o
 <details>
 <summary>Properties</summary>
 
-To create an object graph quickly and conveniently, a set of properties is formed. These properties are here called roots of compositions. The type of a property is the type of the root object created by the composition. Accordingly, each invocation of a property leads to the creation of a composition with a root element of this type.
-
 ### Public Composition Roots
 
-To create an object graph quickly and conveniently, a set of properties is formed. These properties are here called roots of compositions. The type of a property is the type of the root object created by the composition. Each invocation of a property results in the creation of a composition with a root element of this type.
+To create an object graph quickly and conveniently, a set of properties is formed. These properties are here called roots of compositions. The type of a property is the type of the root object created by the composition. Accordingly, each invocation of a property leads to the creation of a composition with a root element of this type.
 
 ```c#
 DI.Setup("Composition")
@@ -174,7 +172,7 @@ DI.Setup("Composition")
     .Root<IService>();
 ```
 
-These properties have an arbitrary name and private accessor and cannot be used directly from the code. Do not attempt to use them, as their names change arbitrarily. Private composition roots can be resolved by _Resolve_ methods.
+These properties have an arbitrary name and access modifier _private_ and cannot be used directly from the code. Do not attempt to use them, as their names are arbitrarily changed. Private composition roots can be resolved by _Resolve_ methods.
 
 </details>
 
@@ -210,10 +208,7 @@ This is a [not recommended](https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanA
 Provides a mechanism to release unmanaged resources. This method is generated only if the composition contains at least one singleton instance that implements the [IDisposable](https://learn.microsoft.com/en-us/dotnet/api/system.idisposable) interface. To dispose of all created singleton objects, the `Dispose()` method of the composition should be called:
 
 ```c#
-using(var composition = new Composition())
-{
-    ...
-}
+using var composition = new Composition();
 ```
 
 </details>
@@ -233,7 +228,7 @@ DI.Setup("Composition")
     ...
 ```
 
-In addition, setup hints can be comments before the _Setup_ method, for example, in the form `hint = value`:
+In addition, setup hints can be commented out before the _Setup_ method as `hint = value`. For example:
 
 ```c#
 // Resolve = Off
@@ -242,6 +237,8 @@ DI.Setup("Composition")
     .Hint(Hint.ToString, "On")
     ...
 ```
+
+Both approaches can be used in combination with each other.
 
 | Hint                                                                                                                               | Values             | Default   | C# version |
 |------------------------------------------------------------------------------------------------------------------------------------|--------------------|-----------|------------|
@@ -271,6 +268,8 @@ DI.Setup("Composition")
 | [ObjectResolveByTagMethodName](#objectresolvebytagmethodname-hint)                                                                 | Method name        | _Resolve_ |            |
 | [DisposeMethodModifiers](#disposemethodmodifiers-hint)                                                                             | Method modifier    | _public_  |            |
 | [FormatCode](#formatcode-hint)                                                                                                     | _On_ or _Off_      | _Off_     |            |
+
+The list of hints will be gradually expanded to meet the needs and desires for fine-tuning code generation. Please feel free to add your ideas.
 
 ### Resolve Hint
 
@@ -457,7 +456,7 @@ Specifies whether the generated code should be formatted. This option consumes a
 - [ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/)
 - [.NET Multi-platform App UI (MAUI)](https://docs.microsoft.com/en-us/dotnet/maui/)
 
-And others
+As well as any other
 
 ## Project template
 
@@ -479,16 +478,14 @@ And run it
 dotnet run --project Sample
 ```
 
-For more information about the template, see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates).
+For more information about the template, please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates).
 
 ## Troubleshooting
 
-### Disabling API generation
-
-_Pure.DI_ automatically generates its API. If an application module already has the _Pure.DI_ API, its automatic generation for some other modules sometimes needs to be disabled. To do this, add the _DefineConstants_ element to the project files of these modules.
-
 <details>
-<summary>For example</summary>
+<summary>Disabling API generation</summary>
+
+_Pure.DI_ automatically generates its API. If an assembly already has the _Pure.DI_ API, for example, from another assembly, it is sometimes necessary to disable its automatic generation to avoid ambiguity. To do this, you need to add a _DefineConstants_ element to the project files of these modules. For example:
 
 ```xml
 <PropertyGroup>
@@ -498,12 +495,10 @@ _Pure.DI_ automatically generates its API. If an application module already has 
 
 </details>
 
-### Generated files
-
-You can set project properties to save generated files and control their storage location. In the project file, add the `<EmitCompilerGeneratedFiles>` element to the `<PropertyGroup>` group and set its value to `true`. Build the project again. The generated files are now created in the _obj/Debug/netX.X/generated/Pure.DI/Pure.DI/Pure.DI.SourceGenerator_ directory. The path components correspond to the build configuration, the target framework, the source generator project name, and the full name of the generator type. You can choose a more convenient output folder by adding the `<CompilerGeneratedFilesOutputPath>` element to the application project file.
-
 <details>
-<summary>For example</summary>
+<summary>Display generated files</summary>
+
+You can set project properties to save generated files and control their storage location. In the project file, add the `<EmitCompilerGeneratedFiles>` element to the `<PropertyGroup>` group and set its value to `true`. Build the project again. The generated files are now created in the _obj/Debug/netX.X/generated/Pure.DI/Pure.DI/Pure.DI.SourceGenerator_ directory. The path components correspond to the build configuration, the target framework, the source generator project name, and the full name of the generator type. You can choose a more convenient output folder by adding the `<CompilerGeneratedFilesOutputPath>` element to the application project file. For example:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -518,12 +513,10 @@ You can set project properties to save generated files and control their storage
 
 </details>
 
-### Log files
-
-To save the log file, you need to add additional project properties. In the project file, add the `<PureDILogFile>` item to `<PropertyGroup>` and specify the path to the log directory, and add the associated `<CompilerVisibleProperty Include="PureDILogFile" />` item to `<ItemGroup>` to make this property visible in the source code generator. To change the log level, specify it using the _PureDISeverity_ property.
-
 <details>
-<summary>For example</summary>
+<summary>Create log files</summary>
+
+To save the log file, you need to add additional project properties. In the project file, add the `<PureDILogFile>` item to `<PropertyGroup>` and specify the path to the log directory, and add the associated `<CompilerVisibleProperty Include="PureDILogFile" />` item to `<ItemGroup>` to make this property visible in the source code generator. To change the log level, specify it using the _PureDISeverity_ property. For example:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -551,3 +544,19 @@ The _PureDISeverity_ property can take on multiple values:
 | Error    | Something not allowed by the rules of the language or other authority. |
 
 </details>
+
+## Contribution
+
+Thank you for your interest in contributing to the _Pure.DI_ project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for _Pure.DI_.
+
+This project uses the "build as code" approach using [csharp-interactive](https://github.com/DevTeam/csharp-interactive). The entire build logic is a regular [console .NET application](/build). You can use the [build.cmd](/build.cmd) and [build.sh](/build.sh) files with the appropriate command in the parameters to perform all basic actions on the project, e.g:
+
+- _readme_ - generates README.MD
+- _pack_ - creates NuGet packages
+- _benchmarks_ - runs benchmark tests
+
+If you are using the Rider IDE, it already has a set of configurations to run these commands.
+
+### Prerequisites
+
+Installed [.NET SDK 7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)

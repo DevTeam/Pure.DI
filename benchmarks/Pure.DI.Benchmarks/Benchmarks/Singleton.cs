@@ -17,6 +17,7 @@ public partial class Singleton : BenchmarkBase
     private static void SetupDI() =>
         // ThreadSafe = Off
         // FormatCode = On
+        // ToString = On
         DI.Setup(nameof(Singleton))
             .Bind<ICompositionRoot>().To<CompositionRoot>()
             .Bind<IService1>().As(Lifetime.Singleton).To<Service1>()

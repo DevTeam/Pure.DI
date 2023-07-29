@@ -60,7 +60,7 @@ classDiagram
 </details>
 
 <details>
-<summary>Composition Code</summary>
+<summary>Pure.DI-generated partial class Composition</summary><blockquote>
 
 ```c#
 partial class Composition
@@ -79,8 +79,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency transientM07D28di_0000 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
-      return transientM07D28di_0000;
+      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency transientM08D01di_0000 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
+      return transientM08D01di_0000;
     }
   }
   
@@ -89,9 +89,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency transientM07D28di_0002 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
-      Pure.DI.UsageTests.Hints.ResolveHintScenario.Service transientM07D28di_0001 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(transientM07D28di_0002);
-      return transientM07D28di_0001;
+      Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency transientM08D01di_0002 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
+      Pure.DI.UsageTests.Hints.ResolveHintScenario.Service transientM08D01di_0001 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(transientM08D01di_0002);
+      return transientM08D01di_0001;
     }
   }
   #endregion
@@ -126,7 +126,7 @@ partial class Composition
 }
 ```
 
-</details>
+</blockquote></details>
 
 
 For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/README.md#setup-hints) page.

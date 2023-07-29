@@ -1,4 +1,4 @@
-## Schrödinger's cat shows how it works [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](samples/ShroedingersCat)
+## Schrödinger's cat will demonstrate how it all works [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](samples/ShroedingersCat)
 
 ### The reality is
 
@@ -14,12 +14,13 @@ interface ICat { State State { get; } }
 enum State { Alive, Dead }
 ```
 
-### Here is our implementation variant
+### Here's our implementation
 
 ```c#
 class CardboardBox<T> : IBox<T>
 {
-    public CardboardBox(T content) => Content = content;
+    public CardboardBox(T content) =>
+        Content = content;
 
     public T Content { get; }
 }
@@ -29,63 +30,123 @@ class ShroedingersCat : ICat
   // Represents the superposition of the states
   private readonly Lazy<State> _superposition;
 
-  public ShroedingersCat(Lazy<State> superposition) => _superposition = superposition;
+  public ShroedingersCat(Lazy<State> superposition) =>
+    _superposition = superposition;
 
-  // Decoherence of the superposition at the time of observation via an irreversible process
+  // Decoherence of the superposition at the time
+  // of observation via an irreversible process
   public State State => _superposition.Value;
 
   public override string ToString() => $"{State} cat";
 }
 ```
 
-It is important to note that our abstraction and implementation knows nothing about the magic of DI or any frameworks. Also note that an instance of type *__Lazy<>__* is used here only as an example. However, using this type with non-trivial logic as a dependency is not recommended, so consider replacing it with some simple abstract type.
+It is important to note that our abstraction and implementation knows nothing about the magic of DI or any frameworks.
 
 ### Let's glue it all together
 
-Add a link to the package
+Add the _Pure.DI_ package to your project:
 
 [![NuGet](https://buildstats.info/nuget/Pure.DI?includePreReleases=true)](https://www.nuget.org/packages/Pure.DI)
 
-For use in the Package Manager
+<details>
+<summary>From the Package Manager</summary>
 
 ```shell
 Install-Package Pure.DI
 ```
 
-For use in the .NET CLI
+</details>
+
+<details>
+<summary>From the .NET CLI</summary>
   
 ```shell
 dotnet add package Pure.DI
 ```
 
-Let's bind abstractions to their realizations or factories, define their lifetime and other options:
+</details>
+
+Let's bind abstractions to their implementations:
 
 ```c#
 partial class Composition
 {
-  // In fact, this code is never run, and the method can have any name or be a constructor, for example,
-  // and can be in any part of the compiled code because this is just a hint to set up an object graph.
+  // In fact, this code is never run,
+  // and the method can have any name or be a constructor, for example,
+  // and can be in any part of the compiled code
+  // because this is just a hint to set up an object graph.
   // Here the customization is part of the generated class, just as an example.
   // But in general it can be done anywhere in the code.
-  private static void Setup() => DI.Setup(nameof(Composition))
-      // Models a random subatomic event that may or may not occur
-      .Bind<Random>().As(Singleton).To<Random>()
-      // Represents a quantum superposition of 2 states: Alive or Dead
-      .Bind<State>().To(ctx =>
-      {
+  private static void Setup() => 
+    DI.Setup(nameof(Composition))
+        // Models a random subatomic event that may or may not occur
+        .Bind<Random>().As(Singleton).To<Random>()
+        // Represents a quantum superposition of 2 states:
+        // Alive or Dead
+        .Bind<State>().To(ctx =>
+        {
           ctx.Inject<Random>(out var random);
           return (State)random.Next(2);
-      })
-      // Represents schrodinger's cat
-      .Bind<ICat>().To<ShroedingersCat>()
-      // Represents a cardboard box with any content
-      .Bind<IBox<TT>>().To<CardboardBox<TT>>()
-      // Composition Root
-      .Root<Program>("Root");
+        })
+        // Represents schrodinger's cat
+        .Bind<ICat>().To<ShroedingersCat>()
+        // Represents a cardboard box with any content
+        .Bind<IBox<TT>>().To<CardboardBox<TT>>()
+        // Composition Root
+        .Root<Program>("Root");
 }
 ```
 
-The above code is just a chain of hints to define the dependency graph used to create a *__Composition__* class with a *__Root__* property that creates the root of the *__Program__* composition below. This code is only useful at compile time, so it can be placed anywhere in the class (in methods, constructors or properties) and preferably where it will not be called at runtime. Its purpose is to check the dependency syntax and help build a compile-time dependency graph to create the *__Composition__* class. The first argument of the _Setup_ method specifies the name of the class to be generated.
+The above code specifies to generate a partial class named *__Composition__*, this name is defined in the `DI.Setup(nameof(Composition))` call. This class contains a *__Root__* property that returns an object of type *__Program__*. The type and name of the property is set by calling `Root<Program>("Root")`. The code of the generated class looks as follows:
+
+```c#
+partial class Composition
+{
+    private object _lockObject = new object();
+    private Random _randomSingleton;    
+    
+    public Program Root
+    {
+      get
+      {
+        Func<State> stateFunc = new Func<State>(() =>
+        {
+          if (_randomSingleton == null)
+          {
+            lock (_lockObject)
+            {
+              if (_randomSingleton == null)
+              {
+                _randomSingleton = new Random();
+              }
+            }
+          }
+          
+          return (State)_randomSingleton.Next(2);      
+        });
+        
+        return new Program(
+          new CardboardBox<ICat>(
+            new ShroedingersCat(
+              new Lazy<Sample.State>(
+                stateFunc))));    
+      }
+    }
+    
+    public T Resolve<T>()
+    {
+        ...
+    }
+    
+    public object Resolve(Type type)
+    {
+        ...
+    }    
+}
+```
+
+The `public Program Root { get; }` property here is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/), the only place in the application where the composition of the object graph for the application takes place. Each instance is created by only basic language constructs, which compiles with all optimizations with minimal impact on performance and memory consumption. In general, applications may have multiple composition roots and thus such properties. Each composition root must have its own unique name, which is defined when the `Root<T>(string name)` method is called, as shown in the above code.
 
 ### Time to open boxes!
 
@@ -104,39 +165,7 @@ class Program
 }
 ```
 
-*__Root__* - here [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) is the only place in the application where object graph composition for the application takes place. Each instance is resolved by a strongly typed block of operators like operator [*__new__*](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/new-operator), which compile with all optimizations with minimal impact on performance and memory consumption. In general, applications may have several composition roots and, accordingly, such properties. Each composition root must have its own unique name, which is defined when the _Root(string rootName)_ method is called, as shown in the code above. Therefore, the generated _Composition_ class in the example contains only one property _Root_, which is the root of the composition and allows resolving an instance of type _Program_:
-
-```c#
-public Sample.Program Root
-{
-  get
-  {
-    Func<State> stateFunc = new Func<State>(() =>
-    {
-      if (_randomSingleton == null)
-      {
-        lock (_lockObject)
-        {
-          if (_randomSingleton == null)
-          {
-            _randomSingleton = new Random();
-          }
-        }
-      }
-      
-      return (State)_randomSingleton.Next(2);      
-    });
-    
-    return new Program(
-      new CardboardBox<ICat>(
-        new ShroedingersCat(
-          new Lazy<Sample.State>(
-            stateFunc))));    
-  }
-}
-```
-
-The full analog of this application with top-level statements can be found [here](Samples/ShroedingersCatTopLevelStatements).
+The full analog of this application with top-level statements can be found [here](samples/ShroedingersCatTopLevelStatements).
 
 ## To summarize
 

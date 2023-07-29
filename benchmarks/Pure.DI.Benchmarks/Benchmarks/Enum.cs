@@ -15,6 +15,7 @@ public partial class Enum : BenchmarkBase
     private static void SetupDI() =>
         // ThreadSafe = Off
         // FormatCode = On
+        // ToString = On
         DI.Setup(nameof(Enum))
             .Bind<ICompositionRoot>().To<CompositionRoot>()
             .Bind<IService1>().To<Service1>()

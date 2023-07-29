@@ -27,7 +27,7 @@ Pure.DI is not a framework or library, but a source code generator for creating 
 - [X] Good for building libraries or frameworks where resource consumption is particularly critical.
   >Its high performance, zero memory consumption/preparation overhead, and lack of dependencies make it ideal for building libraries and frameworks.
 
-## Schrödinger's cat shows how it works [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](samples/ShroedingersCat)
+## Schrödinger's cat will demonstrate how it all works [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](samples/ShroedingersCat)
 
 ### The reality is
 
@@ -43,12 +43,13 @@ interface ICat { State State { get; } }
 enum State { Alive, Dead }
 ```
 
-### Here is our implementation variant
+### Here's our implementation
 
 ```c#
 class CardboardBox<T> : IBox<T>
 {
-    public CardboardBox(T content) => Content = content;
+    public CardboardBox(T content) =>
+        Content = content;
 
     public T Content { get; }
 }
@@ -58,63 +59,123 @@ class ShroedingersCat : ICat
   // Represents the superposition of the states
   private readonly Lazy<State> _superposition;
 
-  public ShroedingersCat(Lazy<State> superposition) => _superposition = superposition;
+  public ShroedingersCat(Lazy<State> superposition) =>
+    _superposition = superposition;
 
-  // Decoherence of the superposition at the time of observation via an irreversible process
+  // Decoherence of the superposition at the time
+  // of observation via an irreversible process
   public State State => _superposition.Value;
 
   public override string ToString() => $"{State} cat";
 }
 ```
 
-It is important to note that our abstraction and implementation knows nothing about the magic of DI or any frameworks. Also note that an instance of type *__Lazy<>__* is used here only as an example. However, using this type with non-trivial logic as a dependency is not recommended, so consider replacing it with some simple abstract type.
+It is important to note that our abstraction and implementation knows nothing about the magic of DI or any frameworks.
 
 ### Let's glue it all together
 
-Add a link to the package
+Add the _Pure.DI_ package to your project:
 
 [![NuGet](https://buildstats.info/nuget/Pure.DI?includePreReleases=true)](https://www.nuget.org/packages/Pure.DI)
 
-For use in the Package Manager
+<details>
+<summary>From the Package Manager</summary>
 
 ```shell
 Install-Package Pure.DI
 ```
 
-For use in the .NET CLI
+</details>
+
+<details>
+<summary>From the .NET CLI</summary>
   
 ```shell
 dotnet add package Pure.DI
 ```
 
-Let's bind abstractions to their realizations or factories, define their lifetime and other options:
+</details>
+
+Let's bind abstractions to their implementations:
 
 ```c#
 partial class Composition
 {
-  // In fact, this code is never run, and the method can have any name or be a constructor, for example,
-  // and can be in any part of the compiled code because this is just a hint to set up an object graph.
+  // In fact, this code is never run,
+  // and the method can have any name or be a constructor, for example,
+  // and can be in any part of the compiled code
+  // because this is just a hint to set up an object graph.
   // Here the customization is part of the generated class, just as an example.
   // But in general it can be done anywhere in the code.
-  private static void Setup() => DI.Setup(nameof(Composition))
-      // Models a random subatomic event that may or may not occur
-      .Bind<Random>().As(Singleton).To<Random>()
-      // Represents a quantum superposition of 2 states: Alive or Dead
-      .Bind<State>().To(ctx =>
-      {
+  private static void Setup() => 
+    DI.Setup(nameof(Composition))
+        // Models a random subatomic event that may or may not occur
+        .Bind<Random>().As(Singleton).To<Random>()
+        // Represents a quantum superposition of 2 states:
+        // Alive or Dead
+        .Bind<State>().To(ctx =>
+        {
           ctx.Inject<Random>(out var random);
           return (State)random.Next(2);
-      })
-      // Represents schrodinger's cat
-      .Bind<ICat>().To<ShroedingersCat>()
-      // Represents a cardboard box with any content
-      .Bind<IBox<TT>>().To<CardboardBox<TT>>()
-      // Composition Root
-      .Root<Program>("Root");
+        })
+        // Represents schrodinger's cat
+        .Bind<ICat>().To<ShroedingersCat>()
+        // Represents a cardboard box with any content
+        .Bind<IBox<TT>>().To<CardboardBox<TT>>()
+        // Composition Root
+        .Root<Program>("Root");
 }
 ```
 
-The above code is just a chain of hints to define the dependency graph used to create a *__Composition__* class with a *__Root__* property that creates the root of the *__Program__* composition below. This code is only useful at compile time, so it can be placed anywhere in the class (in methods, constructors or properties) and preferably where it will not be called at runtime. Its purpose is to check the dependency syntax and help build a compile-time dependency graph to create the *__Composition__* class. The first argument of the _Setup_ method specifies the name of the class to be generated.
+The above code specifies to generate a partial class named *__Composition__*, this name is defined in the `DI.Setup(nameof(Composition))` call. This class contains a *__Root__* property that returns an object of type *__Program__*. The type and name of the property is set by calling `Root<Program>("Root")`. The code of the generated class looks as follows:
+
+```c#
+partial class Composition
+{
+    private object _lockObject = new object();
+    private Random _randomSingleton;    
+    
+    public Program Root
+    {
+      get
+      {
+        Func<State> stateFunc = new Func<State>(() =>
+        {
+          if (_randomSingleton == null)
+          {
+            lock (_lockObject)
+            {
+              if (_randomSingleton == null)
+              {
+                _randomSingleton = new Random();
+              }
+            }
+          }
+          
+          return (State)_randomSingleton.Next(2);      
+        });
+        
+        return new Program(
+          new CardboardBox<ICat>(
+            new ShroedingersCat(
+              new Lazy<Sample.State>(
+                stateFunc))));    
+      }
+    }
+    
+    public T Resolve<T>()
+    {
+        ...
+    }
+    
+    public object Resolve(Type type)
+    {
+        ...
+    }    
+}
+```
+
+The `public Program Root { get; }` property here is a [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/), the only place in the application where the composition of the object graph for the application takes place. Each instance is created by only basic language constructs, which compiles with all optimizations with minimal impact on performance and memory consumption. In general, applications may have multiple composition roots and thus such properties. Each composition root must have its own unique name, which is defined when the `Root<T>(string name)` method is called, as shown in the above code.
 
 ### Time to open boxes!
 
@@ -133,39 +194,7 @@ class Program
 }
 ```
 
-*__Root__* - here [*__Composition Root__*](https://blog.ploeh.dk/2011/07/28/CompositionRoot/) is the only place in the application where object graph composition for the application takes place. Each instance is resolved by a strongly typed block of operators like operator [*__new__*](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/operators/new-operator), which compile with all optimizations with minimal impact on performance and memory consumption. In general, applications may have several composition roots and, accordingly, such properties. Each composition root must have its own unique name, which is defined when the _Root(string rootName)_ method is called, as shown in the code above. Therefore, the generated _Composition_ class in the example contains only one property _Root_, which is the root of the composition and allows resolving an instance of type _Program_:
-
-```c#
-public Sample.Program Root
-{
-  get
-  {
-    Func<State> stateFunc = new Func<State>(() =>
-    {
-      if (_randomSingleton == null)
-      {
-        lock (_lockObject)
-        {
-          if (_randomSingleton == null)
-          {
-            _randomSingleton = new Random();
-          }
-        }
-      }
-      
-      return (State)_randomSingleton.Next(2);      
-    });
-    
-    return new Program(
-      new CardboardBox<ICat>(
-        new ShroedingersCat(
-          new Lazy<Sample.State>(
-            stateFunc))));    
-  }
-}
-```
-
-The full analog of this application with top-level statements can be found [here](Samples/ShroedingersCatTopLevelStatements).
+The full analog of this application with top-level statements can be found [here](samples/ShroedingersCatTopLevelStatements).
 
 ## To summarize
 
@@ -256,7 +285,7 @@ dotnet run
 
 ## Generated Code
 
-Each generated class, hereafter called a _composition_, must be customized. It starts with the `Setup(...)` method:
+Each generated class, hereafter called a _composition_, must be customized. Setup starts with a call to the `Setup(string compositionTypeName)` method:
 
 ```c#
 DI.Setup("Composition")
@@ -287,9 +316,9 @@ partial class Composition
 
     public T Resolve<T>(object? tag)  { ... }
 
-    public object Resolve(System.Type type) { ... }
+    public object Resolve(Type type) { ... }
 
-    public object Resolve(System.Type type, object? tag) { ... }
+    public object Resolve(Type type, object? tag) { ... }
 }
 ```
 
@@ -378,11 +407,9 @@ The child composition inherits the state of the parent composition in the form o
 <details>
 <summary>Properties</summary>
 
-To create an object graph quickly and conveniently, a set of properties is formed. These properties are here called roots of compositions. The type of a property is the type of the root object created by the composition. Accordingly, each invocation of a property leads to the creation of a composition with a root element of this type.
-
 ### Public Composition Roots
 
-To create an object graph quickly and conveniently, a set of properties is formed. These properties are here called roots of compositions. The type of a property is the type of the root object created by the composition. Each invocation of a property results in the creation of a composition with a root element of this type.
+To create an object graph quickly and conveniently, a set of properties is formed. These properties are here called roots of compositions. The type of a property is the type of the root object created by the composition. Accordingly, each invocation of a property leads to the creation of a composition with a root element of this type.
 
 ```c#
 DI.Setup("Composition")
@@ -424,7 +451,7 @@ DI.Setup("Composition")
     .Root<IService>();
 ```
 
-These properties have an arbitrary name and private accessor and cannot be used directly from the code. Do not attempt to use them, as their names change arbitrarily. Private composition roots can be resolved by _Resolve_ methods.
+These properties have an arbitrary name and access modifier _private_ and cannot be used directly from the code. Do not attempt to use them, as their names are arbitrarily changed. Private composition roots can be resolved by _Resolve_ methods.
 
 </details>
 
@@ -460,10 +487,7 @@ This is a [not recommended](https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanA
 Provides a mechanism to release unmanaged resources. This method is generated only if the composition contains at least one singleton instance that implements the [IDisposable](https://learn.microsoft.com/en-us/dotnet/api/system.idisposable) interface. To dispose of all created singleton objects, the `Dispose()` method of the composition should be called:
 
 ```c#
-using(var composition = new Composition())
-{
-    ...
-}
+using var composition = new Composition();
 ```
 
 </details>
@@ -483,7 +507,7 @@ DI.Setup("Composition")
     ...
 ```
 
-In addition, setup hints can be comments before the _Setup_ method, for example, in the form `hint = value`:
+In addition, setup hints can be commented out before the _Setup_ method as `hint = value`. For example:
 
 ```c#
 // Resolve = Off
@@ -492,6 +516,8 @@ DI.Setup("Composition")
     .Hint(Hint.ToString, "On")
     ...
 ```
+
+Both approaches can be used in combination with each other.
 
 | Hint                                                                                                                               | Values             | Default   | C# version |
 |------------------------------------------------------------------------------------------------------------------------------------|--------------------|-----------|------------|
@@ -521,6 +547,8 @@ DI.Setup("Composition")
 | [ObjectResolveByTagMethodName](#objectresolvebytagmethodname-hint)                                                                 | Method name        | _Resolve_ |            |
 | [DisposeMethodModifiers](#disposemethodmodifiers-hint)                                                                             | Method modifier    | _public_  |            |
 | [FormatCode](#formatcode-hint)                                                                                                     | _On_ or _Off_      | _Off_     |            |
+
+The list of hints will be gradually expanded to meet the needs and desires for fine-tuning code generation. Please feel free to add your ideas.
 
 ### Resolve Hint
 
@@ -707,7 +735,7 @@ Specifies whether the generated code should be formatted. This option consumes a
 - [ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/)
 - [.NET Multi-platform App UI (MAUI)](https://docs.microsoft.com/en-us/dotnet/maui/)
 
-And others
+As well as any other
 
 ## Project template
 
@@ -729,16 +757,14 @@ And run it
 dotnet run --project Sample
 ```
 
-For more information about the template, see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates).
+For more information about the template, please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates).
 
 ## Troubleshooting
 
-### Disabling API generation
-
-_Pure.DI_ automatically generates its API. If an application module already has the _Pure.DI_ API, its automatic generation for some other modules sometimes needs to be disabled. To do this, add the _DefineConstants_ element to the project files of these modules.
-
 <details>
-<summary>For example</summary>
+<summary>Disabling API generation</summary>
+
+_Pure.DI_ automatically generates its API. If an assembly already has the _Pure.DI_ API, for example, from another assembly, it is sometimes necessary to disable its automatic generation to avoid ambiguity. To do this, you need to add a _DefineConstants_ element to the project files of these modules. For example:
 
 ```xml
 <PropertyGroup>
@@ -748,12 +774,10 @@ _Pure.DI_ automatically generates its API. If an application module already has 
 
 </details>
 
-### Generated files
-
-You can set project properties to save generated files and control their storage location. In the project file, add the `<EmitCompilerGeneratedFiles>` element to the `<PropertyGroup>` group and set its value to `true`. Build the project again. The generated files are now created in the _obj/Debug/netX.X/generated/Pure.DI/Pure.DI/Pure.DI.SourceGenerator_ directory. The path components correspond to the build configuration, the target framework, the source generator project name, and the full name of the generator type. You can choose a more convenient output folder by adding the `<CompilerGeneratedFilesOutputPath>` element to the application project file.
-
 <details>
-<summary>For example</summary>
+<summary>Display generated files</summary>
+
+You can set project properties to save generated files and control their storage location. In the project file, add the `<EmitCompilerGeneratedFiles>` element to the `<PropertyGroup>` group and set its value to `true`. Build the project again. The generated files are now created in the _obj/Debug/netX.X/generated/Pure.DI/Pure.DI/Pure.DI.SourceGenerator_ directory. The path components correspond to the build configuration, the target framework, the source generator project name, and the full name of the generator type. You can choose a more convenient output folder by adding the `<CompilerGeneratedFilesOutputPath>` element to the application project file. For example:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -768,12 +792,10 @@ You can set project properties to save generated files and control their storage
 
 </details>
 
-### Log files
-
-To save the log file, you need to add additional project properties. In the project file, add the `<PureDILogFile>` item to `<PropertyGroup>` and specify the path to the log directory, and add the associated `<CompilerVisibleProperty Include="PureDILogFile" />` item to `<ItemGroup>` to make this property visible in the source code generator. To change the log level, specify it using the _PureDISeverity_ property.
-
 <details>
-<summary>For example</summary>
+<summary>Create log files</summary>
+
+To save the log file, you need to add additional project properties. In the project file, add the `<PureDILogFile>` item to `<PropertyGroup>` and specify the path to the log directory, and add the associated `<CompilerVisibleProperty Include="PureDILogFile" />` item to `<ItemGroup>` to make this property visible in the source code generator. To change the log level, specify it using the _PureDISeverity_ property. For example:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -802,6 +824,22 @@ The _PureDISeverity_ property can take on multiple values:
 
 </details>
 
+## Contribution
+
+Thank you for your interest in contributing to the _Pure.DI_ project! First of all, if you are going to make a big change or feature, please open a problem first. That way, we can coordinate and understand if the change you're going to work on fits with current priorities and if we can commit to reviewing and merging it within a reasonable timeframe. We don't want you to waste a lot of your valuable time on something that may not align with what we want for _Pure.DI_.
+
+This project uses the "build as code" approach using [csharp-interactive](https://github.com/DevTeam/csharp-interactive). The entire build logic is a regular [console .NET application](/build). You can use the [build.cmd](/build.cmd) and [build.sh](/build.sh) files with the appropriate command in the parameters to perform all basic actions on the project, e.g:
+
+- _readme_ - generates README.MD
+- _pack_ - creates NuGet packages
+- _benchmarks_ - runs benchmark tests
+
+If you are using the Rider IDE, it already has a set of configurations to run these commands.
+
+### Prerequisites
+
+Installed [.NET SDK 7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+
 
 ## Benchmarks
 
@@ -809,18 +847,23 @@ The _PureDISeverity_ property can take on multiple values:
 <summary>Transient</summary>
 
 <table>
-<thead><tr><th>                Method</th><th>   Mean</th><th>Error</th><th> StdDev</th><th> Median</th><th>Ratio</th><th>RatioSD</th>
+<thead><tr><th>              Method</th><th>   Mean</th><th>  Error</th><th> StdDev</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</thead><tbody><tr><td>&#39;Pure.DI composition root&#39;</td><td>3.644 ns</td><td>0.1301 ns</td><td>0.2278 ns</td><td>3.618 ns</td><td>0.95</td><td>0.08</td>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>3.866 ns</td><td>0.1410 ns</td><td>0.2470 ns</td><td>3.826 ns</td><td>1.00</td><td>0.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>5.021 ns</td><td>0.1567 ns</td><td>0.3961 ns</td><td>4.893 ns</td><td>1.32</td><td>0.12</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>8.258 ns</td><td>0.2282 ns</td><td>0.3124 ns</td><td>8.227 ns</td><td>2.12</td><td>0.17</td>
-</tr><tr><td>LightInject</td><td>11.880 ns</td><td>0.2369 ns</td><td>0.2216 ns</td><td>11.855 ns</td><td>3.09</td><td>0.19</td>
-</tr><tr><td>DryIoc</td><td>20.525 ns</td><td>0.4440 ns</td><td>0.8765 ns</td><td>20.342 ns</td><td>5.36</td><td>0.43</td>
-</tr><tr><td>MicrosoftDependencyInjection</td><td>24.907 ns</td><td>0.3146 ns</td><td>0.2627 ns</td><td>24.797 ns</td><td>6.50</td><td>0.44</td>
-</tr><tr><td>SimpleInjector</td><td>25.713 ns</td><td>0.5057 ns</td><td>0.4730 ns</td><td>25.839 ns</td><td>6.68</td><td>0.42</td>
-</tr><tr><td>Autofac</td><td>11,836.198 ns</td><td>787.2618 ns</td><td>2,321.2591 ns</td><td>11,580.115 ns</td><td>3,192.58</td><td>703.84</td>
+</thead><tbody><tr><td>&#39;Pure.DI composition root&#39;</td><td>3.905 ns</td><td>0.1264 ns</td><td>0.1120 ns</td><td>0.93</td><td>0.04</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>4.223 ns</td><td>0.1146 ns</td><td>0.1016 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>5.156 ns</td><td>0.1445 ns</td><td>0.1207 ns</td><td>1.22</td><td>0.04</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>8.982 ns</td><td>0.1606 ns</td><td>0.1341 ns</td><td>2.13</td><td>0.05</td>
+</tr><tr><td>LightInject</td><td>12.760 ns</td><td>0.2849 ns</td><td>0.4086 ns</td><td>3.03</td><td>0.14</td>
+</tr><tr><td>DryIoc</td><td>21.621 ns</td><td>0.1693 ns</td><td>0.1501 ns</td><td>5.12</td><td>0.13</td>
+</tr><tr><td>&#39;Simple Injector&#39;</td><td>25.124 ns</td><td>0.2307 ns</td><td>0.2045 ns</td><td>5.95</td><td>0.14</td>
+</tr><tr><td>&#39;Microsoft DI&#39;</td><td>30.622 ns</td><td>0.6353 ns</td><td>0.8261 ns</td><td>7.20</td><td>0.23</td>
+</tr><tr><td>Unity</td><td>3,951.550 ns</td><td>66.6363 ns</td><td>71.3001 ns</td><td>938.96</td><td>29.00</td>
+</tr><tr><td>Autofac</td><td>9,226.310 ns</td><td>134.1379 ns</td><td>125.4727 ns</td><td>2,190.09</td><td>64.23</td>
+</tr><tr><td>&#39;Castle Windsor&#39;</td><td>20,472.355 ns</td><td>408.9786 ns</td><td>419.9909 ns</td><td>4,862.71</td><td>126.38</td>
+</tr><tr><td>Ninject</td><td>90,659.632 ns</td><td>1,803.9658 ns</td><td>5,028.7356 ns</td><td>22,181.39</td><td>1,190.28</td>
 </tr></tbody></table>
+
+[Transient details](readme/TransientDetails.md)
 
 </details>
 
@@ -828,18 +871,23 @@ The _PureDISeverity_ property can take on multiple values:
 <summary>Singleton</summary>
 
 <table>
-<thead><tr><th>                Method</th><th>  Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th>
+<thead><tr><th>              Method</th><th>   Mean</th><th>  Error</th><th> StdDev</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>3.786 ns</td><td>0.1347 ns</td><td>0.1752 ns</td><td>1.00</td><td>0.00</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>4.313 ns</td><td>0.1508 ns</td><td>0.1961 ns</td><td>1.14</td><td>0.07</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>5.427 ns</td><td>0.1716 ns</td><td>0.3095 ns</td><td>1.43</td><td>0.09</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>8.801 ns</td><td>0.2395 ns</td><td>0.2851 ns</td><td>2.34</td><td>0.15</td>
-</tr><tr><td>DryIoc</td><td>22.165 ns</td><td>0.4642 ns</td><td>0.5701 ns</td><td>5.88</td><td>0.31</td>
-</tr><tr><td>SimpleInjector</td><td>26.368 ns</td><td>0.3747 ns</td><td>0.3505 ns</td><td>6.96</td><td>0.35</td>
-</tr><tr><td>MicrosoftDependencyInjection</td><td>27.638 ns</td><td>0.5711 ns</td><td>0.7818 ns</td><td>7.33</td><td>0.36</td>
-</tr><tr><td>LightInject</td><td>40.876 ns</td><td>0.6849 ns</td><td>0.7612 ns</td><td>10.82</td><td>0.51</td>
-</tr><tr><td>Autofac</td><td>7,092.382 ns</td><td>138.9567 ns</td><td>194.7978 ns</td><td>1,879.76</td><td>116.88</td>
+</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>4.127 ns</td><td>0.1110 ns</td><td>0.0984 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>4.221 ns</td><td>0.0686 ns</td><td>0.0642 ns</td><td>1.02</td><td>0.03</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>5.539 ns</td><td>0.1219 ns</td><td>0.1140 ns</td><td>1.34</td><td>0.04</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>9.271 ns</td><td>0.2205 ns</td><td>0.2063 ns</td><td>2.26</td><td>0.07</td>
+</tr><tr><td>DryIoc</td><td>23.297 ns</td><td>0.4912 ns</td><td>0.4824 ns</td><td>5.65</td><td>0.19</td>
+</tr><tr><td>&#39;Simple Injector&#39;</td><td>27.072 ns</td><td>0.2235 ns</td><td>0.1982 ns</td><td>6.56</td><td>0.16</td>
+</tr><tr><td>&#39;Microsoft DI&#39;</td><td>29.477 ns</td><td>0.4632 ns</td><td>0.4333 ns</td><td>7.15</td><td>0.20</td>
+</tr><tr><td>LightInject</td><td>45.532 ns</td><td>0.9257 ns</td><td>0.8659 ns</td><td>11.03</td><td>0.30</td>
+</tr><tr><td>Unity</td><td>2,738.862 ns</td><td>18.7742 ns</td><td>15.6773 ns</td><td>663.16</td><td>16.82</td>
+</tr><tr><td>Autofac</td><td>7,293.788 ns</td><td>28.2394 ns</td><td>26.4151 ns</td><td>1,768.41</td><td>42.10</td>
+</tr><tr><td>&#39;Castle Windsor&#39;</td><td>14,479.241 ns</td><td>241.5276 ns</td><td>396.8368 ns</td><td>3,581.98</td><td>151.57</td>
+</tr><tr><td>Ninject</td><td>66,069.812 ns</td><td>1,855.7800 ns</td><td>5,173.1730 ns</td><td>17,637.64</td><td>1,278.50</td>
 </tr></tbody></table>
+
+[Singleton details](readme/SingletonDetails.md)
 
 </details>
 
@@ -847,16 +895,19 @@ The _PureDISeverity_ property can take on multiple values:
 <summary>Func</summary>
 
 <table>
-<thead><tr><th>                Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th>
+<thead><tr><th>              Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>83.26 ns</td><td>1.705 ns</td><td>2.030 ns</td><td>0.95</td><td>0.06</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>85.94 ns</td><td>1.628 ns</td><td>1.444 ns</td><td>0.99</td><td>0.05</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>86.77 ns</td><td>1.785 ns</td><td>4.412 ns</td><td>0.99</td><td>0.07</td>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>87.80 ns</td><td>1.798 ns</td><td>3.754 ns</td><td>1.00</td><td>0.00</td>
-</tr><tr><td>DryIoc</td><td>105.83 ns</td><td>2.060 ns</td><td>2.606 ns</td><td>1.20</td><td>0.07</td>
-</tr><tr><td>LightInject</td><td>432.29 ns</td><td>5.690 ns</td><td>5.322 ns</td><td>4.98</td><td>0.19</td>
-</tr><tr><td>Autofac</td><td>8,546.73 ns</td><td>163.729 ns</td><td>175.188 ns</td><td>97.73</td><td>4.80</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>87.29 ns</td><td>1.757 ns</td><td>2.630 ns</td><td>87.13 ns</td><td>1.01</td><td>0.02</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>87.34 ns</td><td>1.139 ns</td><td>0.889 ns</td><td>87.33 ns</td><td>0.99</td><td>0.01</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>88.49 ns</td><td>1.201 ns</td><td>1.064 ns</td><td>88.28 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>92.41 ns</td><td>1.027 ns</td><td>0.858 ns</td><td>92.31 ns</td><td>1.04</td><td>0.01</td>
+</tr><tr><td>DryIoc</td><td>112.16 ns</td><td>2.695 ns</td><td>7.646 ns</td><td>108.66 ns</td><td>1.39</td><td>0.09</td>
+</tr><tr><td>LightInject</td><td>493.40 ns</td><td>5.094 ns</td><td>4.253 ns</td><td>492.08 ns</td><td>5.58</td><td>0.10</td>
+</tr><tr><td>Unity</td><td>3,703.23 ns</td><td>55.805 ns</td><td>52.200 ns</td><td>3,691.33 ns</td><td>41.83</td><td>0.76</td>
+</tr><tr><td>Autofac</td><td>9,427.99 ns</td><td>158.625 ns</td><td>140.617 ns</td><td>9,398.69 ns</td><td>106.56</td><td>2.20</td>
 </tr></tbody></table>
+
+[Func details](readme/FuncDetails.md)
 
 </details>
 
@@ -864,16 +915,19 @@ The _PureDISeverity_ property can take on multiple values:
 <summary>Array</summary>
 
 <table>
-<thead><tr><th>                Method</th><th>  Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
+<thead><tr><th>              Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>79.99 ns</td><td>2.698 ns</td><td>7.954 ns</td><td>76.70 ns</td><td>1.00</td><td>0.00</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>88.79 ns</td><td>2.717 ns</td><td>7.884 ns</td><td>86.02 ns</td><td>1.12</td><td>0.15</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>92.69 ns</td><td>3.242 ns</td><td>9.509 ns</td><td>88.42 ns</td><td>1.17</td><td>0.15</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>93.28 ns</td><td>2.674 ns</td><td>7.884 ns</td><td>90.48 ns</td><td>1.18</td><td>0.14</td>
-</tr><tr><td>LightInject</td><td>99.37 ns</td><td>3.547 ns</td><td>10.347 ns</td><td>97.70 ns</td><td>1.25</td><td>0.18</td>
-</tr><tr><td>DryIoc</td><td>108.40 ns</td><td>3.156 ns</td><td>9.257 ns</td><td>104.45 ns</td><td>1.37</td><td>0.17</td>
-</tr><tr><td>Autofac</td><td>10,368.08 ns</td><td>203.428 ns</td><td>429.098 ns</td><td>10,342.65 ns</td><td>130.12</td><td>15.68</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>111.0 ns</td><td>7.00 ns</td><td>20.43 ns</td><td>99.67 ns</td><td>0.99</td><td>0.21</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>113.9 ns</td><td>5.96 ns</td><td>17.57 ns</td><td>112.62 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>115.5 ns</td><td>4.46 ns</td><td>13.16 ns</td><td>114.41 ns</td><td>1.03</td><td>0.18</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>119.5 ns</td><td>5.82 ns</td><td>16.80 ns</td><td>115.31 ns</td><td>1.07</td><td>0.24</td>
+</tr><tr><td>LightInject</td><td>123.2 ns</td><td>7.14 ns</td><td>21.04 ns</td><td>121.70 ns</td><td>1.10</td><td>0.19</td>
+</tr><tr><td>DryIoc</td><td>134.6 ns</td><td>6.01 ns</td><td>17.06 ns</td><td>136.66 ns</td><td>1.18</td><td>0.20</td>
+</tr><tr><td>Unity</td><td>4,944.7 ns</td><td>236.42 ns</td><td>693.37 ns</td><td>4,675.96 ns</td><td>44.57</td><td>10.68</td>
+</tr><tr><td>Autofac</td><td>12,176.7 ns</td><td>344.88 ns</td><td>1,006.02 ns</td><td>11,901.56 ns</td><td>108.96</td><td>19.56</td>
 </tr></tbody></table>
+
+[Array details](readme/ArrayDetails.md)
 
 </details>
 
@@ -881,17 +935,20 @@ The _PureDISeverity_ property can take on multiple values:
 <summary>Enum</summary>
 
 <table>
-<thead><tr><th>                Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th>
+<thead><tr><th>              Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>196.2 ns</td><td>2.54 ns</td><td>2.38 ns</td><td>0.99</td><td>0.03</td>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>198.0 ns</td><td>3.95 ns</td><td>4.85 ns</td><td>1.00</td><td>0.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>202.2 ns</td><td>3.56 ns</td><td>3.33 ns</td><td>1.02</td><td>0.03</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>205.5 ns</td><td>2.19 ns</td><td>2.05 ns</td><td>1.04</td><td>0.03</td>
-</tr><tr><td>DryIoc</td><td>224.1 ns</td><td>2.27 ns</td><td>2.12 ns</td><td>1.13</td><td>0.04</td>
-</tr><tr><td>LightInject</td><td>243.4 ns</td><td>4.83 ns</td><td>5.17 ns</td><td>1.23</td><td>0.04</td>
-</tr><tr><td>MicrosoftDependencyInjection</td><td>248.3 ns</td><td>3.94 ns</td><td>3.69 ns</td><td>1.25</td><td>0.05</td>
-</tr><tr><td>Autofac</td><td>10,481.5 ns</td><td>29.76 ns</td><td>26.38 ns</td><td>52.50</td><td>0.95</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>221.8 ns</td><td>4.42 ns</td><td>5.26 ns</td><td>0.95</td><td>0.04</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>225.3 ns</td><td>4.40 ns</td><td>4.32 ns</td><td>0.96</td><td>0.03</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>237.7 ns</td><td>7.06 ns</td><td>20.83 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>247.9 ns</td><td>9.11 ns</td><td>26.29 ns</td><td>1.06</td><td>0.17</td>
+</tr><tr><td>LightInject</td><td>273.0 ns</td><td>4.72 ns</td><td>5.05 ns</td><td>1.17</td><td>0.04</td>
+</tr><tr><td>DryIoc</td><td>288.4 ns</td><td>5.79 ns</td><td>16.13 ns</td><td>1.23</td><td>0.13</td>
+</tr><tr><td>&#39;Microsoft DI&#39;</td><td>295.3 ns</td><td>5.66 ns</td><td>5.56 ns</td><td>1.26</td><td>0.05</td>
+</tr><tr><td>Unity</td><td>7,103.3 ns</td><td>121.72 ns</td><td>153.94 ns</td><td>30.22</td><td>1.65</td>
+</tr><tr><td>Autofac</td><td>11,828.0 ns</td><td>119.59 ns</td><td>99.86 ns</td><td>50.08</td><td>1.72</td>
 </tr></tbody></table>
+
+[Enum details](readme/EnumDetails.md)
 
 </details>
 

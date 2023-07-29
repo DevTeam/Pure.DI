@@ -2,7 +2,7 @@ namespace Pure.DI.UsageTests;
 
 using System.Text;
 
-internal static class TestTools
+public static class TestTools
 {
     public static void SaveClassDiagram(object composition, string name)
     {

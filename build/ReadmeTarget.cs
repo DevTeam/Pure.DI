@@ -5,6 +5,7 @@ namespace Build;
 using System.CommandLine.Invocation;
 using HostApi;
 using Pure.DI;
+using Pure.DI.Benchmarks.Benchmarks;
 
 internal class ReadmeTarget : ITarget<int>
 {
@@ -53,12 +54,17 @@ internal class ReadmeTarget : ITarget<int>
         // Delete generated files
         Directory.Delete(Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator"), true);
 
-        // Run tests for Class Diagrams
-        var testProject = Path.Combine(solutionDirectory, "tests", "Pure.DI.UsageTests", "Pure.DI.UsageTests.csproj");
-        await new DotNetClean().WithProject(testProject).BuildAsync();
-        var testResult = await new DotNetTest().WithProject(testProject).BuildAsync();
-        Assertion.Succeed(testResult);
-        
+        var projects = new[]
+        {
+            Path.Combine(solutionDirectory, "tests", "Pure.DI.UsageTests", "Pure.DI.UsageTests.csproj"),
+            Path.Combine(solutionDirectory, "benchmarks", "Pure.DI.Benchmarks", "Pure.DI.Benchmarks.csproj")
+        };
+
+        foreach (var project in projects)
+        {
+            Assertion.Succeed(await new MSBuild().WithProject(project).WithTarget("clean;rebuild").BuildAsync());    
+        }
+
         await using var readmeWriter = File.CreateText(ReadmeFile);
         
         await AddContent(ReadmeHeaderFile, readmeWriter, "docs");
@@ -255,48 +261,9 @@ internal class ReadmeTarget : ITarget<int>
                 await examplesWriter.WriteLineAsync(vars[BodyKey]);
                 await examplesWriter.WriteLineAsync("```");
 
-                var sampleName = Path.GetFileNameWithoutExtension(vars[SourceKey]);
-                var classDiagramFile = Path.Combine(logsDirectory, sampleName + ".Mermaid");
-                if (File.Exists(classDiagramFile))
-                {
-                    await examplesWriter.WriteLineAsync("");
-                    await examplesWriter.WriteLineAsync("<details open>");
-                    await examplesWriter.WriteLineAsync("<summary>Class Diagram</summary>");
-                    await examplesWriter.WriteLineAsync("");
-                    await examplesWriter.WriteLineAsync("```mermaid");
-                    var classDiagram = await File.ReadAllTextAsync(classDiagramFile);
-                    await examplesWriter.WriteLineAsync(classDiagram);
-                    await examplesWriter.WriteLineAsync("```");
-                    await examplesWriter.WriteLineAsync("");
-                    await examplesWriter.WriteLineAsync("</details>");
-                    await examplesWriter.WriteLineAsync("");
-                }
-
-                foreach (var generatedCodeFile in Directory.GetFiles(Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator"), $"*.{sampleName}.*.g.cs").OrderBy(i => i))
-                {
-                    var name = Path.GetFileName(generatedCodeFile).Split('.').Reverse().Skip(2).FirstOrDefault() ?? "Generated";
-                    await examplesWriter.WriteLineAsync("<details>");
-                    await examplesWriter.WriteLineAsync($"<summary>{name} Code</summary>");
-                    await examplesWriter.WriteLineAsync("");
-                    await examplesWriter.WriteLineAsync("```c#");
-                    var generatedCode = await File.ReadAllTextAsync(generatedCodeFile);
-                    generatedCode = string.Join(
-                        Environment.NewLine,
-                        generatedCode
-                            .Split(Environment.NewLine)
-                            .SkipWhile(i => i != "{")
-                            .Skip(2)
-                            .Reverse()
-                            .SkipWhile(i => i != "}")
-                            .Skip(1)
-                            .Reverse()
-                            .Select(i => i.Length > 2 ? i[2..] : i));
-                    await examplesWriter.WriteLineAsync(generatedCode);
-                    await examplesWriter.WriteLineAsync("```");
-                    await examplesWriter.WriteLineAsync("");
-                    await examplesWriter.WriteLineAsync("</details>");
-                    await examplesWriter.WriteLineAsync("");
-                }
+                var exampleName = Path.GetFileNameWithoutExtension(vars[SourceKey]);
+                await AddClassDiagram(logsDirectory, exampleName, examplesWriter);
+                await AddExample(logsDirectory, $"Pure.DI.UsageTests.*.{exampleName}.*.g.cs", examplesWriter);
 
                 var footer = vars[FooterKey];
                 if (!string.IsNullOrWhiteSpace(footer))
@@ -307,6 +274,54 @@ internal class ReadmeTarget : ITarget<int>
 
                 await examplesWriter.FlushAsync();
             }
+        }
+    }
+
+    private static async Task AddClassDiagram(string logsDirectory, string exampleName, TextWriter examplesWriter)
+    {
+        var classDiagramFile = Path.Combine(logsDirectory, exampleName + ".Mermaid");
+        if (File.Exists(classDiagramFile))
+        {
+            await examplesWriter.WriteLineAsync("");
+            await examplesWriter.WriteLineAsync("<details open>");
+            await examplesWriter.WriteLineAsync("<summary>Class Diagram</summary>");
+            await examplesWriter.WriteLineAsync("");
+            await examplesWriter.WriteLineAsync("```mermaid");
+            var classDiagram = await File.ReadAllTextAsync(classDiagramFile);
+            await examplesWriter.WriteLineAsync(classDiagram);
+            await examplesWriter.WriteLineAsync("```");
+            await examplesWriter.WriteLineAsync("");
+            await examplesWriter.WriteLineAsync("</details>");
+            await examplesWriter.WriteLineAsync("");
+        }
+    }
+
+    private static async Task AddExample(string logsDirectory, string exampleSearchPattern, TextWriter examplesWriter)
+    {
+        foreach (var generatedCodeFile in Directory.GetFiles(Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator"), exampleSearchPattern).OrderBy(i => i))
+        {
+            var name = Path.GetFileName(generatedCodeFile).Split('.').Reverse().Skip(2).FirstOrDefault() ?? "Generated";
+            await examplesWriter.WriteLineAsync("<details>");
+            await examplesWriter.WriteLineAsync($"<summary>Pure.DI-generated partial class {name}</summary><blockquote>");
+            await examplesWriter.WriteLineAsync("");
+            await examplesWriter.WriteLineAsync("```c#");
+            var generatedCode = await File.ReadAllTextAsync(generatedCodeFile);
+            generatedCode = string.Join(
+                Environment.NewLine,
+                generatedCode
+                    .Split(Environment.NewLine)
+                    .SkipWhile(i => i != "{")
+                    .Skip(2)
+                    .Reverse()
+                    .SkipWhile(i => i != "}")
+                    .Skip(1)
+                    .Reverse()
+                    .Select(i => i.Length > 2 ? i[2..] : i));
+            await examplesWriter.WriteLineAsync(generatedCode);
+            await examplesWriter.WriteLineAsync("```");
+            await examplesWriter.WriteLineAsync("");
+            await examplesWriter.WriteLineAsync("</blockquote></details>");
+            await examplesWriter.WriteLineAsync("");
         }
     }
 
@@ -339,6 +354,8 @@ internal class ReadmeTarget : ITarget<int>
                 }
 
                 await readmeWriter.WriteLineAsync("");
+                await readmeWriter.WriteLineAsync($"[{reportName} details]({ReadmeDir}/{reportName}Details.md)");
+                await readmeWriter.WriteLineAsync("");
                 await readmeWriter.WriteLineAsync("</details>");
                 await readmeWriter.WriteLineAsync("");
 
@@ -361,6 +378,33 @@ internal class ReadmeTarget : ITarget<int>
                     await readmeWriter.WriteLineAsync("</details>");
                 }
             }
+        }
+        
+        var benchmarks = new (string name, string description, string classDiagram)[]
+        {
+            (nameof(Transient), "Creating an object graph of 22 transient objects.", new Transient().ToString()),
+            (nameof(Singleton), "Creating an object graph of 20 transition objects plus 1 singleton with an additional 6 transition objects .", new Singleton().ToString()),
+            (nameof(Func), "Creating an object graph of 7 transition objects plus 1 `Func<T>` with additional 1 transition object.", new Func().ToString()),
+            (nameof(Array), "Creating an object graph of 27 transient objects, including 4 transient array objects.", new Array().ToString()),
+            (nameof(Enum), "Creating an object graph of 12 transient objects, including 1 transient enumerable object.", new Enum().ToString())
+        };
+
+        foreach (var (name,description, classDiagram) in benchmarks)
+        {
+            await using var classDiagramWriter = File.CreateText(Path.Combine(ReadmeDir, $"{name}Details.md"));
+            await classDiagramWriter.WriteLineAsync($"## {name} details");
+            await classDiagramWriter.WriteLineAsync("");
+            await classDiagramWriter.WriteLineAsync(description);
+            await classDiagramWriter.WriteLineAsync("");
+            await classDiagramWriter.WriteLineAsync("### Class diagram");
+            await classDiagramWriter.WriteLineAsync("```mermaid");
+            await classDiagramWriter.WriteLineAsync(classDiagram);
+            await classDiagramWriter.WriteLineAsync("```");
+            
+            await classDiagramWriter.WriteLineAsync("");
+            await classDiagramWriter.WriteLineAsync("### Generated code");
+            await classDiagramWriter.WriteLineAsync("");
+            await AddExample(logsDirectory, $"Pure.DI.Benchmarks.Benchmarks.{name}.g.cs", classDiagramWriter);
         }
     }
 

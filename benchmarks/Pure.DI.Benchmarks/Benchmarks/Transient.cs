@@ -15,6 +15,7 @@ public partial class Transient : BenchmarkBase
     private static void SetupDI() =>
         // ThreadSafe = Off
         // FormatCode = On
+        // ToString = On
         DI.Setup(nameof(Transient))
             .Bind<ICompositionRoot>().To<CompositionRoot>()
             .Bind<IService1>().To<Service1>()
