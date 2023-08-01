@@ -18,22 +18,6 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
     private const string DISetup = $"{nameof(DI)}.{nameof(DI.Setup)}";
     private static readonly char[] TypeNamePartsSeparators = { '.' };
     private static readonly Regex CommentRegex = new(@"//\s*(\w+)\s*=\s*(.+)\s*", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-    private static readonly ImmutableHashSet<string> ApiMethods = ImmutableHashSet.Create(
-        DISetup,
-        nameof(IConfiguration.Arg),
-        nameof(IConfiguration.Bind),
-        nameof(IConfiguration.DependsOn),
-        nameof(IConfiguration.DefaultLifetime),
-        nameof(IConfiguration.Root),
-        nameof(IConfiguration.Hint),
-        nameof(IConfiguration.OrdinalAttribute),
-        nameof(IConfiguration.TagAttribute),
-        nameof(IConfiguration.TypeAttribute),
-        nameof(IBinding.As),
-        nameof(IBinding.To),
-        nameof(IBinding.Tags)
-    );
-    
     private readonly ILogger<MetadataSyntaxWalker> _logger;
     private IMetadataVisitor? _metadataVisitor;
     private CancellationToken _cancellationToken = CancellationToken.None;
@@ -41,6 +25,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
     private readonly Stack<InvocationExpressionSyntax> _invocations = new();
     private string _namespace = string.Empty;
     private readonly Hints _hints = new();
+    private bool _isMetadata;
 
     public MetadataSyntaxWalker(ILogger<MetadataSyntaxWalker> logger) => _logger = logger;
 
@@ -59,7 +44,15 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
         while (_invocations.TryPop(out var invocation))
         {
             invocations.Push(invocation);
-            base.VisitInvocationExpression(invocation);
+            _isMetadata = true;
+            try
+            {
+                base.VisitInvocationExpression(invocation);
+            }
+            finally
+            {
+                _isMetadata = false;
+            }
         }
 
         while (invocations.TryPop(out var invocation))
@@ -74,7 +67,7 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
     public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
     {
         _cancellationToken.ThrowIfCancellationRequested();
-        if (_invocations.Count > 0 || IsMetadata(invocation))
+        if (_isMetadata || IsMetadata(invocation))
         {
             _invocations.Push(invocation);
         }
@@ -612,18 +605,9 @@ internal class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
     }
     
     [SuppressMessage("ReSharper", "SuggestBaseTypeForParameter")]
-    private static bool IsMetadata(InvocationExpressionSyntax invocation)
-    {
-        if (!ApiMethods.Contains(GetInvocationName(invocation)))
-        {
-            return false;
-        }
-
-        var setupInvocation = invocation
+    private static bool IsMetadata(InvocationExpressionSyntax invocation) =>
+        invocation
             .DescendantNodesAndSelf()
             .OfType<InvocationExpressionSyntax>()
-            .FirstOrDefault(i => GetInvocationName(i) == DISetup);
-
-        return setupInvocation is not null;
-    }
+            .FirstOrDefault(i => GetInvocationName(i) == DISetup) is not null;
 }
