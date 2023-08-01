@@ -78,25 +78,7 @@ Add the _Pure.DI_ package to your project:
 
 [![NuGet](https://buildstats.info/nuget/Pure.DI?includePreReleases=true)](https://www.nuget.org/packages/Pure.DI)
 
-<details>
-<summary>From the Package Manager</summary>
-
-```shell
-Install-Package Pure.DI
-```
-
-</details>
-
-<details>
-<summary>From the .NET CLI</summary>
-  
-```shell
-dotnet add package Pure.DI
-```
-
-</details>
-
-Let's bind abstractions to their implementations:
+Let's bind the abstractions to their implementations and set up the creation of the object graph:
 
 ```c#
 partial class Composition
@@ -127,7 +109,7 @@ partial class Composition
 }
 ```
 
-The above code specifies to generate a partial class named *__Composition__*, this name is defined in the `DI.Setup(nameof(Composition))` call. This class contains a *__Root__* property that returns an object of type *__Program__*. The type and name of the property is set by calling `Root<Program>("Root")`. The code of the generated class looks as follows:
+The above code specifies the generation of a partial class named *__Composition__*, this name is defined in the `DI.Setup(nameof(Composition))` call. This class contains a *__Root__* property that returns a graph of objects with an object of type *__Program__* as the root. The type and name of the property is defined by calling `Root<Program>("Root")`. The code of the generated class looks as follows:
 
 ```c#
 partial class Composition
@@ -760,6 +742,28 @@ dotnet run --project Sample
 For more information about the template, please see [this page](https://github.com/DevTeam/Pure.DI/wiki/Project-templates).
 
 ## Troubleshooting
+
+<details>
+<summary>Version update</summary>
+
+When updating the version, it is possible that the previous version of the code generator remains active and is used by compilation services. In this case, the old and new versions of the generator may conflict. For a project where the code generator is used, it is recommended to do the following:
+- After updating the version, close the IDE if it is open
+- Delete the _obj_ and _bin_ directories
+- Execute the following commands one by one
+
+```shell
+dotnet build-server shutdown
+```
+
+```shell
+dotnet restore
+```
+
+```shell
+dotnet build
+```
+
+</details>
 
 <details>
 <summary>Disabling API generation</summary>

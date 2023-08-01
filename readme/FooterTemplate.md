@@ -483,6 +483,28 @@ For more information about the template, please see [this page](https://github.c
 ## Troubleshooting
 
 <details>
+<summary>Version update</summary>
+
+When updating the version, it is possible that the previous version of the code generator remains active and is used by compilation services. In this case, the old and new versions of the generator may conflict. For a project where the code generator is used, it is recommended to do the following:
+- After updating the version, close the IDE if it is open
+- Delete the _obj_ and _bin_ directories
+- Execute the following commands one by one
+
+```shell
+dotnet build-server shutdown
+```
+
+```shell
+dotnet restore
+```
+
+```shell
+dotnet build
+```
+
+</details>
+
+<details>
 <summary>Disabling API generation</summary>
 
 _Pure.DI_ automatically generates its API. If an assembly already has the _Pure.DI_ API, for example, from another assembly, it is sometimes necessary to disable its automatic generation to avoid ambiguity. To do this, you need to add a _DefineConstants_ element to the project files of these modules. For example:
