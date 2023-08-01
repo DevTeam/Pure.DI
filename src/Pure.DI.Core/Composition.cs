@@ -44,7 +44,6 @@ internal partial class Composition
         .Bind<IUnboundTypeConstructor>().To<UnboundTypeConstructor>()
         .Bind<IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>>>().To<ResolversBuilder>()
         .Bind<IEqualityComparer<string>>().To(_ => StringComparer.InvariantCultureIgnoreCase)
-        .Bind<IEqualityComparer<ImmutableArray<byte>>>().To<BytesArrayEqualityComparer>()
         .Bind<Func<ImmutableArray<byte>, bool>>().To(_ => new Func<ImmutableArray<byte>, bool>(_ => true))
         .Bind<IBuilder<LogEntry, LogInfo>>().To<LogInfoBuilder>()
         .Bind<IValidator<DependencyGraph>>().To<DependencyGraphValidator>()

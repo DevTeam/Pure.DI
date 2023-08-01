@@ -5,7 +5,7 @@ internal class Formatting : IFormatting
 {
     public const int IndentSize = 2;
     private const int IndentsCount = 5;
-    private static readonly ImmutableArray<string> Indents;
+    private static readonly string[] Indents;
 
     static Formatting()
     {
@@ -15,7 +15,7 @@ internal class Formatting : IFormatting
             indentsBuilder.Add(IndentInternal(indentIndex));
         }
 
-        Indents = indentsBuilder.ToImmutableArray();
+        Indents = indentsBuilder.ToArray();
     }
     
     public string Indent(Indent indent) => IndentPrefix(indent);

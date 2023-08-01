@@ -3,14 +3,13 @@ namespace Pure.DI.Core;
 
 internal class Logger<T> : ILogger<T>
 {
-    private readonly Lazy<ImmutableArray<IObserver<LogEntry>>> _logEntryObservers;
+    private readonly Lazy<IObserver<LogEntry>[]> _logEntryObservers;
     private readonly string _source;
 
     public Logger(IObserversProvider observersProvider)
     {
         _source = typeof(T).Name;
-        ImmutableArray<IObserver<LogEntry>> CreateObservers() => observersProvider.GetObservers<LogEntry>().ToImmutableArray();
-        _logEntryObservers = new Lazy<ImmutableArray<IObserver<LogEntry>>>(CreateObservers);
+        _logEntryObservers = new Lazy<IObserver<LogEntry>[]>(() => observersProvider.GetObservers<LogEntry>().ToArray());
     }
 
     public void Log(in LogEntry logEntry)

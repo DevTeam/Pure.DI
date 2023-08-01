@@ -30,7 +30,7 @@ internal class Variator<T> : IVariator<T>
 
         if (hasNext)
         {
-            variants = curVariants.AsReadOnly();
+            variants = curVariants;
             return hasNext;
         }
 

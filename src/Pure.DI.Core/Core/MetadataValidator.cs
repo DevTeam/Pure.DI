@@ -8,10 +8,7 @@ internal class MetadataValidator : IValidator<MdSetup>
 {
     private readonly ILogger<MetadataValidator> _logger;
 
-    public MetadataValidator(ILogger<MetadataValidator> logger)
-    {
-        _logger = logger;
-    }
+    public MetadataValidator(ILogger<MetadataValidator> logger) => _logger = logger;
 
     public void Validate(in MdSetup setup, CancellationToken cancellationToken)
     {

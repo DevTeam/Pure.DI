@@ -5,10 +5,7 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
 {
     private readonly ILogger<DependencyGraphValidator> _logger;
 
-    public DependencyGraphValidator(ILogger<DependencyGraphValidator> logger)
-    {
-        _logger = logger;
-    }
+    public DependencyGraphValidator(ILogger<DependencyGraphValidator> logger) => _logger = logger;
 
     public void Validate(in DependencyGraph dependencyGraph, CancellationToken cancellationToken)
     {
