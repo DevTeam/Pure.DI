@@ -17,8 +17,10 @@ internal readonly struct ProcessingNode
         Node = node;
         Contracts = contracts;
 
-        bool IsMarkerBased() => marker.IsMarkerBased(node.Type);
         _isMarkerBased = new Lazy<bool>(IsMarkerBased);
+
+        _injections = new Lazy<ImmutableArray<Injection>>(GetInjections);
+        return;
 
         ImmutableArray<Injection> GetInjections()
         {
@@ -26,7 +28,8 @@ internal readonly struct ProcessingNode
             injectionsWalker.VisitDependencyNode(node);
             return injectionsWalker.ToImmutableArray();
         }
-        _injections = new Lazy<ImmutableArray<Injection>>(GetInjections);
+
+        bool IsMarkerBased() => marker.IsMarkerBased(node.Type);
     }
 
     public bool IsMarkerBased => _isMarkerBased.Value;

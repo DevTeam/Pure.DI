@@ -1,5 +1,5 @@
 // ReSharper disable StringLiteralTypo
-namespace Pure.DI.Core.CSharp;
+namespace Pure.DI.Core.Code;
 
 internal static class CodeExtensions
 {

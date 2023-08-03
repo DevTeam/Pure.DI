@@ -1,13 +1,20 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class DependencyGraphValidator: IValidator<DependencyGraph>
+internal sealed class DependencyGraphValidator: IValidator<DependencyGraph>
 {
     private readonly ILogger<DependencyGraphValidator> _logger;
+    private readonly CancellationToken _cancellationToken;
 
-    public DependencyGraphValidator(ILogger<DependencyGraphValidator> logger) => _logger = logger;
+    public DependencyGraphValidator(
+        ILogger<DependencyGraphValidator> logger,
+        CancellationToken cancellationToken)
+    {
+        _logger = logger;
+        _cancellationToken = cancellationToken;
+    }
 
-    public void Validate(in DependencyGraph dependencyGraph, CancellationToken cancellationToken)
+    public void Validate(in DependencyGraph dependencyGraph)
     {
         var graph = dependencyGraph.Graph;
         var isValid = dependencyGraph.IsValid;
@@ -16,7 +23,7 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
         {
             foreach (var dependency in graph.Edges.Where(i => !i.IsResolved))
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                _cancellationToken.ThrowIfCancellationRequested();
                 var errorMessage = $"Cannot resolve dependency \"{dependency.TargetSymbol?.ToString() ?? dependency.Injection.ToString()}\" in {dependency.Target.Type}.";
                 var locationsWalker = new DependencyGraphLocationsWalker(dependency.Injection);
                 locationsWalker.VisitDependencyNode(dependency.Target);
@@ -33,7 +40,7 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
         {
             foreach (var rootNode in dependencyGraph.Roots.Select(i => i.Value.Node))
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                _cancellationToken.ThrowIfCancellationRequested();
                 if (!graph.TryGetInEdges(rootNode, out var dependencies))
                 {
                     continue;
@@ -46,7 +53,7 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
                 enumerators.Push((rootNode.Binding.Id, dependencies.GetEnumerator()));
                 while (enumerators.TryPop(out var enumerator))
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
+                    _cancellationToken.ThrowIfCancellationRequested();
                     if (!enumerator.Enumerator.MoveNext())
                     {
                         if (path.Count > 0)
@@ -82,7 +89,7 @@ internal class DependencyGraphValidator: IValidator<DependencyGraph>
             isValid = false;
             foreach (var cycle in cycles)
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                _cancellationToken.ThrowIfCancellationRequested();
                 var pathDescription = string.Join(" <-- ", cycle.Path.Select(i => $"{i.Type}"));
                 _logger.CompileError($"A cyclic dependency has been found {pathDescription}.", dependencyGraph.Source.Source.GetLocation(), LogId.ErrorCyclicDependency);
                 isErrorReported = true;

@@ -1,7 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class GlobalOptions : IGlobalOptions
+internal sealed class GlobalOptions : IGlobalOptions
 {
     private readonly Lazy<string?> _logFile;
     private readonly Lazy<DiagnosticSeverity> _severity;

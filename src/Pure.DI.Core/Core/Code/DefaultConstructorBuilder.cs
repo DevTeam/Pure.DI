@@ -1,9 +1,9 @@
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.Core.CSharp;
+namespace Pure.DI.Core.Code;
 
-internal class DefaultConstructorBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class DefaultConstructorBuilder: IBuilder<CompositionCode, CompositionCode>
 {
-    public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
+    public CompositionCode Build(CompositionCode composition)
     {
         if (composition.Args.Any())
         {

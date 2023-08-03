@@ -1,11 +1,11 @@
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.Core.CSharp;
+namespace Pure.DI.Core.Code;
 
-internal class ChildConstructorBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class ChildConstructorBuilder: IBuilder<CompositionCode, CompositionCode>
 {
     private const string ParentCompositionArgName = "parent";
 
-    public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
+    public CompositionCode Build(CompositionCode composition)
     {
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
@@ -37,7 +37,6 @@ internal class ChildConstructorBuilder: IBuilder<CompositionCode, CompositionCod
 
                     foreach (var singletonField in composition.Singletons)
                     {
-                        cancellationToken.ThrowIfCancellationRequested();
                         code.AppendLine($"{singletonField.Name} = {ParentCompositionArgName}.{singletonField.Name};");
 
                         if (singletonField.InstanceType.IsValueType)
@@ -57,7 +56,6 @@ internal class ChildConstructorBuilder: IBuilder<CompositionCode, CompositionCod
             {
                 foreach (var argsField in composition.Args)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
                     code.AppendLine($"{argsField.Name} = {ParentCompositionArgName}.{argsField.Name};");
                 }
             }

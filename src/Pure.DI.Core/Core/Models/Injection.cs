@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Models;
 
-using CSharp;
+using Code;
 
 internal readonly record struct Injection(
     ITypeSymbol Type,

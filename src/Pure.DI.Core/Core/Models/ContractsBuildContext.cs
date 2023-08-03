@@ -1,5 +1,5 @@
 namespace Pure.DI.Core.Models;
 
-internal record struct ContractsBuildContext(
+internal readonly record struct ContractsBuildContext(
     in MdBinding Binding,
     object? ContextTag);

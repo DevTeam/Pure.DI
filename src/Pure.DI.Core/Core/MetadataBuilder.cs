@@ -8,23 +8,23 @@
 // ReSharper disable LoopCanBeConvertedToQuery
 namespace Pure.DI.Core;
 
-using System.Diagnostics.CodeAnalysis;
-
-[SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Local")]
 internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>>
 {
     private readonly ILogger<MetadataBuilder> _logger;
     private readonly Func<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>> _setupsBuilderFactory;
-    
+    private readonly CancellationToken _cancellationToken;
+
     public MetadataBuilder(
         ILogger<MetadataBuilder> logger,
-        Func<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>> setupsBuilderFactory)
+        Func<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>> setupsBuilderFactory,
+        CancellationToken cancellationToken)
     {
         _logger = logger;
         _setupsBuilderFactory = setupsBuilderFactory;
+        _cancellationToken = cancellationToken;
     }
 
-    public IEnumerable<MdSetup> Build(IEnumerable<SyntaxUpdate> updates, CancellationToken cancellationToken)
+    public IEnumerable<MdSetup> Build(IEnumerable<SyntaxUpdate> updates)
     {
         var actualUpdates = 
             updates
@@ -38,20 +38,18 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
             var languageVersion = update.SemanticModel.Compilation.GetLanguageVersion();
             if (languageVersion < LanguageVersion.CSharp8)
             {
-                _logger.CompileError($"Pure.DI does not support C# {languageVersion.ToDisplayString()}. Please use language version {LanguageVersion.CSharp8.ToDisplayString()} or greater.", update.Node.GetLocation(), LogId.ErrorNotSupportedLanguageVersion);
-                throw HandledException.Shared;
+                throw new CompileErrorException($"Pure.DI does not support C# {languageVersion.ToDisplayString()}. Please use language version {LanguageVersion.CSharp8.ToDisplayString()} or greater.", update.Node.GetLocation(), LogId.ErrorNotSupportedLanguageVersion);
             }
             
             var setupsBuilder = _setupsBuilderFactory();
-            foreach (var newSetup in setupsBuilder.Build(update, cancellationToken))
+            foreach (var newSetup in setupsBuilder.Build(update))
             {
                 setups.Add(newSetup);    
             }
             
-            cancellationToken.ThrowIfCancellationRequested();
+            _cancellationToken.ThrowIfCancellationRequested();
         }
-
-        cancellationToken.ThrowIfCancellationRequested();
+        
         if (setups.Count == 0)
         {
             _logger.Trace(Unit.Shared, _ => ImmutableArray.Create("The set of setup is empty."));
@@ -65,7 +63,7 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
             .GroupBy(i => i.Name)
             .Select(setupGroup =>
             {
-                MergeSetups(setupGroup, out var mergedSetup, false, cancellationToken);
+                MergeSetups(setupGroup, out var mergedSetup, false);
                 return mergedSetup;
             })
             .ToDictionary(i =>  i.Name, i => i);
@@ -76,10 +74,10 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
         foreach (var setup in setupMap.Values.Where(i => i.Kind == CompositionKind.Public))
         {
             var setupsChain = globalSetups
-                .Concat(ResolveDependencies(setup, setupMap, new HashSet<CompositionName>(), cancellationToken))
+                .Concat(ResolveDependencies(setup, setupMap, new HashSet<CompositionName>()))
                 .Concat(Enumerable.Repeat(setup, 1));
             
-            MergeSetups(setupsChain, out var mergedSetup, true, cancellationToken);
+            MergeSetups(setupsChain, out var mergedSetup, true);
             _logger.Trace(mergedSetup, i => Enumerable.Repeat("Metadata created", 1).Concat(i.ToStrings(1)), setup.Source.GetLocation());
             yield return mergedSetup;
         }
@@ -87,13 +85,11 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
 
     private IEnumerable<MdSetup> ResolveDependencies(
         MdSetup setup,
-        IReadOnlyDictionary<CompositionName, MdSetup> map, ISet<CompositionName> processed,
-        CancellationToken cancellationToken)
+        IReadOnlyDictionary<CompositionName, MdSetup> map, ISet<CompositionName> processed)
     {
-        cancellationToken.ThrowIfCancellationRequested();
         foreach (var dependsOn in setup.DependsOn)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            _cancellationToken.ThrowIfCancellationRequested();
             foreach (var compositionTypeName in dependsOn.CompositionTypeNames)
             {
                 if (!processed.Add(compositionTypeName))
@@ -103,12 +99,11 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
 
                 if (!map.TryGetValue(compositionTypeName, out var dependsOnSetup))
                 {
-                    _logger.CompileError($"Cannot find setup \"{compositionTypeName}\".", dependsOn.Source.GetLocation(), LogId.ErrorCannotFindSetup);
-                    throw HandledException.Shared;
+                    throw new CompileErrorException($"Cannot find setup \"{compositionTypeName}\".", dependsOn.Source.GetLocation(), LogId.ErrorCannotFindSetup);
                 }
 
                 yield return dependsOnSetup;
-                foreach (var result in ResolveDependencies(dependsOnSetup, map, processed, cancellationToken))
+                foreach (var result in ResolveDependencies(dependsOnSetup, map, processed))
                 {
                     yield return result;
                 }   
@@ -116,10 +111,10 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
         }
     }
 
-    private static void MergeSetups(IEnumerable<MdSetup> setups, out MdSetup mergedSetup, bool resolveDependsOn, in CancellationToken cancellationToken)
+    private void MergeSetups(IEnumerable<MdSetup> setups, out MdSetup mergedSetup, bool resolveDependsOn)
     {
         SyntaxNode? source = default;
-        CompositionName? name = default;
+        var name = new CompositionName("Composition", "");
         var kind = CompositionKind.Global;
         var settings = new Hints();
         var bindingsBuilder = ImmutableArray.CreateBuilder<MdBinding>(64);
@@ -159,12 +154,12 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
                 usingDirectives.Add(usingDirective);   
             }
 
-            cancellationToken.ThrowIfCancellationRequested();
+            _cancellationToken.ThrowIfCancellationRequested();
         }
 
         mergedSetup = new MdSetup(
             source!,
-            name!,
+            name,
             usingDirectives.ToImmutableArray(),
             kind,
             settings,

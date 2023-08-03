@@ -1,8 +1,6 @@
 ﻿// ReSharper disable HeapView.DelegateAllocation
 namespace Pure.DI.Core;
 
-using System.Diagnostics.CodeAnalysis;
-
 internal static class CompilationExtensions
 {
     [SuppressMessage("ReSharper", "HeapView.ClosureAllocation")]

@@ -1,5 +1,5 @@
 namespace Pure.DI.Core.Models;
 
-internal class Hints: Dictionary<Hint, string>, IHints
+internal sealed class Hints: Dictionary<Hint, string>, IHints
 {
 }

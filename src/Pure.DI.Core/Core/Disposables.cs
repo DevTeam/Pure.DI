@@ -7,8 +7,6 @@
 // ReSharper disable HeapView.ObjectAllocation.Evident
 namespace Pure.DI.Core;
 
-using System.Diagnostics.CodeAnalysis;
-
 [ExcludeFromCodeCoverage]
 internal static class Disposables
 {

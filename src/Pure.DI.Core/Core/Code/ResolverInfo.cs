@@ -1,4 +1,4 @@
-namespace Pure.DI.Core.CSharp;
+namespace Pure.DI.Core.Code;
 
 internal record ResolverInfo(
     int Id,

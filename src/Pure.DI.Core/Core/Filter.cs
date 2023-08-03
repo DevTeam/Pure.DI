@@ -3,7 +3,7 @@ namespace Pure.DI.Core;
 
 using System.Text.RegularExpressions;
 
-internal class Filter : IFilter
+internal sealed class Filter : IFilter
 {
     private readonly ILogger<Filter> _logger;
     private readonly ICache<string, Regex> _regexCache;

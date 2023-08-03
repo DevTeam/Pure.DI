@@ -7,7 +7,6 @@
 namespace Pure.DI;
 
 using System.Text.RegularExpressions;
-using Core;
 
 // ReSharper disable once PartialTypeWithSinglePart
 internal partial class CompositionBase

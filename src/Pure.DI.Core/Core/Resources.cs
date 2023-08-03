@@ -2,7 +2,7 @@ namespace Pure.DI.Core;
 
 using System.Text.RegularExpressions;
 
-internal class Resources: IResources
+internal sealed class Resources: IResources
 {
     private readonly ICache<string, Regex> _regexCache;
 

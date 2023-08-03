@@ -1,8 +1,8 @@
 namespace Pure.DI.Core;
 
-internal class RootDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<DependencyNode>>
+internal sealed class RootDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<DependencyNode>>
 {
-    public IEnumerable<DependencyNode> Build(MdSetup setup, CancellationToken cancellationToken)
+    public IEnumerable<DependencyNode> Build(MdSetup setup)
     {
         var id = -1;
         foreach (var root in setup.Roots)

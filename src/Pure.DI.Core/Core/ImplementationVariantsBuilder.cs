@@ -2,14 +2,20 @@
 // ReSharper disable IdentifierTypo
 namespace Pure.DI.Core;
 
-internal class ImplementationVariantsBuilder: IBuilder<DpImplementation, IEnumerable<DpImplementation>>
+internal sealed class ImplementationVariantsBuilder: IBuilder<DpImplementation, IEnumerable<DpImplementation>>
 {
     private readonly IVariator<ImplementationVariant> _implementationVariator;
+    private readonly CancellationToken _cancellationToken;
 
-    public ImplementationVariantsBuilder(IVariator<ImplementationVariant> implementationVariator) => 
+    public ImplementationVariantsBuilder(
+        IVariator<ImplementationVariant> implementationVariator,
+        CancellationToken cancellationToken)
+    {
         _implementationVariator = implementationVariator;
+        _cancellationToken = cancellationToken;
+    }
 
-    public IEnumerable<DpImplementation> Build(DpImplementation implementation, CancellationToken cancellationToken)
+    public IEnumerable<DpImplementation> Build(DpImplementation implementation)
     {
         var variations =
             implementation.Methods.Select(method => CreateVariations(method, ImplementationVariantKind.Method))
@@ -21,7 +27,7 @@ internal class ImplementationVariantsBuilder: IBuilder<DpImplementation, IEnumer
         {
             while (_implementationVariator.TryGetNextVariants(variations, _ => true, out var variants))
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                _cancellationToken.ThrowIfCancellationRequested();
                 yield return variants.Aggregate(
                     implementation with { Methods = ImmutableArray<DpMethod>.Empty },
                     (current, variant) => variant.Kind switch 

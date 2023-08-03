@@ -1,10 +1,10 @@
 // ReSharper disable HeapView.BoxingAllocation
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.Core.CSharp;
+namespace Pure.DI.Core.Code;
 
-internal class UsingDeclarationsBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class UsingDeclarationsBuilder: IBuilder<CompositionCode, CompositionCode>
 {
-    public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
+    public CompositionCode Build(CompositionCode composition)
     {
         var code = composition.Code;
         if (!composition.UsingDirectives.Any())

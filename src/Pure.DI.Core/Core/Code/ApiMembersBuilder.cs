@@ -1,7 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.Core.CSharp;
+namespace Pure.DI.Core.Code;
 
-internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
 {
     private readonly IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
     
@@ -11,7 +11,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
         _resolversBuilder = resolversBuilder;
     }
 
-    public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
+    public CompositionCode Build(CompositionCode composition)
     {
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
@@ -50,7 +50,7 @@ internal class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
             apiCode.AppendLine();
             membersCounter++;
 
-            var resolvers = _resolversBuilder.Build(composition.Roots, cancellationToken).ToArray();
+            var resolvers = _resolversBuilder.Build(composition.Roots).ToArray();
             CreateObjectResolverMethod(
                 hints.GetValueOrDefault(Hint.ObjectResolveMethodModifiers, Constant.DefaultApiMethodModifiers),
                 hints.GetValueOrDefault(Hint.ObjectResolveMethodName, Constant.ResolverMethodName),

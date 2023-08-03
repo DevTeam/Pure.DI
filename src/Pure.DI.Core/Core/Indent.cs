@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal class Indent
+internal sealed class Indent
 {
     private readonly string _str;
     

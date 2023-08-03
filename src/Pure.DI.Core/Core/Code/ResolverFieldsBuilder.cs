@@ -1,7 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.Core.CSharp;
+namespace Pure.DI.Core.Code;
 
-internal class ResolversFieldsBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class ResolversFieldsBuilder: IBuilder<CompositionCode, CompositionCode>
 {
     private readonly IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
     internal static readonly string BucketsFieldName = $"_buckets{Variable.Salt}";
@@ -13,14 +13,14 @@ internal class ResolversFieldsBuilder: IBuilder<CompositionCode, CompositionCode
         _resolversBuilder = resolversBuilder;
     }
 
-    public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
+    public CompositionCode Build(CompositionCode composition)
     {
         if (composition.Source.Source.Hints.GetHint(Hint.Resolve, SettingState.On) != SettingState.On)
         {
             return composition;
         }
         
-        var resolvers = _resolversBuilder.Build(composition.Roots, cancellationToken).ToArray();
+        var resolvers = _resolversBuilder.Build(composition.Roots).ToArray();
         if (!resolvers.Any())
         {
             return composition;

@@ -1,8 +1,6 @@
 namespace Pure.DI.Core;
 
-using System.Collections;
-
-internal class FactoryResolversSyntaxWalker : CSharpSyntaxWalker, IEnumerable<InvocationExpressionSyntax>
+internal sealed class FactoryResolversSyntaxWalker : CSharpSyntaxWalker, IEnumerable<InvocationExpressionSyntax>
 {
     private readonly List<InvocationExpressionSyntax> _resolvers = new();
 

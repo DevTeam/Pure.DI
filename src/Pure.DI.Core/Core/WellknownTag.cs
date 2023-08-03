@@ -2,19 +2,19 @@ namespace Pure.DI.Core;
 
 internal enum WellknownTag
 {
-    CSharpCompositionBuilder,
-    CSharpClassBuilder,
-    CSharpDisposeMethodBuilder,
-    CSharpRootPropertiesBuilder,
-    CSharpUsingDeclarationsBuilder,
-    CSharpArgFieldsBuilder,
-    CSharpSingletonFieldsBuilder,
-    CSharpChildConstructorBuilder,
-    CSharpPrimaryConstructorBuilder,
-    CSharpDefaultConstructorBuilder,
-    CSharpResolverClassesBuilder,
-    CSharpStaticConstructorBuilder,
-    CSharpApiMembersBuilder,
-    CSharpResolversFieldsBuilder,
-    CSharpToStringBuilder
+    CompositionBuilder,
+    ClassBuilder,
+    DisposeMethodBuilder,
+    RootPropertiesBuilder,
+    UsingDeclarationsBuilder,
+    ArgFieldsBuilder,
+    SingletonFieldsBuilder,
+    ChildConstructorBuilder,
+    PrimaryConstructorBuilder,
+    DefaultConstructorBuilder,
+    ResolverClassesBuilder,
+    StaticConstructorBuilder,
+    ApiMembersBuilder,
+    ResolversFieldsBuilder,
+    ToStringMethodBuilder
 }

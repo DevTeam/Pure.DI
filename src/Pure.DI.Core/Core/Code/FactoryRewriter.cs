@@ -1,8 +1,8 @@
 ﻿// ReSharper disable ConvertIfStatementToReturnStatement
 // ReSharper disable InvertIf
-namespace Pure.DI.Core.CSharp;
+namespace Pure.DI.Core.Code;
 
-internal class FactoryRewriter : CSharpSyntaxRewriter
+internal sealed class FactoryRewriter : CSharpSyntaxRewriter
 {
     private static readonly IdentifierNameSyntax InjectionMarkerExpression = SyntaxFactory.IdentifierName(Variable.InjectionMarker);
     private readonly DpFactory _factory;

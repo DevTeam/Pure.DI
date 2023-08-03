@@ -1,11 +1,11 @@
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.Core.CSharp;
+namespace Pure.DI.Core.Code;
 
-internal class RootPropertiesBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class RootPropertiesBuilder: IBuilder<CompositionCode, CompositionCode>
 {
     private static readonly string[] NewLineSeparators = { Environment.NewLine };
     
-    public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
+    public CompositionCode Build(CompositionCode composition)
     {
         if (!composition.Roots.Any())
         {
@@ -24,7 +24,6 @@ internal class RootPropertiesBuilder: IBuilder<CompositionCode, CompositionCode>
         var isFirst = true;
         foreach (var root in composition.Roots.Where(i => generatePrivateRoots || i.IsPublic))
         {
-            cancellationToken.ThrowIfCancellationRequested();
             if (isFirst)
             {
                 isFirst = false;

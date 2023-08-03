@@ -30,7 +30,7 @@ internal class WeatherForecastService : IWeatherForecastService
 
     private WeatherForecast CreateWeatherForecast(int index)
     {
-        _logger.LogInformation("Create WeatherForecast {index}", index);
+        _logger.LogInformation("Create WeatherForecast {Index}", index);
         return new WeatherForecast
         {
             Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),

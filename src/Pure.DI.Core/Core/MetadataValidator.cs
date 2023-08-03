@@ -2,15 +2,13 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-using System.Diagnostics.CodeAnalysis;
-
-internal class MetadataValidator : IValidator<MdSetup>
+internal sealed class MetadataValidator : IValidator<MdSetup>
 {
     private readonly ILogger<MetadataValidator> _logger;
 
     public MetadataValidator(ILogger<MetadataValidator> logger) => _logger = logger;
 
-    public void Validate(in MdSetup setup, CancellationToken cancellationToken)
+    public void Validate(in MdSetup setup)
     {
         if (setup.Kind == CompositionKind.Public && !setup.Roots.Any())
         {
@@ -76,8 +74,7 @@ internal class MetadataValidator : IValidator<MdSetup>
         
         if (implementationType == default || semanticModel == default)
         {
-            _logger.CompileError("Invalid binding due to construction failure.", location, LogId.ErrorInvalidMetadata);
-            throw HandledException.Shared;
+            throw new CompileErrorException("Invalid binding due to construction failure.", location, LogId.ErrorInvalidMetadata);
         }
         
         var supportedContracts = new HashSet<ITypeSymbol>(GetBaseTypes(implementationType), SymbolEqualityComparer.Default) { implementationType };

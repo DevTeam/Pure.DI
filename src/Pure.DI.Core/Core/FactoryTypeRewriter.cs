@@ -1,14 +1,14 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class FactoryTypeRewriter: CSharpSyntaxRewriter, IBuilder<RewriterContext<MdFactory>, MdFactory>
+internal sealed class FactoryTypeRewriter: CSharpSyntaxRewriter, IBuilder<RewriterContext<MdFactory>, MdFactory>
 {
     private readonly IMarker _marker;
     private RewriterContext<MdFactory> _context;
 
     public FactoryTypeRewriter(IMarker marker) => _marker = marker;
 
-    public MdFactory Build(RewriterContext<MdFactory> context, CancellationToken cancellationToken)
+    public MdFactory Build(RewriterContext<MdFactory> context)
     {
         _context = context;
         var factory = context.State;

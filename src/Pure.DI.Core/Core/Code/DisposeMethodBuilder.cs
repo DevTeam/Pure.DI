@@ -1,9 +1,9 @@
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.Core.CSharp;
+namespace Pure.DI.Core.Code;
 
-internal class DisposeMethodBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class DisposeMethodBuilder: IBuilder<CompositionCode, CompositionCode>
 {
-    public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
+    public CompositionCode Build(CompositionCode composition)
     {
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
@@ -52,7 +52,6 @@ internal class DisposeMethodBuilder: IBuilder<CompositionCode, CompositionCode>
 
                 foreach (var singletonField in composition.Singletons)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
                     code.AppendLine(
                         singletonField.InstanceType.IsValueType
                             ? $"{singletonField.Name}Created = false;"

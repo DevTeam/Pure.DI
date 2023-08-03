@@ -1,8 +1,6 @@
 namespace Pure.DI.Core;
 
-using System.Collections;
-
-internal class DependenciesToSymbolsWalker: DependenciesWalker, IEnumerable<ISymbol>
+internal sealed class DependenciesToSymbolsWalker: DependenciesWalker, IEnumerable<ISymbol>
 {
     private readonly List<ISymbol> _symbols = new();
 

@@ -1,13 +1,34 @@
 namespace Pure.DI.Core.Models;
 
-internal record DependencyNode(
+internal readonly record struct DependencyNode(
     int Variation,
-    DpRoot? Root = default,
-    DpImplementation? Implementation = default,
-    DpFactory? Factory = default,
-    DpArg? Arg = default,
-    DpConstruct? Construct = default)
+    in MdBinding Binding,
+    ITypeSymbol Type,
+    in DpRoot? Root = default,
+    in DpImplementation? Implementation = default,
+    in DpFactory? Factory = default,
+    in DpArg? Arg = default,
+    in DpConstruct? Construct = default)
 {
+    public DependencyNode(
+        int Variation,
+        in DpRoot? Root = default,
+        in DpImplementation? Implementation = default,
+        in DpFactory? Factory = default,
+        in DpArg? Arg = default,
+        in DpConstruct? Construct = default)
+        :this(
+            Variation,
+            Root?.Binding ?? Implementation?.Binding ?? Factory?.Binding ?? Arg?.Binding ?? Construct?.Binding ?? new MdBinding(),
+            Root?.Source.RootType ?? Implementation?.Source.Type ?? Factory?.Source.Type ?? Arg?.Source.Type ?? Construct?.Source.Type!,
+            Root,
+            Implementation,
+            Factory,
+            Arg,
+            Construct)
+    {
+    }
+        
     private IEnumerable<string> ToStrings(int indent) =>
         Root?.ToStrings(indent)
         ?? Implementation?.ToStrings(indent)
@@ -16,16 +37,11 @@ internal record DependencyNode(
         ?? Construct?.ToStrings(indent)
         ?? Enumerable.Repeat("unresolved", 1);
 
-    public MdBinding Binding { get; } = Root?.Binding ?? Implementation?.Binding ?? Factory?.Binding ?? Arg?.Binding ?? Construct?.Binding ?? new MdBinding();
-
-    public ITypeSymbol Type => Root?.Source.RootType ?? Implementation?.Source.Type ?? Factory?.Source.Type ?? Arg?.Source.Type ?? Construct?.Source.Type!;
-    
     public Lifetime Lifetime => Binding.Lifetime?.Value ?? Lifetime.Transient;
 
     public override string ToString() => string.Join(Environment.NewLine, ToStrings(0));
 
-    public virtual bool Equals(DependencyNode? other) => 
-        ReferenceEquals(this, other) || (other is not null && Binding.Equals(other.Binding));
+    public bool Equals(DependencyNode other) => Binding.Equals(other.Binding);
 
     public override int GetHashCode() => Binding.GetHashCode();
 }

@@ -1,7 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class ContractsBuilder: IBuilder<ContractsBuildContext, ISet<Injection>>
+internal sealed class ContractsBuilder: IBuilder<ContractsBuildContext, ISet<Injection>>
 {
     private readonly IMarker _marker;
     private readonly IUnboundTypeConstructor _unboundTypeConstructor;
@@ -14,7 +14,7 @@ internal class ContractsBuilder: IBuilder<ContractsBuildContext, ISet<Injection>
         _unboundTypeConstructor = unboundTypeConstructor;
     }
 
-    public ISet<Injection> Build(ContractsBuildContext context, CancellationToken cancellationToken)
+    public ISet<Injection> Build(ContractsBuildContext context)
     {
         var binding = context.Binding;
         if (binding.Tags.IsDefault)

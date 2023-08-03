@@ -1,17 +1,23 @@
 // ReSharper disable ConvertIfStatementToReturnStatement
 // ReSharper disable HeapView.BoxingAllocation
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.Core.CSharp;
+namespace Pure.DI.Core.Code;
 
-internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
+internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
 {
     private readonly IBuilder<ContractsBuildContext, ISet<Injection>> _injectionsBuilder;
+    private readonly CancellationToken _cancellationToken;
     private static readonly FormatOptions DefaultFormatOptions = new();
     
-    public ClassDiagramBuilder(IBuilder<ContractsBuildContext, ISet<Injection>> injectionsBuilder) =>
+    public ClassDiagramBuilder(
+        IBuilder<ContractsBuildContext, ISet<Injection>> injectionsBuilder,
+        CancellationToken cancellationToken)
+    {
         _injectionsBuilder = injectionsBuilder;
+        _cancellationToken = cancellationToken;
+    }
 
-    public LinesBuilder Build(CompositionCode composition, CancellationToken cancellationToken)
+    public LinesBuilder Build(CompositionCode composition)
     {
         var lines = new LinesBuilder();
         lines.AppendLine("classDiagram");
@@ -56,13 +62,13 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
             var graph = composition.Source.Graph;
             foreach (var node in graph.Vertices.GroupBy(i => i.Type, SymbolEqualityComparer.Default).Select(i => i.First()))
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                _cancellationToken.ThrowIfCancellationRequested();
                 if (node.Root is not null)
                 {
                     continue;
                 }
                 
-                var contracts = _injectionsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag), CancellationToken.None);
+                var contracts = _injectionsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag));
                 foreach (var contract in contracts)
                 {
                     if (node.Type.Equals(contract.Type, SymbolEqualityComparer.Default))
@@ -115,7 +121,7 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
             
             foreach (var dependency in graph.Edges)
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                _cancellationToken.ThrowIfCancellationRequested();
                 if (dependency.Target.Root is not null && roots.TryGetValue(dependency.Injection, out var root))
                 {
                     lines.AppendLine($"{composition.Name.ClassName} ..> {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatInjection(root.Injection, DefaultFormatOptions)} {root.PropertyName}");
@@ -176,14 +182,16 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
             return $"{Format(method.DeclaredAccessibility)}{property.Name} : {FormatType(method.ReturnType, options)}";
         }
 
+        // ReSharper disable once InvertIf
         if (method.MethodKind == MethodKind.Constructor)
         {
-            string FormatPropertyLocal(IParameterSymbol parameter) => $"{FormatType(parameter.Type, options)} {parameter.Name}";
             return $"{Format(method.DeclaredAccessibility)}{method.ContainingType.Name}({string.Join(", ", method.Parameters.Select(FormatPropertyLocal))})";
+            string FormatPropertyLocal(IParameterSymbol parameter) => $"{FormatType(parameter.Type, options)} {parameter.Name}";
         }
 
-        string FormatParameterLocal(IParameterSymbol parameter) => $"{FormatType(parameter.Type, options)} {parameter.Name}";
         return $"{Format(method.DeclaredAccessibility)}{method.Name}({string.Join(", ", method.Parameters.Select(FormatParameterLocal))}) : {FormatType(method.ReturnType, options)}";
+
+        string FormatParameterLocal(IParameterSymbol parameter) => $"{FormatType(parameter.Type, options)} {parameter.Name}";
     }
 
     private static string FormatProperty(IPropertySymbol property, FormatOptions options) =>
@@ -197,13 +205,14 @@ internal class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
 
     private static string FormatType(ISymbol typeSymbol, FormatOptions options)
     {
-        string FormatSymbolLocal(ITypeSymbol i) => FormatSymbol(i, options);
         return typeSymbol switch
         {
             INamedTypeSymbol { IsGenericType: true } namedTypeSymbol => $"{namedTypeSymbol.Name}{options.StartGenericArgsSymbol}{string.Join(options.TypeArgsSeparator, namedTypeSymbol.TypeArguments.Select(FormatSymbolLocal))}{options.FinishGenericArgsSymbol}",
             IArrayTypeSymbol array => $"Array{options.StartGenericArgsSymbol}{FormatType(array.ElementType, options)}{options.FinishGenericArgsSymbol}",
             _ => typeSymbol.Name
         };
+        
+        string FormatSymbolLocal(ITypeSymbol i) => FormatSymbol(i, options);
     }
 
     private static string Format(Accessibility accessibility) =>

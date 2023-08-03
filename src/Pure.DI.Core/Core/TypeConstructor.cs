@@ -1,9 +1,7 @@
 ﻿// ReSharper disable InvertIf
+// ReSharper disable once ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-using System.Diagnostics.CodeAnalysis;
-
-// ReSharper disable once ClassNeverInstantiated.Global
 [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]
 internal sealed class TypeConstructor : ITypeConstructor
 {
@@ -98,9 +96,9 @@ internal sealed class TypeConstructor : ITypeConstructor
 
             case INamedTypeSymbol namedType:
             {
-                ITypeSymbol CreateConstruct(ITypeSymbol typeArgument) => Construct(compilation, typeArgument);
                 var args = namedType.TypeArguments.Select(CreateConstruct);
                 return namedType.OriginalDefinition.Construct(args.ToArray());
+                ITypeSymbol CreateConstruct(ITypeSymbol typeArgument) => Construct(compilation, typeArgument);
             }
 
             case IArrayTypeSymbol arrayTypeSymbol:

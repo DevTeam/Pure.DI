@@ -25,7 +25,7 @@ internal static class DebugHelper
         {
             StartInfo = new ProcessStartInfo(
                 profiler,
-                $@"attach {Process.GetCurrentProcess().Id} --save-to=""{traceFile}"" --profiling-type=Sampling --timeout=30s")
+                $"""attach {Process.GetCurrentProcess().Id} --save-to="{traceFile}" --profiling-type=Sampling --timeout=30s""")
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
                 CreateNoWindow = true

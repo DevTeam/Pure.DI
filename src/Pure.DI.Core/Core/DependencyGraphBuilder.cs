@@ -3,9 +3,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-using CSharp;
-
-internal class DependencyGraphBuilder : IDependencyGraphBuilder
+internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
 {
     private readonly IBuilder<MdSetup, IEnumerable<DependencyNode>>[] _dependencyNodeBuilders;
     private readonly IBuilder<ContractsBuildContext, ISet<Injection>> _contractsBuilder;
@@ -14,6 +12,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
     private readonly Func<ITypeConstructor> _typeConstructorFactory;
     private readonly Func<IBuilder<RewriterContext<MdFactory>, MdFactory>> _factoryRewriterFactory;
     private readonly IFilter _filter;
+    private readonly CancellationToken _cancellationToken;
 
     public DependencyGraphBuilder(
         IBuilder<MdSetup, IEnumerable<DependencyNode>>[] dependencyNodeBuilders,
@@ -22,7 +21,8 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
         IUnboundTypeConstructor unboundTypeConstructor,
         Func<ITypeConstructor> typeConstructorFactory,
         Func<IBuilder<RewriterContext<MdFactory>, MdFactory>> factoryRewriterFactory,
-        IFilter filter)
+        IFilter filter,
+        CancellationToken cancellationToken)
     {
         _dependencyNodeBuilders = dependencyNodeBuilders;
         _contractsBuilder = contractsBuilder;
@@ -31,13 +31,13 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
         _typeConstructorFactory = typeConstructorFactory;
         _factoryRewriterFactory = factoryRewriterFactory;
         _filter = filter;
+        _cancellationToken = cancellationToken;
     }
 
     public IEnumerable<DependencyNode> TryBuild(
         MdSetup setup,
         IReadOnlyCollection<ProcessingNode> nodes,
-        out DependencyGraph? dependencyGraph,
-        CancellationToken cancellationToken)
+        out DependencyGraph? dependencyGraph)
     {
         dependencyGraph = default;
         var maxId = 0;
@@ -73,7 +73,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
             var targetNode = node.Node;
             foreach (var injection in node.Injections)
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                _cancellationToken.ThrowIfCancellationRequested();
                 if (map.TryGetValue(injection, out var sourceNode))
                 {
                     continue;
@@ -88,8 +88,8 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                         var unboundInjection = injection with { Type = unboundType };
                         if (map.TryGetValue(unboundInjection, out sourceNode))
                         {
-                            var newBinding = CreateGenericBinding(targetNode, injection, sourceNode, ++maxId, cancellationToken);
-                            var newNode = CreateNodes(setup, newBinding, cancellationToken)
+                            var newBinding = CreateGenericBinding(targetNode, injection, sourceNode, ++maxId);
+                            var newNode = CreateNodes(setup, newBinding)
                                 .Single(i => i.Variation == sourceNode.Variation);
                             map[injection] = newNode;
                             queue.Enqueue(CreateNewProcessingNode(injection, newNode));
@@ -111,7 +111,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                             if (constructKind.HasValue)
                             {
                                 var enumerableBinding = CreateConstructBinding(setup, targetNode, injection, constructType, default, lifetime, ++maxId, constructKind.Value);
-                                return CreateNodes(setup, enumerableBinding, cancellationToken);
+                                return CreateNodes(setup, enumerableBinding);
                             }
                         }
                         
@@ -128,7 +128,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                     case IArrayTypeSymbol arrayType:
                     {
                         var arrayBinding = CreateConstructBinding(setup, targetNode, injection, arrayType.ElementType, default, Lifetime.Transient, ++maxId, MdConstructKind.Array);
-                        return CreateNodes(setup, arrayBinding, cancellationToken);
+                        return CreateNodes(setup, arrayBinding);
                     }
                 }
 
@@ -136,14 +136,14 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                 {
                     // Composition
                     var compositionBinding = CreateConstructBinding(setup, targetNode, injection, injection.Type, default, Lifetime.Transient, ++maxId, MdConstructKind.Composition);
-                    return CreateNodes(setup, compositionBinding, cancellationToken);
+                    return CreateNodes(setup, compositionBinding);
                 }
 
                 // Auto-binding
                 if (injection.Type is { IsAbstract: false, SpecialType: SpecialType.None })
                 {
                     var autoBinding = CreateAutoBinding(setup, targetNode, injection, ++maxId);
-                    return CreateNodes(setup, autoBinding, cancellationToken).ToArray();
+                    return CreateNodes(setup, autoBinding).ToArray();
                 }
                 
                 // OnCannotResolve
@@ -151,6 +151,11 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                 {
                     continue;
                 }
+
+                // Not processed
+                notProcessed.Add(node);
+                isValid = false;
+                break;
 
                 bool TryCreateOnCannotResolve(MdSetup mdSetup, DependencyNode ownerNode, Injection unresolvedInjection)
                 {
@@ -162,7 +167,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                             (Hint.OnCannotResolveLifetimeRegularExpression, ownerNode.Lifetime.ValueToString())))
                     {
                         var onCannotResolveBinding = CreateConstructBinding(mdSetup, ownerNode, unresolvedInjection, unresolvedInjection.Type, unresolvedInjection.Tag, ownerNode.Lifetime, ++maxId, MdConstructKind.OnCannotResolve);
-                        var onCannotResolveNodes = CreateNodes(mdSetup, onCannotResolveBinding, cancellationToken);
+                        var onCannotResolveNodes = CreateNodes(mdSetup, onCannotResolveBinding);
                         foreach (var onCannotResolveNode in onCannotResolveNodes)
                         {
                             map[unresolvedInjection] = onCannotResolveNode;
@@ -173,11 +178,6 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
 
                     return false;
                 }
-
-                // Not processed
-                notProcessed.Add(node);
-                isValid = false;
-                break;
             }
 
             if (!isValid)
@@ -260,8 +260,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
         DependencyNode targetNode,
         Injection injection,
         DependencyNode sourceNode,
-        int newId,
-        CancellationToken cancellationToken)
+        int newId)
     {
         var semanticModel = targetNode.Binding.SemanticModel;
         var compilation = semanticModel.Compilation;
@@ -287,8 +286,7 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
                 : default(MdImplementation?),
             Factory = sourceNode.Binding.Factory.HasValue
                 ? _factoryRewriterFactory().Build(
-                    new RewriterContext<MdFactory>(typeConstructor, injection, sourceNode.Binding.Factory.Value),
-                    cancellationToken)
+                    new RewriterContext<MdFactory>(typeConstructor, injection, sourceNode.Binding.Factory.Value))
                 : default(MdFactory?),
             Arg = sourceNode.Binding.Arg.HasValue
                 ? sourceNode.Binding.Arg.Value with
@@ -385,16 +383,13 @@ internal class DependencyGraphBuilder : IDependencyGraphBuilder
     
     private ProcessingNode CreateNewProcessingNode(in Injection injection, DependencyNode dependencyNode)
     {
-        var contracts = _contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, injection.Tag), CancellationToken.None);
+        var contracts = _contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, injection.Tag));
         return new ProcessingNode(dependencyNode, contracts, _marker);
     }
 
-    private IEnumerable<DependencyNode> CreateNodes(
-        MdSetup setup,
-        MdBinding binding,
-        CancellationToken cancellationToken)
+    private IEnumerable<DependencyNode> CreateNodes(MdSetup setup, MdBinding binding)
     {
         var newSetup = setup with { Roots = ImmutableArray<MdRoot>.Empty, Bindings = ImmutableArray.Create(binding) };
-        return _dependencyNodeBuilders.SelectMany(builder => builder.Build(newSetup, cancellationToken));
+        return _dependencyNodeBuilders.SelectMany(builder => builder.Build(newSetup));
     }
 }

@@ -5,7 +5,7 @@ namespace Pure.DI.Core.Models;
 
 internal record MdSetup(
     SyntaxNode Source,
-    CompositionName Name,
+    in CompositionName Name,
     in ImmutableArray<MdUsingDirectives> UsingDirectives,
     CompositionKind Kind,
     IHints Hints,

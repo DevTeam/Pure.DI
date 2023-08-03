@@ -3,7 +3,7 @@ namespace Pure.DI.Core;
 
 using System.Collections.Concurrent;
 
-internal class Cache<TKey, TValue> : ICache<TKey, TValue>
+internal sealed class Cache<TKey, TValue> : ICache<TKey, TValue>
 {
     private readonly Func<TKey, TValue> _factory;
     private readonly ConcurrentDictionary<TKey, TValue> _dictionary;

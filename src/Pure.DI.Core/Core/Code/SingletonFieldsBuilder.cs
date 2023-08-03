@@ -1,9 +1,9 @@
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.Core.CSharp;
+namespace Pure.DI.Core.Code;
 
-internal class SingletonFieldsBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class SingletonFieldsBuilder: IBuilder<CompositionCode, CompositionCode>
 {
-    public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
+    public CompositionCode Build(CompositionCode composition)
     {
         if (!composition.Singletons.Any())
         {
@@ -26,7 +26,6 @@ internal class SingletonFieldsBuilder: IBuilder<CompositionCode, CompositionCode
         // Singleton fields
         foreach (var singletonField in composition.Singletons)
         {
-            cancellationToken.ThrowIfCancellationRequested();
             code.AppendLine($"private {singletonField.InstanceType} {singletonField.Name};");
             membersCounter++;
 

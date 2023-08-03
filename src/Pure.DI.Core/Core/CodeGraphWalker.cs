@@ -75,7 +75,8 @@ internal abstract class CodeGraphWalker<TContext>
                 }
 
                 instantiations.Push(new Instantiation(targetVariable, arguments.ToImmutableArray()));
-                
+                continue;
+
                 void ProcessVariable(Variable var)
                 {
                     var isBlockRoot = var.IsBlockRoot;
@@ -231,24 +232,30 @@ internal abstract class CodeGraphWalker<TContext>
         {
             argsWalker.VisitField(field);
             var fieldVariable = argsWalker.GetResult().Single();
-            void VisitFieldAction() => VisitField(context, instantiation, field, fieldVariable);
             visits.Add((VisitFieldAction, field.Ordinal));
+            continue;
+
+            void VisitFieldAction() => VisitField(context, instantiation, field, fieldVariable);
         }
         
         foreach (var property in implementation.Properties.Where(i => !i.Property.IsRequired && i.Property.SetMethod?.IsInitOnly != true))
         {
             argsWalker.VisitProperty(property);
             var propertyVariable = argsWalker.GetResult().Single();
-            void VisitFieldAction() => VisitProperty(context, instantiation, property, propertyVariable);
             visits.Add((VisitFieldAction, property.Ordinal));
+            continue;
+
+            void VisitFieldAction() => VisitProperty(context, instantiation, property, propertyVariable);
         }
         
         foreach (var method in implementation.Methods)
         {
             argsWalker.VisitMethod(method);
             var methodArgs = argsWalker.GetResult();
-            void VisitMethodAction() => VisitMethod(context, instantiation, method, methodArgs);
             visits.Add((VisitMethodAction, method.Ordinal));
+            continue;
+
+            void VisitMethodAction() => VisitMethod(context, instantiation, method, methodArgs);
         }
 
         foreach (var visit in visits.OrderBy(i => i.Ordinal ?? int.MaxValue))

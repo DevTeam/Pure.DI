@@ -8,7 +8,7 @@ namespace Pure.DI.Core;
 
 using Variation = IEnumerator<ProcessingNode>;
 
-internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
+internal sealed class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
 {
     private readonly ILogger<VariationalDependencyGraphBuilder> _logger;
     private readonly IGlobalOptions _globalOptions;
@@ -17,6 +17,7 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
     private readonly IMarker _marker;
     private readonly IBuilder<ContractsBuildContext, ISet<Injection>> _contractsBuilder;
     private readonly IDependencyGraphBuilder _graphBuilder;
+    private readonly CancellationToken _cancellationToken;
 
     public VariationalDependencyGraphBuilder(
         ILogger<VariationalDependencyGraphBuilder> logger,
@@ -25,7 +26,8 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
         IVariator<ProcessingNode> variator,
         IMarker marker,
         IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
-        IDependencyGraphBuilder graphBuilder)
+        IDependencyGraphBuilder graphBuilder,
+        CancellationToken cancellationToken)
     {
         _logger = logger;
         _globalOptions = globalOptions;
@@ -34,18 +36,19 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
         _marker = marker;
         _contractsBuilder = contractsBuilder;
         _graphBuilder = graphBuilder;
+        _cancellationToken = cancellationToken;
     }
 
-    public DependencyGraph Build(MdSetup setup, CancellationToken cancellationToken)
+    public DependencyGraph Build(MdSetup setup)
     {
-        IEnumerable<DependencyNode> BuildNodes(IBuilder<MdSetup, IEnumerable<DependencyNode>> builder) => builder.Build(setup, cancellationToken);
+        IEnumerable<DependencyNode> BuildNodes(IBuilder<MdSetup, IEnumerable<DependencyNode>> builder) => builder.Build(setup);
         var rawNodes = SortByPriority(_dependencyNodeBuilders.SelectMany(BuildNodes)).Reverse().ToArray();
         var allNodes = new List<ProcessingNode>();
         var injections = new Dictionary<Injection, DependencyNode>();
         var allOverriddenInjections = new HashSet<Injection>();
         foreach (var node in rawNodes)
         {
-            var contracts = _contractsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag), cancellationToken);
+            var contracts = _contractsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag));
             var isRoot = node.Root is not null;
             if (!isRoot)
             {
@@ -96,14 +99,9 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
                     _logger.CompileError($"The maximum number of iterations {_globalOptions.MaxIterations.ToString()} was exceeded when building the optimal dependency graph. Try to specify the dependency graph more accurately.", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
                 }
                 
-                cancellationToken.ThrowIfCancellationRequested();
+                _cancellationToken.ThrowIfCancellationRequested();
 
-                ProcessingNode CreateProcessingNode(DependencyNode dependencyNode) => new(
-                    dependencyNode,
-                    _contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, MdTag.ContextTag),cancellationToken),
-                    _marker);
-
-                var newNodes = SortByPriority(_graphBuilder.TryBuild(setup, nodes, out var dependencyGraph, cancellationToken))
+                var newNodes = SortByPriority(_graphBuilder.TryBuild(setup, nodes, out var dependencyGraph))
                     .Select(CreateProcessingNode)
                     .ToArray();
 
@@ -123,6 +121,12 @@ internal class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyG
                 }
 
                 first ??= dependencyGraph;
+                continue;
+
+                ProcessingNode CreateProcessingNode(DependencyNode dependencyNode) => new(
+                    dependencyNode,
+                    _contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, MdTag.ContextTag)),
+                    _marker);
             }
 
             return first!;

@@ -1,10 +1,7 @@
 // ReSharper disable ConvertIfStatementToReturnStatement
 namespace Pure.DI.Core;
 
-using System.Collections;
-using System.Text;
-
-internal class LinesBuilder: IEnumerable<string>
+internal sealed class LinesBuilder: IEnumerable<string>
 {
     private static readonly string[] Indents = new string[64]; 
     private readonly StringBuilder _sb = new(); 

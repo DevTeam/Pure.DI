@@ -1,8 +1,6 @@
 namespace Pure.DI.Core;
 
-using System.Collections;
-
-internal class DependenciesToLinesWalker: DependenciesWalker, IEnumerable<string>
+internal sealed class DependenciesToLinesWalker: DependenciesWalker, IEnumerable<string>
 {
     private readonly LinesBuilder _lb;
     

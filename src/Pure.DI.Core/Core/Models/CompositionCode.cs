@@ -2,7 +2,7 @@ namespace Pure.DI.Core.Models;
 
 internal record CompositionCode(
     DependencyGraph Source,
-    CompositionName Name,
+    in CompositionName Name,
     in ImmutableArray<MdUsingDirectives> UsingDirectives,
     in ImmutableArray<Variable> Singletons,
     in ImmutableArray<Variable> Args,

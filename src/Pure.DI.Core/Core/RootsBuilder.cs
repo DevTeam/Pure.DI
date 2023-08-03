@@ -1,19 +1,18 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class RootsBuilder: IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>>
+internal sealed class RootsBuilder: IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>>
 {
     private readonly IBuilder<ContractsBuildContext, ISet<Injection>> _contractsBuilder;
 
     public RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder) =>
         _contractsBuilder = contractsBuilder;
 
-    public IReadOnlyDictionary<Injection, Root> Build(DependencyGraph dependencyGraph, CancellationToken cancellationToken)
+    public IReadOnlyDictionary<Injection, Root> Build(DependencyGraph dependencyGraph)
     {
         var rootsPairs = new List<KeyValuePair<Injection, Root>>();
         foreach (var curNode in dependencyGraph.Graph.Vertices)
         {
-            cancellationToken.ThrowIfCancellationRequested();
             var node = curNode;
             if (node.Type is INamedTypeSymbol { IsUnboundGenericType: true })
             {
@@ -39,7 +38,7 @@ internal class RootsBuilder: IBuilder<DependencyGraph, IReadOnlyDictionary<Injec
             }
 
             // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var injection in _contractsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag), cancellationToken).Where(i => i == root.Injection).Take(1))
+            foreach (var injection in _contractsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag)).Where(i => i == root.Injection).Take(1))
             {
                 rootsPairs.Add(new KeyValuePair<Injection, Root>(
                     injection,

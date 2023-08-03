@@ -1,7 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class Formatting : IFormatting
+internal sealed class Formatting : IFormatting
 {
     public const int IndentSize = 2;
     private const int IndentsCount = 5;

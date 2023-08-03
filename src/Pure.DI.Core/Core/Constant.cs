@@ -15,4 +15,9 @@ internal static class Constant
     public const string OnDependencyInjectionMethodName = "OnDependencyInjection";
     public const string OnCannotResolve = "OnCannotResolve";
     public const string OnNewRootMethodName = "OnNewRoot";
+    
+    public const string SingletonVariablePrefix = "_singleton";
+    public const string PerResolveVariablePrefix = "perResolve";
+    public const string ArgVariablePrefix = "_arg";
+    public const string TransientVariablePrefix = "transient";
 }

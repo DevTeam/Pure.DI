@@ -6,6 +6,7 @@
 // ReSharper disable HeapView.ClosureAllocation
 // ReSharper disable HeapView.ObjectAllocation.Possible
 // ReSharper disable HeapView.BoxingAllocation
+
 namespace Pure.DI.IntegrationTests;
 
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ public static class TestExtensions
         var parseOptions = CSharpParseOptions.Default
             .WithLanguageVersion(runOptions.LanguageVersion);
 
-        parseOptions = runOptions.PreprocessorSymbols.IsDefaultOrEmpty 
+        parseOptions = runOptions.PreprocessorSymbols.IsDefaultOrEmpty
             ? parseOptions.WithPreprocessorSymbols("NET")
             : parseOptions.WithPreprocessorSymbols(runOptions.PreprocessorSymbols);
 
@@ -42,7 +43,7 @@ public static class TestExtensions
             .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication).WithNullableContextOptions(runOptions.NullableContextOptions))
             .AddSyntaxTrees(generatedApiSources.Select(api => CSharpSyntaxTree.ParseText(api.SourceText, parseOptions)))
             .AddSyntaxTrees(CSharpSyntaxTree.ParseText(setupCode, parseOptions));
-            //.Check(stdOut, options);
+        //.Check(stdOut, options);
 
         var globalOptions = new TestAnalyzerConfigOptions(new Dictionary<string, string>
         {
@@ -60,16 +61,16 @@ public static class TestExtensions
 
         var compilationCopy = compilation;
         var updates = compilationCopy.SyntaxTrees.Select(i => CreateUpdate(i, compilationCopy));
-        var generator = new Generator(contextOptions.Object, contextProducer.Object, contextDiagnostic.Object);
-        
+        var generator = new Generator(contextOptions.Object, contextProducer.Object, contextDiagnostic.Object, CancellationToken.None);
+
         var dependencyGraphObserver = new Observer<DependencyGraph>();
         using var dependencyGraphObserverToken = generator.RegisterObserver(dependencyGraphObserver);
 
         var logEntryObserver = new Observer<LogEntry>();
         using var logEntryObserverToken = generator.RegisterObserver(logEntryObserver);
-        
-        generator.Generate(updates, CancellationToken.None);
-        
+
+        generator.Generate(updates);
+
         var logs = logEntryObserver.Values;
         var errors = logs.Where(i => i.Severity == DiagnosticSeverity.Error).ToImmutableArray();
         var warnings = logs.Where(i => i.Severity == DiagnosticSeverity.Warning).ToImmutableArray();
@@ -97,16 +98,17 @@ public static class TestExtensions
         var configPath = Path.ChangeExtension(tempFileName, "runtimeconfig.json");
         var runtime = RuntimeInformation.FrameworkDescription.Split(" ")[1];
         var dotnetVersion = $"{Environment.Version.Major}.{Environment.Version.Minor}";
-        var config = @"
-{
-  ""runtimeOptions"": {
-            ""tfm"": ""netV.V"",
-            ""framework"": {
-                ""name"": ""Microsoft.NETCore.App"",
-                ""version"": ""RUNTIME""
-            }
-        }
-}".Replace("V.V", dotnetVersion).Replace("RUNTIME", runtime);
+        var config = """
+                     {
+                       "runtimeOptions": {
+                                 "tfm": "netV.V",
+                                 "framework": {
+                                     "name": "Microsoft.NETCore.App",
+                                     "version": "RUNTIME"
+                                 }
+                             }
+                     }
+                     """.Replace("V.V", dotnetVersion).Replace("RUNTIME", runtime);
 
         try
         {
@@ -128,14 +130,6 @@ public static class TestExtensions
                     generatedCode);
             }
 
-            void StdOutReceived(object sender, DataReceivedEventArgs args)
-            {
-                if (args.Data != null)
-                {
-                    stdOut.Add(args.Data);
-                }
-            }
-            
             await File.WriteAllTextAsync(configPath, config);
             var process = new Process
             {
@@ -162,15 +156,23 @@ public static class TestExtensions
             {
                 process.OutputDataReceived -= StdOutReceived;
             }
-            
+
             return new Result(
-                    !errors.Any() && !warnings.Any(),
+                !errors.Any() && !warnings.Any(),
                 stdOut.ToImmutableArray(),
                 logs,
                 errors,
                 warnings,
                 dependencyGraphObserver.Values.ToImmutableArray(),
                 generatedCode);
+
+            void StdOutReceived(object sender, DataReceivedEventArgs args)
+            {
+                if (args.Data != null)
+                {
+                    stdOut.Add(args.Data);
+                }
+            }
         }
         finally
         {
@@ -221,7 +223,7 @@ public static class TestExtensions
                 MetadataReference.CreateFromFile(typeof(IOptions).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(SourceGenerator).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Regex).Assembly.Location));
-    
+
     private static CSharpCompilation Check(this CSharpCompilation compilation, List<string> output, Options? options)
     {
         var errors = (
@@ -229,14 +231,14 @@ public static class TestExtensions
                 where diagnostic.Severity is DiagnosticSeverity.Error or DiagnosticSeverity.Warning
                 select GetErrorMessage(diagnostic))
             .ToList();
-        
+
         output.AddRange(errors);
 
         if (!(options?.CheckCompilationErrors ?? true))
         {
             return compilation;
         }
-        
+
         var hasError = errors.Any();
         if (!hasError)
         {
@@ -276,8 +278,8 @@ public static class TestExtensions
 
     private static string GetSystemAssemblyPathByName(string assemblyName) =>
         Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location) ?? string.Empty, assemblyName);
-    
-    private class TestAnalyzerConfigOptions: AnalyzerConfigOptions
+
+    private class TestAnalyzerConfigOptions : AnalyzerConfigOptions
     {
         private readonly IDictionary<string, string> _options;
 
@@ -288,8 +290,8 @@ public static class TestExtensions
 #pragma warning restore CS8765
             => _options.TryGetValue(key, out value);
     }
-    
-    private class Observer<T>: IObserver<T>
+
+    private class Observer<T> : IObserver<T>
     {
         private readonly List<T> _values = new();
 

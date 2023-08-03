@@ -1,7 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class Marker : IMarker
+internal sealed class Marker : IMarker
 {
     private const string GenericTypeArgumentPrefix = "TT";
 

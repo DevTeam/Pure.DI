@@ -2,7 +2,7 @@ namespace Pure.DI.Core;
 
 using System.Reflection;
 
-internal class Information : IInformation
+internal sealed class Information : IInformation
 {
     private static readonly string CurrentDescription = Constant.GeneratorName;
     

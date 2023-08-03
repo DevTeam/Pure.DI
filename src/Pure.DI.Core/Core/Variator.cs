@@ -2,7 +2,7 @@
 // ReSharper disable IdentifierTypo
 namespace Pure.DI.Core;
 
-internal class Variator<T> : IVariator<T>
+internal sealed class Variator<T> : IVariator<T>
 {
     public bool TryGetNextVariants(
         IEnumerable<IEnumerator<T>> variations,

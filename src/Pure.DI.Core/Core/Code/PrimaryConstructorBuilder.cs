@@ -1,9 +1,9 @@
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.Core.CSharp;
+namespace Pure.DI.Core.Code;
 
-internal class PrimaryConstructorBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class PrimaryConstructorBuilder: IBuilder<CompositionCode, CompositionCode>
 {
-    public CompositionCode Build(CompositionCode composition, CancellationToken cancellationToken)
+    public CompositionCode Build(CompositionCode composition)
     {
         if (!composition.Args.Any())
         {
@@ -28,7 +28,6 @@ internal class PrimaryConstructorBuilder: IBuilder<CompositionCode, CompositionC
         {
             foreach (var arg in composition.Args)
             {
-                cancellationToken.ThrowIfCancellationRequested();
                 if (arg.InstanceType.IsValueType)
                 {
                     continue;
@@ -47,7 +46,6 @@ internal class PrimaryConstructorBuilder: IBuilder<CompositionCode, CompositionC
 
             foreach (var arg in composition.Args)
             {
-                cancellationToken.ThrowIfCancellationRequested();
                 code.AppendLine($"{arg.Name} = {arg.Node.Arg?.Source.ArgName};");
             }
             

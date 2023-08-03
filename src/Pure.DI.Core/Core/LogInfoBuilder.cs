@@ -2,7 +2,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class LogInfoBuilder: IBuilder<LogEntry, LogInfo>
+internal sealed class LogInfoBuilder: IBuilder<LogEntry, LogInfo>
 {
     private static readonly string[] NewLineSeparators = { Environment.NewLine };
 
@@ -17,7 +17,7 @@ internal class LogInfoBuilder: IBuilder<LogEntry, LogInfo>
         _clock = clock;
     }
 
-    public LogInfo Build(LogEntry logEntry, CancellationToken cancellationToken)
+    public LogInfo Build(LogEntry logEntry)
     {
         var sb = new StringBuilder();
         var severityCode = logEntry.Severity switch

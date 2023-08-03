@@ -2,7 +2,7 @@
 // ReSharper disable InvertIf
 namespace Pure.DI.Core;
 
-internal class LogObserver: ILogObserver
+internal sealed class LogObserver: ILogObserver
 {
     private readonly DiagnosticSeverity _severity;
     private readonly IBuilder<LogEntry, LogInfo> _logInfoBuilder;
@@ -29,7 +29,7 @@ internal class LogObserver: ILogObserver
     {
         if (logEntry.Severity >= _severity)
         {
-            var logInfo = _logInfoBuilder.Build(logEntry, CancellationToken.None);
+            var logInfo = _logInfoBuilder.Build(logEntry);
             if (logInfo.DiagnosticDescriptor is { } descriptor)
             {
                 lock (_diagnostics)
@@ -49,7 +49,7 @@ internal class LogObserver: ILogObserver
         
         if (_hasLogFile && logEntry.IsOutcome)
         {
-            var logInfo = _logInfoBuilder.Build(logEntry, CancellationToken.None);
+            var logInfo = _logInfoBuilder.Build(logEntry);
             Outcome.AppendLine(logInfo.Outcome);
         }
     }

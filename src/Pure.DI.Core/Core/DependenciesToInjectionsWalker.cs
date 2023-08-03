@@ -1,7 +1,5 @@
 namespace Pure.DI.Core;
 
-using System.Collections;
-
 internal sealed class DependenciesToInjectionsWalker: DependenciesWalker, IEnumerable<Injection>
 {
     private readonly List<Injection> _injections = new();

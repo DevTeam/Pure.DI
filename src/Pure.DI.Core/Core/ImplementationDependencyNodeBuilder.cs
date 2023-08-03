@@ -3,7 +3,7 @@
 // ReSharper disable ConvertToAutoPropertyWhenPossible
 namespace Pure.DI.Core;
 
-internal class ImplementationDependencyNodeBuilder : 
+internal sealed class ImplementationDependencyNodeBuilder : 
     IBuilder<MdSetup, IEnumerable<DependencyNode>>
 {
     private readonly ILogger<ImplementationDependencyNodeBuilder> _logger;
@@ -17,7 +17,7 @@ internal class ImplementationDependencyNodeBuilder :
         _implementationVariantsBuilder = implementationVariantsBuilder;
     }
 
-    public IEnumerable<DependencyNode> Build(MdSetup setup, CancellationToken cancellationToken)
+    public IEnumerable<DependencyNode> Build(MdSetup setup)
     {
         foreach (var binding in setup.Bindings)
         {
@@ -33,8 +33,7 @@ internal class ImplementationDependencyNodeBuilder :
 
             if (implementationType.IsAbstract)
             {
-                _logger.CompileError($"The {implementationType} cannot be constructed due to being an abstract type.", implementation.Source.GetLocation(), LogId.ErrorInvalidMetadata);
-                throw HandledException.Shared;
+                throw new CompileErrorException($"The {implementationType} cannot be constructed due to being an abstract type.", implementation.Source.GetLocation(), LogId.ErrorInvalidMetadata);
             }
 
             var compilation = binding.SemanticModel.Compilation;
@@ -55,8 +54,7 @@ internal class ImplementationDependencyNodeBuilder :
 
             if (!constructors.Any())
             {
-                _logger.CompileError($"The instance of {implementationType} cannot be instantiated due to no accessible constructor available.", implementation.Source.GetLocation(), LogId.ErrorInvalidMetadata);
-                throw HandledException.Shared;
+                throw new CompileErrorException($"The instance of {implementationType} cannot be instantiated due to no accessible constructor available.", implementation.Source.GetLocation(), LogId.ErrorInvalidMetadata);
             }
 
             var methods = new List<DpMethod>();
@@ -140,7 +138,7 @@ internal class ImplementationDependencyNodeBuilder :
                 var variantsWithOrdinal = implementationsWithOrdinal
                     .OrderBy(i => i.Constructor.Ordinal)
                     .SelectMany(impl => 
-                        _implementationVariantsBuilder.Build(impl, cancellationToken)
+                        _implementationVariantsBuilder.Build(impl)
                             .OrderByDescending(i => GetInjectionsCount(i)));
 
                 foreach (var node in CreateNodes(variantsWithOrdinal))
@@ -152,7 +150,7 @@ internal class ImplementationDependencyNodeBuilder :
             }
 
             var implementations = baseImplementations
-                .SelectMany(impl => _implementationVariantsBuilder.Build(impl, cancellationToken))
+                .SelectMany(impl => _implementationVariantsBuilder.Build(impl))
                 .Select(impl => (Implementation: impl, InjectionsCount: GetInjectionsCount(impl)))
                 .ToArray();
 
@@ -228,8 +226,7 @@ internal class ImplementationDependencyNodeBuilder :
                     break;
 
                 case > 1:
-                    _logger.CompileError($"{member} of the type {member.ContainingType} cannot be processed because it is marked with multiple mutually exclusive attributes.", attribute.Source.GetLocation(), LogId.ErrorInvalidMetadata);
-                    throw HandledException.Shared;
+                    throw new CompileErrorException($"{member} of the type {member.ContainingType} cannot be processed because it is marked with multiple mutually exclusive attributes.", attribute.Source.GetLocation(), LogId.ErrorInvalidMetadata);                 
             }
         }
 

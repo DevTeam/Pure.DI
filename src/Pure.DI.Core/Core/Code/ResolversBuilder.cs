@@ -1,9 +1,9 @@
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.Core.CSharp;
+namespace Pure.DI.Core.Code;
 
-internal class ResolversBuilder: IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>>
+internal sealed class ResolversBuilder: IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>>
 {
-    public IEnumerable<ResolverInfo> Build(ImmutableArray<Root> roots, CancellationToken cancellationToken) =>
+    public IEnumerable<ResolverInfo> Build(ImmutableArray<Root> roots) =>
         roots.Where(i => !i.Injection.Type.IsRefLikeType)
             .Where(i => !ReferenceEquals(i.Injection.Tag, MdTag.ContextTag))
             .GroupBy(i => i.Injection.Type, SymbolEqualityComparer.Default)

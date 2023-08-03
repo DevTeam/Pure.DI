@@ -1,8 +1,6 @@
 namespace Pure.DI.Core;
 
-using System.Collections;
-
-internal class NamespacesSyntaxWalker: CSharpSyntaxWalker, IEnumerable<string>
+internal sealed class NamespacesSyntaxWalker: CSharpSyntaxWalker, IEnumerable<string>
 {
     private readonly SemanticModel _semanticModel;
     private readonly HashSet<string> _namespaces = new();

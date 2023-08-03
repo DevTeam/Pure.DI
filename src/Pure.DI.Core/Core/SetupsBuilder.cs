@@ -1,7 +1,7 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMetadataVisitor
+internal sealed class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMetadataVisitor
 {
     private readonly ILogger<SetupsBuilder> _logger;
     private readonly Func<IMetadataSyntaxWalker> _metadataSyntaxWalkerFactory;
@@ -46,7 +46,7 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
         set => _binding = value;
     }
 
-    public IEnumerable<MdSetup> Build(SyntaxUpdate update, CancellationToken cancellationToken)
+    public IEnumerable<MdSetup> Build(SyntaxUpdate update)
     {
         var checkSum = update.Node.SyntaxTree.GetText().GetChecksum();
         if (!_setupCache.Get(checkSum))
@@ -54,7 +54,7 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
             return Array.Empty<MdSetup>();
         }
         
-        _metadataSyntaxWalkerFactory().Visit(this, update, cancellationToken);
+        _metadataSyntaxWalkerFactory().Visit(this, update);
         if (!_setups.Any())
         {
             _setupCache.Set(checkSum, false);
@@ -168,8 +168,7 @@ internal class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMe
 
         if (_binding.HasValue)
         {
-            _logger.CompileError($"Binding {_binding} is not fully defined.", _binding.Value.Source.GetLocation(), LogId.ErrorInvalidMetadata);
-            throw HandledException.Shared;
+            throw new CompileErrorException($"Binding {_binding} is not fully defined.", _binding.Value.Source.GetLocation(), LogId.ErrorInvalidMetadata);
         }
 
         _setups.Add(

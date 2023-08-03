@@ -1,7 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal class ObserversRegistry : IObserversRegistry, IObserversProvider
+internal sealed class ObserversRegistry : IObserversRegistry, IObserversProvider
 {
     private readonly Dictionary<Type, ICollection<object>> _observers = new();
     
@@ -13,6 +13,8 @@ internal class ObserversRegistry : IObserversRegistry, IObserversProvider
             observers.Add(observer);
         }
 
+        return Disposables.Create(Remove);
+
         void Remove()
         {
             lock (observers)
@@ -20,8 +22,6 @@ internal class ObserversRegistry : IObserversRegistry, IObserversProvider
                 observers.Remove(observer);
             }
         }
-
-        return Disposables.Create(Remove);
     }
 
     public IEnumerable<IObserver<T>> GetObservers<T>() => GetOfType<T>().Cast<IObserver<T>>();

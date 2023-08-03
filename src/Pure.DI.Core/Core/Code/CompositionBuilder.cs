@@ -1,13 +1,14 @@
 // ReSharper disable InvertIf
 // ReSharper disable ConvertIfStatementToConditionalTernaryExpression
-namespace Pure.DI.Core.CSharp;
+namespace Pure.DI.Core.Code;
 
-internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<DependencyGraph, CompositionCode>
+internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<DependencyGraph, CompositionCode>
 {
     private static readonly string InjectionStatement = $"{Variable.InjectionMarker};";
     private readonly ILogger<CompositionBuilder> _logger;
     private readonly Func<IVarIdGenerator> _idGeneratorFactory;
     private readonly IFilter _filter;
+    private readonly CancellationToken _cancellationToken;
     private readonly Dictionary<Compilation, INamedTypeSymbol?> _disposableTypes = new();
     private readonly Dictionary<Root, ImmutableArray<Line>> _roots = new();
 
@@ -15,18 +16,18 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
     public CompositionBuilder(
         ILogger<CompositionBuilder> logger,
         Func<IVarIdGenerator> idGeneratorFactory,
-        IFilter filter)
+        IFilter filter,
+        CancellationToken cancellationToken)
     {
         _logger = logger;
         _idGeneratorFactory = idGeneratorFactory;
         _filter = filter;
+        _cancellationToken = cancellationToken;
     }
     
-    private CompositionBuilder CreateChildBuilder(BuildContext context) => new(_logger, () => context.IdGenerator, _filter);
+    private CompositionBuilder CreateChildBuilder(BuildContext context) => new(_logger, () => context.IdGenerator, _filter, _cancellationToken);
 
-    public CompositionCode Build(
-        DependencyGraph dependencyGraph,
-        CancellationToken cancellationToken)
+    public CompositionCode Build(DependencyGraph dependencyGraph)
     {
         _roots.Clear();
         var variables = new Dictionary<MdBinding, Variable>();
@@ -36,7 +37,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             ImmutableDictionary<MdBinding, Variable>.Empty,
             new LinesBuilder(),
             _idGeneratorFactory());
-        VisitGraph(context, dependencyGraph, variables, cancellationToken);
+        VisitGraph(context, dependencyGraph, variables, _cancellationToken);
         var fields = variables.Select(i => i.Value).ToImmutableArray();
         return new CompositionCode(
             dependencyGraph,
@@ -120,8 +121,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         in ImmutableArray<(Variable RequiredVariable, DpProperty RequiredProperty)> requiredProperties)
     {
         base.VisitConstructor(context, instantiation, implementation, constructor, constructorArguments, requiredFields, requiredProperties);
-        
-        string InjectVar(Variable variable) => Inject(context, variable);
+
         var args = string.Join(", ", constructorArguments.Select(InjectVar));
         string newStatement;
         if (!instantiation.Target.InstanceType.IsTupleType)
@@ -156,6 +156,9 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         
 
         context.Code.AppendLines(GenerateOnInstanceCreatedStatements(context, instantiation.Target));
+        return;
+
+        string InjectVar(Variable variable) => Inject(context, variable);
     }
 
     protected override void VisitField(
@@ -186,9 +189,11 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
     {
         base.VisitMethod(context, instantiation, method, methodArguments);
 
-        string InjectVariable(Variable variable) => Inject(context, variable);
         var args = string.Join(", ", methodArguments.Select(InjectVariable));
         context.Code.AppendLine($"{instantiation.Target.Name}.{method.Method.Name}({args});");
+        return;
+
+        string InjectVariable(Variable variable) => Inject(context, variable);
     }
 
     protected override void VisitArg(
@@ -269,11 +274,13 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
             return;
         }
 
-        string InjectVariable(Variable variable) => Inject(context, variable);
         context.Code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = new {construct.Source.ElementType}[{instantiation.Arguments.Length.ToString()}] {{ {string.Join(", ", instantiation.Arguments.Select(InjectVariable))} }};");
         context.Code.AppendLines(GenerateOnInstanceCreatedStatements(context, instantiation.Target));
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
+        return;
+
+        string InjectVariable(Variable variable) => Inject(context, variable);
     }
 
     protected override void VisitSpanConstruct(
@@ -286,8 +293,7 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         {
             return;
         }
-        
-        string InjectVariable(Variable variable) => Inject(context, variable);
+
         var createArray = $"{construct.Source.ElementType}[{instantiation.Arguments.Length.ToString()}] {{ {string.Join(", ", instantiation.Arguments.Select(InjectVariable))} }}";
         var createInstance = 
             construct.Source.ElementType.IsValueType
@@ -298,6 +304,9 @@ internal class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilder<Depen
         context.Code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = {createInstance};");
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
+        return;
+
+        string InjectVariable(Variable variable) => Inject(context, variable);
     }
 
     protected override void VisitCompositionConstruct(

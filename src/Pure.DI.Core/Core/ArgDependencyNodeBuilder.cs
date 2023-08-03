@@ -1,8 +1,8 @@
 ﻿namespace Pure.DI.Core;
 
-internal class ArgDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<DependencyNode>>
+internal sealed class ArgDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<DependencyNode>>
 {
-    public IEnumerable<DependencyNode> Build(MdSetup setup, CancellationToken cancellationToken)
+    public IEnumerable<DependencyNode> Build(MdSetup setup)
     {
         foreach (var binding in setup.Bindings)
         {
