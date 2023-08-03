@@ -3,13 +3,22 @@ using Build;using HostApi;
 using NuGet.Versioning;
 using Pure.DI;
 
+const string defaultVersion = "2.0.*";
+
+NuGetVersion? versionOverride = default;
+if (NuGetVersion.TryParse(Property.Get("version", ""), out var versionOverrideValue))
+{
+    versionOverride = versionOverrideValue;
+}
+
 Directory.SetCurrentDirectory(Tools.GetSolutionDirectory());
 var settings = new Settings(
     Environment.GetEnvironmentVariable("TEAMCITY_VERSION") is not null,
     "Release",
-    VersionRange.Parse(Property.Get("version", "2.0.*", true)),
+    VersionRange.Parse(defaultVersion),
+    versionOverride,
     Property.Get("NuGetKey", string.Empty),
-    new BuildCase(new Version(4, 3, 1)));
+    new CodeAnalysis(new Version(4, 3, 1)));
 
 new DotNetBuildServerShutdown().Run();
 

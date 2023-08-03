@@ -24,10 +24,10 @@ internal class PackTarget: ITarget<string>
 
     public Task<string> RunAsync(InvocationContext ctx)
     {
-        var packageVersion = Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI"), _settings.VersionRange);
+        var packageVersion = _settings.VersionOverride ?? Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI"), _settings.VersionRange);
         var projectDirectory = Path.Combine("src", "Pure.DI");
-        var packages = _settings.Cases
-            .Select(i => CreatePackage(packageVersion, i, projectDirectory))
+        var packages = _settings.CodeAnalysis
+            .Select(codeAnalysis => CreatePackage(packageVersion, codeAnalysis, projectDirectory))
             .ToArray();
 
         var targetPackage = Path.GetFullPath(
@@ -38,9 +38,9 @@ internal class PackTarget: ITarget<string>
         return Task.FromResult(targetPackage);
     }
     
-    private string CreatePackage(NuGetVersion packageVersion, BuildCase buildCase, string projectDirectory)
+    private string CreatePackage(NuGetVersion packageVersion, CodeAnalysis codeAnalysis, string projectDirectory)
     {
-        var analyzerRoslynPackageVersion = buildCase.AnalyzerRoslynPackageVersion;
+        var analyzerRoslynPackageVersion = codeAnalysis.AnalyzerRoslynPackageVersion;
         var analyzerRoslynVersion = new Version(analyzerRoslynPackageVersion.Major, analyzerRoslynPackageVersion.Minor);
         WriteLine($"Build package for Roslyn {analyzerRoslynVersion}.", Color.Highlighted);
 

@@ -20,7 +20,7 @@ internal class TemplateTarget: ITarget<string>
 
     public Task<string> RunAsync(InvocationContext ctx)
     {
-        var templatePackageVersion = Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI.Templates"), _settings.VersionRange);
+        var templatePackageVersion = _settings.VersionOverride ?? Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI.Templates"), _settings.VersionRange);
         var props = new[]
         {
             ("configuration", _settings.Configuration),

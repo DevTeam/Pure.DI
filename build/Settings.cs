@@ -7,7 +7,8 @@ record Settings(
     bool BuildServer,
     string Configuration,
     VersionRange VersionRange,
+    NuGetVersion? VersionOverride,
     string NuGetKey,
-    params BuildCase[] Cases);
+    params CodeAnalysis[] CodeAnalysis);
 
-record BuildCase(Version AnalyzerRoslynPackageVersion);
+record CodeAnalysis(Version AnalyzerRoslynPackageVersion);
