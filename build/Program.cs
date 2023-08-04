@@ -2,46 +2,41 @@
 using Build;using HostApi;
 using NuGet.Versioning;
 
-var defaultVersionRange = VersionRange.Parse("2.0.*");
+var autoIncrementingVersionRange = VersionRange.Parse("2.0.*");
 
-NuGetVersion? versionOverride = default;
-if (NuGetVersion.TryParse(Property.Get("version", ""), out var versionOverrideValue))
-{
-    WriteLine($"The version has been overridden by {versionOverrideValue}.", Color.Highlighted);
-    versionOverride = versionOverrideValue;
-}
-else
-{
-    WriteLine("The next version has been used.", Color.Highlighted);
-}
+WriteLine(
+    NuGetVersion.TryParse(Property.Get("version"), out var versionOverride) 
+        ? $"The version has been overridden by {versionOverride}."
+        : "The next version has been used.",
+    Color.Highlighted);
 
 Directory.SetCurrentDirectory(Tools.GetSolutionDirectory());
 var settings = new Settings(
     Environment.GetEnvironmentVariable("TEAMCITY_VERSION") is not null,
     "Release",
-    defaultVersionRange,
+    autoIncrementingVersionRange,
     versionOverride,
-    Property.Get("NuGetKey", string.Empty),
+    Property.Get("NuGetKey"),
     new CodeAnalysis(new Version(4, 3, 1)));
 
-new DotNetBuildServerShutdown().Run();
-
-var composition = new Composition(settings);
-return await composition.Root.RunAsync();
+return await new Composition(settings).Root.RunAsync(args);
 
 internal partial class Program
 {
-    private readonly RootCommand _rootCommand;
+    private readonly IEnumerable<Command> _commands;
 
-    public Program(IEnumerable<ICommandProvider> commandProviders)
+    public Program(IEnumerable<Command> commands) => 
+        _commands = commands;
+
+    private async Task<int> RunAsync(string[] args)
     {
-        _rootCommand = new RootCommand();
-        foreach (var command in commandProviders.Select(i => i.Command))
+        var rootCommand = new RootCommand();
+        foreach (var command in _commands)
         {
-            WriteLine($"{command.Name} added: {command.Description}", Color.Highlighted);
-            _rootCommand.AddCommand(command);
+            rootCommand.AddCommand(command);
         }
+        
+        await new DotNetBuildServerShutdown().RunAsync();
+        return await rootCommand.InvokeAsync(args);
     }
-
-    private Task<int> RunAsync() => _rootCommand.InvokeAsync(Args.ToArray());
 }
