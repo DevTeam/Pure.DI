@@ -2,12 +2,13 @@
 // ReSharper disable ConvertIfStatementToSwitchStatement
 namespace Build;
 
+using System.CommandLine;
 using System.CommandLine.Invocation;
 using HostApi;
 using Pure.DI;
 using Pure.DI.Benchmarks.Benchmarks;
 
-internal class ReadmeTarget : ITarget<int>
+internal class ReadmeTarget : ITarget<int>, ICommandProvider
 {
     private readonly Settings _settings;
     private readonly ITarget<int> _benchmarksTarget;
@@ -37,11 +38,16 @@ internal class ReadmeTarget : ITarget<int>
 
     public ReadmeTarget(
         Settings settings,
-        [Tag("benchmarks")] ITarget<int> benchmarksTarget)
+        [Tag(nameof(BenchmarksTarget))] ITarget<int> benchmarksTarget)
     {
         _settings = settings;
         _benchmarksTarget = benchmarksTarget;
+        Command = new Command("readme", "Generates README.MD");
+        Command.SetHandler(RunAsync);
+        Command.AddAlias("r");
     }
+
+    public Command Command { get; }
 
     public async Task<int> RunAsync(InvocationContext ctx)
     {

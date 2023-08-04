@@ -1,10 +1,11 @@
 namespace Build;
 
+using System.CommandLine;
 using System.CommandLine.Invocation;
 using HostApi;
 using JetBrains.TeamCity.ServiceMessages.Write.Special;
 
-internal class BenchmarksTarget: ITarget<int>
+internal class BenchmarksTarget: ITarget<int>, ICommandProvider
 {
     private readonly Settings _settings;
     private readonly ITeamCityWriter _teamCityWriter;
@@ -23,7 +24,12 @@ internal class BenchmarksTarget: ITarget<int>
     {
         _settings = settings;
         _teamCityWriter = teamCityWriter;
+        Command = new Command("benchmarks", "Runs benchmarks");
+        Command.SetHandler(RunAsync);
+        Command.AddAlias("b");
     }
+    
+    public Command Command { get; }
 
     public Task<int> RunAsync(InvocationContext ctx)
     {

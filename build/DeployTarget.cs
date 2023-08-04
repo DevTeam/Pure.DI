@@ -1,21 +1,27 @@
 namespace Build;
 
+using System.CommandLine;
 using System.CommandLine.Invocation;
 using HostApi;
 using Pure.DI;
 
-internal class DeployTarget: ITarget<int>
+internal class DeployTarget: ITarget<int>, ICommandProvider
 {
     private readonly Settings _settings;
     private readonly ITarget<string> _packTarget;
 
     public DeployTarget(
         Settings settings,
-        [Tag("pack")] ITarget<string> packTarget)
+        [Tag(nameof(PackTarget))] ITarget<string> packTarget)
     {
         _settings = settings;
         _packTarget = packTarget;
+        Command = new Command("deploy", "Push NuGet packages");
+        Command.SetHandler(RunAsync);
+        Command.AddAlias("d");
     }
+    
+    public Command Command { get; }
 
     public async Task<int> RunAsync(InvocationContext ctx)
     {

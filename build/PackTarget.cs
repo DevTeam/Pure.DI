@@ -3,13 +3,14 @@
 // ReSharper disable HeapView.ClosureAllocation
 namespace Build;
 
+using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.IO.Compression;
 using HostApi;
 using JetBrains.TeamCity.ServiceMessages.Write.Special;
 using NuGet.Versioning;
 
-internal class PackTarget: ITarget<string>
+internal class PackTarget: ITarget<string>, ICommandProvider
 {
     private readonly Settings _settings;
     private readonly ITeamCityWriter _teamCityWriter;
@@ -20,7 +21,12 @@ internal class PackTarget: ITarget<string>
     {
         _settings = settings;
         _teamCityWriter = teamCityWriter;
+        Command = new Command("pack", "Creates NuGet packages");
+        Command.SetHandler(RunAsync);
+        Command.AddAlias("p");
     }
+    
+    public Command Command { get; }
 
     public Task<string> RunAsync(InvocationContext ctx)
     {

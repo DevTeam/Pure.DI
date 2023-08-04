@@ -1,11 +1,12 @@
 // ReSharper disable StringLiteralTypo
 namespace Build;
 
+using System.CommandLine;
 using System.CommandLine.Invocation;
 using HostApi;
 using JetBrains.TeamCity.ServiceMessages.Write.Special;
 
-internal class TemplateTarget: ITarget<string>
+internal class TemplateTarget: ITarget<string>, ICommandProvider
 {
     private readonly Settings _settings;
     private readonly ITeamCityWriter _teamCityWriter;
@@ -16,7 +17,12 @@ internal class TemplateTarget: ITarget<string>
     {
         _settings = settings;
         _teamCityWriter = teamCityWriter;
+        Command = new Command("template", "Push NuGet packages");
+        Command.SetHandler(RunAsync);
+        Command.AddAlias("t");
     }
+    
+    public Command Command { get; }
 
     public Task<string> RunAsync(InvocationContext ctx)
     {
