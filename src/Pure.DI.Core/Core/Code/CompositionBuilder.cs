@@ -106,6 +106,11 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
         in DpImplementation implementation,
         CancellationToken cancellationToken)
     {
+        if (!instantiation.Target.IsCreationRequired(instantiation.Target.Node))
+        {
+            return;
+        }
+        
         base.VisitImplementation(context, root, instantiation, implementation, cancellationToken);
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
@@ -218,7 +223,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
         Instantiation instantiation,
         CancellationToken cancellationToken)
     {
-        if (instantiation.Target.IsCreated)
+        if (!instantiation.Target.IsCreationRequired(instantiation.Target.Node))
         {
             return;
         }
@@ -240,7 +245,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
 
                     if (arg.Node.Lifetime != Lifetime.PerResolve)
                     {
-                        arg.IsCreated = false;
+                        arg.AllowCreation();
                         VisitRootVariable(context with { IsRootContext = false }, dependencyGraph, context.Variables, arg, cancellationToken);
                     }
 
@@ -269,7 +274,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
         in DpConstruct construct,
         Instantiation instantiation)
     {
-        if (instantiation.Target.IsCreated)
+        if (!instantiation.Target.IsCreationRequired(instantiation.Target.Node))
         {
             return;
         }
@@ -289,7 +294,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
         in DpConstruct construct,
         Instantiation instantiation)
     {
-        if (instantiation.Target.IsCreated)
+        if (!instantiation.Target.IsCreationRequired(instantiation.Target.Node))
         {
             return;
         }
@@ -315,7 +320,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
         in DpConstruct construct,
         Instantiation instantiation)
     {
-        if (instantiation.Target.IsCreated)
+        if (!instantiation.Target.IsCreationRequired(instantiation.Target.Node))
         {
             return;
         }
@@ -327,7 +332,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
 
     protected override void VisitOnCannotResolve(BuildContext context, Variable root, in DpConstruct construct, Instantiation instantiation)
     {
-        if (instantiation.Target.IsCreated)
+        if (!instantiation.Target.IsCreationRequired(instantiation.Target.Node))
         {
             return;
         }
@@ -357,7 +362,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
         in DpFactory factory,
         CancellationToken cancellationToken)
     {
-        if (instantiation.Target.IsCreated)
+        if (!instantiation.Target.IsCreationRequired(instantiation.Target.Node))
         {
             return;
         }

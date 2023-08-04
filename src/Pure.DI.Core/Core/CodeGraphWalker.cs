@@ -103,7 +103,10 @@ internal abstract class CodeGraphWalker<TContext>
                     if (targetVariable.Node.Construct is { Source.Kind: MdConstructKind.Enumerable })
                     {
                         // Will be created lazy in a local function
-                        var.IsCreated = var.Node.Lifetime != Lifetime.PerResolve;
+                        if (var.Node.Lifetime != Lifetime.PerResolve)
+                        {
+                            var.Owner = targetVariable.Node;
+                        }
                     }
                         
                     arguments.Add(var);   
@@ -194,11 +197,6 @@ internal abstract class CodeGraphWalker<TContext>
         in DpImplementation implementation,
         CancellationToken cancellationToken)
     {
-        if (instantiation.Target.IsCreated)
-        {
-            return;
-        }
-        
         var args = instantiation.Arguments.ToList();
         var argsWalker = new DependenciesToVariablesWalker(args);
         argsWalker.VisitConstructor(implementation.Constructor);

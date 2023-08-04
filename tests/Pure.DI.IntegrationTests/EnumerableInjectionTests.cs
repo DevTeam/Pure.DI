@@ -270,4 +270,85 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(ImmutableArray.Create("Dependency created", "Service creating", "Dependency created", "Dependency created"), result);
     }
+    
+    [Fact]
+    public async Task ShouldSupportEnumerableWhenPerResolveInFunc()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using System.Collections.Generic;
+                           using System.Linq;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency
+                               {
+                                    int Id { get; }
+                               }
+                           
+                               class Dependency: IDependency
+                               {
+                                   private static int _nextId;
+                                   public Dependency()
+                                   {
+                                       Id = _nextId++;
+                                       Console.WriteLine($"Dependency {_nextId} created");
+                                   }
+                                   
+                                   public int Id { get; set; }
+                               }
+                           
+                               interface IService
+                               {
+                               }
+                           
+                               class Service: IService
+                               {
+                                   public Service(IEnumerable<int> deps)
+                                   {
+                                       Console.WriteLine("Service creating");
+                                       foreach (var dep in deps)
+                                       {
+                                       }
+                                   }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       // FormatCode = On
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>(1).To<Dependency>()
+                                           .Bind<IDependency>(2).As(Lifetime.PerResolve).To<Dependency>()
+                                           .Bind<IDependency>(3).To<Dependency>()
+                                           .Bind<IEnumerable<int>>().To(ctx => 
+                                           {
+                                                ctx.Inject(out IEnumerable<IDependency> dependencies);
+                                                return dependencies.Select(i => i.Id);
+                                           })
+                                           .Bind<IService>().To<Service>()
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       var service = composition.Service;
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency 1 created", "Service creating", "Dependency 2 created", "Dependency 3 created"), result);
+    }
 }

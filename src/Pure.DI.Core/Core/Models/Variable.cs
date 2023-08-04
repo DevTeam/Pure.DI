@@ -48,6 +48,13 @@ internal record Variable(
     
     public virtual bool IsCreated { get; set; }
     
+    public virtual DependencyNode? Owner { get; set; }
+
+    public bool IsCreationRequired(in DependencyNode node) => 
+        !IsCreated && (!Owner.HasValue || Owner.Equals(node));
+
+    public void AllowCreation() => Owner = default;
+    
     public virtual bool IsBlockRoot { get; init; }
     
     public override string ToString() => Name;
@@ -72,6 +79,12 @@ internal record Variable(
         {
             get => _variable.IsCreated;
             set => _variable.IsCreated = value;
+        }
+
+        public override DependencyNode? Owner
+        {
+            get => _variable.Owner;
+            set => _variable.Owner = value;
         }
 
         public override bool IsBlockRoot => _variable.IsBlockRoot;
