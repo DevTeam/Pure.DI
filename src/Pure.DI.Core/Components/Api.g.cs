@@ -42,7 +42,7 @@ namespace Pure.DI
         Singleton,
 
         /// <summary>
-        /// The per resolve lifetime is similar to the <see cref="Lifetime.Transient"/>, but it reuses the instance in the recursive object graph.
+        /// Lifetime per resolve is similar to <see cref="Lifetime.Transient"/>, but the instance is reused in the same object graph.
         /// </summary>
         PerResolve
     }
@@ -186,7 +186,7 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// Represents a generic type argument marker. It allows you to create custom generic argument tokens such as <see cref="TTS"/>, <see cref="TTDictionary{TKey,TValue}"/>, etc. 
+    /// Represents a generic argument token. It allows you to create custom generic argument tokens such as <see cref="TTS"/>, <see cref="TTDictionary{TKey,TValue}"/>, etc. 
     /// </summary>
     [global::System.AttributeUsage(global::System.AttributeTargets.Class | global::System.AttributeTargets.Interface | global::System.AttributeTargets.Struct)]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
@@ -234,144 +234,165 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// Determines the kind of Composition.
+    /// Determines how the partial class will be generated.
     /// </summary>
     internal enum CompositionKind
     {
         /// <summary>
-        /// This value is used by default. If this value is specified, a normal Composition class will be created.
+        /// This value is used by default. If this value is specified, a normal partial class will be generated.
         /// </summary>
         Public,
         
         /// <summary>
-        /// If you specify this value, the class will not be generated, but this setup can be used by others as a baseline. `DependsOn(...)` is required
+        /// If this value is specified, the class will not be generated, but this setting can be used by other users as a baseline. `DependsOn(...)` is mandatory
         /// </summary>
         Internal,
         
         /// <summary>
-        /// No Composition class will be created when this value is specified, but this setup is the baseline for all installations in the current project, and `DependsOn(...)` is not required.
+        /// No partial classes will be created when this value is specified, but this setting is the baseline for all installations in the current project, and `DependsOn(...)` is not required.
         /// </summary>
         Global
     }
     
     /// <summary>
-    /// API to configure DI.
+    /// An API for a Dependency Injection setup.
     /// </summary>
     internal interface IConfiguration
     {
         /// <summary>
-        /// Starts defining a binding.
+        /// Begins the definition of the binding.
+        /// <example><code>Bind&lt;IService&gt;()</code></example>>
         /// </summary>
-        /// <typeparam name="T">The type of dependency to be bound. Common type markers such as <see cref="TT"/>, <see cref="TTList{T}"/> and others are also supported.</typeparam>
+        /// <typeparam name="T">The type of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>Binding configuration API.</returns>
+        /// <returns>API reference to the installation continuation chain.</returns>
         IBinding Bind<T>(params object[] tags);
 
         /// <summary>
-        /// Specifies to use some DI configuration as the base configuration by its name.
+        /// Indicates the use of some single or multiple setups as base setups by name.
+        /// <example><code><c>DependsOn(nameof(CompositionBase))</c></code></example>
         /// </summary>
-        /// <param name="baseConfigurationNames">The name of a base DI configuration.</param>
-        /// <returns>DI configuration API.</returns>
+        /// <param name="baseConfigurationNames">The name of a base API reference to the installation continuation chain.</param>
+        /// <returns>API reference to the installation continuation chain.</returns>
         IConfiguration DependsOn(params string[] baseConfigurationNames);
 
         /// <summary>
         /// Specifies a custom attribute that overrides the injection type.
         /// </summary>
+        /// <example><code>TypeAttribute&lt;MyTypeAttribute&gt;()</code></example>
         /// <param name="typeArgumentPosition">The optional parameter that specifies the position of the type parameter in the attribute constructor. 0 by default. See predefined attribute <see cref="TypeAttribute{T}"/>.</param>
         /// <typeparam name="T">The attribute type.</typeparam>
-        /// <returns>DI configuration API.</returns>
+        /// <returns>API reference to the installation continuation chain.</returns>
         IConfiguration TypeAttribute<T>(int typeArgumentPosition = 0) where T : global::System.Attribute;
 
         /// <summary>
         /// Specifies a tag attribute that overrides the injected tag.
         /// </summary>
+        /// <example><code>TagAttribute&lt;MyTagAttribute&gt;()</code></example>
         /// <param name="tagArgumentPosition">The optional parameter that specifies the position of the tag parameter in the attribute constructor. 0 by default. See the predefined <see cref="TagAttribute{T}"/> attribute.</param>
         /// <typeparam name="T">The attribute type.</typeparam>
-        /// <returns>DI configuration API.</returns>
+        /// <returns>API reference to the installation continuation chain.</returns>
         IConfiguration TagAttribute<T>(int tagArgumentPosition = 0) where T : global::System.Attribute;
 
         /// <summary>
         /// Specifies a custom attribute that overrides the injection ordinal.
         /// </summary>
+        /// <example><code>OrdinalAttribute&lt;MyOrdinalAttribute&gt;()</code></example>
         /// <param name="ordinalArgumentPosition">The optional parameter that specifies the position of the ordinal parameter in the attribute constructor. 0 by default. See the predefined <see cref="OrdinalAttribute{T}"/> attribute.</param>
         /// <typeparam name="T">The attribute type.</typeparam>
-        /// <returns>DI configuration API.</returns>
+        /// <returns>API reference to the installation continuation chain.</returns>
         IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition = 0) where T : global::System.Attribute;
 
         /// <summary>
         /// Overrides the default <see cref="Lifetime"/> for all bindings further down the chain. If not specified, the <see cref="Lifetime.Transient"/> lifetime is used.
         /// </summary>
+        /// <example><code>DefaultLifetime(Lifetime.Singleton)</code></example>
         /// <param name="lifetime">The default lifetime.</param>
-        /// <returns>DI configuration API.</returns>
+        /// <returns>API reference to the installation continuation chain.</returns>
         IConfiguration DefaultLifetime(Pure.DI.Lifetime lifetime);
         
         /// <summary>
-        /// Adds a Composition argument.  
+        /// Adds a partial class argument and replaces the default constructor by adding this argument as a parameter. It is only created if this argument is actually used. 
         /// </summary>
+        /// <example><code>Arg&lt;int&gt;("id")</code></example>
         /// <param name="name">The argument name.</param>
         /// <param name="tags">The optional argument that specifies the tags for the argument.</param>
         /// <typeparam name="T">The argument type.</typeparam>
-        /// <returns>DI configuration.</returns>
+        /// <returns>API reference to the installation continuation chain.</returns>
         IConfiguration Arg<T>(string name, params object[] tags);
         
         /// <summary>
         /// Specifying the root of the Composition.
         /// </summary>
+        /// <example><code>Root&lt;IService&gt;("Root")</code></example>
         /// <param name="name">Specifies the unique name of the root of the composition. If the value is empty, a private root will be created, which can be used when calling <c>Resolve</c> methods.</param>
         /// <param name="tag">Optional argument specifying the tag for the root of the Composition.</param>
         /// <typeparam name="T">The Composition root type.</typeparam>
-        /// <returns>DI configuration.</returns>
+        /// <returns>API reference to the installation continuation chain.</returns>
         IConfiguration Root<T>(string name = "", object tag = null);
 
         /// <summary>
         /// Defines a hint for fine-tuning code generation.
         /// </summary>
+        /// <example><code>Hint(Resolve, "Off")</code></example>
         /// <param name="hint">The hint type.</param>
         /// <param name="value">The hint value.</param>
-        /// <returns>DI configuration.</returns>
+        /// <returns>API reference to the installation continuation chain.</returns>
         IConfiguration Hint(Hint hint, string value);
     }
 
     /// <summary>
-    /// API to configure a binding.
+    /// An API for a binding setup.
     /// </summary>
     internal interface IBinding
     {
         /// <summary>
-        /// Starts defining a binding.
+        /// Begins the definition of the binding.
         /// </summary>
+        /// <example><code>Bind&lt;IService&gt;()</code></example>>
         /// <typeparam name="T">The type of dependency to be bound. Common type markers such as <see cref="TT"/>, <see cref="TTList{T}"/> and others are also supported.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>Binding configuration API.</returns>
+        /// <returns>API reference to the installation continuation chain.</returns>
         IBinding Bind<T>(params object[] tags);
 
         /// <summary>
         /// Determines the <see cref="Lifetime"/> of a binding.
         /// </summary>
+        /// <example><code>As(Lifetime.Singleton)</code></example>
         /// <param name="lifetime">The <see cref="Lifetime"/> of a binding</param>
-        /// <returns>Binding configuration API.</returns>
+        /// <returns>API reference to the installation continuation chain.</returns>
         IBinding As(Pure.DI.Lifetime lifetime);
 
         /// <summary>
         /// Defines the binding tags.
         /// </summary>
+        /// <example><code>Tags("myTag", 123)</code></example>
         /// <param name="tags">The binding tags.</param>
-        /// <returns>Binding configuration API.</returns>
+        /// <returns>API reference to the installation continuation chain.</returns>
         IBinding Tags(params object[] tags);
 
         /// <summary>
         /// Completes the binding chain by specifying the implementation.
         /// </summary>
+        /// <example><code>To&lt;Service&gt;()</code></example>
         /// <typeparam name="T">The implementation type. Also supports generic type markers such as <see cref="TT"/>, <see cref="TTList{T}"/>, and others.</typeparam>
-        /// <returns>DI configuration API.</returns>
+        /// <returns>API reference to the installation continuation chain.</returns>
         IConfiguration To<T>();
 
         /// <summary>
         /// Completes the binding chain by specifying the implementation using a factory method. It allows you to manually create an instance, call the necessary methods, initialize properties, fields, etc.
         /// </summary>
-        /// <param name="factory">Lambda expression that provides dependency creation.</param>
-        /// <typeparam name="T">The implementation type. Also supports generic type markers such as <see cref="TT"/>, <see cref="TTList{T}"/>, and others.</typeparam>
-        /// <returns>DI configuration API.</returns>
+        /// <example><code>
+        /// To(_ =&gt;
+        /// {
+        ///   var service = new Service("My Service");
+        ///   service.Initialize();
+        ///   return service;
+        /// })
+        /// </code></example>
+        /// <param name="factory">Lambda expression to manually create an instance.</param>
+        /// <typeparam name="T">The implementation type.</typeparam>
+        /// <returns>API reference to the installation continuation chain.</returns>
         IConfiguration To<T>(global::System.Func<IContext, T> factory);
     }
 
@@ -387,27 +408,35 @@ namespace Pure.DI
             
         /// <summary>
         /// Injects an instance of type <c>T</c>.
+        /// <example><code>ctx.Inject&lt;IDependency&gt;(out var dependency);</code></example>
         /// </summary>
         void Inject<T>(out T value);
 
         /// <summary>
         /// Injects an instance of type <c>T</c> marked with a tag.
-        /// <summary>
+        /// </summary>
+        /// <example><code>ctx.Inject&lt;IDependency&gt;("myTag", out var dependency);</code></example>
         void Inject<T>(object tag, out T value);
     }
     
     /// <summary>
-    /// Provides API to setup a DI Composition.
+    /// An API for a Dependency Injection setup.
     /// </summary>
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal static class DI
     {
         /// <summary>
-        /// Begins the definitions of the DI setup chain.
+        /// Begins the definitions of the Dependency Injection setup chain.
         /// </summary>
-        /// <param name="compositionTypeName">This argument specifying a custom DI Composition type name to generate. By default, it is a name of an owner class if the owner class is <c>static partial class</c> otherwise, it is a name of an owner plus the "DI" postfix. /// <param name="compositionTypeName">The optional argument specifying a custom DI Composition type name to generate. By default, it is a name of an owner class if the owner class is <c>static partial class</c> otherwise, it is a name of an owner plus the "DI" postfix. For a top level statements application the name is <c>Composition</c> by default.</param></param>
-        /// <param name="kind">This argument specifying a Composition scope. By default, it is <c>Public</c> by default.</param></param>
-        /// <returns>DI configuration API.</returns>
+        /// <example><code>
+        /// DI.Setup("Composition")
+        ///   .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;()
+        ///   .Bind&lt;IService&gt;().To&lt;Service&gt;()
+        ///   .Root&lt;IService&gt;("Root");
+        /// </code></example>
+        /// <param name="compositionTypeName">This argument specifying the partial class name to generate.</param>
+        /// <param name="kind">An optional argument specifying the kind of setup. Please <see cref="Pure.DI.CompositionKind"/> for details. It defaults to <c>Public</c>.</param>
+        /// <returns>API reference to the installation continuation chain.</returns>
         [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
         internal static IConfiguration Setup(string compositionTypeName, CompositionKind kind = CompositionKind.Public)
         {
@@ -592,21 +621,21 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// The abstract dependency resolver for internal use.
+    /// Abstract dependency resolver.
     /// </summary>
     /// <typeparam name="TComposite">The Composition instance.</typeparam>
     /// <typeparam name="T">The type of the Composition root.</typeparam>
     internal interface IResolver<TComposite, out T>
     {
         /// <summary>
-        /// Resolves a Composition root.
+        /// Resolves the Composition root.
         /// </summary>
         /// <param name="composite">The Composition instance.</param>
-        /// <returns>Compositional root.</returns>
+        /// <returns>The Compositional root.</returns>
         T Resolve(TComposite composite);
         
         /// <summary>
-        /// Resolves a Composition root.
+        /// Resolves the Composition root by type and tag.
         /// </summary>
         /// <param name="composite">The Composition instance.</param>
         /// <param name="tag">The tag of a Composition root.</param>
