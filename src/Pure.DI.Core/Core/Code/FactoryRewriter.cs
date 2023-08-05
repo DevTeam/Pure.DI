@@ -11,6 +11,7 @@ internal sealed class FactoryRewriter : CSharpSyntaxRewriter
     private readonly string _finishLabel;
     private readonly ICollection<Injection> _injections;
     private int _nestedLambdaCounter;
+    private int _nestedBlockCounter;
 
     public FactoryRewriter(
         DpFactory factory,
@@ -28,10 +29,8 @@ internal sealed class FactoryRewriter : CSharpSyntaxRewriter
     
     public bool IsFinishMarkRequired { get; private set; }
 
-    public SimpleLambdaExpressionSyntax Rewrite(SimpleLambdaExpressionSyntax lambda)
-    {
-        return (SimpleLambdaExpressionSyntax)VisitSimpleLambdaExpression(lambda)!;
-    }
+    public SimpleLambdaExpressionSyntax Rewrite(SimpleLambdaExpressionSyntax lambda) => 
+        (SimpleLambdaExpressionSyntax)VisitSimpleLambdaExpression(lambda)!;
 
     public override SyntaxNode? VisitSimpleLambdaExpression(SimpleLambdaExpressionSyntax node)
     {
@@ -58,18 +57,50 @@ internal sealed class FactoryRewriter : CSharpSyntaxRewriter
             _nestedLambdaCounter--;   
         }
     }
-    
+
+    public override SyntaxNode? VisitBlock(BlockSyntax block)
+    {
+        _nestedBlockCounter++;
+        try
+        {
+            if (_nestedLambdaCounter == 1 && _nestedBlockCounter == 1)
+            {
+                var statements = new List<StatementSyntax>(); 
+                foreach (var statement in block.Statements)
+                {
+                    var curStatement = statement;
+                    if (curStatement is ReturnStatementSyntax { Expression: {} returnBody })
+                    {
+                        curStatement = CreateAssignmentExpression(returnBody);
+                    }
+                    else
+                    {
+                        curStatement = (StatementSyntax)Visit(curStatement);
+                    }
+                    
+                    statements.Add(curStatement);
+                }
+
+                return SyntaxFactory.Block(statements);
+            }
+            else
+            {
+                return base.VisitBlock(block);   
+            }
+        }
+        finally
+        {
+            _nestedBlockCounter--;
+        }
+    }
+
     public override SyntaxNode? VisitReturnStatement(ReturnStatementSyntax node)
     {
         if (_nestedLambdaCounter == 1 && node.Expression is {} returnBody)
         {
             IsFinishMarkRequired = true;
             return SyntaxFactory.Block(
-                SyntaxFactory.ExpressionStatement(
-                    SyntaxFactory.AssignmentExpression(
-                        SyntaxKind.SimpleAssignmentExpression,
-                        SyntaxFactory.IdentifierName(_variable.Name).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space), 
-                        (ExpressionSyntax)Visit(returnBody).WithLeadingTrivia(SyntaxFactory.Space))),
+                CreateAssignmentExpression(returnBody),
                 SyntaxFactory.GotoStatement(
                     SyntaxKind.GotoStatement,
                     SyntaxFactory.IdentifierName(_finishLabel).WithLeadingTrivia(SyntaxFactory.Space)).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space)
@@ -78,7 +109,14 @@ internal sealed class FactoryRewriter : CSharpSyntaxRewriter
         
         return base.VisitReturnStatement(node);
     }
-    
+
+    private ExpressionStatementSyntax CreateAssignmentExpression(SyntaxNode returnBody) =>
+        SyntaxFactory.ExpressionStatement(
+            SyntaxFactory.AssignmentExpression(
+                SyntaxKind.SimpleAssignmentExpression,
+                SyntaxFactory.IdentifierName(_variable.Name).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space), 
+                (ExpressionSyntax)Visit(returnBody).WithLeadingTrivia(SyntaxFactory.Space)));
+
     public override SyntaxNode? VisitInvocationExpression(InvocationExpressionSyntax invocation)
     {
         if (invocation.ArgumentList.Arguments.Count > 0)
