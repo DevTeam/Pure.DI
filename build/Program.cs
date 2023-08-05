@@ -19,7 +19,7 @@ var settings = new Settings(
     Property.Get("NuGetKey"),
     new CodeAnalysis(new Version(4, 3, 1)));
 
-return await new Composition(settings).Root.RunAsync(args);
+return await new Composition(settings).Root.RunAsync(Args);
 
 internal partial class Program
 {
@@ -28,7 +28,7 @@ internal partial class Program
     public Program(IEnumerable<Command> commands) => 
         _commands = commands;
 
-    private async Task<int> RunAsync(string[] args)
+    private async Task<int> RunAsync(IEnumerable<string> args)
     {
         var rootCommand = new RootCommand();
         foreach (var command in _commands)
@@ -37,6 +37,6 @@ internal partial class Program
         }
         
         await new DotNetBuildServerShutdown().RunAsync();
-        return await rootCommand.InvokeAsync(args);
+        return await rootCommand.InvokeAsync(args.ToArray());
     }
 }
