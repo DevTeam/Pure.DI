@@ -94,9 +94,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Attributes.TypeAttributeScenario.AbcDependency transientM08D05di_0001 = new Pure.DI.UsageTests.Attributes.TypeAttributeScenario.AbcDependency();
-      Pure.DI.UsageTests.Attributes.TypeAttributeScenario.XyzDependency transientM08D05di_0002 = new Pure.DI.UsageTests.Attributes.TypeAttributeScenario.XyzDependency();
-      Pure.DI.UsageTests.Attributes.TypeAttributeScenario.Service transientM08D05di_0000 = new Pure.DI.UsageTests.Attributes.TypeAttributeScenario.Service(transientM08D05di_0001, transientM08D05di_0002);
+      var transientM08D05di_0001 = new Pure.DI.UsageTests.Attributes.TypeAttributeScenario.AbcDependency();
+      var transientM08D05di_0002 = new Pure.DI.UsageTests.Attributes.TypeAttributeScenario.XyzDependency();
+      var transientM08D05di_0000 = new Pure.DI.UsageTests.Attributes.TypeAttributeScenario.Service(transientM08D05di_0001, transientM08D05di_0002);
       return transientM08D05di_0000;
     }
   }
@@ -194,7 +194,7 @@ partial class Composition
   
   static Composition()
   {
-    ResolverM08D05di_0000 valResolverM08D05di_0000 = new ResolverM08D05di_0000();
+    var valResolverM08D05di_0000 = new ResolverM08D05di_0000();
     ResolverM08D05di<Pure.DI.UsageTests.Attributes.TypeAttributeScenario.IService>.Value = valResolverM08D05di_0000;
     _bucketsM08D05di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,

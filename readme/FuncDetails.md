@@ -78,17 +78,17 @@ partial class Func
       perResolveM08D05di_0006 = new global::System.Func<Pure.DI.Benchmarks.Model.IService3>(() =>
       {
           Pure.DI.Benchmarks.Model.IService3 value;
-          Pure.DI.Benchmarks.Model.Service3 transientM08D05di_0013 = new Pure.DI.Benchmarks.Model.Service3();
+          var transientM08D05di_0013 = new Pure.DI.Benchmarks.Model.Service3();
           value = transientM08D05di_0013;
           return value;
       });
-      Pure.DI.Benchmarks.Model.Service2Func transientM08D05di_0010 = new Pure.DI.Benchmarks.Model.Service2Func(perResolveM08D05di_0006);
-      Pure.DI.Benchmarks.Model.Service1 transientM08D05di_0001 = new Pure.DI.Benchmarks.Model.Service1(transientM08D05di_0010);
-      Pure.DI.Benchmarks.Model.Service2Func transientM08D05di_0002 = new Pure.DI.Benchmarks.Model.Service2Func(perResolveM08D05di_0006);
-      Pure.DI.Benchmarks.Model.Service2Func transientM08D05di_0003 = new Pure.DI.Benchmarks.Model.Service2Func(perResolveM08D05di_0006);
-      Pure.DI.Benchmarks.Model.Service2Func transientM08D05di_0004 = new Pure.DI.Benchmarks.Model.Service2Func(perResolveM08D05di_0006);
-      Pure.DI.Benchmarks.Model.Service3 transientM08D05di_0005 = new Pure.DI.Benchmarks.Model.Service3();
-      Pure.DI.Benchmarks.Model.CompositionRoot transientM08D05di_0000 = new Pure.DI.Benchmarks.Model.CompositionRoot(transientM08D05di_0001, transientM08D05di_0004, transientM08D05di_0003, transientM08D05di_0002, transientM08D05di_0005);
+      var transientM08D05di_0010 = new Pure.DI.Benchmarks.Model.Service2Func(perResolveM08D05di_0006);
+      var transientM08D05di_0001 = new Pure.DI.Benchmarks.Model.Service1(transientM08D05di_0010);
+      var transientM08D05di_0002 = new Pure.DI.Benchmarks.Model.Service2Func(perResolveM08D05di_0006);
+      var transientM08D05di_0003 = new Pure.DI.Benchmarks.Model.Service2Func(perResolveM08D05di_0006);
+      var transientM08D05di_0004 = new Pure.DI.Benchmarks.Model.Service2Func(perResolveM08D05di_0006);
+      var transientM08D05di_0005 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di_0000 = new Pure.DI.Benchmarks.Model.CompositionRoot(transientM08D05di_0001, transientM08D05di_0004, transientM08D05di_0003, transientM08D05di_0002, transientM08D05di_0005);
       return transientM08D05di_0000;
     }
   }
@@ -208,7 +208,7 @@ partial class Func
   
   static Func()
   {
-    ResolverM08D05di_0000 valResolverM08D05di_0000 = new ResolverM08D05di_0000();
+    var valResolverM08D05di_0000 = new ResolverM08D05di_0000();
     ResolverM08D05di<Pure.DI.Benchmarks.Model.ICompositionRoot>.Value = valResolverM08D05di_0000;
     _bucketsM08D05di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Func, object>>.Create(
       1,

@@ -117,9 +117,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      string transientM08D05di_0002 = OnCannotResolve<string>(null, Pure.DI.Lifetime.Transient);
-      Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency transientM08D05di_0001 = new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency(transientM08D05di_0002);
-      Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service transientM08D05di_0000 = new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service(transientM08D05di_0001);
+      var transientM08D05di_0002 = OnCannotResolve<string>(null, Pure.DI.Lifetime.Transient);
+      var transientM08D05di_0001 = new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency(transientM08D05di_0002);
+      var transientM08D05di_0000 = new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service(transientM08D05di_0001);
       return transientM08D05di_0000;
     }
   }
@@ -222,7 +222,7 @@ partial class Composition
   
   static Composition()
   {
-    ResolverM08D05di_0000 valResolverM08D05di_0000 = new ResolverM08D05di_0000();
+    var valResolverM08D05di_0000 = new ResolverM08D05di_0000();
     ResolverM08D05di<Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.IService>.Value = valResolverM08D05di_0000;
     _bucketsM08D05di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,

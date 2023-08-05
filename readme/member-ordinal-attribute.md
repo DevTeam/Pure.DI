@@ -124,7 +124,7 @@ partial class PersonComposition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person transientM08D05di_0000 = new Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person();
+      var transientM08D05di_0000 = new Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person();
       transientM08D05di_0000.Id = _argM08D05di_personId;
       transientM08D05di_0000.FirstName = _argM08D05di_personName;
       transientM08D05di_0000.Birthday = _argM08D05di_personBirthday;
@@ -226,7 +226,7 @@ partial class PersonComposition
   
   static PersonComposition()
   {
-    ResolverM08D05di_0000 valResolverM08D05di_0000 = new ResolverM08D05di_0000();
+    var valResolverM08D05di_0000 = new ResolverM08D05di_0000();
     ResolverM08D05di<Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson>.Value = valResolverM08D05di_0000;
     _bucketsM08D05di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>.Create(
       1,

@@ -40,7 +40,7 @@ internal sealed class StaticConstructorBuilder: IBuilder<CompositionCode, Compos
             foreach (var resolver in resolvers)
             {
                 var className = resolver.ClassName;
-                code.AppendLine($"{className} val{className} = new {className}();");
+                code.AppendLine($"var val{className} = new {className}();");
                 if (hasOnNewRoot)
                 {
                     foreach (var root in resolver.Roots)

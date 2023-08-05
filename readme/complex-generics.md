@@ -127,10 +127,10 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string> transientM08D05di_0002 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string>();
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int> transientM08D05di_0003 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int>();
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>> transientM08D05di_0001 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>>(transientM08D05di_0002, transientM08D05di_0003);
-      Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string> transientM08D05di_0000 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>(transientM08D05di_0001);
+      var transientM08D05di_0002 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string>();
+      var transientM08D05di_0003 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int>();
+      var transientM08D05di_0001 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>>(transientM08D05di_0002, transientM08D05di_0003);
+      var transientM08D05di_0000 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>(transientM08D05di_0001);
       return transientM08D05di_0000;
     }
   }
@@ -240,7 +240,7 @@ partial class Composition
   
   static Composition()
   {
-    ResolverM08D05di_0000 valResolverM08D05di_0000 = new ResolverM08D05di_0000();
+    var valResolverM08D05di_0000 = new ResolverM08D05di_0000();
     ResolverM08D05di<Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>>.Value = valResolverM08D05di_0000;
     _bucketsM08D05di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,

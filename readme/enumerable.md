@@ -97,13 +97,13 @@ partial class Composition
     {
       System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableScenario.IDependency> LocalFunc_perResolveM08D05di_0001()
       {
-          Pure.DI.UsageTests.BCL.EnumerableScenario.AbcDependency transientM08D05di_0002 = new Pure.DI.UsageTests.BCL.EnumerableScenario.AbcDependency();
+          var transientM08D05di_0002 = new Pure.DI.UsageTests.BCL.EnumerableScenario.AbcDependency();
           yield return transientM08D05di_0002;
-          Pure.DI.UsageTests.BCL.EnumerableScenario.XyzDependency transientM08D05di_0003 = new Pure.DI.UsageTests.BCL.EnumerableScenario.XyzDependency();
+          var transientM08D05di_0003 = new Pure.DI.UsageTests.BCL.EnumerableScenario.XyzDependency();
           yield return transientM08D05di_0003;
       }
-      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableScenario.IDependency> perResolveM08D05di_0001 = LocalFunc_perResolveM08D05di_0001();
-      Pure.DI.UsageTests.BCL.EnumerableScenario.Service transientM08D05di_0000 = new Pure.DI.UsageTests.BCL.EnumerableScenario.Service(perResolveM08D05di_0001);
+      var perResolveM08D05di_0001 = LocalFunc_perResolveM08D05di_0001();
+      var transientM08D05di_0000 = new Pure.DI.UsageTests.BCL.EnumerableScenario.Service(perResolveM08D05di_0001);
       return transientM08D05di_0000;
     }
   }
@@ -208,7 +208,7 @@ partial class Composition
   
   static Composition()
   {
-    ResolverM08D05di_0000 valResolverM08D05di_0000 = new ResolverM08D05di_0000();
+    var valResolverM08D05di_0000 = new ResolverM08D05di_0000();
     ResolverM08D05di<Pure.DI.UsageTests.BCL.EnumerableScenario.IService>.Value = valResolverM08D05di_0000;
     _bucketsM08D05di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,

@@ -113,9 +113,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency transientM08D05di_0001 = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency();
+      var transientM08D05di_0001 = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency();
       OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency>(ref transientM08D05di_0001, null, Pure.DI.Lifetime.Transient);
-      Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service transientM08D05di_0000 = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service(transientM08D05di_0001);
+      var transientM08D05di_0000 = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service(transientM08D05di_0001);
       OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service>(ref transientM08D05di_0000, null, Pure.DI.Lifetime.Transient);
       return transientM08D05di_0000;
     }
@@ -217,7 +217,7 @@ partial class Composition
   
   static Composition()
   {
-    ResolverM08D05di_0000 valResolverM08D05di_0000 = new ResolverM08D05di_0000();
+    var valResolverM08D05di_0000 = new ResolverM08D05di_0000();
     ResolverM08D05di<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService>.Value = valResolverM08D05di_0000;
     _bucketsM08D05di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,

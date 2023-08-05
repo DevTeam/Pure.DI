@@ -99,7 +99,7 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario.Service transientM08D05di_0000 = new Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario.Service(_argM08D05di_serviceName);
+      var transientM08D05di_0000 = new Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario.Service(_argM08D05di_serviceName);
       return transientM08D05di_0000;
     }
   }
@@ -198,7 +198,7 @@ partial class Composition
   
   static Composition()
   {
-    ResolverM08D05di_0000 valResolverM08D05di_0000 = new ResolverM08D05di_0000();
+    var valResolverM08D05di_0000 = new ResolverM08D05di_0000();
     ResolverM08D05di<Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario.IService>.Value = valResolverM08D05di_0000;
     _bucketsM08D05di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,

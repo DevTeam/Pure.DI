@@ -101,8 +101,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Dependency transientM08D05di_0001 = new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Dependency();
-      Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Service transientM08D05di_0000 = new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Service()
+      var transientM08D05di_0001 = new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Dependency();
+      var transientM08D05di_0000 = new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Service()
       {
           ServiceNameField = _argM08D05di_name,
           Dependency = transientM08D05di_0001
@@ -208,7 +208,7 @@ partial class Composition
   
   static Composition()
   {
-    ResolverM08D05di_0000 valResolverM08D05di_0000 = new ResolverM08D05di_0000();
+    var valResolverM08D05di_0000 = new ResolverM08D05di_0000();
     ResolverM08D05di<Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.IService>.Value = valResolverM08D05di_0000;
     _bucketsM08D05di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,

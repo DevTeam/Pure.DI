@@ -91,7 +91,7 @@ partial class Composition
       perResolveM08D05di_0002 = new global::System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(() =>
       {
           Pure.DI.UsageTests.BCL.LazyScenario.IDependency value;
-          Pure.DI.UsageTests.BCL.LazyScenario.Dependency transientM08D05di_0005 = new Pure.DI.UsageTests.BCL.LazyScenario.Dependency();
+          var transientM08D05di_0005 = new Pure.DI.UsageTests.BCL.LazyScenario.Dependency();
           value = transientM08D05di_0005;
           return value;
       });
@@ -101,7 +101,7 @@ partial class Composition
           func = perResolveM08D05di_0002;
           transientM08D05di_0001 = new global::System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(func, true);
       }
-      Pure.DI.UsageTests.BCL.LazyScenario.Service transientM08D05di_0000 = new Pure.DI.UsageTests.BCL.LazyScenario.Service(transientM08D05di_0001);
+      var transientM08D05di_0000 = new Pure.DI.UsageTests.BCL.LazyScenario.Service(transientM08D05di_0001);
       return transientM08D05di_0000;
     }
   }
@@ -203,7 +203,7 @@ partial class Composition
   
   static Composition()
   {
-    ResolverM08D05di_0000 valResolverM08D05di_0000 = new ResolverM08D05di_0000();
+    var valResolverM08D05di_0000 = new ResolverM08D05di_0000();
     ResolverM08D05di<Pure.DI.UsageTests.BCL.LazyScenario.IService>.Value = valResolverM08D05di_0000;
     _bucketsM08D05di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,

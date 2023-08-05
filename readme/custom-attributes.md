@@ -123,7 +123,7 @@ partial class PersonComposition
     {
       string transientM08D05di_0001;
       transientM08D05di_0001 = "Nik";
-      Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person transientM08D05di_0000 = new Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person(transientM08D05di_0001);
+      var transientM08D05di_0000 = new Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person(transientM08D05di_0001);
       transientM08D05di_0000.Id = _argM08D05di_personId;
       return transientM08D05di_0000;
     }
@@ -219,7 +219,7 @@ partial class PersonComposition
   
   static PersonComposition()
   {
-    ResolverM08D05di_0000 valResolverM08D05di_0000 = new ResolverM08D05di_0000();
+    var valResolverM08D05di_0000 = new ResolverM08D05di_0000();
     ResolverM08D05di<Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson>.Value = valResolverM08D05di_0000;
     _bucketsM08D05di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>.Create(
       1,

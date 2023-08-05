@@ -97,7 +97,7 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Interception.InterceptionScenario.Service transientM08D05di_0000 = new Pure.DI.UsageTests.Interception.InterceptionScenario.Service();
+      var transientM08D05di_0000 = new Pure.DI.UsageTests.Interception.InterceptionScenario.Service();
       return OnDependencyInjection<Pure.DI.UsageTests.Interception.InterceptionScenario.IService>(transientM08D05di_0000, null, Pure.DI.Lifetime.Transient);
     }
   }
@@ -190,7 +190,7 @@ partial class Composition
   
   static Composition()
   {
-    ResolverM08D05di_0000 valResolverM08D05di_0000 = new ResolverM08D05di_0000();
+    var valResolverM08D05di_0000 = new ResolverM08D05di_0000();
     ResolverM08D05di<Pure.DI.UsageTests.Interception.InterceptionScenario.IService>.Value = valResolverM08D05di_0000;
     _bucketsM08D05di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,

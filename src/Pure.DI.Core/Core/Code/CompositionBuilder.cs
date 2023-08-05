@@ -261,7 +261,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
 
         context.Code.AppendLine("}");
         context.Code.AppendLine();
-        context.Code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = {localFuncName}();");
+        context.Code.AppendLine($"var {instantiation.Target.Name} = {localFuncName}();");
 
         context.Code.AppendLines(GenerateOnInstanceCreatedStatements(context, instantiation.Target));
         AddReturnStatement(context, root, instantiation);
@@ -279,7 +279,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
             return;
         }
 
-        context.Code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = new {construct.Source.ElementType}[{instantiation.Arguments.Length.ToString()}] {{ {string.Join(", ", instantiation.Arguments.Select(InjectVariable))} }};");
+        context.Code.AppendLine($"var {instantiation.Target.Name} = new {construct.Source.ElementType}[{instantiation.Arguments.Length.ToString()}] {{ {string.Join(", ", instantiation.Arguments.Select(InjectVariable))} }};");
         context.Code.AppendLines(GenerateOnInstanceCreatedStatements(context, instantiation.Target));
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
@@ -300,13 +300,13 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
         }
 
         var createArray = $"{construct.Source.ElementType}[{instantiation.Arguments.Length.ToString()}] {{ {string.Join(", ", instantiation.Arguments.Select(InjectVariable))} }}";
-        var createInstance = 
-            construct.Source.ElementType.IsValueType
+
+        var isStackalloc = construct.Source.ElementType.IsValueType
             && construct.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp7_3
-            && !IsJustReturn(context, root, instantiation) 
-                ? $"stackalloc {createArray}"
-                : $"new {Constant.SystemNamespace}Span<{construct.Source.ElementType}>(new {createArray})";
-        context.Code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = {createInstance};");
+            && !IsJustReturn(context, root, instantiation);
+        
+        var createInstance = isStackalloc ? $"stackalloc {createArray}" : $"new {Constant.SystemNamespace}Span<{construct.Source.ElementType}>(new {createArray})";
+        context.Code.AppendLine($"{(isStackalloc ? instantiation.Target.InstanceType : "var")} {instantiation.Target.Name} = {createInstance};");
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
         return;
@@ -433,7 +433,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
                 using (code.Indent(indent.Value))
                 {
                     factoryCodeBuilder.VisitRootVariable(context, dependencyGraph, context.Variables, injectedVariable, cancellationToken);
-                    code.AppendLine($"{(resolver.injection.DeclarationRequired ? $"{resolver.argument.Injection.Type} " : "")}{resolver.injection.VariableName} = {Inject(context, injectedVariable)};");
+                    code.AppendLine($"{(resolver.injection.DeclarationRequired ? "var " : "")}{resolver.injection.VariableName} = {Inject(context, injectedVariable)};");
                 }
             }
             else
@@ -512,7 +512,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
     
     private static IEnumerable<Line> GenerateDeclareStatements(Variable variable, string instantiation, string lastChars = ";")
     {
-        var declaration = variable.IsDeclared ? $"{variable.Name}" : $"{variable.InstanceType} {variable.Name}";
+        var declaration = variable.IsDeclared ? $"{variable.Name}" : $"var {variable.Name}";
         yield return new Line(0, $"{declaration} = {instantiation}{lastChars}");
     }
     

@@ -161,7 +161,7 @@ partial class Composition
               }
           }
       }
-      Pure.DI.UsageTests.BCL.ServiceCollectionScenario.Service transientM08D05di_0000 = new Pure.DI.UsageTests.BCL.ServiceCollectionScenario.Service(_singletonM08D05di_0022);
+      var transientM08D05di_0000 = new Pure.DI.UsageTests.BCL.ServiceCollectionScenario.Service(_singletonM08D05di_0022);
       return transientM08D05di_0000;
     }
   }
@@ -261,10 +261,10 @@ partial class Composition
   
   static Composition()
   {
-    ResolverM08D05di_0000 valResolverM08D05di_0000 = new ResolverM08D05di_0000();
+    var valResolverM08D05di_0000 = new ResolverM08D05di_0000();
     OnNewRoot<Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IDependency, Pure.DI.UsageTests.BCL.ServiceCollectionScenario.Dependency>(valResolverM08D05di_0000, "RootM08D05di_0001", null, Pure.DI.Lifetime.Singleton);
     ResolverM08D05di<Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IDependency>.Value = valResolverM08D05di_0000;
-    ResolverM08D05di_0001 valResolverM08D05di_0001 = new ResolverM08D05di_0001();
+    var valResolverM08D05di_0001 = new ResolverM08D05di_0001();
     OnNewRoot<Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService, Pure.DI.UsageTests.BCL.ServiceCollectionScenario.Service>(valResolverM08D05di_0001, "RootM08D05di_0002", null, Pure.DI.Lifetime.Transient);
     ResolverM08D05di<Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService>.Value = valResolverM08D05di_0001;
     _bucketsM08D05di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(

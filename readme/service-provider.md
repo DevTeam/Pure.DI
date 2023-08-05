@@ -136,7 +136,7 @@ partial class ServiceProvider
               }
           }
       }
-      Pure.DI.UsageTests.BCL.ServiceProviderScenario.Service transientM08D05di_0000 = new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Service(_singletonM08D05di_0022);
+      var transientM08D05di_0000 = new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Service(_singletonM08D05di_0022);
       return transientM08D05di_0000;
     }
   }
@@ -236,9 +236,9 @@ partial class ServiceProvider
   
   static ServiceProvider()
   {
-    ResolverM08D05di_0000 valResolverM08D05di_0000 = new ResolverM08D05di_0000();
+    var valResolverM08D05di_0000 = new ResolverM08D05di_0000();
     ResolverM08D05di<Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency>.Value = valResolverM08D05di_0000;
-    ResolverM08D05di_0001 valResolverM08D05di_0001 = new ResolverM08D05di_0001();
+    var valResolverM08D05di_0001 = new ResolverM08D05di_0001();
     ResolverM08D05di<Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService>.Value = valResolverM08D05di_0001;
     _bucketsM08D05di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<ServiceProvider, object>>.Create(
       4,

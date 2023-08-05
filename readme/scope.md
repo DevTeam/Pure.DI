@@ -163,7 +163,7 @@ partial class Composition: System.IDisposable
               }
           }
       }
-      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service transientM08D05di_0000 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service(_singletonM08D05di_0022);
+      var transientM08D05di_0000 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service(_singletonM08D05di_0022);
       return transientM08D05di_0000;
     }
   }
@@ -173,8 +173,8 @@ partial class Composition: System.IDisposable
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Composition transientM08D05di_0002 = this;
-      Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session transientM08D05di_0001 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session(transientM08D05di_0002);
+      var transientM08D05di_0002 = this;
+      var transientM08D05di_0001 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session(transientM08D05di_0002);
       return transientM08D05di_0001;
     }
   }
@@ -304,9 +304,9 @@ partial class Composition: System.IDisposable
   
   static Composition()
   {
-    ResolverM08D05di_0000 valResolverM08D05di_0000 = new ResolverM08D05di_0000();
+    var valResolverM08D05di_0000 = new ResolverM08D05di_0000();
     ResolverM08D05di<Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService>.Value = valResolverM08D05di_0000;
-    ResolverM08D05di_0001 valResolverM08D05di_0001 = new ResolverM08D05di_0001();
+    var valResolverM08D05di_0001 = new ResolverM08D05di_0001();
     ResolverM08D05di<Pure.DI.UsageTests.Lifetimes.ScopeScenario.ISession>.Value = valResolverM08D05di_0001;
     _bucketsM08D05di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       4,
