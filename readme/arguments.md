@@ -96,8 +96,8 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly int _argM08D05di_id;
-  private readonly string _argM08D05di_serviceName;
+  private readonly int _argM08D05diid;
+  private readonly string _argM08D05diserviceName;
   
   public Composition(int id, string serviceName)
   {
@@ -106,14 +106,14 @@ partial class Composition
       throw new global::System.ArgumentNullException("serviceName");
     }
     
-    _argM08D05di_id = id;
-    _argM08D05di_serviceName = serviceName;
+    _argM08D05diid = id;
+    _argM08D05diserviceName = serviceName;
   }
   
   internal Composition(Composition parent)
   {
-    _argM08D05di_id = parent._argM08D05di_id;
-    _argM08D05di_serviceName = parent._argM08D05di_serviceName;
+    _argM08D05diid = parent._argM08D05diid;
+    _argM08D05diserviceName = parent._argM08D05diserviceName;
   }
   
   #region Composition Roots
@@ -122,9 +122,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM08D05di_0001 = new Pure.DI.UsageTests.Basics.ArgumentsScenario.Dependency(_argM08D05di_id);
-      var transientM08D05di_0000 = new Pure.DI.UsageTests.Basics.ArgumentsScenario.Service(_argM08D05di_serviceName, transientM08D05di_0001);
-      return transientM08D05di_0000;
+      var transientM08D05di1 = new Pure.DI.UsageTests.Basics.ArgumentsScenario.Dependency(_argM08D05diid);
+      var transientM08D05di0 = new Pure.DI.UsageTests.Basics.ArgumentsScenario.Service(_argM08D05diserviceName, transientM08D05di1);
+      return transientM08D05di0;
     }
   }
   #endregion

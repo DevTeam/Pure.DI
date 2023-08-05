@@ -103,16 +103,16 @@ classDiagram
 ```c#
 partial class PersonComposition
 {
-  private readonly int _argM08D05di_personId;
+  private readonly int _argM08D05dipersonId;
   
   public PersonComposition(int personId)
   {
-    _argM08D05di_personId = personId;
+    _argM08D05dipersonId = personId;
   }
   
   internal PersonComposition(PersonComposition parent)
   {
-    _argM08D05di_personId = parent._argM08D05di_personId;
+    _argM08D05dipersonId = parent._argM08D05dipersonId;
   }
   
   #region Composition Roots
@@ -121,11 +121,11 @@ partial class PersonComposition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      string transientM08D05di_0001;
-      transientM08D05di_0001 = "Nik";
-      var transientM08D05di_0000 = new Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person(transientM08D05di_0001);
-      transientM08D05di_0000.Id = _argM08D05di_personId;
-      return transientM08D05di_0000;
+      string transientM08D05di1;
+      transientM08D05di1 = "Nik";
+      var transientM08D05di0 = new Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person(transientM08D05di1);
+      transientM08D05di0.Id = _argM08D05dipersonId;
+      return transientM08D05di0;
     }
   }
   #endregion

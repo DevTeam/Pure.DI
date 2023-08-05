@@ -85,17 +85,17 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM08D05di_0002 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
-      var transientM08D05di_0003 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
-      var transientM08D05di_0004 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
-      System.ReadOnlySpan<Pure.DI.UsageTests.BCL.SpanScenario.Dependency> transientM08D05di_0001 = stackalloc Pure.DI.UsageTests.BCL.SpanScenario.Dependency[3]
+      var transientM08D05di2 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
+      var transientM08D05di3 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
+      var transientM08D05di4 = new Pure.DI.UsageTests.BCL.SpanScenario.Dependency();
+      System.ReadOnlySpan<Pure.DI.UsageTests.BCL.SpanScenario.Dependency> transientM08D05di1 = stackalloc Pure.DI.UsageTests.BCL.SpanScenario.Dependency[3]
       {
-          transientM08D05di_0002,
-          transientM08D05di_0003,
-          transientM08D05di_0004
+          transientM08D05di2,
+          transientM08D05di3,
+          transientM08D05di4
       };
-      var transientM08D05di_0000 = new Pure.DI.UsageTests.BCL.SpanScenario.Service(transientM08D05di_0001);
-      return transientM08D05di_0000;
+      var transientM08D05di0 = new Pure.DI.UsageTests.BCL.SpanScenario.Service(transientM08D05di1);
+      return transientM08D05di0;
     }
   }
   #endregion

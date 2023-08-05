@@ -95,16 +95,16 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableScenario.IDependency> LocalFunc_perResolveM08D05di_0001()
+      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableScenario.IDependency> LocalFunc_perResolveM08D05di1()
       {
-          var transientM08D05di_0002 = new Pure.DI.UsageTests.BCL.EnumerableScenario.AbcDependency();
-          yield return transientM08D05di_0002;
-          var transientM08D05di_0003 = new Pure.DI.UsageTests.BCL.EnumerableScenario.XyzDependency();
-          yield return transientM08D05di_0003;
+          var transientM08D05di2 = new Pure.DI.UsageTests.BCL.EnumerableScenario.AbcDependency();
+          yield return transientM08D05di2;
+          var transientM08D05di3 = new Pure.DI.UsageTests.BCL.EnumerableScenario.XyzDependency();
+          yield return transientM08D05di3;
       }
-      var perResolveM08D05di_0001 = LocalFunc_perResolveM08D05di_0001();
-      var transientM08D05di_0000 = new Pure.DI.UsageTests.BCL.EnumerableScenario.Service(perResolveM08D05di_0001);
-      return transientM08D05di_0000;
+      var perResolveM08D05di1 = LocalFunc_perResolveM08D05di1();
+      var transientM08D05di0 = new Pure.DI.UsageTests.BCL.EnumerableScenario.Service(perResolveM08D05di1);
+      return transientM08D05di0;
     }
   }
   #endregion

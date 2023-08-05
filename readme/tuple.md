@@ -91,12 +91,12 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      Pure.DI.UsageTests.BCL.TupleScenario.Point transientM08D05di_0002;
-      transientM08D05di_0002 = new Point(7, 9);
-      var transientM08D05di_0003 = new Pure.DI.UsageTests.BCL.TupleScenario.Dependency();
-      var transientM08D05di_0001 = (transientM08D05di_0002, transientM08D05di_0003);
-      var transientM08D05di_0000 = new Pure.DI.UsageTests.BCL.TupleScenario.Service(transientM08D05di_0001);
-      return transientM08D05di_0000;
+      Pure.DI.UsageTests.BCL.TupleScenario.Point transientM08D05di2;
+      transientM08D05di2 = new Point(7, 9);
+      var transientM08D05di3 = new Pure.DI.UsageTests.BCL.TupleScenario.Dependency();
+      var transientM08D05di1 = (transientM08D05di2, transientM08D05di3);
+      var transientM08D05di0 = new Pure.DI.UsageTests.BCL.TupleScenario.Service(transientM08D05di1);
+      return transientM08D05di0;
     }
   }
   #endregion

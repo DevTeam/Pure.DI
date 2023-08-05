@@ -76,7 +76,7 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly string _argM08D05di_serviceName;
+  private readonly string _argM08D05diserviceName;
   
   public Composition(string serviceName)
   {
@@ -85,12 +85,12 @@ partial class Composition
       throw new global::System.ArgumentNullException("serviceName");
     }
     
-    _argM08D05di_serviceName = serviceName;
+    _argM08D05diserviceName = serviceName;
   }
   
   internal Composition(Composition parent)
   {
-    _argM08D05di_serviceName = parent._argM08D05di_serviceName;
+    _argM08D05diserviceName = parent._argM08D05diserviceName;
   }
   
   #region Composition Roots
@@ -99,8 +99,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM08D05di_0000 = new Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario.Service(_argM08D05di_serviceName);
-      return transientM08D05di_0000;
+      var transientM08D05di0 = new Pure.DI.UsageTests.Attributes.ConstructorOrdinalAttributeScenario.Service(_argM08D05diserviceName);
+      return transientM08D05di0;
     }
   }
   #endregion

@@ -99,9 +99,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM08D05di_0001 = new Pure.DI.UsageTests.Basics.CompositionRootsScenario.Dependency();
-      var transientM08D05di_0000 = new Pure.DI.UsageTests.Basics.CompositionRootsScenario.Service(transientM08D05di_0001);
-      return transientM08D05di_0000;
+      var transientM08D05di1 = new Pure.DI.UsageTests.Basics.CompositionRootsScenario.Dependency();
+      var transientM08D05di0 = new Pure.DI.UsageTests.Basics.CompositionRootsScenario.Service(transientM08D05di1);
+      return transientM08D05di0;
     }
   }
   
@@ -110,8 +110,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM08D05di_0002 = new Pure.DI.UsageTests.Basics.CompositionRootsScenario.OtherService();
-      return transientM08D05di_0002;
+      var transientM08D05di2 = new Pure.DI.UsageTests.Basics.CompositionRootsScenario.OtherService();
+      return transientM08D05di2;
     }
   }
   
@@ -120,8 +120,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM08D05di_0003 = new Pure.DI.UsageTests.Basics.CompositionRootsScenario.Dependency();
-      return transientM08D05di_0003;
+      var transientM08D05di3 = new Pure.DI.UsageTests.Basics.CompositionRootsScenario.Dependency();
+      return transientM08D05di3;
     }
   }
   #endregion

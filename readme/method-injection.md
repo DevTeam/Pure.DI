@@ -85,10 +85,10 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM08D05di_0001 = new Pure.DI.UsageTests.Basics.MethodInjectionScenario.Dependency();
-      var transientM08D05di_0000 = new Pure.DI.UsageTests.Basics.MethodInjectionScenario.Service();
-      transientM08D05di_0000.SetDependency(transientM08D05di_0001);
-      return transientM08D05di_0000;
+      var transientM08D05di1 = new Pure.DI.UsageTests.Basics.MethodInjectionScenario.Dependency();
+      var transientM08D05di0 = new Pure.DI.UsageTests.Basics.MethodInjectionScenario.Service();
+      transientM08D05di0.SetDependency(transientM08D05di1);
+      return transientM08D05di0;
     }
   }
   #endregion

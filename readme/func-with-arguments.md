@@ -105,7 +105,7 @@ classDiagram
 partial class Composition
 {
   private readonly System.IDisposable[] _disposableSingletonsM08D05di;
-  private Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock _singletonM08D05di_0022;
+  private Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock _singletonM08D05di22;
   
   public Composition()
   {
@@ -117,7 +117,7 @@ partial class Composition
     _disposableSingletonsM08D05di = new System.IDisposable[0];
     lock (parent._disposableSingletonsM08D05di)
     {
-      _singletonM08D05di_0022 = parent._singletonM08D05di_0022;
+      _singletonM08D05di22 = parent._singletonM08D05di22;
     }
   }
   
@@ -127,26 +127,26 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      System.Func<int, Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.IDependency> transientM08D05di_0001;
-      transientM08D05di_0001 = new Func<int, IDependency>(id =>
+      System.Func<int, Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.IDependency> transientM08D05di1;
+      transientM08D05di1 = new Func<int, IDependency>(id =>
       {
-          if (global::System.Object.ReferenceEquals(_singletonM08D05di_0022, null))
+          if (global::System.Object.ReferenceEquals(_singletonM08D05di22, null))
           {
               lock (_disposableSingletonsM08D05di)
               {
-                  if (global::System.Object.ReferenceEquals(_singletonM08D05di_0022, null))
+                  if (global::System.Object.ReferenceEquals(_singletonM08D05di22, null))
                   {
-                      _singletonM08D05di_0022 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock();
+                      _singletonM08D05di22 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock();
                   }
               }
           }
-          var transientM08D05di_0004 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Dependency(_singletonM08D05di_0022);
-          var dependency = transientM08D05di_0004;
+          var transientM08D05di4 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Dependency(_singletonM08D05di22);
+          var dependency = transientM08D05di4;
           dependency.Id = id;
           return dependency;
       });
-      var transientM08D05di_0000 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Service(transientM08D05di_0001);
-      return transientM08D05di_0000;
+      var transientM08D05di0 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Service(transientM08D05di1);
+      return transientM08D05di0;
     }
   }
   #endregion

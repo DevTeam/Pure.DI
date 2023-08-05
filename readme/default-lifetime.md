@@ -83,8 +83,8 @@ classDiagram
 partial class Composition
 {
   private readonly System.IDisposable[] _disposableSingletonsM08D05di;
-  private Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Dependency _singletonM08D05di_0022;
-  private Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Service _singletonM08D05di_0023;
+  private Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Dependency _singletonM08D05di22;
+  private Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Service _singletonM08D05di23;
   
   public Composition()
   {
@@ -96,8 +96,8 @@ partial class Composition
     _disposableSingletonsM08D05di = new System.IDisposable[0];
     lock (parent._disposableSingletonsM08D05di)
     {
-      _singletonM08D05di_0022 = parent._singletonM08D05di_0022;
-      _singletonM08D05di_0023 = parent._singletonM08D05di_0023;
+      _singletonM08D05di22 = parent._singletonM08D05di22;
+      _singletonM08D05di23 = parent._singletonM08D05di23;
     }
   }
   
@@ -107,27 +107,27 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      if (global::System.Object.ReferenceEquals(_singletonM08D05di_0022, null))
+      if (global::System.Object.ReferenceEquals(_singletonM08D05di22, null))
       {
           lock (_disposableSingletonsM08D05di)
           {
-              if (global::System.Object.ReferenceEquals(_singletonM08D05di_0022, null))
+              if (global::System.Object.ReferenceEquals(_singletonM08D05di22, null))
               {
-                  _singletonM08D05di_0022 = new Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Dependency();
+                  _singletonM08D05di22 = new Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Dependency();
               }
           }
       }
-      if (global::System.Object.ReferenceEquals(_singletonM08D05di_0023, null))
+      if (global::System.Object.ReferenceEquals(_singletonM08D05di23, null))
       {
           lock (_disposableSingletonsM08D05di)
           {
-              if (global::System.Object.ReferenceEquals(_singletonM08D05di_0023, null))
+              if (global::System.Object.ReferenceEquals(_singletonM08D05di23, null))
               {
-                  _singletonM08D05di_0023 = new Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Service(_singletonM08D05di_0022, _singletonM08D05di_0022);
+                  _singletonM08D05di23 = new Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Service(_singletonM08D05di22, _singletonM08D05di22);
               }
           }
       }
-      return _singletonM08D05di_0023;
+      return _singletonM08D05di23;
     }
   }
   #endregion

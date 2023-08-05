@@ -89,26 +89,26 @@ partial class Enum
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      System.Collections.Generic.IEnumerable<Pure.DI.Benchmarks.Model.IService3> LocalFunc_perResolveM08D05di_0006()
+      System.Collections.Generic.IEnumerable<Pure.DI.Benchmarks.Model.IService3> LocalFunc_perResolveM08D05di6()
       {
-          var transientM08D05di_0020 = new Pure.DI.Benchmarks.Model.Service3();
-          yield return transientM08D05di_0020;
-          var transientM08D05di_0021 = new Pure.DI.Benchmarks.Model.Service3v2();
-          yield return transientM08D05di_0021;
-          var transientM08D05di_0022 = new Pure.DI.Benchmarks.Model.Service3v3();
-          yield return transientM08D05di_0022;
-          var transientM08D05di_0023 = new Pure.DI.Benchmarks.Model.Service3v4();
-          yield return transientM08D05di_0023;
+          var transientM08D05di20 = new Pure.DI.Benchmarks.Model.Service3();
+          yield return transientM08D05di20;
+          var transientM08D05di21 = new Pure.DI.Benchmarks.Model.Service3v2();
+          yield return transientM08D05di21;
+          var transientM08D05di22 = new Pure.DI.Benchmarks.Model.Service3v3();
+          yield return transientM08D05di22;
+          var transientM08D05di23 = new Pure.DI.Benchmarks.Model.Service3v4();
+          yield return transientM08D05di23;
       }
-      var perResolveM08D05di_0006 = LocalFunc_perResolveM08D05di_0006();
-      var transientM08D05di_0019 = new Pure.DI.Benchmarks.Model.Service2Enum(perResolveM08D05di_0006);
-      var transientM08D05di_0001 = new Pure.DI.Benchmarks.Model.Service1(transientM08D05di_0019);
-      var transientM08D05di_0002 = new Pure.DI.Benchmarks.Model.Service2Enum(perResolveM08D05di_0006);
-      var transientM08D05di_0003 = new Pure.DI.Benchmarks.Model.Service2Enum(perResolveM08D05di_0006);
-      var transientM08D05di_0004 = new Pure.DI.Benchmarks.Model.Service2Enum(perResolveM08D05di_0006);
-      var transientM08D05di_0005 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0000 = new Pure.DI.Benchmarks.Model.CompositionRoot(transientM08D05di_0001, transientM08D05di_0004, transientM08D05di_0003, transientM08D05di_0002, transientM08D05di_0005);
-      return transientM08D05di_0000;
+      var perResolveM08D05di6 = LocalFunc_perResolveM08D05di6();
+      var transientM08D05di19 = new Pure.DI.Benchmarks.Model.Service2Enum(perResolveM08D05di6);
+      var transientM08D05di1 = new Pure.DI.Benchmarks.Model.Service1(transientM08D05di19);
+      var transientM08D05di2 = new Pure.DI.Benchmarks.Model.Service2Enum(perResolveM08D05di6);
+      var transientM08D05di3 = new Pure.DI.Benchmarks.Model.Service2Enum(perResolveM08D05di6);
+      var transientM08D05di4 = new Pure.DI.Benchmarks.Model.Service2Enum(perResolveM08D05di6);
+      var transientM08D05di5 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di0 = new Pure.DI.Benchmarks.Model.CompositionRoot(transientM08D05di1, transientM08D05di4, transientM08D05di3, transientM08D05di2, transientM08D05di5);
+      return transientM08D05di0;
     }
   }
   #endregion

@@ -97,8 +97,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM08D05di_0000 = new Pure.DI.UsageTests.Interception.InterceptionScenario.Service();
-      return OnDependencyInjection<Pure.DI.UsageTests.Interception.InterceptionScenario.IService>(transientM08D05di_0000, null, Pure.DI.Lifetime.Transient);
+      var transientM08D05di0 = new Pure.DI.UsageTests.Interception.InterceptionScenario.Service();
+      return OnDependencyInjection<Pure.DI.UsageTests.Interception.InterceptionScenario.IService>(transientM08D05di0, null, Pure.DI.Lifetime.Transient);
     }
   }
   #endregion

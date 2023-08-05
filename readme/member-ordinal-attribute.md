@@ -95,9 +95,9 @@ classDiagram
 ```c#
 partial class PersonComposition
 {
-  private readonly int _argM08D05di_personId;
-  private readonly string _argM08D05di_personName;
-  private readonly System.DateTime _argM08D05di_personBirthday;
+  private readonly int _argM08D05dipersonId;
+  private readonly string _argM08D05dipersonName;
+  private readonly System.DateTime _argM08D05dipersonBirthday;
   
   public PersonComposition(int personId, string personName, System.DateTime personBirthday)
   {
@@ -106,16 +106,16 @@ partial class PersonComposition
       throw new global::System.ArgumentNullException("personName");
     }
     
-    _argM08D05di_personId = personId;
-    _argM08D05di_personName = personName;
-    _argM08D05di_personBirthday = personBirthday;
+    _argM08D05dipersonId = personId;
+    _argM08D05dipersonName = personName;
+    _argM08D05dipersonBirthday = personBirthday;
   }
   
   internal PersonComposition(PersonComposition parent)
   {
-    _argM08D05di_personId = parent._argM08D05di_personId;
-    _argM08D05di_personName = parent._argM08D05di_personName;
-    _argM08D05di_personBirthday = parent._argM08D05di_personBirthday;
+    _argM08D05dipersonId = parent._argM08D05dipersonId;
+    _argM08D05dipersonName = parent._argM08D05dipersonName;
+    _argM08D05dipersonBirthday = parent._argM08D05dipersonBirthday;
   }
   
   #region Composition Roots
@@ -124,11 +124,11 @@ partial class PersonComposition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM08D05di_0000 = new Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person();
-      transientM08D05di_0000.Id = _argM08D05di_personId;
-      transientM08D05di_0000.FirstName = _argM08D05di_personName;
-      transientM08D05di_0000.Birthday = _argM08D05di_personBirthday;
-      return transientM08D05di_0000;
+      var transientM08D05di0 = new Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person();
+      transientM08D05di0.Id = _argM08D05dipersonId;
+      transientM08D05di0.FirstName = _argM08D05dipersonName;
+      transientM08D05di0.Birthday = _argM08D05dipersonBirthday;
+      return transientM08D05di0;
     }
   }
   #endregion

@@ -25,17 +25,17 @@ internal record Variable(
                 case { Lifetime: Lifetime.Singleton }:
                 {
                     var binding = Node.Binding;
-                    return $"{Constant.SingletonVariablePrefix}{Salt}_{binding.Id:0000}";
+                    return $"{Constant.SingletonVariablePrefix}{Salt}{binding.Id}";
                 }
 
                 case { Lifetime: Lifetime.PerResolve }:
-                    return $"{Constant.PerResolveVariablePrefix}{Salt}_{Id:0000}";
+                    return $"{Constant.PerResolveVariablePrefix}{Salt}{Id}";
                 
                 case { Arg: {} arg }:
-                    return $"{Constant.ArgVariablePrefix}{Salt}_{arg.Source.ArgName}";
+                    return $"{Constant.ArgVariablePrefix}{Salt}{arg.Source.ArgName}";
 
                 default:
-                    return $"{Constant.TransientVariablePrefix}{Salt}_{Id:0000}";
+                    return $"{Constant.TransientVariablePrefix}{Salt}{Id}";
             }
         }
     }

@@ -76,34 +76,34 @@ partial class Transient
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM08D05di_0022 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0023 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0024 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0025 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0026 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0021 = new Pure.DI.Benchmarks.Model.Service2(transientM08D05di_0026, transientM08D05di_0025, transientM08D05di_0024, transientM08D05di_0023, transientM08D05di_0022);
-      var transientM08D05di_0001 = new Pure.DI.Benchmarks.Model.Service1(transientM08D05di_0021);
-      var transientM08D05di_0016 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0017 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0018 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0019 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0020 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0002 = new Pure.DI.Benchmarks.Model.Service2(transientM08D05di_0020, transientM08D05di_0019, transientM08D05di_0018, transientM08D05di_0017, transientM08D05di_0016);
-      var transientM08D05di_0011 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0012 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0013 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0014 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0015 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0003 = new Pure.DI.Benchmarks.Model.Service2(transientM08D05di_0015, transientM08D05di_0014, transientM08D05di_0013, transientM08D05di_0012, transientM08D05di_0011);
-      var transientM08D05di_0006 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0007 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0008 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0009 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0010 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0004 = new Pure.DI.Benchmarks.Model.Service2(transientM08D05di_0010, transientM08D05di_0009, transientM08D05di_0008, transientM08D05di_0007, transientM08D05di_0006);
-      var transientM08D05di_0005 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM08D05di_0000 = new Pure.DI.Benchmarks.Model.CompositionRoot(transientM08D05di_0001, transientM08D05di_0004, transientM08D05di_0003, transientM08D05di_0002, transientM08D05di_0005);
-      return transientM08D05di_0000;
+      var transientM08D05di22 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di23 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di24 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di25 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di26 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di21 = new Pure.DI.Benchmarks.Model.Service2(transientM08D05di26, transientM08D05di25, transientM08D05di24, transientM08D05di23, transientM08D05di22);
+      var transientM08D05di1 = new Pure.DI.Benchmarks.Model.Service1(transientM08D05di21);
+      var transientM08D05di16 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di17 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di18 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di19 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di20 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di2 = new Pure.DI.Benchmarks.Model.Service2(transientM08D05di20, transientM08D05di19, transientM08D05di18, transientM08D05di17, transientM08D05di16);
+      var transientM08D05di11 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di12 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di13 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di14 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di15 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di3 = new Pure.DI.Benchmarks.Model.Service2(transientM08D05di15, transientM08D05di14, transientM08D05di13, transientM08D05di12, transientM08D05di11);
+      var transientM08D05di6 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di7 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di8 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di9 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di10 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di4 = new Pure.DI.Benchmarks.Model.Service2(transientM08D05di10, transientM08D05di9, transientM08D05di8, transientM08D05di7, transientM08D05di6);
+      var transientM08D05di5 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM08D05di0 = new Pure.DI.Benchmarks.Model.CompositionRoot(transientM08D05di1, transientM08D05di4, transientM08D05di3, transientM08D05di2, transientM08D05di5);
+      return transientM08D05di0;
     }
   }
   #endregion

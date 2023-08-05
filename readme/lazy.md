@@ -87,22 +87,22 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> perResolveM08D05di_0002;
-      perResolveM08D05di_0002 = new global::System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(() =>
+      System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> perResolveM08D05di2;
+      perResolveM08D05di2 = new global::System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(() =>
       {
           Pure.DI.UsageTests.BCL.LazyScenario.IDependency value;
-          var transientM08D05di_0005 = new Pure.DI.UsageTests.BCL.LazyScenario.Dependency();
-          value = transientM08D05di_0005;
+          var transientM08D05di5 = new Pure.DI.UsageTests.BCL.LazyScenario.Dependency();
+          value = transientM08D05di5;
           return value;
       });
-      System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> transientM08D05di_0001;
+      System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> transientM08D05di1;
       {
           global::System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> func;
-          func = perResolveM08D05di_0002;
-          transientM08D05di_0001 = new global::System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(func, true);
+          func = perResolveM08D05di2;
+          transientM08D05di1 = new global::System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(func, true);
       }
-      var transientM08D05di_0000 = new Pure.DI.UsageTests.BCL.LazyScenario.Service(transientM08D05di_0001);
-      return transientM08D05di_0000;
+      var transientM08D05di0 = new Pure.DI.UsageTests.BCL.LazyScenario.Service(transientM08D05di1);
+      return transientM08D05di0;
     }
   }
   #endregion
