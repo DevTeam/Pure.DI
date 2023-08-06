@@ -156,7 +156,7 @@ internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilde
         $"{FormatTag(injection.Tag)}{FormatSymbol(injection.Type, options)}";
 
     private static string FormatDependency(Dependency dependency, FormatOptions options) => 
-        $"{(dependency.Injection.Tag == default ? "" : FormatTag(dependency.Injection.Tag) + " ")}{FormatSymbol(dependency.TargetSymbol, options)}";
+        $"{(dependency.Injection.Tag == default ? "" : FormatTag(dependency.Injection.Tag) + " ")}{FormatSymbol(dependency.Injection.Type, options)}";
 
     private static string FormatTag(object? tag) =>
         tag != default ? $"{tag.ValueToString("").Replace("\"", "\\\"")} " : "";

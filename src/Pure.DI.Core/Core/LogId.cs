@@ -3,7 +3,7 @@ namespace Pure.DI.Core;
 internal static class LogId
 {
     // Errors
-    public const string ErrorUnresolvedDependency = "DIE000";
+    public const string ErrorUnableToResolve = "DIE000";
     public const string ErrorCyclicDependency = "DIE001";
     public const string ErrorCannotFindSetup = "DIE002";
     public const string ErrorInvalidMetadata = "DIE003";

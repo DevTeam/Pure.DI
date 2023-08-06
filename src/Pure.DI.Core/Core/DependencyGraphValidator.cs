@@ -24,12 +24,12 @@ internal sealed class DependencyGraphValidator: IValidator<DependencyGraph>
             foreach (var dependency in graph.Edges.Where(i => !i.IsResolved))
             {
                 _cancellationToken.ThrowIfCancellationRequested();
-                var errorMessage = $"Cannot resolve dependency \"{dependency.TargetSymbol?.ToString() ?? dependency.Injection.ToString()}\" in {dependency.Target.Type}.";
+                var errorMessage = $"Unable to resolve \"{dependency.Injection}\" in {dependency.Target}.";
                 var locationsWalker = new DependencyGraphLocationsWalker(dependency.Injection);
                 locationsWalker.VisitDependencyNode(dependency.Target);
                 foreach (var location in locationsWalker.Locations)
                 {
-                    _logger.CompileError(errorMessage, location, LogId.ErrorUnresolvedDependency);
+                    _logger.CompileError(errorMessage, location, LogId.ErrorUnableToResolve);
                     isErrorReported = true;
                 }
             }
@@ -103,7 +103,7 @@ internal sealed class DependencyGraphValidator: IValidator<DependencyGraph>
 
         if (!isErrorReported)
         {
-            _logger.CompileError("Cannot build a dependency graph.", dependencyGraph.Source.Source.GetLocation(), LogId.ErrorUnresolvedDependency);
+            _logger.CompileError("Cannot build a dependency graph.", dependencyGraph.Source.Source.GetLocation(), LogId.ErrorUnableToResolve);
         }
 
         throw HandledException.Shared;

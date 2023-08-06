@@ -472,7 +472,7 @@ Dependency(int id<--int), string abc<--string))
   -[Dependency(int id<--int), string abc<--string))]<--[string]--[unresolved]
 """);
 
-        var errors = result.Logs.Where(i => i.Id == LogId.ErrorUnresolvedDependency).ToImmutableArray();
+        var errors = result.Logs.Where(i => i.Id == LogId.ErrorUnableToResolve).ToImmutableArray();
         errors.Length.ShouldBe(1);
     }
     
