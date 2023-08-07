@@ -47,7 +47,8 @@ internal sealed class RootsBuilder: IBuilder<DependencyGraph, IReadOnlyDictionar
                         node,
                         injection,
                         name,
-                        ImmutableArray<Line>.Empty)));
+                        ImmutableArray<Line>.Empty,
+                        ImmutableArray<Variable>.Empty)));
             }
         }
 

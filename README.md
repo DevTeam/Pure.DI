@@ -212,6 +212,7 @@ dotnet run
 - [Injection](readme/injection.md)
 - [Generics](readme/generics.md)
 - [Arguments](readme/arguments.md)
+- [Root arguments](readme/root-arguments.md)
 - [Tags](readme/tags.md)
 - [Auto-bindings](readme/auto-bindings.md)
 - [Child composition](readme/child-composition.md)
@@ -391,7 +392,7 @@ The child composition inherits the state of the parent composition in the form o
 
 ### Public Composition Roots
 
-To create an object graph quickly and conveniently, a set of properties is formed. These properties are here called roots of compositions. The type of a property is the type of the root object created by the composition. Accordingly, each invocation of a property leads to the creation of a composition with a root element of this type.
+To create an object graph quickly and conveniently, a set of properties (or a methods) is formed. These properties are here called roots of compositions. The type of a property/method is the type of the root object created by the composition. Accordingly, each invocation of a property/method leads to the creation of a composition with a root element of this type.
 
 ```c#
 DI.Setup("Composition")
@@ -454,7 +455,7 @@ public object Resolve(Type type) { ... }
 public object Resolve(Type type, object? tag) { ... }
 ```
 
-These methods can resolve both public and private composition roots, and are useful when using the [Service Locator](https://martinfowler.com/articles/injection.html) approach, where the code resolves composition roots in place:
+These methods can resolve both public and private composition roots that do not depend on any arguments of the composition roots. They are useful when using the [Service Locator](https://martinfowler.com/articles/injection.html) approach, where the code resolves composition roots in place:
 
 ```c#
 var composition = new Composition();

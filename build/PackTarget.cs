@@ -52,14 +52,16 @@ internal class PackTarget: ITarget<string>, ICommandProvider
 
         var props = new[]
         {
+            ("configuration", _settings.Configuration),
             ("version", packageVersion.ToString()),
             ("AnalyzerRoslynVersion", analyzerRoslynVersion.ToString()),
             ("AnalyzerRoslynPackageVersion", analyzerRoslynPackageVersion.ToString())
         };
         
-        var build = new DotNetBuild()
-            .WithProps(props)
-            .WithConfiguration(_settings.Configuration);
+        var build = new MSBuild()
+            .WithTarget("clean;rebuild")
+            .WithRestore(true)
+            .WithProps(props);
         
         var buildResult = build.Build();
         Assertion.Succeed(buildResult);

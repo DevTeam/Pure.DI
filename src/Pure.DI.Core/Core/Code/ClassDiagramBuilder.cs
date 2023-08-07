@@ -24,15 +24,21 @@ internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilde
         using (lines.Indent())
         {
             var hasResolveMethods = composition.Source.Source.Hints.GetHint(Hint.Resolve, SettingState.On) == SettingState.On;
-            var roots = composition.Roots.ToDictionary(i => i.Injection, i => i);
-            if (hasResolveMethods || roots.Any())
+            var rootProperties = composition.Roots.ToDictionary(i => i.Injection, i => i);
+            if (hasResolveMethods || rootProperties.Any())
             {
                 lines.AppendLine($"class {composition.Name.ClassName} {{");
                 using (lines.Indent())
                 {
                     foreach (var root in composition.Roots.OrderByDescending(i => i.IsPublic).ThenBy(i => i.Name))
                     {
-                        lines.AppendLine($"{(root.IsPublic ? "+" : "-")}{FormatType(root.Injection.Type, DefaultFormatOptions)} {root.PropertyName}");
+                        var rootArgsStr = "";
+                        if (!root.Args.IsEmpty)
+                        {
+                            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{arg.InstanceType} {arg.Name}"))})";
+                        }
+
+                        lines.AppendLine($"{(root.IsPublic ? "+" : "-")}{FormatType(root.Injection.Type, DefaultFormatOptions)} {root.PropertyName}{rootArgsStr}");
                     }
                     
                     if (hasResolveMethods)
@@ -122,7 +128,7 @@ internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilde
             foreach (var dependency in graph.Edges)
             {
                 _cancellationToken.ThrowIfCancellationRequested();
-                if (dependency.Target.Root is not null && roots.TryGetValue(dependency.Injection, out var root))
+                if (dependency.Target.Root is not null && rootProperties.TryGetValue(dependency.Injection, out var root))
                 {
                     lines.AppendLine($"{composition.Name.ClassName} ..> {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatInjection(root.Injection, DefaultFormatOptions)} {root.PropertyName}");
                 }

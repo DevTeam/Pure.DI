@@ -3,11 +3,14 @@ namespace Pure.DI.Core.Code;
 
 internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
 {
+    private readonly ILogger<ApiMembersBuilder> _logger;
     private readonly IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
     
     public ApiMembersBuilder(
+        ILogger<ApiMembersBuilder> logger,
         IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
     {
+        _logger = logger;
         _resolversBuilder = resolversBuilder;
     }
 
@@ -24,6 +27,12 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
         var apiCode = new LinesBuilder();
         if (hints.GetHint(Hint.Resolve, SettingState.On) == SettingState.On)
         {
+            var rootArgs = composition.Args.Where(i => i.Node.Arg?.Source.Kind == ArgKind.Root).ToArray();
+            foreach (var rootArg in rootArgs)
+            {
+                _logger.CompileWarning($"The root argument \"{rootArg.Node.Arg}\" of the composition is used. This root cannot be resolved using \"Resolve\" methods, so an exception will be thrown when trying to do so.", rootArg.Node.Arg?.Source.Source.GetLocation() ?? composition.Source.Source.Source.GetLocation(), LogId.WarningRootArgInResolveMethod);
+            }
+            
             AddMethodHeader(apiCode);
             apiCode.AppendLine($"{hints.GetValueOrDefault(Hint.ResolveMethodModifiers, Constant.DefaultApiMethodModifiers)} T {hints.GetValueOrDefault(Hint.ResolveMethodName, Constant.ResolverMethodName)}<T>()");
             apiCode.AppendLine("{");

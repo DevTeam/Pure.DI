@@ -50,11 +50,12 @@ internal sealed class ChildConstructorBuilder: IBuilder<CompositionCode, Composi
             }
         }
 
-        if (composition.Args.Any())
+        var classArgs = composition.Args.Where(i => i.Node.Arg?.Source.Kind == ArgKind.Class).ToArray();
+        if (classArgs.Any())
         {
             using (code.Indent())
             {
-                foreach (var argsField in composition.Args)
+                foreach (var argsField in classArgs)
                 {
                     code.AppendLine($"{argsField.Name} = {ParentCompositionArgName}.{argsField.Name};");
                 }

@@ -322,6 +322,16 @@ namespace Pure.DI
         IConfiguration Arg<T>(string name, params object[] tags);
         
         /// <summary>
+        /// Adds a root argument to use as a root parameter. 
+        /// </summary>
+        /// <example><code>RootArg&lt;int&gt;("id")</code></example>
+        /// <param name="name">The argument name.</param>
+        /// <param name="tags">The optional argument that specifies the tags for the argument.</param>
+        /// <typeparam name="T">The argument type.</typeparam>
+        /// <returns>API reference to the installation continuation chain.</returns>
+        IConfiguration RootArg<T>(string name, params object[] tags);
+        
+        /// <summary>
         /// Specifying the root of the Composition.
         /// </summary>
         /// <example><code>Root&lt;IService&gt;("Root")</code></example>
@@ -494,6 +504,13 @@ namespace Pure.DI
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration Arg<T>(string name, params object[] tags)
+            {
+                return Configuration.Shared;
+            }
+            
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            public IConfiguration RootArg<T>(string name, params object[] tags)
             {
                 return Configuration.Shared;
             }

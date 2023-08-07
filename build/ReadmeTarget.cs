@@ -215,6 +215,7 @@ internal class ReadmeTarget : ITarget<int>, ICommandProvider
             .GroupBy(i => i[TitleKey])
             .OrderBy(i => groups.TryGetValue(i.Key, out var index) ? index : int.MaxValue)
             .Select(i => (GroupName: i.Key, SampleItems: i.OrderBy(j => int.Parse(j[PriorityKey])).ThenBy(j => j[DescriptionKey]).ToArray()));
+        
         return examples;
     }
 

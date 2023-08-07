@@ -2,7 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/ArgumentsScenario.cs)
 
-Sometimes you need to pass some state to a composition class to use it when resolving dependencies. To do this, just use the `Arg<T>(string argName)` method, specify the type of argument and its name. You can also specify a tag for each argument. You can then use them as dependencies when building the object graph. If you have multiple arguments of the same type, just use tags to distinguish them. The values of the arguments are manipulated when you create a composition class by calling its constructor. It is important to remember that only those arguments that are used in the object graph will appear in the constructor. Arguments that are not involved cannot be defined, as they are omitted from the constructor parameters to save resources.
+Sometimes you need to pass some state to a composition class to use it when resolving dependencies. To do this, just use the `Arg<T>(string argName)` method, specify the type of argument and its name. You can also specify a tag for each argument. You can then use them as dependencies when building the object graph. If you have multiple arguments of the same type, just use tags to distinguish them. The values of the arguments are manipulated when you create a composition class by calling its constructor. It is important to remember that only those arguments that are used in the object graph will appear in the constructor. Arguments that are not involved will not be added to the constructor arguments.
 
 ```c#
 interface IDependency
@@ -83,7 +83,7 @@ classDiagram
     <<abstract>>
   }
   Service o-- String : "name"  Argument "serviceName"
-  Service *--  Dependency : IDependency dependency
+  Service *--  Dependency : IDependency
   Dependency o-- Int32 : Argument "id"
   Composition ..> Service : IService Root
 ```
@@ -96,8 +96,8 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly int _argM08D05diid;
-  private readonly string _argM08D05diserviceName;
+  private readonly int _argM08D08diid;
+  private readonly string _argM08D08diserviceName;
   
   public Composition(int id, string serviceName)
   {
@@ -106,14 +106,14 @@ partial class Composition
       throw new global::System.ArgumentNullException("serviceName");
     }
     
-    _argM08D05diid = id;
-    _argM08D05diserviceName = serviceName;
+    _argM08D08diid = id;
+    _argM08D08diserviceName = serviceName;
   }
   
   internal Composition(Composition parent)
   {
-    _argM08D05diid = parent._argM08D05diid;
-    _argM08D05diserviceName = parent._argM08D05diserviceName;
+    _argM08D08diid = parent._argM08D08diid;
+    _argM08D08diserviceName = parent._argM08D08diserviceName;
   }
   
   #region Composition Roots
@@ -122,9 +122,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM08D05di1 = new Pure.DI.UsageTests.Basics.ArgumentsScenario.Dependency(_argM08D05diid);
-      var transientM08D05di0 = new Pure.DI.UsageTests.Basics.ArgumentsScenario.Service(_argM08D05diserviceName, transientM08D05di1);
-      return transientM08D05di0;
+      var transientM08D08di1 = new Pure.DI.UsageTests.Basics.ArgumentsScenario.Dependency(_argM08D08diid);
+      var transientM08D08di0 = new Pure.DI.UsageTests.Basics.ArgumentsScenario.Service(_argM08D08diserviceName, transientM08D08di1);
+      return transientM08D08di0;
     }
   }
   #endregion
@@ -136,7 +136,7 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>()
   {
-    return ResolverM08D05di<T>.Value.Resolve(this);
+    return ResolverM08D08di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -145,7 +145,7 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>(object? tag)
   {
-    return ResolverM08D05di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM08D08di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -154,10 +154,10 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM08D05di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM08D05di;
+    var index = (int)(_bucketSizeM08D08di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM08D08di;
     do {
-      ref var pair = ref _bucketsM08D05di[index];
+      ref var pair = ref _bucketsM08D08di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -173,10 +173,10 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM08D05di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM08D05di;
+    var index = (int)(_bucketSizeM08D08di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM08D08di;
     do {
-      ref var pair = ref _bucketsM08D05di[index];
+      ref var pair = ref _bucketsM08D08di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -215,31 +215,31 @@ partial class Composition
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service o-- String : \"name\"  Argument \"serviceName\"\n" +
-        "  Service *--  Dependency : IDependency dependency\n" +
+        "  Service *--  Dependency : IDependency\n" +
         "  Dependency o-- Int32 : Argument \"id\"\n" +
         "  Composition ..> Service : IService Root";
   }
   
-  private readonly static int _bucketSizeM08D05di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM08D05di;
+  private readonly static int _bucketSizeM08D08di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM08D08di;
   
   static Composition()
   {
-    var valResolverM08D05di_0000 = new ResolverM08D05di_0000();
-    ResolverM08D05di<Pure.DI.UsageTests.Basics.ArgumentsScenario.IService>.Value = valResolverM08D05di_0000;
-    _bucketsM08D05di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM08D08di_0000 = new ResolverM08D08di_0000();
+    ResolverM08D08di<Pure.DI.UsageTests.Basics.ArgumentsScenario.IService>.Value = valResolverM08D08di_0000;
+    _bucketsM08D08di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM08D05di,
+      out _bucketSizeM08D08di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.ArgumentsScenario.IService), valResolverM08D05di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.ArgumentsScenario.IService), valResolverM08D08di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM08D05di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM08D08di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM08D05di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM08D08di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -252,7 +252,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM08D05di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.ArgumentsScenario.IService>
+  private sealed class ResolverM08D08di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.ArgumentsScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.Basics.ArgumentsScenario.IService Resolve(Composition composition)

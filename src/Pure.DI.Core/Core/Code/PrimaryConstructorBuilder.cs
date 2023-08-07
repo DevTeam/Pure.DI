@@ -21,12 +21,13 @@ internal sealed class PrimaryConstructorBuilder: IBuilder<CompositionCode, Compo
         {
             code.AppendLine();
         }
-
-        code.AppendLine($"public {composition.Name.ClassName}({string.Join(", ", composition.Args.Select(i => $"{i.InstanceType} {i.Node.Arg?.Source.ArgName}"))})");
+        
+        var classArgs = composition.Args.Where(arg => arg.Node.Arg?.Source.Kind == ArgKind.Class).ToArray();
+        code.AppendLine($"public {composition.Name.ClassName}({string.Join(", ", classArgs.Select(arg => $"{arg.InstanceType} {arg.Node.Arg?.Source.ArgName}"))})");
         code.AppendLine("{");
         using (code.Indent())
         {
-            foreach (var arg in composition.Args)
+            foreach (var arg in classArgs)
             {
                 if (arg.InstanceType.IsValueType)
                 {
@@ -44,7 +45,7 @@ internal sealed class PrimaryConstructorBuilder: IBuilder<CompositionCode, Compo
                 code.AppendLine();
             }
 
-            foreach (var arg in composition.Args)
+            foreach (var arg in classArgs)
             {
                 code.AppendLine($"{arg.Name} = {arg.Node.Arg?.Source.ArgName};");
             }

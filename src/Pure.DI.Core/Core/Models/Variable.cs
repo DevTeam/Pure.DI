@@ -31,8 +31,11 @@ internal record Variable(
                 case { Lifetime: Lifetime.PerResolve }:
                     return $"{Constant.PerResolveVariablePrefix}{Salt}{Id}";
                 
-                case { Arg: {} arg }:
+                case { Arg: { Source.Kind: ArgKind.Class} arg }:
                     return $"{Constant.ArgVariablePrefix}{Salt}{arg.Source.ArgName}";
+                
+                case { Arg: { Source.Kind: ArgKind.Root} arg }:
+                    return arg.Source.ArgName;
 
                 default:
                     return $"{Constant.TransientVariablePrefix}{Salt}{Id}";
