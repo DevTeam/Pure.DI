@@ -5,14 +5,15 @@ internal sealed class ArgFieldsBuilder: IBuilder<CompositionCode, CompositionCod
 {
     public CompositionCode Build(CompositionCode composition)
     {
-        if (!composition.Args.Any())
+        var classArgs = composition.Args.Where(i => i.Node.Arg?.Source.Kind == ArgKind.Class).ToArray();
+        if (!classArgs.Any())
         {
             return composition;
         }
         
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
-        foreach (var arg in composition.Args)
+        foreach (var arg in classArgs)
         {
             code.AppendLine($"private readonly {arg.InstanceType} {arg.Name};");
             membersCounter++;

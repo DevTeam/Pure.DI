@@ -5,7 +5,8 @@ internal record Root(
     DependencyNode Node,
     in Injection Injection,
     string Name,
-    in ImmutableArray<Line> Lines)
+    in ImmutableArray<Line> Lines,
+    bool HasRootArgs)
 {
     public bool IsPublic => !string.IsNullOrWhiteSpace(Name);
 

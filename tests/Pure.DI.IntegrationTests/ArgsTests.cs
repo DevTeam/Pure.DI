@@ -1,10 +1,12 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+using Core;
+
 [Collection(nameof(NonParallelTestsCollectionDefinition))]
 public class ArgsTests
 {
     [Fact]
-    public async Task ShouldSupportArgRoot()
+    public async Task ShouldSupportArgAsRoot()
     {
         // Given
 
@@ -183,5 +185,137 @@ namespace Sample
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(ImmutableArray.Create("Some Name 37 56"), result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportRootArg()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency {}
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                           
+                                   string Name { get; }
+                               }
+                           
+                               class Service: IService
+                               {
+                                   public Service(IDependency dep, string name)
+                                   {
+                                       Dep = dep;
+                                       Name = name;
+                                   }
+                           
+                                   public IDependency Dep { get; }
+                           
+                                   public string Name { get; private set; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .RootArg<string>("serviceName")
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service("Some Name").Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(0);
+        result.Warnings.Count.ShouldBe(1);
+        result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod).ShouldBe(1);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Some Name"), result);
+    }
+    
+    [Fact]
+    public async Task ShouldNotShowWaningAboutRootArgWhenResolveMethodsAreNotGenerated()
+    {
+        // Given
+
+        // When
+        var result = await """
+                           using System;
+                           using Pure.DI;
+
+                           namespace Sample
+                           {
+                               interface IDependency {}
+                           
+                               class Dependency: IDependency {}
+                           
+                               interface IService
+                               {
+                                   IDependency Dep { get; }
+                           
+                                   string Name { get; }
+                               }
+                           
+                               class Service: IService
+                               {
+                                   public Service(IDependency dep, string name)
+                                   {
+                                       Dep = dep;
+                                       Name = name;
+                                   }
+                           
+                                   public IDependency Dep { get; }
+                           
+                                   public string Name { get; private set; }
+                               }
+                           
+                               static class Setup
+                               {
+                                   private static void SetupComposition()
+                                   {
+                                       DI.Setup("Composition")
+                                           .Hint(Hint.Resolve, "Off")
+                                           .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+                                           .Bind<IService>().To<Service>()
+                                           .RootArg<string>("serviceName")
+                                           .Root<IService>("Service");
+                                   }
+                               }
+                           
+                               public class Program
+                               {
+                                   public static void Main()
+                                   {
+                                       var composition = new Composition();
+                                       Console.WriteLine(composition.Service("Some Name").Name);
+                                   }
+                               }
+                           }
+                           """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Some Name"), result);
     }
 }

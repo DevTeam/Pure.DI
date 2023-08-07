@@ -6,7 +6,8 @@ internal readonly record struct MdArg(
     SemanticModel SemanticModel,
     SyntaxNode Source,
     ITypeSymbol Type,
-    string ArgName)
+    string ArgName,
+    ArgKind Kind)
 {
     public override string ToString() => $"To<{Type}>(arg: \"{ArgName}\")";
 }

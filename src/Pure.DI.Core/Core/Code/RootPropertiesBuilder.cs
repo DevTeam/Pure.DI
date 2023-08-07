@@ -33,24 +33,44 @@ internal sealed class RootPropertiesBuilder: IBuilder<CompositionCode, Compositi
                 code.AppendLine();
             }
 
-            BuildProperty(composition, root.Injection.Type, root);
+            BuildRoot(composition, root.Injection.Type, root);
             membersCounter++;
         }
         code.AppendLine("#endregion");
         return composition with { MembersCount = membersCounter };
     }
     
-    private static void BuildProperty(CompositionCode composition, ITypeSymbol type, Root root)
+    private static void BuildRoot(CompositionCode composition, ITypeSymbol type, Root root)
     {
         var code = composition.Code;
-        code.AppendLine($"{(root.IsPublic ? "public" : "private")} {type} {root.PropertyName}");
+        var rootArgs = composition.Args.Where(i => i.Node.Arg?.Source.Kind == ArgKind.Root).ToArray();
+        var hasRootArgs = false;
+        var rootArgsStr = "";
+        if (rootArgs.Any())
+        {
+            hasRootArgs = true;
+            rootArgsStr = $"({string.Join(", ", rootArgs.Select(arg => $"{arg.InstanceType} {arg.Name}"))})";
+        }
+
+        if (hasRootArgs)
+        {
+            code.AppendLine(Constant.MethodImplOptions);
+        }
+
+        code.AppendLine($"{(root.IsPublic ? "public" : "private")} {type} {root.PropertyName}{rootArgsStr}");
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine(Constant.MethodImplOptions);
-            code.AppendLine("get");
-            code.AppendLine("{");
-            using (code.Indent())
+            var indentToken = Disposables.Empty;
+            if (!hasRootArgs)
+            {
+                code.AppendLine(Constant.MethodImplOptions);
+                code.AppendLine("get");
+                code.AppendLine("{");
+                indentToken = code.Indent();
+            }
+
+            try
             {
                 if (composition.Source.Source.Hints.GetHint(Hint.FormatCode) == SettingState.On)
                 {
@@ -65,11 +85,18 @@ internal sealed class RootPropertiesBuilder: IBuilder<CompositionCode, Compositi
                 }
                 else
                 {
-                    code.AppendLines(root.Lines);   
+                    code.AppendLines(root.Lines);
                 }
             }
+            finally
+            {
+                indentToken.Dispose();
+            }
 
-            code.AppendLine("}");
+            if (!hasRootArgs)
+            {
+                code.AppendLine("}");
+            }
         }
 
         code.AppendLine("}");

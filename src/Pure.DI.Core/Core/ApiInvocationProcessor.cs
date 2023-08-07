@@ -187,22 +187,11 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                         break;
 
                     case nameof(IConfiguration.Arg):
-                        if (genericName.TypeArgumentList.Arguments is [{ } argTypeSyntax]
-                            && invocation.ArgumentList.Arguments is [{ Expression: { } nameArgExpression }, ..] args)
-                        {
-                            var name = semanticModel.GetRequiredConstantValue<string>(nameArgExpression).Trim();
-                            var tags = new List<MdTag>(args.Count - 1);
-                            for (var index = 1; index < args.Count; index++)
-                            {
-                                var arg = args[index];
-                                tags.Add(new MdTag(index - 1, semanticModel.GetConstantValue<object>(arg.Expression)));
-                            }
-
-                            var argType = semanticModel.GetTypeSymbol<ITypeSymbol>(argTypeSyntax, _cancellationToken);
-                            metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, argType, tags.ToImmutableArray()));
-                            metadataVisitor.VisitArg(new MdArg(semanticModel, invocation, argType, name));
-                        }
-
+                        VisitArg(metadataVisitor, semanticModel, ArgKind.Class, invocation, genericName);
+                        break;
+                    
+                    case nameof(IConfiguration.RootArg):
+                        VisitArg(metadataVisitor, semanticModel, ArgKind.Root, invocation, genericName);
                         break;
 
                     case nameof(IConfiguration.Root):
@@ -255,7 +244,32 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                 break;
         }
     }
-    
+
+    private void VisitArg(
+        IMetadataVisitor metadataVisitor,
+        SemanticModel semanticModel,
+        ArgKind kind,
+        InvocationExpressionSyntax invocation,
+        GenericNameSyntax genericName)
+    {
+        // ReSharper disable once InvertIf
+        if (genericName.TypeArgumentList.Arguments is [{ } argTypeSyntax]
+            && invocation.ArgumentList.Arguments is [{ Expression: { } nameArgExpression }, ..] args)
+        {
+            var name = semanticModel.GetRequiredConstantValue<string>(nameArgExpression).Trim();
+            var tags = new List<MdTag>(args.Count - 1);
+            for (var index = 1; index < args.Count; index++)
+            {
+                var arg = args[index];
+                tags.Add(new MdTag(index - 1, semanticModel.GetConstantValue<object>(arg.Expression)));
+            }
+
+            var argType = semanticModel.GetTypeSymbol<ITypeSymbol>(argTypeSyntax, _cancellationToken);
+            metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, argType, tags.ToImmutableArray()));
+            metadataVisitor.VisitArg(new MdArg(semanticModel, invocation, argType, name, kind));
+        }
+    }
+
     private static void VisitFactory(
         IMetadataVisitor metadataVisitor,
         SemanticModel semanticModel,

@@ -212,6 +212,7 @@ dotnet run
 - [Injection](readme/injection.md)
 - [Generics](readme/generics.md)
 - [Arguments](readme/arguments.md)
+- [Root arguments](readme/root-arguments.md)
 - [Tags](readme/tags.md)
 - [Auto-bindings](readme/auto-bindings.md)
 - [Child composition](readme/child-composition.md)

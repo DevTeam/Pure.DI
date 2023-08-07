@@ -71,7 +71,8 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
 
         var newContext = context with { Variables = variables, Code = new LinesBuilder() };
         base.VisitRoot(newContext, dependencyGraph, variables, root, cancellationToken);
-        _roots.Add(root, newContext.Code.Lines.ToImmutableArray());
+        var hasRootArgs = newContext.Variables.Values.Any(i => i.Node.Arg?.Source.Kind == ArgKind.Root);
+        _roots.Add(root with{ HasRootArgs = hasRootArgs }, newContext.Code.Lines.ToImmutableArray());
     }
 
     protected override void VisitBlock(

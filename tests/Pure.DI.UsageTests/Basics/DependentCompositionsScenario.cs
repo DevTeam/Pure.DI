@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=13
+$p=14
 $d=Dependent compositions
 $h=The _Setup_ method has an additional argument _kind_, which defines the type of composition:
 $h=- _CompositionKind.Public_ - will create a normal composition class, this is the default setting and can be omitted, it can also use the _DependsOn_ method to use it as a dependency in other compositions

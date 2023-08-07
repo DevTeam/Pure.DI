@@ -52,7 +52,7 @@ classDiagram
   class IDependency {
     <<abstract>>
   }
-  Service *--  Dependency : IDependency dependency
+  Service *--  Dependency : IDependency
   Composition ..> Dependency : IDependency DependencyRoot
   Composition ..> Service : IService Root
 ```
@@ -79,8 +79,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM08D05di0 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
-      return transientM08D05di0;
+      var transientM08D07di0 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
+      return transientM08D07di0;
     }
   }
   
@@ -89,9 +89,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM08D05di2 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
-      var transientM08D05di1 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(transientM08D05di2);
-      return transientM08D05di1;
+      var transientM08D07di2 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
+      var transientM08D07di1 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(transientM08D07di2);
+      return transientM08D07di1;
     }
   }
   #endregion
@@ -119,7 +119,7 @@ partial class Composition
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  Service *--  Dependency : IDependency dependency\n" +
+        "  Service *--  Dependency : IDependency\n" +
         "  Composition ..> Dependency : IDependency DependencyRoot\n" +
         "  Composition ..> Service : IService Root";
   }
