@@ -1,23 +1,24 @@
 namespace Pure.DI;
 
-public sealed class Generator
+public static class Generator
 {
-    private static readonly CompositionBase CompositionBase = new();
-    private readonly Composition _composition;
+    private static readonly Composition Composition = new();
 
     public static IEnumerable<Source> GetApi(CancellationToken cancellationToken) => 
-        CompositionBase.ApiBuilder.Build(Unit.Shared);
+        Composition.ApiBuilder.Build(Unit.Shared);
 
-    public Generator(IOptions options, ISourcesRegistry sources, IDiagnostic diagnostic, CancellationToken cancellationToken) =>
-        _composition = new Composition(
+    public static IDisposable RegisterObserver<T>(IObserver<T> observer) => 
+        Composition.ObserversRegistry.Register(observer);
+
+    public static void Generate(IOptions options,
+        ISourcesRegistry sources,
+        IDiagnostic diagnostic,
+        IEnumerable<SyntaxUpdate> updates,
+        CancellationToken cancellationToken) =>
+        Composition.CreateGenerator(
             options: options,
             sources: sources,
             diagnostic: diagnostic,
-            cancellationToken: cancellationToken);
-
-    public void Generate(IEnumerable<SyntaxUpdate> updates) =>
-        _composition.Generator.Build(updates);
-
-    public IDisposable RegisterObserver<T>(IObserver<T> observer) => 
-        _composition.ObserversRegistry.Register(observer);
+            cancellationToken: cancellationToken)
+            .Build(updates);
 }

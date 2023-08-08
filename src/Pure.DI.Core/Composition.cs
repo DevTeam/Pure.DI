@@ -6,15 +6,24 @@
 // ReSharper disable HeapView.BoxingAllocation
 namespace Pure.DI;
 
+using System.Text.RegularExpressions;
+
 // ReSharper disable once PartialTypeWithSinglePart
 internal partial class Composition
 {
     private static void Setup() => DI.Setup(nameof(Composition))
-        .DependsOn(nameof(CompositionBase))
-        .Arg<IOptions>("options")
-        .Arg<ISourcesRegistry>("sources")
-        .Arg<IDiagnostic>("diagnostic")
-        .Arg<CancellationToken>("cancellationToken")
+        .Hint(Hint.Resolve, "Off")
+        .RootArg<IOptions>("options")
+        .RootArg<ISourcesRegistry>("sources")
+        .RootArg<IDiagnostic>("diagnostic")
+        .RootArg<CancellationToken>("cancellationToken")
+        
+        .Root<IBuilder<Unit, IEnumerable<Source>>>("ApiBuilder")
+        .Root<IObserversRegistry>("ObserversRegistry")
+        .Root<IBuilder<IEnumerable<SyntaxUpdate>, Unit>>("CreateGenerator")
+        
+        .Bind<IObserversRegistry>().Bind<IObserversProvider>().As(Lifetime.Singleton).To<ObserversRegistry>()
+        .Bind<ICache<TT1, TT2>>().As(Lifetime.Singleton).To<Cache<TT1, TT2>>()
 
         // Transient
         .DefaultLifetime(Lifetime.Transient)
@@ -29,6 +38,8 @@ internal partial class Composition
 
         // PerResolve
         .DefaultLifetime(Lifetime.PerResolve)
+        .Bind<IResources>().To<Resources>()
+        .Bind<Func<string, Regex>>().To(_ => new Func<string, Regex>(value => new Regex(value, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase)))
         .Bind<IInformation>().To<Information>()
         .Bind<IClock>().To<Clock>()
         .Bind<IFileSystem>().To<FileSystem>()
@@ -57,8 +68,10 @@ internal partial class Composition
         .Bind<IBuilder<MdSetup, IEnumerable<DependencyNode>>>(typeof(RootDependencyNodeBuilder)).To<RootDependencyNodeBuilder>()
         .Bind<IBuilder<MdSetup, DependencyGraph>>().To<VariationalDependencyGraphBuilder>()
         .Bind<IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>>>().To<MetadataBuilder>()
+        .Bind<IBuilder<DpImplementation, IEnumerable<DpImplementation>>>().To<ImplementationVariantsBuilder>()
+        .Bind<IBuilder<Unit, IEnumerable<Source>>>().To<ApiBuilder>()
         
-        // CSharp
+        // Code
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.ClassBuilder).To<ClassBuilder>()
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.DisposeMethodBuilder).To<DisposeMethodBuilder>()
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.RootPropertiesBuilder).To<RootPropertiesBuilder>()
@@ -72,13 +85,5 @@ internal partial class Composition
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.StaticConstructorBuilder).To<StaticConstructorBuilder>()
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.ApiMembersBuilder).To<ApiMembersBuilder>()
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.ResolversFieldsBuilder).To<ResolversFieldsBuilder>()
-        .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.ToStringMethodBuilder).To<ToStringMethodBuilder>()
-
-        // Singleton
-        .DefaultLifetime(Lifetime.Singleton)
-        .Bind<IBuilder<DpImplementation, IEnumerable<DpImplementation>>>().To<ImplementationVariantsBuilder>()
-        .Bind<IObserversRegistry>().Bind<IObserversProvider>().To<ObserversRegistry>()
-        
-        .Root<IObserversRegistry>("ObserversRegistry")
-        .Root<IBuilder<IEnumerable<SyntaxUpdate>, Unit>>("Generator");
+        .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.ToStringMethodBuilder).To<ToStringMethodBuilder>();
 }

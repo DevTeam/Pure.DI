@@ -35,7 +35,7 @@ public class SourceGenerator: IIncrementalGenerator
 
             var updates = changes.Select(change => new SyntaxUpdate(change.Node, change.SemanticModel));
             var ctx = new Context(sourceProductionContext, options.Left.Right, options.Left.Left);
-            new Generator(ctx, ctx, ctx, sourceProductionContext.CancellationToken).Generate(updates);
+            Generator.Generate(ctx, ctx, ctx, updates, sourceProductionContext.CancellationToken);
         });
     }
 }

@@ -61,15 +61,14 @@ public static class TestExtensions
 
         var compilationCopy = compilation;
         var updates = compilationCopy.SyntaxTrees.Select(i => CreateUpdate(i, compilationCopy));
-        var generator = new Generator(contextOptions.Object, contextProducer.Object, contextDiagnostic.Object, CancellationToken.None);
 
         var dependencyGraphObserver = new Observer<DependencyGraph>();
-        using var dependencyGraphObserverToken = generator.RegisterObserver(dependencyGraphObserver);
+        using var dependencyGraphObserverToken = Generator.RegisterObserver(dependencyGraphObserver);
 
         var logEntryObserver = new Observer<LogEntry>();
-        using var logEntryObserverToken = generator.RegisterObserver(logEntryObserver);
+        using var logEntryObserverToken = Generator.RegisterObserver(logEntryObserver);
 
-        generator.Generate(updates);
+        Generator.Generate(contextOptions.Object, contextProducer.Object, contextDiagnostic.Object, updates, CancellationToken.None);
 
         var logs = logEntryObserver.Values;
         var errors = logs.Where(i => i.Severity == DiagnosticSeverity.Error).ToImmutableArray();
