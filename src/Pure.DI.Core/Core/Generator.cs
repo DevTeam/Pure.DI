@@ -166,8 +166,6 @@ internal sealed class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
                     default,
                     LogId.ErrorUnhandled,
                     error));
-
-            throw;
         }
         finally
         {

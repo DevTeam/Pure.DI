@@ -188,7 +188,7 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
             processed.Add(node);
         }
 
-        foreach (var key in map.Keys.Where(i => ReferenceEquals(i.Tag, MdTag.ContextTag)))
+        foreach (var key in map.Keys.Where(i => ReferenceEquals(i.Tag, MdTag.ContextTag)).ToArray())
         {
             map.Remove(key);
         }

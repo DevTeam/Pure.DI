@@ -50,7 +50,17 @@ internal sealed class LogInfoBuilder: IBuilder<LogEntry, LogInfo>
         DiagnosticDescriptor? descriptor = default;
         if (!string.IsNullOrWhiteSpace(logEntry.Id))
         {
-            descriptor = new DiagnosticDescriptor(logEntry.Id!, severityCode, firstLine, severityCode, logEntry.Severity, true);
+            var message = new StringBuilder(firstLine);
+            if (logEntry.Exception is { } exception)
+            {
+                message.Append(", Message: \"");
+                message.Append(exception.Message);
+                message.Append("\", Stack Trace: \"");
+                message.Append(exception.StackTrace.Replace(System.Environment.NewLine, " "));
+                message.Append('"');
+            }
+
+            descriptor = new DiagnosticDescriptor(logEntry.Id!, severityCode, message.ToString(), severityCode, logEntry.Severity, true);
         }
 
         return new LogInfo(
