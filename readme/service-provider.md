@@ -50,8 +50,8 @@ service.Dependency.ShouldBe(dependency);
 ```mermaid
 classDiagram
   class ServiceProvider {
-    -IDependency RootM08D07di_0001
-    -IService RootM08D07di_0002
+    -IDependency RootM08D08di_0001
+    -IService RootM08D08di_0002
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object GetService(Type type)
@@ -72,8 +72,8 @@ classDiagram
     <<abstract>>
   }
   Service o--  "Singleton" Dependency : IDependency
-  ServiceProvider ..> Dependency : IDependency RootM08D07di_0001
-  ServiceProvider ..> Service : IService RootM08D07di_0002
+  ServiceProvider ..> Dependency : IDependency RootM08D08di_0001
+  ServiceProvider ..> Service : IService RootM08D08di_0002
 ```
 
 </details>

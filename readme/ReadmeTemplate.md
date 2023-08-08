@@ -47,7 +47,7 @@ It is important to note that our abstraction and implementation knows nothing ab
 
 Add the _Pure.DI_ package to your project:
 
-[![NuGet](https://buildstats.info/nuget/Pure.DI?includePreReleases=true)](https://www.nuget.org/packages/Pure.DI)
+[![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
 
 Let's bind the abstractions to their implementations and set up the creation of the object graph:
 

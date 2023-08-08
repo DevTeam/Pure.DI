@@ -97,7 +97,7 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.0.11">
+        <PackageReference Include="Pure.DI" Version="2.0.13">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
