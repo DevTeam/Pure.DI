@@ -23,7 +23,7 @@
     "compositionName": {
       "type": "parameter",
       "datatype": "string",
-      "description": "The name of the Composer class.",
+      "description": "The name of the composition class.",
       "defaultValue": "Composition",
       "FileRename": "_CompositionName_",
       "replaces": "$(CompositionName)"

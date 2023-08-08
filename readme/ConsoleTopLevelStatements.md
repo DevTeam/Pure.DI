@@ -8,8 +8,7 @@ This example is very similar to [simple console application](ConsoleTemplate.md)
 using Pure.DI;
 using static Pure.DI.Lifetime;
 
-// For a top level statements application the name of generated composer is "Composer"
-// by default if it was not override in the Setup call below.
+// Composition root
 new Composition().Root.Run();
 
 // In fact, this code is never run, and the method can have any name or be a constructor, for example,
