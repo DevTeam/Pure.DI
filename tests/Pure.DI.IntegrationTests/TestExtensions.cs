@@ -24,6 +24,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 using Moq;
 using Generator = Generator;
+using Path = System.IO.Path;
 
 public static class TestExtensions
 {

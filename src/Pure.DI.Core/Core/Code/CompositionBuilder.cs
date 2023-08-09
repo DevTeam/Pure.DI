@@ -150,6 +150,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
             
         var hasRequired = required.Any();
         context.Code.AppendLines(GenerateDeclareStatements(instantiation.Target, newStatement, hasRequired ? "" : ";"));
+        instantiation.Target.IsDeclared = true;
         if (hasRequired)
         {
             context.Code.AppendLine("{");
@@ -332,6 +333,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
         }
 
         context.Code.AppendLines(GenerateDeclareStatements(instantiation.Target, "this"));
+        instantiation.Target.IsDeclared = true;
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
     }
@@ -344,6 +346,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
         }
 
         context.Code.AppendLines(GenerateDeclareStatements(instantiation.Target, $"{Constant.OnCannotResolve}<{instantiation.Target.ContractType}>({instantiation.Target.Injection.Tag.ValueToString()}, {instantiation.Target.Node.Lifetime.ValueToString()})"));
+        instantiation.Target.IsDeclared = true;
         context.Code.AppendLines(GenerateOnInstanceCreatedStatements(context, instantiation.Target));
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;
@@ -376,7 +379,8 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
         var code = context.Code;
         if (!instantiation.Target.IsDeclared)
         {
-            code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name};");
+            code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = default({instantiation.Target.InstanceType});");
+            instantiation.Target.IsDeclared = true;
         }
         
         var factoryBuildContext = context with
@@ -390,6 +394,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
             code.Append($"{instantiation.Target.Name} = ");
         }
 
+        instantiation.Target.IsCreated = true;
         RewriteFactory(factoryBuildContext, context.IsRootContext, dependencyGraph, instantiation, factory, cancellationToken);
         code.AppendLines(GenerateOnInstanceCreatedStatements(context, instantiation.Target));
 
@@ -399,7 +404,6 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
             code.AppendLines(GenerateReturnStatements(context, instantiation.Target));
         }
         
-        instantiation.Target.IsCreated = true;
         base.VisitFactory(context, dependencyGraph, root, instantiation, factory, cancellationToken);
     }
 

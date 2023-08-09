@@ -9,5 +9,5 @@ internal sealed class FileSystem : IFileSystem
         Directory.CreateDirectory(path);
     
     public string? GetDirectoryName(string path) =>
-        Path.GetDirectoryName(path);
+        System.IO.Path.GetDirectoryName(path);
 }

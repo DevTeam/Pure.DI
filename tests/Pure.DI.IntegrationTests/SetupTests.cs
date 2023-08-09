@@ -605,4 +605,74 @@ internal interface IDependency { }
         // Then
         result.Success.ShouldBeTrue(result);
     }
+    
+    [Theory]
+    [InlineData("Func")]
+    [InlineData("Lazy")]
+    public async Task ShouldSupportLazyInjection(string lazyType)
+    {
+        // Given
+
+        // When
+        var result = await """
+           using System;
+           using Pure.DI;
+
+           namespace Sample
+           {
+           
+                using Pure.DI;
+
+                public class Dependency : IDependency
+                {
+                    public Dependency(Func<IDependency2> dependency2) { }
+                }
+
+                public interface IDependency    
+                {
+                }
+
+                public class Dependency2 : IDependency2
+                {
+                    public Dependency2(IDependency dependency) { }
+                }
+
+                public interface IDependency2   
+                {
+                }
+
+                public interface IService
+                {
+                }
+
+                public class Service : IService
+                {
+                    public Service(IDependency2 dependency2)
+                    {
+                    }
+                }
+           
+                public partial class Composition
+                {
+                    public static void Setup() =>
+                        DI.Setup(nameof(Composition))
+                            .Bind<IDependency>().To<Dependency>().Root<IDependency>("Dependency")
+                            .Bind<IDependency2>().To<Dependency2>().Root<IDependency2>("Dependency2")
+                            .Bind<IService>().To<Service>().Root<IService>("Service");
+                }
+           
+               public class Program
+               {
+                   public static void Main()
+                   {
+                       var composition = new Composition();
+                       IService service = composition.Service;
+                   }
+               }
+           }
+           """.Replace("Func<", lazyType + "<").RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
 }

@@ -35,6 +35,7 @@ internal partial class Composition
         .Bind<IBuilder<IEnumerable<SyntaxUpdate>, Unit>>().To<Core.Generator>()
         .Bind<IBuilder<RewriterContext<MdFactory>, MdFactory>>().To<FactoryTypeRewriter>()
         .Bind<IBuilder<DependencyGraph, CompositionCode>>(WellknownTag.CompositionBuilder).To<CompositionBuilder>()
+        .Bind<IGraphPath>().To<GraphPath>()
 
         // PerResolve
         .DefaultLifetime(Lifetime.PerResolve)
@@ -56,6 +57,7 @@ internal partial class Composition
         .Bind<IValidator<DependencyGraph>>().To<DependencyGraphValidator>()
         .Bind<IValidator<MdSetup>>().To<MetadataValidator>()
         .Bind<IApiInvocationProcessor>().To<ApiInvocationProcessor>()
+        .Bind<IPathfinder>().To<Pathfinder>()
         .Bind<IBuilder<LogEntry, LogInfo>>().To<LogInfoBuilder>()
         .Bind<IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>>>().To<ResolversBuilder>()
         .Bind<IBuilder<ContractsBuildContext, ISet<Injection>>>().To<ContractsBuilder>()

@@ -4,13 +4,19 @@ namespace Pure.DI.Core;
 internal sealed class DependencyGraphValidator: IValidator<DependencyGraph>
 {
     private readonly ILogger<DependencyGraphValidator> _logger;
+    private readonly IPathfinder _pathfinder;
+    private readonly Func<IGraphPath> _pathFactory;
     private readonly CancellationToken _cancellationToken;
 
     public DependencyGraphValidator(
         ILogger<DependencyGraphValidator> logger,
+        IPathfinder pathfinder,
+        Func<IGraphPath> pathFactory,
         CancellationToken cancellationToken)
     {
         _logger = logger;
+        _pathfinder = pathfinder;
+        _pathFactory = pathFactory;
         _cancellationToken = cancellationToken;
     }
 
@@ -35,67 +41,37 @@ internal sealed class DependencyGraphValidator: IValidator<DependencyGraph>
             }
         }
 
-        var cycles = new List<(Dependency CyclicDependency, ImmutableArray<DependencyNode> Path)>();
         using (_logger.TraceProcess("search for cycles"))
         {
+            var paths = new Dictionary<int, IGraphPath>();
             foreach (var rootNode in dependencyGraph.Roots.Select(i => i.Value.Node))
             {
-                _cancellationToken.ThrowIfCancellationRequested();
-                if (!graph.TryGetInEdges(rootNode, out var dependencies))
+                foreach (var (id, dependency) in _pathfinder.GetPaths(graph, rootNode))
                 {
-                    continue;
-                }
-
-                var path = new LinkedList<DependencyNode>();
-                path.AddLast(rootNode);
-                var ids = new HashSet<int>();
-                var enumerators = new Stack<(int Id, IEnumerator<Dependency> Enumerator)>();
-                enumerators.Push((rootNode.Binding.Id, dependencies.GetEnumerator()));
-                while (enumerators.TryPop(out var enumerator))
-                {
-                    _cancellationToken.ThrowIfCancellationRequested();
-                    if (!enumerator.Enumerator.MoveNext())
+                    if (!paths.TryGetValue(id, out var path))
                     {
-                        if (path.Count > 0)
-                        {
-                            path.RemoveLast();
-                        }
-
-                        ids.Remove(enumerator.Id);
-                        continue;
+                        path = _pathFactory();
+                        paths.Add(id, path);
                     }
-
-                    var dependency = enumerator.Enumerator.Current;
-                    if (!ids.Add(dependency.Source.Binding.Id))
+                    
+                    if (!path.TryAddPart(dependency.Target))
                     {
-                        cycles.Add((dependency, path.ToImmutableArray()));
+                        _logger.CompileError($"A cyclic dependency has been found: {path}.", dependencyGraph.Source.Source.GetLocation(), LogId.ErrorCyclicDependency);
+                        isErrorReported = true;
+                        isValid = false;
                         break;
                     }
 
-                    path.AddLast(dependency.Source);
-                    enumerators.Push(enumerator);
-                    if (!graph.TryGetInEdges(dependency.Source, out var nestedDependencies))
+                    if (path.IsCompleted(dependency.Target))
                     {
-                        continue;
+                        break;
                     }
-
-                    enumerators.Push((dependency.Source.Binding.Id, nestedDependencies.GetEnumerator()));
                 }
+                
+                paths.Clear();
             }
         }
-
-        if (cycles.Any())
-        {
-            isValid = false;
-            foreach (var cycle in cycles)
-            {
-                _cancellationToken.ThrowIfCancellationRequested();
-                var pathDescription = string.Join(" <-- ", cycle.Path.Select(i => $"{i.Type}"));
-                _logger.CompileError($"A cyclic dependency has been found {pathDescription}.", dependencyGraph.Source.Source.GetLocation(), LogId.ErrorCyclicDependency);
-                isErrorReported = true;
-            }
-        }
-
+        
         if (isValid)
         {
             return;
