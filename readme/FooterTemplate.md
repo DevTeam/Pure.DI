@@ -247,7 +247,8 @@ Both approaches can be used in combination with each other.
 | [OnNewInstanceImplementationTypeNameRegularExpression](#onnewinstanceimplementationtypenameregularexpression-hint)                 | Regular expression | .+        |            |
 | [OnNewInstanceTagRegularExpression](#onnewinstancetagregularexpression-hint)                                                       | Regular expression | .+        |            |
 | [OnNewInstanceLifetimeRegularExpression](#onnewinstancelifetimeregularexpression-hint)                                             | Regular expression | .+        |            |
-| [OnDependencyInjection](#ondependencyinjection-hint)                                                                               | _On_ or _Off_      | _Off_     | 9.0        | | [OnDependencyInjectionImplementationTypeNameRegularExpression](#OnDependencyInjectionImplementationTypeNameRegularExpression-Hint) | Regular expression | .+        |            |
+| [OnDependencyInjection](#ondependencyinjection-hint)                                                                               | _On_ or _Off_      | _Off_     | 9.0        | 
+| [OnDependencyInjectionImplementationTypeNameRegularExpression](#OnDependencyInjectionImplementationTypeNameRegularExpression-Hint) | Regular expression | .+        |            |
 | [OnDependencyInjectionContractTypeNameRegularExpression](#ondependencyinjectioncontracttypenameregularexpression-hint)             | Regular expression | .+        |            |
 | [OnDependencyInjectionTagRegularExpression](#ondependencyinjectiontagregularexpression-hint)                                       | Regular expression | .+        |            |
 | [OnDependencyInjectionLifetimeRegularExpression](#ondependencyinjectionlifetimeregularexpression-hint)                             | Regular expression | .+        |            |
@@ -267,13 +268,13 @@ Both approaches can be used in combination with each other.
 | [ObjectResolveByTagMethodModifiers](#objectresolvebytagmethodmodifiers-hint)                                                       | Method modifier    | _public_  |            |
 | [ObjectResolveByTagMethodName](#objectresolvebytagmethodname-hint)                                                                 | Method name        | _Resolve_ |            |
 | [DisposeMethodModifiers](#disposemethodmodifiers-hint)                                                                             | Method modifier    | _public_  |            |
-| [FormatCode](#formatcode-hint)                                                                                                     | _On_ or _Off_      | _Off_     |            |
+| [FormatCode](#formatcode-hint)                                                                                                     |  _On_ or _Off_     | _Off_     |            |
 
 The list of hints will be gradually expanded to meet the needs and desires for fine-tuning code generation. Please feel free to add your ideas.
 
 ### Resolve Hint
 
-Determines whether to generate [_Resolve_ methods](#resolve-methods). By default, a set of four _Resolve_ methods are generated. Set this hint to _Off_ to disable the generation of resolve methods. This will reduce the generation time of the class composition, and in this case no [private composition roots](#private-roots) will be generated. The class composition will be smaller and will only have [public roots](#public-roots). When the _Resolve_ hint is disabled, only the public roots properties are available, so be sure to explicitly define them using the `Root<T>(string name)` method with an explicit composition root name.
+Determines whether to generate [_Resolve_ methods](#resolve). By default, a set of four _Resolve_ methods are generated. Set this hint to _Off_ to disable the generation of resolve methods. This will reduce the generation time of the class composition, and in this case no [private composition roots](#private-composition-roots) will be generated. The class composition will be smaller and will only have [public roots](#public-composition-roots). When the _Resolve_ hint is disabled, only the public roots properties are available, so be sure to explicitly define them using the `Root<T>(string name)` method with an explicit composition root name.
 
 ### OnNewInstance Hint
 
@@ -443,21 +444,6 @@ Specifies whether the generated code should be formatted. This option consumes a
 - [.NET SDK 6.0.4xx or newer](https://dotnet.microsoft.com/download/dotnet/6.0)
 - [C# 8 or newer](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-version-history#c-version-80)
 
-## Supported frameworks
-
-- [.NET and .NET Core](https://docs.microsoft.com/en-us/dotnet/core/) 1.0+
-- [.NET Standard](https://docs.microsoft.com/en-us/dotnet/standard/net-standard) 1.0+
-- [Native AOT](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/)
-- [.NET Framework](https://docs.microsoft.com/en-us/dotnet/framework/) 2.0+
-- [UWP/XBOX](https://docs.microsoft.com/en-us/windows/uwp/index)
-- [.NET IoT](https://dotnet.microsoft.com/apps/iot)
-- [Xamarin](https://dotnet.microsoft.com/apps/xamarin)
-- [WPF](https://learn.microsoft.com/en-us/dotnet/desktop/wpf)
-- [ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/)
-- [.NET Multi-platform App UI (MAUI)](https://docs.microsoft.com/en-us/dotnet/maui/)
-
-As well as any other
-
 ## Project template
 
 Install the DI template [Pure.DI.Templates](https://www.nuget.org/packages/Pure.DI.Templates)
@@ -532,38 +518,6 @@ You can set project properties to save generated files and control their storage
     
 </Project>
 ```
-
-</details>
-
-<details>
-<summary>Create log files</summary>
-
-To save the log file, you need to add additional project properties. In the project file, add the `<PureDILogFile>` item to `<PropertyGroup>` and specify the path to the log directory, and add the associated `<CompilerVisibleProperty Include="PureDILogFile" />` item to `<ItemGroup>` to make this property visible in the source code generator. To change the log level, specify it using the _PureDISeverity_ property. For example:
-
-```xml
-<Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <PureDILogFile>.logs\Pure.DI.log</PureDILogFile>
-        <PureDISeverity>Info</PureDISeverity>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <CompilerVisibleProperty Include="PureDILogFile" />
-        <CompilerVisibleProperty Include="PureDISeverity" />
-    </ItemGroup>
-
-</Project>
-```
-
-The _PureDISeverity_ property can take on multiple values:
-
-| Severity | Description                                                            |
-|----------|------------------------------------------------------------------------|
-| Hidden   | Debug information.                                                     |
-| Info     | Information that does not indicate a problem (i.e. not prescriptive).  |
-| Warning  | Something suspicious, but allowed. This is the default value.          |
-| Error    | Something not allowed by the rules of the language or other authority. |
 
 </details>
 
