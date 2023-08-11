@@ -52,6 +52,7 @@ internal abstract class CodeGraphWalker<TContext>
         Variable rootVariable,
         CancellationToken cancellationToken)
     {
+        var counter = 200_000;
         var targets = new Stack<Variable>();
         var blocks = new Stack<Block>();
         var blockRootVariables = new Stack<Variable>();
@@ -63,6 +64,11 @@ internal abstract class CodeGraphWalker<TContext>
             var instantiations = new Stack<Instantiation>();
             while (targets.TryPop(out var targetVariable))
             {
+                if (counter-- < 0)
+                {
+                    throw new CompileErrorException("A cyclic dependency has been found.", dependencyGraph.Source.Source.GetLocation(), LogId.ErrorCyclicDependency);
+                }
+                
                 cancellationToken.ThrowIfCancellationRequested();
                 var arguments = new List<Variable>();
                 if (dependencyGraph.Graph.TryGetInEdges(targetVariable.Node, out var dependencies))
