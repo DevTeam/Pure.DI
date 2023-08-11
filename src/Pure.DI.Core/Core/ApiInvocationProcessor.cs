@@ -282,6 +282,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
         var hasContextTag = false;
         var resolvers = resolversWalker.Select(invocation =>
         {
+            // ReSharper disable once InvertIf
             if (invocation.ArgumentList.Arguments is { Count: > 0 } arguments)
             {
                 switch (arguments)

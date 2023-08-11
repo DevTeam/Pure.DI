@@ -24,7 +24,6 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 using Moq;
 using Generator = Generator;
-using Path = System.IO.Path;
 
 public static class TestExtensions
 {
@@ -39,7 +38,7 @@ public static class TestExtensions
             ? parseOptions.WithPreprocessorSymbols("NET")
             : parseOptions.WithPreprocessorSymbols(runOptions.PreprocessorSymbols);
 
-        var generatedApiSources = Generator.GetApi(CancellationToken.None).ToArray();
+        var generatedApiSources = Generator.GetApi().ToArray();
         var compilation = CreateCompilation()
             .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication).WithNullableContextOptions(runOptions.NullableContextOptions))
             .AddSyntaxTrees(generatedApiSources.Select(api => CSharpSyntaxTree.ParseText(api.SourceText, parseOptions)))

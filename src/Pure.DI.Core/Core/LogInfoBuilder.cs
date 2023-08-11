@@ -56,7 +56,7 @@ internal sealed class LogInfoBuilder: IBuilder<LogEntry, LogInfo>
                 message.Append(", Message: \"");
                 message.Append(exception.Message);
                 message.Append("\", Stack Trace: \"");
-                message.Append(exception.StackTrace.Replace(System.Environment.NewLine, " "));
+                message.Append(exception.StackTrace.Replace(Environment.NewLine, " "));
                 message.Append('"');
             }
 

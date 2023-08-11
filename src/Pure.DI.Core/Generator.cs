@@ -4,7 +4,7 @@ public static class Generator
 {
     private static readonly Composition Composition = new();
 
-    public static IEnumerable<Source> GetApi(CancellationToken cancellationToken) => 
+    public static IEnumerable<Source> GetApi() => 
         Composition.ApiBuilder.Build(Unit.Shared);
 
     public static IDisposable RegisterObserver<T>(IObserver<T> observer) => 

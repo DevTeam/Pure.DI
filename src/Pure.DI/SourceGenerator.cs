@@ -13,7 +13,7 @@ public class SourceGenerator: IIncrementalGenerator
         
         context.RegisterPostInitializationOutput(initializationContext =>
         {
-            foreach (var apiSource in Generator.GetApi(initializationContext.CancellationToken))
+            foreach (var apiSource in Generator.GetApi())
             {
                 initializationContext.AddSource(apiSource.HintName, apiSource.SourceText);
             }

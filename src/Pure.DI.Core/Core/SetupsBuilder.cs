@@ -3,7 +3,6 @@ namespace Pure.DI.Core;
 
 internal sealed class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMetadataVisitor
 {
-    private readonly ILogger<SetupsBuilder> _logger;
     private readonly Func<IMetadataSyntaxWalker> _metadataSyntaxWalkerFactory;
     private readonly ICache<ImmutableArray<byte>, bool> _setupCache;
     private readonly List<MdSetup> _setups = new();
@@ -21,11 +20,9 @@ internal sealed class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup
     private MdDefaultLifetime? _defaultLifetime;
 
     public SetupsBuilder(
-        ILogger<SetupsBuilder> logger,
         Func<IMetadataSyntaxWalker> metadataSyntaxWalkerFactory,
         ICache<ImmutableArray<byte>, bool> setupCache)
     {
-        _logger = logger;
         _metadataSyntaxWalkerFactory = metadataSyntaxWalkerFactory;
         _setupCache = setupCache;
     }
