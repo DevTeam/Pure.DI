@@ -53,9 +53,9 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
 
     public bool TryGetOutEdges(in TVertex source, out IReadOnlyCollection<TEdge> edges)
     {
-        if (_outInEdges.TryGetValue(source, out var inOutEdges))
+        if (_outInEdges.TryGetValue(source, out var outInEdges))
         {
-            edges = inOutEdges.Edges;
+            edges = outInEdges.Edges;
             return true;
         }
 
