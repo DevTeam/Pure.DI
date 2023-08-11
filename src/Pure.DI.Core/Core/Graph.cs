@@ -5,40 +5,43 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
     where TEdge : IEdge<TVertex>
     where TVertex : notnull
 {
-    private readonly Dictionary<TVertex, GraphEntry<TVertex, TEdge>> _vertexEdges;
-    private readonly IEqualityComparer<TVertex> _vertexEqualityComparer;
+    private readonly Dictionary<TVertex, GraphEntry<TVertex, TEdge>> _inOutEdges;
+    private readonly Dictionary<TVertex, GraphEntry<TVertex, TEdge>> _outInEdges;
+    private readonly List<TEdge> _edges = new();
 
     public Graph(
         IEnumerable<GraphEntry<TVertex, TEdge>> entries,
         IEqualityComparer<TVertex>? vertexEqualityComparer = default)
     {
-        _vertexEqualityComparer = vertexEqualityComparer ?? EqualityComparer<TVertex>.Default;
-        _vertexEdges = new Dictionary<TVertex, GraphEntry<TVertex, TEdge>>(_vertexEqualityComparer);
+        var comparer = vertexEqualityComparer ?? EqualityComparer<TVertex>.Default;
+        _inOutEdges = new Dictionary<TVertex, GraphEntry<TVertex, TEdge>>(comparer);
+        var outInEdges = new Dictionary<TVertex, List<TEdge>>(comparer);
         foreach (var entry in entries)
         {
-            _vertexEdges.Add(entry.Target, entry);
-        }
-    }
-
-    public IEnumerable<TVertex> Vertices => _vertexEdges.Keys;
-
-    public IEnumerable<TEdge> Edges
-    {
-        get
-        {
-            var edges = new List<TEdge>();
-            foreach (var vertexEdge in _vertexEdges)
+            _inOutEdges.Add(entry.Target, entry);
+            foreach (var edge in entry.Edges)
             {
-                edges.AddRange(vertexEdge.Value.Edges);
+                if (!outInEdges.TryGetValue(edge.Source, out var vertices))
+                {
+                    vertices = new List<TEdge>();
+                    outInEdges.Add(edge.Source, vertices);
+                }
+
+                vertices.Add(edge);
+                _edges.Add(edge);
             }
-            
-            return edges;
         }
+
+        _outInEdges = outInEdges.ToDictionary(i => i.Key, i => new GraphEntry<TVertex, TEdge>(i.Key, i.Value));
     }
+
+    public IEnumerable<TVertex> Vertices => _inOutEdges.Keys;
+
+    public IEnumerable<TEdge> Edges => _edges;
 
     public bool TryGetInEdges(in TVertex target, out IReadOnlyCollection<TEdge> edges)
     {
-        if (_vertexEdges.TryGetValue(target, out var inOutEdges))
+        if (_inOutEdges.TryGetValue(target, out var inOutEdges))
         {
             edges = inOutEdges.Edges;
             return true;
@@ -50,16 +53,13 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
 
     public bool TryGetOutEdges(in TVertex source, out IReadOnlyCollection<TEdge> edges)
     {
-        var result = new List<TEdge>();
-        foreach (var vertexEdge in Edges)
+        if (_outInEdges.TryGetValue(source, out var inOutEdges))
         {
-            if (_vertexEqualityComparer.Equals(vertexEdge.Source, source))
-            {
-                result.Add(vertexEdge);
-            }
+            edges = inOutEdges.Edges;
+            return true;
         }
 
-        edges = result;
-        return result.Count > 0;
+        edges = ImmutableArray<TEdge>.Empty;
+        return false;
     }
 }
