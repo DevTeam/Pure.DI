@@ -718,4 +718,58 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
     }
+    
+    [Fact]
+    public async Task ShouldSupportSingletonWithinFunc()
+    {
+        // Given
+
+        // When
+        var result = await """
+            using System;
+            using System.Collections.Generic;
+            using Pure.DI;
+
+            namespace Sample
+            {
+               interface IDep { }
+
+                class Dep: IDep
+                {
+                    public Dep(Func<int> val) { }
+                }
+
+                class Service
+                {
+                    public Service(IEnumerable<IDep> deps) { }
+                }
+
+                static class Setup
+                {
+                   private static void SetupComposition()
+                   {
+                       DI.Setup("Composition")
+                            .Hint(Hint.Resolve, "Off")
+                            .Hint(Hint.FormatCode, "On")
+                            .DefaultLifetime(Lifetime.Singleton)
+                            .Bind<int>().To(_ => 99)
+                            .Bind<IDep>().To<Dep>()
+                            .Root<Service>("Service");
+                   }
+                }
+
+                public class Program
+                {
+                   public static void Main()
+                   {
+                       var composition = new Composition();
+                       var service = composition.Service;
+                   }
+                }
+            }
+        """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
 }

@@ -72,12 +72,43 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
         var newContext = context with { Variables = variables, Code = new LinesBuilder() };
         var prevVariables = variables.Select(i => i.Value).ToImmutableHashSet();
         base.VisitRoot(newContext, dependencyGraph, variables, root, cancellationToken);
+        
+        var perResolveVariables = variables
+            .Select(i => i.Value)
+            .Where(i => i.Node.Lifetime == Lifetime.PerResolve)
+            .Except(prevVariables)
+            .ToArray();
+        
+        var code = new LinesBuilder();
+        foreach (var perResolveVariable in perResolveVariables)
+        {
+            code.AppendLine($"var {perResolveVariable.Name} = default({perResolveVariable.InstanceType});");
+        }
+        
+        code.AppendLines(newContext.Code.Lines);
+        
+        var keysToRemove = variables
+            .Where(i => i.Value.Node.Lifetime != Lifetime.Singleton && i.Value.Node.Arg is null)
+            .Select(i => i.Key)
+            .ToArray();
+
+        foreach (var binding in keysToRemove)
+        {
+            variables.Remove(binding);
+        }
+        
+        foreach (var variable in variables.Values)
+        {
+            variable.IsCreated = false;
+        }
+        
         var rootArgs = variables
             .Select(i => i.Value)
             .Except(prevVariables)
             .Where(i => i.Node.Arg?.Source.Kind == ArgKind.Root)
             .ToImmutableArray();
-        _roots.Add(root with { Args = rootArgs }, newContext.Code.Lines.ToImmutableArray());
+        
+        _roots.Add(root with { Args = rootArgs }, code.Lines.ToImmutableArray());
     }
 
     protected override void VisitBlock(
@@ -87,7 +118,10 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
         Block block,
         CancellationToken cancellationToken)
     {
-        var isSingletonInitBlock = block.Root is { IsCreated: false, Node.Lifetime: Lifetime.Singleton };
+        var isSingletonInitBlock = 
+            block.Root is { IsCreated: false, Node.Lifetime: Lifetime.Singleton }
+            && block.Root.IsCreationRequired(block.Root.Node);
+        
         if (isSingletonInitBlock)
         {
             StartSingletonInitBlock(context, block.Root);
@@ -268,7 +302,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
 
         context.Code.AppendLine("}");
         context.Code.AppendLine();
-        context.Code.AppendLine($"var {instantiation.Target.Name} = {localFuncName}();");
+        context.Code.AppendLine($"{(instantiation.Target.IsDeclared ? "" : "var ")} {instantiation.Target.Name} = {localFuncName}();");
 
         context.Code.AppendLines(GenerateOnInstanceCreatedStatements(context, instantiation.Target));
         AddReturnStatement(context, root, instantiation);
@@ -286,7 +320,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
             return;
         }
 
-        context.Code.AppendLine($"var {instantiation.Target.Name} = new {construct.Source.ElementType}[{instantiation.Arguments.Length.ToString()}] {{ {string.Join(", ", instantiation.Arguments.Select(InjectVariable))} }};");
+        context.Code.AppendLine($"{(instantiation.Target.IsDeclared ? "" : "var ")} {instantiation.Target.Name} = new {construct.Source.ElementType}[{instantiation.Arguments.Length.ToString()}] {{ {string.Join(", ", instantiation.Arguments.Select(InjectVariable))} }};");
         context.Code.AppendLines(GenerateOnInstanceCreatedStatements(context, instantiation.Target));
         AddReturnStatement(context, root, instantiation);
         instantiation.Target.IsCreated = true;

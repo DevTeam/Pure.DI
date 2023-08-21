@@ -75,7 +75,7 @@ internal record Variable(
         public override bool IsDeclared
         {
             get => _variable.IsDeclared;
-            set => _variable.IsCreated = value;
+            set => _variable.IsDeclared = value;
         }
 
         public override bool IsCreated

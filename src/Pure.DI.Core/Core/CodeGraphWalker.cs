@@ -28,21 +28,6 @@ internal abstract class CodeGraphWalker<TContext>
     {
         var rootVariable = CreateVariable(context, dependencyGraph, variables, root.Node, root.Injection);
         VisitRootVariable(context, dependencyGraph, variables, rootVariable, cancellationToken);
-        
-        var keysToRemove = variables
-            .Where(i => i.Value.Node.Lifetime != Lifetime.Singleton && i.Value.Node.Arg is null)
-            .Select(i => i.Key)
-            .ToArray();
-
-        foreach (var binding in keysToRemove)
-        {
-            variables.Remove(binding);
-        }
-        
-        foreach (var variable in variables.Values)
-        {
-            variable.IsCreated = false;
-        }
     }
 
     protected void VisitRootVariable(
@@ -408,7 +393,11 @@ internal abstract class CodeGraphWalker<TContext>
                     return perResolveVar.CreateLinkedVariable(injection);
                 }
 
-                perResolveVar = new Variable(source, GenerateId(context), node, injection);
+                perResolveVar = new Variable(source, GenerateId(context), node, injection)
+                {
+                    IsDeclared = true
+                };
+                
                 variables.Add(node.Binding, perResolveVar);
                 return perResolveVar;
 
