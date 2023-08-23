@@ -6,11 +6,13 @@
 // ReSharper disable HeapView.BoxingAllocation
 namespace Pure.DI;
 
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 // ReSharper disable once PartialTypeWithSinglePart
 internal partial class Composition
 {
+    [Conditional("DI")]
     private static void Setup() => DI.Setup(nameof(Composition))
         .Hint(Hint.Resolve, "Off")
         .RootArg<IOptions>("options")

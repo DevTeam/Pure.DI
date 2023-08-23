@@ -50,8 +50,8 @@ service.Dependency.ShouldBe(dependency);
 ```mermaid
 classDiagram
   class ServiceProvider {
-    -IDependency RootM08D08di_0001
-    -IService RootM08D08di_0002
+    -IDependency RootM08D23di_0001
+    -IService RootM08D23di_0002
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object GetService(Type type)
@@ -72,8 +72,8 @@ classDiagram
     <<abstract>>
   }
   Service o--  "Singleton" Dependency : IDependency
-  ServiceProvider ..> Dependency : IDependency RootM08D08di_0001
-  ServiceProvider ..> Service : IService RootM08D08di_0002
+  ServiceProvider ..> Dependency : IDependency RootM08D23di_0001
+  ServiceProvider ..> Service : IService RootM08D23di_0002
 ```
 
 </details>
@@ -84,60 +84,60 @@ classDiagram
 ```c#
 partial class ServiceProvider
 {
-  private readonly System.IDisposable[] _disposableSingletonsM08D09di;
-  private Pure.DI.UsageTests.BCL.ServiceProviderScenario.Dependency _singletonM08D09di22;
+  private readonly System.IDisposable[] _disposableSingletonsM08D23di;
+  private Pure.DI.UsageTests.BCL.ServiceProviderScenario.Dependency _singletonM08D23di22;
   
   public ServiceProvider()
   {
-    _disposableSingletonsM08D09di = new System.IDisposable[0];
+    _disposableSingletonsM08D23di = new System.IDisposable[0];
   }
   
   internal ServiceProvider(ServiceProvider parent)
   {
-    _disposableSingletonsM08D09di = new System.IDisposable[0];
-    lock (parent._disposableSingletonsM08D09di)
+    _disposableSingletonsM08D23di = new System.IDisposable[0];
+    lock (parent._disposableSingletonsM08D23di)
     {
-      _singletonM08D09di22 = parent._singletonM08D09di22;
+      _singletonM08D23di22 = parent._singletonM08D23di22;
     }
   }
   
   #region Composition Roots
-  private Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency RootM08D09di_0001
+  private Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency RootM08D23di_0001
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      if (global::System.Object.ReferenceEquals(_singletonM08D09di22, null))
+      if (global::System.Object.ReferenceEquals(_singletonM08D23di22, null))
       {
-          lock (_disposableSingletonsM08D09di)
+          lock (_disposableSingletonsM08D23di)
           {
-              if (global::System.Object.ReferenceEquals(_singletonM08D09di22, null))
+              if (global::System.Object.ReferenceEquals(_singletonM08D23di22, null))
               {
-                  _singletonM08D09di22 = new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Dependency();
+                  _singletonM08D23di22 = new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Dependency();
               }
           }
       }
-      return _singletonM08D09di22;
+      return _singletonM08D23di22;
     }
   }
   
-  private Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService RootM08D09di_0002
+  private Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService RootM08D23di_0002
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      if (global::System.Object.ReferenceEquals(_singletonM08D09di22, null))
+      if (global::System.Object.ReferenceEquals(_singletonM08D23di22, null))
       {
-          lock (_disposableSingletonsM08D09di)
+          lock (_disposableSingletonsM08D23di)
           {
-              if (global::System.Object.ReferenceEquals(_singletonM08D09di22, null))
+              if (global::System.Object.ReferenceEquals(_singletonM08D23di22, null))
               {
-                  _singletonM08D09di22 = new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Dependency();
+                  _singletonM08D23di22 = new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Dependency();
               }
           }
       }
-      var transientM08D09di0 = new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Service(_singletonM08D09di22);
-      return transientM08D09di0;
+      var transientM08D23di0 = new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Service(_singletonM08D23di22);
+      return transientM08D23di0;
     }
   }
   #endregion
@@ -149,7 +149,7 @@ partial class ServiceProvider
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>()
   {
-    return ResolverM08D09di<T>.Value.Resolve(this);
+    return ResolverM08D23di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -158,7 +158,7 @@ partial class ServiceProvider
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>(object? tag)
   {
-    return ResolverM08D09di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM08D23di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -167,10 +167,10 @@ partial class ServiceProvider
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object GetService(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM08D09di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    var finish = index + _bucketSizeM08D09di;
+    var index = (int)(_bucketSizeM08D23di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var finish = index + _bucketSizeM08D23di;
     do {
-      ref var pair = ref _bucketsM08D09di[index];
+      ref var pair = ref _bucketsM08D23di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -186,10 +186,10 @@ partial class ServiceProvider
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM08D09di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    var finish = index + _bucketSizeM08D09di;
+    var index = (int)(_bucketSizeM08D23di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var finish = index + _bucketSizeM08D23di;
     do {
-      ref var pair = ref _bucketsM08D09di[index];
+      ref var pair = ref _bucketsM08D23di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -205,8 +205,8 @@ partial class ServiceProvider
     return
       "classDiagram\n" +
         "  class ServiceProvider {\n" +
-          "    -IDependency RootM08D09di_0001\n" +
-          "    -IService RootM08D09di_0002\n" +
+          "    -IDependency RootM08D23di_0001\n" +
+          "    -IService RootM08D23di_0002\n" +
           "    + T ResolveᐸTᐳ()\n" +
           "    + T ResolveᐸTᐳ(object? tag)\n" +
           "    + object GetService(Type type)\n" +
@@ -227,33 +227,33 @@ partial class ServiceProvider
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service o--  \"Singleton\" Dependency : IDependency\n" +
-        "  ServiceProvider ..> Dependency : IDependency RootM08D09di_0001\n" +
-        "  ServiceProvider ..> Service : IService RootM08D09di_0002";
+        "  ServiceProvider ..> Dependency : IDependency RootM08D23di_0001\n" +
+        "  ServiceProvider ..> Service : IService RootM08D23di_0002";
   }
   
-  private readonly static int _bucketSizeM08D09di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<ServiceProvider, object>>[] _bucketsM08D09di;
+  private readonly static int _bucketSizeM08D23di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<ServiceProvider, object>>[] _bucketsM08D23di;
   
   static ServiceProvider()
   {
-    var valResolverM08D09di_0000 = new ResolverM08D09di_0000();
-    ResolverM08D09di<Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency>.Value = valResolverM08D09di_0000;
-    var valResolverM08D09di_0001 = new ResolverM08D09di_0001();
-    ResolverM08D09di<Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService>.Value = valResolverM08D09di_0001;
-    _bucketsM08D09di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<ServiceProvider, object>>.Create(
+    var valResolverM08D23di_0000 = new ResolverM08D23di_0000();
+    ResolverM08D23di<Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency>.Value = valResolverM08D23di_0000;
+    var valResolverM08D23di_0001 = new ResolverM08D23di_0001();
+    ResolverM08D23di<Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService>.Value = valResolverM08D23di_0001;
+    _bucketsM08D23di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<ServiceProvider, object>>.Create(
       4,
-      out _bucketSizeM08D09di,
+      out _bucketSizeM08D23di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<ServiceProvider, object>>[2]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<ServiceProvider, object>>(typeof(Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency), valResolverM08D09di_0000)
-        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<ServiceProvider, object>>(typeof(Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService), valResolverM08D09di_0001)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<ServiceProvider, object>>(typeof(Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency), valResolverM08D23di_0000)
+        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<ServiceProvider, object>>(typeof(Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService), valResolverM08D23di_0001)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM08D09di<T>: global::Pure.DI.IResolver<ServiceProvider, T>
+  private sealed class ResolverM08D23di<T>: global::Pure.DI.IResolver<ServiceProvider, T>
   {
-    public static global::Pure.DI.IResolver<ServiceProvider, T> Value = new ResolverM08D09di<T>();
+    public static global::Pure.DI.IResolver<ServiceProvider, T> Value = new ResolverM08D23di<T>();
     
     public T Resolve(ServiceProvider composite)
     {
@@ -266,34 +266,34 @@ partial class ServiceProvider
     }
   }
   
-  private sealed class ResolverM08D09di_0000: global::Pure.DI.IResolver<ServiceProvider, Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency>
+  private sealed class ResolverM08D23di_0000: global::Pure.DI.IResolver<ServiceProvider, Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency Resolve(ServiceProvider composition)
     {
-      return composition.RootM08D09di_0001;
+      return composition.RootM08D23di_0001;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency ResolveByTag(ServiceProvider composition, object tag)
     {
-      if (Equals(tag, null)) return composition.RootM08D09di_0001;
+      if (Equals(tag, null)) return composition.RootM08D23di_0001;
       throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency.");
     }
   }
   
-  private sealed class ResolverM08D09di_0001: global::Pure.DI.IResolver<ServiceProvider, Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService>
+  private sealed class ResolverM08D23di_0001: global::Pure.DI.IResolver<ServiceProvider, Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService Resolve(ServiceProvider composition)
     {
-      return composition.RootM08D09di_0002;
+      return composition.RootM08D23di_0002;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService ResolveByTag(ServiceProvider composition, object tag)
     {
-      if (Equals(tag, null)) return composition.RootM08D09di_0002;
+      if (Equals(tag, null)) return composition.RootM08D23di_0002;
       throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService.");
     }
   }

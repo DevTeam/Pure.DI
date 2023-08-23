@@ -13,6 +13,7 @@ $f=The partial class is also useful for specifying access modifiers to the gener
 // ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Basics.PartialClassScenario;
 
+using System.Diagnostics;
 using Shouldly;
 using Xunit;
 
@@ -32,6 +33,7 @@ class Service : IService
 partial class Composition
 {
     // This method will not be called in runtime
+    [Conditional("DI")]
     private void Setup() =>
 // }        
         // ToString = On

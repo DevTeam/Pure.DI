@@ -3,10 +3,12 @@
 // ReSharper disable RedundantNameQualifier
 namespace WpfAppNetCore;
 
+using System.Diagnostics;
 using Pure.DI;
 
 internal partial class Composition
 {
+    [Conditional("DI")]
     private static void Setup() => DI.Setup(nameof(Composition))
         // View Models
         .Bind<IClockViewModel>().To<ClockViewModel>().Root<IClockViewModel>("ClockViewModel")
