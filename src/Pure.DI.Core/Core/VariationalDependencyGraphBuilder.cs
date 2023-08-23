@@ -12,7 +12,7 @@ internal sealed class VariationalDependencyGraphBuilder : IBuilder<MdSetup, Depe
 {
     private readonly ILogger<VariationalDependencyGraphBuilder> _logger;
     private readonly IGlobalOptions _globalOptions;
-    private readonly IBuilder<MdSetup, IEnumerable<DependencyNode>>[] _dependencyNodeBuilders;
+    private readonly IReadOnlyCollection<IBuilder<MdSetup, IEnumerable<DependencyNode>>> _dependencyNodeBuilders;
     private readonly IVariator<ProcessingNode> _variator;
     private readonly IMarker _marker;
     private readonly IBuilder<ContractsBuildContext, ISet<Injection>> _contractsBuilder;
@@ -22,7 +22,7 @@ internal sealed class VariationalDependencyGraphBuilder : IBuilder<MdSetup, Depe
     public VariationalDependencyGraphBuilder(
         ILogger<VariationalDependencyGraphBuilder> logger,
         IGlobalOptions globalOptions,
-        IBuilder<MdSetup, IEnumerable<DependencyNode>>[] dependencyNodeBuilders,
+        IReadOnlyCollection<IBuilder<MdSetup, IEnumerable<DependencyNode>>> dependencyNodeBuilders,
         IVariator<ProcessingNode> variator,
         IMarker marker,
         IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,

@@ -5,7 +5,7 @@ namespace Pure.DI.Core;
 
 internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
 {
-    private readonly IBuilder<MdSetup, IEnumerable<DependencyNode>>[] _dependencyNodeBuilders;
+    private readonly IReadOnlyCollection<IBuilder<MdSetup, IEnumerable<DependencyNode>>> _dependencyNodeBuilders;
     private readonly IBuilder<ContractsBuildContext, ISet<Injection>> _contractsBuilder;
     private readonly IMarker _marker;
     private readonly IUnboundTypeConstructor _unboundTypeConstructor;
@@ -15,7 +15,7 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
     private readonly CancellationToken _cancellationToken;
 
     public DependencyGraphBuilder(
-        IBuilder<MdSetup, IEnumerable<DependencyNode>>[] dependencyNodeBuilders,
+        IReadOnlyCollection<IBuilder<MdSetup, IEnumerable<DependencyNode>>> dependencyNodeBuilders,
         IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
         IMarker marker,
         IUnboundTypeConstructor unboundTypeConstructor,
