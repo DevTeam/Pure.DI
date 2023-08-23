@@ -123,9 +123,7 @@ namespace Sample
         // Then
         result.Success.ShouldBeFalse(result);
         result.Errors
-            .Count(i => 
-                i.Id == LogId.ErrorUnableToResolve
-                && i.Lines.FirstOrDefault() == "Unable to resolve \"Sample.IService\" in Sample.IService() MyRoot1.")
+            .Count(i => i is { Id: LogId.ErrorUnableToResolve, Message: "Unable to resolve \"Sample.IService\" in Sample.IService() MyRoot1." })
             .ShouldBe(1);
     }
     

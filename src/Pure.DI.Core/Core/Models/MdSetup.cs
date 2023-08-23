@@ -15,14 +15,4 @@ internal record MdSetup(
     in ImmutableArray<MdTypeAttribute> TypeAttributes,
     in ImmutableArray<MdTagAttribute> TagAttributes,
     in ImmutableArray<MdOrdinalAttribute> OrdinalAttributes,
-    ITypeConstructor? TypeConstructor = default)
-{
-    public IEnumerable<string> ToStrings(int indent)
-    {
-        var walker = new MetadataToLinesWalker(indent);
-        walker.VisitSetup(this);
-        return walker;
-    }
-    
-    public override string ToString() => string.Join(Environment.NewLine, ToStrings(0));
-}
+    ITypeConstructor? TypeConstructor = default);

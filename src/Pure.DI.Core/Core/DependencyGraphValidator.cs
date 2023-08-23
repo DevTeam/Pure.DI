@@ -24,19 +24,16 @@ internal sealed class DependencyGraphValidator: IValidator<DependencyGraph>
         }
         
         var isErrorReported = false;
-        using (_logger.TraceProcess("search for unresolved nodes"))
+        foreach (var dependency in graph.Edges.Where(i => !i.IsResolved))
         {
-            foreach (var dependency in graph.Edges.Where(i => !i.IsResolved))
+            _cancellationToken.ThrowIfCancellationRequested();
+            var errorMessage = $"Unable to resolve \"{dependency.Injection}\" in {dependency.Target}.";
+            var locationsWalker = new DependencyGraphLocationsWalker(dependency.Injection);
+            locationsWalker.VisitDependencyNode(dependency.Target);
+            foreach (var location in locationsWalker.Locations)
             {
-                _cancellationToken.ThrowIfCancellationRequested();
-                var errorMessage = $"Unable to resolve \"{dependency.Injection}\" in {dependency.Target}.";
-                var locationsWalker = new DependencyGraphLocationsWalker(dependency.Injection);
-                locationsWalker.VisitDependencyNode(dependency.Target);
-                foreach (var location in locationsWalker.Locations)
-                {
-                    _logger.CompileError(errorMessage, location, LogId.ErrorUnableToResolve);
-                    isErrorReported = true;
-                }
+                _logger.CompileError(errorMessage, location, LogId.ErrorUnableToResolve);
+                isErrorReported = true;
             }
         }
 

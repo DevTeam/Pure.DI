@@ -1,7 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal sealed class Formatting : IFormatting
+internal static class Formatting
 {
     public const int IndentSize = 2;
     private const int IndentsCount = 5;
@@ -18,8 +18,6 @@ internal sealed class Formatting : IFormatting
         Indents = indentsBuilder.ToArray();
     }
     
-    public string Indent(Indent indent) => IndentPrefix(indent);
-
     public static string IndentPrefix(Indent indent) =>
         indent.Value switch
         {

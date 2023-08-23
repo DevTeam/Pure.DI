@@ -30,13 +30,9 @@ internal readonly record struct Result(
 
         foreach (var error in Errors)
         {
-            foreach (var errorLine in error.Lines)
-            {
-                text.AppendLine(errorLine);
-            }
-
-            text.AppendLine();
+            text.AppendLine(error.Message);
         }
+        
         return text.ToString();
     }
 

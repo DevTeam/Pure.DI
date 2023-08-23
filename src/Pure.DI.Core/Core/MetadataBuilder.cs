@@ -10,16 +10,13 @@ namespace Pure.DI.Core;
 
 internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>>
 {
-    private readonly ILogger<MetadataBuilder> _logger;
     private readonly Func<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>> _setupsBuilderFactory;
     private readonly CancellationToken _cancellationToken;
 
     public MetadataBuilder(
-        ILogger<MetadataBuilder> logger,
         Func<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>> setupsBuilderFactory,
         CancellationToken cancellationToken)
     {
-        _logger = logger;
         _setupsBuilderFactory = setupsBuilderFactory;
         _cancellationToken = cancellationToken;
     }
@@ -52,12 +49,9 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
         
         if (setups.Count == 0)
         {
-            _logger.Trace(Unit.Shared, _ => ImmutableArray.Create("The set of setup is empty."));
             yield break;
         }
-
-        _logger.Trace(setups, state => ImmutableArray.Create($"Raw setups count is {state.Count}: {string.Join(", ", state.Select(i => $"\"{i.Name.FullName}\""))}"));
-
+        
         var setupMap = setups
             .Where(i => i.Kind != CompositionKind.Global)
             .GroupBy(i => i.Name)
@@ -68,8 +62,6 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
             })
             .ToDictionary(i =>  i.Name, i => i);
         
-        _logger.Trace(setupMap, state => ImmutableArray.Create($"Setups map with size {state.Count}: {string.Join(", ", state.Select(i => $"\"{i.Key}\""))}"));
-
         var globalSetups = setups.Where(i => i.Kind == CompositionKind.Global).ToList();
         foreach (var setup in setupMap.Values.Where(i => i.Kind == CompositionKind.Public))
         {
@@ -78,7 +70,6 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
                 .Concat(Enumerable.Repeat(setup, 1));
             
             MergeSetups(setupsChain, out var mergedSetup, true);
-            _logger.Trace(mergedSetup, i => Enumerable.Repeat("Metadata created", 1).Concat(i.ToStrings(1)), setup.Source.GetLocation());
             yield return mergedSetup;
         }
     }

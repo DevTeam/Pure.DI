@@ -7,18 +7,12 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
 {
     private static readonly char[] TypeNamePartsSeparators = { '.' };
     private static readonly Regex CommentRegex = new(@"//\s*(\w+)\s*=\s*(.+)\s*", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-    private readonly ILogger<ApiInvocationProcessor> _logger;
     private readonly CancellationToken _cancellationToken;
     private readonly Hints _hints = new();
     
-    public ApiInvocationProcessor(
-        ILogger<ApiInvocationProcessor> logger,
-        CancellationToken cancellationToken)
-    {
-        _logger = logger;
+    public ApiInvocationProcessor(CancellationToken cancellationToken) =>
         _cancellationToken = cancellationToken;
-    }
-    
+
     public void ProcessInvocation(
         IMetadataVisitor metadataVisitor,
         SemanticModel semanticModel,
@@ -31,7 +25,6 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
             return;
         }
 
-        using var logToken = _logger.TraceProcess($"processing metadata \"{memberAccess.Name}\"", invocation.GetLocation());
         switch (memberAccess.Name)
         {
             case IdentifierNameSyntax identifierName:

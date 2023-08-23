@@ -41,8 +41,7 @@ internal sealed class VariationalDependencyGraphBuilder : IBuilder<MdSetup, Depe
 
     public DependencyGraph Build(MdSetup setup)
     {
-        IEnumerable<DependencyNode> BuildNodes(IBuilder<MdSetup, IEnumerable<DependencyNode>> builder) => builder.Build(setup);
-        var rawNodes = SortByPriority(_dependencyNodeBuilders.SelectMany(BuildNodes)).Reverse().ToArray();
+        var rawNodes = SortByPriority(_dependencyNodeBuilders.SelectMany(builder => builder.Build(setup))).Reverse();
         var allNodes = new List<ProcessingNode>();
         var injections = new Dictionary<Injection, DependencyNode>();
         var allOverriddenInjections = new HashSet<Injection>();

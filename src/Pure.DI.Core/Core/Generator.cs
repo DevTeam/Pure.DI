@@ -8,7 +8,6 @@ using System.Diagnostics;
 internal sealed class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
 {
     private readonly ILogger<Generator> _logger;
-    private readonly IGlobalOptions _globalOptions;
     private readonly IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>> _metadataBuilder;
     private readonly IBuilder<MdSetup, DependencyGraph> _dependencyGraphBuilder;
     private readonly IValidator<DependencyGraph> _dependencyGraphValidator;
@@ -17,17 +16,15 @@ internal sealed class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
     private readonly IBuilder<CompositionCode, CompositionCode> _classBuilder;
     private readonly IValidator<MdSetup> _metadataValidator;
     private readonly ISourcesRegistry _sourcesRegistry;
-    private readonly IFileSystem _fileSystem;
     private readonly CancellationToken _cancellationToken;
     private readonly IObserversRegistry _observersRegistry;
-    private readonly ILogObserver _logObserver;
+    private readonly IObserver<LogEntry> _logObserver;
     private readonly IObserversProvider _observersProvider;
 
     public Generator(
         ILogger<Generator> logger,
-        IGlobalOptions globalOptions,
         IObserversRegistry observersRegistry,
-        ILogObserver logObserver,
+        IObserver<LogEntry> logObserver,
         IObserversProvider observersProvider,
         IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>> metadataBuilder,
         IBuilder<MdSetup, DependencyGraph> dependencyGraphBuilder,
@@ -37,11 +34,9 @@ internal sealed class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
         [Tag(WellknownTag.ClassBuilder)] IBuilder<CompositionCode, CompositionCode> classBuilder,
         IValidator<MdSetup> metadataValidator,
         ISourcesRegistry sourcesRegistry,
-        IFileSystem fileSystem,
         CancellationToken cancellationToken)
     {
         _logger = logger;
-        _globalOptions = globalOptions;
         _observersRegistry = observersRegistry;
         _logObserver = logObserver;
         _observersProvider = observersProvider;
@@ -53,7 +48,6 @@ internal sealed class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
         _classBuilder = classBuilder;
         _metadataValidator = metadataValidator;
         _sourcesRegistry = sourcesRegistry;
-        _fileSystem = fileSystem;
         _cancellationToken = cancellationToken;
     }
 
@@ -61,84 +55,37 @@ internal sealed class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
     {
         var stopwatch = new Stopwatch();
         stopwatch.Start();
-        var logFile = _globalOptions.LogFile;
         using var logObserverToken= _observersRegistry.Register(_logObserver);
         try
         {
-            using var logToken = _logger.TraceProcess("generation");
-            ImmutableArray<MdSetup> setups;
-            using (_logger.TraceProcess("metadata analysis"))
-            {
-                setups = _metadataBuilder.Build(updates).ToImmutableArray();
-            }
-
-            foreach (var setup in setups)
+            foreach (var setup in _metadataBuilder.Build(updates))
             {
                 try
                 {
-                    _logger.Trace(setup.Hints, i => Enumerable.Repeat($"Settings \"{setup.Name.FullName}\":", 1).Concat(i.Select(j => $"{j.Key} = {j.Value}")));
-                    using var setupToken = _logger.TraceProcess($"metadata processing \"{setup.Name.FullName}\", {setup.Bindings.Length} bindings");
                     _metadataValidator.Validate(setup);
-                    DependencyGraph dependencyGraph;
-                    using (_logger.TraceProcess($"building a dependency graph \"{setup.Name.FullName}\""))
+                    _cancellationToken.ThrowIfCancellationRequested();
+                    var dependencyGraph = _dependencyGraphBuilder.Build(setup);
+                    foreach (var graphObserver in _observersProvider.GetObservers<DependencyGraph>())
                     {
-                        _cancellationToken.ThrowIfCancellationRequested();
-                        dependencyGraph = _dependencyGraphBuilder.Build(setup);
-                        foreach (var graphObserver in _observersProvider.GetObservers<DependencyGraph>())
-                        {
-                            graphObserver.OnNext(dependencyGraph);
-                        }
+                        graphObserver.OnNext(dependencyGraph);
                     }
 
-                    using (_logger.TraceProcess($"search for roots \"{setup.Name.FullName}\""))
-                    {
-                        _cancellationToken.ThrowIfCancellationRequested();
-                        var roots = _rootsBuilder.Build(dependencyGraph);
-                        dependencyGraph = dependencyGraph with { Roots = roots };
-                    }
+                    _cancellationToken.ThrowIfCancellationRequested();
+                    var roots = _rootsBuilder.Build(dependencyGraph);
+                    dependencyGraph = dependencyGraph with { Roots = roots };
 
-                    using (_logger.TraceProcess($"dependency graph validation \"{setup.Name.FullName}\""))
-                    {
-                        _cancellationToken.ThrowIfCancellationRequested();
-                        _dependencyGraphValidator.Validate(dependencyGraph);
-                    }
+                    _cancellationToken.ThrowIfCancellationRequested();
+                    _dependencyGraphValidator.Validate(dependencyGraph);
 
-                    CompositionCode composition;
-                    using (_logger.TraceProcess($"creating composition \"{setup.Name.FullName}\""))
-                    {
-                        _cancellationToken.ThrowIfCancellationRequested();
-                        composition = _compositionBuilder.Build(dependencyGraph);
-                    }
+                    _cancellationToken.ThrowIfCancellationRequested();
+                    var composition = _compositionBuilder.Build(dependencyGraph);
 
-                    using (_logger.TraceProcess($"code generation \"{setup.Name.FullName}\""))
-                    {
-                        _cancellationToken.ThrowIfCancellationRequested();
-                        composition = _classBuilder.Build(composition);
-                    }
+                    _cancellationToken.ThrowIfCancellationRequested();
+                    composition = _classBuilder.Build(composition);
 
-                    using (_logger.TraceProcess($"saving data \"{setup.Name.FullName}\""))
-                    {
-                        _cancellationToken.ThrowIfCancellationRequested();
-                        var classCode = string.Join(Environment.NewLine, composition.Code);
-                        _sourcesRegistry.AddSource($"{setup.Name.FullName}.g.cs", SourceText.From(classCode, Encoding.UTF8));
-                    }
-
-                    if (LoggerExtensions.IsTracing())
-                    {
-                        var trace = new List<string> { $"Setup {dependencyGraph.Source.Name.FullName}:", "---------- Map ----------" };
-                        foreach (var item in dependencyGraph.Map)
-                        {
-                            trace.Add($"{item.Key} -> {item.Value}");
-                        }
-
-                        trace.Add("---------- Roots ----------");
-                        foreach (var root in dependencyGraph.Roots)
-                        {
-                            trace.Add($"{root.Key} {root.Value.PropertyName} -> {root.Value.Node}");
-                        }
-
-                        _logger.Trace(trace, state => state);
-                    }
+                    _cancellationToken.ThrowIfCancellationRequested();
+                    var classCode = string.Join(Environment.NewLine, composition.Code);
+                    _sourcesRegistry.AddSource($"{setup.Name.FullName}.g.cs", SourceText.From(classCode, Encoding.UTF8));
                 }
                 catch (HandledException handledException)
                 {
@@ -162,7 +109,7 @@ internal sealed class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
             _logger.Log(
                 new LogEntry(
                     DiagnosticSeverity.Error,
-                    ImmutableArray.Create("An unhandled error has occurred."),
+                    "An unhandled error has occurred.",
                     default,
                     LogId.ErrorUnhandled,
                     error));
@@ -170,26 +117,7 @@ internal sealed class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
         finally
         {
             stopwatch.Stop();
-            _logObserver.Flush();
-            try
-            {
-                if (logFile != null && !string.IsNullOrWhiteSpace(logFile))
-                {
-                    if (_fileSystem.GetDirectoryName(logFile) is {} logFileDirectory)
-                    {
-                        _fileSystem.CreateDirectory(logFileDirectory);
-                    }
-
-                    var log = _logObserver.Log;
-                    log.Append(_logObserver.Outcome);
-                    log.AppendLine($"{stopwatch.Elapsed.TotalMilliseconds,8:#####0.0} ms");
-                    _fileSystem.AppendAllText(logFile, log.ToString());
-                }
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
+            _logObserver.OnCompleted();
         }
         
         return Unit.Shared;
@@ -204,7 +132,7 @@ internal sealed class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
 #else
                 DiagnosticSeverity.Hidden,
 #endif
-                ImmutableArray.Create("Generation interrupted."),
+                "Generation interrupted.",
                 default,
                 LogId.InfoGenerationInterrupted,
                 handledException));
