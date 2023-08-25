@@ -31,9 +31,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
     {
         _roots.Clear();
         var variables = new Dictionary<MdBinding, Variable>();
-        var isThreadSafe = dependencyGraph.Source.Hints.GetHint(Hint.ThreadSafe, SettingState.On) == SettingState.On;
         var context = new BuildContext(
-            isThreadSafe,
             ImmutableDictionary<MdBinding, Variable>.Empty,
             new LinesBuilder(),
             _idGeneratorFactory());
@@ -122,16 +120,17 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
             block.Root is { IsCreated: false, Node.Lifetime: Lifetime.Singleton }
             && block.Root.IsCreationRequired(block.Root.Node);
         
+        var isThreadSafe = dependencyGraph.Source.Hints.GetHint(Hint.ThreadSafe, SettingState.On) == SettingState.On;
         if (isSingletonInitBlock)
         {
-            StartSingletonInitBlock(context, block.Root);
+            StartSingletonInitBlock(context, block.Root, isThreadSafe);
         }
 
         base.VisitBlock(context, dependencyGraph, root, block, cancellationToken);
 
         if (isSingletonInitBlock)
         {
-            FinishSingletonInitBlock(context, block.Root);
+            FinishSingletonInitBlock(context, block.Root, isThreadSafe);
             if (context.IsRootContext && block.Root == root)
             {
                 context.Code.AppendLines(GenerateReturnStatements(context, block.Root));
@@ -504,7 +503,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
         }
     }
 
-    private static void StartSingletonInitBlock(BuildContext context, Variable variable)
+    private static void StartSingletonInitBlock(BuildContext context, Variable variable, bool isThreadSafe)
     {
         var checkExpression = variable.InstanceType.IsValueType switch
         {
@@ -513,7 +512,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
         };
 
         var code = context.Code;
-        if (context.IsThreadSafe)
+        if (isThreadSafe)
         {
             code.AppendLine($"if ({checkExpression})");
             code.AppendLine("{");
@@ -528,7 +527,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
         code.IncIndent();
     }
 
-    private void FinishSingletonInitBlock(BuildContext context, Variable variable)
+    private void FinishSingletonInitBlock(BuildContext context, Variable variable, bool isThreadSafe)
     {
         var code = context.Code;
         if (IsDisposable(variable))
@@ -544,7 +543,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
 
         code.DecIndent();
         code.AppendLine("}");
-        if (context.IsThreadSafe)
+        if (isThreadSafe)
         {
             code.DecIndent();
             code.AppendLine("}");
