@@ -31,14 +31,14 @@ internal sealed class ResolverClassesBuilder: IBuilder<CompositionCode, Composit
         }
         
         code.AppendLine("#region Resolvers");
-        code.AppendLine($"private sealed class {ResolverInfo.ResolverClassName}<T>: {ResolverInterfaceName}<{composition.Name.ClassName}, T>");
+        code.AppendLine($"private sealed class {ResolverInfo.ResolverClassName}<T>: {ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, T>");
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine($"public static {ResolverInterfaceName}<{composition.Name.ClassName}, T> {ResolverPropertyName} = new {ResolverInfo.ResolverClassName}<T>();");
+            code.AppendLine($"public static {ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, T> {ResolverPropertyName} = new {ResolverInfo.ResolverClassName}<T>();");
 
             code.AppendLine();
-            code.AppendLine($"public T {ResolveMethodName}({composition.Name.ClassName} composite)");
+            code.AppendLine($"public T {ResolveMethodName}({composition.Source.Source.Name.ClassName} composite)");
             code.AppendLine("{");
             using (code.Indent())
             {
@@ -48,7 +48,7 @@ internal sealed class ResolverClassesBuilder: IBuilder<CompositionCode, Composit
             code.AppendLine("}");
             
             code.AppendLine();
-            code.AppendLine($"public T {ResolveByTagMethodName}({composition.Name.ClassName} composite, object tag)");
+            code.AppendLine($"public T {ResolveByTagMethodName}({composition.Source.Source.Name.ClassName} composite, object tag)");
             code.AppendLine("{");
             using (code.Indent())
             {
@@ -66,12 +66,12 @@ internal sealed class ResolverClassesBuilder: IBuilder<CompositionCode, Composit
             {
                 var resolverClassName = resolver.ClassName;
                 code.AppendLine();
-                var interfaceName = $"{ResolverInterfaceName}<{composition.Name.ClassName}, {resolver.Type}>";
+                var interfaceName = $"{ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, {resolver.Type}>";
                 var interfaces = new List<string> { interfaceName };
                 var objectInterfaceName = "";
                 if (resolver.Type.IsValueType)
                 {
-                    objectInterfaceName = $"{ResolverInterfaceName}<{composition.Name.ClassName}, object>";
+                    objectInterfaceName = $"{ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, object>";
                     interfaces.Add(objectInterfaceName);
                 }
                 
@@ -83,7 +83,7 @@ internal sealed class ResolverClassesBuilder: IBuilder<CompositionCode, Composit
 
                     if (!string.IsNullOrWhiteSpace(objectInterfaceName))
                     {
-                        code.AppendLine($"object {objectInterfaceName}.{ResolveMethodName}({composition.Name.ClassName} composition)");
+                        code.AppendLine($"object {objectInterfaceName}.{ResolveMethodName}({composition.Source.Source.Name.ClassName} composition)");
                         code.AppendLine("{");
                         using (code.Indent())
                         {
@@ -92,7 +92,7 @@ internal sealed class ResolverClassesBuilder: IBuilder<CompositionCode, Composit
                         code.AppendLine("}");
                         
                         code.AppendLine();
-                        code.AppendLine($"object {objectInterfaceName}.{ResolveByTagMethodName}({composition.Name.ClassName} composition, object tag)");
+                        code.AppendLine($"object {objectInterfaceName}.{ResolveByTagMethodName}({composition.Source.Source.Name.ClassName} composition, object tag)");
                         code.AppendLine("{");
                         using (code.Indent())
                         {
@@ -114,7 +114,7 @@ internal sealed class ResolverClassesBuilder: IBuilder<CompositionCode, Composit
         var defaultRoot = resolver.Roots.SingleOrDefault(i => i.Injection.Tag is null);
 
         code.AppendLine(Constant.MethodImplOptions);
-        code.AppendLine($"public {resolver.Type} {ResolveMethodName}({composition.Name.ClassName} composition)");
+        code.AppendLine($"public {resolver.Type} {ResolveMethodName}({composition.Source.Source.Name.ClassName} composition)");
         code.AppendLine("{");
         using (code.Indent())
         {
@@ -133,7 +133,7 @@ internal sealed class ResolverClassesBuilder: IBuilder<CompositionCode, Composit
         code.AppendLine();
 
         code.AppendLine(Constant.MethodImplOptions);
-        code.AppendLine($"public {resolver.Type} {ResolveByTagMethodName}({composition.Name.ClassName} composition, object tag)");
+        code.AppendLine($"public {resolver.Type} {ResolveByTagMethodName}({composition.Source.Source.Name.ClassName} composition, object tag)");
         code.AppendLine("{");
         using (code.Indent())
         {

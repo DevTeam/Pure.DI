@@ -34,7 +34,7 @@ internal sealed class ResolversFieldsBuilder: IBuilder<CompositionCode, Composit
 
         code.AppendLine($"private readonly static int {BucketSizeFieldName};");
         
-        var pairs = $"{Constant.SystemNamespace}Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.Name.ClassName}, object>";
+        var pairs = $"{Constant.SystemNamespace}Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, object>";
         var pairTypeName = $"{Constant.ApiNamespace}Pair<{pairs}>";
         code.AppendLine($"private readonly static {pairTypeName}[] {BucketsFieldName};");
         

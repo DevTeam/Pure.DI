@@ -17,7 +17,7 @@ internal sealed class DefaultConstructorBuilder: IBuilder<CompositionCode, Compo
             code.AppendLine();
         }
 
-        code.AppendLine($"public {composition.Name.ClassName}()");
+        code.AppendLine($"public {composition.Source.Source.Name.ClassName}()");
         code.AppendLine("{");
         using (code.Indent())
         {

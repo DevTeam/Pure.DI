@@ -33,7 +33,7 @@ internal sealed class StaticConstructorBuilder: IBuilder<CompositionCode, Compos
         var hasOnNewRoot = composition.Source.Source.Hints.GetHint(Hint.OnNewRoot) == SettingState.On;
         
         var membersCounter = 0;
-        code.AppendLine($"static {composition.Name.ClassName}()");
+        code.AppendLine($"static {composition.Source.Source.Name.ClassName}()");
         code.AppendLine("{");
         using (code.Indent())
         {
@@ -53,7 +53,7 @@ internal sealed class StaticConstructorBuilder: IBuilder<CompositionCode, Compos
             }
             
             var divisor = Buckets<object, object>.GetDivisor((uint)resolvers.Length);
-            var pairs = $"{Constant.SystemNamespace}Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.Name.ClassName}, object>";
+            var pairs = $"{Constant.SystemNamespace}Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, object>";
             var bucketsTypeName = $"{Constant.ApiNamespace}Buckets<{pairs}>";
             var pairTypeName = $"{Constant.ApiNamespace}Pair<{pairs}>";
             code.AppendLine($"{ResolversFieldsBuilder.BucketsFieldName} = {bucketsTypeName}.{nameof(Buckets<object, object>.Create)}(");
@@ -86,7 +86,7 @@ internal sealed class StaticConstructorBuilder: IBuilder<CompositionCode, Compos
         {
             code.AppendLine();
             code.AppendLine(Constant.MethodImplOptions);
-            code.AppendLine($"private static partial void {Constant.OnNewRootMethodName}<TContract, T>({ResolverClassesBuilder.ResolverInterfaceName}<{composition.Name.ClassName}, TContract> resolver, string name, object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
+            code.AppendLine($"private static partial void {Constant.OnNewRootMethodName}<TContract, T>({ResolverClassesBuilder.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, TContract> resolver, string name, object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
         

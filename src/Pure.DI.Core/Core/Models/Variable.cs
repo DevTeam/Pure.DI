@@ -2,7 +2,7 @@
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
 namespace Pure.DI.Core.Models;
 
-internal record Variable(
+internal sealed record Variable(
     DependencyGraph Source,
     int Id,
     DependencyNode Node,
@@ -12,9 +12,6 @@ internal record Variable(
     internal static readonly string DisposeIndexFieldName = "_disposeIndex" + Salt;
     internal static readonly string DisposablesFieldName = "_disposableSingletons" + Salt;
     internal static readonly string InjectionMarker = "injection" + Salt;
-
-    public Variable CreateLinkedVariable(in Injection injection) => 
-        new LinkedVariable(this, injection);
 
     public string Name
     {
@@ -47,51 +44,18 @@ internal record Variable(
     
     public ITypeSymbol ContractType => Injection.Type;
 
-    public virtual bool IsDeclared { get; set; }
+    public bool IsDeclared { get; set; }
     
-    public virtual bool IsCreated { get; set; }
+    public bool IsCreated { get; set; }
     
-    public virtual DependencyNode? Owner { get; set; }
+    public DependencyNode? Owner { get; set; }
 
     public bool IsCreationRequired(in DependencyNode node) => 
         !IsCreated && (!Owner.HasValue || Owner.Equals(node));
 
     public void AllowCreation() => Owner = default;
     
-    public virtual bool IsBlockRoot { get; init; }
+    public bool IsBlockRoot { get; init; }
     
-    public override string ToString() => Name;
-    
-    private record LinkedVariable : Variable
-    {
-        private readonly Variable _variable;
-
-        public LinkedVariable(Variable variable, in Injection injection)
-            : base(variable.Source, variable.Id, variable.Node, injection)
-        {
-            _variable = variable;
-        }
-
-        public override bool IsDeclared
-        {
-            get => _variable.IsDeclared;
-            set => _variable.IsDeclared = value;
-        }
-
-        public override bool IsCreated
-        {
-            get => _variable.IsCreated;
-            set => _variable.IsCreated = value;
-        }
-
-        public override DependencyNode? Owner
-        {
-            get => _variable.Owner;
-            set => _variable.Owner = value;
-        }
-
-        public override bool IsBlockRoot => _variable.IsBlockRoot;
-
-        public override string ToString() => _variable.ToString();
-    }
+    public override string ToString() => $"{ContractType} {Name}";
 }

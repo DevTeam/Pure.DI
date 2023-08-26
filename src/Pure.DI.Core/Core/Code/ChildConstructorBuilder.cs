@@ -14,7 +14,7 @@ internal sealed class ChildConstructorBuilder: IBuilder<CompositionCode, Composi
             code.AppendLine();
         }
 
-        code.AppendLine($"internal {composition.Name.ClassName}({composition.Name.ClassName} {ParentCompositionArgName})");
+        code.AppendLine($"internal {composition.Source.Source.Name.ClassName}({composition.Source.Source.Name.ClassName} {ParentCompositionArgName})");
         code.AppendLine("{");
         using (code.Indent())
         {

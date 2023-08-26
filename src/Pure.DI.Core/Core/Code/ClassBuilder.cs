@@ -56,16 +56,16 @@ internal sealed class ClassBuilder : IBuilder<CompositionCode, CompositionCode>
         composition = _usingDeclarationsBuilder.Build(composition);
         
         var nsIndent = Disposables.Empty;
-        if (!string.IsNullOrWhiteSpace(composition.Name.Namespace))
+        if (!string.IsNullOrWhiteSpace(composition.Source.Source.Name.Namespace))
         {
-            code.AppendLine($"namespace {composition.Name.Namespace}");
+            code.AppendLine($"namespace {composition.Source.Source.Name.Namespace}");
             code.AppendLine("{");
             nsIndent = code.Indent();
         }
 
         code.AppendLine($"[{Constant.SystemNamespace}Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]");
         var implementingInterfaces = composition.DisposableSingletonsCount > 0 ? $": {Constant.IDisposableInterfaceName}" : "";
-        code.AppendLine($"partial class {composition.Name.ClassName}{implementingInterfaces}");
+        code.AppendLine($"partial class {composition.Source.Source.Name.ClassName}{implementingInterfaces}");
         code.AppendLine("{");
 
         using (code.Indent())
@@ -81,7 +81,7 @@ internal sealed class ClassBuilder : IBuilder<CompositionCode, CompositionCode>
         code.AppendLine("}");
 
         // ReSharper disable once InvertIf
-        if (!string.IsNullOrWhiteSpace(composition.Name.Namespace))
+        if (!string.IsNullOrWhiteSpace(composition.Source.Source.Name.Namespace))
         {
             // ReSharper disable once RedundantAssignment
             nsIndent.Dispose();

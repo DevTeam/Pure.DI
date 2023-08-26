@@ -39,14 +39,14 @@ internal abstract class CodeGraphWalker<TContext>
     {
         var counter = 200_000;
         var targets = new Stack<Variable>();
-        var blocks = new Stack<Block>();
-        var blockRootVariables = new Stack<Variable>();
-        blockRootVariables.Push(rootVariable);
-        while (blockRootVariables.TryPop(out var target))
+        var blocks = new LinkedList<Block>();
+        var rootVariables = new Stack<Variable>();
+        rootVariables.Push(rootVariable);
+        while (rootVariables.TryPop(out var target))
         {
             cancellationToken.ThrowIfCancellationRequested();
             targets.Push(target);
-            var instantiations = new Stack<Instantiation>();
+            var instantiations = new LinkedList<Instantiation>();
             while (targets.TryPop(out var targetVariable))
             {
                 if (counter-- < 0)
@@ -61,27 +61,34 @@ internal abstract class CodeGraphWalker<TContext>
                     foreach (var dependency in dependencies)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        ProcessVariable(CreateVariable(context, dependencyGraph, variables, dependency.Source, dependency.Injection));
+                        if (!dependency.IsResolved)
+                        {
+                            continue;
+                        }
+
+                        var depVar = CreateVariable(context, dependencyGraph, variables, dependency.Source, dependency.Injection);
+                        ProcessVariable(depVar);
                     }
                 }
 
-                instantiations.Push(new Instantiation(targetVariable, arguments.ToImmutableArray()));
+                var instantiation = new Instantiation(targetVariable, arguments.ToImmutableArray());
+                instantiations.AddFirst(instantiation);
                 continue;
 
                 void ProcessVariable(Variable var)
                 {
-                    var isBlockRoot = var.IsBlockRoot;
-                    if (!isBlockRoot && var.Node.Lifetime == Lifetime.PerResolve)
+                    var isRoot = var.IsBlockRoot;
+                    if (!isRoot && var.Node.Lifetime == Lifetime.PerResolve)
                     {
                         if (dependencyGraph.Graph.TryGetOutEdges(var.Node, out var outDependencies))
                         {
-                            isBlockRoot = outDependencies.Select(i => i.Target.Factory is not null ? 2 : 1).Sum() > 1;
+                            isRoot = outDependencies.Select(i => i.Target.Factory is not null ? 2 : 1).Sum() > 1;
                         }
                     }
                         
-                    if (isBlockRoot)
+                    if (isRoot)
                     {
-                        blockRootVariables.Push(var);
+                        rootVariables.Push(var);
                     }
                     else
                     {
@@ -104,10 +111,12 @@ internal abstract class CodeGraphWalker<TContext>
                 }
             }
 
-            blocks.Push(new Block(target, instantiations.ToImmutableArray()));
+
+            var newBlock = new Block(target, instantiations);
+            blocks.AddFirst(newBlock);
         }
 
-        while (blocks.TryPop(out var block))
+        foreach (var block in blocks)
         {
             VisitBlock(context, dependencyGraph, rootVariable, block, cancellationToken);
         }
@@ -375,7 +384,7 @@ internal abstract class CodeGraphWalker<TContext>
             case { Lifetime: Lifetime.Singleton }:
                 if (variables.TryGetValue(node.Binding, out var singletonVar))
                 {
-                    return singletonVar.CreateLinkedVariable(injection);
+                    return singletonVar;
                 }
 
                 singletonVar = new Variable(source, 0, node, injection)
@@ -390,14 +399,11 @@ internal abstract class CodeGraphWalker<TContext>
             case { Lifetime: Lifetime.PerResolve }:
                 if (variables.TryGetValue(node.Binding, out var perResolveVar))
                 {
-                    return perResolveVar.CreateLinkedVariable(injection);
+                    return perResolveVar;
                 }
 
-                perResolveVar = new Variable(source, GenerateId(context), node, injection)
-                {
-                    IsDeclared = true
-                };
-                
+                perResolveVar = new Variable(source, GenerateId(context), node, injection);
+
                 variables.Add(node.Binding, perResolveVar);
                 return perResolveVar;
 

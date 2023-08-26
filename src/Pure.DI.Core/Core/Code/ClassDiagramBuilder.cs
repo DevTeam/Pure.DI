@@ -27,7 +27,7 @@ internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilde
             var rootProperties = composition.Roots.ToDictionary(i => i.Injection, i => i);
             if (hasResolveMethods || rootProperties.Any())
             {
-                lines.AppendLine($"class {composition.Name.ClassName} {{");
+                lines.AppendLine($"class {composition.Source.Source.Name.ClassName} {{");
                 using (lines.Indent())
                 {
                     foreach (var root in composition.Roots.OrderByDescending(i => i.IsPublic).ThenBy(i => i.Name))
@@ -56,12 +56,12 @@ internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilde
             }
             else
             {
-                lines.AppendLine($"class {composition.Name.ClassName}");
+                lines.AppendLine($"class {composition.Source.Source.Name.ClassName}");
             }
 
             if (composition.DisposableSingletonsCount > 0)
             {
-                lines.AppendLine($"{composition.Name.ClassName} --|> IDisposable");
+                lines.AppendLine($"{composition.Source.Source.Name.ClassName} --|> IDisposable");
             }
 
             var types = new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
@@ -130,7 +130,7 @@ internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilde
                 _cancellationToken.ThrowIfCancellationRequested();
                 if (dependency.Target.Root is not null && rootProperties.TryGetValue(dependency.Injection, out var root))
                 {
-                    lines.AppendLine($"{composition.Name.ClassName} ..> {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatInjection(root.Injection, DefaultFormatOptions)} {root.PropertyName}");
+                    lines.AppendLine($"{composition.Source.Source.Name.ClassName} ..> {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatInjection(root.Injection, DefaultFormatOptions)} {root.PropertyName}");
                 }
                 else
                 {

@@ -39,8 +39,7 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
         var fields = variables.Select(i => i.Value).ToImmutableArray();
         return new CompositionCode(
             dependencyGraph,
-            dependencyGraph.Source.Name,
-            dependencyGraph.Source.UsingDirectives,
+            new LinesBuilder(),
             GetSingletons(fields),
             GetArgs(fields),
             _roots
@@ -50,7 +49,6 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
                 .ThenBy(i => i.PropertyName)
                 .ToImmutableArray(),
             variables.Values.Count(IsDisposable),
-            new LinesBuilder(),
             0
         );
     }
@@ -67,46 +65,35 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
             return;
         }
 
-        var newContext = context with { Variables = variables, Code = new LinesBuilder() };
         var prevVariables = variables.Select(i => i.Value).ToImmutableHashSet();
+        ResetVariables(variables);
+        var newContext = context with { Variables = variables, Code = new LinesBuilder() };
         base.VisitRoot(newContext, dependencyGraph, variables, root, cancellationToken);
-        
-        var perResolveVariables = variables
-            .Select(i => i.Value)
-            .Where(i => i.Node.Lifetime == Lifetime.PerResolve)
-            .Except(prevVariables)
-            .ToArray();
-        
-        var code = new LinesBuilder();
-        foreach (var perResolveVariable in perResolveVariables)
-        {
-            code.AppendLine($"var {perResolveVariable.Name} = default({perResolveVariable.InstanceType});");
-        }
-        
-        code.AppendLines(newContext.Code.Lines);
-        
-        var keysToRemove = variables
-            .Where(i => i.Value.Node.Lifetime != Lifetime.Singleton && i.Value.Node.Arg is null)
-            .Select(i => i.Key)
-            .ToArray();
-
-        foreach (var binding in keysToRemove)
-        {
-            variables.Remove(binding);
-        }
-        
-        foreach (var variable in variables.Values)
-        {
-            variable.IsCreated = false;
-        }
-        
         var rootArgs = variables
             .Select(i => i.Value)
             .Except(prevVariables)
             .Where(i => i.Node.Arg?.Source.Kind == ArgKind.Root)
             .ToImmutableArray();
-        
-        _roots.Add(root with { Args = rootArgs }, code.Lines.ToImmutableArray());
+        _roots.Add(root with { Args = rootArgs }, newContext.Code.Lines.ToImmutableArray());
+    }
+    
+    private static void ResetVariables(IDictionary<MdBinding, Variable> variables)
+    {
+        var varsToRemove = variables
+            .Where(i => i.Value.Node.Lifetime != Lifetime.Singleton && i.Value.Node.Arg is null)
+            .Select(i => i.Key)
+            .ToArray();
+
+        foreach (var binding in varsToRemove)
+        {
+            variables.Remove(binding);
+        }
+
+        foreach (var variable in variables.Values)
+        {
+            variable.IsCreated = false;
+            variable.Owner = default;
+        }
     }
 
     protected override void VisitBlock(
@@ -412,7 +399,8 @@ internal sealed class CompositionBuilder: CodeGraphWalker<BuildContext>, IBuilde
         var code = context.Code;
         if (!instantiation.Target.IsDeclared)
         {
-            code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name} = default({instantiation.Target.InstanceType});");
+            var defaultValue = instantiation.Target.IsDelegate() ? $" = default({instantiation.Target.InstanceType})" : "";
+            code.AppendLine($"{instantiation.Target.InstanceType} {instantiation.Target.Name}{defaultValue};");
             instantiation.Target.IsDeclared = true;
         }
         

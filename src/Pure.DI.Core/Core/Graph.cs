@@ -44,7 +44,7 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
         if (_inOutEdges.TryGetValue(target, out var inOutEdges))
         {
             edges = inOutEdges.Edges;
-            return true;
+            return edges.Count > 0;
         }
 
         edges = ImmutableArray<TEdge>.Empty;
@@ -56,7 +56,7 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
         if (_outInEdges.TryGetValue(source, out var outInEdges))
         {
             edges = outInEdges.Edges;
-            return true;
+            return edges.Count > 0;
         }
 
         edges = ImmutableArray<TEdge>.Empty;

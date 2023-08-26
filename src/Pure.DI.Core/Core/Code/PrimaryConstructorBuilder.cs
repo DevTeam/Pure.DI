@@ -23,7 +23,7 @@ internal sealed class PrimaryConstructorBuilder: IBuilder<CompositionCode, Compo
         }
         
         var classArgs = composition.Args.Where(arg => arg.Node.Arg?.Source.Kind == ArgKind.Class).ToArray();
-        code.AppendLine($"public {composition.Name.ClassName}({string.Join(", ", classArgs.Select(arg => $"{arg.InstanceType} {arg.Node.Arg?.Source.ArgName}"))})");
+        code.AppendLine($"public {composition.Source.Source.Name.ClassName}({string.Join(", ", classArgs.Select(arg => $"{arg.InstanceType} {arg.Node.Arg?.Source.ArgName}"))})");
         code.AppendLine("{");
         using (code.Indent())
         {

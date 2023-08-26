@@ -131,6 +131,7 @@ namespace Sample
         // When
         var result = await """
 using System;
+using System.Collections.Generic;
 using Pure.DI;
 
 namespace Sample
@@ -147,6 +148,7 @@ namespace Sample
     class Service: IService 
     {
         private Func<IDependency> _depFactory;
+
         public Service(Func<IDependency> depFactory)
         { 
             _depFactory = depFactory;           
@@ -154,15 +156,31 @@ namespace Sample
 
         public IDependency Dep => _depFactory();
     }
+    
+    class Consumer 
+    {
+        private Func<IService> _serviceFactory;
+        private Func<IDependency> _depFactory;
+
+        public Consumer(Func<IService> serviceFactory, Func<IDependency> depFactory)
+        { 
+            _serviceFactory = serviceFactory;
+            _depFactory = depFactory;           
+        }
+
+        public IService Service => _serviceFactory();
+        public IDependency Dep => _depFactory();
+    }
 
     static class Setup
     {
         private static void SetupComposition()
         {
+            // FormatCode = On
             DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>()
                 .Bind<IService>().To<Service>()    
-                .Root<IService>("Service");
+                .Root<Consumer>("Consumer");
         }
     }
 
@@ -171,8 +189,10 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            var service = composition.Service;
-            Console.WriteLine(service.Dep == service.Dep);                               
+            var consumer = composition.Consumer;
+            var service = consumer.Service;
+            Console.WriteLine(service.Dep == service.Dep);
+            Console.WriteLine(consumer.Dep == service.Dep);                               
         }
     }                
 }
@@ -180,7 +200,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True"), result);
     }
     
     [Fact]
