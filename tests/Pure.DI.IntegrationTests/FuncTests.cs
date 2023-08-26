@@ -39,6 +39,7 @@ namespace Sample
     {
         private static void SetupComposition()
         {
+            // FormatCode = On
             DI.Setup("Composition")
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>()    
@@ -239,6 +240,7 @@ namespace Sample
     {
         private static void SetupComposition()
         {
+            // FormatCode = On
             DI.Setup("Composition")
                 .Bind<IDependency>("Abc").To<Dependency>()
                 .Bind<IService>().To<Service>()    
@@ -299,6 +301,7 @@ namespace Sample
     {
         private static void SetupComposition()
         {
+            // FormatCode = On
             DI.Setup("Composition")
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>()    
@@ -423,6 +426,7 @@ namespace Sample
     {
         private static void SetupComposition()
         {
+            // FormatCode = On
             DI.Setup("Composition")
                 .Bind<IDependency>().To<Dependency>()
                 .Bind<IService>().To<Service>()    

@@ -8,7 +8,7 @@ internal readonly record struct DpConstruct(
     public IEnumerable<string> ToStrings(int indent)
     {
         var walker = new DependenciesToLinesWalker(indent);
-        walker.VisitConstruct(this);
+        walker.VisitConstruct(Unit.Shared, this);
         return walker;
     }
 

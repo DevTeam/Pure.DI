@@ -17,15 +17,15 @@ internal sealed class DisposeMethodBuilder: IBuilder<CompositionCode, Compositio
             code.AppendLine();
         }
         
-        code.AppendLine($"{composition.Source.Source.Hints.GetValueOrDefault(Hint.DisposeMethodModifiers, Constant.DefaultApiMethodModifiers)} void Dispose()");
+        code.AppendLine($"{composition.Source.Source.Hints.GetValueOrDefault(Hint.DisposeMethodModifiers, Names.DefaultApiMethodModifiers)} void Dispose()");
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine($"lock ({Variable.DisposablesFieldName})");
+            code.AppendLine($"lock ({Names.DisposablesFieldName})");
             code.AppendLine("{");
             using (code.Indent())
             {
-                code.AppendLine($"while ({Variable.DisposeIndexFieldName} > 0)");
+                code.AppendLine($"while ({Names.DisposeIndexFieldName} > 0)");
                 code.AppendLine("{");
                 using (code.Indent())
                 {
@@ -33,7 +33,7 @@ internal sealed class DisposeMethodBuilder: IBuilder<CompositionCode, Compositio
                     code.AppendLine("{");
                     using (code.Indent())
                     {
-                        code.AppendLine($"{Variable.DisposablesFieldName}[--{Variable.DisposeIndexFieldName}].Dispose();");
+                        code.AppendLine($"{Names.DisposablesFieldName}[--{Names.DisposeIndexFieldName}].Dispose();");
                     }
 
                     code.AppendLine("}");
@@ -54,8 +54,8 @@ internal sealed class DisposeMethodBuilder: IBuilder<CompositionCode, Compositio
                 {
                     code.AppendLine(
                         singletonField.InstanceType.IsValueType
-                            ? $"{singletonField.Name}Created = false;"
-                            : $"{singletonField.Name} = null;");
+                            ? $"{singletonField.VarName}Created = false;"
+                            : $"{singletonField.VarName} = null;");
                 }
             }
 

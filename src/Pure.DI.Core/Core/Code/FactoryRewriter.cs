@@ -4,10 +4,9 @@ namespace Pure.DI.Core.Code;
 
 internal sealed class FactoryRewriter : CSharpSyntaxRewriter
 {
-    private static readonly IdentifierNameSyntax InjectionMarkerExpression = SyntaxFactory.IdentifierName(Variable.InjectionMarker);
+    private static readonly IdentifierNameSyntax InjectionMarkerExpression = SyntaxFactory.IdentifierName(Names.InjectionMarker);
     private readonly DpFactory _factory;
     private readonly Variable _variable;
-    private readonly object? _contextTag;
     private readonly string _finishLabel;
     private readonly ICollection<Injection> _injections;
     private int _nestedLambdaCounter;
@@ -16,13 +15,11 @@ internal sealed class FactoryRewriter : CSharpSyntaxRewriter
     public FactoryRewriter(
         DpFactory factory,
         Variable variable,
-        object? contextTag,
         string finishLabel,
         ICollection<Injection> injections)
     {
         _factory = factory;
         _variable = variable;
-        _contextTag = contextTag;
         _finishLabel = finishLabel;
         _injections = injections;
     }
@@ -114,7 +111,7 @@ internal sealed class FactoryRewriter : CSharpSyntaxRewriter
         SyntaxFactory.ExpressionStatement(
             SyntaxFactory.AssignmentExpression(
                 SyntaxKind.SimpleAssignmentExpression,
-                SyntaxFactory.IdentifierName(_variable.Name).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space), 
+                SyntaxFactory.IdentifierName(_variable.VarName).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space), 
                 (ExpressionSyntax)Visit(returnBody).WithLeadingTrivia(SyntaxFactory.Space)));
 
     public override SyntaxNode? VisitInvocationExpression(InvocationExpressionSyntax invocation)
@@ -199,7 +196,7 @@ internal sealed class FactoryRewriter : CSharpSyntaxRewriter
             && node is { Expression: IdentifierNameSyntax identifierName, Name.Identifier.Text: nameof(IContext.Tag) } 
             && identifierName.Identifier.Text == _factory.Source.Context.Identifier.Text)
         {
-            var token = SyntaxFactory.ParseToken(_contextTag.ValueToString());
+            var token = SyntaxFactory.ParseToken(_variable.Injection.Tag.ValueToString());
             if (token.IsKind(SyntaxKind.NumericLiteralToken))
             {
                 return SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, token);

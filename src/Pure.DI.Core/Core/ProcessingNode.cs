@@ -25,7 +25,7 @@ internal readonly struct ProcessingNode
         ImmutableArray<Injection> GetInjections()
         {
             var injectionsWalker = new DependenciesToInjectionsWalker();
-            injectionsWalker.VisitDependencyNode(node);
+            injectionsWalker.VisitDependencyNode(Unit.Shared, node);
             return injectionsWalker.ToImmutableArray();
         }
 

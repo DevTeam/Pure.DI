@@ -29,7 +29,7 @@ internal sealed class DependencyGraphValidator: IValidator<DependencyGraph>
             _cancellationToken.ThrowIfCancellationRequested();
             var errorMessage = $"Unable to resolve \"{dependency.Injection}\" in {dependency.Target}.";
             var locationsWalker = new DependencyGraphLocationsWalker(dependency.Injection);
-            locationsWalker.VisitDependencyNode(dependency.Target);
+            locationsWalker.VisitDependencyNode(Unit.Shared, dependency.Target);
             foreach (var location in locationsWalker.Locations)
             {
                 _logger.CompileError(errorMessage, location, LogId.ErrorUnableToResolve);

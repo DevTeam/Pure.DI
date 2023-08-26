@@ -18,30 +18,29 @@ internal sealed class ChildConstructorBuilder: IBuilder<CompositionCode, Composi
         code.AppendLine("{");
         using (code.Indent())
         {
+            if (composition.DisposableSingletonsCount == 0)
+            {
+                code.AppendLine($"{Names.DisposablesFieldName} = new {Names.IDisposableInterfaceName}[0];");
+            }
+
             if (composition.Singletons.Any())
             {
-
-                if (composition.DisposableSingletonsCount == 0)
-                {
-                    code.AppendLine($"{Variable.DisposablesFieldName} = new {Constant.IDisposableInterfaceName}[0];");
-                }
-
-                code.AppendLine($"lock ({ParentCompositionArgName}.{Variable.DisposablesFieldName})");
+                code.AppendLine($"lock ({ParentCompositionArgName}.{Names.DisposablesFieldName})");
                 code.AppendLine("{");
                 using (code.Indent())
                 {
                     if (composition.DisposableSingletonsCount > 0)
                     {
-                        code.AppendLine($"{Variable.DisposablesFieldName} = new {Constant.IDisposableInterfaceName}[{composition.DisposableSingletonsCount.ToString()} - {ParentCompositionArgName}.{Variable.DisposeIndexFieldName}];");
+                        code.AppendLine($"{Names.DisposablesFieldName} = new {Names.IDisposableInterfaceName}[{composition.DisposableSingletonsCount.ToString()} - {ParentCompositionArgName}.{Names.DisposeIndexFieldName}];");
                     }
 
                     foreach (var singletonField in composition.Singletons)
                     {
-                        code.AppendLine($"{singletonField.Name} = {ParentCompositionArgName}.{singletonField.Name};");
+                        code.AppendLine($"{singletonField.VarName} = {ParentCompositionArgName}.{singletonField.VarName};");
 
                         if (singletonField.InstanceType.IsValueType)
                         {
-                            code.AppendLine($"{singletonField.Name}Created = {ParentCompositionArgName}.{singletonField.Name}Created;");
+                            code.AppendLine($"{singletonField.VarName}Created = {ParentCompositionArgName}.{singletonField.VarName}Created;");
                         }
                     }
                 }
@@ -57,7 +56,7 @@ internal sealed class ChildConstructorBuilder: IBuilder<CompositionCode, Composi
             {
                 foreach (var argsField in classArgs)
                 {
-                    code.AppendLine($"{argsField.Name} = {ParentCompositionArgName}.{argsField.Name};");
+                    code.AppendLine($"{argsField.VarName} = {ParentCompositionArgName}.{argsField.VarName};");
                 }
             }
         }

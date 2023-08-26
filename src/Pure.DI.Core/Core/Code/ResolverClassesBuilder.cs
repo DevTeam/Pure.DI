@@ -6,7 +6,7 @@ namespace Pure.DI.Core.Code;
 internal sealed class ResolverClassesBuilder: IBuilder<CompositionCode, CompositionCode>
 {
     private readonly IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
-    internal const string ResolverInterfaceName = $"{Constant.ApiNamespace}{nameof(IResolver<object, object>)}";
+    internal const string ResolverInterfaceName = $"{Names.ApiNamespace}{nameof(IResolver<object, object>)}";
     internal const string ResolverPropertyName = "Value";
     internal const string ResolveMethodName = nameof(IResolver<object, object>.Resolve);
     internal const string ResolveByTagMethodName = nameof(IResolver<object, object>.ResolveByTag);
@@ -42,7 +42,7 @@ internal sealed class ResolverClassesBuilder: IBuilder<CompositionCode, Composit
             code.AppendLine("{");
             using (code.Indent())
             {
-                code.AppendLine($"throw new {Constant.SystemNamespace}InvalidOperationException($\"{Constant.CannotResolve} of type {{typeof(T)}}.\");");
+                code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{Names.CannotResolve} of type {{typeof(T)}}.\");");
             }
             
             code.AppendLine("}");
@@ -52,7 +52,7 @@ internal sealed class ResolverClassesBuilder: IBuilder<CompositionCode, Composit
             code.AppendLine("{");
             using (code.Indent())
             {
-                code.AppendLine($"throw new {Constant.SystemNamespace}InvalidOperationException($\"{Constant.CannotResolve} \\\"{{tag}}\\\" of type {{typeof(T)}}.\");");
+                code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{Names.CannotResolve} \\\"{{tag}}\\\" of type {{typeof(T)}}.\");");
             }
             
             code.AppendLine("}");
@@ -113,7 +113,7 @@ internal sealed class ResolverClassesBuilder: IBuilder<CompositionCode, Composit
     {
         var defaultRoot = resolver.Roots.SingleOrDefault(i => i.Injection.Tag is null);
 
-        code.AppendLine(Constant.MethodImplOptions);
+        code.AppendLine(Names.MethodImplOptions);
         code.AppendLine($"public {resolver.Type} {ResolveMethodName}({composition.Source.Source.Name.ClassName} composition)");
         code.AppendLine("{");
         using (code.Indent())
@@ -124,7 +124,7 @@ internal sealed class ResolverClassesBuilder: IBuilder<CompositionCode, Composit
             }
             else
             {
-                code.AppendLine($"throw new {Constant.SystemNamespace}InvalidOperationException($\"{Constant.CannotResolve} of type {resolver.Type}.\");");
+                code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{Names.CannotResolve} of type {resolver.Type}.\");");
             }
         }
 
@@ -132,7 +132,7 @@ internal sealed class ResolverClassesBuilder: IBuilder<CompositionCode, Composit
 
         code.AppendLine();
 
-        code.AppendLine(Constant.MethodImplOptions);
+        code.AppendLine(Names.MethodImplOptions);
         code.AppendLine($"public {resolver.Type} {ResolveByTagMethodName}({composition.Source.Source.Name.ClassName} composition, object tag)");
         code.AppendLine("{");
         using (code.Indent())
@@ -148,7 +148,7 @@ internal sealed class ResolverClassesBuilder: IBuilder<CompositionCode, Composit
                 code.AppendLine($"if (Equals(tag, null)) return composition.{defaultRoot.PropertyName};");
             }
 
-            code.AppendLine($"throw new {Constant.SystemNamespace}InvalidOperationException($\"{Constant.CannotResolve} \\\"{{tag}}\\\" of type {resolver.Type}.\");");
+            code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{Names.CannotResolve} \\\"{{tag}}\\\" of type {resolver.Type}.\");");
         }
 
         code.AppendLine("}");

@@ -12,7 +12,7 @@ internal readonly record struct DpImplementation(
     public IEnumerable<string> ToStrings(int indent)
     {
         var walker = new DependenciesToLinesWalker(indent);
-        walker.VisitImplementation(this);
+        walker.VisitImplementation(Unit.Shared, this);
         return walker;
     }
 

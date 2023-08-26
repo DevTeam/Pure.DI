@@ -4,7 +4,7 @@ using System.Reflection;
 
 internal sealed class Information : IInformation
 {
-    private static readonly string CurrentDescription = Constant.GeneratorName;
+    private static readonly string CurrentDescription = Names.GeneratorName;
     
     static Information()
     {
@@ -12,7 +12,7 @@ internal sealed class Information : IInformation
         var version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
         if (!string.IsNullOrWhiteSpace(version))
         {
-            CurrentDescription = $"{Constant.GeneratorName} {version}";
+            CurrentDescription = $"{Names.GeneratorName} {version}";
         }
     }
 

@@ -194,65 +194,65 @@ namespace Sample
 
         // When
         var result = await """
-                           using System;
-                           using Pure.DI;
+        using System;
+        using Pure.DI;
 
-                           namespace Sample
-                           {
-                               interface IDependency {}
-                           
-                               class Dependency: IDependency {}
-                               
-                               class Dependency2
-                               {
-                                    public Dependency2(int id) {}
-                               }
-                           
-                               interface IService
-                               {
-                                   IDependency Dep { get; }
-                           
-                                   string Name { get; }
-                               }
-                           
-                               class Service: IService
-                               {
-                                   public Service(IDependency dep, string name)
-                                   {
-                                       Dep = dep;
-                                       Name = name;
-                                   }
-                           
-                                   public IDependency Dep { get; }
-                           
-                                   public string Name { get; private set; }
-                               }
-                           
-                               static class Setup
-                               {
-                                   private static void SetupComposition()
-                                   {
-                                       // ToString = On
-                                       DI.Setup("Composition")
-                                           .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-                                           .Bind<IService>().To<Service>()
-                                           .Root<Dependency2>()
-                                           .RootArg<string>("serviceName")
-                                           .RootArg<int>("id")
-                                           .Root<IService>("Service");
-                                   }
-                               }
-                           
-                               public class Program
-                               {
-                                   public static void Main()
-                                   {
-                                       var composition = new Composition();
-                                       Console.WriteLine(composition.Service("Some Name").Name);
-                                   }
-                               }
-                           }
-                           """.RunAsync();
+        namespace Sample
+        {
+           interface IDependency {}
+
+           class Dependency: IDependency {}
+           
+           class Dependency2
+           {
+                public Dependency2(int id) {}
+           }
+
+           interface IService
+           {
+               IDependency Dep { get; }
+
+               string Name { get; }
+           }
+
+           class Service: IService
+           {
+               public Service(IDependency dep, string name)
+               {
+                   Dep = dep;
+                   Name = name;
+               }
+
+               public IDependency Dep { get; }
+
+               public string Name { get; private set; }
+           }
+
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   // ToString = On
+                   DI.Setup("Composition")
+                       .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+                       .Bind<IService>().To<Service>()
+                       .Root<Dependency2>()
+                       .RootArg<string>("serviceName")
+                       .RootArg<int>("id")
+                       .Root<IService>("Service");
+               }
+           }
+
+           public class Program
+           {
+               public static void Main()
+               {
+                   var composition = new Composition();
+                   Console.WriteLine(composition.Service("Some Name").Name);
+               }
+           }
+        }
+        """.RunAsync();
 
         // Then
         result.Success.ShouldBeFalse(result);

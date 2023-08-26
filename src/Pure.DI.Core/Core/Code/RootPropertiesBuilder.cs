@@ -48,12 +48,12 @@ internal sealed class RootPropertiesBuilder: IBuilder<CompositionCode, Compositi
         if (hasRootArgs)
         {
             hasRootArgs = true;
-            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{arg.InstanceType} {arg.Name}"))})";
+            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{arg.InstanceType} {arg.VarName}"))})";
         }
 
         if (hasRootArgs)
         {
-            code.AppendLine(Constant.MethodImplOptions);
+            code.AppendLine(Names.MethodImplOptions);
         }
 
         code.AppendLine($"{(root.IsPublic ? "public" : "private")} {type} {root.PropertyName}{rootArgsStr}");
@@ -63,7 +63,7 @@ internal sealed class RootPropertiesBuilder: IBuilder<CompositionCode, Compositi
             var indentToken = Disposables.Empty;
             if (!hasRootArgs)
             {
-                code.AppendLine(Constant.MethodImplOptions);
+                code.AppendLine(Names.MethodImplOptions);
                 code.AppendLine("get");
                 code.AppendLine("{");
                 indentToken = code.Indent();

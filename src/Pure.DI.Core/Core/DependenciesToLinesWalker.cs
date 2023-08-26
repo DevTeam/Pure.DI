@@ -1,31 +1,31 @@
 namespace Pure.DI.Core;
 
-internal sealed class DependenciesToLinesWalker: DependenciesWalker, IEnumerable<string>
+internal sealed class DependenciesToLinesWalker: DependenciesWalker<Unit>, IEnumerable<string>
 {
     private readonly LinesBuilder _lb;
     
     public DependenciesToLinesWalker(int indent) => _lb = new LinesBuilder(indent);
 
-    public override void VisitRoot(in DpRoot root)
+    public override void VisitRoot(in Unit ctx, in DpRoot root)
     {
         using (_lb.Indent())
         {
             _lb.Append($"{root.Source.RootType}({root.Source.Tag?.Value ?? ""}) {root.Source.Name}");
-            base.VisitRoot(in root);
+            base.VisitRoot(ctx, in root);
         }
     }
 
-    public override void VisitFactory(in DpFactory factory)
+    public override void VisitFactory(in Unit ctx, in DpFactory factory)
     {
         using (_lb.Indent())
         {
             var mdFactory = factory.Source;
             _lb.Append($"{mdFactory.Factory.Body}");
-            base.VisitFactory(in factory);
+            base.VisitFactory(ctx, in factory);
         }
     }
     
-    public override void VisitArg(in DpArg arg)
+    public override void VisitArg(in Unit ctx, in DpArg arg)
     {
         using (_lb.Indent())
         {
@@ -33,7 +33,7 @@ internal sealed class DependenciesToLinesWalker: DependenciesWalker, IEnumerable
         }
     }
 
-    public override void VisitConstruct(DpConstruct construct)
+    public override void VisitConstruct(in Unit ctx, DpConstruct construct)
     {
         using (_lb.Indent())
         {
@@ -41,15 +41,15 @@ internal sealed class DependenciesToLinesWalker: DependenciesWalker, IEnumerable
         }
     }
 
-    public override void VisitConstructor(in DpMethod constructor)
+    public override void VisitConstructor(in Unit ctx, in DpMethod constructor)
     {
         using (_lb.Indent())
         {
-            VisitMethod(constructor);
+            VisitMethod(ctx, constructor);
         }
     }
 
-    public override void VisitMethod(in DpMethod method)
+    public override void VisitMethod(in Unit ctx, in DpMethod method)
     {
         var typeArgs = "";
         if (method.Method.ContainingType.TypeArguments.Any())
@@ -70,13 +70,13 @@ internal sealed class DependenciesToLinesWalker: DependenciesWalker, IEnumerable
                 _lb.Append(", ");
             }
 
-            VisitParameter(parameter);
+            VisitParameter(ctx, parameter);
         }
         
         _lb.Append(")");
     }
 
-    public override void VisitParameter(in DpParameter parameter) => _lb.Append(parameter.ToString());
+    public override void VisitParameter(in Unit ctx, in DpParameter parameter) => _lb.Append(parameter.ToString());
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 

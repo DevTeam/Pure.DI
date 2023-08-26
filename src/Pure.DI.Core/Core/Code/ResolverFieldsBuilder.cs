@@ -4,8 +4,8 @@ namespace Pure.DI.Core.Code;
 internal sealed class ResolversFieldsBuilder: IBuilder<CompositionCode, CompositionCode>
 {
     private readonly IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
-    internal static readonly string BucketsFieldName = $"_buckets{Variable.Salt}";
-    internal static readonly string BucketSizeFieldName = $"_bucketSize{Variable.Salt}";
+    internal static readonly string BucketsFieldName = $"_buckets{Names.Salt}";
+    internal static readonly string BucketSizeFieldName = $"_bucketSize{Names.Salt}";
 
     public ResolversFieldsBuilder(
         IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
@@ -34,8 +34,8 @@ internal sealed class ResolversFieldsBuilder: IBuilder<CompositionCode, Composit
 
         code.AppendLine($"private readonly static int {BucketSizeFieldName};");
         
-        var pairs = $"{Constant.SystemNamespace}Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, object>";
-        var pairTypeName = $"{Constant.ApiNamespace}Pair<{pairs}>";
+        var pairs = $"{Names.SystemNamespace}Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, object>";
+        var pairTypeName = $"{Names.ApiNamespace}Pair<{pairs}>";
         code.AppendLine($"private readonly static {pairTypeName}[] {BucketsFieldName};");
         
         return composition with { MembersCount = composition.MembersCount + 2 };

@@ -8,7 +8,7 @@ internal readonly record struct DpFactory(
     public IEnumerable<string> ToStrings(int indent)
     {
         var walker = new DependenciesToLinesWalker(indent);
-        walker.VisitFactory(this);
+        walker.VisitFactory(Unit.Shared, this);
         return walker;
     }
     

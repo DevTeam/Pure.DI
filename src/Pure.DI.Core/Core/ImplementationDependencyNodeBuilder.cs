@@ -174,7 +174,7 @@ internal sealed class ImplementationDependencyNodeBuilder :
     private static int GetInjectionsCount(in DpImplementation implementation)
     {
         var injectionsWalker = new DependenciesToInjectionsCountWalker();
-        injectionsWalker.VisitImplementation(implementation);
+        injectionsWalker.VisitImplementation(Unit.Shared, implementation);
         return injectionsWalker.Count;
     }
 
@@ -233,12 +233,12 @@ internal sealed class ImplementationDependencyNodeBuilder :
         return defaultValue;
     }
 
-    private sealed class DependenciesToInjectionsCountWalker: DependenciesWalker
+    private sealed class DependenciesToInjectionsCountWalker: DependenciesWalker<Unit>
     {
         private int _count;
 
         public int Count => _count;
 
-        public override void VisitInjection(in Injection injection, in ImmutableArray<Location> locations) => _count++;
+        public override void VisitInjection(in Unit ctx, in Injection injection, in ImmutableArray<Location> locations) => _count++;
     }
 }

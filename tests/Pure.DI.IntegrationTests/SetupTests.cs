@@ -653,9 +653,10 @@ internal interface IDependency { }
                 public partial class Composition
                 {
                     public static void Setup() =>
+                        // FormatCode = On
                         DI.Setup(nameof(Composition))
-                            .Bind<IDependency>().To<Dependency>().Root<IDependency>("Dependency")
-                            .Bind<IDependency2>().To<Dependency2>().Root<IDependency2>("Dependency2")
+                            .Bind<IDependency>().To<Dependency>()
+                            .Bind<IDependency2>().To<Dependency2>()
                             .Bind<IService>().To<Service>().Root<IService>("Service");
                 }
            
@@ -672,5 +673,98 @@ internal interface IDependency { }
 
         // Then
         result.Success.ShouldBeTrue(result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportSeveralContracts()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency
+    {
+        [Ordinal(1)]
+        internal void Initialize([Tag(374)] string depName)
+        {
+            Console.WriteLine($"Initialize {depName}");            
+        }
+    }
+    
+    interface IDependency2 {}
+
+    class Dependency2: IDependency2, IDisposable
+    {
+        public void Dispose() { }
+    }
+
+    interface IService
+    {
+        IDependency Dep { get; }        
+    }
+
+    class Service: IService 
+    {
+        private IDependency _dep;
+        public Service(IDisposable disposable, IDependency dep, IDependency2 dep2)
+        { 
+            _dep = dep;           
+        }
+
+        public IDependency Dep => _dep;
+        
+        public void Run()
+        {
+            Console.WriteLine("Run");            
+        }
+
+        [Ordinal(7)]
+        public void Activate()
+        {
+            Console.WriteLine("Activate");            
+        }
+
+        [Ordinal(1)]
+        internal void Initialize(IDependency dep)
+        {
+            Console.WriteLine("Initialize");
+            Console.WriteLine(dep != Dep);
+        }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>()
+                .Bind<IDisposable>().Bind<IDependency2>().As(Lifetime.PerResolve).To<Dependency2>().Root<IDisposable>("Dependency2")
+                .Bind<IService>().To<Service>()
+                .Arg<string>("depName", 374)    
+                .Root<IService>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition("dep");
+            var service = composition.Service;                                           
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Initialize dep", "Initialize dep", "Initialize", "True", "Activate"), result);
     }
 }

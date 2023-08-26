@@ -7,7 +7,7 @@ internal readonly record struct DpArg(
     public IEnumerable<string> ToStrings(int indent)
     {
         var walker = new DependenciesToLinesWalker(indent);
-        walker.VisitArg(this);
+        walker.VisitArg(Unit.Shared, this);
         return walker;
     }
 

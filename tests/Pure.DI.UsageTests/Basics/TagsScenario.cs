@@ -10,6 +10,7 @@ $f=The tag can be a constant, a type, or a value of an enumerated type. The _def
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedType.Global
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.UsageTests.Basics.TagsScenario;
 
 using Shouldly;

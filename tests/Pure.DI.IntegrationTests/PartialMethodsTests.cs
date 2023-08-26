@@ -131,7 +131,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Dependency '' Singleton created", "System.Func`1[Sample.IDependency] '' PerResolve created", "Sample.Service '' Transient created"), result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("System.Func`1[Sample.IDependency] '' PerResolve created", "Sample.Dependency '' Singleton created", "Sample.Service '' Transient created"), result);
     }
     
     [Fact]
@@ -256,6 +256,7 @@ namespace Sample
     {
         private static void SetupComposition()
         {
+            // FormatCode = On
             // OnDependencyInjection = On
             // OnDependencyInjectionImplementationTypeNameRegularExpression = \.Dependency
             DI.Setup("Composition")
@@ -330,6 +331,7 @@ namespace Sample
     {
         private static void SetupComposition()
         {
+            // FormatCode = On
             // OnDependencyInjection = On
             // OnDependencyInjectionContractTypeNameRegularExpression = \.IService
             DI.Setup("Composition")

@@ -34,11 +34,11 @@ internal sealed class PrimaryConstructorBuilder: IBuilder<CompositionCode, Compo
                     continue;
                 }
 
-                code.AppendLine($"if ({Constant.SystemNamespace}Object.ReferenceEquals({arg.Node.Arg?.Source.ArgName}, null))");
+                code.AppendLine($"if ({Names.SystemNamespace}Object.ReferenceEquals({arg.Node.Arg?.Source.ArgName}, null))");
                 code.AppendLine("{");
                 using (code.Indent())
                 {
-                    code.AppendLine($"throw new {Constant.SystemNamespace}ArgumentNullException(\"{arg.Node.Arg?.Source.ArgName}\");");
+                    code.AppendLine($"throw new {Names.SystemNamespace}ArgumentNullException(\"{arg.Node.Arg?.Source.ArgName}\");");
                 }
 
                 code.AppendLine("}");
@@ -47,13 +47,10 @@ internal sealed class PrimaryConstructorBuilder: IBuilder<CompositionCode, Compo
 
             foreach (var arg in classArgs)
             {
-                code.AppendLine($"{arg.Name} = {arg.Node.Arg?.Source.ArgName};");
+                code.AppendLine($"{arg.VarName} = {arg.Node.Arg?.Source.ArgName};");
             }
             
-            if (composition.Singletons.Any())
-            {
-                code.AppendLine($"{Variable.DisposablesFieldName} = new {Constant.IDisposableInterfaceName}[{composition.DisposableSingletonsCount.ToString()}];");
-            }
+            code.AppendLine($"{Names.DisposablesFieldName} = new {Names.IDisposableInterfaceName}[{composition.DisposableSingletonsCount.ToString()}];");
         }
 
         code.AppendLine("}");

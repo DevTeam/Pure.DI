@@ -28,7 +28,7 @@ namespace Sample
 
     class CardboardBox<T> : IBox<T>
     {
-        public CardboardBox(T content) => Content = content;
+        public CardboardBox(T content, State state) => Content = content;
 
         public T Content { get; }
 
@@ -57,10 +57,11 @@ namespace Sample
             // Resolve = Off
             // FormatCode = On
             DI.Setup(nameof(Composition))
+                .Bind<int>().To(_ => 99)
                 // Models a random subatomic event that may or may not occur
-                .Bind<Random>().As(Singleton).To<Random>()
+                .Bind<Random>().To<Random>()
                 // Represents a quantum superposition of 2 states: Alive or Dead
-                .Bind<State>().To(ctx =>
+                .Bind<State>().As(Singleton).To(ctx =>
                 {
                     ctx.Inject<Random>(out var random);
                     return (State)random.Next(2);
@@ -95,5 +96,7 @@ namespace Sample
         // Then
         result.Success.ShouldBeTrue(result);
         (result.StdOut.Contains("[Dead cat]") || result.StdOut.Contains("[Alive cat]")).ShouldBeTrue(result);
+        // result.RootBlocks.Count.ShouldBe(1);
+        // result.RootBlocks[0].Block.ToString().ShouldBe("[[[6-6-2: System.Random], 5-5-1: Sample.State, 4-4-1: System.Func<Sample.State>], 3-3-0: System.Lazy<Sample.State>, 2-2-0: Sample.ShroedingersCat, 1-1-0: Sample.CardboardBox<Sample.ICat>, 0-0-0: Sample.Program]");
     }
 }

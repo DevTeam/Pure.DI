@@ -45,7 +45,7 @@ internal sealed class StaticConstructorBuilder: IBuilder<CompositionCode, Compos
                 {
                     foreach (var root in resolver.Roots)
                     {
-                        code.AppendLine($"{Constant.OnNewRootMethodName}<{root.Injection.Type}, {root.Node.Type}>(val{className}, \"{root.PropertyName}\", {root.Injection.Tag.ValueToString()}, {root.Node.Lifetime.ValueToString()});");
+                        code.AppendLine($"{Names.OnNewRootMethodName}<{root.Injection.Type}, {root.Node.Type}>(val{className}, \"{root.PropertyName}\", {root.Injection.Tag.ValueToString()}, {root.Node.Lifetime.ValueToString()});");
                     }
                 }
                 
@@ -53,9 +53,9 @@ internal sealed class StaticConstructorBuilder: IBuilder<CompositionCode, Compos
             }
             
             var divisor = Buckets<object, object>.GetDivisor((uint)resolvers.Length);
-            var pairs = $"{Constant.SystemNamespace}Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, object>";
-            var bucketsTypeName = $"{Constant.ApiNamespace}Buckets<{pairs}>";
-            var pairTypeName = $"{Constant.ApiNamespace}Pair<{pairs}>";
+            var pairs = $"{Names.SystemNamespace}Type, {ResolverClassesBuilder.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, object>";
+            var bucketsTypeName = $"{Names.ApiNamespace}Buckets<{pairs}>";
+            var pairTypeName = $"{Names.ApiNamespace}Pair<{pairs}>";
             code.AppendLine($"{ResolversFieldsBuilder.BucketsFieldName} = {bucketsTypeName}.{nameof(Buckets<object, object>.Create)}(");
             using (code.Indent())
             {
@@ -85,8 +85,8 @@ internal sealed class StaticConstructorBuilder: IBuilder<CompositionCode, Compos
         if (hasOnNewRoot)
         {
             code.AppendLine();
-            code.AppendLine(Constant.MethodImplOptions);
-            code.AppendLine($"private static partial void {Constant.OnNewRootMethodName}<TContract, T>({ResolverClassesBuilder.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, TContract> resolver, string name, object? tag, {Constant.ApiNamespace}{nameof(Lifetime)} lifetime);");
+            code.AppendLine(Names.MethodImplOptions);
+            code.AppendLine($"private static partial void {Names.OnNewRootMethodName}<TContract, T>({ResolverClassesBuilder.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, TContract> resolver, string name, object? tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
         

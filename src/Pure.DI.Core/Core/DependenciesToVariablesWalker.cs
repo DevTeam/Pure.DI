@@ -1,17 +1,17 @@
 namespace Pure.DI.Core;
 
-internal sealed class DependenciesToVariablesWalker: DependenciesWalker
+internal sealed class DependenciesToVariablesWalker: DependenciesWalker<Unit>
 {
-    private readonly IList<Variable> _variables;
-    private readonly Dictionary<Injection, List<Variable>> _variablesMap;
+    private readonly ICollection<Variable> _variables;
+    private readonly Dictionary<Injection, LinkedList<Variable>> _variablesMap;
     private readonly ImmutableArray<Variable>.Builder _resultBuilder = ImmutableArray.CreateBuilder<Variable>();
 
-    public DependenciesToVariablesWalker(IList<Variable> variables)
+    public DependenciesToVariablesWalker(ICollection<Variable> variables)
     {
         _variables = variables;
         _variablesMap = variables
             .GroupBy(i => i.Injection)
-            .ToDictionary(i => i.Key, i => i.ToList());
+            .ToDictionary(i => i.Key, i => new LinkedList<Variable>(i));
     }
 
     public ImmutableArray<Variable> GetResult()
@@ -21,12 +21,12 @@ internal sealed class DependenciesToVariablesWalker: DependenciesWalker
         return result;
     }
 
-    public override void VisitInjection(in Injection injection, in ImmutableArray<Location> locations)
+    public override void VisitInjection(in Unit ctx, in Injection injection, in ImmutableArray<Location> locations)
     {
         if (_variablesMap.TryGetValue(injection, out var variables))
         {
-            var variable = variables[^1];
-            variables.RemoveAt(variables.Count - 1);
+            var variable = variables.First.Value;
+            variables.RemoveFirst();
             _variables.Remove(variable);
             if (variables.Count == 0)
             {
@@ -36,6 +36,6 @@ internal sealed class DependenciesToVariablesWalker: DependenciesWalker
             _resultBuilder.Add(variable);
         }
         
-        base.VisitInjection(in injection, locations);
+        base.VisitInjection(ctx, in injection, locations);
     }
 }

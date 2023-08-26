@@ -35,7 +35,7 @@ internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilde
                         var rootArgsStr = "";
                         if (!root.Args.IsEmpty)
                         {
-                            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{arg.InstanceType} {arg.Name}"))})";
+                            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{arg.InstanceType} {arg.VarName}"))})";
                         }
 
                         lines.AppendLine($"{(root.IsPublic ? "+" : "-")}{FormatType(root.Injection.Type, DefaultFormatOptions)} {root.PropertyName}{rootArgsStr}");
@@ -45,10 +45,10 @@ internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilde
                     {
                         var hints = composition.Source.Source.Hints;
                         var genericParameterT = $"{DefaultFormatOptions.StartGenericArgsSymbol}T{DefaultFormatOptions.FinishGenericArgsSymbol}";
-                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ResolveMethodModifiers, "") == "" ? "+ " : "")}T {hints.GetValueOrDefault(Hint.ResolveMethodName, Constant.ResolverMethodName)}{genericParameterT}()");
-                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ResolveByTagMethodModifiers, "") == "" ? "+ " : "")}T {hints.GetValueOrDefault(Hint.ResolveByTagMethodName, Constant.ResolverMethodName)}{genericParameterT}(object? tag)");
-                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ObjectResolveMethodModifiers, "") == "" ? "+ " : "")}object {hints.GetValueOrDefault(Hint.ObjectResolveMethodName, Constant.ResolverMethodName)}(Type type)");
-                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ObjectResolveByTagMethodModifiers, "") == "" ? "+ " : "")}object {hints.GetValueOrDefault(Hint.ObjectResolveByTagMethodName, Constant.ResolverMethodName)}(Type type, object? tag)");
+                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ResolveMethodModifiers, "") == "" ? "+ " : "")}T {hints.GetValueOrDefault(Hint.ResolveMethodName, Names.ResolverMethodName)}{genericParameterT}()");
+                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ResolveByTagMethodModifiers, "") == "" ? "+ " : "")}T {hints.GetValueOrDefault(Hint.ResolveByTagMethodName, Names.ResolverMethodName)}{genericParameterT}(object? tag)");
+                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ObjectResolveMethodModifiers, "") == "" ? "+ " : "")}object {hints.GetValueOrDefault(Hint.ObjectResolveMethodName, Names.ResolverMethodName)}(Type type)");
+                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ObjectResolveByTagMethodModifiers, "") == "" ? "+ " : "")}object {hints.GetValueOrDefault(Hint.ObjectResolveByTagMethodName, Names.ResolverMethodName)}(Type type, object? tag)");
                     }
                 }
 
@@ -87,7 +87,7 @@ internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilde
                 }
 
                 var classDiagramWalker = new ClassDiagramWalker(lines, DefaultFormatOptions);
-                classDiagramWalker.VisitDependencyNode(node);
+                classDiagramWalker.VisitDependencyNode(Unit.Shared, node);
             }
 
             foreach (var type in types)
@@ -239,7 +239,7 @@ internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilde
         string FinishGenericArgsSymbol = "ᐳ",
         string TypeArgsSeparator = "ˏ");
 
-    private class ClassDiagramWalker : DependenciesWalker
+    private class ClassDiagramWalker : DependenciesWalker<Unit>
     {
         private readonly LinesBuilder _lines;
         private readonly LinesBuilder _nodeLines = new();
@@ -251,9 +251,9 @@ internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilde
             _options = options;
         }
 
-        public override void VisitDependencyNode(DependencyNode node)
+        public override void VisitDependencyNode(in Unit ctx, DependencyNode node)
         {
-            base.VisitDependencyNode(node);
+            base.VisitDependencyNode(ctx, node);
             if (!_nodeLines.Lines.Any())
             {
                 _lines.AppendLine($"class {FormatType(node.Type, _options)}");
@@ -269,28 +269,28 @@ internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilde
             _lines.AppendLine("}");
         }
 
-        public override void VisitConstructor(in DpMethod constructor)
+        public override void VisitConstructor(in Unit ctx, in DpMethod constructor)
         {
             _nodeLines.AppendLine(FormatMethod(constructor.Method, _options));
-            base.VisitConstructor(in constructor);
+            base.VisitConstructor(ctx, in constructor);
         }
 
-        public override void VisitMethod(in DpMethod method)
+        public override void VisitMethod(in Unit ctx, in DpMethod method)
         {
             _nodeLines.AppendLine(FormatMethod(method.Method, _options));
-            base.VisitMethod(in method);
+            base.VisitMethod(ctx, in method);
         }
 
-        public override void VisitProperty(in DpProperty property)
+        public override void VisitProperty(in Unit ctx, in DpProperty property)
         {
             _nodeLines.AppendLine(FormatProperty(property.Property, _options));
-            base.VisitProperty(in property);
+            base.VisitProperty(ctx, in property);
         }
 
-        public override void VisitField(in DpField field)
+        public override void VisitField(in Unit ctx, in DpField field)
         {
             _nodeLines.AppendLine(FormatField(field.Field, _options));
-            base.VisitField(in field);
+            base.VisitField(ctx, in field);
         }
     }
 }

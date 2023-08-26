@@ -78,6 +78,7 @@ namespace Sample
     {
         private static void SetupComposition()
         {
+            // FormatCode = On
             DI.Setup("Composition")
                 .Bind<IDependency>(1).To<Dependency>()
                 .Bind<IDependency>(2).To<Dependency>()

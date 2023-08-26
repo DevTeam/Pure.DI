@@ -251,78 +251,141 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldSupportFactoryWithSimpleInject()
+    {
+        // Given
+
+        // When
+        var result = await """
+        using System;
+        using Pure.DI;
+
+        namespace Sample
+        {
+           interface IDependency {}
+
+           class Dependency: IDependency {}
+
+           interface IService
+           {
+               IDependency Dep { get; }
+           }
+
+           class Service: IService
+           {
+               public Service(IDependency dep)
+               {
+                   Dep = dep;
+               }
+
+               public IDependency Dep { get; }
+           }
+
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .Bind<IDependency>().To(ctx => new Dependency())
+                       .Bind<IService>().To(ctx => {
+                           ctx.Inject<IDependency>(out var dependency);
+                           return new Service(dependency);
+                       })
+                       .Root<IService>("Service");
+               }
+           }
+
+           public class Program
+           {
+               public static void Main()
+               {
+                   var composition = new Composition();
+                   var service1 = composition.Service;
+                   var service2 = composition.Service;
+                   Console.WriteLine(service1.Dep != service2.Dep);
+               }
+           }
+        }
+        """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
+    }
+    
+    [Fact]
     public async Task ShouldSupportFactoryWithInjectWhenBlocks()
     {
         // Given
 
         // When
         var result = await """
-                           using System;
-                           using Pure.DI;
+        using System;
+        using Pure.DI;
 
-                           namespace Sample
+        namespace Sample
+        {
+           interface IDependency {}
+
+           class Dependency: IDependency {}
+
+           interface IService
+           {
+               IDependency Dep { get; }
+           }
+
+           class Service: IService
+           {
+               public Service(IDependency dep)
+               {
+                   Dep = dep;
+               }
+
+               public IDependency Dep { get; }
+           }
+
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .Bind<IDependency>().To(ctx => new Dependency())
+                       .Bind<IService>().To(ctx => {
+                           IDependency dependency1;
+                           var rnd = new Random(1).Next(3);
+                           if (rnd == 0)
                            {
-                               interface IDependency {}
-                           
-                               class Dependency: IDependency {}
-                           
-                               interface IService
-                               {
-                                   IDependency Dep { get; }
-                               }
-                           
-                               class Service: IService
-                               {
-                                   public Service(IDependency dep)
-                                   {
-                                       Dep = dep;
-                                   }
-                           
-                                   public IDependency Dep { get; }
-                               }
-                           
-                               static class Setup
-                               {
-                                   private static void SetupComposition()
-                                   {
-                                       DI.Setup("Composition")
-                                           .Bind<IDependency>().To(ctx => new Dependency())
-                                           .Bind<IService>().To(ctx => {
-                                               IDependency dependency1;
-                                               var rnd = new Random(1).Next(3);
-                                               if (rnd == 0)
-                                               {
-                                                    ctx.Inject(out dependency1);
-                                               }
-                                               else
-                                               {
-                                                   if (rnd == 1)
-                                                   {
-                                                        ctx.Inject(out dependency1);
-                                                        return new Service(dependency1);
-                                                   }
-                                                   
-                                                   ctx.Inject(out dependency1);
-                                               }
-                                               
-                                               return new Service(dependency1);
-                                           })
-                                           .Root<IService>("Service");
-                                   }
-                               }
-                           
-                               public class Program
-                               {
-                                   public static void Main()
-                                   {
-                                       var composition = new Composition();
-                                       var service1 = composition.Service;
-                                       var service2 = composition.Service;
-                                       Console.WriteLine(service1.Dep != service2.Dep);
-                                   }
-                               }
+                                ctx.Inject(out dependency1);
                            }
-                           """.RunAsync();
+                           else
+                           {
+                               if (rnd == 1)
+                               {
+                                    ctx.Inject(out dependency1);
+                                    return new Service(dependency1);
+                               }
+                               
+                               ctx.Inject(out dependency1);
+                           }
+                           
+                           return new Service(dependency1);
+                       })
+                       .Root<IService>("Service");
+               }
+           }
+
+           public class Program
+           {
+               public static void Main()
+               {
+                   var composition = new Composition();
+                   var service1 = composition.Service;
+                   var service2 = composition.Service;
+                   Console.WriteLine(service1.Dep != service2.Dep);
+               }
+           }
+        }
+        """.RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);

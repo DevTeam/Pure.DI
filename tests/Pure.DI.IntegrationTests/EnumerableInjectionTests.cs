@@ -269,7 +269,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency created", "Service creating", "Dependency created", "Dependency created"), result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Service creating", "Dependency created", "Dependency created", "Dependency created"), result);
     }
     
     [Fact]
@@ -350,6 +350,6 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency 1 created", "Service creating", "Dependency 2 created", "Dependency 3 created"), result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Service creating", "Dependency 1 created", "Dependency 2 created", "Dependency 3 created"), result);
     }
 }

@@ -15,7 +15,7 @@ internal sealed class ArgFieldsBuilder: IBuilder<CompositionCode, CompositionCod
         var membersCounter = composition.MembersCount;
         foreach (var arg in classArgs)
         {
-            code.AppendLine($"private readonly {arg.InstanceType} {arg.Name};");
+            code.AppendLine($"private readonly {arg.InstanceType} {arg.VarName};");
             membersCounter++;
         }
 

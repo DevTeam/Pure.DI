@@ -290,6 +290,7 @@ namespace Sample
     {
         private static void SetupComposition()
         {
+            // FormatCode = On
             DI.Setup("Composition")
                 .Bind<IDependency1>().To<Dependency1>()
                 .Bind<IDependency2>().As(Lifetime.Singleton).To<Dependency2>()
@@ -512,19 +513,24 @@ namespace Sample
         IDependency1 Dep1 { get; }
 
         IDependency2 Dep2 { get; }
+        
+        IDependency1 Dep3 { get; }
     }
 
     class Service: IService 
     {
-        public Service(IDependency1 dep1, IDependency2 dep2)
+        public Service(IDependency1 dep1, IDependency2 dep2, IDependency1 dep3)
         {
             Dep1 = dep1;
             Dep2 = dep2;
+            Dep3 = dep3;
         }
 
         public IDependency1 Dep1 { get; }
 
         public IDependency2 Dep2 { get; }
+        
+        public IDependency1 Dep3 { get; }
     }
 
     static class Setup
@@ -546,6 +552,7 @@ namespace Sample
             var composition = new Composition();
             var service = composition.Service;
             Console.WriteLine(service.Dep1 == service.Dep2.Dep1);
+            Console.WriteLine(service.Dep1 == service.Dep3);
         }
     }                
 }
@@ -553,7 +560,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True"), result);
     }
     
     [Fact]
@@ -694,6 +701,7 @@ namespace Sample
     {
         private static void SetupComposition()
         {
+            // FormatCode = On
             DI.Setup("Composition")
                 .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>()
                 .Bind<ISin>().To<Sin>()

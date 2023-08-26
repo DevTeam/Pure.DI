@@ -3,118 +3,119 @@
 // ReSharper disable HeapView.ObjectAllocation.Possible
 // ReSharper disable VirtualMemberNeverOverridden.Global
 // ReSharper disable MemberCanBeProtected.Global
+// ReSharper disable UnusedParameter.Global
 namespace Pure.DI.Core;
 
-internal class DependenciesWalker
+internal class DependenciesWalker<TContext>
 {
-    public virtual void VisitDependencyNode(DependencyNode node)
+    public virtual void VisitDependencyNode(in TContext ctx, DependencyNode node)
     {
         if (node.Root is { } root)
         {
-            VisitRoot(root);
+            VisitRoot(ctx, root);
         }
         
         if (node.Implementation is { } implementation)
         {
-            VisitImplementation(implementation);
+            VisitImplementation(ctx, implementation);
         }
                 
         if (node.Factory is { } factory)
         {
-            VisitFactory(factory);
+            VisitFactory(ctx, factory);
         }
         
         if (node.Arg is { } arg)
         {
-            VisitArg(arg);
+            VisitArg(ctx, arg);
         }
         
         if (node.Construct is { } construction)
         {
-            VisitConstruct(construction);
+            VisitConstruct(ctx, construction);
         }
     }
 
-    public virtual void VisitRoot(in DpRoot root)
+    public virtual void VisitRoot(in TContext ctx, in DpRoot root)
     {
-        VisitInjection(root.Injection, ImmutableArray.Create(root.Source.Source.GetLocation()));
+        VisitInjection(ctx, root.Injection, ImmutableArray.Create(root.Source.Source.GetLocation()));
     }
 
-    public virtual void VisitImplementation(in DpImplementation implementation)
+    public virtual void VisitImplementation(in TContext ctx, in DpImplementation implementation)
     {
         if (implementation.Constructor is var constructor)
         {
-            VisitConstructor(constructor);
+            VisitConstructor(ctx, constructor);
         }
         
         foreach (var field in implementation.Fields)
         {
-            VisitField(field);
+            VisitField(ctx, field);
         }
 
         foreach (var property in implementation.Properties)
         {
-            VisitProperty(property);
+            VisitProperty(ctx, property);
         }
 
         foreach (var method in implementation.Methods)
         {
-            VisitMethod(method);
+            VisitMethod(ctx, method);
         }
     }
 
-    public virtual void VisitFactory(in DpFactory factory)
+    public virtual void VisitFactory(in TContext ctx, in DpFactory factory)
     {
         foreach (var injection in factory.Injections)
         {
-            VisitInjection(injection, ImmutableArray.Create(factory.Source.Source.GetLocation()));
+            VisitInjection(ctx, injection, ImmutableArray.Create(factory.Source.Source.GetLocation()));
         }
     }
 
-    public virtual void VisitArg(in DpArg arg)
+    public virtual void VisitArg(in TContext ctx, in DpArg arg)
     {
     }
 
-    public virtual void VisitConstruct(DpConstruct construct)
+    public virtual void VisitConstruct(in TContext ctx, DpConstruct construct)
     {
         foreach (var injection in construct.Injections)
         {
-            VisitInjection(injection, ImmutableArray.Create(construct.Binding.Source.GetLocation()));
+            VisitInjection(ctx, injection, ImmutableArray.Create(construct.Binding.Source.GetLocation()));
         }
     }
 
-    public virtual void VisitMethod(in DpMethod method)
+    public virtual void VisitMethod(in TContext ctx, in DpMethod method)
     {
         foreach (var parameter in method.Parameters) 
         {
-            VisitParameter(parameter);
+            VisitParameter(ctx, parameter);
         }
     }
 
-    public virtual void VisitProperty(in DpProperty property)
+    public virtual void VisitProperty(in TContext ctx, in DpProperty property)
     {
-        VisitInjection(property.Injection, property.Property.Locations);
+        VisitInjection(ctx, property.Injection, property.Property.Locations);
     }
 
-    public virtual void VisitField(in DpField field)
+    public virtual void VisitField(in TContext ctx, in DpField field)
     {
-        VisitInjection(field.Injection, field.Field.Locations);
+        VisitInjection(ctx, field.Injection, field.Field.Locations);
     }
 
-    public virtual void VisitConstructor(in DpMethod constructor)
+    public virtual void VisitConstructor(in TContext ctx, in DpMethod constructor)
     {
         foreach (var parameter in constructor.Parameters)
         {
-            VisitParameter(parameter);
+            VisitParameter(ctx, parameter);
         }
     }
 
-    public virtual void VisitParameter(in DpParameter parameter)
+    public virtual void VisitParameter(in TContext ctx, in DpParameter parameter)
     {
-        VisitInjection(parameter.Injection, parameter.ParameterSymbol.Locations);
+        VisitInjection(ctx, parameter.Injection, parameter.ParameterSymbol.Locations);
     }
 
-    public virtual void VisitInjection(in Injection injection, in ImmutableArray<Location> locations)
+    public virtual void VisitInjection(in TContext ctx, in Injection injection, in ImmutableArray<Location> locations)
     {
     }
 }

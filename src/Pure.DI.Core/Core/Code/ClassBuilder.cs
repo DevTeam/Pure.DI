@@ -63,8 +63,8 @@ internal sealed class ClassBuilder : IBuilder<CompositionCode, CompositionCode>
             nsIndent = code.Indent();
         }
 
-        code.AppendLine($"[{Constant.SystemNamespace}Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]");
-        var implementingInterfaces = composition.DisposableSingletonsCount > 0 ? $": {Constant.IDisposableInterfaceName}" : "";
+        code.AppendLine($"[{Names.SystemNamespace}Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]");
+        var implementingInterfaces = composition.DisposableSingletonsCount > 0 ? $": {Names.IDisposableInterfaceName}" : "";
         code.AppendLine($"partial class {composition.Source.Source.Name.ClassName}{implementingInterfaces}");
         code.AppendLine("{");
 

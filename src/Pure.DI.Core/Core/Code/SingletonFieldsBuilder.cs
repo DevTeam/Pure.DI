@@ -5,28 +5,29 @@ internal sealed class SingletonFieldsBuilder: IBuilder<CompositionCode, Composit
 {
     public CompositionCode Build(CompositionCode composition)
     {
-        if (!composition.Singletons.Any())
-        {
-            return composition;
-        }
-        
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
+        
+        // Disposables field
+        code.AppendLine($"private readonly {Names.IDisposableInterfaceName}[] {Names.DisposablesFieldName};");
+        membersCounter++;
+        
+        if (!composition.Singletons.Any())
+        {
+            return composition with { MembersCount = membersCounter };
+        }
+        
         if (composition.DisposableSingletonsCount > 0)
         {
             // DisposeIndex field
-            code.AppendLine($"private int {Variable.DisposeIndexFieldName};");
+            code.AppendLine($"private int {Names.DisposeIndexFieldName};");
             membersCounter++;
         }
-            
-        // Disposables field
-        code.AppendLine($"private readonly {Constant.IDisposableInterfaceName}[] {Variable.DisposablesFieldName};");
-        membersCounter++;
-
+        
         // Singleton fields
         foreach (var singletonField in composition.Singletons)
         {
-            code.AppendLine($"private {singletonField.InstanceType} {singletonField.Name};");
+            code.AppendLine($"private {singletonField.InstanceType} {singletonField.VarName};");
             membersCounter++;
 
             if (!singletonField.InstanceType.IsValueType)
@@ -34,7 +35,7 @@ internal sealed class SingletonFieldsBuilder: IBuilder<CompositionCode, Composit
                 continue;
             }
 
-            code.AppendLine($"private bool {singletonField.Name}Created;");
+            code.AppendLine($"private bool {singletonField.VarName}Created;");
             membersCounter++;
         }
 

@@ -31,26 +31,15 @@ internal partial class Composition
         .DefaultLifetime(Lifetime.Transient)
         .Bind<IMetadataSyntaxWalker>().To<MetadataSyntaxWalker>()
         .Bind<IDependencyGraphBuilder>().To<DependencyGraphBuilder>()
-        .Bind<IVarIdGenerator>().To<VarIdGenerator>()
         .Bind<ITypeConstructor>().To<TypeConstructor>()
         .Bind<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>>().To<SetupsBuilder>()
         .Bind<IBuilder<IEnumerable<SyntaxUpdate>, Unit>>().To<Core.Generator>()
         .Bind<IBuilder<RewriterContext<MdFactory>, MdFactory>>().To<FactoryTypeRewriter>()
         .Bind<IBuilder<DependencyGraph, CompositionCode>>(WellknownTag.CompositionBuilder).To<CompositionBuilder>()
-
-        // PerResolve
-        .DefaultLifetime(Lifetime.PerResolve)
-        .Bind<IResources>().To<Resources>()
-        .Bind<Func<string, Regex>>().To(_ => new Func<string, Regex>(value => new Regex(value, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase)))
-        .Bind<IInformation>().To<Information>()
-        .Bind<ILogger<TT>>().To<Logger<TT>>()
-        .Bind<IObserver<LogEntry>>().To<LogObserver>()
-        .Bind<IGlobalOptions>().To<GlobalOptions>()
-        .Bind<IMarker>().To<Marker>()
-        .Bind<IFilter>().To<Filter>()
-        .Bind<IVariator<TT>>().To<Variator<TT>>()
-        .Bind<IUnboundTypeConstructor>().To<UnboundTypeConstructor>()
-        .Bind<IEqualityComparer<string>>().To(_ => StringComparer.InvariantCultureIgnoreCase)
+        .Bind<IVariablesBuilder>().To<VariablesBuilder>()
+        .Bind<IBuildTools>().To<BuildTools>()
+        .Bind<IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>>>().To<MetadataBuilder>()
+        
         .Bind<Func<ImmutableArray<byte>, bool>>().To(_ => new Func<ImmutableArray<byte>, bool>(_ => true))
         .Bind<IValidator<DependencyGraph>>().To<DependencyGraphValidator>()
         .Bind<IValidator<MdSetup>>().To<MetadataValidator>()
@@ -66,9 +55,16 @@ internal partial class Composition
         .Bind<IBuilder<MdSetup, IEnumerable<DependencyNode>>>(typeof(ImplementationDependencyNodeBuilder)).To<ImplementationDependencyNodeBuilder>()
         .Bind<IBuilder<MdSetup, IEnumerable<DependencyNode>>>(typeof(RootDependencyNodeBuilder)).To<RootDependencyNodeBuilder>()
         .Bind<IBuilder<MdSetup, DependencyGraph>>().To<VariationalDependencyGraphBuilder>()
-        .Bind<IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>>>().To<MetadataBuilder>()
         .Bind<IBuilder<DpImplementation, IEnumerable<DpImplementation>>>().To<ImplementationVariantsBuilder>()
         .Bind<IBuilder<Unit, IEnumerable<Source>>>().To<ApiBuilder>()
+        
+        // Code builders
+        .Bind<ICodeBuilder<IStatement>>().To<StatementCodeBuilder>()
+        .Bind<ICodeBuilder<Block>>().To<BlockCodeBuilder>()
+        .Bind<ICodeBuilder<Variable>>().To<VariableCodeBuilder>()
+        .Bind<ICodeBuilder<DpImplementation>>().To<ImplementationCodeBuilder>()
+        .Bind<ICodeBuilder<DpFactory>>().To<FactoryCodeBuilder>()
+        .Bind<ICodeBuilder<DpConstruct>>().To<ConstructCodeBuilder>()
         
         // Code
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.ClassBuilder).To<ClassBuilder>()
@@ -84,5 +80,19 @@ internal partial class Composition
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.StaticConstructorBuilder).To<StaticConstructorBuilder>()
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.ApiMembersBuilder).To<ApiMembersBuilder>()
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.ResolversFieldsBuilder).To<ResolversFieldsBuilder>()
-        .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.ToStringMethodBuilder).To<ToStringMethodBuilder>();
+        .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.ToStringMethodBuilder).To<ToStringMethodBuilder>()
+
+        // PerResolve
+        .DefaultLifetime(Lifetime.PerResolve)
+        .Bind<IResources>().To<Resources>()
+        .Bind<Func<string, Regex>>().To(_ => new Func<string, Regex>(value => new Regex(value, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase)))
+        .Bind<IInformation>().To<Information>()
+        .Bind<ILogger<TT>>().To<Logger<TT>>()
+        .Bind<IObserver<LogEntry>>().To<LogObserver>()
+        .Bind<IGlobalOptions>().To<GlobalOptions>()
+        .Bind<IMarker>().To<Marker>()
+        .Bind<IFilter>().To<Filter>()
+        .Bind<IVariator<TT>>().To<Variator<TT>>()
+        .Bind<IUnboundTypeConstructor>().To<UnboundTypeConstructor>()
+        .Bind<IEqualityComparer<string>>().To(_ => StringComparer.InvariantCultureIgnoreCase);
 }

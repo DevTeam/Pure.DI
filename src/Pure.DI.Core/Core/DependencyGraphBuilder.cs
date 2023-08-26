@@ -213,6 +213,7 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
             isValid,
             setup,
             new Graph<DependencyNode, Dependency>(entries.ToImmutableArray()),
+            map,
             ImmutableDictionary<Injection, Root>.Empty);
         
         return ImmutableArray<DependencyNode>.Empty;

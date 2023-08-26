@@ -51,6 +51,88 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldSupportTagsForSeveralRoots()
+    {
+        // Given
+
+        // When
+        var result = await """
+        using System;
+        using Pure.DI;
+
+        namespace Sample
+        {
+            interface IDependency { }
+
+            class AbcDependency : IDependency { }
+                   
+            class XyzDependency : IDependency { }
+                   
+            class Dependency : IDependency { }
+
+            interface IService
+            {
+               IDependency Dependency1 { get; }
+
+               IDependency Dependency2 { get; }
+               
+               IDependency Dependency3 { get; }
+            }
+
+            class Service : IService
+            {
+               public Service(
+                   [Tag("Abc")] IDependency dependency1,
+                   [Tag("Xyz")] IDependency dependency2,
+                   IDependency dependency3)
+               {
+                   Dependency1 = dependency1;
+                   Dependency2 = dependency2;
+                   Dependency3 = dependency3;
+               }
+
+               public IDependency Dependency1 { get; }
+
+               public IDependency Dependency2 { get; }
+               
+               public IDependency Dependency3 { get; }
+            }
+
+            static class Setup
+            {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                        .Bind<IDependency>("Abc", default).To<AbcDependency>()
+                        .Bind<IDependency>("Xyz")
+                        .As(Lifetime.Singleton)
+                        .To<XyzDependency>()
+                        .Root<IDependency>("XyzRoot", "Xyz")
+                        .Bind<IService>().To<Service>().Root<IService>("Root");
+               }
+            }
+
+            public class Program
+            {
+               public static void Main()
+               {
+                   var composition = new Composition();
+                   var service = composition.Root;
+                   Console.WriteLine(service.Dependency1?.GetType() == typeof(AbcDependency));
+                   Console.WriteLine(service.Dependency2?.GetType() == typeof(XyzDependency));
+                   Console.WriteLine(service.Dependency2 == composition.XyzRoot);
+                   Console.WriteLine(service.Dependency3?.GetType() == typeof(AbcDependency));
+               }
+            }
+        }
+        """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True", "True", "True"), result);
+    }
+    
+    [Fact]
     public async Task ShouldSupportTagsWhenEnum()
     {
         // Given

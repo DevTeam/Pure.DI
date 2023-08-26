@@ -8,7 +8,7 @@ internal readonly record struct DpRoot(
     public IEnumerable<string> ToStrings(int indent)
     {
         var walker = new DependenciesToLinesWalker(indent);
-        walker.VisitRoot(this);
+        walker.VisitRoot(Unit.Shared, this);
         return walker;
     }
 

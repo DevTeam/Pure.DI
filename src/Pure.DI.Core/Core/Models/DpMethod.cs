@@ -8,7 +8,7 @@ internal readonly record struct DpMethod(
     public override string ToString()
     {
         var walker = new DependenciesToLinesWalker(0);
-        walker.VisitMethod(this);
+        walker.VisitMethod(Unit.Shared, this);
         return string.Join(Environment.NewLine, walker);
     }
 }
