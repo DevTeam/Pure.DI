@@ -10,8 +10,7 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
         {
             return;
         }
-        
-        ctx.Code.AppendLine($"// Level {variable.Info.Level}");
+
         var toCheckExistence = variable.Node.Lifetime != Lifetime.Transient;
         var level = ctx.Level;
         if (toCheckExistence)
