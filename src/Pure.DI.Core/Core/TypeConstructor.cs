@@ -1,5 +1,6 @@
 ﻿// ReSharper disable InvertIf
 // ReSharper disable once ClassNeverInstantiated.Global
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
 [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]

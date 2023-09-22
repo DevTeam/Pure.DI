@@ -1,5 +1,6 @@
 // ReSharper disable InvertIf
 // ReSharper disable RedundantJumpStatement
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
 internal class VariableCodeBuilder : DependenciesWalker<BuildContext>, ICodeBuilder<Variable>

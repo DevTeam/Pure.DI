@@ -1,16 +1,19 @@
-﻿namespace Pure.DI.Core.Code;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+namespace Pure.DI.Core.Code;
 
 internal class BlockCodeBuilder: ICodeBuilder<Block>
 {
     public void Build(BuildContext ctx, in Block block)
     {
         var variable = ctx.Variable;
-        if (!TryCreate(variable))
+        if (!TryCreate(ctx, variable))
         {
             return;
         }
         
+        ctx.Code.AppendLine($"// Level {variable.Info.Level}");
         var toCheckExistence = variable.Node.Lifetime != Lifetime.Transient;
+        var level = ctx.Level;
         if (toCheckExistence)
         {
             var checkExpression = variable.InstanceType.IsValueType switch
@@ -32,11 +35,12 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
             ctx.Code.AppendLine($"if ({checkExpression})");
             ctx.Code.AppendLine("{");
             ctx.Code.IncIndent();
+            level++;
         }
-
+        
         foreach (var statement in block.Statements)
         {
-            ctx.StatementBuilder.Build(ctx with{ Variable = statement.Current }, statement);
+            ctx.StatementBuilder.Build(ctx with { Level = level, Variable = statement.Current }, statement);
         }
 
         if (!toCheckExistence)
@@ -69,7 +73,7 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
         ctx.Code.AppendLine();
     }
     
-    private static bool TryCreate(Variable variable)
+    private static bool TryCreate(BuildContext ctx, Variable variable)
     {
         // A transient instance must be created each time
         if (variable.Node.Lifetime == Lifetime.Transient)
@@ -77,14 +81,12 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
             return true;
         }
 
-        // An instance has been created in some parent block
-        if (variable.GetPath().OfType<Block>().Any(i => i.Created.Contains(variable.Node.Binding)))
+        if (ctx.Level >= variable.Info.Level)
         {
             return false;
         }
-
-        // An instance has already been created in the current block
-        var block = variable.GetPath().OfType<Block>().First();
-        return block.Created.Add(variable.Node.Binding);
+        
+        variable.Info.Level = ctx.Level;
+        return true;
     }
 }

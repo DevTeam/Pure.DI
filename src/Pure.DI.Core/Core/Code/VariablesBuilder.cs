@@ -1,3 +1,4 @@
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
 internal class VariablesBuilder : IVariablesBuilder
@@ -11,7 +12,7 @@ internal class VariablesBuilder : IVariablesBuilder
         DependencyNode rootNode,
         Injection rootInjection)
     {
-        var rootBlock = new Block(default, new LinkedList<IStatement>(), new HashSet<MdBinding>());
+        var rootBlock = new Block(default, new LinkedList<IStatement>());
         var rootVar = CreateVariable(rootBlock, map, rootNode, rootInjection);
         rootBlock.Statements.AddFirst(rootVar);
         var blocks = new Stack<Block>();
@@ -65,7 +66,7 @@ internal class VariablesBuilder : IVariablesBuilder
                             var isBlock = depNode.Lifetime != Lifetime.Transient || variable.Node.IsLazy();
                             if (isBlock)
                             {
-                                var depBlock = new Block(currentStatement, new LinkedList<IStatement>(), new HashSet<MdBinding>());
+                                var depBlock = new Block(currentStatement, new LinkedList<IStatement>());
                                 depBlock.Statements.AddFirst(depVariable);
                                 if (!isAlreadyCreated)
                                 {
@@ -125,7 +126,7 @@ internal class VariablesBuilder : IVariablesBuilder
         }
 
         var id = GetId(node);
-        var var = new Variable(parent, id, node, injection, new List<IStatement>());
+        var var = new Variable(parent, id, node, injection, new List<IStatement>(), new VariableInfo());
         if (isSharedVar)
         {
             map.Add(node.Binding, var);

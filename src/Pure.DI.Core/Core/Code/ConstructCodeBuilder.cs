@@ -1,3 +1,4 @@
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
 internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
@@ -35,6 +36,7 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
     {
         var variable = ctx.Variable;
         var code = ctx.Code;
+        var level = ctx.Level + 1;
         var localFuncName = $"LocalFunc_{variable.VarName}";
         code.AppendLine($"{variable.InstanceType} {localFuncName}()");
         code.AppendLine("{");
@@ -43,7 +45,7 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
             var hasYieldReturn = false;
             foreach (var statement in variable.Args)
             {
-                ctx.StatementBuilder.Build(ctx with { Variable = statement.Current }, statement);
+                ctx.StatementBuilder.Build(ctx with { Level = level, Variable = statement.Current }, statement);
                 code.AppendLine($"yield return {ctx.BuildTools.OnInjected(ctx, statement.Current)};");
                 hasYieldReturn = true;
             }

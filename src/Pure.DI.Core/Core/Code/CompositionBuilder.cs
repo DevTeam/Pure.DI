@@ -1,4 +1,5 @@
 // ReSharper disable InvertIf
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
 internal class CompositionBuilder: IBuilder<DependencyGraph, CompositionCode>
@@ -33,7 +34,7 @@ internal class CompositionBuilder: IBuilder<DependencyGraph, CompositionCode>
         {
             _cancellationToken.ThrowIfCancellationRequested();
             var rootBlock = _variablesBuilder.Build(graph.Graph, map, root.Node, root.Injection);
-            var ctx = new BuildContext(_buildTools, _statementBuilder, graph, rootBlock.Current, new LinesBuilder(), default, isThreadSafe);
+            var ctx = new BuildContext(0, _buildTools, _statementBuilder, graph, rootBlock.Current, new LinesBuilder(), default, isThreadSafe);
             foreach (var perResolveVar in map.GetPerResolves())
             {
                 ctx.Code.AppendLine($"{perResolveVar.InstanceType} {perResolveVar.VarName} = default({perResolveVar.InstanceType});");

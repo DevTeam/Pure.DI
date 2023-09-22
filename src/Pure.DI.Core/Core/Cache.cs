@@ -1,4 +1,5 @@
 // ReSharper disable HeapView.ObjectAllocation.Evident
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
 using System.Collections.Concurrent;

@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core.Code;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+namespace Pure.DI.Core.Code;
 
 internal class FactoryCodeBuilder: ICodeBuilder<DpFactory>
 {
@@ -8,6 +9,12 @@ internal class FactoryCodeBuilder: ICodeBuilder<DpFactory>
     {
         var variable = ctx.Variable;
         var code = ctx.Code;
+        var level = ctx.Level;
+        if (variable.Node.IsLazy())
+        {
+            level++;
+        }
+        
         // Rewrites syntax tree
         var finishLabel = $"label{Names.Salt}{variable.Id}";
         var injections = new List<FactoryRewriter.Injection>();
@@ -43,7 +50,7 @@ internal class FactoryCodeBuilder: ICodeBuilder<DpFactory>
                 var (injection, argument) = resolvers.Current;
                 using (code.Indent(indent.Value))
                 {
-                    ctx.StatementBuilder.Build(ctx with { Variable = argument.Current }, argument);
+                    ctx.StatementBuilder.Build(ctx with { Level = level, Variable = argument.Current }, argument);
                     code.AppendLine($"{(injection.DeclarationRequired ? "var " : "")}{injection.VariableName} = {ctx.BuildTools.OnInjected(ctx, argument.Current)};");
                 }
             }

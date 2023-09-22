@@ -5,7 +5,8 @@ internal record Variable(
         int Id,
         in DependencyNode Node,
         in Injection Injection,
-        ICollection<IStatement> Args)
+        ICollection<IStatement> Args,
+        VariableInfo Info)
         : IStatement
 {
     public Variable Current => this;
@@ -50,5 +51,6 @@ internal record Variable(
     public void Reset()
     {
         IsCreated = false;
+        Info.Level = int.MaxValue;
     }
 }
