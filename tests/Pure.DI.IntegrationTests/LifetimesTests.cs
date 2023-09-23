@@ -634,6 +634,7 @@ namespace Sample
             var service = composition.Service;
             var service2 = composition.Service;
             Console.WriteLine(service.Dep == service.Sin.Dep);        
+            Console.WriteLine(service.Dep != service2.Dep);
             Console.WriteLine(service.Sin == service2.Sin);
         }
     }                
@@ -642,7 +643,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True"), result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True", "True"), result);
     }
     
     [Fact]

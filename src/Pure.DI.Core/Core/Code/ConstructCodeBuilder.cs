@@ -45,7 +45,7 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
             var hasYieldReturn = false;
             foreach (var statement in variable.Args)
             {
-                ctx.StatementBuilder.Build(ctx with { Level = level, Variable = statement.Current }, statement);
+                ctx.StatementBuilder.Build(ctx with { Level = level, Variable = statement.Current, LockIsRequired = default }, statement);
                 code.AppendLine($"yield return {ctx.BuildTools.OnInjected(ctx, statement.Current)};");
                 hasYieldReturn = true;
             }
@@ -79,7 +79,7 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
             && span.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp7_3;
         
         var createInstance = isStackalloc ? $"stackalloc {createArray}" : $"new {Names.SystemNamespace}Span<{span.Source.ElementType}>(new {createArray})";
-        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VarName} = {createInstance};");
+        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable, isStackalloc)}{variable.VarName} = {createInstance};");
         ctx.Code.AppendLines(ctx.BuildTools.OnCreated(ctx, variable));
     }
 

@@ -4,6 +4,11 @@ internal class VariablesMap: Dictionary<MdBinding, Variable>
 {
     public void Reset()
     {
+        foreach (var variable in Values)
+        {
+            variable.Info.Reset();
+        }
+
         var classBindings = this
             .Where(i => i.Value.Node.Arg is not null || i.Value.Node.Lifetime != Lifetime.Singleton)
             .Select(i => i.Key)
@@ -12,11 +17,6 @@ internal class VariablesMap: Dictionary<MdBinding, Variable>
         foreach (var singletonBinding in classBindings)
         {
             Remove(singletonBinding);
-        }
-
-        foreach (var variable in Values)
-        {
-            variable.Reset();
         }
     }
 

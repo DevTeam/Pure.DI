@@ -61,7 +61,12 @@ internal class VariablesBuilder : IVariablesBuilder
                             }
 
                             var depVariable = CreateVariable(currentStatement, map, depNode, depInjection);
-                            depVariable.IsCreated = isAlreadyCreated;
+                            if (isAlreadyCreated)
+                            {
+                                depVariable.Info.IsAlreadyCreated = true;
+                                depVariable.Info.RefCount--;
+                            }
+                            
                             var isBlockStatement = !variable.Node.IsEnumerable() && !variable.Node.IsFactory();
                             var isBlock = depNode.Lifetime != Lifetime.Transient || variable.Node.IsLazy();
                             if (isBlock)
@@ -116,6 +121,7 @@ internal class VariablesBuilder : IVariablesBuilder
         {
             if (map.TryGetValue(node.Binding, out var currentVar))
             {
+                currentVar.Info.RefCount++;
                 return currentVar with
                 {
                     Parent = parent,
@@ -127,6 +133,7 @@ internal class VariablesBuilder : IVariablesBuilder
 
         var id = GetId(node);
         var var = new Variable(parent, id, node, injection, new List<IStatement>(), new VariableInfo());
+        var.Info.RefCount++;
         if (isSharedVar)
         {
             map.Add(node.Binding, var);

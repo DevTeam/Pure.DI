@@ -9,7 +9,7 @@ internal class BuildTools : IBuildTools
 
     public BuildTools(IFilter filter) => _filter = filter;
 
-    public string GetDeclaration(Variable variable) => variable.IsDeclared ? "" : $"{variable.InstanceType} ";
+    public string GetDeclaration(Variable variable, bool typeIsRequired = false) => variable.IsDeclared ? "" : typeIsRequired ? $"{variable.InstanceType} " : "var ";
     
     public string OnInjected(BuildContext ctx, Variable variable)
     {

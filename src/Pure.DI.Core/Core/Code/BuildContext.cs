@@ -8,4 +8,4 @@ internal record BuildContext(
     Variable Variable,
     LinesBuilder Code,
     object? ContextTag,
-    bool IsThreadSafe);
+    bool? LockIsRequired);

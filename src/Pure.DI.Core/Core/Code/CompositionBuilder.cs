@@ -26,7 +26,6 @@ internal class CompositionBuilder: IBuilder<DependencyGraph, CompositionCode>
 
     public CompositionCode Build(DependencyGraph graph)
     {
-        var isThreadSafe = graph.Source.Hints.GetHint(Hint.ThreadSafe, SettingState.On) == SettingState.On;
         var roots = new List<Root>();
         var map = new VariablesMap();
         var allArgs = new HashSet<Variable>();
@@ -34,11 +33,20 @@ internal class CompositionBuilder: IBuilder<DependencyGraph, CompositionCode>
         {
             _cancellationToken.ThrowIfCancellationRequested();
             var rootBlock = _variablesBuilder.Build(graph.Graph, map, root.Node, root.Injection);
-            var ctx = new BuildContext(0, _buildTools, _statementBuilder, graph, rootBlock.Current, new LinesBuilder(), default, isThreadSafe);
+            var ctx = new BuildContext(
+                0,
+                _buildTools,
+                _statementBuilder,
+                graph,
+                rootBlock.Current,
+                new LinesBuilder(),
+                default,
+                default);
+
             foreach (var perResolveVar in map.GetPerResolves())
             {
-                ctx.Code.AppendLine($"{perResolveVar.InstanceType} {perResolveVar.VarName} = default({perResolveVar.InstanceType});");
-                if (perResolveVar.InstanceType.IsValueType)
+                ctx.Code.AppendLine($"var {perResolveVar.VarName} = default({perResolveVar.InstanceType});");
+                if (perResolveVar.Info.RefCount > 1 && perResolveVar.InstanceType.IsValueType)
                 {
                     ctx.Code.AppendLine($"var {perResolveVar.VarName}Created = false;");
                 }

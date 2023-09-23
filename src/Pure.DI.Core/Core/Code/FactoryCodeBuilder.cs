@@ -10,9 +10,11 @@ internal class FactoryCodeBuilder: ICodeBuilder<DpFactory>
         var variable = ctx.Variable;
         var code = ctx.Code;
         var level = ctx.Level;
+        var lockIsRequired = ctx.LockIsRequired;
         if (variable.Node.IsLazy())
         {
             level++;
+            lockIsRequired = default;
         }
         
         // Rewrites syntax tree
@@ -33,7 +35,7 @@ internal class FactoryCodeBuilder: ICodeBuilder<DpFactory>
         {
             if (!variable.IsDeclared)
             {
-                code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VarName};");
+                code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable, true)}{variable.VarName};");
             }
         }
 
@@ -50,7 +52,7 @@ internal class FactoryCodeBuilder: ICodeBuilder<DpFactory>
                 var (injection, argument) = resolvers.Current;
                 using (code.Indent(indent.Value))
                 {
-                    ctx.StatementBuilder.Build(ctx with { Level = level, Variable = argument.Current }, argument);
+                    ctx.StatementBuilder.Build(ctx with { Level = level, Variable = argument.Current, LockIsRequired = lockIsRequired }, argument);
                     code.AppendLine($"{(injection.DeclarationRequired ? "var " : "")}{injection.VariableName} = {ctx.BuildTools.OnInjected(ctx, argument.Current)};");
                 }
             }

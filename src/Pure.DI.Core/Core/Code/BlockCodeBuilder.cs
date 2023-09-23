@@ -6,22 +6,26 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
     public void Build(BuildContext ctx, in Block block)
     {
         var variable = ctx.Variable;
-        if (!TryCreate(ctx, variable))
+        if (!IsNewInstanceRequired(ctx, variable))
         {
             return;
         }
 
-        var toCheckExistence = variable.Node.Lifetime != Lifetime.Transient;
         var level = ctx.Level;
+        var lockIsRequired = ctx.LockIsRequired ?? ctx.DependencyGraph.Source.Hints.GetHint(Hint.ThreadSafe, SettingState.On) == SettingState.On;
+        var toCheckExistence =
+            // The "singleton" instance must be created with a check each time
+            variable.Node.Lifetime == Lifetime.Singleton
+            // The "per resolve" instance should be created without checks if it is the only one in the composition
+            || (variable.Node.Lifetime == Lifetime.PerResolve && variable.Info.RefCount > 1);
+        
         if (toCheckExistence)
         {
-            var checkExpression = variable.InstanceType.IsValueType switch
-            {
-                true => $"!{variable.VarName}Created",
-                false => $"{Names.SystemNamespace}Object.ReferenceEquals({variable.VarName}, null)"
-            };
-            
-            if (ctx.IsThreadSafe)
+            var checkExpression = variable.InstanceType.IsValueType
+                ? $"!{variable.VarName}Created"
+                : $"{Names.SystemNamespace}Object.ReferenceEquals({variable.VarName}, null)";
+
+            if (lockIsRequired)
             {
                 ctx.Code.AppendLine($"if ({checkExpression})");
                 ctx.Code.AppendLine("{");
@@ -29,17 +33,18 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
                 ctx.Code.AppendLine($"lock ({Names.DisposablesFieldName})");
                 ctx.Code.AppendLine("{");
                 ctx.Code.IncIndent();
+                ctx = ctx with { LockIsRequired = false };
             }
             
             ctx.Code.AppendLine($"if ({checkExpression})");
             ctx.Code.AppendLine("{");
             ctx.Code.IncIndent();
-            level++;
+            ctx = ctx with { Level = level + 1 };
         }
-        
+
         foreach (var statement in block.Statements)
         {
-            ctx.StatementBuilder.Build(ctx with { Level = level, Variable = statement.Current }, statement);
+            ctx.StatementBuilder.Build(ctx with { Variable = statement.Current }, statement);
         }
 
         if (!toCheckExistence)
@@ -55,12 +60,11 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
         if (variable.InstanceType.IsValueType)
         {
             ctx.Code.AppendLine($"{variable.VarName}Created = true;");
-            ctx.Code.AppendLine($"{Names.SystemNamespace}Threading.Thread.MemoryBarrier();");
         }
             
         ctx.Code.DecIndent();
         ctx.Code.AppendLine("}");
-        if (!ctx.IsThreadSafe)
+        if (!lockIsRequired)
         {
             return;
         }
@@ -72,14 +76,15 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
         ctx.Code.AppendLine();
     }
     
-    private static bool TryCreate(BuildContext ctx, Variable variable)
+    private static bool IsNewInstanceRequired(BuildContext ctx, Variable variable)
     {
         // A transient instance must be created each time
         if (variable.Node.Lifetime == Lifetime.Transient)
         {
             return true;
         }
-
+        
+        // Do not create an instance if it has already been created at this level or a level below it
         if (ctx.Level >= variable.Info.Level)
         {
             return false;

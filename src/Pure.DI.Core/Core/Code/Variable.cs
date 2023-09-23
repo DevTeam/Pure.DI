@@ -13,8 +13,6 @@ internal record Variable(
     
     public bool IsDeclared { get; } = Node.Lifetime != Lifetime.Transient || Node.IsArg();
     
-    public bool IsCreated { get; set; }
-    
     public string VarName
     {
         get
@@ -47,10 +45,4 @@ internal record Variable(
     public ITypeSymbol ContractType => Injection.Type;
 
     public override string ToString() => $"{InstanceType} {VarName}";
-
-    public void Reset()
-    {
-        IsCreated = false;
-        Info.Level = int.MaxValue;
-    }
 }
