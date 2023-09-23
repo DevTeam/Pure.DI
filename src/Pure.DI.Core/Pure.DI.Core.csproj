@@ -5,7 +5,7 @@
         <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
         <RootNamespace>Pure.DI</RootNamespace>
         <OutputPath>bin/$(Configuration)/roslyn$(AnalyzerRoslynVersion)</OutputPath>
-        <DefineConstants>PUREDI_API_SUPPRESSION;PUREDI_API_V1</DefineConstants>
+        <DefineConstants>PUREDI_API_SUPPRESSION;PUREDI_API_V2</DefineConstants>
     </PropertyGroup>
     
     <ItemGroup>

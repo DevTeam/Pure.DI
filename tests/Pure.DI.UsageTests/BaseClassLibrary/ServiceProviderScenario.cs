@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=6
+$p=99
 $d=Service provider
 $h=The `// ObjectResolveMethodName = GetService` hint overrides the _object Resolve(Type type)_ method name in _GetService_, allowing the _IServiceProvider_ interface to be implemented in a partial class.
 */

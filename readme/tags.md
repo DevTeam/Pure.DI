@@ -106,7 +106,7 @@ classDiagram
 partial class Composition
 {
   private readonly System.IDisposable[] _disposableSingletonsM09D23di;
-  private Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency _singletonM09D23di23;
+  private Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency _singletonM09D23di22;
   
   public Composition()
   {
@@ -118,7 +118,7 @@ partial class Composition
     _disposableSingletonsM09D23di = new System.IDisposable[0];
     lock (parent._disposableSingletonsM09D23di)
     {
-      _singletonM09D23di23 = parent._singletonM09D23di23;
+      _singletonM09D23di22 = parent._singletonM09D23di22;
     }
   }
   
@@ -128,17 +128,17 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      if (global::System.Object.ReferenceEquals(_singletonM09D23di23, null))
+      if (global::System.Object.ReferenceEquals(_singletonM09D23di22, null))
       {
           lock (_disposableSingletonsM09D23di)
           {
-              if (global::System.Object.ReferenceEquals(_singletonM09D23di23, null))
+              if (global::System.Object.ReferenceEquals(_singletonM09D23di22, null))
               {
-                  _singletonM09D23di23 = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
+                  _singletonM09D23di22 = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
               }
           }
       }
-      return _singletonM09D23di23;
+      return _singletonM09D23di22;
     }
   }
   
@@ -147,20 +147,20 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM09D23di107 = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
-      if (global::System.Object.ReferenceEquals(_singletonM09D23di23, null))
+      var transientM09D23di110 = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
+      if (global::System.Object.ReferenceEquals(_singletonM09D23di22, null))
       {
           lock (_disposableSingletonsM09D23di)
           {
-              if (global::System.Object.ReferenceEquals(_singletonM09D23di23, null))
+              if (global::System.Object.ReferenceEquals(_singletonM09D23di22, null))
               {
-                  _singletonM09D23di23 = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
+                  _singletonM09D23di22 = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
               }
           }
       }
-      var transientM09D23di106 = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
-      var transientM09D23di105 = new Pure.DI.UsageTests.Basics.TagsScenario.Service(transientM09D23di106, _singletonM09D23di23, transientM09D23di107);
-      return transientM09D23di105;
+      var transientM09D23di109 = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
+      var transientM09D23di108 = new Pure.DI.UsageTests.Basics.TagsScenario.Service(transientM09D23di109, _singletonM09D23di22, transientM09D23di110);
+      return transientM09D23di108;
     }
   }
   #endregion

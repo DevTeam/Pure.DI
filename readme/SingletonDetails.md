@@ -63,7 +63,7 @@ classDiagram
 partial class Singleton
 {
   private readonly System.IDisposable[] _disposableSingletonsM09D23di;
-  private Pure.DI.Benchmarks.Model.Service1 _singletonM09D23di23;
+  private Pure.DI.Benchmarks.Model.Service1 _singletonM09D23di22;
   
   public Singleton()
   {
@@ -75,7 +75,7 @@ partial class Singleton
     _disposableSingletonsM09D23di = new System.IDisposable[0];
     lock (parent._disposableSingletonsM09D23di)
     {
-      _singletonM09D23di23 = parent._singletonM09D23di23;
+      _singletonM09D23di22 = parent._singletonM09D23di22;
     }
   }
   
@@ -104,7 +104,7 @@ partial class Singleton
       var transientM09D23di67 = new Pure.DI.Benchmarks.Model.Service2(transientM09D23di69, transientM09D23di70, transientM09D23di71, transientM09D23di72, transientM09D23di73);
       var transientM09D23di66 = new Pure.DI.Benchmarks.Model.Service2(transientM09D23di74, transientM09D23di75, transientM09D23di76, transientM09D23di77, transientM09D23di78);
       var transientM09D23di65 = new Pure.DI.Benchmarks.Model.Service2(transientM09D23di79, transientM09D23di80, transientM09D23di81, transientM09D23di82, transientM09D23di83);
-      if (global::System.Object.ReferenceEquals(_singletonM09D23di23, null))
+      if (global::System.Object.ReferenceEquals(_singletonM09D23di22, null))
       {
           var transientM09D23di89 = new Pure.DI.Benchmarks.Model.Service3();
           var transientM09D23di88 = new Pure.DI.Benchmarks.Model.Service3();
@@ -112,9 +112,9 @@ partial class Singleton
           var transientM09D23di86 = new Pure.DI.Benchmarks.Model.Service3();
           var transientM09D23di85 = new Pure.DI.Benchmarks.Model.Service3();
           var transientM09D23di84 = new Pure.DI.Benchmarks.Model.Service2(transientM09D23di85, transientM09D23di86, transientM09D23di87, transientM09D23di88, transientM09D23di89);
-          _singletonM09D23di23 = new Pure.DI.Benchmarks.Model.Service1(transientM09D23di84);
+          _singletonM09D23di22 = new Pure.DI.Benchmarks.Model.Service1(transientM09D23di84);
       }
-      var transientM09D23di63 = new Pure.DI.Benchmarks.Model.CompositionRoot(_singletonM09D23di23, transientM09D23di65, transientM09D23di66, transientM09D23di67, transientM09D23di68);
+      var transientM09D23di63 = new Pure.DI.Benchmarks.Model.CompositionRoot(_singletonM09D23di22, transientM09D23di65, transientM09D23di66, transientM09D23di67, transientM09D23di68);
       return transientM09D23di63;
     }
   }

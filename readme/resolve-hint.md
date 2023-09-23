@@ -83,8 +83,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM09D23di115 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
-      return transientM09D23di115;
+      var transientM09D23di118 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
+      return transientM09D23di118;
     }
   }
   
@@ -93,9 +93,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM09D23di117 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
-      var transientM09D23di116 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(transientM09D23di117);
-      return transientM09D23di116;
+      var transientM09D23di120 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
+      var transientM09D23di119 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(transientM09D23di120);
+      return transientM09D23di119;
     }
   }
   #endregion

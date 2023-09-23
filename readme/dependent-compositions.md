@@ -113,9 +113,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM09D23di62 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
-      var transientM09D23di61 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(transientM09D23di62);
-      return transientM09D23di61;
+      var transientM09D23di65 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
+      var transientM09D23di64 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(transientM09D23di65);
+      return transientM09D23di64;
     }
   }
   #endregion
@@ -284,9 +284,9 @@ partial class OtherComposition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM09D23di64 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
-      var transientM09D23di63 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(transientM09D23di64);
-      return transientM09D23di63;
+      var transientM09D23di67 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
+      var transientM09D23di66 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(transientM09D23di67);
+      return transientM09D23di66;
     }
   }
   
@@ -295,10 +295,10 @@ partial class OtherComposition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM09D23di67 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
-      var transientM09D23di66 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(transientM09D23di67);
-      var transientM09D23di65 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program(transientM09D23di66);
-      return transientM09D23di65;
+      var transientM09D23di70 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency();
+      var transientM09D23di69 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(transientM09D23di70);
+      var transientM09D23di68 = new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program(transientM09D23di69);
+      return transientM09D23di68;
     }
   }
   #endregion

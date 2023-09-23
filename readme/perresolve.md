@@ -108,8 +108,8 @@ partial class Composition
               }
           }
       }
-      var transientM09D23di128 = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service(perResolveM09D23di29, perResolveM09D23di29);
-      return transientM09D23di128;
+      var transientM09D23di131 = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service(perResolveM09D23di29, perResolveM09D23di29);
+      return transientM09D23di131;
     }
   }
   #endregion

@@ -36,13 +36,6 @@ namespace Pure.DI
                         ctx.Inject<global::System.Func<TT>>(ctx.Tag, out func);
                         return new global::System.Lazy<TT>(func, true);
                     })
-                .Bind<global::System.Threading.Tasks.Task<TT>>()
-                    .To(ctx =>
-                    {
-                        global::System.Func<TT> func;
-                        ctx.Inject<global::System.Func<TT>>(ctx.Tag, out func);
-                        return new global::System.Threading.Tasks.Task<TT>(func);
-                    })
 #endif              
 #if NETSTANDARD || NET || NETCOREAPP                
                 .Bind<global::System.Lazy<TT, TT1>>()

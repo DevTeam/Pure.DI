@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=7
+$p=98
 $d=Service collection
 $h=The `// OnNewRoot = On` hint specifies to create a static method that will be called for each registered composition root. This method can be used, for example, to create an _IServiceCollection_ object:
 */

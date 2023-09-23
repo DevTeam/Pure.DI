@@ -246,9 +246,10 @@ dotnet run
 - [Lazy](readme/lazy.md)
 - [Span and ReadOnlySpan](readme/span-and-readonlyspan.md)
 - [Tuple](readme/tuple.md)
-- [Service provider](readme/service-provider.md)
+- [Weak Reference](readme/weak-reference.md)
 - [Service collection](readme/service-collection.md)
 - [Func with arguments](readme/func-with-arguments.md)
+- [Service provider](readme/service-provider.md)
 - [Overriding the BCL binding](readme/overriding-the-bcl-binding.md)
 ### Interception
 - [Decorator](readme/decorator.md)

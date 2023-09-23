@@ -131,11 +131,11 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM09D23di56 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int>();
-      var transientM09D23di55 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string>();
-      var transientM09D23di54 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>>(transientM09D23di55, transientM09D23di56);
-      var transientM09D23di53 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>(transientM09D23di54);
-      return transientM09D23di53;
+      var transientM09D23di59 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.DependencyStruct<int>();
+      var transientM09D23di58 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Dependency<string>();
+      var transientM09D23di57 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Service<string, int, System.Collections.Generic.List<string>, System.Collections.Generic.Dictionary<string, int>>(transientM09D23di58, transientM09D23di59);
+      var transientM09D23di56 = new Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>(transientM09D23di57);
+      return transientM09D23di56;
     }
   }
   #endregion

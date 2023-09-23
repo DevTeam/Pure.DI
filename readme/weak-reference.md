@@ -1,64 +1,33 @@
-#### OnNewInstance hint
+#### Weak Reference
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/OnNewInstanceHintScenario.cs)
-
-Hints are used to fine-tune code generation. The _OnNewInstance_ hint determines whether to generate partial _OnNewInstance_ method.
-In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// OnNewInstance = On`.
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/WeakReferenceScenario.cs)
 
 ```c#
-using static Hint;
+interface IDependency { }
 
-interface IDependency
-{
-}
+class Dependency : IDependency { }
 
-class Dependency : IDependency
-{
-    public override string ToString() => "Dependency";
-}
-
-interface IService
-{
-    IDependency Dependency { get; }
-}
+interface IService { }
 
 class Service : IService
 {
-    public Service(IDependency dependency) =>
-        Dependency = dependency;
+    private readonly WeakReference<IDependency> _dependency;
 
-    public IDependency Dependency { get; }
+    public Service(WeakReference<IDependency> dependency) =>
+        _dependency = dependency;
 
-    public override string ToString() => "Service";
-}
-
-internal partial class Composition
-{
-    private readonly List<string> _log;
-
-    public Composition(List<string> log) : this() =>
-        _log = log;
-
-    partial void OnNewInstance<T>(
-        ref T value,
-        object? tag,
-        Lifetime lifetime)
-    {
-        _log.Add(typeof(T).Name);
-    }
+    public IDependency? Dependency =>
+        _dependency.TryGetTarget(out var value)
+            ? value
+            : default;
 }
 
 DI.Setup("Composition")
-    .Hint(OnNewInstance, "On")
-    .Hint(OnNewInstanceLifetimeRegularExpression, nameof(Lifetime.Transient))
     .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
+    .Bind<IService>().To<Service>().Root<IService>("Root");
 
-var log = new List<string>();
-var composition = new Composition(log);
+var composition = new Composition();
 var service = composition.Root;
-        
-log.ShouldBe(ImmutableArray.Create("Dependency", "Service"));
 ```
 
 <details open>
@@ -73,9 +42,12 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
+  class WeakReferenceᐸIDependencyᐳ {
+    +WeakReference(IDependency target)
+  }
   Service --|> IService : 
   class Service {
-    +Service(IDependency dependency)
+    +Service(WeakReferenceᐸIDependencyᐳ dependency)
   }
   Dependency --|> IDependency : 
   class Dependency {
@@ -87,7 +59,8 @@ classDiagram
   class IDependency {
     <<abstract>>
   }
-  Service *--  Dependency : IDependency
+  WeakReferenceᐸIDependencyᐳ *--  Dependency : IDependency
+  Service *--  WeakReferenceᐸIDependencyᐳ : WeakReferenceᐸIDependencyᐳ
   Composition ..> Service : IService Root
 ```
 
@@ -112,16 +85,15 @@ partial class Composition
   }
   
   #region Composition Roots
-  public Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService Root
+  public Pure.DI.UsageTests.BCL.WeakReferenceScenario.IService Root
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM09D23di117 = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency();
-      OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency>(ref transientM09D23di117, null, Pure.DI.Lifetime.Transient);
-      var transientM09D23di116 = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service(transientM09D23di117);
-      OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service>(ref transientM09D23di116, null, Pure.DI.Lifetime.Transient);
-      return transientM09D23di116;
+      var transientM09D23di48 = new Pure.DI.UsageTests.BCL.WeakReferenceScenario.Dependency();
+      var transientM09D23di47 = new System.WeakReference<Pure.DI.UsageTests.BCL.WeakReferenceScenario.IDependency>(transientM09D23di48);
+      var transientM09D23di46 = new Pure.DI.UsageTests.BCL.WeakReferenceScenario.Service(transientM09D23di47);
+      return transientM09D23di46;
     }
   }
   #endregion
@@ -182,9 +154,6 @@ partial class Composition
     
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-  partial void OnNewInstance<T>(ref T value, object? tag, global::Pure.DI.Lifetime lifetime);
   #endregion
   
   public override string ToString()
@@ -198,9 +167,12 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
+        "  class WeakReferenceᐸIDependencyᐳ {\n" +
+          "    +WeakReference(IDependency target)\n" +
+        "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
-          "    +Service(IDependency dependency)\n" +
+          "    +Service(WeakReferenceᐸIDependencyᐳ dependency)\n" +
         "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
@@ -212,7 +184,8 @@ partial class Composition
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  Service *--  Dependency : IDependency\n" +
+        "  WeakReferenceᐸIDependencyᐳ *--  Dependency : IDependency\n" +
+        "  Service *--  WeakReferenceᐸIDependencyᐳ : WeakReferenceᐸIDependencyᐳ\n" +
         "  Composition ..> Service : IService Root";
   }
   
@@ -222,13 +195,13 @@ partial class Composition
   static Composition()
   {
     var valResolverM09D23di_0000 = new ResolverM09D23di_0000();
-    ResolverM09D23di<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService>.Value = valResolverM09D23di_0000;
+    ResolverM09D23di<Pure.DI.UsageTests.BCL.WeakReferenceScenario.IService>.Value = valResolverM09D23di_0000;
     _bucketsM09D23di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
       out _bucketSizeM09D23di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService), valResolverM09D23di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.WeakReferenceScenario.IService), valResolverM09D23di_0000)
       });
   }
   
@@ -248,19 +221,19 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM09D23di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService>
+  private sealed class ResolverM09D23di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.WeakReferenceScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.BCL.WeakReferenceScenario.IService Resolve(Composition composition)
     {
       return composition.Root;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.BCL.WeakReferenceScenario.IService ResolveByTag(Composition composition, object tag)
     {
       if (Equals(tag, null)) return composition.Root;
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.WeakReferenceScenario.IService.");
     }
   }
   #endregion
@@ -269,6 +242,3 @@ partial class Composition
 
 </blockquote></details>
 
-
-The `OnNewInstanceLifetimeRegularExpression` hint helps you define a set of lifetimes that require instance creation control. You can use it to specify a regular expression to filter bindings by lifetime name.
-For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/README.md#setup-hints) page.

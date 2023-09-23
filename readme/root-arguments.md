@@ -120,9 +120,9 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public Pure.DI.UsageTests.Basics.RootArgumentsScenario.IService CreateService(string serviceName, int id, string dependencyName)
   {
-    var transientM09D23di99 = new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Dependency(id, dependencyName);
-    var transientM09D23di97 = new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Service(serviceName, transientM09D23di99);
-    return transientM09D23di97;
+    var transientM09D23di102 = new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Dependency(id, dependencyName);
+    var transientM09D23di100 = new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Service(serviceName, transientM09D23di102);
+    return transientM09D23di100;
   }
   #endregion
   

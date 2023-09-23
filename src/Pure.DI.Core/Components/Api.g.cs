@@ -412,7 +412,7 @@ namespace Pure.DI
     internal interface IContext
     {
         /// <summary>
-        /// The tag that was used to inject the current object in the object graph.
+        /// The tag that was used to inject the current object in the object graph. See also <see cref="IBinding.Tags"/>
         /// </summary>
         object Tag { get; }
             
@@ -420,11 +420,16 @@ namespace Pure.DI
         /// Injects an instance of type <c>T</c>.
         /// <example><code>ctx.Inject&lt;IDependency&gt;(out var dependency);</code></example>
         /// </summary>
+        /// <param name="value">Injectable instance.</param>.
+        /// <typeparam name="T">Instance type.</typeparam>
         void Inject<T>(out T value);
 
         /// <summary>
         /// Injects an instance of type <c>T</c> marked with a tag.
         /// </summary>
+        /// <param name="tag">The injection tag. See also <see cref="IBinding.Tags"/></param>.
+        /// <param name="value">Injectable instance.</param>.
+        /// <typeparam name="T">Instance type.</typeparam>
         /// <example><code>ctx.Inject&lt;IDependency&gt;("myTag", out var dependency);</code></example>
         void Inject<T>(object tag, out T value);
     }

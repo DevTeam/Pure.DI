@@ -83,8 +83,8 @@ classDiagram
 partial class Composition
 {
   private readonly System.IDisposable[] _disposableSingletonsM09D23di;
-  private Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Service _singletonM09D23di23;
-  private Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Dependency _singletonM09D23di22;
+  private Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Service _singletonM09D23di22;
+  private Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Dependency _singletonM09D23di21;
   
   public Composition()
   {
@@ -96,8 +96,8 @@ partial class Composition
     _disposableSingletonsM09D23di = new System.IDisposable[0];
     lock (parent._disposableSingletonsM09D23di)
     {
-      _singletonM09D23di23 = parent._singletonM09D23di23;
       _singletonM09D23di22 = parent._singletonM09D23di22;
+      _singletonM09D23di21 = parent._singletonM09D23di21;
     }
   }
   
@@ -107,21 +107,21 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      if (global::System.Object.ReferenceEquals(_singletonM09D23di23, null))
+      if (global::System.Object.ReferenceEquals(_singletonM09D23di22, null))
       {
           lock (_disposableSingletonsM09D23di)
           {
-              if (global::System.Object.ReferenceEquals(_singletonM09D23di23, null))
+              if (global::System.Object.ReferenceEquals(_singletonM09D23di22, null))
               {
-                  if (global::System.Object.ReferenceEquals(_singletonM09D23di22, null))
+                  if (global::System.Object.ReferenceEquals(_singletonM09D23di21, null))
                   {
-                      _singletonM09D23di22 = new Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Dependency();
+                      _singletonM09D23di21 = new Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Dependency();
                   }
-                  _singletonM09D23di23 = new Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Service(_singletonM09D23di22, _singletonM09D23di22);
+                  _singletonM09D23di22 = new Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Service(_singletonM09D23di21, _singletonM09D23di21);
               }
           }
       }
-      return _singletonM09D23di23;
+      return _singletonM09D23di22;
     }
   }
   #endregion
