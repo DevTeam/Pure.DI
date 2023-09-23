@@ -266,6 +266,7 @@ dotnet run
 - [WPF application](readme/Wpf.md)
 - [Web API](readme/WebAPI.md)
 - [Top level statements console application](readme/ConsoleTopLevelStatements.md)
+- [Native AOT console application](readme/ConsoleNativeAOTPageTemplate.md)
 
 ## Generated Code
 
