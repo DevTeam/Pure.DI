@@ -5,11 +5,11 @@
         <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
         <RootNamespace>Pure.DI</RootNamespace>
         <OutputPath>bin/$(Configuration)/roslyn$(AnalyzerRoslynVersion)</OutputPath>
-        <DefineConstants>PUREDI_API_SUPPRESSION;PUREDI_API_V2</DefineConstants>
+        <DefineConstants>PUREDI_API_SUPPRESSION;PUREDI_API_V1</DefineConstants>
     </PropertyGroup>
     
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.0.17">
+        <PackageReference Include="Pure.DI" Version="2.0.19">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
