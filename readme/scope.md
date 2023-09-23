@@ -163,8 +163,8 @@ partial class Composition: System.IDisposable
               }
           }
       }
-      var transientM09D23di125 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service(_singletonM09D23di22);
-      return transientM09D23di125;
+      var transientM09D23di129 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service(_singletonM09D23di22);
+      return transientM09D23di129;
     }
   }
   
@@ -173,9 +173,9 @@ partial class Composition: System.IDisposable
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM09D23di127 = this;
-      var transientM09D23di126 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session(transientM09D23di127);
-      return transientM09D23di126;
+      var transientM09D23di131 = this;
+      var transientM09D23di130 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session(transientM09D23di131);
+      return transientM09D23di130;
     }
   }
   #endregion

@@ -105,8 +105,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM09D23di89 = new Pure.DI.UsageTests.Basics.ResolveScenario.Dependency();
-      return transientM09D23di89;
+      var transientM09D23di93 = new Pure.DI.UsageTests.Basics.ResolveScenario.Dependency();
+      return transientM09D23di93;
     }
   }
   
@@ -115,8 +115,8 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM09D23di92 = new Pure.DI.UsageTests.Basics.ResolveScenario.OtherService();
-      return transientM09D23di92;
+      var transientM09D23di96 = new Pure.DI.UsageTests.Basics.ResolveScenario.OtherService();
+      return transientM09D23di96;
     }
   }
   
@@ -125,9 +125,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM09D23di91 = new Pure.DI.UsageTests.Basics.ResolveScenario.Dependency();
-      var transientM09D23di90 = new Pure.DI.UsageTests.Basics.ResolveScenario.Service(transientM09D23di91);
-      return transientM09D23di90;
+      var transientM09D23di95 = new Pure.DI.UsageTests.Basics.ResolveScenario.Dependency();
+      var transientM09D23di94 = new Pure.DI.UsageTests.Basics.ResolveScenario.Service(transientM09D23di95);
+      return transientM09D23di94;
     }
   }
   #endregion

@@ -141,6 +141,11 @@ internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilde
                     }
                     else
                     {
+                        if (SymbolEqualityComparer.Default.Equals(dependency.Source.Type, dependency.Target.Type))
+                        {
+                            continue;
+                        }
+
                         var relationship = dependency.Source.Lifetime == Lifetime.Transient ? "*--" : "o--";
                         lines.AppendLine($"{FormatType(dependency.Target.Type, DefaultFormatOptions)} {relationship} {FormatCardinality(dependency.Source.Lifetime)} {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatDependency(dependency, DefaultFormatOptions)}");   
                     }

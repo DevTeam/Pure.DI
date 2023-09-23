@@ -104,13 +104,13 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM09D23di88 = new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Dependency();
-      var transientM09D23di86 = new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Service()
+      var transientM09D23di92 = new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Dependency();
+      var transientM09D23di90 = new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Service()
       {
           ServiceNameField = _argM09D23diname,
-          Dependency = transientM09D23di88
+          Dependency = transientM09D23di92
       };
-      return transientM09D23di86;
+      return transientM09D23di90;
     }
   }
   #endregion

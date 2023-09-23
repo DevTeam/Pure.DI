@@ -68,7 +68,7 @@ The [project file](/samples/WpfAppNetCore/WpfAppNetCore.csproj) looks like this:
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.0.19">
+        <PackageReference Include="Pure.DI" Version="2.0.20">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

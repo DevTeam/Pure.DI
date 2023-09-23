@@ -221,6 +221,7 @@ dotnet run
 - [Method injection](readme/method-injection.md)
 - [Property injection](readme/property-injection.md)
 - [Complex generics](readme/complex-generics.md)
+- [Instance Initialization](readme/instance-initialization.md)
 - [Partial class](readme/partial-class.md)
 - [A few partial classes](readme/a-few-partial-classes.md)
 - [Dependent compositions](readme/dependent-compositions.md)

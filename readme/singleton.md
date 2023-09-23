@@ -112,8 +112,8 @@ partial class Composition
               }
           }
       }
-      var transientM09D23di128 = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service(_singletonM09D23di22, _singletonM09D23di22);
-      return transientM09D23di128;
+      var transientM09D23di132 = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service(_singletonM09D23di22, _singletonM09D23di22);
+      return transientM09D23di132;
     }
   }
   #endregion

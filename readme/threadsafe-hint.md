@@ -84,9 +84,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM09D23di115 = new Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Dependency();
-      var transientM09D23di114 = new Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Service(transientM09D23di115);
-      return transientM09D23di114;
+      var transientM09D23di119 = new Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Dependency();
+      var transientM09D23di118 = new Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Service(transientM09D23di119);
+      return transientM09D23di118;
     }
   }
   #endregion

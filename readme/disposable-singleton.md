@@ -118,8 +118,8 @@ partial class Composition: System.IDisposable
               }
           }
       }
-      var transientM09D23di123 = new Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service(_singletonM09D23di22);
-      return transientM09D23di123;
+      var transientM09D23di127 = new Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service(_singletonM09D23di22);
+      return transientM09D23di127;
     }
   }
   #endregion

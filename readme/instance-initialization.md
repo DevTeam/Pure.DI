@@ -1,64 +1,63 @@
-#### OnNewInstance hint
+#### Instance Initialization
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/OnNewInstanceHintScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/InstanceInitializationScenario.cs)
 
-Hints are used to fine-tune code generation. The _OnNewInstance_ hint determines whether to generate partial _OnNewInstance_ method.
-In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// OnNewInstance = On`.
+This example shows how to build up an instance with all the necessary dependencies and manually prepare it for further use.
 
 ```c#
-using static Hint;
-
 interface IDependency
 {
 }
 
-class Dependency : IDependency
-{
-    public override string ToString() => "Dependency";
-}
+class Dependency : IDependency { }
 
 interface IService
 {
+    string ServiceName { get; }
+
     IDependency Dependency { get; }
+
+    bool IsInitialized { get; }
 }
 
 class Service : IService
 {
-    public Service(IDependency dependency) =>
+    public Service(string serviceName, IDependency dependency)
+    {
+        ServiceName = serviceName;
         Dependency = dependency;
+    }
+
+    public string ServiceName { get; }
 
     public IDependency Dependency { get; }
 
-    public override string ToString() => "Service";
-}
+    public bool IsInitialized { get; private set; }
 
-internal partial class Composition
-{
-    private readonly List<string> _log;
-
-    public Composition(List<string> log) : this() =>
-        _log = log;
-
-    partial void OnNewInstance<T>(
-        ref T value,
-        object? tag,
-        Lifetime lifetime)
-    {
-        _log.Add(typeof(T).Name);
-    }
+    public void Initialize() =>
+        IsInitialized = true;
 }
 
 DI.Setup("Composition")
-    .Hint(OnNewInstance, "On")
-    .Hint(OnNewInstanceLifetimeRegularExpression, nameof(Lifetime.Transient))
     .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
+    .Arg<string>("serviceName")
+    .Bind<IService>()
+        .To<Service>(ctx =>
+        {
+            // Builds up an instance with all necessary dependencies
+            ctx.Inject<Service>(out var service);
 
-var log = new List<string>();
-var composition = new Composition(log);
+            // Executing all the necessary logic
+            // to prepare the instance for further use
+            service.Initialize();
+            return service;
+        })
+        .Root<IService>("Root");
+
+var composition = new Composition("My Service");
 var service = composition.Root;
-        
-log.ShouldBe(ImmutableArray.Create("Dependency", "Service"));
+service.ServiceName.ShouldBe("My Service");
+service.IsInitialized.ShouldBeTrue();
 ```
 
 <details open>
@@ -73,20 +72,18 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  Service --|> IService : 
   class Service {
-    +Service(IDependency dependency)
+    +Service(String serviceName, IDependency dependency)
   }
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
   }
-  class IService {
-    <<abstract>>
-  }
+  class String
   class IDependency {
     <<abstract>>
   }
+  Service o-- String : Argument "serviceName"
   Service *--  Dependency : IDependency
   Composition ..> Service : IService Root
 ```
@@ -100,28 +97,42 @@ classDiagram
 partial class Composition
 {
   private readonly System.IDisposable[] _disposableSingletonsM09D23di;
+  private readonly string _argM09D23diserviceName;
   
-  public Composition()
+  public Composition(string serviceName)
   {
+    if (global::System.Object.ReferenceEquals(serviceName, null))
+    {
+      throw new global::System.ArgumentNullException("serviceName");
+    }
+    
+    _argM09D23diserviceName = serviceName;
     _disposableSingletonsM09D23di = new System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
     _disposableSingletonsM09D23di = new System.IDisposable[0];
+    _argM09D23diserviceName = parent._argM09D23diserviceName;
   }
   
   #region Composition Roots
-  public Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService Root
+  public Pure.DI.UsageTests.Basics.InstanceInitializationScenario.IService Root
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM09D23di114 = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency();
-      OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency>(ref transientM09D23di114, null, Pure.DI.Lifetime.Transient);
-      var transientM09D23di113 = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service(transientM09D23di114);
-      OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service>(ref transientM09D23di113, null, Pure.DI.Lifetime.Transient);
-      return transientM09D23di113;
+      var transientM09D23di80 = new Pure.DI.UsageTests.Basics.InstanceInitializationScenario.Dependency();
+      Pure.DI.UsageTests.Basics.InstanceInitializationScenario.Service transientM09D23di77;
+      {
+          var transientM09D23di78 = new Pure.DI.UsageTests.Basics.InstanceInitializationScenario.Service(_argM09D23diserviceName, transientM09D23di80);
+          var service = transientM09D23di78;
+          // Executing all the necessary logic
+          // to prepare the instance for further use
+          service.Initialize();
+          transientM09D23di77 = service;
+      }
+      return transientM09D23di77;
     }
   }
   #endregion
@@ -182,9 +193,6 @@ partial class Composition
     
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-  partial void OnNewInstance<T>(ref T value, object? tag, global::Pure.DI.Lifetime lifetime);
   #endregion
   
   public override string ToString()
@@ -198,20 +206,18 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  Service --|> IService : \n" +
         "  class Service {\n" +
-          "    +Service(IDependency dependency)\n" +
+          "    +Service(String serviceName, IDependency dependency)\n" +
         "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
+        "  class String\n" +
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
+        "  Service o-- String : Argument \"serviceName\"\n" +
         "  Service *--  Dependency : IDependency\n" +
         "  Composition ..> Service : IService Root";
   }
@@ -222,13 +228,13 @@ partial class Composition
   static Composition()
   {
     var valResolverM09D23di_0000 = new ResolverM09D23di_0000();
-    ResolverM09D23di<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService>.Value = valResolverM09D23di_0000;
+    ResolverM09D23di<Pure.DI.UsageTests.Basics.InstanceInitializationScenario.IService>.Value = valResolverM09D23di_0000;
     _bucketsM09D23di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
       out _bucketSizeM09D23di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService), valResolverM09D23di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.InstanceInitializationScenario.IService), valResolverM09D23di_0000)
       });
   }
   
@@ -248,19 +254,19 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM09D23di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService>
+  private sealed class ResolverM09D23di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.InstanceInitializationScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.Basics.InstanceInitializationScenario.IService Resolve(Composition composition)
     {
       return composition.Root;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Basics.InstanceInitializationScenario.IService ResolveByTag(Composition composition, object tag)
     {
       if (Equals(tag, null)) return composition.Root;
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.InstanceInitializationScenario.IService.");
     }
   }
   #endregion
@@ -269,6 +275,3 @@ partial class Composition
 
 </blockquote></details>
 
-
-The `OnNewInstanceLifetimeRegularExpression` hint helps you define a set of lifetimes that require instance creation control. You can use it to specify a regular expression to filter bindings by lifetime name.
-For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/README.md#setup-hints) page.

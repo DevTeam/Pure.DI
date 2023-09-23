@@ -147,7 +147,7 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM09D23di103 = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
+      var transientM09D23di107 = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
       if (global::System.Object.ReferenceEquals(_singletonM09D23di23, null))
       {
           lock (_disposableSingletonsM09D23di)
@@ -158,9 +158,9 @@ partial class Composition
               }
           }
       }
-      var transientM09D23di102 = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
-      var transientM09D23di101 = new Pure.DI.UsageTests.Basics.TagsScenario.Service(transientM09D23di102, _singletonM09D23di23, transientM09D23di103);
-      return transientM09D23di101;
+      var transientM09D23di106 = new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency();
+      var transientM09D23di105 = new Pure.DI.UsageTests.Basics.TagsScenario.Service(transientM09D23di106, _singletonM09D23di23, transientM09D23di107);
+      return transientM09D23di105;
     }
   }
   #endregion
