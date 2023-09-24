@@ -5,12 +5,12 @@ namespace Pure.DI.Core;
 internal sealed class LogObserver: IObserver<LogEntry>
 {
     private readonly IBuilder<LogEntry, LogInfo> _logInfoBuilder;
-    private readonly IDiagnostic _diagnostic;
+    private readonly IGeneratorDiagnostic _diagnostic;
     private readonly HashSet<DiagnosticInfo> _diagnostics = new();
     
     public LogObserver(
         IBuilder<LogEntry, LogInfo> logInfoBuilder,
-        IDiagnostic diagnostic)
+        IGeneratorDiagnostic diagnostic)
     {
         _logInfoBuilder = logInfoBuilder;
         _diagnostic = diagnostic;

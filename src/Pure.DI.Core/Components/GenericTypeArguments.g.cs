@@ -8,20 +8,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI { }
+    internal abstract class TT { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -142,25 +129,60 @@ namespace Pure.DI
     [GenericTypeArgument]
     internal interface TTObserver<in T>: global::System.IObserver<T> { }
 #endif
+    
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Generic.IReadOnlyCollection[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTReadOnlyCollection<out T>: global::System.Collections.Generic.IReadOnlyCollection<T> { }
+#endif
+    
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Generic.IReadOnlyList[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTReadOnlyList<out T>: global::System.Collections.Generic.IReadOnlyList<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableList[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableList<T>: global::System.Collections.Immutable.IImmutableList<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableSet[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableSet<T>: global::System.Collections.Immutable.IImmutableSet<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableQueue[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableQueue<T>: global::System.Collections.Immutable.IImmutableQueue<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableStack[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableStack<T>: global::System.Collections.Immutable.IImmutableStack<T> { }
+#endif
         /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT1 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC1 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI1 { }
+    internal abstract class TT1 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -281,25 +303,60 @@ namespace Pure.DI
     [GenericTypeArgument]
     internal interface TTObserver1<in T>: global::System.IObserver<T> { }
 #endif
+    
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Generic.IReadOnlyCollection[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTReadOnlyCollection1<out T>: global::System.Collections.Generic.IReadOnlyCollection<T> { }
+#endif
+    
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Generic.IReadOnlyList[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTReadOnlyList1<out T>: global::System.Collections.Generic.IReadOnlyList<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableList[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableList1<T>: global::System.Collections.Immutable.IImmutableList<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableSet[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableSet1<T>: global::System.Collections.Immutable.IImmutableSet<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableQueue[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableQueue1<T>: global::System.Collections.Immutable.IImmutableQueue<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableStack[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableStack1<T>: global::System.Collections.Immutable.IImmutableStack<T> { }
+#endif
         /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT2 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC2 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI2 { }
+    internal abstract class TT2 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -420,25 +477,60 @@ namespace Pure.DI
     [GenericTypeArgument]
     internal interface TTObserver2<in T>: global::System.IObserver<T> { }
 #endif
+    
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Generic.IReadOnlyCollection[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTReadOnlyCollection2<out T>: global::System.Collections.Generic.IReadOnlyCollection<T> { }
+#endif
+    
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Generic.IReadOnlyList[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTReadOnlyList2<out T>: global::System.Collections.Generic.IReadOnlyList<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableList[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableList2<T>: global::System.Collections.Immutable.IImmutableList<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableSet[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableSet2<T>: global::System.Collections.Immutable.IImmutableSet<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableQueue[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableQueue2<T>: global::System.Collections.Immutable.IImmutableQueue<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableStack[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableStack2<T>: global::System.Collections.Immutable.IImmutableStack<T> { }
+#endif
         /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT3 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC3 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI3 { }
+    internal abstract class TT3 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -559,25 +651,60 @@ namespace Pure.DI
     [GenericTypeArgument]
     internal interface TTObserver3<in T>: global::System.IObserver<T> { }
 #endif
+    
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Generic.IReadOnlyCollection[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTReadOnlyCollection3<out T>: global::System.Collections.Generic.IReadOnlyCollection<T> { }
+#endif
+    
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Generic.IReadOnlyList[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTReadOnlyList3<out T>: global::System.Collections.Generic.IReadOnlyList<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableList[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableList3<T>: global::System.Collections.Immutable.IImmutableList<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableSet[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableSet3<T>: global::System.Collections.Immutable.IImmutableSet<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableQueue[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableQueue3<T>: global::System.Collections.Immutable.IImmutableQueue<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableStack[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableStack3<T>: global::System.Collections.Immutable.IImmutableStack<T> { }
+#endif
         /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT4 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC4 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI4 { }
+    internal abstract class TT4 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -698,25 +825,60 @@ namespace Pure.DI
     [GenericTypeArgument]
     internal interface TTObserver4<in T>: global::System.IObserver<T> { }
 #endif
+    
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Generic.IReadOnlyCollection[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTReadOnlyCollection4<out T>: global::System.Collections.Generic.IReadOnlyCollection<T> { }
+#endif
+    
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Generic.IReadOnlyList[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTReadOnlyList4<out T>: global::System.Collections.Generic.IReadOnlyList<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableList[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableList4<T>: global::System.Collections.Immutable.IImmutableList<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableSet[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableSet4<T>: global::System.Collections.Immutable.IImmutableSet<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableQueue[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableQueue4<T>: global::System.Collections.Immutable.IImmutableQueue<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableStack[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableStack4<T>: global::System.Collections.Immutable.IImmutableStack<T> { }
+#endif
         /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT5 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC5 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI5 { }
+    internal abstract class TT5 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -837,25 +999,60 @@ namespace Pure.DI
     [GenericTypeArgument]
     internal interface TTObserver5<in T>: global::System.IObserver<T> { }
 #endif
+    
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Generic.IReadOnlyCollection[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTReadOnlyCollection5<out T>: global::System.Collections.Generic.IReadOnlyCollection<T> { }
+#endif
+    
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Generic.IReadOnlyList[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTReadOnlyList5<out T>: global::System.Collections.Generic.IReadOnlyList<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableList[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableList5<T>: global::System.Collections.Immutable.IImmutableList<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableSet[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableSet5<T>: global::System.Collections.Immutable.IImmutableSet<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableQueue[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableQueue5<T>: global::System.Collections.Immutable.IImmutableQueue<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableStack[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableStack5<T>: global::System.Collections.Immutable.IImmutableStack<T> { }
+#endif
         /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT6 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC6 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI6 { }
+    internal abstract class TT6 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -976,25 +1173,60 @@ namespace Pure.DI
     [GenericTypeArgument]
     internal interface TTObserver6<in T>: global::System.IObserver<T> { }
 #endif
+    
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Generic.IReadOnlyCollection[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTReadOnlyCollection6<out T>: global::System.Collections.Generic.IReadOnlyCollection<T> { }
+#endif
+    
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Generic.IReadOnlyList[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTReadOnlyList6<out T>: global::System.Collections.Generic.IReadOnlyList<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableList[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableList6<T>: global::System.Collections.Immutable.IImmutableList<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableSet[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableSet6<T>: global::System.Collections.Immutable.IImmutableSet<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableQueue[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableQueue6<T>: global::System.Collections.Immutable.IImmutableQueue<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableStack[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableStack6<T>: global::System.Collections.Immutable.IImmutableStack<T> { }
+#endif
         /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT7 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC7 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI7 { }
+    internal abstract class TT7 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1115,25 +1347,60 @@ namespace Pure.DI
     [GenericTypeArgument]
     internal interface TTObserver7<in T>: global::System.IObserver<T> { }
 #endif
+    
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Generic.IReadOnlyCollection[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTReadOnlyCollection7<out T>: global::System.Collections.Generic.IReadOnlyCollection<T> { }
+#endif
+    
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Generic.IReadOnlyList[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTReadOnlyList7<out T>: global::System.Collections.Generic.IReadOnlyList<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableList[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableList7<T>: global::System.Collections.Immutable.IImmutableList<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableSet[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableSet7<T>: global::System.Collections.Immutable.IImmutableSet<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableQueue[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableQueue7<T>: global::System.Collections.Immutable.IImmutableQueue<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableStack[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableStack7<T>: global::System.Collections.Immutable.IImmutableStack<T> { }
+#endif
         /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT8 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC8 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI8 { }
+    internal abstract class TT8 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1254,25 +1521,60 @@ namespace Pure.DI
     [GenericTypeArgument]
     internal interface TTObserver8<in T>: global::System.IObserver<T> { }
 #endif
+    
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Generic.IReadOnlyCollection[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTReadOnlyCollection8<out T>: global::System.Collections.Generic.IReadOnlyCollection<T> { }
+#endif
+    
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Generic.IReadOnlyList[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTReadOnlyList8<out T>: global::System.Collections.Generic.IReadOnlyList<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableList[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableList8<T>: global::System.Collections.Immutable.IImmutableList<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableSet[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableSet8<T>: global::System.Collections.Immutable.IImmutableSet<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableQueue[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableQueue8<T>: global::System.Collections.Immutable.IImmutableQueue<T> { }
+#endif
+    
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c>global::System.Collections.Immutable.IImmutableStack[T]</c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface TTImmutableStack8<T>: global::System.Collections.Immutable.IImmutableStack<T> { }
+#endif
         /// <summary>
     /// Represents the generic type arguments marker for a reference type.
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT9 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC9 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI9 { }
+    internal abstract class TT9 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1286,20 +1588,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT10 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC10 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI10 { }
+    internal abstract class TT10 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1313,20 +1602,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT11 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC11 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI11 { }
+    internal abstract class TT11 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1340,20 +1616,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT12 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC12 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI12 { }
+    internal abstract class TT12 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1367,20 +1630,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT13 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC13 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI13 { }
+    internal abstract class TT13 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1394,20 +1644,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT14 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC14 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI14 { }
+    internal abstract class TT14 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1421,20 +1658,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT15 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC15 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI15 { }
+    internal abstract class TT15 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1448,20 +1672,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT16 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC16 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI16 { }
+    internal abstract class TT16 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1475,20 +1686,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT17 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC17 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI17 { }
+    internal abstract class TT17 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1502,20 +1700,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT18 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC18 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI18 { }
+    internal abstract class TT18 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1529,20 +1714,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT19 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC19 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI19 { }
+    internal abstract class TT19 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1556,20 +1728,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT20 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC20 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI20 { }
+    internal abstract class TT20 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1583,20 +1742,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT21 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC21 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI21 { }
+    internal abstract class TT21 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1610,20 +1756,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT22 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC22 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI22 { }
+    internal abstract class TT22 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1637,20 +1770,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT23 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC23 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI23 { }
+    internal abstract class TT23 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1664,20 +1784,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT24 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC24 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI24 { }
+    internal abstract class TT24 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1691,20 +1798,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT25 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC25 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI25 { }
+    internal abstract class TT25 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1718,20 +1812,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT26 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC26 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI26 { }
+    internal abstract class TT26 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1745,20 +1826,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT27 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC27 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI27 { }
+    internal abstract class TT27 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1772,20 +1840,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT28 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC28 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI28 { }
+    internal abstract class TT28 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1799,20 +1854,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT29 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC29 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI29 { }
+    internal abstract class TT29 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1826,20 +1868,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT30 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC30 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI30 { }
+    internal abstract class TT30 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1853,20 +1882,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT31 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC31 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI31 { }
+    internal abstract class TT31 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -1880,20 +1896,7 @@ namespace Pure.DI
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT32 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC32 { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI32 { }
+    internal abstract class TT32 { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.

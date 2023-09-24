@@ -15,9 +15,9 @@ internal partial class Composition
     [Conditional("DI")]
     private static void Setup() => DI.Setup(nameof(Composition))
         .Hint(Hint.Resolve, "Off")
-        .RootArg<IOptions>("options")
-        .RootArg<ISourcesRegistry>("sources")
-        .RootArg<IDiagnostic>("diagnostic")
+        .RootArg<IGeneratorOptions>("options")
+        .RootArg<IGeneratorSources>("sources")
+        .RootArg<IGeneratorDiagnostic>("diagnostic")
         .RootArg<CancellationToken>("cancellationToken")
         
         .Root<IBuilder<Unit, IEnumerable<Source>>>("ApiBuilder")

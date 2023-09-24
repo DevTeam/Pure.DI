@@ -15,7 +15,7 @@ internal sealed class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
     private readonly IBuilder<DependencyGraph, CompositionCode> _compositionBuilder;
     private readonly IBuilder<CompositionCode, CompositionCode> _classBuilder;
     private readonly IValidator<MdSetup> _metadataValidator;
-    private readonly ISourcesRegistry _sourcesRegistry;
+    private readonly IGeneratorSources _sources;
     private readonly CancellationToken _cancellationToken;
     private readonly IObserversRegistry _observersRegistry;
     private readonly IObserver<LogEntry> _logObserver;
@@ -33,7 +33,7 @@ internal sealed class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
         [Tag(WellknownTag.CompositionBuilder)] IBuilder<DependencyGraph, CompositionCode> compositionBuilder,
         [Tag(WellknownTag.ClassBuilder)] IBuilder<CompositionCode, CompositionCode> classBuilder,
         IValidator<MdSetup> metadataValidator,
-        ISourcesRegistry sourcesRegistry,
+        IGeneratorSources sources,
         CancellationToken cancellationToken)
     {
         _logger = logger;
@@ -47,7 +47,7 @@ internal sealed class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
         _compositionBuilder = compositionBuilder;
         _classBuilder = classBuilder;
         _metadataValidator = metadataValidator;
-        _sourcesRegistry = sourcesRegistry;
+        _sources = sources;
         _cancellationToken = cancellationToken;
     }
 
@@ -85,7 +85,7 @@ internal sealed class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
 
                     _cancellationToken.ThrowIfCancellationRequested();
                     var classCode = string.Join(Environment.NewLine, composition.Code);
-                    _sourcesRegistry.AddSource($"{setup.Name.FullName}.g.cs", SourceText.From(classCode, Encoding.UTF8));
+                    _sources.AddSource($"{setup.Name.FullName}.g.cs", SourceText.From(classCode, Encoding.UTF8));
                 }
                 catch (HandledException handledException)
                 {

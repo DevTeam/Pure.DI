@@ -37,7 +37,7 @@ namespace Pure.DI
                         return new global::System.Lazy<TT>(func, true);
                     })
 #endif              
-#if NETSTANDARD || NET || NETCOREAPP                
+#if NETSTANDARD || NET || NETCOREAPP
                 .Bind<global::System.Lazy<TT, TT1>>()
                     .To(ctx =>
                     {
@@ -50,7 +50,7 @@ namespace Pure.DI
 #endif
 
                 // Collections
-#if NETSTANDARD2_1 || NETCOREAPP2_1_OR_GREATER                
+#if NETSTANDARD2_1 || NETCOREAPP2_1_OR_GREATER
                 .Bind<global::System.Memory<TT>>()
                     .To(ctx =>
                     {
@@ -77,7 +77,7 @@ namespace Pure.DI
                         ctx.Inject<TT[]>(out var arr);
                         return new global::System.Collections.Generic.List<TT>(arr);
                     })
-#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER                
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
                 .Bind<global::System.Collections.Generic.IReadOnlyCollection<TT>>()
                 .Bind<global::System.Collections.Generic.IReadOnlyList<TT>>()
                     .As(Lifetime.PerResolve)

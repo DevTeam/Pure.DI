@@ -5,7 +5,7 @@ internal sealed class GlobalOptions : IGlobalOptions
 {
     private readonly Lazy<int> _maxIterations;
 
-    public GlobalOptions(IOptions options)
+    public GlobalOptions(IGeneratorOptions options)
     {
         _maxIterations = new Lazy<int>(() =>
         {

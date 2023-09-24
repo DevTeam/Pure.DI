@@ -1,8 +1,8 @@
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedMemberInSuper.Global
-namespace Pure.DI;
+namespace Pure.DI.Core;
 
-public interface IOptions
+internal interface IGeneratorOptions
 {
     ParseOptions ParseOptions { get; }
 

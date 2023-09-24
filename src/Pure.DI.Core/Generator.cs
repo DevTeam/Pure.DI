@@ -1,24 +1,45 @@
 namespace Pure.DI;
 
-public static class Generator
+public sealed class Generator
 {
-    private static readonly Composition Composition = new();
+    private readonly Composition _composition = new();
 
-    public static IEnumerable<Source> GetApi() => 
-        Composition.ApiBuilder.Build(Unit.Shared);
+    public IEnumerable<Source> GetApi() => 
+        _composition.ApiBuilder.Build(Unit.Shared);
 
-    public static IDisposable RegisterObserver<T>(IObserver<T> observer) => 
-        Composition.ObserversRegistry.Register(observer);
+    public void Generate(
+        ParseOptions parseOptions,
+        AnalyzerConfigOptionsProvider analyzerConfigOptionsProvider,
+        in SourceProductionContext sourceProductionContext,
+        in ImmutableArray<GeneratorSyntaxContext> changes,
+        CancellationToken cancellationToken)
+    {
+        if (changes.IsEmpty)
+        {
+            return;
+        }
 
-    public static void Generate(IOptions options,
-        ISourcesRegistry sources,
-        IDiagnostic diagnostic,
+        Generate(
+            new GeneratorOptions(parseOptions, analyzerConfigOptionsProvider),
+            new GeneratorSources(sourceProductionContext),
+            new GeneratorDiagnostic(sourceProductionContext),
+            changes.Select(change => new SyntaxUpdate(change.Node, change.SemanticModel)),
+            cancellationToken);
+    }
+
+    internal IDisposable RegisterObserver<T>(IObserver<T> observer) => 
+        _composition.ObserversRegistry.Register(observer);
+
+    internal void Generate(
+        IGeneratorOptions options,
+        IGeneratorSources sources,
+        IGeneratorDiagnostic diagnostic,
         IEnumerable<SyntaxUpdate> updates,
         CancellationToken cancellationToken) =>
-        Composition.CreateGenerator(
-            options: options,
-            sources: sources,
-            diagnostic: diagnostic,
-            cancellationToken: cancellationToken)
+        _composition.CreateGenerator(
+                options: options,
+                sources: sources,
+                diagnostic: diagnostic,
+                cancellationToken: cancellationToken)
             .Build(updates);
 }

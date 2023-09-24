@@ -1,6 +1,6 @@
-namespace Pure.DI;
+namespace Pure.DI.Core;
 
-public interface ISourcesRegistry
+internal interface IGeneratorSources
 {
     void AddSource(string hintName, SourceText sourceText);
 }

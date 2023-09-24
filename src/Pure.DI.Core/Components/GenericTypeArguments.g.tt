@@ -8,7 +8,7 @@
 namespace Pure.DI
 {    
 <#
-var baseTypes = new Dictionary<string, string> { 
+var netTypes = new Dictionary<string, string> { 
     { "global::System.IDisposable", "TTDisposable#" },
     { "global::System.IComparable", "TTComparable#" },
     { "global::System.IComparable<T>", "TTComparable#<in T>" },
@@ -24,6 +24,18 @@ var baseTypes = new Dictionary<string, string> {
     { "global::System.IObservable<T>", "TTObservable#<out T>" },
     { "global::System.IObserver<T>", "TTObserver#<in T>" }
 };
+
+var net45Types = new Dictionary<string, string> { 
+    { "global::System.Collections.Generic.IReadOnlyCollection<T>", "TTReadOnlyCollection#<out T>" },
+    { "global::System.Collections.Generic.IReadOnlyList<T>", "TTReadOnlyList#<out T>" }
+};
+
+var netCoreTypes = new Dictionary<string, string> { 
+    { "global::System.Collections.Immutable.IImmutableList<T>", "TTImmutableList#<T>" },
+    { "global::System.Collections.Immutable.IImmutableSet<T>", "TTImmutableSet#<T>" },
+    { "global::System.Collections.Immutable.IImmutableQueue<T>", "TTImmutableQueue#<T>" },
+    { "global::System.Collections.Immutable.IImmutableStack<T>", "TTImmutableStack#<T>" }
+};
 #>
 <#for(var i = 0; i <= 32; i++) {#>
     /// <summary>
@@ -31,20 +43,7 @@ var baseTypes = new Dictionary<string, string> {
     /// </summary>
     [GenericTypeArgument]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal abstract class TT<#=i == 0 ? "" : i.ToString()#> { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for a reference type with default constructor.
-    /// </summary>
-    [GenericTypeArgument]
-    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    internal class TTC<#=i == 0 ? "" : i.ToString()#> { }
-
-    /// <summary>
-    /// Represents the generic type arguments marker for an interface.
-    /// </summary>
-    [GenericTypeArgument]
-    internal interface TTI<#=i == 0 ? "" : i.ToString()#> { }
+    internal abstract class TT<#=i == 0 ? "" : i.ToString()#> { }    
 
     /// <summary>
     /// Represents the generic type arguments marker for a value type.
@@ -59,15 +58,39 @@ var baseTypes = new Dictionary<string, string> {
         continue;
     }
 
-    foreach(var baseType in baseTypes)
+    foreach(var type in netTypes)
     {#>
 
 #if !NET35 && !NET20
     /// <summary>
-    /// Represents the generic type arguments marker for <c><#=baseType.Key.Replace('<','[').Replace('>',']')#></c>.
+    /// Represents the generic type arguments marker for <c><#=type.Key.Replace('<','[').Replace('>',']')#></c>.
     /// </summary>
     [GenericTypeArgument]
-    internal interface <#=baseType.Value.Replace("#", i == 0 ? "" : i.ToString())#>: <#=baseType.Key#> { }
+    internal interface <#=type.Value.Replace("#", i == 0 ? "" : i.ToString())#>: <#=type.Key#> { }
+#endif
+    <#}#>
+<#
+    foreach(var type in net45Types)
+    {#>
+
+#if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
+    /// <summary>
+    /// Represents the generic type arguments marker for <c><#=type.Key.Replace('<','[').Replace('>',']')#></c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface <#=type.Value.Replace("#", i == 0 ? "" : i.ToString())#>: <#=type.Key#> { }
+#endif
+    <#}#>
+<#
+    foreach(var type in netCoreTypes)
+    {#>
+
+#if NET || NETCOREAPP
+    /// <summary>
+    /// Represents the generic type arguments marker for <c><#=type.Key.Replace('<','[').Replace('>',']')#></c>.
+    /// </summary>
+    [GenericTypeArgument]
+    internal interface <#=type.Value.Replace("#", i == 0 ? "" : i.ToString())#>: <#=type.Key#> { }
 #endif
     <#}#>
 <#}#>
