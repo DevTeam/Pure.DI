@@ -2,7 +2,7 @@
 $v=true
 $p=99
 $d=Func with arguments
-$h=At any time a BCL type binding can be added manually:
+$f=To distinguish between several different bindings of the same type you can use tags.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -11,6 +11,7 @@ $h=At any time a BCL type binding can be added manually:
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable UnusedMember.Global
+// ReSharper disable VariableHidesOuterVariable
 namespace Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario;
 
 using System.Collections.Immutable;
@@ -35,9 +36,10 @@ interface IDependency
 
 class Dependency : IDependency
 {
-    public Dependency(IClock clock) { }
+    public Dependency(IClock clock, int id) => 
+        Id = id;
 
-    public int Id { get; set; }
+    public int Id { get; }
 }
 
 interface IService
@@ -62,16 +64,27 @@ public class Scenario
     [Fact]
     public void Run()
     {
+// {    
+        // Declares the "dependencyId" variable to setup binding
+        var dependencyId = default(int);
+// }        
         // ToString = On
         // FormatCode = On
-// {            
+// {        
         DI.Setup("Composition")
             .Bind<IClock>().As(Lifetime.Singleton).To<Clock>()
+            // Binds int to dependencyId
+            .Bind<int>().To(_ => dependencyId)
             .Bind<Func<int, IDependency>>().To(ctx =>
-                new Func<int, IDependency>(id =>
+                // The name of the Lambda function argument must match
+                // the variable in the binding, in our case it is "dependencyId"
+                new Func<int, IDependency>(dependencyId =>
                 {
+                    // Builds up an instance of type Dependency
+                    // with all necessary dependencies,
+                    // including those of type int,
+                    // referring to the variable "dependencyId"
                     ctx.Inject<Dependency>(out var dependency);
-                    dependency.Id = id;
                     return dependency;
                 }))
             .Bind<IService>().To<Service>().Root<IService>("Root");
