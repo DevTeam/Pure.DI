@@ -1,6 +1,7 @@
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable UnusedTypeParameter
+#pragma warning disable CS8667
 namespace WebAPI;
 
 using Pure.DI;
@@ -34,6 +35,7 @@ internal partial class Composition
     public WebApplication BuildWebApplication()
     {
         var webApplication = _builder.Build();
+
         // Saves the service provider to use it to resolve dependencies external to this composition
         // from the service provider 
         _serviceProvider = webApplication.Services;
@@ -41,9 +43,8 @@ internal partial class Composition
     }
 
     // Obtaining external dependencies from the service provider
-    private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime) => 
-        _serviceProvider.GetService<T>()
-        ?? throw new InvalidOperationException($"Cannot resolve {tag} {typeof(T)} from the service provider.");
+    private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime) where T : notnull => 
+        _serviceProvider.GetRequiredService<T>();
 
     // Registers the composition roots for use in a service collection
     private static partial void OnNewRoot<TContract, T>(IResolver<Composition, TContract> resolver, string name, object? tag, Lifetime lifetime) =>

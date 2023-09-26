@@ -11,7 +11,7 @@
         <RepositoryUrl>https://github.com/DevTeam/Pure.DI.git</RepositoryUrl>
         <Description>Pure DI for .NET without frameworks!</Description>
         <Product>Pure DI</Product>
-        <Copyright>Copyright (C) 2023 Nikolay Pianikov</Copyright>
+        <Copyright>Copyright (C) $([System.DateTime]::Now.Year) Nikolay Pianikov</Copyright>
         <AnalyzerRoslynVersion Condition="'$(AnalyzerRoslynVersion)'==''">4.3</AnalyzerRoslynVersion>
         <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">4.3.1</AnalyzerRoslynPackageVersion>
         <BaseIntermediateOutputPath>obj\roslyn$(AnalyzerRoslynVersion)</BaseIntermediateOutputPath>
