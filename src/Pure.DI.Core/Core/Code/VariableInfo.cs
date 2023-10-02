@@ -3,13 +3,11 @@
 internal class VariableInfo
 {
     public int Level = int.MaxValue;
-    public int RefCount;
-    public bool IsAlreadyCreated;
+    public int RefCount = 1;
     
     public void Reset()
     {
         Level = int.MaxValue;
-        RefCount = 0;
-        IsAlreadyCreated = false;
+        RefCount = 1;
     }
 }

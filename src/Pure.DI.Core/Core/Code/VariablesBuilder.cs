@@ -3,9 +3,6 @@ namespace Pure.DI.Core.Code;
 
 internal class VariablesBuilder : IVariablesBuilder
 {
-    private readonly Dictionary<MdBinding, int> _bindings = new();
-    private int _id;
-    
     public Block Build(
         IGraph<DependencyNode, Dependency> graph,
         IDictionary<MdBinding, Variable> map,
@@ -13,7 +10,8 @@ internal class VariablesBuilder : IVariablesBuilder
         Injection rootInjection)
     {
         var rootBlock = new Block(default, new LinkedList<IStatement>());
-        var rootVar = CreateVariable(rootBlock, map, rootNode, rootInjection);
+        var transientId = 0;
+        var rootVar = GetVariable(rootBlock, map, rootNode, rootInjection, ref transientId);
         rootBlock.Statements.AddFirst(rootVar);
         var blocks = new Stack<Block>();
         blocks.Push(rootBlock);
@@ -54,19 +52,10 @@ internal class VariablesBuilder : IVariablesBuilder
                                     throw new CompileErrorException($"Cyclic dependency has been found: {pathStr}.", depNode.Binding.Source.GetLocation(), LogId.ErrorCyclicDependency);
                                 }
 
-                                isAlreadyCreated = depNode.IsLazy() && path
-                                    .Select(i => i.Current.Node)
-                                    .GroupBy(i => i.Binding)
-                                    .Any(i => i.Count() > 1);
+                                isAlreadyCreated = depNode.IsLazy();
                             }
 
-                            var depVariable = CreateVariable(currentStatement, map, depNode, depInjection);
-                            if (isAlreadyCreated)
-                            {
-                                depVariable.Info.IsAlreadyCreated = true;
-                                depVariable.Info.RefCount--;
-                            }
-                            
+                            var depVariable = GetVariable(currentStatement, map, depNode, depInjection, ref transientId);
                             var isBlockStatement = !variable.Node.IsEnumerable() && !variable.Node.IsFactory();
                             var isBlock = depNode.Lifetime != Lifetime.Transient || variable.Node.IsLazy();
                             if (isBlock)
@@ -110,52 +99,31 @@ internal class VariablesBuilder : IVariablesBuilder
         return rootBlock;
     }
     
-    private Variable CreateVariable(
+    private static Variable GetVariable(
         IStatement? parent,
         IDictionary<MdBinding, Variable> map,
         in DependencyNode node,
-        in Injection injection)
+        in Injection injection,
+        ref int transientId)
     {
-        var isSharedVar = node.IsArg() || node.Lifetime != Lifetime.Transient;
-        if (isSharedVar)
+        if (node.Lifetime == Lifetime.Transient && !node.IsArg())
         {
-            if (map.TryGetValue(node.Binding, out var currentVar))
+            return new Variable(parent, transientId++, node, injection, new List<IStatement>(), new VariableInfo());
+        }
+
+        if (map.TryGetValue(node.Binding, out var variable))
+        {
+            variable.Info.RefCount++;
+            return variable with
             {
-                currentVar.Info.RefCount++;
-                return currentVar with
-                {
-                    Parent = parent,
-                    Injection = injection,
-                    Args = new List<IStatement>()
-                };
-            }
+                Parent = parent,
+                Injection = injection,
+                Args = new List<IStatement>()
+            };
         }
 
-        var id = GetId(node);
-        var var = new Variable(parent, id, node, injection, new List<IStatement>(), new VariableInfo());
-        var.Info.RefCount++;
-        if (isSharedVar)
-        {
-            map.Add(node.Binding, var);
-        }
-
-        return var;
-    }
-
-    private int GetId(in DependencyNode node)
-    {
-        if (node.Lifetime == Lifetime.Transient)
-        {
-            return _id++;
-        }
-
-        if (_bindings.TryGetValue(node.Binding, out var id))
-        {
-            return id;
-        }
-        
-        id = _id++;
-        _bindings.Add(node.Binding, id);
-        return id;
+        variable = new Variable(parent, node.Binding.Id, node, injection, new List<IStatement>(), new VariableInfo());
+        map.Add(node.Binding, variable);
+        return variable;
     }
 }

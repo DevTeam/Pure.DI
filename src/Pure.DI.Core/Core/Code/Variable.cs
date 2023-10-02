@@ -2,7 +2,7 @@ namespace Pure.DI.Core.Code;
 
 internal record Variable(
         IStatement? Parent,
-        int Id,
+        int PerLifetimeId,
         in DependencyNode Node,
         in Injection Injection,
         ICollection<IStatement> Args,
@@ -26,7 +26,7 @@ internal record Variable(
                 }
 
                 case { Lifetime: Lifetime.PerResolve }:
-                    return $"{Names.PerResolveVariablePrefix}{Names.Salt}{Id}";
+                    return $"{Names.PerResolveVariablePrefix}{Names.Salt}{PerLifetimeId}";
 
                 case { Arg: { Source.Kind: ArgKind.Class } arg }:
                     return $"{Names.ArgVariablePrefix}{Names.Salt}{arg.Source.ArgName}";
@@ -35,7 +35,7 @@ internal record Variable(
                     return arg.Source.ArgName;
 
                 default:
-                    return $"{Names.TransientVariablePrefix}{Names.Salt}{Id}";
+                    return $"{Names.TransientVariablePrefix}{Names.Salt}{PerLifetimeId}";
             }
         }
     }

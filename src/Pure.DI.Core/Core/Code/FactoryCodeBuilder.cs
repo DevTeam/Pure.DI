@@ -18,7 +18,7 @@ internal class FactoryCodeBuilder: ICodeBuilder<DpFactory>
         }
         
         // Rewrites syntax tree
-        var finishLabel = $"label{Names.Salt}{variable.Id}";
+        var finishLabel = $"{variable.VarName}Finish";
         var injections = new List<FactoryRewriter.Injection>();
         var factoryRewriter = new FactoryRewriter(factory, variable, finishLabel, injections);
         var lambda = factoryRewriter.Rewrite(factory.Source.Factory);

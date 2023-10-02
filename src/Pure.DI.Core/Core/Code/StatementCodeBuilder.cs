@@ -21,11 +21,7 @@ internal class StatementCodeBuilder : ICodeBuilder<IStatement>
         switch (statement)
         {
             case Variable variable:
-                if (!variable.Info.IsAlreadyCreated)
-                {
-                    _variableBuilder.Build(ctx, variable);
-                }
-
+                _variableBuilder.Build(ctx, variable);
                 break;
 
             case Block block:
