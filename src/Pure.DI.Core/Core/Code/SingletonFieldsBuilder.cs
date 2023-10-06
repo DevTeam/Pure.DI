@@ -23,20 +23,28 @@ internal sealed class SingletonFieldsBuilder: IBuilder<CompositionCode, Composit
             code.AppendLine($"private int {Names.DisposeIndexFieldName};");
             membersCounter++;
         }
+
+        var fieldModifiers =
+            composition.Source.Source.Hints.GetHint(Hint.ThreadSafe, SettingState.On) == SettingState.On
+                ? "volatile "
+                : "";
         
         // Singleton fields
         foreach (var singletonField in composition.Singletons)
         {
-            code.AppendLine($"private {singletonField.InstanceType} {singletonField.VarName};");
-            membersCounter++;
-
-            if (!singletonField.InstanceType.IsValueType)
+            if (singletonField.InstanceType.IsValueType)
             {
-                continue;
-            }
+                code.AppendLine($"private {(singletonField.InstanceType.IsAtomicValueType() ? fieldModifiers : "")}{singletonField.InstanceType} {singletonField.VarName};");
+                membersCounter++;
 
-            code.AppendLine($"private bool {singletonField.VarName}Created;");
-            membersCounter++;
+                code.AppendLine($"private {fieldModifiers}bool {singletonField.VarName}Created;");
+                membersCounter++;
+            }
+            else
+            {
+                code.AppendLine($"private {fieldModifiers}{singletonField.InstanceType} {singletonField.VarName};");
+                membersCounter++;
+            }
         }
 
         return composition with { MembersCount = membersCounter };

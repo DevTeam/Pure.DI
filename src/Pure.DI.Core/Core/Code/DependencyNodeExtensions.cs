@@ -16,4 +16,7 @@ internal static class DependencyNodeExtensions
     
     public static bool IsLazy(this in DependencyNode node) =>
         node.IsDelegate() || node.IsEnumerable();
+    
+    public static bool IsDisposable(this in DependencyNode node) => 
+        node.Type.AllInterfaces.Any(i => i.SpecialType == SpecialType.System_IDisposable);
 }

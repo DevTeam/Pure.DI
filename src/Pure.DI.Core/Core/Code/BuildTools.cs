@@ -4,7 +4,6 @@ namespace Pure.DI.Core.Code;
 
 internal class BuildTools : IBuildTools
 {
-    private readonly Dictionary<Compilation, INamedTypeSymbol?> _disposableTypes = new();
     private readonly IFilter _filter;
 
     public BuildTools(IFilter filter) => _filter = filter;
@@ -55,18 +54,6 @@ internal class BuildTools : IBuildTools
 
         var tag = GetTag(ctx, variable);
         yield return new Line(0, $"{Names.OnNewInstanceMethodName}<{variable.InstanceType}>(ref {variable.VarName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})" + ";");
-    }
-
-    public bool IsDisposable(Variable variable)
-    {
-        var compilation = variable.Node.Binding.SemanticModel.Compilation;
-        if (!_disposableTypes.TryGetValue(compilation, out var disposableType))
-        {
-            disposableType = compilation.GetTypeByMetadataName(Names.IDisposableInterfaceName);
-            _disposableTypes.Add(compilation, disposableType);
-        }
-        
-        return disposableType is not null && variable.Node.Type.AllInterfaces.Any(i => disposableType.Equals(i, SymbolEqualityComparer.Default));
     }
 
     private static object? GetTag(BuildContext ctx, Variable variable)

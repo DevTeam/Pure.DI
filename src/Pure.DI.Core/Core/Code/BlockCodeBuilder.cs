@@ -52,7 +52,7 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
             return;
         }
 
-        if (variable.Node.Lifetime == Lifetime.Singleton && ctx.BuildTools.IsDisposable(variable))
+        if (variable.Node.Lifetime == Lifetime.Singleton && variable.Node.IsDisposable())
         {
             ctx.Code.AppendLine($"{Names.DisposablesFieldName}[{Names.DisposeIndexFieldName}++] = {variable.VarName};");
         }

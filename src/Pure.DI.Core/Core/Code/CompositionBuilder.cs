@@ -91,6 +91,6 @@ internal class CompositionBuilder: IBuilder<DependencyGraph, CompositionCode>
             singletons,
             allArgs.OrderBy(i => i.Node.Binding.Id).ToImmutableArray(),
             publicRoots,
-            singletons.Count(_buildTools.IsDisposable));
+            singletons.Count(i => i.Node.IsDisposable()));
     }
 }
