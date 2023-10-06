@@ -29,19 +29,20 @@ internal sealed class DisposeMethodBuilder: IBuilder<CompositionCode, Compositio
                 code.AppendLine("{");
                 using (code.Indent())
                 {
+                    code.AppendLine($"var disposableInstance = {Names.DisposablesFieldName}[--{Names.DisposeIndexFieldName}];");
                     code.AppendLine("try");
                     code.AppendLine("{");
                     using (code.Indent())
                     {
-                        code.AppendLine($"{Names.DisposablesFieldName}[--{Names.DisposeIndexFieldName}].Dispose();");
+                        code.AppendLine($"disposableInstance.Dispose();");
                     }
 
                     code.AppendLine("}");
-                    code.AppendLine("catch");
+                    code.AppendLine("catch(Exception exception)");
                     code.AppendLine("{");
                     using (code.Indent())
                     {
-                        code.AppendLine("// ignored");
+                        code.AppendLine("OnDisposeException(disposableInstance, exception);");
                     }
 
                     code.AppendLine("}");
@@ -63,6 +64,10 @@ internal sealed class DisposeMethodBuilder: IBuilder<CompositionCode, Compositio
         }
 
         code.AppendLine("}");
+        membersCounter++;
+        
+        code.AppendLine($"partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : {Names.IDisposableInterfaceName};");
+        membersCounter++;
 
         return composition with { MembersCount = membersCounter };
     }
