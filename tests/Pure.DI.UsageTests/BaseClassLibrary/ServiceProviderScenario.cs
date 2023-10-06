@@ -65,6 +65,6 @@ public class Scenario
         service.Dependency.ShouldBe(dependency);
 // }            
         service.ShouldBeOfType<Service>();
-        TestTools.SaveClassDiagram(serviceProvider, nameof(ServiceProviderScenario));
+        serviceProvider.SaveClassDiagram();
     }
 }

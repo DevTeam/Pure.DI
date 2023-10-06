@@ -4,8 +4,9 @@ using System.Text;
 
 public static class TestTools
 {
-    public static void SaveClassDiagram(object composition, string name)
+    public static void SaveClassDiagram(this object composition)
     {
+        var name = composition.GetType().FullName!.Split('.').Reverse().Skip(1).First();
         var logDirName = Path.Combine(GetSolutionDirectory(), ".logs");
         Directory.CreateDirectory(logDirName);
         var fileName = Path.Combine(logDirName, $"{name}.Mermaid");

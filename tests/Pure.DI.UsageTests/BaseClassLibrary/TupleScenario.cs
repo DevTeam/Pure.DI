@@ -52,6 +52,6 @@ public class Scenario
         var composition = new Composition();
         var root = composition.Root;
 // }            
-        TestTools.SaveClassDiagram(new Composition(), nameof(TupleScenario));
+        composition.SaveClassDiagram();
     }
 }

@@ -94,6 +94,6 @@ public class Scenario
         service.Dependencies.Length.ShouldBe(10);
         service.Dependencies[3].Id.ShouldBe(3);
 // }            
-        TestTools.SaveClassDiagram(new Composition(), nameof(FuncWithArgumentsScenario));
+        composition.SaveClassDiagram();
     }
 }

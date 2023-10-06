@@ -78,6 +78,6 @@ public class Scenario
         service.Dependencies[0].ShouldBeOfType<AbcDependency>();
         service.Dependencies[1].ShouldBeOfType<XyzDependency>();
 // }            
-        TestTools.SaveClassDiagram(new Composition(), nameof(ArrayScenario));
+        composition.SaveClassDiagram();
     }
 }

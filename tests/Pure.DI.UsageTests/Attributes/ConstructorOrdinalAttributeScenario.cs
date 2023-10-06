@@ -58,6 +58,6 @@ public class Scenario
         var service = composition.Root;
         service.ToString().ShouldBe("Xyz");
 // }            
-        TestTools.SaveClassDiagram(composition, nameof(ConstructorOrdinalAttributeScenario));
+        composition.SaveClassDiagram();
     }
 }

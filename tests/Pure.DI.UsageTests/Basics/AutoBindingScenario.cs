@@ -47,6 +47,6 @@ public class Scenario
         // Or this way
         var service3 = composition.Resolve(typeof(Service));
 // }
-        TestTools.SaveClassDiagram(composition, nameof(AutoBindingScenario));
+        composition.SaveClassDiagram();
     }
 }

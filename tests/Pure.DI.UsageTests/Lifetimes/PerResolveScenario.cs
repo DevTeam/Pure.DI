@@ -57,6 +57,6 @@ public class Scenario
         service1.Dependency1.ShouldBe(service1.Dependency2);
         service2.Dependency1.ShouldNotBe(service1.Dependency1);
 // }
-        TestTools.SaveClassDiagram(composition, nameof(PerResolveScenario));
+        composition.SaveClassDiagram();
     }
 }

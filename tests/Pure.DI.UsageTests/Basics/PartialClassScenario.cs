@@ -57,6 +57,6 @@ public class Scenario
         var service = composition.Root;
 // }            
         service.ShouldBeOfType<Service>();
-        TestTools.SaveClassDiagram(composition, nameof(PartialClassScenario));
+        composition.SaveClassDiagram();
     }
 }

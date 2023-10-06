@@ -82,6 +82,6 @@ public class Scenario
         
         log.ShouldBe(ImmutableArray.Create("Dependency injected"));
 // }
-        TestTools.SaveClassDiagram(composition, nameof(OnDependencyInjectionHintScenario));
+        composition.SaveClassDiagram();
     }
 }

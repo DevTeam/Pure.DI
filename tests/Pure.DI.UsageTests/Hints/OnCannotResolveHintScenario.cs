@@ -85,6 +85,6 @@ public class Scenario
         service.Dependency.ToString().ShouldBe("Dependency with name");
         
 // }
-        TestTools.SaveClassDiagram(composition, nameof(OnCannotResolveHintScenario));
+        composition.SaveClassDiagram();
     }
 }

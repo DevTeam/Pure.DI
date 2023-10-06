@@ -134,6 +134,6 @@ public class Scenario
                 "get_Dependency",
                 "DependencyCall"));
 // }
-        TestTools.SaveClassDiagram(composition, nameof(AdvancedInterceptionScenario));
+        composition.SaveClassDiagram();
     }
 }

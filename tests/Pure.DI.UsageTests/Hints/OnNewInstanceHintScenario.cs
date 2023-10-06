@@ -84,6 +84,6 @@ public class Scenario
         
         log.ShouldBe(ImmutableArray.Create("Dependency", "Service"));
 // }
-        TestTools.SaveClassDiagram(composition, nameof(OnNewInstanceHintScenario));
+        composition.SaveClassDiagram();
     }
 }

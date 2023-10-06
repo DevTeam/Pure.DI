@@ -61,6 +61,6 @@ public class Scenario
         var service = composition.Root;
         service.Count.ShouldBe(3);
 // }            
-        TestTools.SaveClassDiagram(new Composition(), nameof(SpanScenario));
+        composition.SaveClassDiagram();
     }
 }

@@ -49,6 +49,6 @@ public class Scenario
         var service = composition.Root;
         service.Dependency.ShouldBeOfType<Dependency>();
 // }            
-        TestTools.SaveClassDiagram(composition, nameof(FieldInjectionScenario));
+        composition.SaveClassDiagram();
     }
 }

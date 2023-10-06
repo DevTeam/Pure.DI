@@ -86,6 +86,6 @@ public class Scenario
         var person = composition.Person;
         person.ToString().ShouldBe("123 Nik");
 // }            
-        TestTools.SaveClassDiagram(composition, nameof(CustomAttributesScenario));
+        composition.SaveClassDiagram();
     }
 }

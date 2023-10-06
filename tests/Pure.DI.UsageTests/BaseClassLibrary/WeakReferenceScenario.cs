@@ -48,6 +48,6 @@ public class Scenario
         var composition = new Composition();
         var service = composition.Root;
 // }            
-        TestTools.SaveClassDiagram(new Composition(), nameof(WeakReferenceScenario));
+        composition.SaveClassDiagram();
     }
 }

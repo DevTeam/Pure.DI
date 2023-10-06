@@ -64,6 +64,6 @@ public class Scenario
         service2.ShouldBeOfType<Service>();
         otherService1.ShouldBeOfType<OtherService>();
         otherService2.ShouldBeOfType<OtherService>();
-        TestTools.SaveClassDiagram(composition, nameof(ResolveScenario));
+        composition.SaveClassDiagram();
     }
 }

@@ -49,6 +49,6 @@ public class Scenario
         var service = composition.Root;
         service.Dependency.ShouldBe(service.Dependency);
 // }            
-        TestTools.SaveClassDiagram(new Composition(), nameof(LazyScenario));
+        composition.SaveClassDiagram();
     }
 }

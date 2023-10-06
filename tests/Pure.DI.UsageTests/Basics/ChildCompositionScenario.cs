@@ -68,6 +68,6 @@ public class Scenario
         }
 // }            
         service.ShouldBeOfType<Service>();
-        TestTools.SaveClassDiagram(composition, nameof(ChildCompositionScenario));
+        composition.SaveClassDiagram();
     }
 }

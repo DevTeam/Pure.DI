@@ -49,6 +49,6 @@ public class Scenario
         var service = composition.Root;
         var dependencyRoot = composition.DependencyRoot;
 // }
-        TestTools.SaveClassDiagram(composition, nameof(ResolveHintScenario));
+        composition.SaveClassDiagram();
     }
 }

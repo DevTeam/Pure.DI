@@ -70,6 +70,6 @@ public class Scenario
         var service = composition.Root;
         service.Dependency.IsInitialized.ShouldBeTrue();
 // }
-        TestTools.SaveClassDiagram(composition, nameof(FactoryScenario));
+        composition.SaveClassDiagram();
     }
 }

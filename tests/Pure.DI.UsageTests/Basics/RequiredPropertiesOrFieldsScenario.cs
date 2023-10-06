@@ -54,6 +54,6 @@ public class Scenario
         service.Dependency.ShouldBeOfType<Dependency>();
         service.Name.ShouldBe("My Service");
 // }            
-        TestTools.SaveClassDiagram(composition, nameof(RequiredPropertiesOrFieldsScenario));
+        composition.SaveClassDiagram();
     }
 }

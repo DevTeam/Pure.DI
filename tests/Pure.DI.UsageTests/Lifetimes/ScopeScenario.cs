@@ -95,6 +95,6 @@ public class Scenario
         session1.Service.Dependency.IsDisposed.ShouldBeTrue();
         session2.Service.Dependency.IsDisposed.ShouldBeFalse();
 // }
-        TestTools.SaveClassDiagram(new Composition(), nameof(ScopeScenario));
+        new Composition().SaveClassDiagram();
     }
 }

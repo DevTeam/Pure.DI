@@ -61,6 +61,6 @@ public class Scenario
             
         dependency.IsDisposed.ShouldBeTrue();
 // }
-        TestTools.SaveClassDiagram(new Composition(), nameof(DisposableSingletonScenario));
+        new Composition().SaveClassDiagram();
     }
 }

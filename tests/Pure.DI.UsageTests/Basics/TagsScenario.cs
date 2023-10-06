@@ -78,6 +78,6 @@ public class Scenario
         service.Dependency2.ShouldBe(composition.XyzRoot);
         service.Dependency3.ShouldBeOfType<AbcDependency>();
 // }            
-        TestTools.SaveClassDiagram(composition, nameof(TagsScenario));
+        composition.SaveClassDiagram();
     }
 }

@@ -78,6 +78,6 @@ public class Scenario
         service.ServiceName.ShouldBe("My Service");
         service.IsInitialized.ShouldBeTrue();
 // }
-        TestTools.SaveClassDiagram(composition, nameof(InstanceInitializationScenario));
+        composition.SaveClassDiagram();
     }
 }

@@ -59,6 +59,6 @@ public class Scenario
         service1.ShouldBe(service2);
         service1.Dependency1.ShouldBe(service1.Dependency2);
 // }
-        TestTools.SaveClassDiagram(composition, nameof(DefaultLifetimeScenario));
+        composition.SaveClassDiagram();
     }
 }

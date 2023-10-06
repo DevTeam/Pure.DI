@@ -82,6 +82,6 @@ public class Scenario
         service.Dependency1.ShouldBeOfType<Dependency<string>>();
         service.Dependency2.ShouldBeOfType<DependencyStruct<int>>();
 // }
-        TestTools.SaveClassDiagram(composition, nameof(ComplexGenericsScenario));
+        composition.SaveClassDiagram();
     }
 }

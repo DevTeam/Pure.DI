@@ -58,6 +58,6 @@ public class Scenario
         service.Dependencies[1].ShouldBeOfType<XyzDependency>();
         service.Dependencies[2].ShouldBeOfType<AbcDependency>();
 // }            
-        TestTools.SaveClassDiagram(new Composition(), nameof(OverridingBclBindingScenario));
+        composition.SaveClassDiagram();
     }
 }

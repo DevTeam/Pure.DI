@@ -50,6 +50,6 @@ public class Scenario
         var service = composition.Root;
         service.GetMessage().ShouldBe("Hello World !!!");
 // }
-        TestTools.SaveClassDiagram(composition, nameof(DecoratorScenario));
+        composition.SaveClassDiagram();
     }
 }

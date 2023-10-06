@@ -72,6 +72,6 @@ public class Scenario
         service.Name.ShouldBe("Abc");
         service.Dependency.Id.ShouldBe(123);
 // }
-        TestTools.SaveClassDiagram(composition, nameof(ArgumentsScenario));
+        composition.SaveClassDiagram();
     }
 }

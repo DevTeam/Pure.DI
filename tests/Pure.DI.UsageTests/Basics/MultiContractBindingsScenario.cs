@@ -46,6 +46,6 @@ public class Scenario
         var composition = new Composition();
         var service = composition.Root;
 // }            
-        TestTools.SaveClassDiagram(composition, nameof(MultiContractBindingsScenario));
+        composition.SaveClassDiagram();
     }
 }

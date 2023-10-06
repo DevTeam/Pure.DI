@@ -92,6 +92,6 @@ public class Scenario
         var dependency = serviceProvider.GetService(typeof(IDependency));
         service.Dependency.ShouldBe(dependency);
 // }            
-        TestTools.SaveClassDiagram(composition, nameof(ServiceCollectionScenario));
+        composition.SaveClassDiagram();
     }
 }

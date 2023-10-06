@@ -63,6 +63,6 @@ public class Scenario
         service.Dependency1.ShouldBeOfType<AbcDependency>();
         service.Dependency2.ShouldBeOfType<XyzDependency>();
 // }            
-        TestTools.SaveClassDiagram(composition, nameof(TypeAttributeScenario));
+        composition.SaveClassDiagram();
     }
 }

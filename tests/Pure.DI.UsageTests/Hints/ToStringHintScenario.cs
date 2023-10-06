@@ -46,6 +46,6 @@ public class Scenario
         var composition = new Composition();
         string classDiagram = composition.ToString();
 // }
-        TestTools.SaveClassDiagram(composition, nameof(ToStringHintScenario));
+        composition.SaveClassDiagram();
     }
 }

@@ -78,6 +78,6 @@ public class Scenario
         var dependency = composition.Resolve<IDependency>();
 // }            
         service.ShouldBeOfType<Service>();
-        TestTools.SaveClassDiagram(composition, nameof(CompositionRootsScenario));
+        composition.SaveClassDiagram();
     }
 }

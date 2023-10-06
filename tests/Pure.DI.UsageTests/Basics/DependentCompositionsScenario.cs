@@ -73,6 +73,6 @@ public class Scenario
         service = otherComposition.Program.Service;
 // }            
         service.ShouldBeOfType<Service>();
-        TestTools.SaveClassDiagram(otherComposition, nameof(DependentCompositionsScenario));
+        otherComposition.SaveClassDiagram();
     }
 }
