@@ -57,10 +57,8 @@ internal partial class Composition
     partial void OnNewInstance<T>(
         ref T value,
         object? tag,
-        Lifetime lifetime)
-    {
+        Lifetime lifetime) =>
         _log.Add(typeof(T).Name);
-    }
 }
 // }
 
@@ -74,15 +72,15 @@ public class Scenario
 // {
         DI.Setup("Composition")
             .Hint(OnNewInstance, "On")
-            .Hint(OnNewInstanceLifetimeRegularExpression, nameof(Lifetime.Transient))
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
+            .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+            .Bind<IService>().To<Service>().Root<IService>("Root");
 
         var log = new List<string>();
         var composition = new Composition(log);
-        var service = composition.Root;
+        var service1 = composition.Root;
+        var service2 = composition.Root;
         
-        log.ShouldBe(ImmutableArray.Create("Dependency", "Service"));
+        log.ShouldBe(ImmutableArray.Create("Dependency", "Service", "Service"));
 // }
         composition.SaveClassDiagram();
     }

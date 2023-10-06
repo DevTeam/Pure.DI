@@ -23,7 +23,7 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
         {
             var checkExpression = variable.InstanceType.IsValueType
                 ? $"!{variable.VarName}Created"
-                : $"{Names.SystemNamespace}Object.ReferenceEquals({variable.VarName}, null)";
+                : $"object.ReferenceEquals({variable.VarName}, null)";
 
             if (lockIsRequired)
             {

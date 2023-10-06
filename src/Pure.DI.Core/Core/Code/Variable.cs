@@ -6,7 +6,8 @@ internal record Variable(
         in DependencyNode Node,
         in Injection Injection,
         ICollection<IStatement> Args,
-        VariableInfo Info)
+        VariableInfo Info,
+        string NameOverride = "")
         : IStatement
 {
     public Variable Current => this;
@@ -17,6 +18,11 @@ internal record Variable(
     {
         get
         {
+            if (!string.IsNullOrEmpty(NameOverride))
+            {
+                return NameOverride;
+            }
+
             switch (Node)
             {
                 case { Lifetime: Lifetime.Singleton }:

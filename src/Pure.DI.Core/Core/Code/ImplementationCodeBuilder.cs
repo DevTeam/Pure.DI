@@ -28,9 +28,7 @@ internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
             requiredProperties.Add((argsWalker.GetResult().Single(), requiredProperty));
         }
         
-        BuildConstructor(ctx, ctorArgs, requiredFields, requiredProperties);
-        
-        var visits = new List<(Action Run, int? Ordinal)>();
+        var visits = new List<(Action<BuildContext> Run, int? Ordinal)>();
         foreach (var field in implementation.Fields.Where(i => i.Field.IsRequired != true))
         {
             argsWalker.VisitField(Unit.Shared, field);
@@ -38,7 +36,7 @@ internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
             visits.Add((VisitFieldAction, field.Ordinal));
             continue;
 
-            void VisitFieldAction() => BuildField(ctx, field, fieldVariable);
+            void VisitFieldAction(BuildContext context) => BuildField(context, field, fieldVariable);
         }
         
         foreach (var property in implementation.Properties.Where(i => !i.Property.IsRequired && i.Property.SetMethod?.IsInitOnly != true))
@@ -48,7 +46,7 @@ internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
             visits.Add((VisitFieldAction, property.Ordinal));
             continue;
 
-            void VisitFieldAction() => BuildProperty(ctx, property, propertyVariable);
+            void VisitFieldAction(BuildContext context) => BuildProperty(context, property, propertyVariable);
         }
         
         foreach (var method in implementation.Methods)
@@ -58,16 +56,40 @@ internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
             visits.Add((VisitMethodAction, method.Ordinal));
             continue;
 
-            void VisitMethodAction() => BuildMethod(ctx, method, methodArgs);
+            void VisitMethodAction(BuildContext context) => BuildMethod(context, method, methodArgs);
         }
 
+        var onCreatedStatements = ctx.BuildTools.OnCreated(ctx, ctx.Variable).ToArray();
+        var tempVariableInit =
+            ctx.Variable.InstanceType.IsReferenceType
+            && ctx.Variable.Node.Lifetime != Lifetime.Transient
+            && (
+                visits.Any()
+                || ctx.BuildTools.OnCreated(ctx, ctx.Variable).Any());
+
+        if (tempVariableInit)
+        {
+            ctx = ctx with { Variable = variable with { NameOverride = variable.VarName + "Temp" } };
+            ctx.Code.AppendLine($"{ctx.Variable.InstanceType} {ctx.Variable.VarName};");
+            if (onCreatedStatements.Any())
+            {
+                onCreatedStatements = ctx.BuildTools.OnCreated(ctx, ctx.Variable).ToArray();
+            }
+        }
+        
+        BuildConstructor(ctx, ctorArgs, requiredFields, requiredProperties);
+        
         foreach (var visit in visits.OrderBy(i => i.Ordinal ?? int.MaxValue))
         {
             _cancellationToken.ThrowIfCancellationRequested();
-            visit.Run();
+            visit.Run(ctx);
         }
 
-        ctx.Code.AppendLines(ctx.BuildTools.OnCreated(ctx, variable));
+        ctx.Code.AppendLines(onCreatedStatements);
+        if (tempVariableInit)
+        {
+            ctx.Code.AppendLine($"{variable.VarName} = {ctx.Variable.VarName};");
+        }
     }
     
     private static void BuildConstructor(
