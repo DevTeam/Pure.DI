@@ -42,7 +42,7 @@ internal sealed class DisposeMethodBuilder: IBuilder<CompositionCode, Compositio
                     code.AppendLine("{");
                     using (code.Indent())
                     {
-                        code.AppendLine("OnDisposeException(disposableInstance, exception);");
+                        code.AppendLine($"{Names.OnDisposeExceptionMethodName}(disposableInstance, exception);");
                     }
 
                     code.AppendLine("}");
@@ -66,7 +66,8 @@ internal sealed class DisposeMethodBuilder: IBuilder<CompositionCode, Compositio
         code.AppendLine("}");
         membersCounter++;
         
-        code.AppendLine($"partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : {Names.IDisposableInterfaceName};");
+        code.AppendLine();
+        code.AppendLine($"partial void {Names.OnDisposeExceptionMethodName}<T>(T disposableInstance, Exception exception) where T : {Names.IDisposableInterfaceName};");
         membersCounter++;
 
         return composition with { MembersCount = membersCounter };

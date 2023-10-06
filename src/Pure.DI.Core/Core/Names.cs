@@ -15,8 +15,9 @@ internal static class Names
     public const string MethodImplOptions = $"[{SystemNamespace}Runtime.CompilerServices.MethodImpl(({SystemNamespace}Runtime.CompilerServices.MethodImplOptions)0x300)]";
     public const string DefaultApiMethodModifiers = "public";
     public const string ResolverMethodName = "Resolve";
-    public const string IDisposableInterfaceName = $"{nameof(System)}.{nameof(IDisposable)}";
+    public const string IDisposableInterfaceName = $"{SystemNamespace}{nameof(IDisposable)}";
     public const string OnNewInstanceMethodName = "OnNewInstance";
+    public const string OnDisposeExceptionMethodName = "OnDisposeException";
     public const string OnDependencyInjectionMethodName = "OnDependencyInjection";
     public const string OnCannotResolve = "OnCannotResolve";
     public const string OnNewRootMethodName = "OnNewRoot";
