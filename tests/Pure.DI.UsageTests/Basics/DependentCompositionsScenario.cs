@@ -46,8 +46,6 @@ public class Scenario
     [Fact]
     public void Run()
     {
-        // ToString = On
-        // FormatCode = On
 // {    
         // This setup does not generate code, but can be used as a dependency
         // and requires the use of the "DependsOn" call to add it as a dependency

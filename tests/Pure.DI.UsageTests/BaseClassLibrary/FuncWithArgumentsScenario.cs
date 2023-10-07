@@ -67,10 +67,6 @@ public class Scenario
 // {    
         // Declares the "dependencyId" variable to setup binding
         var dependencyId = default(int);
-// }        
-        // ToString = On
-        // FormatCode = On
-// {        
         DI.Setup("Composition")
             .Bind<IClock>().As(Lifetime.Singleton).To<Clock>()
             // Binds int to dependencyId

@@ -62,20 +62,20 @@ classDiagram
 ```c#
 partial class Singleton
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM10D06di;
-  private Pure.DI.Benchmarks.Model.Service1 _singletonM10D06di22;
+  private readonly global::System.IDisposable[] _disposableSingletonsM10D07di;
+  private Pure.DI.Benchmarks.Model.Service1 _singletonM10D07di22;
   
   public Singleton()
   {
-    _disposableSingletonsM10D06di = new global::System.IDisposable[0];
+    _disposableSingletonsM10D07di = new global::System.IDisposable[0];
   }
   
   internal Singleton(Singleton parent)
   {
-    _disposableSingletonsM10D06di = new global::System.IDisposable[0];
-    lock (parent._disposableSingletonsM10D06di)
+    _disposableSingletonsM10D07di = new global::System.IDisposable[0];
+    lock (parent._disposableSingletonsM10D07di)
     {
-      _singletonM10D06di22 = parent._singletonM10D06di22;
+      _singletonM10D07di22 = parent._singletonM10D07di22;
     }
   }
   
@@ -85,37 +85,37 @@ partial class Singleton
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM10D06di19 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D06di18 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D06di17 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D06di16 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D06di15 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D06di14 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D06di13 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D06di12 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D06di11 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D06di10 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D06di9 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D06di8 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D06di7 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D06di6 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D06di5 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D06di4 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D06di3 = new Pure.DI.Benchmarks.Model.Service2(transientM10D06di5, transientM10D06di6, transientM10D06di7, transientM10D06di8, transientM10D06di9);
-      var transientM10D06di2 = new Pure.DI.Benchmarks.Model.Service2(transientM10D06di10, transientM10D06di11, transientM10D06di12, transientM10D06di13, transientM10D06di14);
-      var transientM10D06di1 = new Pure.DI.Benchmarks.Model.Service2(transientM10D06di15, transientM10D06di16, transientM10D06di17, transientM10D06di18, transientM10D06di19);
-      if (object.ReferenceEquals(_singletonM10D06di22, null))
+      var transientM10D07di19 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D07di18 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D07di17 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D07di16 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D07di15 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D07di14 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D07di13 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D07di12 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D07di11 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D07di10 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D07di9 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D07di8 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D07di7 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D07di6 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D07di5 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D07di4 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D07di3 = new Pure.DI.Benchmarks.Model.Service2(transientM10D07di5, transientM10D07di6, transientM10D07di7, transientM10D07di8, transientM10D07di9);
+      var transientM10D07di2 = new Pure.DI.Benchmarks.Model.Service2(transientM10D07di10, transientM10D07di11, transientM10D07di12, transientM10D07di13, transientM10D07di14);
+      var transientM10D07di1 = new Pure.DI.Benchmarks.Model.Service2(transientM10D07di15, transientM10D07di16, transientM10D07di17, transientM10D07di18, transientM10D07di19);
+      if (object.ReferenceEquals(_singletonM10D07di22, null))
       {
-          var transientM10D06di25 = new Pure.DI.Benchmarks.Model.Service3();
-          var transientM10D06di24 = new Pure.DI.Benchmarks.Model.Service3();
-          var transientM10D06di23 = new Pure.DI.Benchmarks.Model.Service3();
-          var transientM10D06di22 = new Pure.DI.Benchmarks.Model.Service3();
-          var transientM10D06di21 = new Pure.DI.Benchmarks.Model.Service3();
-          var transientM10D06di20 = new Pure.DI.Benchmarks.Model.Service2(transientM10D06di21, transientM10D06di22, transientM10D06di23, transientM10D06di24, transientM10D06di25);
-          _singletonM10D06di22 = new Pure.DI.Benchmarks.Model.Service1(transientM10D06di20);
+          var transientM10D07di25 = new Pure.DI.Benchmarks.Model.Service3();
+          var transientM10D07di24 = new Pure.DI.Benchmarks.Model.Service3();
+          var transientM10D07di23 = new Pure.DI.Benchmarks.Model.Service3();
+          var transientM10D07di22 = new Pure.DI.Benchmarks.Model.Service3();
+          var transientM10D07di21 = new Pure.DI.Benchmarks.Model.Service3();
+          var transientM10D07di20 = new Pure.DI.Benchmarks.Model.Service2(transientM10D07di21, transientM10D07di22, transientM10D07di23, transientM10D07di24, transientM10D07di25);
+          _singletonM10D07di22 = new Pure.DI.Benchmarks.Model.Service1(transientM10D07di20);
       }
-      var transientM10D06di0 = new Pure.DI.Benchmarks.Model.CompositionRoot(_singletonM10D06di22, transientM10D06di1, transientM10D06di2, transientM10D06di3, transientM10D06di4);
-      return transientM10D06di0;
+      var transientM10D07di0 = new Pure.DI.Benchmarks.Model.CompositionRoot(_singletonM10D07di22, transientM10D07di1, transientM10D07di2, transientM10D07di3, transientM10D07di4);
+      return transientM10D07di0;
     }
   }
   #endregion
@@ -127,7 +127,7 @@ partial class Singleton
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>()
   {
-    return ResolverM10D06di<T>.Value.Resolve(this);
+    return ResolverM10D07di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -136,7 +136,7 @@ partial class Singleton
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>(object? tag)
   {
-    return ResolverM10D06di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM10D07di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -145,10 +145,10 @@ partial class Singleton
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM10D06di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM10D06di;
+    var index = (int)(_bucketSizeM10D07di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM10D07di;
     do {
-      ref var pair = ref _bucketsM10D06di[index];
+      ref var pair = ref _bucketsM10D07di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -164,10 +164,10 @@ partial class Singleton
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM10D06di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM10D06di;
+    var index = (int)(_bucketSizeM10D07di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM10D07di;
     do {
-      ref var pair = ref _bucketsM10D06di[index];
+      ref var pair = ref _bucketsM10D07di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -231,26 +231,26 @@ partial class Singleton
         "  Singleton ..> CompositionRoot : ICompositionRoot Root";
   }
   
-  private readonly static int _bucketSizeM10D06di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Singleton, object>>[] _bucketsM10D06di;
+  private readonly static int _bucketSizeM10D07di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Singleton, object>>[] _bucketsM10D07di;
   
   static Singleton()
   {
-    var valResolverM10D06di_0000 = new ResolverM10D06di_0000();
-    ResolverM10D06di<Pure.DI.Benchmarks.Model.ICompositionRoot>.Value = valResolverM10D06di_0000;
-    _bucketsM10D06di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Singleton, object>>.Create(
+    var valResolverM10D07di_0000 = new ResolverM10D07di_0000();
+    ResolverM10D07di<Pure.DI.Benchmarks.Model.ICompositionRoot>.Value = valResolverM10D07di_0000;
+    _bucketsM10D07di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Singleton, object>>.Create(
       1,
-      out _bucketSizeM10D06di,
+      out _bucketSizeM10D07di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Singleton, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Singleton, object>>(typeof(Pure.DI.Benchmarks.Model.ICompositionRoot), valResolverM10D06di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Singleton, object>>(typeof(Pure.DI.Benchmarks.Model.ICompositionRoot), valResolverM10D07di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM10D06di<T>: global::Pure.DI.IResolver<Singleton, T>
+  private sealed class ResolverM10D07di<T>: global::Pure.DI.IResolver<Singleton, T>
   {
-    public static global::Pure.DI.IResolver<Singleton, T> Value = new ResolverM10D06di<T>();
+    public static global::Pure.DI.IResolver<Singleton, T> Value = new ResolverM10D07di<T>();
     
     public T Resolve(Singleton composite)
     {
@@ -263,7 +263,7 @@ partial class Singleton
     }
   }
   
-  private sealed class ResolverM10D06di_0000: global::Pure.DI.IResolver<Singleton, Pure.DI.Benchmarks.Model.ICompositionRoot>
+  private sealed class ResolverM10D07di_0000: global::Pure.DI.IResolver<Singleton, Pure.DI.Benchmarks.Model.ICompositionRoot>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.Benchmarks.Model.ICompositionRoot Resolve(Singleton composition)

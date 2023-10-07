@@ -39,10 +39,6 @@ class Service : IService
 partial class Composition
 {
     private void Setup() =>
-// }        
-        // ToString = On
-        // FormatCode = On
-// {
         // The following hint specifies to create a static method
         // that will be called for each registered composition root:
 

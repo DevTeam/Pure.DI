@@ -71,8 +71,6 @@ public class Scenario
     [Fact]
     public void Run()
     {
-        // ToString = On
-        // FormatCode = On
 // {            
         // OnCannotResolveContractTypeNameRegularExpression = string
         DI.Setup("Composition")

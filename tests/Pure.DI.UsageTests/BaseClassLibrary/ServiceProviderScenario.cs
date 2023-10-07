@@ -36,10 +36,6 @@ class Service : IService
 partial class ServiceProvider: IServiceProvider
 {
     private void Setup() =>
-// }        
-        // ToString = On
-        // FormatCode = On
-// {
         // The following hint overrides the name of the
         // "object Resolve(Type type)" method in "GetService",
         // which implements the "IServiceProvider" interface:

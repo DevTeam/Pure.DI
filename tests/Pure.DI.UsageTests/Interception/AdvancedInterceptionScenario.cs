@@ -114,8 +114,6 @@ public class Scenario
     [Fact]
     public void Run()
     {
-        // ToString = On
-        // FormatCode = On
 // {            
         // OnDependencyInjection = On
         DI.Setup("Composition")

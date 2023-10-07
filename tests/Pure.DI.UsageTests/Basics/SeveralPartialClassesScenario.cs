@@ -31,38 +31,22 @@ partial class Composition
 {
     // This method will not be called in runtime
     private void Setup1() =>
-// }        
-        // ToString = On
-        // FormatCode = On
-// {        
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>();
 }
-// }
 
-// {
 partial class Composition
 {
     // This method will not be called in runtime
     private void Setup2() =>
-// }        
-        // ToString = On
-        // FormatCode = On
-// {        
         DI.Setup(nameof(Composition))
             .Bind<IService>().To<Service>();
 }
-// }
 
-// {
 partial class Composition
 {
     // This method will not be called in runtime
     private void Setup3() =>
-// }        
-        // ToString = On
-        // FormatCode = On
-// {        
         DI.Setup(nameof(Composition))
             .Root<IService>("Root");
 }
@@ -73,8 +57,6 @@ public class Scenario
     [Fact]
     public void Run()
     {
-        // ToString = On
-        // FormatCode = On
 // {            
         var composition = new Composition();
         var service = composition.Root;

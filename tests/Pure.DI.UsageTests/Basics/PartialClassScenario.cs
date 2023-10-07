@@ -35,10 +35,6 @@ partial class Composition
     // This method will not be called in runtime
     [Conditional("DI")]
     private void Setup() =>
-// }        
-        // ToString = On
-        // FormatCode = On
-// {        
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>().Root<IService>("Root");
@@ -50,8 +46,6 @@ public class Scenario
     [Fact]
     public void Run()
     {
-        // ToString = On
-        // FormatCode = On
 // {            
         var composition = new Composition();
         var service = composition.Root;
