@@ -12,7 +12,8 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
         }
 
         var level = ctx.Level;
-        var lockIsRequired = ctx.LockIsRequired ?? ctx.DependencyGraph.Source.Hints.GetHint(Hint.ThreadSafe, SettingState.On) == SettingState.On;
+        var isThreadSafe = ctx.DependencyGraph.Source.Hints.GetHint(Hint.ThreadSafe, SettingState.On) == SettingState.On;
+        var lockIsRequired = ctx.LockIsRequired ?? isThreadSafe;
         var toCheckExistence =
             // The "singleton" instance must be created with a check each time
             variable.Node.Lifetime == Lifetime.Singleton
@@ -56,12 +57,17 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
         {
             ctx.Code.AppendLine($"{Names.DisposablesFieldName}[{Names.DisposeIndexFieldName}++] = {variable.VarName};");
         }
-            
+
         if (variable.InstanceType.IsValueType)
         {
+            if (variable.Node.Lifetime != Lifetime.Transient && isThreadSafe)
+            {
+                ctx.Code.AppendLine($"{Names.SystemNamespace}Threading.Thread.MemoryBarrier();");
+            }
+
             ctx.Code.AppendLine($"{variable.VarName}Created = true;");
         }
-            
+
         ctx.Code.DecIndent();
         ctx.Code.AppendLine("}");
         if (!lockIsRequired)

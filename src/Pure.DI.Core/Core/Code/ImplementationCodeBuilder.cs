@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable InvertIf
 namespace Pure.DI.Core.Code;
 
 internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
@@ -61,11 +62,9 @@ internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
 
         var onCreatedStatements = ctx.BuildTools.OnCreated(ctx, ctx.Variable).ToArray();
         var tempVariableInit =
-            ctx.Variable.InstanceType.IsReferenceType
+            ctx.DependencyGraph.Source.Hints.GetHint(Hint.ThreadSafe, SettingState.On) == SettingState.On
             && ctx.Variable.Node.Lifetime != Lifetime.Transient
-            && (
-                visits.Any()
-                || ctx.BuildTools.OnCreated(ctx, ctx.Variable).Any());
+            && (visits.Any() || ctx.BuildTools.OnCreated(ctx, ctx.Variable).Any());
 
         if (tempVariableInit)
         {
@@ -88,6 +87,7 @@ internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
         ctx.Code.AppendLines(onCreatedStatements);
         if (tempVariableInit)
         {
+            ctx.Code.AppendLine($"{Names.SystemNamespace}Threading.Thread.MemoryBarrier();");
             ctx.Code.AppendLine($"{variable.VarName} = {ctx.Variable.VarName};");
         }
     }

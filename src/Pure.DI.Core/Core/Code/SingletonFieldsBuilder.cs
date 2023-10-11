@@ -24,25 +24,20 @@ internal sealed class SingletonFieldsBuilder: IBuilder<CompositionCode, Composit
             membersCounter++;
         }
 
-        var fieldModifiers =
-            composition.Source.Source.Hints.GetHint(Hint.ThreadSafe, SettingState.On) == SettingState.On
-                ? "volatile "
-                : "";
-        
         // Singleton fields
         foreach (var singletonField in composition.Singletons)
         {
             if (singletonField.InstanceType.IsValueType)
             {
-                code.AppendLine($"private {(singletonField.InstanceType.IsAtomicValueType() ? fieldModifiers : "")}{singletonField.InstanceType} {singletonField.VarName};");
+                code.AppendLine($"private {singletonField.InstanceType} {singletonField.VarName};");
                 membersCounter++;
 
-                code.AppendLine($"private {fieldModifiers}bool {singletonField.VarName}Created;");
+                code.AppendLine($"private bool {singletonField.VarName}Created;");
                 membersCounter++;
             }
             else
             {
-                code.AppendLine($"private {fieldModifiers}{singletonField.InstanceType} {singletonField.VarName};");
+                code.AppendLine($"private {singletonField.InstanceType} {singletonField.VarName};");
                 membersCounter++;
             }
         }
