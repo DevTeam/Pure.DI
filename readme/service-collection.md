@@ -22,7 +22,7 @@ class Service : IService
     public IDependency Dependency { get; }
 }
 
-partial class Composition
+partial class Composition: ServiceCollection
 {
     private void Setup() =>
         // The following hint specifies to create a static method
@@ -36,20 +36,16 @@ partial class Composition
             .Root<IService>();
 
     // Creates a service collection for the current composition
-    public IServiceCollection CreateServiceCollection()
-    {
-        var serviceCollection = new ServiceCollection();
-        foreach (var (serviceType, factory) in Factories)
-        {
-            serviceCollection.AddTransient(
-                serviceType,
-                serviceProvider => factory(this)!);
-        }
+    public IServiceCollection CreateServiceCollection() =>
+        new ServiceCollection()
+            .Add(Factories
+                .Select(i =>
+                    new ServiceDescriptor(
+                        i.ServiceType,
+                        _ => i.Factory(this),
+                        ServiceLifetime.Transient)));
 
-        return serviceCollection;
-    }
-
-    private static readonly List<(Type ServiceType, Func<Composition, object?> Factory)> Factories = new();
+    private static readonly List<(Type ServiceType, Func<Composition, object> Factory)> Factories = new();
 
     // Registers the roots of the composition for use in a service collection
     private static partial void OnNewRoot<TContract, T>(
@@ -57,7 +53,7 @@ partial class Composition
         string name,
         object? tag,
         Lifetime lifetime) =>
-        Factories.Add((typeof(TContract), composition => resolver.Resolve(composition)));
+        Factories.Add((typeof(TContract), composition => resolver.Resolve(composition)!));
 }
 
 var composition = new Composition();

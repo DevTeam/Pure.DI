@@ -8,7 +8,7 @@ Composition setup is in two files:
 
 - [Composition.cs](/samples/WebAPI/Composition.cs) - the normal part with bindings
 
-- [WebComposition.cs](/samples/WebAPI/WebComposition.cs) - the setup that provides a collection of Microsoft DI services
+- [Composition.ServiceProviderFactory.cs](/samples/WebAPI/Composition.ServiceProviderFactory.cs) - provides an alternative implementation of a _IServiceProviderFactory_
 
 You can define a composition in parts. Both parts contain definitions of parts of the same _Composition_ class. 
 
@@ -26,15 +26,23 @@ internal partial class Composition
 
 Controllers may not have binding setups, as they are the roots of the composition and are not injected anywhere. Therefore, it is sufficient only to declare them as the roots of the composition.
 
-The second part is a bit more complicated. Its responsibility is the integration with Microsoft DI. This is where the roots of the composition are registered in the Microsoft DI service collection:
+The second part is a bit more complicated. Its responsibility is the integration with Microsoft DI. It implements the `IServiceProviderFactory` interface:
 
 ```c#
-internal partial class Composition
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedParameterInPartialMethod
+// ReSharper disable UnusedTypeParameter
+#pragma warning disable CS8667
+namespace WebAPI;
+
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Pure.DI;
+
+internal partial class Composition: IServiceProviderFactory<IServiceCollection>
 {
-    private static readonly List<(Type ServiceType, Func<Composition, object?> Factory)> Factories = new();
-    private readonly WebApplicationBuilder _builder;
+    private static readonly List<(Type ServiceType, Func<Composition, object> Factory)> Factories = new();
     private IServiceProvider _serviceProvider;
-    
+
     private static void HintsSetup() =>
         DI.Setup(nameof(Composition))
             // Determines whether to generate the `OnCannotResolve<T>(...)` partial method
@@ -42,49 +50,48 @@ internal partial class Composition
             .Hint(Hint.OnCannotResolve, "On")
             // Determines whether to generate a static partial method `OnNewRoot<TContract, T>(...)`
             .Hint(Hint.OnNewRoot, "On");
-
-    public Composition(WebApplicationBuilder builder): this()
-    {
-        _builder = builder;
-        // Registers composition roots as services in the service collection
-        foreach (var (serviceType, factory) in Factories)
-        {
-            // Uses the Transient lifetime, since the actual lifetime is controlled in this class
-            // and not in the service provider
-            builder.Services.AddTransient(serviceType, _ => factory(this)!);
-        }
-    }
     
-    public WebApplication BuildWebApplication()
+    public IServiceCollection CreateBuilder(IServiceCollection services)
     {
-        var webApplication = _builder.Build();
-        // Saves the service provider to use it to resolve dependencies external to this composition
-        // from the service provider 
-        _serviceProvider = webApplication.Services;
-        return webApplication;
+        // It is required for controllers to be registered as regular services.
+        services.AddMvc().AddControllersAsServices();
+        
+        // Registers composition roots as services in the service collection
+        return services.Add(Factories
+            .Select(i => 
+                new ServiceDescriptor(
+                    i.ServiceType,
+                    _ => i.Factory(this),
+                    ServiceLifetime.Transient)));
     }
+
+    public IServiceProvider CreateServiceProvider(IServiceCollection services) =>
+        // Saves the service provider to use it to resolve dependencies external
+        // to this composition from the service provider 
+        _serviceProvider = services.BuildServiceProvider();
 
     // Obtaining external dependencies from the service provider
-    private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime) => 
-        _serviceProvider.GetService<T>()
-        ?? throw new InvalidOperationException($"Cannot resolve {tag} {typeof(T)} from the service provider.");
+    private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime) where T : notnull => 
+        _serviceProvider.GetRequiredService<T>();
 
     // Registers the composition roots for use in a service collection
-    private static partial void OnNewRoot<TContract, T>(IResolver<Composition, TContract> resolver, string name, object? tag, Lifetime lifetime) =>
-        Factories.Add((typeof(TContract), composition => resolver.Resolve(composition)));
+    private static partial void OnNewRoot<TContract, T>(
+        IResolver<Composition, TContract> resolver,
+        string name,
+        object? tag,
+        Lifetime lifetime) =>
+        Factories.Add((typeof(TContract), composition => resolver.Resolve(composition)!));
 }
 ```
 
-The web application entry point is in the [Program.cs](/samples/WebAPI/Program.cs) file:
+Te web application entry point is in the [Program.cs](/samples/WebAPI/Program.cs) file:
 
 ```c#
-var composition = new Composition(builder);
-builder.Services.AddMvc().AddControllersAsServices();
-....
-var app = composition.BuildWebApplication();
-```
+var builder = WebApplication.CreateBuilder(args);
 
-Note the absence of the `AddControllersAsServices()` call. It is required for controllers to be registered as regular services.  An object of type Composition creates a web application because it additionally needs to store a service provider in its field to resolve external dependencies.
+// Uses Composition as an alternative IServiceProviderFactory
+builder.Host.UseServiceProviderFactory(new Composition());
+```
 
 The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
 
