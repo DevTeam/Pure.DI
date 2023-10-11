@@ -48,7 +48,7 @@ internal sealed class RootPropertiesBuilder: IBuilder<CompositionCode, Compositi
         if (hasRootArgs)
         {
             hasRootArgs = true;
-            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{arg.InstanceType} {arg.VarName}"))})";
+            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{arg.InstanceType} {arg.VariableName}"))})";
         }
 
         if (hasRootArgs)

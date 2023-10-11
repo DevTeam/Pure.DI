@@ -14,41 +14,11 @@ internal record Variable(
     
     public bool IsDeclared { get; } = Node.Lifetime != Lifetime.Transient || Node.IsArg();
     
-    public string VarName
-    {
-        get
-        {
-            if (!string.IsNullOrEmpty(NameOverride))
-            {
-                return NameOverride;
-            }
+    public string VariableName => string.IsNullOrEmpty(NameOverride) ? Node.GetVariableName(PerLifetimeId) : NameOverride;
 
-            switch (Node)
-            {
-                case { Lifetime: Lifetime.Singleton }:
-                {
-                    var binding = Node.Binding;
-                    return $"{Names.SingletonVariablePrefix}{Names.Salt}{binding.Id}";
-                }
-
-                case { Lifetime: Lifetime.PerResolve }:
-                    return $"{Names.PerResolveVariablePrefix}{Names.Salt}{PerLifetimeId}";
-
-                case { Arg: { Source.Kind: ArgKind.Class } arg }:
-                    return $"{Names.ArgVariablePrefix}{Names.Salt}{arg.Source.ArgName}";
-
-                case { Arg: { Source.Kind: ArgKind.Root } arg }:
-                    return arg.Source.ArgName;
-
-                default:
-                    return $"{Names.TransientVariablePrefix}{Names.Salt}{PerLifetimeId}";
-            }
-        }
-    }
-    
     public ITypeSymbol InstanceType => Node.Type;
     
     public ITypeSymbol ContractType => Injection.Type;
 
-    public override string ToString() => $"{InstanceType} {VarName}";
+    public override string ToString() => $"{InstanceType} {VariableName}";
 }

@@ -34,11 +34,11 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
             }
             
             AddMethodHeader(apiCode);
-            apiCode.AppendLine($"{hints.GetValueOrDefault(Hint.ResolveMethodModifiers, Names.DefaultApiMethodModifiers)} T {hints.GetValueOrDefault(Hint.ResolveMethodName, Names.ResolverMethodName)}<T>()");
+            apiCode.AppendLine($"{hints.GetValueOrDefault(Hint.ResolveMethodModifiers, Names.DefaultApiMethodModifiers)} T {hints.GetValueOrDefault(Hint.ResolveMethodName, Names.ResolveMethodName)}<T>()");
             apiCode.AppendLine("{");
             using (apiCode.Indent())
             {
-                apiCode.AppendLine($"return {ResolverInfo.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}.{ResolverClassesBuilder.ResolveMethodName}(this);");
+                apiCode.AppendLine($"return {Names.ResolverClassName}<T>.{Names.ResolverPropertyName}.{Names.ResolveMethodName}(this);");
             }
 
             apiCode.AppendLine("}");
@@ -47,11 +47,11 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
             membersCounter++;
 
             AddMethodHeader(apiCode);
-            apiCode.AppendLine($"{hints.GetValueOrDefault(Hint.ResolveByTagMethodModifiers, Names.DefaultApiMethodModifiers)} T {hints.GetValueOrDefault(Hint.ResolveByTagMethodName, Names.ResolverMethodName)}<T>(object? tag)");
+            apiCode.AppendLine($"{hints.GetValueOrDefault(Hint.ResolveByTagMethodModifiers, Names.DefaultApiMethodModifiers)} T {hints.GetValueOrDefault(Hint.ResolveByTagMethodName, Names.ResolveMethodName)}<T>(object? tag)");
             apiCode.AppendLine("{");
             using (apiCode.Indent())
             {
-                apiCode.AppendLine($"return {ResolverInfo.ResolverClassName}<T>.{ResolverClassesBuilder.ResolverPropertyName}.{ResolverClassesBuilder.ResolveByTagMethodName}(this, tag);");
+                apiCode.AppendLine($"return {Names.ResolverClassName}<T>.{Names.ResolverPropertyName}.{Names.ResolveByTagMethodName}(this, tag);");
             }
 
             apiCode.AppendLine("}");
@@ -62,10 +62,10 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
             var resolvers = _resolversBuilder.Build(composition.Roots).ToArray();
             CreateObjectResolverMethod(
                 hints.GetValueOrDefault(Hint.ObjectResolveMethodModifiers, Names.DefaultApiMethodModifiers),
-                hints.GetValueOrDefault(Hint.ObjectResolveMethodName, Names.ResolverMethodName),
+                hints.GetValueOrDefault(Hint.ObjectResolveMethodName, Names.ResolveMethodName),
                 resolvers,
                 $"{Names.SystemNamespace}Type type",
-                ResolverClassesBuilder.ResolveMethodName,
+                Names.ResolveMethodName,
                 "this",
                 false,
                 apiCode);
@@ -75,10 +75,10 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
             apiCode.AppendLine();
             CreateObjectResolverMethod(
                 hints.GetValueOrDefault(Hint.ObjectResolveByTagMethodModifiers, Names.DefaultApiMethodModifiers),
-                hints.GetValueOrDefault(Hint.ObjectResolveByTagMethodName, Names.ResolverMethodName),
+                hints.GetValueOrDefault(Hint.ObjectResolveByTagMethodName, Names.ResolveMethodName),
                 resolvers,
                 $"{Names.SystemNamespace}Type type, object? tag",
-                ResolverClassesBuilder.ResolveByTagMethodName,
+                Names.ResolveByTagMethodName,
                 "this, tag",
                 true,
                 apiCode);
@@ -139,12 +139,12 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
             var divisor = Buckets<object, object>.GetDivisor((uint)resolvers.Count);
             if (resolvers.Any())
             {
-                code.AppendLine($"var index = (int)({ResolversFieldsBuilder.BucketSizeFieldName} * ((uint){Names.SystemNamespace}Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % {divisor}));");
-                code.AppendLine($"var finish = index + {ResolversFieldsBuilder.BucketSizeFieldName};");
+                code.AppendLine($"var index = (int)({Names.BucketSizeFieldName} * ((uint){Names.SystemNamespace}Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % {divisor}));");
+                code.AppendLine($"var finish = index + {Names.BucketSizeFieldName};");
                 code.AppendLine("do {");
                 using (code.Indent())
                 {
-                    code.AppendLine($"ref var pair = ref {ResolversFieldsBuilder.BucketsFieldName}[index];");
+                    code.AppendLine($"ref var pair = ref {Names.BucketsFieldName}[index];");
                     code.AppendLine("if (ReferenceEquals(pair.Key, type))");
                     code.AppendLine("{");
                     using (code.Indent())

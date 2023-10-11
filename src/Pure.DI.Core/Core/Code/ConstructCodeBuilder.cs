@@ -37,7 +37,7 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
         var variable = ctx.Variable;
         var code = ctx.Code;
         var level = ctx.Level + 1;
-        var localFuncName = $"LocalFunc_{variable.VarName}";
+        var localFuncName = $"LocalFunc_{variable.VariableName}";
         code.AppendLine($"{variable.InstanceType} {localFuncName}()");
         code.AppendLine("{");
         using (code.Indent())
@@ -58,14 +58,14 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
 
         code.AppendLine("}");
         code.AppendLine();
-        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VarName} = {localFuncName}();");
+        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = {localFuncName}();");
         ctx.Code.AppendLines(ctx.BuildTools.OnCreated(ctx, variable));
     }
 
     private static void BuildArray(BuildContext ctx, DpConstruct array)
     {
         var variable = ctx.Variable;
-        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VarName} = new {array.Source.ElementType}[{variable.Args.Count.ToString()}] {{ {string.Join(", ", variable.Args.Select(i => ctx.BuildTools.OnInjected(ctx, i.Current)))} }};");
+        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = new {array.Source.ElementType}[{variable.Args.Count.ToString()}] {{ {string.Join(", ", variable.Args.Select(i => ctx.BuildTools.OnInjected(ctx, i.Current)))} }};");
         ctx.Code.AppendLines(ctx.BuildTools.OnCreated(ctx, variable));
     }
 
@@ -79,19 +79,19 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
             && span.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp7_3;
         
         var createInstance = isStackalloc ? $"stackalloc {createArray}" : $"new {Names.SystemNamespace}Span<{span.Source.ElementType}>(new {createArray})";
-        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable, isStackalloc)}{variable.VarName} = {createInstance};");
+        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable, isStackalloc)}{variable.VariableName} = {createInstance};");
         ctx.Code.AppendLines(ctx.BuildTools.OnCreated(ctx, variable));
     }
 
     private static void BuildComposition(BuildContext ctx)
     {
         var variable = ctx.Variable;
-        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VarName} = this;");
+        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = this;");
     }
 
     private static void BuildOnCannotResolve(BuildContext ctx)
     {
         var variable = ctx.Variable;
-        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VarName} = {Names.OnCannotResolve}<{variable.ContractType}>({variable.Injection.Tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()});");
+        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = {Names.OnCannotResolve}<{variable.ContractType}>({variable.Injection.Tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()});");
     }
 }

@@ -18,7 +18,7 @@ internal class FactoryCodeBuilder: ICodeBuilder<DpFactory>
         }
         
         // Rewrites syntax tree
-        var finishLabel = $"{variable.VarName}Finish";
+        var finishLabel = $"{variable.VariableName}Finish";
         var injections = new List<FactoryRewriter.Injection>();
         var factoryRewriter = new FactoryRewriter(factory, variable, finishLabel, injections);
         var lambda = factoryRewriter.Rewrite(factory.Source.Factory);
@@ -29,13 +29,13 @@ internal class FactoryCodeBuilder: ICodeBuilder<DpFactory>
 
         if (syntaxNode is not BlockSyntax)
         {
-            code.Append($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VarName} = ");
+            code.Append($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = ");
         }
         else
         {
             if (!variable.IsDeclared)
             {
-                code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable, true)}{variable.VarName};");
+                code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable, true)}{variable.VariableName};");
             }
         }
 

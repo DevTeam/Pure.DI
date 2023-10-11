@@ -111,7 +111,7 @@ internal sealed class FactoryRewriter : CSharpSyntaxRewriter
         SyntaxFactory.ExpressionStatement(
             SyntaxFactory.AssignmentExpression(
                 SyntaxKind.SimpleAssignmentExpression,
-                SyntaxFactory.IdentifierName(_variable.VarName).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space), 
+                SyntaxFactory.IdentifierName(_variable.VariableName).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space), 
                 (ExpressionSyntax)Visit(returnBody).WithLeadingTrivia(SyntaxFactory.Space)));
 
     public override SyntaxNode? VisitInvocationExpression(InvocationExpressionSyntax invocation)

@@ -35,7 +35,7 @@ internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilde
                         var rootArgsStr = "";
                         if (!root.Args.IsEmpty)
                         {
-                            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{arg.InstanceType} {arg.VarName}"))})";
+                            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{arg.InstanceType} {arg.VariableName}"))})";
                         }
 
                         lines.AppendLine($"{(root.IsPublic ? "+" : "-")}{FormatType(root.Injection.Type, DefaultFormatOptions)} {root.PropertyName}{rootArgsStr}");
@@ -45,10 +45,10 @@ internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilde
                     {
                         var hints = composition.Source.Source.Hints;
                         var genericParameterT = $"{DefaultFormatOptions.StartGenericArgsSymbol}T{DefaultFormatOptions.FinishGenericArgsSymbol}";
-                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ResolveMethodModifiers, "") == "" ? "+ " : "")}T {hints.GetValueOrDefault(Hint.ResolveMethodName, Names.ResolverMethodName)}{genericParameterT}()");
-                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ResolveByTagMethodModifiers, "") == "" ? "+ " : "")}T {hints.GetValueOrDefault(Hint.ResolveByTagMethodName, Names.ResolverMethodName)}{genericParameterT}(object? tag)");
-                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ObjectResolveMethodModifiers, "") == "" ? "+ " : "")}object {hints.GetValueOrDefault(Hint.ObjectResolveMethodName, Names.ResolverMethodName)}(Type type)");
-                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ObjectResolveByTagMethodModifiers, "") == "" ? "+ " : "")}object {hints.GetValueOrDefault(Hint.ObjectResolveByTagMethodName, Names.ResolverMethodName)}(Type type, object? tag)");
+                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ResolveMethodModifiers, "") == "" ? "+ " : "")}T {hints.GetValueOrDefault(Hint.ResolveMethodName, Names.ResolveMethodName)}{genericParameterT}()");
+                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ResolveByTagMethodModifiers, "") == "" ? "+ " : "")}T {hints.GetValueOrDefault(Hint.ResolveByTagMethodName, Names.ResolveMethodName)}{genericParameterT}(object? tag)");
+                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ObjectResolveMethodModifiers, "") == "" ? "+ " : "")}object {hints.GetValueOrDefault(Hint.ObjectResolveMethodName, Names.ResolveMethodName)}(Type type)");
+                        lines.AppendLine($"{(hints.GetValueOrDefault(Hint.ObjectResolveByTagMethodModifiers, "") == "" ? "+ " : "")}object {hints.GetValueOrDefault(Hint.ObjectResolveByTagMethodName, Names.ResolveMethodName)}(Type type, object? tag)");
                     }
                 }
 

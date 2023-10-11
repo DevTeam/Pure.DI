@@ -29,15 +29,15 @@ internal sealed class SingletonFieldsBuilder: IBuilder<CompositionCode, Composit
         {
             if (singletonField.InstanceType.IsValueType)
             {
-                code.AppendLine($"private {singletonField.InstanceType} {singletonField.VarName};");
+                code.AppendLine($"private {singletonField.InstanceType} {singletonField.VariableName};");
                 membersCounter++;
 
-                code.AppendLine($"private bool {singletonField.VarName}Created;");
+                code.AppendLine($"private bool {singletonField.VariableName}Created;");
                 membersCounter++;
             }
             else
             {
-                code.AppendLine($"private {singletonField.InstanceType} {singletonField.VarName};");
+                code.AppendLine($"private {singletonField.InstanceType} {singletonField.VariableName};");
                 membersCounter++;
             }
         }

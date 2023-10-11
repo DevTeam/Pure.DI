@@ -36,11 +36,11 @@ internal sealed class ChildConstructorBuilder: IBuilder<CompositionCode, Composi
 
                     foreach (var singletonField in composition.Singletons)
                     {
-                        code.AppendLine($"{singletonField.VarName} = {ParentCompositionArgName}.{singletonField.VarName};");
+                        code.AppendLine($"{singletonField.VariableName} = {ParentCompositionArgName}.{singletonField.VariableName};");
 
                         if (singletonField.InstanceType.IsValueType)
                         {
-                            code.AppendLine($"{singletonField.VarName}Created = {ParentCompositionArgName}.{singletonField.VarName}Created;");
+                            code.AppendLine($"{singletonField.VariableName}Created = {ParentCompositionArgName}.{singletonField.VariableName}Created;");
                         }
                     }
                 }
@@ -56,7 +56,7 @@ internal sealed class ChildConstructorBuilder: IBuilder<CompositionCode, Composi
             {
                 foreach (var argsField in classArgs)
                 {
-                    code.AppendLine($"{argsField.VarName} = {ParentCompositionArgName}.{argsField.VarName};");
+                    code.AppendLine($"{argsField.VariableName} = {ParentCompositionArgName}.{argsField.VariableName};");
                 }
             }
         }

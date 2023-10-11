@@ -23,8 +23,8 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
         if (toCheckExistence)
         {
             var checkExpression = variable.InstanceType.IsValueType
-                ? $"!{variable.VarName}Created"
-                : $"object.ReferenceEquals({variable.VarName}, null)";
+                ? $"!{variable.VariableName}Created"
+                : $"object.ReferenceEquals({variable.VariableName}, null)";
 
             if (lockIsRequired)
             {
@@ -55,7 +55,7 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
 
         if (variable.Node.Lifetime == Lifetime.Singleton && variable.Node.IsDisposable())
         {
-            ctx.Code.AppendLine($"{Names.DisposablesFieldName}[{Names.DisposeIndexFieldName}++] = {variable.VarName};");
+            ctx.Code.AppendLine($"{Names.DisposablesFieldName}[{Names.DisposeIndexFieldName}++] = {variable.VariableName};");
         }
 
         if (variable.InstanceType.IsValueType)
@@ -65,7 +65,7 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
                 ctx.Code.AppendLine($"{Names.SystemNamespace}Threading.Thread.MemoryBarrier();");
             }
 
-            ctx.Code.AppendLine($"{variable.VarName}Created = true;");
+            ctx.Code.AppendLine($"{variable.VariableName}Created = true;");
         }
 
         ctx.Code.DecIndent();

@@ -47,7 +47,7 @@ internal sealed class PrimaryConstructorBuilder: IBuilder<CompositionCode, Compo
 
             foreach (var arg in classArgs)
             {
-                code.AppendLine($"{arg.VarName} = {arg.Node.Arg?.Source.ArgName};");
+                code.AppendLine($"{arg.VariableName} = {arg.Node.Arg?.Source.ArgName};");
             }
             
             code.AppendLine($"{Names.DisposablesFieldName} = new {Names.IDisposableInterfaceName}[{composition.DisposableSingletonsCount.ToString()}];");

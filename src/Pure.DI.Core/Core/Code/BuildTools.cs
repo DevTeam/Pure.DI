@@ -15,7 +15,7 @@ internal class BuildTools : IBuildTools
     {
         if (ctx.DependencyGraph.Source.Hints.GetHint(Hint.OnDependencyInjection) != SettingState.On)
         {
-            return variable.VarName;
+            return variable.VariableName;
         }
 
         if (!_filter.IsMeetRegularExpression(
@@ -25,11 +25,11 @@ internal class BuildTools : IBuildTools
                 (Hint.OnDependencyInjectionTagRegularExpression, variable.Injection.Tag.ValueToString()),
                 (Hint.OnDependencyInjectionLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
         {
-            return variable.VarName;
+            return variable.VariableName;
         }
         
         var tag = GetTag(ctx, variable);
-        return $"{Names.OnDependencyInjectionMethodName}<{variable.ContractType}>({variable.VarName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})";
+        return $"{Names.OnDependencyInjectionMethodName}<{variable.ContractType}>({variable.VariableName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})";
     }
     
     public IEnumerable<Line> OnCreated(BuildContext ctx, Variable variable)
@@ -54,7 +54,7 @@ internal class BuildTools : IBuildTools
         }
 
         var tag = GetTag(ctx, variable);
-        yield return new Line(0, $"{Names.OnNewInstanceMethodName}<{variable.InstanceType}>(ref {variable.VarName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})" + ";");
+        yield return new Line(0, $"{Names.OnNewInstanceMethodName}<{variable.InstanceType}>(ref {variable.VariableName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})" + ";");
     }
 
     private static object? GetTag(BuildContext ctx, Variable variable)

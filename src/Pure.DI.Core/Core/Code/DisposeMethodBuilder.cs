@@ -55,8 +55,8 @@ internal sealed class DisposeMethodBuilder: IBuilder<CompositionCode, Compositio
                 {
                     code.AppendLine(
                         singletonField.InstanceType.IsValueType
-                            ? $"{singletonField.VarName}Created = false;"
-                            : $"{singletonField.VarName} = null;");
+                            ? $"{singletonField.VariableName}Created = false;"
+                            : $"{singletonField.VariableName} = null;");
                 }
             }
 

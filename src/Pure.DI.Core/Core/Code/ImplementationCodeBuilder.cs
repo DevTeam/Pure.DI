@@ -68,8 +68,8 @@ internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
 
         if (tempVariableInit)
         {
-            ctx = ctx with { Variable = variable with { NameOverride = variable.VarName + "Temp" } };
-            ctx.Code.AppendLine($"{ctx.Variable.InstanceType} {ctx.Variable.VarName};");
+            ctx = ctx with { Variable = variable with { NameOverride = variable.VariableName + "Temp" } };
+            ctx.Code.AppendLine($"{ctx.Variable.InstanceType} {ctx.Variable.VariableName};");
             if (onCreatedStatements.Any())
             {
                 onCreatedStatements = ctx.BuildTools.OnCreated(ctx, ctx.Variable).ToArray();
@@ -88,7 +88,7 @@ internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
         if (tempVariableInit)
         {
             ctx.Code.AppendLine($"{Names.SystemNamespace}Threading.Thread.MemoryBarrier();");
-            ctx.Code.AppendLine($"{variable.VarName} = {ctx.Variable.VarName};");
+            ctx.Code.AppendLine($"{variable.VariableName} = {ctx.Variable.VariableName};");
         }
     }
     
@@ -106,7 +106,7 @@ internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
         var hasRequired = required.Any();
         var args = string.Join(", ", constructorArgs.Select(i => ctx.BuildTools.OnInjected(ctx, i)));
         var newStatement = variable.InstanceType.IsTupleType ? $"({args})" : $"new {variable.InstanceType}({args})";
-        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VarName} = {newStatement}{(hasRequired ? "" : ";")}");
+        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = {newStatement}{(hasRequired ? "" : ";")}");
         if (!hasRequired)
         {
             return;
@@ -127,17 +127,17 @@ internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
     
     private static void BuildField(BuildContext ctx, DpField field, Variable fieldVariable)
     {
-        ctx.Code.AppendLine($"{ctx.Variable.VarName}.{field.Field.Name} = {ctx.BuildTools.OnInjected(ctx, fieldVariable)};");
+        ctx.Code.AppendLine($"{ctx.Variable.VariableName}.{field.Field.Name} = {ctx.BuildTools.OnInjected(ctx, fieldVariable)};");
     }
 
     private static void BuildProperty(BuildContext ctx, DpProperty property, Variable propertyVariable)
     {
-        ctx.Code.AppendLine($"{ctx.Variable.VarName}.{property.Property.Name} = {ctx.BuildTools.OnInjected(ctx, propertyVariable)};");
+        ctx.Code.AppendLine($"{ctx.Variable.VariableName}.{property.Property.Name} = {ctx.BuildTools.OnInjected(ctx, propertyVariable)};");
     }
 
     private static void BuildMethod(BuildContext ctx, DpMethod method, ImmutableArray<Variable> methodArgs)
     {
         var args = string.Join(", ", methodArgs.Select(i => ctx.BuildTools.OnInjected(ctx, i)));
-        ctx.Code.AppendLine($"{ctx.Variable.VarName}.{method.Method.Name}({args});");
+        ctx.Code.AppendLine($"{ctx.Variable.VariableName}.{method.Method.Name}({args});");
     }
 }

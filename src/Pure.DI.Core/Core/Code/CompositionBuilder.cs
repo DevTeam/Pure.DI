@@ -45,10 +45,10 @@ internal class CompositionBuilder: IBuilder<DependencyGraph, CompositionCode>
 
             foreach (var perResolveVar in map.GetPerResolves())
             {
-                ctx.Code.AppendLine($"var {perResolveVar.VarName} = default({perResolveVar.InstanceType});");
+                ctx.Code.AppendLine($"var {perResolveVar.VariableName} = default({perResolveVar.InstanceType});");
                 if (perResolveVar.Info.RefCount > 1 && perResolveVar.InstanceType.IsValueType)
                 {
-                    ctx.Code.AppendLine($"var {perResolveVar.VarName}Created = false;");
+                    ctx.Code.AppendLine($"var {perResolveVar.VariableName}Created = false;");
                 }
             }
             
