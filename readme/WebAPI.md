@@ -29,6 +29,15 @@ Controllers may not have binding setups, as they are the roots of the compositio
 The second part is a bit more complicated. Its responsibility is the integration with Microsoft DI. It implements the `IServiceProviderFactory` interface:
 
 ```c#
+// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedParameterInPartialMethod
+// ReSharper disable UnusedTypeParameter
+#pragma warning disable CS8667
+namespace WebAPI;
+
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Pure.DI;
+
 internal partial class Composition: IServiceProviderFactory<IServiceCollection>
 {
     private static readonly List<(Type ServiceType, Func<Composition, object> Factory)> Factories = new();
@@ -71,8 +80,7 @@ internal partial class Composition: IServiceProviderFactory<IServiceCollection>
         string name,
         object? tag,
         Lifetime lifetime) =>
-        Factories.Add((typeof(TContract), 
-            composition => resolver.Resolve(composition)!));
+        Factories.Add((typeof(TContract), composition => resolver.Resolve(composition)!));
 }
 ```
 
@@ -96,7 +104,7 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.0.20">
+        <PackageReference Include="Pure.DI" Version="2.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

@@ -122,7 +122,7 @@ partial class Composition
   }
   
   #region Composition Roots
-  private Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IDependency RootM10D11di_0001
+  private Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IDependency RootM10D11di0001
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
@@ -141,7 +141,7 @@ partial class Composition
     }
   }
   
-  private Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService RootM10D11di_0002
+  private Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService RootM10D11di0002
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
@@ -225,8 +225,8 @@ partial class Composition
     return
       "classDiagram\n" +
         "  class Composition {\n" +
-          "    -IDependency RootM10D11di_0001\n" +
-          "    -IService RootM10D11di_0002\n" +
+          "    -IDependency RootM10D11di0001\n" +
+          "    -IService RootM10D11di0002\n" +
           "    + T ResolveᐸTᐳ()\n" +
           "    + T ResolveᐸTᐳ(object? tag)\n" +
           "    + object Resolve(Type type)\n" +
@@ -247,8 +247,8 @@ partial class Composition
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service o--  \"Singleton\" Dependency : IDependency\n" +
-        "  Composition ..> Dependency : IDependency RootM10D11di_0001\n" +
-        "  Composition ..> Service : IService RootM10D11di_0002";
+        "  Composition ..> Dependency : IDependency RootM10D11di0001\n" +
+        "  Composition ..> Service : IService RootM10D11di0002";
   }
   
   private readonly static int _bucketSizeM10D11di;
@@ -257,10 +257,10 @@ partial class Composition
   static Composition()
   {
     var valResolverM10D11di_0000 = new ResolverM10D11di_0000();
-    OnNewRoot<Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IDependency, Pure.DI.UsageTests.BCL.ServiceCollectionScenario.Dependency>(valResolverM10D11di_0000, "RootM10D11di_0001", null, Pure.DI.Lifetime.Singleton);
+    OnNewRoot<Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IDependency, Pure.DI.UsageTests.BCL.ServiceCollectionScenario.Dependency>(valResolverM10D11di_0000, "RootM10D11di0001", null, Pure.DI.Lifetime.Singleton);
     ResolverM10D11di<Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IDependency>.Value = valResolverM10D11di_0000;
     var valResolverM10D11di_0001 = new ResolverM10D11di_0001();
-    OnNewRoot<Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService, Pure.DI.UsageTests.BCL.ServiceCollectionScenario.Service>(valResolverM10D11di_0001, "RootM10D11di_0002", null, Pure.DI.Lifetime.Transient);
+    OnNewRoot<Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService, Pure.DI.UsageTests.BCL.ServiceCollectionScenario.Service>(valResolverM10D11di_0001, "RootM10D11di0002", null, Pure.DI.Lifetime.Transient);
     ResolverM10D11di<Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService>.Value = valResolverM10D11di_0001;
     _bucketsM10D11di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       4,
@@ -296,13 +296,13 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IDependency Resolve(Composition composition)
     {
-      return composition.RootM10D11di_0001;
+      return composition.RootM10D11di0001;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IDependency ResolveByTag(Composition composition, object tag)
     {
-      if (Equals(tag, null)) return composition.RootM10D11di_0001;
+      if (Equals(tag, null)) return composition.RootM10D11di0001;
       throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IDependency.");
     }
   }
@@ -312,13 +312,13 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService Resolve(Composition composition)
     {
-      return composition.RootM10D11di_0002;
+      return composition.RootM10D11di0002;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService ResolveByTag(Composition composition, object tag)
     {
-      if (Equals(tag, null)) return composition.RootM10D11di_0002;
+      if (Equals(tag, null)) return composition.RootM10D11di0002;
       throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService.");
     }
   }

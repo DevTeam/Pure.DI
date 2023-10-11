@@ -120,7 +120,7 @@ partial class Composition
     }
   }
   
-  private Pure.DI.UsageTests.Basics.ResolveScenario.IService RootM10D11di_0002
+  private Pure.DI.UsageTests.Basics.ResolveScenario.IService RootM10D11di0002
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
@@ -197,7 +197,7 @@ partial class Composition
         "  class Composition {\n" +
           "    +IDependency DependencySingleton\n" +
           "    +IService OtherService\n" +
-          "    -IService RootM10D11di_0002\n" +
+          "    -IService RootM10D11di0002\n" +
           "    + T ResolveᐸTᐳ()\n" +
           "    + T ResolveᐸTᐳ(object? tag)\n" +
           "    + object Resolve(Type type)\n" +
@@ -223,7 +223,7 @@ partial class Composition
         "  }\n" +
         "  Service *--  Dependency : IDependency\n" +
         "  Composition ..> Dependency : IDependency DependencySingleton\n" +
-        "  Composition ..> Service : IService RootM10D11di_0002\n" +
+        "  Composition ..> Service : IService RootM10D11di0002\n" +
         "  Composition ..> OtherService : \"Other\" IService OtherService";
   }
   
@@ -283,14 +283,14 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.Basics.ResolveScenario.IService Resolve(Composition composition)
     {
-      return composition.RootM10D11di_0002;
+      return composition.RootM10D11di0002;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.Basics.ResolveScenario.IService ResolveByTag(Composition composition, object tag)
     {
       if (Equals(tag, "Other")) return composition.OtherService;
-      if (Equals(tag, null)) return composition.RootM10D11di_0002;
+      if (Equals(tag, null)) return composition.RootM10D11di0002;
       throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.ResolveScenario.IService.");
     }
   }

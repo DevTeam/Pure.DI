@@ -101,7 +101,7 @@ partial class ServiceProvider
   }
   
   #region Composition Roots
-  private Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency RootM10D11di_0001
+  private Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency RootM10D11di0001
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
@@ -120,7 +120,7 @@ partial class ServiceProvider
     }
   }
   
-  private Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService RootM10D11di_0002
+  private Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService RootM10D11di0002
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
@@ -204,8 +204,8 @@ partial class ServiceProvider
     return
       "classDiagram\n" +
         "  class ServiceProvider {\n" +
-          "    -IDependency RootM10D11di_0001\n" +
-          "    -IService RootM10D11di_0002\n" +
+          "    -IDependency RootM10D11di0001\n" +
+          "    -IService RootM10D11di0002\n" +
           "    + T ResolveᐸTᐳ()\n" +
           "    + T ResolveᐸTᐳ(object? tag)\n" +
           "    + object GetService(Type type)\n" +
@@ -226,8 +226,8 @@ partial class ServiceProvider
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service o--  \"Singleton\" Dependency : IDependency\n" +
-        "  ServiceProvider ..> Dependency : IDependency RootM10D11di_0001\n" +
-        "  ServiceProvider ..> Service : IService RootM10D11di_0002";
+        "  ServiceProvider ..> Dependency : IDependency RootM10D11di0001\n" +
+        "  ServiceProvider ..> Service : IService RootM10D11di0002";
   }
   
   private readonly static int _bucketSizeM10D11di;
@@ -270,13 +270,13 @@ partial class ServiceProvider
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency Resolve(ServiceProvider composition)
     {
-      return composition.RootM10D11di_0001;
+      return composition.RootM10D11di0001;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency ResolveByTag(ServiceProvider composition, object tag)
     {
-      if (Equals(tag, null)) return composition.RootM10D11di_0001;
+      if (Equals(tag, null)) return composition.RootM10D11di0001;
       throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency.");
     }
   }
@@ -286,13 +286,13 @@ partial class ServiceProvider
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService Resolve(ServiceProvider composition)
     {
-      return composition.RootM10D11di_0002;
+      return composition.RootM10D11di0002;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService ResolveByTag(ServiceProvider composition, object tag)
     {
-      if (Equals(tag, null)) return composition.RootM10D11di_0002;
+      if (Equals(tag, null)) return composition.RootM10D11di0002;
       throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService.");
     }
   }
