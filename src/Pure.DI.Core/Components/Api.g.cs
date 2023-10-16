@@ -1153,6 +1153,28 @@ namespace Pure.DI
         /// <typeparam name="T">The implementation type.</typeparam>
         /// <returns>API reference to the installation continuation chain.</returns>
         IConfiguration To<T>(global::System.Func<IContext, T> factory);
+        
+        /// <summary>
+        /// Completes the binding chain by specifying the implementation using a source code statement.
+        /// <example>
+        /// For example:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;int&gt;().To&lt;int&gt;("dependencyId")
+        ///     .Bind&lt;Func&lt;int, IDependency&gt;&gt;()
+        ///         .To&lt;Func&lt;int, IDependency&gt;&gt;(ctx =&gt;
+        ///             dependencyId =&gt;
+        ///             {
+        ///                 ctx.Inject&lt;Dependency&gt;(out var dependency);
+        ///                 return dependency;
+        ///             });
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="sourceCodeStatement">Source code statement</param>
+        /// <typeparam name="T">The implementation type.</typeparam>
+        /// <returns>API reference to the installation continuation chain.</returns>
+        IConfiguration To<T>(string sourceCodeStatement);
     }
 
     /// <summary>
@@ -1371,6 +1393,13 @@ namespace Pure.DI
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
             public IConfiguration To<T>(global::System.Func<IContext, T> factory)
+            {
+                return Configuration.Shared;
+            }
+
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            public IConfiguration To<T>(string sourceCodeStatement)
             {
                 return Configuration.Shared;
             }

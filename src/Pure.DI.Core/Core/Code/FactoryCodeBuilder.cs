@@ -29,7 +29,7 @@ internal class FactoryCodeBuilder: ICodeBuilder<DpFactory>
 
         if (syntaxNode is not BlockSyntax)
         {
-            code.Append($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = ");
+            code.Append($"{ctx.BuildTools.GetDeclaration(variable, true)}{variable.VariableName} = ");
         }
         else
         {

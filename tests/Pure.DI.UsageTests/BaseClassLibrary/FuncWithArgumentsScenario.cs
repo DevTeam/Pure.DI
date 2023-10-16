@@ -2,7 +2,6 @@
 $v=true
 $p=99
 $d=Func with arguments
-$f=To distinguish between several different bindings of the same type you can use tags.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -65,24 +64,20 @@ public class Scenario
     public void Run()
     {
 // {    
-        // Declares the "dependencyId" variable to setup binding
-        var dependencyId = default(int);
         DI.Setup("Composition")
             .Bind<IClock>().As(Lifetime.Singleton).To<Clock>()
-            // Binds int to dependencyId
-            .Bind<int>().To(_ => dependencyId)
-            .Bind<Func<int, IDependency>>().To(ctx =>
-                // The name of the Lambda function argument must match
-                // the variable in the binding, in our case it is "dependencyId"
-                new Func<int, IDependency>(dependencyId =>
-                {
-                    // Builds up an instance of type Dependency
-                    // with all necessary dependencies,
-                    // including those of type int,
-                    // referring to the variable "dependencyId"
-                    ctx.Inject<Dependency>(out var dependency);
-                    return dependency;
-                }))
+            // Binds a dependency of type int
+            // to the source code statement "dependencyId"
+            .Bind<int>().To<int>("dependencyId")
+            .Bind<Func<int, IDependency>>()
+                .To<Func<int, IDependency>>(ctx =>
+                    dependencyId =>
+                    {
+                        // Builds up an instance of type Dependency
+                        // referring the source code statement "dependencyId"
+                        ctx.Inject<Dependency>(out var dependency);
+                        return dependency;
+                    })
             .Bind<IService>().To<Service>().Root<IService>("Root");
 
         var composition = new Composition();

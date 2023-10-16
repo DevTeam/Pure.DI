@@ -167,6 +167,13 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                                 case [{ Expression: SimpleLambdaExpressionSyntax lambdaExpression }]:
                                     VisitFactory(metadataVisitor, semanticModel, semanticModel.GetTypeSymbol<ITypeSymbol>(implementationTypeName, _cancellationToken), lambdaExpression);
                                     break;
+                                
+                                case [{ Expression: LiteralExpressionSyntax { Token.Value: string sourceCodeStatement } }]:
+                                    var lambda = SyntaxFactory
+                                        .SimpleLambdaExpression(SyntaxFactory.Parameter(SyntaxFactory.Identifier("_")))
+                                        .WithExpressionBody(SyntaxFactory.IdentifierName(sourceCodeStatement));
+                                    VisitFactory(metadataVisitor, semanticModel, semanticModel.GetTypeSymbol<ITypeSymbol>(implementationTypeName, _cancellationToken), lambda, true);
+                                    break;
 
                                 case []:
                                     metadataVisitor.VisitImplementation(new MdImplementation(semanticModel, implementationTypeName, semanticModel.GetTypeSymbol<INamedTypeSymbol>(implementationTypeName, _cancellationToken)));
@@ -268,7 +275,8 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
         IMetadataVisitor metadataVisitor,
         SemanticModel semanticModel,
         ITypeSymbol resultType,
-        SimpleLambdaExpressionSyntax lambdaExpression)
+        SimpleLambdaExpressionSyntax lambdaExpression,
+        bool isManual = false)
     {
         var resolversWalker = new FactoryResolversSyntaxWalker();
         resolversWalker.Visit(lambdaExpression);
@@ -324,7 +332,11 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
             .Where(i => i != default)
             .ToImmutableArray();
 
-        VisitUsingDirectives(metadataVisitor, semanticModel, lambdaExpression);
+        if (!isManual)
+        {
+            VisitUsingDirectives(metadataVisitor, semanticModel, lambdaExpression);
+        }
+
         metadataVisitor.VisitFactory(
             new MdFactory(
                 semanticModel,
