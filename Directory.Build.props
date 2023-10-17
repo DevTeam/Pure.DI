@@ -1,6 +1,7 @@
 ﻿<Project>
 
     <PropertyGroup>
+        <BasePackageId>Pure.DI</BasePackageId>
         <LangVersion>11</LangVersion>
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -9,8 +10,8 @@
         <IsPackable>false</IsPackable>
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/DevTeam/Pure.DI.git</RepositoryUrl>
-        <Description>Pure DI for .NET without frameworks!</Description>
-        <Product>Pure DI</Product>
+        <Description>Coding in a pure DI paradigm without frameworks!</Description>
+        <Product>$(BasePackageId)</Product>
         <Copyright>Copyright (C) $([System.DateTime]::Now.Year) Nikolay Pianikov</Copyright>
         <AnalyzerRoslynVersion Condition="'$(AnalyzerRoslynVersion)'==''">4.3</AnalyzerRoslynVersion>
         <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">4.3.1</AnalyzerRoslynPackageVersion>

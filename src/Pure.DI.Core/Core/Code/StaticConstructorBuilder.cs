@@ -17,22 +17,30 @@ internal sealed class StaticConstructorBuilder: IBuilder<CompositionCode, Compos
         {
             return composition;
         }
+        
+        var code = composition.Code;
+        if (composition.MembersCount > 0)
+        {
+            code.AppendLine();
+        }
+        
+        var membersCounter = 0;
+        var hasOnNewRoot = composition.Source.Source.Hints.GetHint(Hint.OnNewRoot) == SettingState.On;
+        // ReSharper disable once InvertIf
+        if (hasOnNewRoot && composition.Source.Source.Hints.GetHint(Hint.OnNewRootPartial, SettingState.On) == SettingState.On)
+        {
+            code.AppendLine(Names.MethodImplOptions);
+            code.AppendLine($"private static partial void {Names.OnNewRootMethodName}<TContract, T>({Names.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, TContract> resolver, string name, object? tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
+            membersCounter++;
+        }
 
         var resolvers = _resolversBuilder.Build(composition.Roots).ToArray();
         if (!resolvers.Any())
         {
             return composition;
         }
-
-        var code = composition.Code;
-        if (composition.MembersCount > 0)
-        {
-            code.AppendLine();
-        }
-
-        var hasOnNewRoot = composition.Source.Source.Hints.GetHint(Hint.OnNewRoot) == SettingState.On;
         
-        var membersCounter = 0;
+        code.AppendLine();
         code.AppendLine($"static {composition.Source.Source.Name.ClassName}()");
         code.AppendLine("{");
         using (code.Indent())
@@ -80,15 +88,6 @@ internal sealed class StaticConstructorBuilder: IBuilder<CompositionCode, Compos
         
         code.AppendLine("}");
         membersCounter++;
-        
-        // ReSharper disable once InvertIf
-        if (hasOnNewRoot)
-        {
-            code.AppendLine();
-            code.AppendLine(Names.MethodImplOptions);
-            code.AppendLine($"private static partial void {Names.OnNewRootMethodName}<TContract, T>({Names.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, TContract> resolver, string name, object? tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
-            membersCounter++;
-        }
         
         return composition with { MembersCount = composition.MembersCount + membersCounter };
     }

@@ -86,7 +86,8 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
             membersCounter++;
         }
 
-        if (composition.Source.Source.Hints.GetHint(Hint.OnNewInstance) == SettingState.On)
+        if (composition.Source.Source.Hints.GetHint(Hint.OnNewInstance) == SettingState.On
+            && composition.Source.Source.Hints.GetHint(Hint.OnNewInstancePartial, SettingState.On) == SettingState.On)
         {
             apiCode.AppendLine();
             apiCode.AppendLine(Names.MethodImplOptions);
@@ -94,7 +95,8 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
             membersCounter++;
         }
 
-        if (composition.Source.Source.Hints.GetHint(Hint.OnDependencyInjection) == SettingState.On)
+        if (composition.Source.Source.Hints.GetHint(Hint.OnDependencyInjection) == SettingState.On
+            && composition.Source.Source.Hints.GetHint(Hint.OnDependencyInjectionPartial, SettingState.On) == SettingState.On)
         {
             apiCode.AppendLine();
             apiCode.AppendLine(Names.MethodImplOptions);
@@ -102,7 +104,8 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
             membersCounter++;
         }
         
-        if (composition.Source.Source.Hints.GetHint(Hint.OnCannotResolve) == SettingState.On)
+        if (composition.Source.Source.Hints.GetHint(Hint.OnCannotResolve) == SettingState.On
+            && composition.Source.Source.Hints.GetHint(Hint.OnCannotResolvePartial, SettingState.On) == SettingState.On)
         {
             apiCode.AppendLine();
             apiCode.AppendLine(Names.MethodImplOptions);

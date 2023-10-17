@@ -69,7 +69,7 @@ This value is used by default. If this value is specified, a normal composition 
 
 ### CompositionKind.Internal
 
-If you specify this value, the class will not be generated, but this setup can be used by others as a baseline. For example:
+If you specify this value, the class will not be generated, but this setup can be used by others as a base setup. For example:
 
 ```c#
 DI.Setup("BaseComposition", CompositionKind.Internal)
@@ -83,7 +83,7 @@ If the _CompositionKind.Public_ flag is set in the composition setup, it can als
 
 ### CompositionKind.Global
 
-No composition class will be created when this value is specified, but this setup is the baseline for all installations in the current project, and `DependsOn(...)` is not required.
+No composition class will be created when this value is specified, but this setup is the base setup for all setups in the current project, and `DependsOn(...)` is not required.
 
 </details>
 

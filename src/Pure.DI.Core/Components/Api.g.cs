@@ -140,6 +140,8 @@ namespace Pure.DI
         /// <seealso cref="IConfiguration.Hint"/>
         OnNewInstance,
         
+        OnNewInstancePartial,
+        
         /// <summary>
         /// The regular expression to filter OnNewInstance by the instance type name. ".+" by default.
         /// <example>
@@ -219,6 +221,8 @@ namespace Pure.DI
         /// </summary>
         /// <seealso cref="IConfiguration.Hint"/>
         OnDependencyInjection,
+        
+        OnDependencyInjectionPartial,
         
         /// <summary>
         /// The regular expression to filter OnDependencyInjection by the instance type name. ".+" by default.
@@ -301,7 +305,7 @@ namespace Pure.DI
         OnDependencyInjectionLifetimeRegularExpression,
         
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to generate a partial <c>OnCannotResolve<T>(...)</c> method to handle a scenario where an instance which cannot be resolved. <c>Off</c> by default.
+        /// <c>On</c> or <c>Off</c>. Determines whether to generate a partial <c>OnCannotResolve<T>(...)</c> method to handle a scenario in which the dependency cannot be resolved. <c>Off</c> by default.
         /// <example>
         /// For example:
         /// <code>
@@ -319,6 +323,8 @@ namespace Pure.DI
         /// </summary>
         /// <seealso cref="IConfiguration.Hint"/>
         OnCannotResolve,
+        
+        OnCannotResolvePartial,
         
         /// <summary>
         /// The regular expression to filter OnCannotResolve by the resolving type name. ".+" by default.
@@ -399,6 +405,8 @@ namespace Pure.DI
         /// </summary>
         /// <seealso cref="IConfiguration.Hint"/>
         OnNewRoot,
+        
+        OnNewRootPartial,
         
         /// <summary>
         /// <c>On</c> or <c>Off</c>. Determine if the <c>ToString()</c> method should be generated. This method provides a text-based class diagram in the format mermaid. <c>Off</c> by default. 
@@ -890,9 +898,9 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        /// <param name="baseConfigurationNames">The name of a base API reference to the installation continuation chain.</param>
+        /// <param name="setupNames">A set of names for the basic setups on which this one depends.</param>
         /// <returns>API reference to the installation continuation chain.</returns>
-        IConfiguration DependsOn(params string[] baseConfigurationNames);
+        IConfiguration DependsOn(params string[] setupNames);
 
         /// <summary>
         /// Specifies a custom attribute that overrides the injection type.
@@ -1294,7 +1302,7 @@ namespace Pure.DI
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-            public IConfiguration DependsOn(params string[] baseConfigurationName)
+            public IConfiguration DependsOn(params string[] setupNames)
             {
                 return Configuration.Shared;
             }

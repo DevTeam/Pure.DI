@@ -10,7 +10,7 @@ using HostApi;
 using JetBrains.TeamCity.ServiceMessages.Write.Special;
 using NuGet.Versioning;
 
-internal class PackTarget: ITarget<string>, ICommandProvider
+internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvider
 {
     private readonly Settings _settings;
     private readonly ITeamCityWriter _teamCityWriter;
@@ -28,23 +28,44 @@ internal class PackTarget: ITarget<string>, ICommandProvider
     
     public Command Command { get; }
 
-    public Task<string> RunAsync(InvocationContext ctx)
+    public Task<IReadOnlyCollection<string>> RunAsync(InvocationContext ctx)
     {
+        var result = new List<string>();
+        
+        // Pure.DI package
         var packageVersion = _settings.VersionOverride ?? Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI"), _settings.VersionRange);
-        var projectDirectory = Path.Combine("src", "Pure.DI");
-        var packages = _settings.CodeAnalysis
-            .Select(codeAnalysis => CreatePackage(packageVersion, codeAnalysis, projectDirectory))
-            .ToArray();
+        var generatorProjectDirectory = Path.Combine("src", "Pure.DI");
+        var generatorPackages = _settings.CodeAnalysis
+            .Select(codeAnalysis => CreateGeneratorPackage(packageVersion, codeAnalysis, generatorProjectDirectory));
 
-        var targetPackage = Path.GetFullPath(
-            Path.Combine(projectDirectory, "bin", _settings.Configuration, $"Pure.DI.{packageVersion}.nupkg"));
+        var generatorPackage = MergeGeneratorPackages(packageVersion, generatorPackages, generatorProjectDirectory);
+        _teamCityWriter.PublishArtifact($"{generatorPackage} => .");
+        result.Add(generatorPackage);
+        
+        // Pure.DI.MS package
+        var props = new[]
+        {
+            ("configuration", _settings.Configuration),
+            ("version", packageVersion.ToString())
+        };
 
-        MergeNuGetPackages(packages, targetPackage);
-        _teamCityWriter.PublishArtifact($"{targetPackage} => .");
-        return Task.FromResult(targetPackage);
+        var msDIProjectDirectory = Path.Combine("src", "Pure.DI.MS");
+        var msDIPackResult = new DotNetPack()
+            .WithProps(props)
+            .WithConfiguration(_settings.Configuration)
+            .WithNoBuild(true)
+            .WithNoLogo(true)
+            .WithProject(Path.Combine(msDIProjectDirectory, "Pure.DI.MS.csproj"))
+            .Build();
+        
+        Assertion.Succeed(msDIPackResult);
+        
+        var msDIPackage = Path.Combine(msDIProjectDirectory, "bin", _settings.Configuration, $"Pure.DI.MS.{packageVersion.ToString()}.nupkg");
+        _teamCityWriter.PublishArtifact($"{msDIPackage} => .");
+        return Task.FromResult<IReadOnlyCollection<string>>(result.AsReadOnly());
     }
     
-    private string CreatePackage(NuGetVersion packageVersion, CodeAnalysis codeAnalysis, string projectDirectory)
+    private string CreateGeneratorPackage(NuGetVersion packageVersion, CodeAnalysis codeAnalysis, string projectDirectory)
     {
         var analyzerRoslynPackageVersion = codeAnalysis.AnalyzerRoslynPackageVersion;
         var analyzerRoslynVersion = new Version(analyzerRoslynPackageVersion.Major, analyzerRoslynPackageVersion.Minor);
@@ -84,17 +105,12 @@ internal class PackTarget: ITarget<string>, ICommandProvider
             .WithProject(Path.Combine(projectDirectory, "Pure.DI.csproj"));
         
         Assertion.Succeed(pack.Build());
-
-        return Path.Combine(
-            projectDirectory,
-            "bin",
-            _settings.Configuration,
-            $"roslyn{analyzerRoslynVersion}",
-            $"Pure.DI.{packageVersion.ToString()}.nupkg");
+        return Path.Combine(projectDirectory, "bin", $"roslyn{analyzerRoslynVersion}", _settings.Configuration, $"Pure.DI.{packageVersion.ToString()}.nupkg");
     }
     
-    private static void MergeNuGetPackages(IEnumerable<string> mergingPackages, string targetPackage)
+    private string MergeGeneratorPackages(NuGetVersion packageVersion, IEnumerable<string> mergingPackages, string projectDirectory)
     {
+        var targetPackage = Path.GetFullPath(Path.Combine(projectDirectory, "bin", _settings.Configuration, $"Pure.DI.{packageVersion}.nupkg"));
         var targetDir = Path.GetDirectoryName(targetPackage);
         if (!string.IsNullOrWhiteSpace(targetDir))
         {
@@ -139,5 +155,7 @@ internal class PackTarget: ITarget<string>, ICommandProvider
                 Info($"{entry.FullName,-100} - merged");
             }
         }
+        
+        return targetPackage;
     }
 }

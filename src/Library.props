@@ -1,0 +1,22 @@
+﻿<Project>
+
+    <PropertyGroup>
+        <IsPackable>true</IsPackable>
+        <PackageId>$(BasePackageId).$(Library)</PackageId>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <ContentTargetFolders>contentFiles</ContentTargetFolders>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+        <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+        <BaseOutputPath>bin</BaseOutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Update="@(Compile)">
+            <Pack>true</Pack>
+            <PackagePath>$(ContentTargetFolders)\cs\any\$(BasePackageId)\$(Library)\%(RecursiveDir)</PackagePath>
+        </Compile>
+    </ItemGroup>
+
+</Project>

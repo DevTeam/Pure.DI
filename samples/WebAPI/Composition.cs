@@ -1,17 +1,19 @@
 // ReSharper disable UnusedMember.Local
-namespace WebAPI;
 
-using System.Diagnostics;
-using Controllers;
 using Pure.DI;
-using Services;
+using WebAPI.Controllers;
+using WebAPI.Services;
 using static Pure.DI.Lifetime;
 
-internal partial class Composition
+namespace WebAPI;
+
+using Pure.DI.MS;
+
+internal partial class Composition: ServiceProviderFactory<Composition>
 {
-    [Conditional("DI")]
     private static void Setup() =>
         DI.Setup(nameof(Composition))
+            .DependsOn(Base)
             .Bind<IWeatherForecastService>().As(Singleton).To<WeatherForecastService>()
             .Root<WeatherForecastController>();
 }

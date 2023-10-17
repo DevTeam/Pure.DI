@@ -3,9 +3,8 @@
     <PropertyGroup>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
         <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
-        <RootNamespace>Pure.DI</RootNamespace>
-        <OutputPath>bin/$(Configuration)/roslyn$(AnalyzerRoslynVersion)</OutputPath>
-        <DefineConstants>PUREDI_API_SUPPRESSION;PUREDI_API_V2</DefineConstants>
+        <RootNamespace>$(BasePackageId)</RootNamespace>
+        <DefineConstants>$(DefineConstants);PUREDI_API_SUPPRESSION;PUREDI_API_V2</DefineConstants>
     </PropertyGroup>
     
     <ItemGroup>
@@ -18,9 +17,14 @@
         <EmbeddedResource Include="Features\Default.g.cs" />
         <EmbeddedResource Include="Components\GenericTypeArguments.g.cs" />
         <None Update="Components\GenericTypeArguments.g.tt">
-            <Generator>TextTemplatingFileGenerator</Generator>
             <LastGenOutput>GenericTypeArguments.g.cs</LastGenOutput>
+            <Generator>TextTemplatingFileGenerator</Generator>
         </None>
+        <Compile Update="Components\GenericTypeArguments.g.cs">
+            <AutoGen>True</AutoGen>
+            <DesignTime>True</DesignTime>
+            <DependentUpon>GenericTypeArguments.g.tt</DependentUpon>
+        </Compile>
     </ItemGroup>
     
 </Project>

@@ -17,6 +17,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8163CDD7-7018-4301-A984-803C3807A6A6}"
 	ProjectSection(SolutionItems) = preProject
 		src\Directory.Build.props = src\Directory.Build.props
+		src\Library.props = src\Library.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{9DF1D09E-863F-4800-9E28-954440EE1601}"
@@ -67,6 +68,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pure.DI.Templates", "src\Pure.DI.Templates\Pure.DI.Templates.csproj", "{5A925B99-3FF8-4ED0-81C2-7F0D3AD52642}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPI", "samples\WebAPI\WebAPI.csproj", "{24C0D8F5-A206-4350-8EA4-03F1A7AC39D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pure.DI.MS", "src\Pure.DI.MS\Pure.DI.MS.csproj", "{F6E7F93F-E86B-4610-9BD5-0FC55D015B12}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -130,6 +133,10 @@ Global
 		{24C0D8F5-A206-4350-8EA4-03F1A7AC39D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24C0D8F5-A206-4350-8EA4-03F1A7AC39D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24C0D8F5-A206-4350-8EA4-03F1A7AC39D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6E7F93F-E86B-4610-9BD5-0FC55D015B12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6E7F93F-E86B-4610-9BD5-0FC55D015B12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6E7F93F-E86B-4610-9BD5-0FC55D015B12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6E7F93F-E86B-4610-9BD5-0FC55D015B12}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7C9E056B-CBA9-4548-9CDB-C5CE03C491B0} = {8163CDD7-7018-4301-A984-803C3807A6A6}
@@ -145,5 +152,6 @@ Global
 		{9DBB3FF4-2C02-4F77-AF82-76147C9874C8} = {FA80D231-C641-4A49-99C6-0C065D818B07}
 		{5A925B99-3FF8-4ED0-81C2-7F0D3AD52642} = {8163CDD7-7018-4301-A984-803C3807A6A6}
 		{24C0D8F5-A206-4350-8EA4-03F1A7AC39D6} = {FA80D231-C641-4A49-99C6-0C065D818B07}
+		{F6E7F93F-E86B-4610-9BD5-0FC55D015B12} = {8163CDD7-7018-4301-A984-803C3807A6A6}
 	EndGlobalSection
 EndGlobal

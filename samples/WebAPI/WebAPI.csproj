@@ -11,4 +11,13 @@
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.11" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Compile Include="..\..\src\Pure.DI.MS\ServiceCollectionFactory.g.cs">
+        <Link>ServiceCollectionFactory.g.cs</Link>
+      </Compile>
+      <Compile Include="..\..\src\Pure.DI.MS\ServiceProviderFactory.g.cs">
+        <Link>ServiceProviderFactory.g.cs</Link>
+      </Compile>
+    </ItemGroup>
 </Project>

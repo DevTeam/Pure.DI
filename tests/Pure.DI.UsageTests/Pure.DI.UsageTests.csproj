@@ -3,13 +3,9 @@
     <PropertyGroup>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
         <CompilerGeneratedFilesOutputPath>../../.logs</CompilerGeneratedFilesOutputPath>
-        <!--<PureDISeverity>Info</PureDISeverity>
-        <PureDILogFile>.logs\Pure.DI.UsageTests.log</PureDILogFile>-->
     </PropertyGroup>
     
     <ItemGroup>
-        <!--<CompilerVisibleProperty Include="PureDISeverity" />
-        <CompilerVisibleProperty Include="PureDILogFile" />-->
         <ProjectReference Include="..\..\src\Pure.DI.Core\Pure.DI.Core.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <ProjectReference Include="..\..\src\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <PackageReference Include="Castle.Core" Version="5.1.1" />
@@ -21,6 +17,15 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <Compile Include="..\..\src\Pure.DI.MS\ServiceCollectionFactory.g.cs">
+        <Link>ServiceCollectionFactory.g.cs</Link>
+      </Compile>
+      <Compile Include="..\..\src\Pure.DI.MS\ServiceProviderFactory.g.cs">
+        <Link>ServiceProviderFactory.g.cs</Link>
+      </Compile>
     </ItemGroup>
 
 </Project>
