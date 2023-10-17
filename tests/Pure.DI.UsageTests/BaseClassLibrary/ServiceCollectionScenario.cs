@@ -53,22 +53,22 @@ partial class Composition: ServiceCollection
     // Creates a service collection for the current composition
     public IServiceCollection CreateServiceCollection() => 
         new ServiceCollection()
-            .Add(Factories
+            .Add(Resolvers
                 .Select(i => 
                     new ServiceDescriptor(
                         i.ServiceType,
-                        _ => i.Factory(this),
+                        _ => i.Resolver.Resolve(this),
                         ServiceLifetime.Transient)));
 
-    private static readonly List<(Type ServiceType, Func<Composition, object> Factory)> Factories = new();
+    private static readonly List<(Type ServiceType, IResolver<Composition, object> Resolver)> Resolvers = new();
 
-    // Registers the roots of the composition for use in a service collection
+    // Registers the resolvers of the composition for use in a service collection
     private static partial void OnNewRoot<TContract, T>(
         IResolver<Composition, TContract> resolver,
         string name,
         object? tag,
         Lifetime lifetime) => 
-        Factories.Add((typeof(TContract), composition => resolver.Resolve(composition)!));
+        Resolvers.Add((typeof(TContract), (IResolver<Composition, object>)resolver));
 }
 // }
 
