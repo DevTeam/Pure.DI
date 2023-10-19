@@ -1,30 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    
+
     <PropertyGroup>
-        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-        <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
         <RootNamespace>$(BasePackageId)</RootNamespace>
-        <DefineConstants>$(DefineConstants);PUREDI_API_SUPPRESSION;PUREDI_API_V2</DefineConstants>
+        <DefineConstants>$(DefineConstants);PUREDI_API_SUPPRESSION;PUREDI_API_V1</DefineConstants>
     </PropertyGroup>
-    
+
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.0.19">
+        <PackageReference Include="Pure.DI" Version="2.0.20">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="IndexRange" Version="1.0.3" />
-        <EmbeddedResource Include="Components\Api.g.cs" />
-        <EmbeddedResource Include="Features\Default.g.cs" />
-        <EmbeddedResource Include="Components\GenericTypeArguments.g.cs" />
-        <None Update="Components\GenericTypeArguments.g.tt">
+        <PackageReference Include="IndexRange" Version="1.0.3"/>
+        <EmbeddedResource Include="Components\Api.g.cs"/>
+        <EmbeddedResource Include="Features\Default.g.cs"/>
+        <EmbeddedResource Include="Components\GenericTypeArguments.g.cs"/>
+        <Compile Update="Components\GenericTypeArguments.g.cs">
             <LastGenOutput>GenericTypeArguments.g.cs</LastGenOutput>
             <Generator>TextTemplatingFileGenerator</Generator>
-        </None>
-        <Compile Update="Components\GenericTypeArguments.g.cs">
             <AutoGen>True</AutoGen>
             <DesignTime>True</DesignTime>
             <DependentUpon>GenericTypeArguments.g.tt</DependentUpon>
         </Compile>
     </ItemGroup>
-    
+
 </Project>

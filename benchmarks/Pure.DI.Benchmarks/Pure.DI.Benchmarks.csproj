@@ -8,7 +8,6 @@
         <Optimize>true</Optimize>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Configuration>Release</Configuration>
-        <IsPackable>false</IsPackable>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
         <CompilerGeneratedFilesOutputPath>../../.logs</CompilerGeneratedFilesOutputPath>
     </PropertyGroup>

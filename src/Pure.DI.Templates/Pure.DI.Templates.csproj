@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
     <PropertyGroup>
         <PackageType>Template</PackageType>
         <PackageId>Pure.DI.Templates</PackageId>
@@ -18,10 +19,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Templates\Pure.DI.Template.CSharp\IStdOut.cs" />
-        <Compile Include="Templates\Pure.DI.Template.CSharp\StdOut.cs" />
-        <Content Include="Templates\**\*" Exclude="Templates\**\bin\**;Templates\**\obj\**" />
-        <Compile Remove="**\*" />
-        <None Remove="*.bat;.sh" />
+        <Compile Include="Templates\Pure.DI.Template.CSharp\IStdOut.cs"/>
+        <Compile Include="Templates\Pure.DI.Template.CSharp\StdOut.cs"/>
+        <Content Include="Templates\**\*" Exclude="Templates\**\bin\**;Templates\**\obj\**"/>
+        <Compile Remove="**\*"/>
+        <None Remove="*.bat;.sh"/>
     </ItemGroup>
+
 </Project>

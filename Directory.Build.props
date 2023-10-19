@@ -10,6 +10,9 @@
         <IsPackable>false</IsPackable>
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/DevTeam/Pure.DI.git</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/DevTeam/Pure.DI/</PackageProjectUrl>
+        <PackageTags>ioc;solid;dotnet;dependency-injection;inversion-of-control;di;injection-container;injection-framework;dip;csharp-sourcegenerator</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <Description>Coding in a pure DI paradigm without frameworks!</Description>
         <Product>$(BasePackageId)</Product>
         <Copyright>Copyright (C) $([System.DateTime]::Now.Year) Nikolay Pianikov</Copyright>
@@ -21,7 +24,7 @@
     </PropertyGroup>
 
     <Target Name="Info" BeforeTargets="Build">
-        <Message Text="Roslyn Version/Package Version = $(AnalyzerRoslynVersion)($(AnalyzerRoslynPackageVersion))" Importance="high"/>
+        <Message Text="Roslyn $(AnalyzerRoslynPackageVersion)" Importance="high"/>
     </Target>
 
 </Project>

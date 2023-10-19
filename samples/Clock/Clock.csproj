@@ -1,8 +1,1 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-    <PropertyGroup>
-        <Nullable>enable</Nullable>
-        <IsPackable>false</IsPackable>
-    </PropertyGroup>
-    
-</Project>
+<Project Sdk="Microsoft.NET.Sdk" />

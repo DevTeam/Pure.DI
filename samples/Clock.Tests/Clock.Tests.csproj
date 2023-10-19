@@ -2,19 +2,18 @@
 
     <PropertyGroup>
         <IsTestProject>True</IsTestProject>
-        <IsPackable>false</IsPackable>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
-        <PackageReference Include="Moq" Version="4.20.69" />
-        <PackageReference Include="MSTest.TestAdapter" Version="3.1.1" />
-        <PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
-        <PackageReference Include="Shouldly" Version="4.2.1" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2"/>
+        <PackageReference Include="Moq" Version="4.20.69"/>
+        <PackageReference Include="MSTest.TestAdapter" Version="3.1.1"/>
+        <PackageReference Include="MSTest.TestFramework" Version="3.1.1"/>
+        <PackageReference Include="Shouldly" Version="4.2.1"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Clock\Clock.csproj" />
+        <ProjectReference Include="..\Clock\Clock.csproj"/>
     </ItemGroup>
 
 </Project>
