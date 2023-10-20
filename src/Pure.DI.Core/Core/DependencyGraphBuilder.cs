@@ -73,9 +73,8 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
         while (queue.TryDequeue(out var node))
         {
             var targetNode = node.Node;
-            foreach (var injectionInfo in node.Injections)
+            foreach (var (injection, hasExplicitDefaultValue, explicitDefaultValue) in node.Injections)
             {
-                var injection = injectionInfo.Injection;
                 _cancellationToken.ThrowIfCancellationRequested();
                 if (map.TryGetValue(injection, out var sourceNode))
                 {
@@ -136,9 +135,9 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
                 }
                 
                 // ExplicitDefaultValue
-                if (injectionInfo.HasExplicitDefaultValue)
+                if (hasExplicitDefaultValue)
                 {
-                    var explicitDefaultBinding = CreateConstructBinding(setup, targetNode, injection, injection.Type, default, Lifetime.Transient, ++maxId, MdConstructKind.ExplicitDefaultValue, injectionInfo.HasExplicitDefaultValue, injectionInfo.ExplicitDefaultValue);
+                    var explicitDefaultBinding = CreateConstructBinding(setup, targetNode, injection, injection.Type, default, Lifetime.Transient, ++maxId, MdConstructKind.ExplicitDefaultValue, hasExplicitDefaultValue, explicitDefaultValue);
                     var newSourceNodes = CreateNodes(setup, explicitDefaultBinding);
                     foreach (var newSourceNode in newSourceNodes)
                     {

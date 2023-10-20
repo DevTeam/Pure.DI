@@ -8,6 +8,7 @@ $d=Weak Reference
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedVariable
+// ReSharper disable UnusedMember.Global
 namespace Pure.DI.UsageTests.BCL.WeakReferenceScenario;
 
 using Xunit;

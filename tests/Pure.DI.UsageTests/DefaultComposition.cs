@@ -1,4 +1,6 @@
-﻿namespace Pure.DI.UsageTests;
+﻿// ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedType.Global
+namespace Pure.DI.UsageTests;
 
 internal class DefaultComposition
 {

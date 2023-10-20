@@ -34,7 +34,7 @@ internal sealed class DisposeMethodBuilder: IBuilder<CompositionCode, Compositio
                     code.AppendLine("{");
                     using (code.Indent())
                     {
-                        code.AppendLine($"disposableInstance.Dispose();");
+                        code.AppendLine("disposableInstance.Dispose();");
                     }
 
                     code.AppendLine("}");

@@ -40,7 +40,7 @@ internal class DeployTarget: ITarget<int>, ICommandProvider
         }
         else
         {
-            Warning($"The NuGet key was not specified, the packages will not be pushed.");
+            Warning("The NuGet key was not specified, the packages will not be pushed.");
         }
 
         return 0;

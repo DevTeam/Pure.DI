@@ -9,6 +9,7 @@ $f=Here an instance of the _Service_ type, labeled _"base"_, is embedded in the 
 // ReSharper disable ClassNeverInstantiated.Local
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedParameter.Local
+// ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Interception.DecoratorScenario;
 
 using Shouldly;
