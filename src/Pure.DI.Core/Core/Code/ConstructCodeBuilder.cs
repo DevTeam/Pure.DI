@@ -26,6 +26,10 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
             case MdConstructKind.OnCannotResolve:
                 BuildOnCannotResolve(ctx);
                 break;
+            
+            case MdConstructKind.ExplicitDefaultValue:
+                BuildExplicitDefaultValue(ctx, construct);
+                break;
 
             default:
                 throw new ArgumentOutOfRangeException();
@@ -93,5 +97,11 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
     {
         var variable = ctx.Variable;
         ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = {Names.OnCannotResolve}<{variable.ContractType}>({variable.Injection.Tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()});");
+    }
+    
+    private static void BuildExplicitDefaultValue(BuildContext ctx, DpConstruct explicitDefault)
+    {
+        var variable = ctx.Variable;
+        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = {explicitDefault.Source.ExplicitDefaultValue.ValueToString()};");
     }
 }

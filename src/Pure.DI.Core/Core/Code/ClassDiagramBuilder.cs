@@ -214,13 +214,13 @@ internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilde
     private static string FormatParameter(IParameterSymbol parameter, FormatOptions options) =>
         $"{FormatType(parameter.Type, options)} {parameter.Name}";
 
-    private static string FormatType(ISymbol typeSymbol, FormatOptions options)
+    private static string FormatType(ISymbol? typeSymbol, FormatOptions options)
     {
         return typeSymbol switch
         {
             INamedTypeSymbol { IsGenericType: true } namedTypeSymbol => $"{namedTypeSymbol.Name}{options.StartGenericArgsSymbol}{string.Join(options.TypeArgsSeparator, namedTypeSymbol.TypeArguments.Select(FormatSymbolLocal))}{options.FinishGenericArgsSymbol}",
             IArrayTypeSymbol array => $"Array{options.StartGenericArgsSymbol}{FormatType(array.ElementType, options)}{options.FinishGenericArgsSymbol}",
-            _ => typeSymbol.Name
+            _ => typeSymbol?.Name ?? "Unresolved"
         };
         
         string FormatSymbolLocal(ITypeSymbol i) => FormatSymbol(i, options);

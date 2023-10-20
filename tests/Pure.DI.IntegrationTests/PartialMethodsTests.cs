@@ -770,6 +770,90 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldSupportOnCannotResolveWhenDefaultValues()
+    {
+        // Given
+
+        // When
+        var result = await """
+        using System;
+        using Pure.DI;
+
+        namespace Sample
+        {
+            internal interface IDependency { }
+
+            internal class Dependency : IDependency
+            { 
+                public Dependency(string id = "Xyz")
+                {
+                    Console.WriteLine($"Dependency {id} created");
+                }
+            }
+
+            internal interface IService
+            {
+                public IDependency Dependency { get; }
+            }
+
+            internal class Service : IService
+            {
+                public Service(string name = "Abc")
+                {
+                    Console.WriteLine($"Service '{name}' created");
+                }
+
+                public required IDependency Dependency { get; init; }
+            }
+
+            internal partial class Composition
+            {
+                private partial T OnCannotResolve<T>(object? tag, Lifetime lifetime)            
+                {
+                    if (typeof(T) == typeof(string))
+                    {
+                        return (T)(object)"MyService";
+                    }            
+
+                    if (typeof(T) == typeof(int) && Equals(tag, "some ID"))
+                    {
+                        return (T)(object)99;
+                    }
+                    
+                    throw new Exception("Cannot resolve."); 
+                }
+            }
+
+            static class Setup
+            {
+                private static void SetupComposition()
+                {
+                    // OnCannotResolve = On
+                    // ToString = On
+                    DI.Setup("Composition")
+                        .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+                        .Bind<IService>().To<Service>()
+                        .Root<IService>("Root");
+                }
+            }
+
+            public class Program
+            {
+                public static void Main()
+                {
+                    var composition = new Composition();
+                    var service = composition.Root;            
+                }
+            }                
+        }
+        """.RunAsync(new Options(LanguageVersion.Preview));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency Xyz created", "Service 'Abc' created"), result);
+    }
+    
+    [Fact]
     public async Task ShouldTrackNewRoot()
     {
         // Given

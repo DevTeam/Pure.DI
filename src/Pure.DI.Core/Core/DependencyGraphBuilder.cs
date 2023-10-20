@@ -1,6 +1,7 @@
 // ReSharper disable LoopCanBeConvertedToQuery
 // ReSharper disable InvertIf
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 namespace Pure.DI.Core;
 
 internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
@@ -68,11 +69,13 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
         var isValid = true;
         var processed = new HashSet<ProcessingNode>();
         var notProcessed = new HashSet<ProcessingNode>();
+        var edgesMap = new Dictionary<ProcessingNode, List<Dependency>>();
         while (queue.TryDequeue(out var node))
         {
             var targetNode = node.Node;
-            foreach (var injection in node.Injections)
+            foreach (var injectionInfo in node.Injections)
             {
+                var injection = injectionInfo.Injection;
                 _cancellationToken.ThrowIfCancellationRequested();
                 if (map.TryGetValue(injection, out var sourceNode))
                 {
@@ -110,7 +113,7 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
                             var lifetime = constructKind == MdConstructKind.Enumerable ? Lifetime.PerResolve : Lifetime.Transient;
                             if (constructKind.HasValue)
                             {
-                                var enumerableBinding = CreateConstructBinding(setup, targetNode, injection, constructType, default, lifetime, ++maxId, constructKind.Value);
+                                var enumerableBinding = CreateConstructBinding(setup, targetNode, injection, constructType, default, lifetime, ++maxId, constructKind.Value, false, default);
                                 return CreateNodes(setup, enumerableBinding);
                             }
                         }
@@ -127,15 +130,34 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
                     // Array construct
                     case IArrayTypeSymbol arrayType:
                     {
-                        var arrayBinding = CreateConstructBinding(setup, targetNode, injection, arrayType.ElementType, default, Lifetime.Transient, ++maxId, MdConstructKind.Array);
+                        var arrayBinding = CreateConstructBinding(setup, targetNode, injection, arrayType.ElementType, default, Lifetime.Transient, ++maxId, MdConstructKind.Array, false, default);
                         return CreateNodes(setup, arrayBinding);
                     }
+                }
+                
+                // ExplicitDefaultValue
+                if (injectionInfo.HasExplicitDefaultValue)
+                {
+                    var explicitDefaultBinding = CreateConstructBinding(setup, targetNode, injection, injection.Type, default, Lifetime.Transient, ++maxId, MdConstructKind.ExplicitDefaultValue, injectionInfo.HasExplicitDefaultValue, injectionInfo.ExplicitDefaultValue);
+                    var newSourceNodes = CreateNodes(setup, explicitDefaultBinding);
+                    foreach (var newSourceNode in newSourceNodes)
+                    {
+                        if (!edgesMap.TryGetValue(node, out var edges))
+                        {
+                            edges = new List<Dependency>();
+                            edgesMap.Add(node, edges);
+                        }
+
+                        edges.Add(new Dependency(true, newSourceNode, injection, targetNode));
+                    }
+                    
+                    continue;
                 }
 
                 if (injection.Type.ToString() == setup.Name.FullName)
                 {
                     // Composition
-                    var compositionBinding = CreateConstructBinding(setup, targetNode, injection, injection.Type, default, Lifetime.Transient, ++maxId, MdConstructKind.Composition);
+                    var compositionBinding = CreateConstructBinding(setup, targetNode, injection, injection.Type, default, Lifetime.Transient, ++maxId, MdConstructKind.Composition, false, default);
                     return CreateNodes(setup, compositionBinding);
                 }
 
@@ -166,7 +188,7 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
                             (Hint.OnCannotResolveTagRegularExpression, unresolvedInjection.Tag.ValueToString()),
                             (Hint.OnCannotResolveLifetimeRegularExpression, ownerNode.Lifetime.ValueToString())))
                     {
-                        var onCannotResolveBinding = CreateConstructBinding(mdSetup, ownerNode, unresolvedInjection, unresolvedInjection.Type, unresolvedInjection.Tag, ownerNode.Lifetime, ++maxId, MdConstructKind.OnCannotResolve);
+                        var onCannotResolveBinding = CreateConstructBinding(mdSetup, ownerNode, unresolvedInjection, unresolvedInjection.Type, unresolvedInjection.Tag, ownerNode.Lifetime, ++maxId, MdConstructKind.OnCannotResolve, false, default);
                         var onCannotResolveNodes = CreateNodes(mdSetup, onCannotResolveBinding);
                         foreach (var onCannotResolveNode in onCannotResolveNodes)
                         {
@@ -196,9 +218,15 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
         var entries = new List<GraphEntry<DependencyNode, Dependency>>(processed.Count);
         foreach (var node in processed.Concat(notProcessed))
         {
-            var edges = new List<Dependency>(node.Injections.Length);
-            foreach (var injection in node.Injections)
+            if (!edgesMap.TryGetValue(node, out var edges))
             {
+                edges = new List<Dependency>();
+                edgesMap.Add(node, edges);
+            }
+
+            foreach (var injectionInfo in node.Injections)
+            {
+                var injection = injectionInfo.Injection;
                 var dependency = map.TryGetValue(injection, out var sourceNode)
                     ? new Dependency(true, sourceNode, injection, node.Node)
                     : new Dependency(false, new DependencyNode(0), injection, node.Node);
@@ -311,7 +339,9 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
         object? tag,
         Lifetime lifetime,
         int newId,
-        MdConstructKind constructKind)
+        MdConstructKind constructKind,
+        bool hasExplicitDefaultValue,
+        object? explicitDefaultValue)
     {
         elementType = elementType.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
         var dependencyContracts = new List<MdContract>();
@@ -351,7 +381,9 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
                 injection.Type,
                 elementType,
                 constructKind,
-                dependencyContracts.ToImmutableArray()));
+                dependencyContracts.ToImmutableArray(),
+                hasExplicitDefaultValue,
+                explicitDefaultValue));
     }
     
     private ProcessingNode CreateNewProcessingNode(in Injection injection, DependencyNode dependencyNode)

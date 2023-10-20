@@ -12,13 +12,18 @@ internal sealed class DependencyGraphLocationsWalker: DependenciesWalker<Unit>
 
     public ImmutableArray<Location> Locations => _locationsBuilder.ToImmutableArray();
 
-    public override void VisitInjection(in Unit ctx, in Injection injection, in ImmutableArray<Location> locations)
+    public override void VisitInjection(
+        in Unit ctx,
+        in Injection injection,
+        bool hasExplicitDefaultValue,
+        object? explicitDefaultValue,
+        in ImmutableArray<Location> locations)
     {
         if (injection.Equals(_injection))
         {
             _locationsBuilder.AddRange(locations);
         }
 
-        base.VisitInjection(ctx, in injection, in locations);
+        base.VisitInjection(ctx, in injection, hasExplicitDefaultValue, explicitDefaultValue, in locations);
     }
 }

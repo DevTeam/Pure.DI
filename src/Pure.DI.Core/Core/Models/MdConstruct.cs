@@ -7,7 +7,9 @@ internal readonly record struct MdConstruct(
     ITypeSymbol Type,
     ITypeSymbol ElementType,
     MdConstructKind Kind,
-    ImmutableArray<MdContract> Dependencies)
+    ImmutableArray<MdContract> Dependencies,
+    bool HasExplicitDefaultValue,
+    object? ExplicitDefaultValue)
 {
     public override string ToString() => $"To<{Kind}<{Type}>>()";
 }

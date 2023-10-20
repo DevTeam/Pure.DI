@@ -239,6 +239,11 @@ internal sealed class ImplementationDependencyNodeBuilder :
 
         public int Count => _count;
 
-        public override void VisitInjection(in Unit ctx, in Injection injection, in ImmutableArray<Location> locations) => _count++;
+        public override void VisitInjection(
+            in Unit ctx,
+            in Injection injection,
+            bool hasExplicitDefaultValue,
+            object? explicitDefaultValue,
+            in ImmutableArray<Location> locations) => _count++;
     }
 }

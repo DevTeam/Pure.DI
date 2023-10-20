@@ -6,7 +6,7 @@ internal readonly struct ProcessingNode
     public readonly bool HasNode = false;
     public readonly DependencyNode Node;
     private readonly Lazy<bool> _isMarkerBased;
-    private readonly Lazy<ImmutableArray<Injection>> _injections;
+    private readonly Lazy<ImmutableArray<InjectionInfo>> _injections;
 
     public ProcessingNode(
         DependencyNode node,
@@ -19,10 +19,10 @@ internal readonly struct ProcessingNode
 
         _isMarkerBased = new Lazy<bool>(IsMarkerBased);
 
-        _injections = new Lazy<ImmutableArray<Injection>>(GetInjections);
+        _injections = new Lazy<ImmutableArray<InjectionInfo>>(GetInjections);
         return;
 
-        ImmutableArray<Injection> GetInjections()
+        ImmutableArray<InjectionInfo> GetInjections()
         {
             var injectionsWalker = new DependenciesToInjectionsWalker();
             injectionsWalker.VisitDependencyNode(Unit.Shared, node);
@@ -36,7 +36,7 @@ internal readonly struct ProcessingNode
         
     public ISet<Injection> Contracts { get; }
 
-    public ImmutableArray<Injection> Injections => _injections.Value;
+    public ImmutableArray<InjectionInfo> Injections => _injections.Value;
 
     public override string ToString() => Node.ToString();
 

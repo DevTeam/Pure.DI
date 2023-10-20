@@ -7,5 +7,6 @@ internal enum MdConstructKind
     Array,
     Span,
     Composition,
-    OnCannotResolve
+    OnCannotResolve,
+    ExplicitDefaultValue
 }

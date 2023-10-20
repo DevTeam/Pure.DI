@@ -21,7 +21,12 @@ internal sealed class DependenciesToVariablesWalker: DependenciesWalker<Unit>
         return result;
     }
 
-    public override void VisitInjection(in Unit ctx, in Injection injection, in ImmutableArray<Location> locations)
+    public override void VisitInjection(
+        in Unit ctx,
+        in Injection injection,
+        bool hasExplicitDefaultValue,
+        object? explicitDefaultValue,
+        in ImmutableArray<Location> locations)
     {
         if (_variablesMap.TryGetValue(injection, out var variables))
         {
@@ -36,6 +41,6 @@ internal sealed class DependenciesToVariablesWalker: DependenciesWalker<Unit>
             _resultBuilder.Add(variable);
         }
         
-        base.VisitInjection(ctx, in injection, locations);
+        base.VisitInjection(ctx, in injection, hasExplicitDefaultValue, explicitDefaultValue, locations);
     }
 }

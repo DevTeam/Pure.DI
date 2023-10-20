@@ -38,7 +38,7 @@ internal class DependenciesWalker<TContext>
 
     public virtual void VisitRoot(in TContext ctx, in DpRoot root)
     {
-        VisitInjection(ctx, root.Injection, ImmutableArray.Create(root.Source.Source.GetLocation()));
+        VisitInjection(ctx, root.Injection, false, default, ImmutableArray.Create(root.Source.Source.GetLocation()));
     }
 
     public virtual void VisitImplementation(in TContext ctx, in DpImplementation implementation)
@@ -68,7 +68,7 @@ internal class DependenciesWalker<TContext>
     {
         foreach (var injection in factory.Injections)
         {
-            VisitInjection(ctx, injection, ImmutableArray.Create(factory.Source.Source.GetLocation()));
+            VisitInjection(ctx, injection, false, default, ImmutableArray.Create(factory.Source.Source.GetLocation()));
         }
     }
 
@@ -80,7 +80,7 @@ internal class DependenciesWalker<TContext>
     {
         foreach (var injection in construct.Injections)
         {
-            VisitInjection(ctx, injection, ImmutableArray.Create(construct.Binding.Source.GetLocation()));
+            VisitInjection(ctx, injection, false, default, ImmutableArray.Create(construct.Binding.Source.GetLocation()));
         }
     }
 
@@ -94,12 +94,24 @@ internal class DependenciesWalker<TContext>
 
     public virtual void VisitProperty(in TContext ctx, in DpProperty property)
     {
-        VisitInjection(ctx, property.Injection, property.Property.Locations);
+        var value = property.Property.SetMethod?.Parameters[0];
+        var hasExplicitDefaultValue = value?.HasExplicitDefaultValue ?? false;
+        VisitInjection(
+            ctx,
+            property.Injection,
+            value?.HasExplicitDefaultValue ?? false,
+            hasExplicitDefaultValue ? value?.ExplicitDefaultValue : default,
+            property.Property.Locations);
     }
 
     public virtual void VisitField(in TContext ctx, in DpField field)
     {
-        VisitInjection(ctx, field.Injection, field.Field.Locations);
+        VisitInjection(
+            ctx,
+            field.Injection,
+            field.Field.HasConstantValue, 
+            field.Field.HasConstantValue ? field.Field.ConstantValue : default,
+            field.Field.Locations);
     }
 
     public virtual void VisitConstructor(in TContext ctx, in DpMethod constructor)
@@ -112,10 +124,20 @@ internal class DependenciesWalker<TContext>
 
     public virtual void VisitParameter(in TContext ctx, in DpParameter parameter)
     {
-        VisitInjection(ctx, parameter.Injection, parameter.ParameterSymbol.Locations);
+        VisitInjection(
+            ctx,
+            parameter.Injection,
+            parameter.ParameterSymbol.HasExplicitDefaultValue,
+            parameter.ParameterSymbol.HasExplicitDefaultValue ? parameter.ParameterSymbol.ExplicitDefaultValue : default,
+            parameter.ParameterSymbol.Locations);
     }
 
-    public virtual void VisitInjection(in TContext ctx, in Injection injection, in ImmutableArray<Location> locations)
+    public virtual void VisitInjection(
+        in TContext ctx,
+        in Injection injection,
+        bool hasExplicitDefaultValue,
+        object? explicitDefaultValue,
+        in ImmutableArray<Location> locations)
     {
     }
 }
