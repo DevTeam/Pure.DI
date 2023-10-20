@@ -9,6 +9,8 @@
         <Compile Include="..\..\src\Pure.DI.MS\ServiceProviderFactory.g.cs">
             <Link>ServiceProviderFactory.g.cs</Link>
         </Compile>
+        <Protobuf Include="Protos\greet.proto" GrpcServices="Server"/>
+        <PackageReference Include="Grpc.AspNetCore" Version="2.49.0"/>
     </ItemGroup>
 
 </Project>
