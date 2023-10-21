@@ -225,6 +225,7 @@ dotnet run
 - [Partial class](readme/partial-class.md)
 - [A few partial classes](readme/a-few-partial-classes.md)
 - [Dependent compositions](readme/dependent-compositions.md)
+- [Default values](readme/default-values.md)
 - [Required properties or fields](readme/required-properties-or-fields.md)
 ### Lifetimes
 - [Singleton](readme/singleton.md)
@@ -265,9 +266,13 @@ dotnet run
 ### Applications
 - [Console application](readme/Console.md)
 - [WPF application](readme/Wpf.md)
-- [Web API](readme/WebAPI.md)
+- [Web API application](readme/WebAPI.md)
+- [Web application](readme/WebApp.md)
+- [gRPC service](readme/GrpcService.md)
 - [Top level statements console application](readme/ConsoleTopLevelStatements.md)
-- [Native AOT console application](readme/ConsoleNativeAOTPageTemplate.md)
+- [Native AOT console application](readme/ConsoleNativeAOT.md)
+- [Win Forms Net Core application](readme/WinFormsAppNetCore.md)
+- [Win Forms application](readme/WinFormsApp.md)
 
 ## Generated Code
 
@@ -333,7 +338,7 @@ This value is used by default. If this value is specified, a normal composition 
 
 ### CompositionKind.Internal
 
-If you specify this value, the class will not be generated, but this setup can be used by others as a baseline. For example:
+If you specify this value, the class will not be generated, but this setup can be used by others as a base setup. For example:
 
 ```c#
 DI.Setup("BaseComposition", CompositionKind.Internal)
@@ -347,7 +352,7 @@ If the _CompositionKind.Public_ flag is set in the composition setup, it can als
 
 ### CompositionKind.Global
 
-No composition class will be created when this value is specified, but this setup is the baseline for all installations in the current project, and `DependsOn(...)` is not required.
+No composition class will be created when this value is specified, but this setup is the base setup for all setups in the current project, and `DependsOn(...)` is not required.
 
 </details>
 

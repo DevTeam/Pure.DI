@@ -1,25 +1,27 @@
-#### Weak Reference
+#### Default values
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/WeakReferenceScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/DefaultValuesScenario.cs)
 
 ```c#
 interface IDependency { }
 
 class Dependency : IDependency { }
 
-interface IService { }
+interface IService
+{
+    string Name { get;}
+
+    IDependency Dependency { get;}
+}
 
 class Service : IService
 {
-    private readonly WeakReference<IDependency> _dependency;
+    public Service(string name = "My Service") =>
+        Name = name;
 
-    public Service(WeakReference<IDependency> dependency) =>
-        _dependency = dependency;
+    public string Name { get; }
 
-    public IDependency? Dependency =>
-        _dependency.TryGetTarget(out var value)
-            ? value
-            : default;
+    public required IDependency Dependency { get; init; } = new Dependency();
 }
 
 DI.Setup("Composition")
@@ -28,6 +30,8 @@ DI.Setup("Composition")
 
 var composition = new Composition();
 var service = composition.Root;
+service.Dependency.ShouldBeOfType<Dependency>();
+service.Name.ShouldBe("My Service");
 ```
 
 <details open>
@@ -42,25 +46,24 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  class WeakReferenceᐸIDependencyᐳ {
-    +WeakReference(IDependency target)
-  }
-  Service --|> IService : 
-  class Service {
-    +Service(WeakReferenceᐸIDependencyᐳ dependency)
-  }
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
   }
-  class IService {
-    <<abstract>>
+  Service --|> IService : 
+  class Service {
+    +Service(String name)
+    +IDependency Dependency
   }
   class IDependency {
     <<abstract>>
   }
-  WeakReferenceᐸIDependencyᐳ *--  Dependency : IDependency
-  Service *--  WeakReferenceᐸIDependencyᐳ : WeakReferenceᐸIDependencyᐳ
+  class IService {
+    <<abstract>>
+  }
+  Service *--  String : String
+  Service *--  Unresolved : String
+  Service *--  Dependency : IDependency
   Composition ..> Service : IService Root
 ```
 
@@ -85,14 +88,17 @@ partial class Composition
   }
   
   #region Composition Roots
-  public Pure.DI.UsageTests.BCL.WeakReferenceScenario.IService Root
+  public Pure.DI.UsageTests.Basics.DefaultValuesScenario.IService Root
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM10D21di2 = new Pure.DI.UsageTests.BCL.WeakReferenceScenario.Dependency();
-      var transientM10D21di1 = new System.WeakReference<Pure.DI.UsageTests.BCL.WeakReferenceScenario.IDependency>(transientM10D21di2);
-      var transientM10D21di0 = new Pure.DI.UsageTests.BCL.WeakReferenceScenario.Service(transientM10D21di1);
+      var transientM10D21di2 = new Pure.DI.UsageTests.Basics.DefaultValuesScenario.Dependency();
+      var transientM10D21di1 = "My Service";
+      var transientM10D21di0 = new Pure.DI.UsageTests.Basics.DefaultValuesScenario.Service(transientM10D21di1)
+      {
+          Dependency = transientM10D21di2
+      };
       return transientM10D21di0;
     }
   }
@@ -167,25 +173,24 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  class WeakReferenceᐸIDependencyᐳ {\n" +
-          "    +WeakReference(IDependency target)\n" +
-        "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(WeakReferenceᐸIDependencyᐳ dependency)\n" +
-        "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(String name)\n" +
+          "    +IDependency Dependency\n" +
         "  }\n" +
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  WeakReferenceᐸIDependencyᐳ *--  Dependency : IDependency\n" +
-        "  Service *--  WeakReferenceᐸIDependencyᐳ : WeakReferenceᐸIDependencyᐳ\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service *--  String : String\n" +
+        "  Service *--  Unresolved : String\n" +
+        "  Service *--  Dependency : IDependency\n" +
         "  Composition ..> Service : IService Root";
   }
   
@@ -196,13 +201,13 @@ partial class Composition
   static Composition()
   {
     var valResolverM10D21di_0000 = new ResolverM10D21di_0000();
-    ResolverM10D21di<Pure.DI.UsageTests.BCL.WeakReferenceScenario.IService>.Value = valResolverM10D21di_0000;
+    ResolverM10D21di<Pure.DI.UsageTests.Basics.DefaultValuesScenario.IService>.Value = valResolverM10D21di_0000;
     _bucketsM10D21di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
       out _bucketSizeM10D21di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.WeakReferenceScenario.IService), valResolverM10D21di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.DefaultValuesScenario.IService), valResolverM10D21di_0000)
       });
   }
   
@@ -222,19 +227,19 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM10D21di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.WeakReferenceScenario.IService>
+  private sealed class ResolverM10D21di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.DefaultValuesScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.BCL.WeakReferenceScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.Basics.DefaultValuesScenario.IService Resolve(Composition composition)
     {
       return composition.Root;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.BCL.WeakReferenceScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Basics.DefaultValuesScenario.IService ResolveByTag(Composition composition, object tag)
     {
       if (Equals(tag, null)) return composition.Root;
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.WeakReferenceScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.DefaultValuesScenario.IService.");
     }
   }
   #endregion

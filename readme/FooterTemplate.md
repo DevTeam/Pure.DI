@@ -1,9 +1,13 @@
 ### Applications
 - [Console application](readme/Console.md)
 - [WPF application](readme/Wpf.md)
-- [Web API](readme/WebAPI.md)
+- [Web API application](readme/WebAPI.md)
+- [Web application](readme/WebApp.md)
+- [gRPC service](readme/GrpcService.md)
 - [Top level statements console application](readme/ConsoleTopLevelStatements.md)
-- [Native AOT console application](readme/ConsoleNativeAOTPageTemplate.md)
+- [Native AOT console application](readme/ConsoleNativeAOT.md)
+- [Win Forms Net Core application](readme/WinFormsAppNetCore.md)
+- [Win Forms application](readme/WinFormsApp.md)
 
 ## Generated Code
 

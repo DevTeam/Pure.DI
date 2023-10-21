@@ -63,6 +63,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "readme", "readme", "{24E449
 		readme\WebAPIPageTemplate.md = readme\WebAPIPageTemplate.md
 		readme\WpfPageTemplate.md = readme\WpfPageTemplate.md
 		readme\ConsoleNativeAOTPageTemplate.md = readme\ConsoleNativeAOTPageTemplate.md
+		readme\WebAppPageTemplate.md = readme\WebAppPageTemplate.md
+		readme\GrpcServicePageTemplate.md = readme\GrpcServicePageTemplate.md
+		readme\WinFormsAppNetCorePageTemplate.md = readme\WinFormsAppNetCorePageTemplate.md
+		readme\WinFormsAppPageTemplate.md = readme\WinFormsAppPageTemplate.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pure.DI.Templates", "src\Pure.DI.Templates\Pure.DI.Templates.csproj", "{5A925B99-3FF8-4ED0-81C2-7F0D3AD52642}"

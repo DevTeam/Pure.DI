@@ -1,10 +1,10 @@
-#### Wep API
+#### gRPC service
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/WebAPI)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/GrpcService)
 
 This example demonstrates the creation of a Web API application in the pure DI paradigm using the _Pure.DI_ code generator.
 
-Composition setup file is [Composition.cs](/samples/WebAPI/Composition.cs):
+Composition setup file is [Composition.cs](/samples/GrpcService/Composition.cs):
 
 ```c#
 internal partial class Composition: ServiceProviderFactory<Composition>
@@ -12,25 +12,28 @@ internal partial class Composition: ServiceProviderFactory<Composition>
     private static void Setup() =>
         DI.Setup(nameof(Composition))
             .DependsOn(Base)
-            .Root<HomeController>();
+            .Root<GreeterService>();
 }
 ```
 
 The composition class inherits from the `ServiceProviderFactory<T>` class, where T is the composition class itself. It depends on the `Base` setup.
 
-Te web application entry point is in the [Program.cs](/samples/WebAPI/Program.cs) file:
+Te web application entry point is in the [Program.cs](/samples/GrpcService/Program.cs) file:
 
 ```c#
 var builder = WebApplication.CreateBuilder(args);
 
+// Additional configuration is required to successfully run gRPC on macOS.
+// For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
+
 // Add services to the container.
-builder.Services.AddControllersWithViews().AddControllersAsServices();
+builder.Services.AddGrpc();
 
 // Uses Composition as an alternative IServiceProviderFactory
 builder.Host.UseServiceProviderFactory(new Composition());
 ```
 
-The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
+The [project file](/samples/GrpcService/GrpcService.csproj) looks like this:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
@@ -46,8 +49,8 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Pure.DI.MS" Version="2.0.21" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.7" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+        <Protobuf Include="Protos\greet.proto" GrpcServices="Server"/>
+        <PackageReference Include="Grpc.AspNetCore" Version="2.58.0" />
     </ItemGroup>
 </Project>
 ```
