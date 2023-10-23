@@ -8,8 +8,11 @@ using Pure.DI;
 internal partial class Composition
 {
     private static void Setup() => DI.Setup(nameof(Composition))
+        // Root
+        .Root<IClockViewModel>("ClockViewModel")
+        
         // View Models
-        .Bind<IClockViewModel>().To<ClockViewModel>().Root<IClockViewModel>("ClockViewModel")
+        .Bind<IClockViewModel>().To<ClockViewModel>()
 
         // Models
         .Bind<ILog<TT>>().To<Log<TT>>()

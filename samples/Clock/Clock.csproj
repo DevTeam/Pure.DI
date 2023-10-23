@@ -11,6 +11,7 @@
         <InternalsVisibleTo Include="WpfAppNetCore" />
         <InternalsVisibleTo Include="WinFormsApp" />
         <InternalsVisibleTo Include="WinFormsAppNetCore" />
+        <InternalsVisibleTo Include="AvaloniaApp" />
     </ItemGroup>
 
 </Project>

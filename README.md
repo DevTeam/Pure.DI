@@ -266,6 +266,7 @@ dotnet run
 ### Applications
 - [Console application](readme/Console.md)
 - [WPF application](readme/Wpf.md)
+- [Avalonia application](readme/Avalonia.md)
 - [Web API application](readme/WebAPI.md)
 - [Web application](readme/WebApp.md)
 - [gRPC service](readme/GrpcService.md)

@@ -10,8 +10,11 @@ The definition of the composition is in [Composition.cs](/samples/WpfAppNetCore/
 internal partial class Composition
 {
     private static void Setup() => DI.Setup(nameof(Composition))
+        // Root
+        .Root<IClockViewModel>("ClockViewModel")
+        
         // View Models
-        .Bind<IClockViewModel>().To<ClockViewModel>().Root<IClockViewModel>("ClockViewModel")
+        .Bind<IClockViewModel>().To<ClockViewModel>()
 
         // Models
         .Bind<ILog<TT>>().To<Log<TT>>()
@@ -44,16 +47,12 @@ All previously defined composition roots are now accessible from [markup](/sampl
 ```xaml
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        DataContext="{StaticResource Composition}">
-    <Grid>
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding ClockViewModel}">
-            <TextBlock Text="{Binding Date}" FontSize="64" />
-            <TextBlock Text="{Binding Time}" FontSize="64" />
-            <StackPanel.Effect>
-                <DropShadowEffect Color="Black" Direction="20" ShadowDepth="5" Opacity="0.5" />
-            </StackPanel.Effect>
-        </StackPanel>
-    </Grid>
+        DataContext="{StaticResource Composition}"
+        Title="{Binding ClockViewModel.Time}">
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" DataContext="{Binding ClockViewModel}">
+        <TextBlock Text="{Binding Date}" FontSize="64" HorizontalAlignment="Center"/>
+        <TextBlock Text="{Binding Time}" FontSize="128" HorizontalAlignment="Center"/>        
+    </StackPanel>
 </Window>
 ```
 
@@ -68,7 +67,7 @@ The [project file](/samples/WpfAppNetCore/WpfAppNetCore.csproj) looks like this:
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.0.21">
+        <PackageReference Include="Pure.DI" Version="2.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

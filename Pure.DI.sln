@@ -67,6 +67,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "readme", "readme", "{24E449
 		readme\GrpcServicePageTemplate.md = readme\GrpcServicePageTemplate.md
 		readme\WinFormsAppNetCorePageTemplate.md = readme\WinFormsAppNetCorePageTemplate.md
 		readme\WinFormsAppPageTemplate.md = readme\WinFormsAppPageTemplate.md
+		readme\AvaloniaPageTemplate.md = readme\AvaloniaPageTemplate.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pure.DI.Templates", "src\Pure.DI.Templates\Pure.DI.Templates.csproj", "{5A925B99-3FF8-4ED0-81C2-7F0D3AD52642}"
@@ -79,11 +80,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "samples\WebApp\We
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrpcService", "samples\GrpcService\GrpcService.csproj", "{D66FA5FF-C244-4757-97D2-1A18D87AF1CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsApp", "samples\WinFormsApp\WinFormsApp.csproj", "{D5C69028-130C-46B8-8E7A-4FD70CF5F0B0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShroedingersCatNativeAOT", "samples\ShroedingersCatNativeAOT\ShroedingersCatNativeAOT.csproj", "{BFC61486-B6A3-40DA-BE7C-F7C737E29EF8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsAppNetCore", "samples\WinFormsAppNetCore\WinFormsAppNetCore.csproj", "{AFC20CA4-8A42-4692-BAEE-52272803356A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaloniaApp", "samples\AvaloniaApp\AvaloniaApp.csproj", "{E4274A56-868E-427E-87FE-E2D46749CAE6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -159,10 +160,6 @@ Global
 		{D66FA5FF-C244-4757-97D2-1A18D87AF1CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D66FA5FF-C244-4757-97D2-1A18D87AF1CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D66FA5FF-C244-4757-97D2-1A18D87AF1CE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D5C69028-130C-46B8-8E7A-4FD70CF5F0B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D5C69028-130C-46B8-8E7A-4FD70CF5F0B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D5C69028-130C-46B8-8E7A-4FD70CF5F0B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D5C69028-130C-46B8-8E7A-4FD70CF5F0B0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BFC61486-B6A3-40DA-BE7C-F7C737E29EF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BFC61486-B6A3-40DA-BE7C-F7C737E29EF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFC61486-B6A3-40DA-BE7C-F7C737E29EF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -171,6 +168,10 @@ Global
 		{AFC20CA4-8A42-4692-BAEE-52272803356A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFC20CA4-8A42-4692-BAEE-52272803356A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFC20CA4-8A42-4692-BAEE-52272803356A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4274A56-868E-427E-87FE-E2D46749CAE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4274A56-868E-427E-87FE-E2D46749CAE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4274A56-868E-427E-87FE-E2D46749CAE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4274A56-868E-427E-87FE-E2D46749CAE6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7C9E056B-CBA9-4548-9CDB-C5CE03C491B0} = {8163CDD7-7018-4301-A984-803C3807A6A6}
@@ -189,8 +190,8 @@ Global
 		{F6E7F93F-E86B-4610-9BD5-0FC55D015B12} = {8163CDD7-7018-4301-A984-803C3807A6A6}
 		{E386932F-B141-494C-9A8D-46B168BE9731} = {FA80D231-C641-4A49-99C6-0C065D818B07}
 		{D66FA5FF-C244-4757-97D2-1A18D87AF1CE} = {FA80D231-C641-4A49-99C6-0C065D818B07}
-		{D5C69028-130C-46B8-8E7A-4FD70CF5F0B0} = {FA80D231-C641-4A49-99C6-0C065D818B07}
 		{BFC61486-B6A3-40DA-BE7C-F7C737E29EF8} = {FA80D231-C641-4A49-99C6-0C065D818B07}
 		{AFC20CA4-8A42-4692-BAEE-52272803356A} = {FA80D231-C641-4A49-99C6-0C065D818B07}
+		{E4274A56-868E-427E-87FE-E2D46749CAE6} = {FA80D231-C641-4A49-99C6-0C065D818B07}
 	EndGlobalSection
 EndGlobal
