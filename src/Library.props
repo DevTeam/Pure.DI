@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <IsPackable>true</IsPackable>
+        <ImplicitUsings>false</ImplicitUsings>
         <PackageId>$(BasePackageId).$(Library)</PackageId>
         <IncludeBuildOutput>false</IncludeBuildOutput>
         <ContentTargetFolders>contentFiles</ContentTargetFolders>

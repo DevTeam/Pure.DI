@@ -3,6 +3,7 @@
 
 namespace Pure.DI.MS;
 
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -36,7 +37,7 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
     /// </code>
     /// </example>
     /// </summary>
-    protected const string Base = $"Pure.DI.MS.ServiceProviderFactory";
+    protected const string Base = "Pure.DI.MS.ServiceProviderFactory";
     
     /// <summary>
     /// An instance of <see cref="Pure.DI.MS.ServiceCollectionFactory"/>.
