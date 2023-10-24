@@ -44,11 +44,11 @@ The [project file](/samples/GrpcService/GrpcService.csproj) looks like this:
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.0.0">
+        <PackageReference Include="Pure.DI" Version="2.0.21">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.0.0" />
+        <PackageReference Include="Pure.DI.MS" Version="2.0.21" />
         <Protobuf Include="Protos\greet.proto" GrpcServices="Server"/>
         <PackageReference Include="Grpc.AspNetCore" Version="2.58.0" />
     </ItemGroup>

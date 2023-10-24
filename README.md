@@ -264,16 +264,19 @@ dotnet run
 - [OnNewInstance hint](readme/onnewinstance-hint.md)
 - [ToString hint](readme/tostring-hint.md)
 ### Applications
-- [Console application](readme/Console.md)
-- [WPF application](readme/Wpf.md)
-- [Avalonia application](readme/Avalonia.md)
-- [Web API application](readme/WebAPI.md)
-- [Web application](readme/WebApp.md)
-- [gRPC service](readme/GrpcService.md)
-- [Top level statements console application](readme/ConsoleTopLevelStatements.md)
-- [Native AOT console application](readme/ConsoleNativeAOT.md)
-- [Win Forms Net Core application](readme/WinFormsAppNetCore.md)
-- [Win Forms application](readme/WinFormsApp.md)
+- Console
+  - [Schrödinger's cat](readme/Console.md)
+  - [Top level statements](readme/ConsoleTopLevelStatements.md)
+  - [Native AOT](readme/ConsoleNativeAOT.md)
+- UI
+  - [WPF](readme/Wpf.md)
+  - [Avalonia](readme/Avalonia.md)
+  - [Win Forms Net Core](readme/WinFormsAppNetCore.md)
+  - [Win Forms](readme/WinFormsApp.md)
+- Web
+  - [Web](readme/WebApp.md)
+  - [Web API service](readme/WebAPI.md)
+  - [gRPC service](readme/GrpcService.md)
 
 ## Generated Code
 

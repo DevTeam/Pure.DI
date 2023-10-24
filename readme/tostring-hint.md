@@ -64,16 +64,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM10D23di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM10D24di;
   
   public Composition()
   {
-    _disposableSingletonsM10D23di = new global::System.IDisposable[0];
+    _disposableSingletonsM10D24di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM10D23di = new global::System.IDisposable[0];
+    _disposableSingletonsM10D24di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -82,9 +82,9 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM10D23di1 = new Pure.DI.UsageTests.Hints.ToStringHintScenario.Dependency();
-      var transientM10D23di0 = new Pure.DI.UsageTests.Hints.ToStringHintScenario.Service(transientM10D23di1);
-      return transientM10D23di0;
+      var transientM10D24di1 = new Pure.DI.UsageTests.Hints.ToStringHintScenario.Dependency();
+      var transientM10D24di0 = new Pure.DI.UsageTests.Hints.ToStringHintScenario.Service(transientM10D24di1);
+      return transientM10D24di0;
     }
   }
   #endregion
@@ -96,7 +96,7 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>()
   {
-    return ResolverM10D23di<T>.Value.Resolve(this);
+    return ResolverM10D24di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -105,7 +105,7 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>(object? tag)
   {
-    return ResolverM10D23di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM10D24di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -114,10 +114,10 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM10D23di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM10D23di;
+    var index = (int)(_bucketSizeM10D24di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM10D24di;
     do {
-      ref var pair = ref _bucketsM10D23di[index];
+      ref var pair = ref _bucketsM10D24di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -133,10 +133,10 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM10D23di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM10D23di;
+    var index = (int)(_bucketSizeM10D24di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM10D24di;
     do {
-      ref var pair = ref _bucketsM10D23di[index];
+      ref var pair = ref _bucketsM10D24di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -176,27 +176,27 @@ partial class Composition
         "  Composition ..> Service : IService MyService";
   }
   
-  private readonly static int _bucketSizeM10D23di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM10D23di;
+  private readonly static int _bucketSizeM10D24di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM10D24di;
   
   
   static Composition()
   {
-    var valResolverM10D23di_0000 = new ResolverM10D23di_0000();
-    ResolverM10D23di<Pure.DI.UsageTests.Hints.ToStringHintScenario.IService>.Value = valResolverM10D23di_0000;
-    _bucketsM10D23di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM10D24di_0000 = new ResolverM10D24di_0000();
+    ResolverM10D24di<Pure.DI.UsageTests.Hints.ToStringHintScenario.IService>.Value = valResolverM10D24di_0000;
+    _bucketsM10D24di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM10D23di,
+      out _bucketSizeM10D24di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Hints.ToStringHintScenario.IService), valResolverM10D23di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Hints.ToStringHintScenario.IService), valResolverM10D24di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM10D23di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM10D24di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM10D23di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM10D24di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -209,7 +209,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM10D23di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Hints.ToStringHintScenario.IService>
+  private sealed class ResolverM10D24di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Hints.ToStringHintScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.Hints.ToStringHintScenario.IService Resolve(Composition composition)
