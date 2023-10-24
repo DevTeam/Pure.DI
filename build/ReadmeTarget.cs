@@ -221,7 +221,7 @@ internal class ReadmeTarget : ITarget<int>, ICommandProvider
 
     private async Task GenerateExamples(IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)> examples, TextWriter readmeWriter, string logsDirectory)
     {
-        var packageVersion = (_settings.VersionOverride ?? Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI"), _settings.VersionRange)).ToString();
+        var packageVersion = (_settings.VersionOverride ?? Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI"), _settings.VersionRange, 0)).ToString();
         foreach (var readmeFile in Directory.EnumerateFiles(Path.Combine(ReadmeDir), "*.md"))
         {
             if (readmeFile.EndsWith("Template.md", StringComparison.InvariantCultureIgnoreCase))

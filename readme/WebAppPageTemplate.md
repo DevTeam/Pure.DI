@@ -50,8 +50,9 @@ The [project file](/samples/WebApp/WebApp.csproj) looks like this:
 </Project>
 ```
 
-It contains 2 additional links to NuGet packages:
+It contains 2 additional references to NuGet packages:
 
-[![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
-
-[![NuGet](https://buildstats.info/nuget/Pure.DI.MS)](https://www.nuget.org/packages/Pure.DI.MS)
+|            |                                                                                                 |
+|------------|-------------------------------------------------------------------------------------------------|
+| Pure.DI    | [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)       |
+| Pure.DI.MS | [![NuGet](https://buildstats.info/nuget/Pure.DI.MS)](https://www.nuget.org/packages/Pure.DI.MS) |

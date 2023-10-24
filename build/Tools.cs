@@ -9,14 +9,14 @@ internal static partial class Tools
 {
     private static readonly Regex ReleaseRegex = CreateReleaseRegex();
     
-    public static NuGetVersion GetNextVersion(NuGetRestoreSettings settings, VersionRange versionRange) =>
+    public static NuGetVersion GetNextVersion(NuGetRestoreSettings settings, VersionRange versionRange, int incrementValue = 1) =>
         GetService<INuGet>()
             .Restore(settings.WithHideWarningsAndErrors(true).WithVersionRange(versionRange).WithNoCache(true))
             .Where(i => i.Name == settings.PackageId)
             .Select(i => i.NuGetVersion)
             .Select(i => i.Release != string.Empty 
                 ? GetNextRelease(versionRange, i)
-                : new NuGetVersion(i.Major, i.Minor, i.Patch + 1))
+                : new NuGetVersion(i.Major, i.Minor, i.Patch + incrementValue))
             .Max() ?? new NuGetVersion(2, 0, 0);
 
     private static NuGetVersion GetNextRelease(VersionRangeBase versionRange, NuGetVersion version)

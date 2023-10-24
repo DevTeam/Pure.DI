@@ -1,30 +1,37 @@
 ﻿#pragma warning disable CA1050
+#pragma warning disable CS8321
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedMemberInSuper.Global
 
+using System.Diagnostics;
 using Pure.DI;
 using static Pure.DI.Lifetime;
 
 // Composition root
 new Composition().Root.Run();
+return;
 
 // In fact, this code is never run, and the method can have any name or be a constructor, for example,
 // and can be in any part of the compiled code because this is just a hint to set up an object graph.
-DI.Setup("Composition")
-    // Models a random subatomic event that may or may not occur
-    .Bind<Random>().As(Singleton).To<Random>()
-    // Represents a quantum superposition of 2 states: Alive or Dead
-    .Bind<State>().To(ctx =>
-    {
-        ctx.Inject<Random>(out var random);
-        return (State)random.Next(2);
-    })
-    // Represents schrodinger's cat
-    .Bind<ICat>().To<ShroedingersCat>()
-    // Represents a cardboard box with any content
-    .Bind<IBox<TT>>().To<CardboardBox<TT>>()
-    // Composition Root
-    .Root<Program>("Root");
+// [Conditional("DI")] attribute avoids generating IL code for the method that follows it.
+// Since this method is needed only at the compile time.
+[Conditional("DI")]
+static void Setup() =>
+    DI.Setup("Composition")
+        // Models a random subatomic event that may or may not occur
+        .Bind<Random>().As(Singleton).To<Random>()
+        // Represents a quantum superposition of 2 states: Alive or Dead
+        .Bind<State>().To(ctx =>
+        {
+            ctx.Inject<Random>(out var random);
+            return (State)random.Next(2);
+        })
+        // Represents schrodinger's cat
+        .Bind<ICat>().To<ShroedingersCat>()
+        // Represents a cardboard box with any content
+        .Bind<IBox<TT>>().To<CardboardBox<TT>>()
+        // Composition Root
+        .Root<Program>("Root");
 
 public interface IBox<out T>
 {

@@ -450,6 +450,13 @@ Specifies whether the generated code should be formatted. This option consumes a
 
 </details>
 
+## NuGet packages
+
+|            |                                                                                                 |
+|------------|-------------------------------------------------------------------------------------------------|
+| Pure.DI    | [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)       |
+| Pure.DI.MS | [![NuGet](https://buildstats.info/nuget/Pure.DI.MS)](https://www.nuget.org/packages/Pure.DI.MS) |
+
 ## Requirements for development environments
 
 - [.NET SDK 6.0.4xx or newer](https://dotnet.microsoft.com/download/dotnet/6.0)
