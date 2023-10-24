@@ -35,7 +35,7 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
             var languageVersion = update.SemanticModel.Compilation.GetLanguageVersion();
             if (languageVersion < LanguageVersion.CSharp8)
             {
-                throw new CompileErrorException($"Pure.DI does not support C# {languageVersion.ToDisplayString()}. Please use language version {LanguageVersion.CSharp8.ToDisplayString()} or greater.", update.Node.GetLocation(), LogId.ErrorNotSupportedLanguageVersion);
+                throw new CompileErrorException($"{Names.GeneratorName} does not support C# {languageVersion.ToDisplayString()}. Please use language version {LanguageVersion.CSharp8.ToDisplayString()} or greater.", update.Node.GetLocation(), LogId.ErrorNotSupportedLanguageVersion);
             }
             
             var setupsBuilder = _setupsBuilderFactory();

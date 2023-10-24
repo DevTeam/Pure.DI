@@ -1,60 +1,29 @@
-// ReSharper disable ClassNeverInstantiated.Global
-// ReSharper disable LoopCanBeConvertedToQuery
-// ReSharper disable InvertIf
 namespace Pure.DI.Core;
-
-using System.Diagnostics;
 
 internal sealed class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
 {
     private readonly ILogger<Generator> _logger;
     private readonly IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>> _metadataBuilder;
-    private readonly IBuilder<MdSetup, DependencyGraph> _dependencyGraphBuilder;
-    private readonly IValidator<DependencyGraph> _dependencyGraphValidator;
-    private readonly IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>> _rootsBuilder;
-    private readonly IBuilder<DependencyGraph, CompositionCode> _compositionBuilder;
-    private readonly IBuilder<CompositionCode, CompositionCode> _classBuilder;
-    private readonly IValidator<MdSetup> _metadataValidator;
-    private readonly IGeneratorSources _sources;
-    private readonly CancellationToken _cancellationToken;
+    private readonly Func<IBuilder<MdSetup, Unit>> _codeBuilderFactory;
     private readonly IObserversRegistry _observersRegistry;
     private readonly IObserver<LogEntry> _logObserver;
-    private readonly IObserversProvider _observersProvider;
 
     public Generator(
         ILogger<Generator> logger,
         IObserversRegistry observersRegistry,
         IObserver<LogEntry> logObserver,
-        IObserversProvider observersProvider,
         IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>> metadataBuilder,
-        IBuilder<MdSetup, DependencyGraph> dependencyGraphBuilder,
-        IValidator<DependencyGraph> dependencyGraphValidator,
-        IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>> rootsBuilder,
-        [Tag(WellknownTag.CompositionBuilder)] IBuilder<DependencyGraph, CompositionCode> compositionBuilder,
-        [Tag(WellknownTag.ClassBuilder)] IBuilder<CompositionCode, CompositionCode> classBuilder,
-        IValidator<MdSetup> metadataValidator,
-        IGeneratorSources sources,
-        CancellationToken cancellationToken)
+        Func<IBuilder<MdSetup, Unit>> codeBuilderFactory)
     {
         _logger = logger;
         _observersRegistry = observersRegistry;
         _logObserver = logObserver;
-        _observersProvider = observersProvider;
         _metadataBuilder = metadataBuilder;
-        _dependencyGraphBuilder = dependencyGraphBuilder;
-        _dependencyGraphValidator = dependencyGraphValidator;
-        _rootsBuilder = rootsBuilder;
-        _compositionBuilder = compositionBuilder;
-        _classBuilder = classBuilder;
-        _metadataValidator = metadataValidator;
-        _sources = sources;
-        _cancellationToken = cancellationToken;
+        _codeBuilderFactory = codeBuilderFactory;
     }
 
     public Unit Build(IEnumerable<SyntaxUpdate> updates)
     {
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
         using var logObserverToken= _observersRegistry.Register(_logObserver);
         try
         {
@@ -62,30 +31,11 @@ internal sealed class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
             {
                 try
                 {
-                    _metadataValidator.Validate(setup);
-                    _cancellationToken.ThrowIfCancellationRequested();
-                    var dependencyGraph = _dependencyGraphBuilder.Build(setup);
-                    foreach (var graphObserver in _observersProvider.GetObservers<DependencyGraph>())
-                    {
-                        graphObserver.OnNext(dependencyGraph);
-                    }
-
-                    _cancellationToken.ThrowIfCancellationRequested();
-                    var roots = _rootsBuilder.Build(dependencyGraph);
-                    dependencyGraph = dependencyGraph with { Roots = roots };
-
-                    _cancellationToken.ThrowIfCancellationRequested();
-                    _dependencyGraphValidator.Validate(dependencyGraph);
-
-                    _cancellationToken.ThrowIfCancellationRequested();
-                    var composition = _compositionBuilder.Build(dependencyGraph);
-
-                    _cancellationToken.ThrowIfCancellationRequested();
-                    composition = _classBuilder.Build(composition);
-
-                    _cancellationToken.ThrowIfCancellationRequested();
-                    var classCode = string.Join(Environment.NewLine, composition.Code);
-                    _sources.AddSource($"{setup.Name.FullName}.g.cs", SourceText.From(classCode, Encoding.UTF8));
+                    _codeBuilderFactory().Build(setup);
+                }
+                catch (CompileErrorException compileException)
+                {
+                    OnCompileException(compileException);
                 }
                 catch (HandledException handledException)
                 {
@@ -96,35 +46,30 @@ internal sealed class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
         catch (OperationCanceledException)
         {
         }
-        catch (CompileErrorException compileError)
+        catch (CompileErrorException compileException)
         {
-            _logger.CompileError(compileError.ErrorMessage, compileError.Location, compileError.Id);
+            OnCompileException(compileException);
         }
         catch (HandledException handledException)
         {
             OnHandledException(handledException);
         }
-        catch (Exception error)
+        catch (Exception exception)
         {
-            _logger.Log(
-                new LogEntry(
-                    DiagnosticSeverity.Error,
-                    "An unhandled error has occurred.",
-                    default,
-                    LogId.ErrorUnhandled,
-                    error));
+            OnException(exception);
         }
         finally
         {
-            stopwatch.Stop();
             _logObserver.OnCompleted();
         }
         
         return Unit.Shared;
     }
 
-    private void OnHandledException(Exception handledException)
-    {
+    private void OnCompileException(CompileErrorException exception) => 
+        _logger.CompileError(exception.ErrorMessage, exception.Location, exception.Id);
+
+    private void OnHandledException(Exception handledException) =>
         _logger.Log(
             new LogEntry(
 #if DEBUG
@@ -132,9 +77,17 @@ internal sealed class Generator : IBuilder<IEnumerable<SyntaxUpdate>, Unit>
 #else
                 DiagnosticSeverity.Hidden,
 #endif
-                "Generation interrupted.",
+                "Code generation aborted.",
                 default,
                 LogId.InfoGenerationInterrupted,
                 handledException));
-    }
+
+    private void OnException(Exception exception) =>
+        _logger.Log(
+            new LogEntry(
+                DiagnosticSeverity.Error,
+                "An unhandled error has occurred.",
+                default,
+                LogId.ErrorUnhandled,
+                exception));
 }

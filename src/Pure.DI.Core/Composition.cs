@@ -28,7 +28,6 @@ internal partial class Composition
         .Bind<ICache<TT1, TT2>>().As(Lifetime.Singleton).To<Cache<TT1, TT2>>()
 
         // Transient
-        .DefaultLifetime(Lifetime.Transient)
         .Bind<IMetadataSyntaxWalker>().To<MetadataSyntaxWalker>()
         .Bind<IDependencyGraphBuilder>().To<DependencyGraphBuilder>()
         .Bind<ITypeConstructor>().To<TypeConstructor>()
@@ -57,6 +56,7 @@ internal partial class Composition
         .Bind<IBuilder<MdSetup, DependencyGraph>>().To<VariationalDependencyGraphBuilder>()
         .Bind<IBuilder<DpImplementation, IEnumerable<DpImplementation>>>().To<ImplementationVariantsBuilder>()
         .Bind<IBuilder<Unit, IEnumerable<Source>>>().To<ApiBuilder>()
+        .Bind<IBuilder<MdSetup, Unit>>().To<CodeBuilder>()
         
         // Code builders
         .Bind<ICodeBuilder<IStatement>>().To<StatementCodeBuilder>()
