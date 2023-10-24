@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers;
 
-using Services;
+using WeatherForecast;
 
 [Route("[controller]")]
 public class WeatherForecastController : ControllerBase
@@ -19,9 +19,12 @@ public class WeatherForecastController : ControllerBase
     }
 
     [HttpGet(Name = "GetWeatherForecast")]
-    public IEnumerable<WeatherForecast> Get()
+    public async IAsyncEnumerable<WeatherForecast> Get()
     {
-        _logger.LogInformation("Get WeatherForecast");
-        return _weatherForecastService.CreateWeatherForecast();
+        await foreach (var forecast in _weatherForecastService.CreateWeatherForecastAsync())
+        {
+            _logger.LogInformation("returns {ForecastSummary}", forecast.Summary);  
+            yield return forecast;
+        }
     }
 }

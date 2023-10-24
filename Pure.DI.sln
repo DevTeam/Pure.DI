@@ -68,6 +68,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "readme", "readme", "{24E449
 		readme\WinFormsAppNetCorePageTemplate.md = readme\WinFormsAppNetCorePageTemplate.md
 		readme\WinFormsAppPageTemplate.md = readme\WinFormsAppPageTemplate.md
 		readme\AvaloniaPageTemplate.md = readme\AvaloniaPageTemplate.md
+		readme\BlazorServerAppPageTemplate.md = readme\BlazorServerAppPageTemplate.md
+		readme\BlazorWebAssemblyAppPageTemplate.md = readme\BlazorWebAssemblyAppPageTemplate.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pure.DI.Templates", "src\Pure.DI.Templates\Pure.DI.Templates.csproj", "{5A925B99-3FF8-4ED0-81C2-7F0D3AD52642}"
@@ -85,6 +87,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsAppNetCore", "samples\WinFormsAppNetCore\WinFormsAppNetCore.csproj", "{AFC20CA4-8A42-4692-BAEE-52272803356A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaloniaApp", "samples\AvaloniaApp\AvaloniaApp.csproj", "{E4274A56-868E-427E-87FE-E2D46749CAE6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorServerApp", "samples\BlazorServerApp\BlazorServerApp.csproj", "{6C95BC87-DA77-4CE7-8CAB-9BEC254CEF51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAssemblyApp", "samples\BlazorWebAssemblyApp\BlazorWebAssemblyApp.csproj", "{D1C043C4-ED8F-45C5-8077-EF10AA71B951}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherForecast", "samples\WeatherForecast\WeatherForecast.csproj", "{9A3E2271-3090-4BCE-BB48-6C0724CFBE44}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -172,6 +180,18 @@ Global
 		{E4274A56-868E-427E-87FE-E2D46749CAE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4274A56-868E-427E-87FE-E2D46749CAE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4274A56-868E-427E-87FE-E2D46749CAE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C95BC87-DA77-4CE7-8CAB-9BEC254CEF51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C95BC87-DA77-4CE7-8CAB-9BEC254CEF51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C95BC87-DA77-4CE7-8CAB-9BEC254CEF51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C95BC87-DA77-4CE7-8CAB-9BEC254CEF51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1C043C4-ED8F-45C5-8077-EF10AA71B951}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1C043C4-ED8F-45C5-8077-EF10AA71B951}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1C043C4-ED8F-45C5-8077-EF10AA71B951}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1C043C4-ED8F-45C5-8077-EF10AA71B951}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A3E2271-3090-4BCE-BB48-6C0724CFBE44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A3E2271-3090-4BCE-BB48-6C0724CFBE44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A3E2271-3090-4BCE-BB48-6C0724CFBE44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A3E2271-3090-4BCE-BB48-6C0724CFBE44}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7C9E056B-CBA9-4548-9CDB-C5CE03C491B0} = {8163CDD7-7018-4301-A984-803C3807A6A6}
@@ -193,5 +213,8 @@ Global
 		{BFC61486-B6A3-40DA-BE7C-F7C737E29EF8} = {FA80D231-C641-4A49-99C6-0C065D818B07}
 		{AFC20CA4-8A42-4692-BAEE-52272803356A} = {FA80D231-C641-4A49-99C6-0C065D818B07}
 		{E4274A56-868E-427E-87FE-E2D46749CAE6} = {FA80D231-C641-4A49-99C6-0C065D818B07}
+		{6C95BC87-DA77-4CE7-8CAB-9BEC254CEF51} = {FA80D231-C641-4A49-99C6-0C065D818B07}
+		{D1C043C4-ED8F-45C5-8077-EF10AA71B951} = {FA80D231-C641-4A49-99C6-0C065D818B07}
+		{9A3E2271-3090-4BCE-BB48-6C0724CFBE44} = {FA80D231-C641-4A49-99C6-0C065D818B07}
 	EndGlobalSection
 EndGlobal

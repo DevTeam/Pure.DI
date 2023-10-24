@@ -1,13 +1,12 @@
 // ReSharper disable UnusedMember.Local
 
+namespace BlazorServerApp;
+
+using Models;
 using Pure.DI;
-using WebAPI.Controllers;
-using static Pure.DI.Lifetime;
-
-namespace WebAPI;
-
 using Pure.DI.MS;
 using WeatherForecast;
+using static Pure.DI.Lifetime;
 
 internal partial class Composition: ServiceProviderFactory<Composition>
 {
@@ -17,5 +16,11 @@ internal partial class Composition: ServiceProviderFactory<Composition>
             .Bind<IWeatherForecastService>()
                 .As(Singleton)
                 .To<WeatherForecastService>()
-                .Root<WeatherForecastController>();
+                .Root<IWeatherForecastService>()
+            .Bind<ICounterService>()
+                .To<CounterService>()
+                .Root<ICounterService>()
+            .Bind<IErrorModel>()
+                .To<ErrorModel>()
+                .Root<IErrorModel>();
 }

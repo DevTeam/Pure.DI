@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="WebAPI" />
+        <InternalsVisibleTo Include="BlazorServerApp" />
+        <InternalsVisibleTo Include="BlazorWebAssemblyApp" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
+    </ItemGroup>
+
+</Project>

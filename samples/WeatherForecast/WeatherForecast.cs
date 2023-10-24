@@ -1,6 +1,6 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable UnusedMember.Global
-namespace WebAPI.Services;
+namespace WeatherForecast;
 
 public class WeatherForecast
 {

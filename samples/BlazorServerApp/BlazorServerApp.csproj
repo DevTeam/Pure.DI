@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-    
+
     <ItemGroup>
-        <ProjectReference Include="..\WeatherForecast\WeatherForecast.csproj" />
+        <ProjectReference Include="..\WeatherForecast\WeatherForecast.csproj"/>
         <ProjectReference Include="..\..\src\Pure.DI.Core\Pure.DI.Core.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <ProjectReference Include="..\..\src\Pure.DI\Pure.DI.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <Compile Include="..\..\src\Pure.DI.MS\ServiceCollectionFactory.g.cs">
@@ -10,8 +10,6 @@
         <Compile Include="..\..\src\Pure.DI.MS\ServiceProviderFactory.g.cs">
             <Link>ServiceProviderFactory.g.cs</Link>
         </Compile>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.13" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
     </ItemGroup>
 
 </Project>
