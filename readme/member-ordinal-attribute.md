@@ -95,10 +95,10 @@ classDiagram
 ```c#
 partial class PersonComposition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM10D24di;
-  private readonly int _argM10D24dipersonId;
-  private readonly string _argM10D24dipersonName;
-  private readonly System.DateTime _argM10D24dipersonBirthday;
+  private readonly global::System.IDisposable[] _disposableSingletonsM10D25di;
+  private readonly int _argM10D25dipersonId;
+  private readonly string _argM10D25dipersonName;
+  private readonly System.DateTime _argM10D25dipersonBirthday;
   
   public PersonComposition(int personId, string personName, System.DateTime personBirthday)
   {
@@ -107,18 +107,18 @@ partial class PersonComposition
       throw new global::System.ArgumentNullException("personName");
     }
     
-    _argM10D24dipersonId = personId;
-    _argM10D24dipersonName = personName;
-    _argM10D24dipersonBirthday = personBirthday;
-    _disposableSingletonsM10D24di = new global::System.IDisposable[0];
+    _argM10D25dipersonId = personId;
+    _argM10D25dipersonName = personName;
+    _argM10D25dipersonBirthday = personBirthday;
+    _disposableSingletonsM10D25di = new global::System.IDisposable[0];
   }
   
   internal PersonComposition(PersonComposition parent)
   {
-    _disposableSingletonsM10D24di = new global::System.IDisposable[0];
-    _argM10D24dipersonId = parent._argM10D24dipersonId;
-    _argM10D24dipersonName = parent._argM10D24dipersonName;
-    _argM10D24dipersonBirthday = parent._argM10D24dipersonBirthday;
+    _disposableSingletonsM10D25di = new global::System.IDisposable[0];
+    _argM10D25dipersonId = parent._argM10D25dipersonId;
+    _argM10D25dipersonName = parent._argM10D25dipersonName;
+    _argM10D25dipersonBirthday = parent._argM10D25dipersonBirthday;
   }
   
   #region Composition Roots
@@ -127,11 +127,11 @@ partial class PersonComposition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM10D24di0 = new Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person();
-      transientM10D24di0.Id = _argM10D24dipersonId;
-      transientM10D24di0.FirstName = _argM10D24dipersonName;
-      transientM10D24di0.Birthday = _argM10D24dipersonBirthday;
-      return transientM10D24di0;
+      var transientM10D25di0 = new Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person();
+      transientM10D25di0.Id = _argM10D25dipersonId;
+      transientM10D25di0.FirstName = _argM10D25dipersonName;
+      transientM10D25di0.Birthday = _argM10D25dipersonBirthday;
+      return transientM10D25di0;
     }
   }
   #endregion
@@ -143,7 +143,7 @@ partial class PersonComposition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>()
   {
-    return ResolverM10D24di<T>.Value.Resolve(this);
+    return ResolverM10D25di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -152,7 +152,7 @@ partial class PersonComposition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>(object? tag)
   {
-    return ResolverM10D24di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM10D25di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -161,10 +161,10 @@ partial class PersonComposition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM10D24di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM10D24di;
+    var index = (int)(_bucketSizeM10D25di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM10D25di;
     do {
-      ref var pair = ref _bucketsM10D24di[index];
+      ref var pair = ref _bucketsM10D25di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -180,10 +180,10 @@ partial class PersonComposition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM10D24di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM10D24di;
+    var index = (int)(_bucketSizeM10D25di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM10D25di;
     do {
-      ref var pair = ref _bucketsM10D24di[index];
+      ref var pair = ref _bucketsM10D25di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -224,27 +224,27 @@ partial class PersonComposition
         "  PersonComposition ..> Person : IPerson Person";
   }
   
-  private readonly static int _bucketSizeM10D24di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[] _bucketsM10D24di;
+  private readonly static int _bucketSizeM10D25di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[] _bucketsM10D25di;
   
   
   static PersonComposition()
   {
-    var valResolverM10D24di_0000 = new ResolverM10D24di_0000();
-    ResolverM10D24di<Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson>.Value = valResolverM10D24di_0000;
-    _bucketsM10D24di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>.Create(
+    var valResolverM10D25di_0000 = new ResolverM10D25di_0000();
+    ResolverM10D25di<Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson>.Value = valResolverM10D25di_0000;
+    _bucketsM10D25di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>.Create(
       1,
-      out _bucketSizeM10D24di,
+      out _bucketSizeM10D25di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>(typeof(Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson), valResolverM10D24di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>(typeof(Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson), valResolverM10D25di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM10D24di<T>: global::Pure.DI.IResolver<PersonComposition, T>
+  private sealed class ResolverM10D25di<T>: global::Pure.DI.IResolver<PersonComposition, T>
   {
-    public static global::Pure.DI.IResolver<PersonComposition, T> Value = new ResolverM10D24di<T>();
+    public static global::Pure.DI.IResolver<PersonComposition, T> Value = new ResolverM10D25di<T>();
     
     public T Resolve(PersonComposition composite)
     {
@@ -257,7 +257,7 @@ partial class PersonComposition
     }
   }
   
-  private sealed class ResolverM10D24di_0000: global::Pure.DI.IResolver<PersonComposition, Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson>
+  private sealed class ResolverM10D25di_0000: global::Pure.DI.IResolver<PersonComposition, Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson Resolve(PersonComposition composition)
