@@ -14,7 +14,7 @@ internal readonly record struct Injection(
     public override int GetHashCode() => 
         SymbolEqualityComparer.Default.GetHashCode(Type);
 
-    private static bool EqualTags(object? tag, object? otherTag)
+    public static bool EqualTags(object? tag, object? otherTag)
     {
         if (ReferenceEquals(tag, MdTag.ContextTag))
         {

@@ -7,36 +7,42 @@ namespace Pure.DI.Core;
 internal sealed class TypeConstructor : ITypeConstructor
 {
     private readonly IMarker _marker;
-    private readonly Dictionary<ITypeSymbol,ITypeSymbol> _map = new(SymbolEqualityComparer.Default);
+    private readonly Dictionary<ITypeSymbol, ITypeSymbol> _map = new(SymbolEqualityComparer.Default);
     
     public TypeConstructor(IMarker marker) => _marker = marker;
 
-    public void Bind(ITypeSymbol source, ITypeSymbol target)
+    public bool TryBind(ITypeSymbol source, ITypeSymbol target)
     {
         if (_marker.IsMarker(source))
         {
             _map[source] = target;
-            return;
+            return true;
         }
-        
+
+        var result = true;
         switch (source)
         {
             case INamedTypeSymbol sourceNamedType when target is INamedTypeSymbol targetNamedType:
             {
-                if (!sourceNamedType.IsGenericType && SymbolEqualityComparer.Default.Equals(source, target))
+                if (!SymbolEqualityComparer.Default.Equals(source.OriginalDefinition, target.OriginalDefinition))
                 {
-                    return;
+                    return false;
+                }
+
+                if (!sourceNamedType.IsGenericType)
+                {
+                    return SymbolEqualityComparer.Default.Equals(source, target);
                 }
 
                 if (_map.ContainsKey(source))
                 {
-                    return;
+                    return true;
                 }
 
                 if (_marker.IsMarker(source))
                 {
                     _map[source] = target;
-                    return;
+                    return true;
                 }
 
                 // Constructed generic
@@ -51,11 +57,17 @@ internal sealed class TypeConstructor : ITypeConstructor
                         {
                             for (var i = 0; i < sourceArgs.Length; i++)
                             {
-                                Bind(sourceArgs[i], targetArgs[i]);
+                                result &= TryBind(sourceArgs[i], targetArgs[i]);
+                                if (!result)
+                                {
+                                    break;
+                                }
                             }
                         }
-
-                        return;
+                        else
+                        {
+                            result = false;
+                        }
                     }
                 }
 
@@ -63,19 +75,48 @@ internal sealed class TypeConstructor : ITypeConstructor
             }
             
             case IArrayTypeSymbol sourceArrayType when target is IArrayTypeSymbol targetArrayType:
-                Bind(sourceArrayType.ElementType, targetArrayType.ElementType);
+                result &= result && TryBind(sourceArrayType.ElementType, targetArrayType.ElementType);
                 break;
+            
+            default:
+                result &= result && SymbolEqualityComparer.Default.Equals(source.OriginalDefinition, target.OriginalDefinition);
+                break;
+        }
+
+        if (!result)
+        {
+            return result;
         }
 
         foreach (var implementationInterfaceType in target.Interfaces)
         {
-            Bind(source, implementationInterfaceType);
+            if (!SymbolEqualityComparer.Default.Equals(source.OriginalDefinition, implementationInterfaceType.OriginalDefinition))
+            {
+                continue;
+            }
+            
+            result &= TryBind(source, implementationInterfaceType);
+            if (!result)
+            {
+                break;
+            }
         }
 
         foreach (var dependencyInterfaceType in source.Interfaces)
         {
-            Bind(dependencyInterfaceType, target);
+            if (!SymbolEqualityComparer.Default.Equals(target.OriginalDefinition, dependencyInterfaceType.OriginalDefinition))
+            {
+                continue;
+            }
+            
+            result &= TryBind(dependencyInterfaceType, target);
+            if (!result)
+            {
+                break;
+            }
         }
+
+        return result;
     }
 
     public ITypeSymbol Construct(Compilation compilation, ITypeSymbol type)

@@ -169,6 +169,58 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldNotOverrideBindingForDifferentMarkerTypes()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using System.Collections.Generic;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                        .Bind<Func<char, IList<TT1>>>().To<Func<char, IList<TT1>>>(_ => ch => new List<TT1>())
+                        .Bind<Func<byte, TT1[]>>().To<Func<byte, TT1[]>>(_ => ch => new TT1[0])
+                        .Bind<Func<int, IList<TT2>>>().To<Func<int, IList<TT2>>>(_ => ch => new List<TT2>())
+                        .Root<Func<char, IList<string>>>("Root1")
+                        .Root<Func<byte, int[]>>("Root2")
+                        .Root<Func<int, IList<char>>>("Root3");
+               }
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                    var composition = new Composition();
+                    Console.WriteLine(composition.Root1.GetType());
+                    Console.WriteLine(composition.Root2.GetType());
+                    Console.WriteLine(composition.Root3.GetType());
+               }
+           }
+       }
+       """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(
+            ImmutableArray.Create(
+                "System.Func`2[System.Char,System.Collections.Generic.IList`1[System.String]]",
+                "System.Func`2[System.Byte,System.Int32[]]",
+                "System.Func`2[System.Int32,System.Collections.Generic.IList`1[System.Char]]"),
+            result);
+        result.Warnings.Count.ShouldBe(0);
+        result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(0);
+    }
+    
+    [Fact]
     public async Task ShouldOverrideGlobalBindingWithoutWarning()
     {
         // Given
