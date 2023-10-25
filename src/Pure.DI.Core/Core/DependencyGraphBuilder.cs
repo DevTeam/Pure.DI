@@ -86,15 +86,36 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
                     case INamedTypeSymbol { IsGenericType: true } geneticType:
                     {
                         // Generic
-                        var unboundType = _unboundTypeConstructor.Construct(targetNode.Binding.SemanticModel.Compilation, injection.Type);
-                        var unboundInjection = injection with { Type = unboundType };
-                        if (map.TryGetValue(unboundInjection, out sourceNode))
+                        var isGenericOk = false;
+                        foreach (var item in map)
                         {
-                            var newBinding = CreateGenericBinding(targetNode, injection, sourceNode, ++maxId);
-                            var newNode = CreateNodes(setup, newBinding)
-                                .Single(i => i.Variation == sourceNode.Variation);
-                            map[injection] = newNode;
-                            queue.Enqueue(CreateNewProcessingNode(injection, newNode));
+                            if (!Injection.EqualTags(injection.Tag, item.Key.Tag))
+                            {
+                                continue;
+                            }
+
+                            if (item.Key.Type is not INamedTypeSymbol { IsGenericType: true })
+                            {
+                                continue;
+                            }
+                            
+                            var typeConstructor = _typeConstructorFactory();
+                            if (!typeConstructor.TryBind(item.Key.Type, injection.Type))
+                            {
+                                continue;
+                            }
+
+                            sourceNode = item.Value;
+                            var genericBinding = CreateGenericBinding(targetNode, injection, sourceNode, typeConstructor, ++maxId);
+                            var genericNode = CreateNodes(setup, genericBinding).Single(i => i.Variation == sourceNode.Variation);
+                            map[injection] = genericNode;
+                            queue.Enqueue(CreateNewProcessingNode(injection, genericNode));
+                            isGenericOk = true;
+                            break;
+                        }
+
+                        if (isGenericOk)
+                        {
                             continue;
                         }
 
@@ -260,16 +281,15 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
         DependencyNode targetNode,
         Injection injection,
         DependencyNode sourceNode,
+        ITypeConstructor typeConstructor,
         int newId)
     {
         var semanticModel = targetNode.Binding.SemanticModel;
         var compilation = semanticModel.Compilation;
-        var typeConstructor = _typeConstructorFactory();
-        typeConstructor.Bind(sourceNode.Type, injection.Type);
         var newContracts = sourceNode.Binding.Contracts
             .Select(contract => contract with
             {
-                ContractType = typeConstructor.Construct(semanticModel.Compilation, contract.ContractType),
+                ContractType = injection.Type,
                 Tags = contract.Tags.Select( tag => CreateTag(injection, tag)).Where(tag => tag.HasValue).Select(tag => tag!.Value).ToImmutableArray()
             })
             .ToImmutableArray();
@@ -309,7 +329,7 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
         var typeConstructor = _typeConstructorFactory();
         if (_marker.IsMarkerBased(injection.Type))
         {
-            typeConstructor.Bind(injection.Type, injection.Type);
+            typeConstructor.TryBind(injection.Type, injection.Type);
             sourceType = typeConstructor.Construct(compilation, injection.Type);
         }
         

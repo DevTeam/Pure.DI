@@ -3,17 +3,6 @@ namespace Pure.DI.Core;
 
 internal sealed class ContractsBuilder: IBuilder<ContractsBuildContext, ISet<Injection>>
 {
-    private readonly IMarker _marker;
-    private readonly IUnboundTypeConstructor _unboundTypeConstructor;
-
-    public ContractsBuilder(
-        IMarker marker,
-        IUnboundTypeConstructor unboundTypeConstructor)
-    {
-        _marker = marker;
-        _unboundTypeConstructor = unboundTypeConstructor;
-    }
-
     public ISet<Injection> Build(ContractsBuildContext context)
     {
         var binding = context.Binding;
@@ -28,11 +17,6 @@ internal sealed class ContractsBuilder: IBuilder<ContractsBuildContext, ISet<Inj
         foreach (var contract in binding.Contracts)
         {
             var contractType = contract.ContractType;
-            if (_marker.IsMarkerBased(contractType))
-            {
-                contractType = _unboundTypeConstructor.Construct(binding.SemanticModel.Compilation, contractType);
-            }
-            
             var contractTags = new HashSet<object?>(bindingTags);
             foreach (var tag in contract.Tags)
             {
