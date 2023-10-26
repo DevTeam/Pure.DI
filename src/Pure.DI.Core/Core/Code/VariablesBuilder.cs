@@ -21,7 +21,7 @@ internal class VariablesBuilder : IVariablesBuilder
             while (stack.TryPop(out var currentStatement))
             {
                 var path = currentStatement.GetPath().ToArray();
-                var hasLazy = path.Any(i => i.Current.Node.IsLazy());
+                var hasLazy = path.Any(i => i.Current.IsLazy);
                 switch (currentStatement)
                 {
                     case Block block:
@@ -108,7 +108,7 @@ internal class VariablesBuilder : IVariablesBuilder
     {
         if (node.Lifetime == Lifetime.Transient && !node.IsArg())
         {
-            return new Variable(parent, transientId++, node, injection, new List<IStatement>(), new VariableInfo());
+            return new Variable(parent, transientId++, node, injection, new List<IStatement>(),new VariableInfo(), node.IsLazy());
         }
 
         if (map.TryGetValue(node.Binding, out var variable))
@@ -122,7 +122,7 @@ internal class VariablesBuilder : IVariablesBuilder
             };
         }
 
-        variable = new Variable(parent, node.Binding.Id, node, injection, new List<IStatement>(), new VariableInfo());
+        variable = new Variable(parent, node.Binding.Id, node, injection, new List<IStatement>(), new VariableInfo(), node.IsLazy());
         map.Add(node.Binding, variable);
         return variable;
     }

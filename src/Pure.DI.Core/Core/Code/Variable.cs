@@ -7,6 +7,7 @@ internal record Variable(
         in Injection Injection,
         ICollection<IStatement> Args,
         VariableInfo Info,
+        bool IsLazy,
         string NameOverride = "")
         : IStatement
 {
