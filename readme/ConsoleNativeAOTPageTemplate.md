@@ -22,3 +22,9 @@ The [project file](/samples/ShroedingersCatNativeAOT/ShroedingersCatNativeAOT.cs
     </ItemGroup>
 </Project>
 ```
+
+It contains an additional reference to the NuGet package:
+
+|            |                                                                                                 |                                     |
+|------------|-------------------------------------------------------------------------------------------------|:------------------------------------|
+| Pure.DI    | [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)       | DI Source code generator            |

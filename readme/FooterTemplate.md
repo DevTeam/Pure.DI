@@ -452,10 +452,10 @@ Specifies whether the generated code should be formatted. This option consumes a
 
 ## NuGet packages
 
-|            |                                                                                                 |
-|------------|-------------------------------------------------------------------------------------------------|
-| Pure.DI    | [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)       |
-| Pure.DI.MS | [![NuGet](https://buildstats.info/nuget/Pure.DI.MS)](https://www.nuget.org/packages/Pure.DI.MS) |
+|            |                                                                                                 |                                     |
+|------------|-------------------------------------------------------------------------------------------------|:------------------------------------|
+| Pure.DI    | [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)       | DI Source code generator            |
+| Pure.DI.MS | [![NuGet](https://buildstats.info/nuget/Pure.DI.MS)](https://www.nuget.org/packages/Pure.DI.MS) | Tools for working with Microsoft DI |
 
 ## Requirements for development environments
 

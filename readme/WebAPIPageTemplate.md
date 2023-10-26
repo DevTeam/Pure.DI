@@ -55,9 +55,9 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
 </Project>
 ```
 
-It contains 2 additional references to NuGet packages:
+It contains additional references to NuGet packages:
 
-|            |                                                                                                 |
-|------------|-------------------------------------------------------------------------------------------------|
-| Pure.DI    | [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)       |
-| Pure.DI.MS | [![NuGet](https://buildstats.info/nuget/Pure.DI.MS)](https://www.nuget.org/packages/Pure.DI.MS) |
+|            |                                                                                                 |                                     |
+|------------|-------------------------------------------------------------------------------------------------|:------------------------------------|
+| Pure.DI    | [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)       | DI Source code generator            |
+| Pure.DI.MS | [![NuGet](https://buildstats.info/nuget/Pure.DI.MS)](https://www.nuget.org/packages/Pure.DI.MS) | Tools for working with Microsoft DI |
