@@ -12,17 +12,18 @@ internal sealed class ApiBuilder : IBuilder<Unit, IEnumerable<Source>>
     {
         foreach (var resource in _resources.GetResource("""^[\w\.]+\.g\.cs$"""))
         {
+            SourceText source;
             using (resource)
             {
-                yield return new Source(
-                    resource.Name,
-                    SourceText.From(
-                        resource.Content,
-                        default,
-                        SourceHashAlgorithm.Sha1,
-                        false,
-                        true));
+                source = SourceText.From(
+                    resource.Content,
+                    default,
+                    SourceHashAlgorithm.Sha1,
+                    false,
+                    true);
             }
+            
+            yield return new Source(resource.Name, source);
         }
     }
 }

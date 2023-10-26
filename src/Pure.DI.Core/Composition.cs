@@ -31,18 +31,19 @@ internal partial class Composition
         .Bind<IMetadataSyntaxWalker>().To<MetadataSyntaxWalker>()
         .Bind<IDependencyGraphBuilder>().To<DependencyGraphBuilder>()
         .Bind<ITypeConstructor>().To<TypeConstructor>()
-        .Bind<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>>().To<SetupsBuilder>()
-        .Bind<IBuilder<IEnumerable<SyntaxUpdate>, Unit>>().To<Core.Generator>()
-        .Bind<IBuilder<RewriterContext<MdFactory>, MdFactory>>().To<FactoryTypeRewriter>()
-        .Bind<IBuilder<DependencyGraph, CompositionCode>>(WellknownTag.CompositionBuilder).To<CompositionBuilder>()
-        .Bind<IVariablesBuilder>().To<VariablesBuilder>()
         .Bind<IBuildTools>().To<BuildTools>()
-        .Bind<IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>>>().To<MetadataBuilder>()
-        
+        .Bind<ILogger<TT>>().To<Logger<TT>>()
+        .Bind<IEqualityComparer<string>>().To(_ => StringComparer.InvariantCultureIgnoreCase)
+        .Bind<IResources>().To<Resources>()
+        .Bind<IInformation>().To<Information>()
+        .Bind<IGlobalOptions>().To<GlobalOptions>()
         .Bind<Func<ImmutableArray<byte>, bool>>().To(_ => new Func<ImmutableArray<byte>, bool>(_ => true))
         .Bind<IValidator<DependencyGraph>>().To<DependencyGraphValidator>()
         .Bind<IValidator<MdSetup>>().To<MetadataValidator>()
         .Bind<IApiInvocationProcessor>().To<ApiInvocationProcessor>()
+        
+        // Builders
+        .Bind<IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>>>().To<MetadataBuilder>()
         .Bind<IBuilder<LogEntry, LogInfo>>().To<LogInfoBuilder>()
         .Bind<IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>>>().To<ResolversBuilder>()
         .Bind<IBuilder<ContractsBuildContext, ISet<Injection>>>().To<ContractsBuilder>()
@@ -57,6 +58,11 @@ internal partial class Composition
         .Bind<IBuilder<DpImplementation, IEnumerable<DpImplementation>>>().To<ImplementationVariantsBuilder>()
         .Bind<IBuilder<Unit, IEnumerable<Source>>>().To<ApiBuilder>()
         .Bind<IBuilder<MdSetup, Unit>>().To<CodeBuilder>()
+        .Bind<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>>().To<SetupsBuilder>()
+        .Bind<IBuilder<IEnumerable<SyntaxUpdate>, Unit>>().To<Core.Generator>()
+        .Bind<IBuilder<RewriterContext<MdFactory>, MdFactory>>().To<FactoryTypeRewriter>()
+        .Bind<IBuilder<DependencyGraph, CompositionCode>>(WellknownTag.CompositionBuilder).To<CompositionBuilder>()
+        .Bind<IVariablesBuilder>().To<VariablesBuilder>()
         
         // Code builders
         .Bind<ICodeBuilder<IStatement>>().To<StatementCodeBuilder>()
@@ -84,15 +90,9 @@ internal partial class Composition
 
         // PerResolve
         .DefaultLifetime(Lifetime.PerResolve)
-        .Bind<IResources>().To<Resources>()
         .Bind<Func<string, Regex>>().To(_ => new Func<string, Regex>(value => new Regex(value, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase)))
-        .Bind<IInformation>().To<Information>()
-        .Bind<ILogger<TT>>().To<Logger<TT>>()
         .Bind<IObserver<LogEntry>>().To<LogObserver>()
-        .Bind<IGlobalOptions>().To<GlobalOptions>()
         .Bind<IMarker>().To<Marker>()
         .Bind<IFilter>().To<Filter>()
-        .Bind<IVariator<TT>>().To<Variator<TT>>()
-        .Bind<IUnboundTypeConstructor>().To<UnboundTypeConstructor>()
-        .Bind<IEqualityComparer<string>>().To(_ => StringComparer.InvariantCultureIgnoreCase);
+        .Bind<IVariator<TT>>().To<Variator<TT>>();
 }

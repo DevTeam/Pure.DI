@@ -9,7 +9,6 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
     private readonly IReadOnlyCollection<IBuilder<MdSetup, IEnumerable<DependencyNode>>> _dependencyNodeBuilders;
     private readonly IBuilder<ContractsBuildContext, ISet<Injection>> _contractsBuilder;
     private readonly IMarker _marker;
-    private readonly IUnboundTypeConstructor _unboundTypeConstructor;
     private readonly Func<ITypeConstructor> _typeConstructorFactory;
     private readonly Func<IBuilder<RewriterContext<MdFactory>, MdFactory>> _factoryRewriterFactory;
     private readonly IFilter _filter;
@@ -19,7 +18,6 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
         IReadOnlyCollection<IBuilder<MdSetup, IEnumerable<DependencyNode>>> dependencyNodeBuilders,
         IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
         IMarker marker,
-        IUnboundTypeConstructor unboundTypeConstructor,
         Func<ITypeConstructor> typeConstructorFactory,
         Func<IBuilder<RewriterContext<MdFactory>, MdFactory>> factoryRewriterFactory,
         IFilter filter,
@@ -28,7 +26,6 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
         _dependencyNodeBuilders = dependencyNodeBuilders;
         _contractsBuilder = contractsBuilder;
         _marker = marker;
-        _unboundTypeConstructor = unboundTypeConstructor;
         _typeConstructorFactory = typeConstructorFactory;
         _factoryRewriterFactory = factoryRewriterFactory;
         _filter = filter;
