@@ -16,7 +16,7 @@ internal partial class Program
     {
         _output.WriteLine("Hello!");
 
-        _output.WriteLine("Press enter to exit.");
+        _output.WriteLine("Press the Enter key to exit.");
         _input.ReadLine();
 
         return 0;

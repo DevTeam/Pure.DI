@@ -3,6 +3,7 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <RootNamespace>Build</RootNamespace>
+        <ApplicationIcon>../docs/icon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>

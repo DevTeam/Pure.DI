@@ -8,6 +8,7 @@
         <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <IsPackable>false</IsPackable>
+        <ApplicationIcon>../../docs/icon.ico</ApplicationIcon>
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/DevTeam/Pure.DI.git</RepositoryUrl>
         <PackageProjectUrl>https://github.com/DevTeam/Pure.DI/</PackageProjectUrl>

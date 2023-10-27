@@ -1,6 +1,6 @@
 namespace WeatherForecast;
 
-public class CounterService : ICounterService
+internal class CounterService : ICounterService
 {
     private int _currentCount;
     
