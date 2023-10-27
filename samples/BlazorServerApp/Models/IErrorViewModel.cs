@@ -1,6 +1,6 @@
 namespace BlazorServerApp.Models;
 
-public interface IErrorModel
+public interface IErrorViewModel
 {
     string? RequestId { get; }
     

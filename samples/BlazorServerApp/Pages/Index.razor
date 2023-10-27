@@ -1,4 +1,7 @@
 ﻿@page "/"
+@using Clock.ViewModels
+@using System.ComponentModel
+@inject IClockViewModel ClockViewModel
 
 <PageTitle>Index</PageTitle>
 
@@ -6,4 +9,17 @@
 
 Welcome to your new app.
 
+<hr/>
+
+<p>Date: @ClockViewModel.Date</p>
+<p>Time: @ClockViewModel.Time</p>
+
 <SurveyPrompt Title="How is Blazor working for you?"/>
+
+@code {                             
+    protected override void OnInitialized()
+    {
+        ((INotifyPropertyChanged)ClockViewModel).PropertyChanged += (_, _) => InvokeAsync(StateHasChanged);
+        base.OnInitialized();
+    }
+}

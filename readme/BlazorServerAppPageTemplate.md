@@ -12,6 +12,20 @@ internal partial class Composition: ServiceProviderFactory<Composition>
     private static void Setup() =>
         DI.Setup(nameof(Composition))
             .DependsOn(Base)
+            
+            // View Models
+            .Bind<IClockViewModel>()
+                .To<ClockViewModel>()
+                .Root<IClockViewModel>("ClockViewModel")
+            .Bind<IErrorViewModel>()
+                .To<ErrorViewModel>()
+                .Root<IErrorViewModel>()
+
+            // Services
+            .Bind<ILog<TT>>().To<Log<TT>>()
+            .Bind<TimeSpan>().To(_ => TimeSpan.FromSeconds(1))
+            .Bind<ITimer>().As(Singleton).To<Timer>()
+            .Bind<IClock>().To<SystemClock>()
             .Bind<IWeatherForecastService>()
                 .As(Singleton)
                 .To<WeatherForecastService>()
@@ -19,9 +33,9 @@ internal partial class Composition: ServiceProviderFactory<Composition>
             .Bind<ICounterService>()
                 .To<CounterService>()
                 .Root<ICounterService>()
-            .Bind<IErrorModel>()
-                .To<ErrorModel>()
-                .Root<IErrorModel>();
+            
+            // Infrastructure
+            .Bind<IDispatcher>().To<Dispatcher>();
 }
 ```
 

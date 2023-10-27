@@ -12,6 +12,8 @@
         <InternalsVisibleTo Include="WinFormsApp" />
         <InternalsVisibleTo Include="WinFormsAppNetCore" />
         <InternalsVisibleTo Include="AvaloniaApp" />
+        <InternalsVisibleTo Include="BlazorWebAssemblyApp" />
+        <InternalsVisibleTo Include="BlazorServerApp" />
     </ItemGroup>
 
 </Project>

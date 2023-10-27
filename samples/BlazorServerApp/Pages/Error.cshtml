@@ -1,6 +1,6 @@
 ﻿@page
 @using BlazorServerApp.Models
-@inject IErrorModel ErrorModel
+@inject IErrorViewModel ErrorViewModel
 
 <!DOCTYPE html>
 <html lang="en">
@@ -19,10 +19,10 @@
         <h1 class="text-danger">Error.</h1>
         <h2 class="text-danger">An error occurred while processing your request.</h2>
 
-        @if (ErrorModel.ShowRequestId)
+        @if (ErrorViewModel.ShowRequestId)
         {
             <p>
-                <strong>Request ID:</strong> <code>@ErrorModel.RequestId</code>
+                <strong>Request ID:</strong> <code>@ErrorViewModel.RequestId</code>
             </p>
         }
 

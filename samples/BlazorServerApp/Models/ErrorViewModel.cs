@@ -7,15 +7,15 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 [IgnoreAntiforgeryToken]
-public class ErrorModel : PageModel, IErrorModel
+public class ErrorViewModel : PageModel, IErrorViewModel
 {
     public string? RequestId { get; set; }
 
     public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
-    private readonly ILogger<ErrorModel> _logger;
+    private readonly ILogger<ErrorViewModel> _logger;
 
-    public ErrorModel(ILogger<ErrorModel> logger) => 
+    public ErrorViewModel(ILogger<ErrorViewModel> logger) => 
         _logger = logger;
 
     public void OnGet() => 
