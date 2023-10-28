@@ -5,6 +5,7 @@ namespace Build;
 
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using HostApi;
 using JetBrains.TeamCity.ServiceMessages.Write.Special;
@@ -14,13 +15,16 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
 {
     private readonly Settings _settings;
     private readonly ITeamCityWriter _teamCityWriter;
+    private readonly INuGet _nuGet;
 
     public PackTarget(
         Settings settings,
-        ITeamCityWriter teamCityWriter)
+        ITeamCityWriter teamCityWriter,
+        INuGet nuGet)
     {
         _settings = settings;
         _teamCityWriter = teamCityWriter;
+        _nuGet = nuGet;
         Command = new Command("pack", "Creates NuGet packages");
         Command.SetHandler(RunAsync);
         Command.AddAlias("p");
@@ -28,7 +32,8 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
     
     public Command Command { get; }
 
-    public Task<IReadOnlyCollection<string>> RunAsync(InvocationContext ctx)
+    [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
+    public async Task<IReadOnlyCollection<string>> RunAsync(InvocationContext ctx)
     {
         var packages = new List<string>();
         
@@ -38,12 +43,20 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
         var generatorPackages = _settings.CodeAnalysis
             .Select(codeAnalysis => CreateGeneratorPackage(generatorPackageVersion, codeAnalysis, generatorProjectDirectory));
 
-        var generatorPackage = MergeGeneratorPackages(generatorPackageVersion, generatorPackages, generatorProjectDirectory);
+        var generatorPackage = Path.GetFullPath(MergeGeneratorPackages(generatorPackageVersion, generatorPackages, generatorProjectDirectory));
         _teamCityWriter.PublishArtifact($"{generatorPackage} => .");
         packages.Add(generatorPackage);
+        DeleteNuGetPackageFromCache("Pure.DI", generatorPackageVersion, Path.GetDirectoryName(generatorPackage)!);
         
         // Libraries
-        var libraries = new[] { "Pure.DI.MS" };
+        var libraries = new[]
+        {
+            new Library(
+                "Pure.DI.MS",
+                new []{ "net8.0", "net7.0" },
+                new []{ "webapi" })
+        };
+        
         var libraryPackageVersion = generatorPackageVersion;
         foreach (var library in libraries)
         {
@@ -53,23 +66,132 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
                 ("version", libraryPackageVersion.ToString())
             };
 
-            var libraryProjectDirectory = Path.Combine("src", library);
-            var libraryPackResult = new DotNetPack()
+            var libraryProjectDirectory = Path.GetFullPath(Path.Combine("src", library.Name));
+            var libraryPackResult = await new DotNetPack()
                 .WithProps(props)
                 .WithConfiguration(_settings.Configuration)
                 .WithNoBuild(true)
                 .WithNoLogo(true)
-                .WithProject(Path.Combine(libraryProjectDirectory, $"{library}.csproj"))
-                .Build();
+                .WithProject(Path.Combine(libraryProjectDirectory, $"{library.Name}.csproj"))
+                .BuildAsync();
         
             Assertion.Succeed(libraryPackResult);
         
-            var libraryPackage = Path.Combine(libraryProjectDirectory, "bin", _settings.Configuration, $"{library}.{libraryPackageVersion.ToString()}.nupkg");
+            var libraryPackageDir = Path.Combine(libraryProjectDirectory, "bin", _settings.Configuration);
+            var libraryPackageName = $"{library.Name}.{libraryPackageVersion.ToString()}.nupkg";
+            var libraryPackage = Path.Combine(libraryPackageDir, libraryPackageName);
+            foreach (var templateName in library.TemplateNames)
+            foreach (var framework in library.Frameworks)
+            {
+                var tempDir = Path.Combine(Path.GetTempPath(), $"Pure.DI{Guid.NewGuid().ToString()[..4]}");
+                Directory.CreateDirectory(tempDir);
+                try
+                {
+                    var exitCode = await  new DotNetNew(
+                            templateName,
+                            "-n",
+                            "MyApp",
+                            "-o",
+                            tempDir,
+                            "--force",
+                            "-f", framework)
+                        .RunAsync();
+                    
+                    if (exitCode != 0)
+                    {
+                        throw new InvalidOperationException($"Cannot create app from the template {templateName}.");
+                    }
+
+                    exitCode = await new DotNetCustom(
+                            "add",
+                            Path.Combine(tempDir),
+                            "package",
+                            "Pure.DI",
+                            "-n",
+                            "-v",
+                            libraryPackageVersion.ToString(),
+                            "-f",
+                            framework,
+                            "-s",
+                            Path.GetDirectoryName(generatorPackage)!)
+                        .RunAsync();
+                    
+                    if (exitCode != 0)
+                    {
+                        throw new InvalidOperationException("Cannot add the NuGet package reference.");
+                    }
+
+                    DeleteNuGetPackageFromCache(library.Name, libraryPackageVersion, libraryPackageDir);
+                    
+                    exitCode = await new DotNetCustom(
+                            "add",
+                            Path.Combine(tempDir),
+                            "package",
+                            library.Name,
+                            "-n",
+                            "-v",
+                            libraryPackageVersion.ToString(),
+                            "-s",
+                            libraryPackageDir,
+                            "-f",
+                            framework)
+                        .RunAsync();
+                    
+                    if (exitCode != 0)
+                    {
+                        throw new InvalidOperationException("Cannot add the NuGet package reference.");
+                    }
+
+                    exitCode = await new DotNetRestore()
+                        .WithWorkingDirectory(tempDir)
+                        .WithForce(true)
+                        .WithNoCache(true)
+                        .AddSources(Path.GetDirectoryName(generatorPackage)!, libraryPackageDir)
+                        .RunAsync();
+                    
+                    if (exitCode != 0)
+                    {
+                        throw new InvalidOperationException("Cannot restore NuGet package.");
+                    }
+                    
+                    exitCode = await new DotNetBuild().WithWorkingDirectory(tempDir).WithNoRestore(true).RunAsync();
+                    if (exitCode != 0)
+                    {
+                        throw new InvalidOperationException("Cannot build.");
+                    }
+                }
+                finally
+                {
+                    Directory.Delete(tempDir, true);
+                }
+            }
+            
             _teamCityWriter.PublishArtifact($"{libraryPackage} => .");
 
         }
-        return Task.FromResult<IReadOnlyCollection<string>>(packages.AsReadOnly());
+        
+        return packages;
     }
+
+    private void DeleteNuGetPackageFromCache(string packageId, NuGetVersion minVersion, params string[] sources)
+    {
+        var paths = _nuGet.Restore(
+                new NuGetRestoreSettings(packageId)
+                    .WithSources(sources)
+                    .WithVersionRange(new VersionRange(minVersion)))
+            .Where(i => i.Name == packageId)
+            .Select(i => i.Path);
+
+        foreach (var path in paths)
+        {
+            Directory.Delete(path, true);
+        }
+    }
+
+    private record Library(
+        string Name,
+        string[] Frameworks,
+        string[] TemplateNames);
     
     private string CreateGeneratorPackage(NuGetVersion packageVersion, CodeAnalysis codeAnalysis, string projectDirectory)
     {

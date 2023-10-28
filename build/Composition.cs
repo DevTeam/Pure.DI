@@ -2,6 +2,7 @@
 namespace Build;
 
 using System.CommandLine;
+using HostApi;
 using Pure.DI;
 
 internal partial class Composition
@@ -12,6 +13,7 @@ internal partial class Composition
         DI.Setup("Composition")
             .Arg<Settings>("settings")
             .DefaultLifetime(Lifetime.PerResolve)
+            .Bind<INuGet>().As(Lifetime.PerResolve).To(_ => GetService<INuGet>())
             .Bind<JetBrains.TeamCity.ServiceMessages.Write.Special.ITeamCityWriter>().As(Lifetime.PerResolve).To(_ => GetService<JetBrains.TeamCity.ServiceMessages.Write.Special.ITeamCityWriter>())
             .Bind<ITarget<int>>().Bind<ICommandProvider>().Tags(nameof(ReadmeTarget)).To<ReadmeTarget>()
             .Bind<ITarget<IReadOnlyCollection<string>>>().Bind<ICommandProvider>().Tags(nameof(PackTarget)).To<PackTarget>()

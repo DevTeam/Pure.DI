@@ -3,6 +3,7 @@
     <PropertyGroup>
         <Library>MS</Library>
         <Description>Tools for working with Microsoft DI using $(BasePackageId). $(Description)</Description>
+        <DefineConstants>$(DefineConstants);PUREDI_NET_ANY</DefineConstants>
     </PropertyGroup>
 
     <Import Project="..\Library.props"/>
@@ -13,4 +14,15 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0-rc.2.23479.6" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="any\Pure.DI\MS\ServiceCollectionFactory.g.cs">
+        <Pack>true</Pack>
+        <PackagePath>contentFiles/cs</PackagePath>
+      </Compile>
+      <Compile Update="any\Pure.DI\MS\ServiceProviderFactory.g.cs">
+        <Pack>true</Pack>
+        <PackagePath>contentFiles/cs</PackagePath>
+      </Compile>
+    </ItemGroup>
+    
 </Project>

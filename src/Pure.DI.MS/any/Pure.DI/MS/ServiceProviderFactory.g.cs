@@ -4,6 +4,8 @@
 namespace Pure.DI.MS;
 
 using System;
+using System.Linq.Expressions;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -27,6 +29,11 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<IServiceCollection>
     where TComposition: ServiceProviderFactory<TComposition>
 {
+    private static readonly Type KeyedServiceProviderType = Type.GetType("Microsoft.Extensions.DependencyInjection.IKeyedServiceProvider, Microsoft.Extensions.DependencyInjection.Abstractions, Culture=neutral, PublicKeyToken=adb9793829ddae60", false);
+    private static readonly MethodInfo GetRequiredKeyedServiceMethod = KeyedServiceProviderType?.GetMethod("GetRequiredKeyedService");
+    private static readonly ParameterExpression TypeParameter = Expression.Parameter(typeof(Type));
+    private static readonly ParameterExpression TagParameter = Expression.Parameter(typeof(object));
+    
     /// <summary>
     /// The name of the Pure.DI setup to use as a dependency in other setups.
     /// <example>
@@ -47,7 +54,7 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
     /// <summary>
     /// <see cref="System.IServiceProvider"/> instance for resolving external dependencies.
     /// </summary>
-    private volatile IServiceProvider? _serviceProvider;
+    private volatile Func<Type, object, object>? _serviceProvider;
     
     /// <summary>
     /// DI setup hints.
@@ -83,8 +90,13 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
     public IServiceProvider CreateServiceProvider(IServiceCollection services)
     {
         var serviceProvider = services.BuildServiceProvider();
-        // Saves the service provider to use it to resolve dependencies external to this composition from the service provider.
-        _serviceProvider ??= services.BuildServiceProvider();
+        _serviceProvider ??= 
+            KeyedServiceProviderType?.IsAssignableFrom(serviceProvider.GetType()) == true
+                ? Expression.Lambda<Func<Type, object, object>>(
+                        Expression.Call(Expression.Constant(serviceProvider), GetRequiredKeyedServiceMethod, TypeParameter, TagParameter),
+                        TypeParameter,
+                        TagParameter).Compile()
+                : new Func<Type, object, object>((type, tag) => serviceProvider.GetService(type) ?? throw new InvalidOperationException($"No service for type '{type}' has been registered."));
         return serviceProvider;
     }
 
@@ -96,9 +108,9 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
     /// <typeparam name="T">Dependency resolution type.</typeparam>
     /// <returns>Resolved dependency instance.</returns>
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    protected T OnCannotResolve<T>(object? tag, Lifetime lifetime) =>
-        _serviceProvider.GetRequiredKeyedService<T>(tag);
-    
+    protected T OnCannotResolve<T>(object? tag, Lifetime lifetime) => 
+        (T)_serviceProvider(typeof(T), tag);
+
     /// <summary>
     /// Registers a composition resolver for use in a service collection <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/>.
     /// </summary>
