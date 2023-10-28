@@ -1,4 +1,4 @@
-#### Wep API
+#### Blazor Server application
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/BlazorServerApp)
 
@@ -54,8 +54,9 @@ The [project file](/samples/BlazorServerApp/BlazorServerApp.csproj) looks like t
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
+
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
@@ -67,6 +68,7 @@ The [project file](/samples/BlazorServerApp/BlazorServerApp.csproj) looks like t
         </PackageReference>
         <PackageReference Include="Pure.DI.MS" Version="2.0.22" />
     </ItemGroup>
+
 </Project>
 ```
 

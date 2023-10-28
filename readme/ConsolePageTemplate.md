@@ -1,4 +1,4 @@
-#### Console application
+#### Schrödinger's cat console application
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](/samples/ShroedingersCat)
 
@@ -93,9 +93,10 @@ The [project file](/samples/ShroedingersCat/ShroedingersCat.csproj) looks like t
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
+
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>$(targetFrameworkVersion)</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
@@ -104,6 +105,7 @@ The [project file](/samples/ShroedingersCat/ShroedingersCat.csproj) looks like t
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
+
 </Project>
 ```
 

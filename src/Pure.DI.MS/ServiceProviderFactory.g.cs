@@ -97,7 +97,7 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
     /// <returns>Resolved dependency instance.</returns>
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     protected T OnCannotResolve<T>(object? tag, Lifetime lifetime) =>
-        _serviceProvider.GetRequiredService<T>();
+        _serviceProvider.GetRequiredKeyedService<T>(tag);
     
     /// <summary>
     /// Registers a composition resolver for use in a service collection <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/>.
@@ -111,8 +111,8 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     protected static void OnNewRoot<TContract, T>(
         IResolver<TComposition, TContract> resolver,
-        string name, object? tag, Lifetime lifetime) => 
-        ServiceCollectionFactory.AddResolver(resolver);
+        string name, object tag, Lifetime lifetime) => 
+        ServiceCollectionFactory.AddResolver(resolver, tag);
 }
 
 #pragma warning restore

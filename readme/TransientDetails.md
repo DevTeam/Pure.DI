@@ -62,16 +62,16 @@ classDiagram
 ```c#
 partial class Transient
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM10D27di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM10D28di;
   
   public Transient()
   {
-    _disposableSingletonsM10D27di = new global::System.IDisposable[0];
+    _disposableSingletonsM10D28di = new global::System.IDisposable[0];
   }
   
   internal Transient(Transient parent)
   {
-    _disposableSingletonsM10D27di = new global::System.IDisposable[0];
+    _disposableSingletonsM10D28di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -80,34 +80,34 @@ partial class Transient
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM10D27di26 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di25 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di24 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di23 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di22 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di21 = new Pure.DI.Benchmarks.Model.Service2(transientM10D27di22, transientM10D27di23, transientM10D27di24, transientM10D27di25, transientM10D27di26);
-      var transientM10D27di20 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di19 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di18 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di17 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di16 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di15 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di14 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di13 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di12 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di11 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di10 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di9 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di8 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di7 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di6 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di5 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM10D27di4 = new Pure.DI.Benchmarks.Model.Service2(transientM10D27di6, transientM10D27di7, transientM10D27di8, transientM10D27di9, transientM10D27di10);
-      var transientM10D27di3 = new Pure.DI.Benchmarks.Model.Service2(transientM10D27di11, transientM10D27di12, transientM10D27di13, transientM10D27di14, transientM10D27di15);
-      var transientM10D27di2 = new Pure.DI.Benchmarks.Model.Service2(transientM10D27di16, transientM10D27di17, transientM10D27di18, transientM10D27di19, transientM10D27di20);
-      var transientM10D27di1 = new Pure.DI.Benchmarks.Model.Service1(transientM10D27di21);
-      var transientM10D27di0 = new Pure.DI.Benchmarks.Model.CompositionRoot(transientM10D27di1, transientM10D27di2, transientM10D27di3, transientM10D27di4, transientM10D27di5);
-      return transientM10D27di0;
+      var transientM10D28di26 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di25 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di24 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di23 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di22 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di21 = new Pure.DI.Benchmarks.Model.Service2(transientM10D28di22, transientM10D28di23, transientM10D28di24, transientM10D28di25, transientM10D28di26);
+      var transientM10D28di20 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di19 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di18 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di17 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di16 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di15 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di14 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di13 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di12 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di11 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di10 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di9 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di8 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di7 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di6 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di5 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM10D28di4 = new Pure.DI.Benchmarks.Model.Service2(transientM10D28di6, transientM10D28di7, transientM10D28di8, transientM10D28di9, transientM10D28di10);
+      var transientM10D28di3 = new Pure.DI.Benchmarks.Model.Service2(transientM10D28di11, transientM10D28di12, transientM10D28di13, transientM10D28di14, transientM10D28di15);
+      var transientM10D28di2 = new Pure.DI.Benchmarks.Model.Service2(transientM10D28di16, transientM10D28di17, transientM10D28di18, transientM10D28di19, transientM10D28di20);
+      var transientM10D28di1 = new Pure.DI.Benchmarks.Model.Service1(transientM10D28di21);
+      var transientM10D28di0 = new Pure.DI.Benchmarks.Model.CompositionRoot(transientM10D28di1, transientM10D28di2, transientM10D28di3, transientM10D28di4, transientM10D28di5);
+      return transientM10D28di0;
     }
   }
   #endregion
@@ -119,7 +119,7 @@ partial class Transient
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>()
   {
-    return ResolverM10D27di<T>.Value.Resolve(this);
+    return ResolverM10D28di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -128,7 +128,7 @@ partial class Transient
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>(object? tag)
   {
-    return ResolverM10D27di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM10D28di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -137,10 +137,10 @@ partial class Transient
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM10D27di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM10D27di;
+    var index = (int)(_bucketSizeM10D28di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM10D28di;
     do {
-      ref var pair = ref _bucketsM10D27di[index];
+      ref var pair = ref _bucketsM10D28di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -156,10 +156,10 @@ partial class Transient
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM10D27di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM10D27di;
+    var index = (int)(_bucketSizeM10D28di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM10D28di;
     do {
-      ref var pair = ref _bucketsM10D27di[index];
+      ref var pair = ref _bucketsM10D28di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -223,27 +223,27 @@ partial class Transient
         "  Transient ..> CompositionRoot : ICompositionRoot Root";
   }
   
-  private readonly static int _bucketSizeM10D27di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>[] _bucketsM10D27di;
+  private readonly static int _bucketSizeM10D28di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>[] _bucketsM10D28di;
   
   
   static Transient()
   {
-    var valResolverM10D27di_0000 = new ResolverM10D27di_0000();
-    ResolverM10D27di<Pure.DI.Benchmarks.Model.ICompositionRoot>.Value = valResolverM10D27di_0000;
-    _bucketsM10D27di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Transient, object>>.Create(
+    var valResolverM10D28di_0000 = new ResolverM10D28di_0000();
+    ResolverM10D28di<Pure.DI.Benchmarks.Model.ICompositionRoot>.Value = valResolverM10D28di_0000;
+    _bucketsM10D28di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Transient, object>>.Create(
       1,
-      out _bucketSizeM10D27di,
+      out _bucketSizeM10D28di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>(typeof(Pure.DI.Benchmarks.Model.ICompositionRoot), valResolverM10D27di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>(typeof(Pure.DI.Benchmarks.Model.ICompositionRoot), valResolverM10D28di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM10D27di<T>: global::Pure.DI.IResolver<Transient, T>
+  private sealed class ResolverM10D28di<T>: global::Pure.DI.IResolver<Transient, T>
   {
-    public static global::Pure.DI.IResolver<Transient, T> Value = new ResolverM10D27di<T>();
+    public static global::Pure.DI.IResolver<Transient, T> Value = new ResolverM10D28di<T>();
     
     public T Resolve(Transient composite)
     {
@@ -256,7 +256,7 @@ partial class Transient
     }
   }
   
-  private sealed class ResolverM10D27di_0000: global::Pure.DI.IResolver<Transient, Pure.DI.Benchmarks.Model.ICompositionRoot>
+  private sealed class ResolverM10D28di_0000: global::Pure.DI.IResolver<Transient, Pure.DI.Benchmarks.Model.ICompositionRoot>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.Benchmarks.Model.ICompositionRoot Resolve(Transient composition)

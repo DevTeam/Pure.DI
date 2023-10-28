@@ -34,8 +34,9 @@ The [project file](/samples/WebApp/WebApp.csproj) looks like this:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
+
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>$(targetFrameworkVersion)</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
@@ -47,6 +48,7 @@ The [project file](/samples/WebApp/WebApp.csproj) looks like this:
         </PackageReference>
         <PackageReference Include="Pure.DI.MS" Version="$(version)" />
     </ItemGroup>
+
 </Project>
 ```
 

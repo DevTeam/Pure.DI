@@ -37,8 +37,9 @@ The [project file](/samples/GrpcService/GrpcService.csproj) looks like this:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
+
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>$(targetFrameworkVersion)</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
@@ -49,9 +50,8 @@ The [project file](/samples/GrpcService/GrpcService.csproj) looks like this:
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Pure.DI.MS" Version="$(version)" />
-        <Protobuf Include="Protos\greet.proto" GrpcServices="Server"/>
-        <PackageReference Include="Grpc.AspNetCore" Version="2.58.0" />
     </ItemGroup>
+
 </Project>
 ```
 

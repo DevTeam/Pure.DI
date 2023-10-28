@@ -37,8 +37,9 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk.Web">
+
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
@@ -49,9 +50,8 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Pure.DI.MS" Version="2.0.22" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.7" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
+
 </Project>
 ```
 

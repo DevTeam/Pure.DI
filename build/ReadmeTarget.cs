@@ -229,7 +229,9 @@ internal class ReadmeTarget : ITarget<int>, ICommandProvider
                 if (readmeFile.EndsWith("PageTemplate.md"))
                 {
                     var content = await File.ReadAllTextAsync(readmeFile);
-                    content = content.Replace("$(version)", packageVersion);
+                    content = content
+                        .Replace("$(version)", packageVersion)
+                        .Replace("$(targetFrameworkVersion)", "net8.0");
                     await File.WriteAllTextAsync(readmeFile.Replace("PageTemplate.md", ".md"), content);
                 }
                 

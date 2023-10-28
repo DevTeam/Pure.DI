@@ -84,7 +84,7 @@ The [project file](/samples/ShroedingersCatTopLevelStatements/ShroedingersCatTop
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>$(targetFrameworkVersion)</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>

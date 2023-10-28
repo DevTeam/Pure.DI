@@ -95,8 +95,9 @@ The [project file](/samples/AvaloniaApp/AvaloniaApp.csproj) looks like this:
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
+
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>$(targetFrameworkVersion)</TargetFramework>
         <OutputType>WinExe</OutputType>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -108,12 +109,8 @@ The [project file](/samples/AvaloniaApp/AvaloniaApp.csproj) looks like this:
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Avalonia" Version="11.0.5"/>
-        <PackageReference Include="Avalonia.Desktop" Version="11.0.5"/>
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.5"/>
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.5"/>
-        ...
     </ItemGroup>
+
 </Project>
 ```
 
