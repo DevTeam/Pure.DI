@@ -3,7 +3,7 @@
     <PropertyGroup>
         <BasePackageId>Pure.DI</BasePackageId>
         <LangVersion>11</LangVersion>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

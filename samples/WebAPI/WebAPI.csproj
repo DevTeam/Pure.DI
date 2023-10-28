@@ -10,7 +10,7 @@
         <Compile Include="..\..\src\Pure.DI.MS\ServiceProviderFactory.g.cs">
             <Link>ServiceProviderFactory.g.cs</Link>
         </Compile>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.13" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0-rc.2.23480.2" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
     </ItemGroup>
 
