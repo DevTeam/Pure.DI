@@ -30,39 +30,45 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
 
     public Task<IReadOnlyCollection<string>> RunAsync(InvocationContext ctx)
     {
-        var result = new List<string>();
+        var packages = new List<string>();
         
-        // Pure.DI package
-        var packageVersion = _settings.VersionOverride ?? Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI"), _settings.VersionRange);
+        // Pure.DI generator package
+        var generatorPackageVersion = _settings.VersionOverride ?? Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI"), _settings.VersionRange);
         var generatorProjectDirectory = Path.Combine("src", "Pure.DI");
         var generatorPackages = _settings.CodeAnalysis
-            .Select(codeAnalysis => CreateGeneratorPackage(packageVersion, codeAnalysis, generatorProjectDirectory));
+            .Select(codeAnalysis => CreateGeneratorPackage(generatorPackageVersion, codeAnalysis, generatorProjectDirectory));
 
-        var generatorPackage = MergeGeneratorPackages(packageVersion, generatorPackages, generatorProjectDirectory);
+        var generatorPackage = MergeGeneratorPackages(generatorPackageVersion, generatorPackages, generatorProjectDirectory);
         _teamCityWriter.PublishArtifact($"{generatorPackage} => .");
-        result.Add(generatorPackage);
+        packages.Add(generatorPackage);
         
-        // Pure.DI.MS package
-        var props = new[]
+        // Libraries
+        var libraries = new[] { "Pure.DI.MS" };
+        var libraryPackageVersion = generatorPackageVersion;
+        foreach (var library in libraries)
         {
-            ("configuration", _settings.Configuration),
-            ("version", packageVersion.ToString())
-        };
+            var props = new[]
+            {
+                ("configuration", _settings.Configuration),
+                ("version", libraryPackageVersion.ToString())
+            };
 
-        var msDIProjectDirectory = Path.Combine("src", "Pure.DI.MS");
-        var msDIPackResult = new DotNetPack()
-            .WithProps(props)
-            .WithConfiguration(_settings.Configuration)
-            .WithNoBuild(true)
-            .WithNoLogo(true)
-            .WithProject(Path.Combine(msDIProjectDirectory, "Pure.DI.MS.csproj"))
-            .Build();
+            var libraryProjectDirectory = Path.Combine("src", library);
+            var libraryPackResult = new DotNetPack()
+                .WithProps(props)
+                .WithConfiguration(_settings.Configuration)
+                .WithNoBuild(true)
+                .WithNoLogo(true)
+                .WithProject(Path.Combine(libraryProjectDirectory, $"{library}.csproj"))
+                .Build();
         
-        Assertion.Succeed(msDIPackResult);
+            Assertion.Succeed(libraryPackResult);
         
-        var msDIPackage = Path.Combine(msDIProjectDirectory, "bin", _settings.Configuration, $"Pure.DI.MS.{packageVersion.ToString()}.nupkg");
-        _teamCityWriter.PublishArtifact($"{msDIPackage} => .");
-        return Task.FromResult<IReadOnlyCollection<string>>(result.AsReadOnly());
+            var libraryPackage = Path.Combine(libraryProjectDirectory, "bin", _settings.Configuration, $"{library}.{libraryPackageVersion.ToString()}.nupkg");
+            _teamCityWriter.PublishArtifact($"{libraryPackage} => .");
+
+        }
+        return Task.FromResult<IReadOnlyCollection<string>>(packages.AsReadOnly());
     }
     
     private string CreateGeneratorPackage(NuGetVersion packageVersion, CodeAnalysis codeAnalysis, string projectDirectory)
