@@ -36,7 +36,11 @@ internal class CodeBuilder: IBuilder<MdSetup, Unit>
     
     public Unit Build(MdSetup setup)
     {
-        _metadataValidator.Validate(setup);
+        if (!_metadataValidator.Validate(setup))
+        {
+            return Unit.Shared;
+        }
+
         _cancellationToken.ThrowIfCancellationRequested();
         var dependencyGraph = _dependencyGraphBuilder.Build(setup);
         foreach (var graphObserver in _observersProvider.GetObservers<DependencyGraph>())
@@ -49,7 +53,10 @@ internal class CodeBuilder: IBuilder<MdSetup, Unit>
         dependencyGraph = dependencyGraph with { Roots = roots };
 
         _cancellationToken.ThrowIfCancellationRequested();
-        _dependencyGraphValidator.Validate(dependencyGraph);
+        if (!_dependencyGraphValidator.Validate(dependencyGraph))
+        {
+            return Unit.Shared;
+        }
 
         _cancellationToken.ThrowIfCancellationRequested();
         var composition = _compositionBuilder.Build(dependencyGraph);

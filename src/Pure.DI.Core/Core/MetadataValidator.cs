@@ -8,7 +8,7 @@ internal sealed class MetadataValidator : IValidator<MdSetup>
 
     public MetadataValidator(ILogger<MetadataValidator> logger) => _logger = logger;
 
-    public void Validate(in MdSetup setup)
+    public bool Validate(in MdSetup setup)
     {
         if (setup.Kind == CompositionKind.Public && !setup.Roots.Any())
         {
@@ -19,6 +19,11 @@ internal sealed class MetadataValidator : IValidator<MdSetup>
             .Aggregate(
                 true, 
                 (current, binding) => current & Validate(binding));
+
+        if (!isValid)
+        {
+            return false;
+        }
 
         foreach (var routeGroups in setup.Roots.GroupBy(root => new Injection(root.RootType, root.Tag?.Value)))
         {
@@ -39,6 +44,8 @@ internal sealed class MetadataValidator : IValidator<MdSetup>
         {
             throw HandledException.Shared;
         }
+
+        return true;
     }
 
     [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]
@@ -71,10 +78,15 @@ internal sealed class MetadataValidator : IValidator<MdSetup>
                 }
             }
         }
-        
+
         if (implementationType == default || semanticModel == default)
         {
             throw new CompileErrorException("Invalid binding due to construction failure.", location, LogId.ErrorInvalidMetadata);
+        }
+        
+        if (implementationType is IErrorTypeSymbol)
+        {
+            return false;
         }
         
         var supportedContracts = new HashSet<ITypeSymbol>(GetBaseTypes(implementationType), SymbolEqualityComparer.Default) { implementationType };

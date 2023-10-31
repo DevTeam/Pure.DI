@@ -6,6 +6,7 @@ namespace Pure.DI
 {
     internal static class Default
     {
+        [global::System.Diagnostics.Conditional("A2768DE22DE3E430C9653990D516CC9B")]
         private static void Setup()
         {
             DI.Setup("", CompositionKind.Global)
@@ -36,8 +37,6 @@ namespace Pure.DI
                         ctx.Inject<global::System.Func<TT>>(ctx.Tag, out func);
                         return new global::System.Lazy<TT>(func, true);
                     })
-#endif              
-#if NETSTANDARD || NET || NETCOREAPP
                 .Bind<global::System.Lazy<TT, TT1>>()
                     .To(ctx =>
                     {
@@ -47,8 +46,7 @@ namespace Pure.DI
                         ctx.Inject<TT1>(ctx.Tag, out metadata);
                         return new global::System.Lazy<TT, TT1>(func, metadata, true);
                     })
-#endif
-
+#endif              
                 // Collections
 #if NETSTANDARD2_1 || NETCOREAPP2_1_OR_GREATER
                 .Bind<global::System.Memory<TT>>()

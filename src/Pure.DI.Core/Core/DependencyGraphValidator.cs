@@ -14,13 +14,13 @@ internal sealed class DependencyGraphValidator: IValidator<DependencyGraph>
         _cancellationToken = cancellationToken;
     }
 
-    public void Validate(in DependencyGraph dependencyGraph)
+    public bool Validate(in DependencyGraph dependencyGraph)
     {
         var graph = dependencyGraph.Graph;
         var isValid = dependencyGraph.IsValid;
         if (isValid)
         {
-            return;
+            return true;
         }
         
         var isErrorReported = false;
