@@ -47,7 +47,6 @@ internal class BenchmarksTarget: ITarget<int>, ICommandProvider
         
             var benchmark = new DotNetRun()
                 .WithProject(Path.Combine("benchmarks", "Pure.DI.Benchmarks", "Pure.DI.Benchmarks.csproj"))
-                .WithFramework("net7.0")
                 .WithConfiguration(_settings.Configuration)
                 .WithArgs("--artifacts", artifactsDirectory, "--", "--filter")
                 .AddArgs(Reports.Select(filter => $"*{filter}*").ToArray());
