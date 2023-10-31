@@ -44,14 +44,16 @@ public partial class Func : BenchmarkBase
     public ICompositionRoot PureDIByCR() => Root;
 
     [Benchmark(Description = "Hand Coded", Baseline = true)]
-    public ICompositionRoot HandCoded() =>
-        new CompositionRoot(
-            new Service1(
-                new Service2Func(() => new Service3())),
-            new Service2Func(() => new Service3()),
-            new Service2Func(() => new Service3()),
-            new Service2Func(() => new Service3()),
+    public ICompositionRoot HandCoded()
+    {
+        var func = () => new Service3();
+        return new CompositionRoot(
+            new Service1(new Service2Func(func)),
+            new Service2Func(func),
+            new Service2Func(func),
+            new Service2Func(func),
             new Service3());
+    }
 
     private static readonly Func<IService3> Service3Factory = () => new Service3();
 }

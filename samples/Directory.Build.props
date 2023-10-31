@@ -1,9 +1,0 @@
-﻿<Project>
-    <Import Project="..\Directory.Build.props"/>
-
-    <PropertyGroup>
-        <ApplicationIcon>../../docs/icon.ico</ApplicationIcon>
-    </PropertyGroup>
-    
-</Project>
-
