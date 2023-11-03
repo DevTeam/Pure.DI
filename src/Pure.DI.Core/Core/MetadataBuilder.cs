@@ -105,7 +105,7 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
     private void MergeSetups(IEnumerable<MdSetup> setups, out MdSetup mergedSetup, bool resolveDependsOn)
     {
         SyntaxNode? source = default;
-        var name = new CompositionName("Composition", "");
+        var name = new CompositionName("Composition", "", default);
         var kind = CompositionKind.Global;
         var settings = new Hints();
         var bindingsBuilder = ImmutableArray.CreateBuilder<MdBinding>(64);

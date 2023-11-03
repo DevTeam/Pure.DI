@@ -29,7 +29,7 @@ internal sealed class MetadataValidator : IValidator<MdSetup>
             && (!SyntaxFacts.IsValidIdentifier(setup.Name.ClassName)
                 || !IsValidOrEmptyIdentifier(setup.Name.Namespace.Replace('.', '_'))))
         {
-            _logger.CompileError($"Invalid composition type name \"{setup.Name}\".", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+            _logger.CompileError($"Invalid composition type name \"{setup.Name}\".", (setup.Name.Source ?? setup.Source).GetLocation(), LogId.ErrorInvalidMetadata);
             isValid = false;
         }
 

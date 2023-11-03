@@ -61,7 +61,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                     case nameof(IBinding.As):
                         if (invocation.ArgumentList.Arguments is [{ Expression: { } lifetimeExpression }])
                         {
-                            metadataVisitor.VisitLifetime(new MdLifetime(semanticModel, invocation, semanticModel.GetRequiredConstantValue<Lifetime>(lifetimeExpression)));
+                            metadataVisitor.VisitLifetime(new MdLifetime(semanticModel, invocation.ArgumentList, semanticModel.GetRequiredConstantValue<Lifetime>(lifetimeExpression)));
                         }
 
                         break;
@@ -88,8 +88,8 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                             case [{ Expression: { } publicCompositionType }]:
                                 metadataVisitor.VisitSetup(
                                     new MdSetup(
-                                        invocation,
-                                        CreateCompositionName(semanticModel.GetRequiredConstantValue<string>(publicCompositionType), @namespace),
+                                        invocation.ArgumentList,
+                                        CreateCompositionName(semanticModel.GetRequiredConstantValue<string>(publicCompositionType), @namespace, invocation.ArgumentList),
                                         ImmutableArray<MdUsingDirectives>.Empty,
                                         CompositionKind.Public,
                                         GetSettings(invocation),
@@ -104,8 +104,8 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                             case [{ Expression: { } publicCompositionType }, { Expression: { } kindExpression }]:
                                 metadataVisitor.VisitSetup(
                                     new MdSetup(
-                                        invocation,
-                                        CreateCompositionName(semanticModel.GetRequiredConstantValue<string>(publicCompositionType), @namespace),
+                                        invocation.ArgumentList,
+                                        CreateCompositionName(semanticModel.GetRequiredConstantValue<string>(publicCompositionType), @namespace, invocation.ArgumentList),
                                         ImmutableArray<MdUsingDirectives>.Empty,
                                         semanticModel.GetRequiredConstantValue<CompositionKind>(kindExpression),
                                         GetSettings(invocation),
@@ -127,7 +127,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                     case nameof(IConfiguration.DefaultLifetime):
                         if (invocation.ArgumentList.Arguments is [{ Expression: { } defaultLifetimeSyntax }])
                         {
-                            metadataVisitor.VisitDefaultLifetime(new MdDefaultLifetime(new MdLifetime(semanticModel, invocation, semanticModel.GetRequiredConstantValue<Lifetime>(defaultLifetimeSyntax))));
+                            metadataVisitor.VisitDefaultLifetime(new MdDefaultLifetime(new MdLifetime(semanticModel, invocation.ArgumentList, semanticModel.GetRequiredConstantValue<Lifetime>(defaultLifetimeSyntax))));
                         }
 
                         break;
@@ -135,7 +135,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                     case nameof(IConfiguration.DependsOn):
                         if (BuildConstantArgs<string>(semanticModel, invocation.ArgumentList.Arguments) is [..] compositionTypeNames)
                         {
-                            metadataVisitor.VisitDependsOn(new MdDependsOn(semanticModel, invocation, compositionTypeNames.Select(i => CreateCompositionName(i, @namespace)).ToImmutableArray()));
+                            metadataVisitor.VisitDependsOn(new MdDependsOn(semanticModel, invocation.ArgumentList, compositionTypeNames.Select(i => CreateCompositionName(i, @namespace, invocation.ArgumentList)).ToImmutableArray()));
                         }
 
                         break;
@@ -152,7 +152,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                             metadataVisitor.VisitContract(
                                 new MdContract(
                                     semanticModel,
-                                    invocation,
+                                    invocation.ArgumentList,
                                     semanticModel.GetTypeSymbol<ITypeSymbol>(contractType, _cancellationToken),
                                     BuildTags(semanticModel, invocation.ArgumentList.Arguments).ToImmutable()));
                         }
@@ -212,7 +212,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                                 tag = new MdTag(0, semanticModel.GetConstantValue<object>(rootArgs[1].Expression));
                             }
 
-                            metadataVisitor.VisitRoot(new MdRoot(invocation, semanticModel, rootSymbol, name, tag));
+                            metadataVisitor.VisitRoot(new MdRoot(rootType, semanticModel, rootSymbol, name, tag));
                         }
 
                         break;
@@ -220,7 +220,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                     case nameof(IConfiguration.TypeAttribute):
                         if (genericName.TypeArgumentList.Arguments is [{ } typeAttributeType])
                         {
-                            metadataVisitor.VisitTypeAttribute(new MdTypeAttribute(semanticModel, invocation, semanticModel.GetTypeSymbol<ITypeSymbol>(typeAttributeType, _cancellationToken), BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0));
+                            metadataVisitor.VisitTypeAttribute(new MdTypeAttribute(semanticModel, invocation.ArgumentList, semanticModel.GetTypeSymbol<ITypeSymbol>(typeAttributeType, _cancellationToken), BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0));
                         }
 
                         break;
@@ -228,7 +228,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                     case nameof(IConfiguration.TagAttribute):
                         if (genericName.TypeArgumentList.Arguments is [{ } tagAttributeType])
                         {
-                            metadataVisitor.VisitTagAttribute(new MdTagAttribute(semanticModel, invocation, semanticModel.GetTypeSymbol<ITypeSymbol>(tagAttributeType, _cancellationToken), BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0));
+                            metadataVisitor.VisitTagAttribute(new MdTagAttribute(semanticModel, invocation.ArgumentList, semanticModel.GetTypeSymbol<ITypeSymbol>(tagAttributeType, _cancellationToken), BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0));
                         }
 
                         break;
@@ -236,7 +236,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                     case nameof(IConfiguration.OrdinalAttribute):
                         if (genericName.TypeArgumentList.Arguments is [{ } ordinalAttributeType])
                         {
-                            metadataVisitor.VisitOrdinalAttribute(new MdOrdinalAttribute(semanticModel, invocation, semanticModel.GetTypeSymbol<ITypeSymbol>(ordinalAttributeType, _cancellationToken), BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0));
+                            metadataVisitor.VisitOrdinalAttribute(new MdOrdinalAttribute(semanticModel, invocation.ArgumentList, semanticModel.GetTypeSymbol<ITypeSymbol>(ordinalAttributeType, _cancellationToken), BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0));
                         }
 
                         break;
@@ -267,7 +267,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
 
             var argType = semanticModel.GetTypeSymbol<ITypeSymbol>(argTypeSyntax, _cancellationToken);
             metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, argType, tags.ToImmutableArray()));
-            metadataVisitor.VisitArg(new MdArg(semanticModel, invocation, argType, name, kind));
+            metadataVisitor.VisitArg(new MdArg(semanticModel, argTypeSyntax, argType, name, kind));
         }
     }
 
@@ -418,7 +418,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
         return builder;
     }
     
-    private static CompositionName CreateCompositionName(string name, string ns)
+    private static CompositionName CreateCompositionName(string name, string ns, SyntaxNode source)
     {
         string className;
         string newNamespace;
@@ -439,6 +439,6 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
             newNamespace = ns;
         }
 
-        return new CompositionName(className, newNamespace);
+        return new CompositionName(className, newNamespace, source);
     }
 }
