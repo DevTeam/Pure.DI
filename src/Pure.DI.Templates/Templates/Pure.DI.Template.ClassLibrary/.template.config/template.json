@@ -1,11 +1,10 @@
 {
   "$schema": "http://json.schemastore.org/template",
-  "identity": "Pure.DI.Template.CSharp",
-  "name": "Pure DI Project",
-  "shortName": "di",
-  "groupIdentity": "PureDI",
+  "identity": "Pure.DI.Template.ClassLibrary",
+  "name": "Pure DI Class Library",
+  "shortName": "dilib",
   "classifications": [
-    "PureDI",
+    "Pure.DI",
     "CSharpCodeGenerator"
   ],
   "precedence": "3000",
@@ -13,12 +12,12 @@
     "language": "C#",
     "type": "project"
   },
-  "description": "A project template for creating console application.",
+  "description": "A project template for creating class library.",
   "author": "NikolayP",
   "generatorVersions": "[1.0.0.0-*)",
   "sourceName": "_PureDIProjectName_",
   "preferNameDirectory": true,
-  "defaultName": "PureDIApp",
+  "defaultName": "PureDILib",
   "symbols": {
     "compositionName": {
       "type": "parameter",

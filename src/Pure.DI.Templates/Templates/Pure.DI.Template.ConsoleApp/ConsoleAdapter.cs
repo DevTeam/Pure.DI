@@ -1,3 +1,5 @@
+using System;
+
 namespace _PureDIProjectName_;
 
 internal class ConsoleAdapter: IInput, IOutput

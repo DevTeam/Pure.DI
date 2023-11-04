@@ -5,7 +5,7 @@ namespace _PureDIProjectName_;
 
 internal partial class $(CompositionName)
 {
-    [Conditional("DI")]
+    [global::System.Diagnostics.Conditional("DI")]
     private static void Setup() => 
         DI.Setup(nameof($(CompositionName)))
             .Bind<IInput>().Bind<IOutput>().As(Singleton).To<ConsoleAdapter>()

@@ -19,9 +19,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Templates\Pure.DI.Template.CSharp\IStdOut.cs"/>
-        <Compile Include="Templates\Pure.DI.Template.CSharp\StdOut.cs"/>
-        <Content Include="Templates\**\*" Exclude="Templates\**\bin\**;Templates\**\obj\**"/>
+        <Content Include="Templates\**\*" Exclude="Templates\**\bin\**;Templates\**\obj\**">
+            <PackagePath>content</PackagePath>
+        </Content>
         <Compile Remove="**\*"/>
         <None Remove="*.bat;.sh"/>
     </ItemGroup>
