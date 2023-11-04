@@ -104,25 +104,25 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM10D28di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM11D04di;
   
   public Composition()
   {
-    _disposableSingletonsM10D28di = new global::System.IDisposable[0];
+    _disposableSingletonsM11D04di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM10D28di = new global::System.IDisposable[0];
+    _disposableSingletonsM11D04di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public Pure.DI.UsageTests.Basics.RootArgumentsScenario.IService CreateService(string serviceName, int id, string dependencyName)
   {
-    var transientM10D28di1 = new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Dependency(id, dependencyName);
-    var transientM10D28di0 = new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Service(serviceName, transientM10D28di1);
-    return transientM10D28di0;
+    var transientM11D04di1 = new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Dependency(id, dependencyName);
+    var transientM11D04di0 = new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Service(serviceName, transientM11D04di1);
+    return transientM11D04di0;
   }
   #endregion
   

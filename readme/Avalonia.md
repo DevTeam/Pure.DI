@@ -105,7 +105,7 @@ The [project file](/samples/AvaloniaApp/AvaloniaApp.csproj) looks like this:
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.0.22">
+        <PackageReference Include="Pure.DI" Version="2.0.23">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

@@ -279,6 +279,9 @@ dotnet run
   - [gRPC service](readme/GrpcService.md)
   - [Blazor Server](readme/BlazorServerApp.md)
   - [Blazor WebAssembly](readme/BlazorWebAssemblyApp.md)
+- Git repo with examples
+  - [Schrödinger's cat](https://github.com/DevTeam/Pure.DI.Example) 
+  - [How to use Pure.DI to create libraries](https://github.com/DevTeam/Pure.DI.Solution)
 
 ## Generated Code
 
@@ -895,16 +898,8 @@ Installed [.NET SDK 7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
 <summary>Array</summary>
 
 <table>
-<thead><tr><th>              Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Ratio</th><th>RatioSD</th>
+<thead><tr><th>Method</th><th>Mean</th><th>Error</th>
 </tr>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>111.0 ns</td><td>7.00 ns</td><td>20.43 ns</td><td>99.67 ns</td><td>0.99</td><td>0.21</td>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>113.9 ns</td><td>5.96 ns</td><td>17.57 ns</td><td>112.62 ns</td><td>1.00</td><td>0.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>115.5 ns</td><td>4.46 ns</td><td>13.16 ns</td><td>114.41 ns</td><td>1.03</td><td>0.18</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>119.5 ns</td><td>5.82 ns</td><td>16.80 ns</td><td>115.31 ns</td><td>1.07</td><td>0.24</td>
-</tr><tr><td>LightInject</td><td>123.2 ns</td><td>7.14 ns</td><td>21.04 ns</td><td>121.70 ns</td><td>1.10</td><td>0.19</td>
-</tr><tr><td>DryIoc</td><td>134.6 ns</td><td>6.01 ns</td><td>17.06 ns</td><td>136.66 ns</td><td>1.18</td><td>0.20</td>
-</tr><tr><td>Unity</td><td>4,944.7 ns</td><td>236.42 ns</td><td>693.37 ns</td><td>4,675.96 ns</td><td>44.57</td><td>10.68</td>
-</tr><tr><td>Autofac</td><td>12,176.7 ns</td><td>344.88 ns</td><td>1,006.02 ns</td><td>11,901.56 ns</td><td>108.96</td><td>19.56</td>
 </tr></tbody></table>
 
 [Array details](readme/ArrayDetails.md)
