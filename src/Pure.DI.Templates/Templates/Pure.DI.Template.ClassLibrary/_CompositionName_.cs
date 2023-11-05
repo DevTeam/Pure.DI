@@ -1,12 +1,16 @@
-﻿using Pure.DI;
+﻿using System.Diagnostics;
+using Pure.DI;
 using static Pure.DI.Lifetime;
 
 namespace _PureDIProjectName_;
 
-internal partial class $(CompositionName)
+/// <summary>
+/// Pure.DI Composition Setup. Please see <see href="https://github.com/DevTeam/Pure.DI.Solution">this</see> example.
+/// </summary>
+internal class $(CompositionName)
 {
-    [global::System.Diagnostics.Conditional("DI")]
+    [Conditional("DI")]
     private static void Setup() => 
-        DI.Setup(nameof($(CompositionName)), CompositionKind.Internal)
+        DI.Setup(nameof($(CompositionName)), CompositionKind.Global)
             .Bind<IInput>().Bind<IOutput>().As(Singleton).To<ConsoleAdapter>();
 }

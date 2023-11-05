@@ -3,9 +3,12 @@ using static Pure.DI.Lifetime;
 
 namespace _PureDIProjectName_;
 
+/// <summary>
+/// Pure.DI Composition Setup. Please see <see href="https://github.com/DevTeam/Pure.DI.Solution">this</see> example.
+/// </summary>
 internal partial class $(CompositionName)
 {
-    [global::System.Diagnostics.Conditional("DI")]
+    [Conditional("DI")]
     private static void Setup() => 
         DI.Setup(nameof($(CompositionName)))
             .Bind<IInput>().Bind<IOutput>().As(Singleton).To<ConsoleAdapter>()
