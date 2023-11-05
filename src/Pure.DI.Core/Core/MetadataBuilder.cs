@@ -63,7 +63,7 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
             .ToDictionary(i =>  i.Name, i => i);
         
         var globalSetups = setups.Where(i => i.Kind == CompositionKind.Global).ToList();
-        foreach (var setup in setupMap.Values.Where(i => i.Kind == CompositionKind.Public))
+        foreach (var setup in setupMap.Values.Where(i => i.Kind == CompositionKind.Public).OrderBy(i => i.Name))
         {
             var setupsChain = globalSetups
                 .Concat(ResolveDependencies(setup, setupMap, new HashSet<CompositionName>()))
