@@ -1,56 +1,50 @@
-#### Interception
+#### Async Enumerable
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Interception/InterceptionScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/AsyncEnumerableScenario.cs)
 
-Interception allows you to enrich or change the behavior of a certain set of objects from the object graph being created without changing the code of the corresponding types.
+Specifying `IAsyncEnumerable<T>` as the injection type allows instances of all bindings implementing type `T` to be injected in an asynchronous-lazy manner - the instances will be provided one at a time, in an order corresponding to the sequence of the bindings.
 
 ```c#
-public interface IService { string GetMessage(); }
+interface IDependency { }
+
+class AbcDependency : IDependency { }
+
+class XyzDependency : IDependency { }
+
+interface IService
+{
+    Task<IReadOnlyList<IDependency>> GetDependenciesAsync();
+}
 
 class Service : IService
 {
-    public string GetMessage() => "Hello World";
-}
+    private readonly IAsyncEnumerable<IDependency> _dependencies;
 
-partial class Composition: IInterceptor
-{
-    private static readonly ProxyGenerator ProxyGenerator = new();
+    public Service(IAsyncEnumerable<IDependency> dependencies) =>
+        _dependencies = dependencies;
 
-    private partial T OnDependencyInjection<T>(
-        in T value,
-        object? tag,
-        Lifetime lifetime)
+    public async Task<IReadOnlyList<IDependency>> GetDependenciesAsync()
     {
-        if (typeof(T).IsValueType)
+        var dependencies = new List<IDependency>();
+        await foreach (var dependency in _dependencies)
         {
-            return value;
+            dependencies.Add(dependency);
         }
 
-        return (T)ProxyGenerator.CreateInterfaceProxyWithTargetInterface(
-            typeof(T),
-            value,
-            this);
-    }
-
-    public void Intercept(IInvocation invocation)
-    {
-        invocation.Proceed();
-        if (invocation.Method.Name == nameof(IService.GetMessage)
-            && invocation.ReturnValue is string message)
-        {
-            invocation.ReturnValue = $"{message} !!!";
-        }
+        return dependencies;
     }
 }
 
-// OnDependencyInjection = On
-// OnDependencyInjectionContractTypeNameRegularExpression = IService
 DI.Setup("Composition")
+    .Bind<IDependency>().To<AbcDependency>()
+    .Bind<IDependency>(2).To<XyzDependency>()
     .Bind<IService>().To<Service>().Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;
-service.GetMessage().ShouldBe("Hello World !!!");
+var dependencies = await service.GetDependenciesAsync();
+dependencies[0].ShouldBeOfType<AbcDependency>();
+dependencies[1].ShouldBeOfType<XyzDependency>();
 ```
 
 <details open>
@@ -65,13 +59,28 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
+  class IAsyncEnumerableᐸIDependencyᐳ
   Service --|> IService : 
   class Service {
-    +Service()
+    +Service(IAsyncEnumerableᐸIDependencyᐳ dependencies)
+  }
+  AbcDependency --|> IDependency : 
+  class AbcDependency {
+    +AbcDependency()
+  }
+  XyzDependency --|> IDependency : 2 
+  class XyzDependency {
+    +XyzDependency()
   }
   class IService {
     <<abstract>>
   }
+  class IDependency {
+    <<abstract>>
+  }
+  IAsyncEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency
+  IAsyncEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
+  Service *--  IAsyncEnumerableᐸIDependencyᐳ : IAsyncEnumerableᐸIDependencyᐳ
   Composition ..> Service : IService Root
 ```
 
@@ -96,13 +105,23 @@ partial class Composition
   }
   
   #region Composition Roots
-  public Pure.DI.UsageTests.Interception.InterceptionScenario.IService Root
+  public Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.IService Root
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM11D06di0 = new Pure.DI.UsageTests.Interception.InterceptionScenario.Service();
-      return OnDependencyInjection<Pure.DI.UsageTests.Interception.InterceptionScenario.IService>(transientM11D06di0, null, Pure.DI.Lifetime.Transient);
+      var transientM11D06di3 = new Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.XyzDependency();
+      var transientM11D06di2 = new Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.AbcDependency();
+      async System.Collections.Generic.IAsyncEnumerable<Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.IDependency> LocalFunc_transientM11D06di1()
+      {
+          var transientM11D06di2 = new Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.AbcDependency();
+          yield return transientM11D06di2;
+          var transientM11D06di3 = new Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.XyzDependency();
+          yield return transientM11D06di3;
+      }
+      var transientM11D06di1 = LocalFunc_transientM11D06di1();
+      var transientM11D06di0 = new Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.Service(transientM11D06di1);
+      return transientM11D06di0;
     }
   }
   #endregion
@@ -163,9 +182,6 @@ partial class Composition
     
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-  private partial T OnDependencyInjection<T>(in T value, object? tag, global::Pure.DI.Lifetime lifetime);
   #endregion
   
   public override string ToString()
@@ -179,13 +195,28 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
+        "  class IAsyncEnumerableᐸIDependencyᐳ\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
-          "    +Service()\n" +
+          "    +Service(IAsyncEnumerableᐸIDependencyᐳ dependencies)\n" +
+        "  }\n" +
+        "  AbcDependency --|> IDependency : \n" +
+        "  class AbcDependency {\n" +
+          "    +AbcDependency()\n" +
+        "  }\n" +
+        "  XyzDependency --|> IDependency : 2 \n" +
+        "  class XyzDependency {\n" +
+          "    +XyzDependency()\n" +
         "  }\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  IAsyncEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency\n" +
+        "  IAsyncEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency\n" +
+        "  Service *--  IAsyncEnumerableᐸIDependencyᐳ : IAsyncEnumerableᐸIDependencyᐳ\n" +
         "  Composition ..> Service : IService Root";
   }
   
@@ -196,13 +227,13 @@ partial class Composition
   static Composition()
   {
     var valResolverM11D06di_0000 = new ResolverM11D06di_0000();
-    ResolverM11D06di<Pure.DI.UsageTests.Interception.InterceptionScenario.IService>.Value = valResolverM11D06di_0000;
+    ResolverM11D06di<Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.IService>.Value = valResolverM11D06di_0000;
     _bucketsM11D06di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
       out _bucketSizeM11D06di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Interception.InterceptionScenario.IService), valResolverM11D06di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.IService), valResolverM11D06di_0000)
       });
   }
   
@@ -222,19 +253,19 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM11D06di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Interception.InterceptionScenario.IService>
+  private sealed class ResolverM11D06di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Interception.InterceptionScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.IService Resolve(Composition composition)
     {
       return composition.Root;
     }
     
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.UsageTests.Interception.InterceptionScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.IService ResolveByTag(Composition composition, object tag)
     {
       if (Equals(tag, null)) return composition.Root;
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Interception.InterceptionScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.IService.");
     }
   }
   #endregion

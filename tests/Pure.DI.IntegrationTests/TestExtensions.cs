@@ -222,7 +222,8 @@ public static class TestExtensions
                 MetadataReference.CreateFromFile(typeof(Uri).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(IGeneratorOptions).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(SourceGenerator).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(Regex).Assembly.Location));
+                MetadataReference.CreateFromFile(typeof(Regex).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(IAsyncEnumerable<>).Assembly.Location));
 
     private static CSharpCompilation Check(this CSharpCompilation compilation, List<string> output, Options? options)
     {

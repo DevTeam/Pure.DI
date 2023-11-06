@@ -8,5 +8,6 @@ internal enum MdConstructKind
     Span,
     Composition,
     OnCannotResolve,
-    ExplicitDefaultValue
+    ExplicitDefaultValue,
+    AsyncEnumerable
 }

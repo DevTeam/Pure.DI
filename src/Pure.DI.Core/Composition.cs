@@ -75,7 +75,7 @@ internal partial class Composition
         // Code
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.ClassBuilder).To<ClassBuilder>()
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.DisposeMethodBuilder).To<DisposeMethodBuilder>()
-        .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.RootPropertiesBuilder).To<RootPropertiesBuilder>()
+        .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.RootMethodsBuilder).To<RootMethodsBuilder>()
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.UsingDeclarationsBuilder).To<UsingDeclarationsBuilder>()
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.ArgFieldsBuilder).To<ArgFieldsBuilder>()
         .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.SingletonFieldsBuilder).To<SingletonFieldsBuilder>()

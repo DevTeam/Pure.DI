@@ -1,10 +1,14 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal sealed class RootPropertiesBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class RootMethodsBuilder: IBuilder<CompositionCode, CompositionCode>
 {
+    private readonly IBuildTools _buildTools;
     private static readonly string[] NewLineSeparators = { Environment.NewLine };
-    
+
+    public RootMethodsBuilder(IBuildTools buildTools) => 
+        _buildTools = buildTools;
+
     public CompositionCode Build(CompositionCode composition)
     {
         if (!composition.Roots.Any())
@@ -40,7 +44,7 @@ internal sealed class RootPropertiesBuilder: IBuilder<CompositionCode, Compositi
         return composition with { MembersCount = membersCounter };
     }
     
-    private static void BuildRoot(CompositionCode composition, ITypeSymbol type, Root root)
+    private void BuildRoot(CompositionCode composition, ITypeSymbol type, Root root)
     {
         var code = composition.Code;
         var hasRootArgs = !root.Args.IsEmpty;
@@ -53,7 +57,7 @@ internal sealed class RootPropertiesBuilder: IBuilder<CompositionCode, Compositi
 
         if (hasRootArgs)
         {
-            code.AppendLine(Names.MethodImplOptions);
+            _buildTools.AddPureHeader(code);
         }
 
         code.AppendLine($"{(root.IsPublic ? "public" : "private")} {type} {root.PropertyName}{rootArgsStr}");
@@ -63,7 +67,7 @@ internal sealed class RootPropertiesBuilder: IBuilder<CompositionCode, Compositi
             var indentToken = Disposables.Empty;
             if (!hasRootArgs)
             {
-                code.AppendLine(Names.MethodImplOptions);
+                _buildTools.AddPureHeader(code);
                 code.AppendLine("get");
                 code.AppendLine("{");
                 indentToken = code.Indent();

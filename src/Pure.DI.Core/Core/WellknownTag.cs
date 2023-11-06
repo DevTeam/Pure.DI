@@ -5,7 +5,7 @@ internal enum WellknownTag
     CompositionBuilder,
     ClassBuilder,
     DisposeMethodBuilder,
-    RootPropertiesBuilder,
+    RootMethodsBuilder,
     UsingDeclarationsBuilder,
     ArgFieldsBuilder,
     SingletonFieldsBuilder,

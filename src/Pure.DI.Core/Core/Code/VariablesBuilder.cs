@@ -56,7 +56,7 @@ internal class VariablesBuilder : IVariablesBuilder
                             }
 
                             var depVariable = GetVariable(currentStatement, map, depNode, depInjection, ref transientId);
-                            var isBlockStatement = !variable.Node.IsEnumerable() && !variable.Node.IsFactory();
+                            var isBlockStatement = !variable.Node.IsEnumerable() && !variable.Node.IsAsyncEnumerable() && !variable.Node.IsFactory();
                             var isBlock = depNode.Lifetime != Lifetime.Transient || variable.Node.IsLazy();
                             if (isBlock)
                             {

@@ -5,13 +5,16 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
 {
     private readonly ILogger<ApiMembersBuilder> _logger;
     private readonly IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
-    
+    private readonly IBuildTools _buildTools;
+
     public ApiMembersBuilder(
         ILogger<ApiMembersBuilder> logger,
-        IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
+        IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder,
+        IBuildTools buildTools)
     {
         _logger = logger;
         _resolversBuilder = resolversBuilder;
+        _buildTools = buildTools;
     }
 
     public CompositionCode Build(CompositionCode composition)
@@ -33,7 +36,7 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
                 _logger.CompileWarning($"The root argument \"{rootArg.Node.Arg}\" of the composition is used. This root cannot be resolved using \"Resolve\" methods, so an exception will be thrown when trying to do so.", rootArg.Node.Arg?.Source.Source.GetLocation() ?? composition.Source.Source.Source.GetLocation(), LogId.WarningRootArgInResolveMethod);
             }
             
-            AddMethodHeader(apiCode);
+            _buildTools.AddPureHeader(apiCode);
             apiCode.AppendLine($"{hints.GetValueOrDefault(Hint.ResolveMethodModifiers, Names.DefaultApiMethodModifiers)} T {hints.GetValueOrDefault(Hint.ResolveMethodName, Names.ResolveMethodName)}<T>()");
             apiCode.AppendLine("{");
             using (apiCode.Indent())
@@ -46,7 +49,7 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
             apiCode.AppendLine();
             membersCounter++;
 
-            AddMethodHeader(apiCode);
+            _buildTools.AddPureHeader(apiCode);
             apiCode.AppendLine($"{hints.GetValueOrDefault(Hint.ResolveByTagMethodModifiers, Names.DefaultApiMethodModifiers)} T {hints.GetValueOrDefault(Hint.ResolveByTagMethodName, Names.ResolveMethodName)}<T>(object? tag)");
             apiCode.AppendLine("{");
             using (apiCode.Indent())
@@ -124,7 +127,7 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
         return composition with { MembersCount = membersCounter };
     }
 
-    private static void CreateObjectResolverMethod(
+    private void CreateObjectResolverMethod(
         string methodModifiers,
         string methodName,
         IReadOnlyCollection<ResolverInfo> resolvers,
@@ -134,7 +137,7 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
         bool byTag,
         LinesBuilder code)
     {
-        AddMethodHeader(code);
+        _buildTools.AddPureHeader(code);
         code.AppendLine($"{methodModifiers} object {methodName}({methodArgs})");
         code.AppendLine("{");
         using (code.Indent())
@@ -166,13 +169,5 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
         }
         
         code.AppendLine("}");
-    }
-
-    private static void AddMethodHeader(LinesBuilder code)
-    {
-        code.AppendLine("#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER");
-        code.AppendLine($"[{Names.SystemNamespace}Diagnostics.Contracts.Pure]");
-        code.AppendLine("#endif");
-        code.AppendLine(Names.MethodImplOptions);
     }
 }

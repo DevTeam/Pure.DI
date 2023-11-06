@@ -7,6 +7,14 @@ internal class BuildTools : IBuildTools
     private readonly IFilter _filter;
 
     public BuildTools(IFilter filter) => _filter = filter;
+    
+    public void AddPureHeader(LinesBuilder code)
+    {
+        code.AppendLine("#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER");
+        code.AppendLine($"[{Names.SystemNamespace}Diagnostics.Contracts.Pure]");
+        code.AppendLine("#endif");
+        code.AppendLine(Names.MethodImplOptions);
+    }
 
     public string GetDeclaration(Variable variable, bool typeIsRequired = false) =>
         variable.IsDeclared ? "" : typeIsRequired ? $"{variable.InstanceType} " : "var ";

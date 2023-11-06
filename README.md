@@ -248,6 +248,7 @@ dotnet run
 - [Span and ReadOnlySpan](readme/span-and-readonlyspan.md)
 - [Tuple](readme/tuple.md)
 - [Weak Reference](readme/weak-reference.md)
+- [Async Enumerable](readme/async-enumerable.md)
 - [Service collection](readme/service-collection.md)
 - [Func with arguments](readme/func-with-arguments.md)
 - [Service provider](readme/service-provider.md)

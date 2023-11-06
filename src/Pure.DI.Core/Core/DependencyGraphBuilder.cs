@@ -124,6 +124,7 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
                                 "System.Span<>" => MdConstructKind.Span,
                                 "System.ReadOnlySpan<>" => MdConstructKind.Span,
                                 "System.Collections.Generic.IEnumerable<>" => MdConstructKind.Enumerable,
+                                "System.Collections.Generic.IAsyncEnumerable<>" => MdConstructKind.AsyncEnumerable,
                                 _ => default(MdConstructKind?)
                             };
 

@@ -30,19 +30,23 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
             case MdConstructKind.ExplicitDefaultValue:
                 BuildExplicitDefaultValue(ctx, construct);
                 break;
+            
+            case MdConstructKind.AsyncEnumerable:
+                BuildEnumerable(ctx, "async ");
+                break;
 
             default:
                 throw new ArgumentOutOfRangeException();
         }
     }
-    
-    private static void BuildEnumerable(BuildContext ctx)
+
+    private static void BuildEnumerable(BuildContext ctx, string methodPrefix = "")
     {
         var variable = ctx.Variable;
         var code = ctx.Code;
         var level = ctx.Level + 1;
         var localFuncName = $"LocalFunc_{variable.VariableName}";
-        code.AppendLine($"{variable.InstanceType} {localFuncName}()");
+        code.AppendLine($"{methodPrefix}{variable.InstanceType} {localFuncName}()");
         code.AppendLine("{");
         using (code.Indent())
         {
@@ -65,7 +69,7 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
         ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = {localFuncName}();");
         ctx.Code.AppendLines(ctx.BuildTools.OnCreated(ctx, variable));
     }
-
+    
     private static void BuildArray(BuildContext ctx, DpConstruct array)
     {
         var variable = ctx.Variable;
