@@ -4,6 +4,7 @@
   - [Top level statements](readme/ConsoleTopLevelStatements.md)
   - [Native AOT](readme/ConsoleNativeAOT.md)
 - UI
+  - [MAUI](readme/Maui.md)
   - [WPF](readme/Wpf.md)
   - [Avalonia](readme/Avalonia.md)
   - [Win Forms Net Core](readme/WinFormsAppNetCore.md)

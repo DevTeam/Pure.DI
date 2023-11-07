@@ -104,25 +104,28 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM11D06di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM11D08di;
   
   public Composition()
   {
-    _disposableSingletonsM11D06di = new global::System.IDisposable[0];
+    _disposableSingletonsM11D08di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM11D06di = new global::System.IDisposable[0];
+    _disposableSingletonsM11D08di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public Pure.DI.UsageTests.Basics.RootArgumentsScenario.IService CreateService(string serviceName, int id, string dependencyName)
   {
-    var transientM11D06di1 = new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Dependency(id, dependencyName);
-    var transientM11D06di0 = new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Service(serviceName, transientM11D06di1);
-    return transientM11D06di0;
+    var transientM11D08di1 = new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Dependency(id, dependencyName);
+    var transientM11D08di0 = new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Service(serviceName, transientM11D08di1);
+    return transientM11D08di0;
   }
   #endregion
   

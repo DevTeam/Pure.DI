@@ -75,48 +75,51 @@ classDiagram
 ```c#
 partial class Enum
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM11D06di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM11D08di;
   
   public Enum()
   {
-    _disposableSingletonsM11D06di = new global::System.IDisposable[0];
+    _disposableSingletonsM11D08di = new global::System.IDisposable[0];
   }
   
   internal Enum(Enum parent)
   {
-    _disposableSingletonsM11D06di = new global::System.IDisposable[0];
+    _disposableSingletonsM11D08di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
   public Pure.DI.Benchmarks.Model.ICompositionRoot Root
   {
+    #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+    [global::System.Diagnostics.Contracts.Pure]
+    #endif
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var perResolveM11D06di28 = default(System.Collections.Generic.IEnumerable<Pure.DI.Benchmarks.Model.IService3>);
-      if (object.ReferenceEquals(perResolveM11D06di28, null))
+      var perResolveM11D08di28 = default(System.Collections.Generic.IEnumerable<Pure.DI.Benchmarks.Model.IService3>);
+      if (object.ReferenceEquals(perResolveM11D08di28, null))
       {
-          System.Collections.Generic.IEnumerable<Pure.DI.Benchmarks.Model.IService3> LocalFunc_perResolveM11D06di28()
+          System.Collections.Generic.IEnumerable<Pure.DI.Benchmarks.Model.IService3> LocalFunc_perResolveM11D08di28()
           {
-              var transientM11D06di7 = new Pure.DI.Benchmarks.Model.Service3();
-              yield return transientM11D06di7;
-              var transientM11D06di8 = new Pure.DI.Benchmarks.Model.Service3v2();
-              yield return transientM11D06di8;
-              var transientM11D06di9 = new Pure.DI.Benchmarks.Model.Service3v3();
-              yield return transientM11D06di9;
-              var transientM11D06di10 = new Pure.DI.Benchmarks.Model.Service3v4();
-              yield return transientM11D06di10;
+              var transientM11D08di7 = new Pure.DI.Benchmarks.Model.Service3();
+              yield return transientM11D08di7;
+              var transientM11D08di8 = new Pure.DI.Benchmarks.Model.Service3v2();
+              yield return transientM11D08di8;
+              var transientM11D08di9 = new Pure.DI.Benchmarks.Model.Service3v3();
+              yield return transientM11D08di9;
+              var transientM11D08di10 = new Pure.DI.Benchmarks.Model.Service3v4();
+              yield return transientM11D08di10;
           }
-          perResolveM11D06di28 = LocalFunc_perResolveM11D06di28();
+          perResolveM11D08di28 = LocalFunc_perResolveM11D08di28();
       }
-      var transientM11D06di6 = new Pure.DI.Benchmarks.Model.Service2Enum(perResolveM11D06di28);
-      var transientM11D06di5 = new Pure.DI.Benchmarks.Model.Service3();
-      var transientM11D06di4 = new Pure.DI.Benchmarks.Model.Service2Enum(perResolveM11D06di28);
-      var transientM11D06di3 = new Pure.DI.Benchmarks.Model.Service2Enum(perResolveM11D06di28);
-      var transientM11D06di2 = new Pure.DI.Benchmarks.Model.Service2Enum(perResolveM11D06di28);
-      var transientM11D06di1 = new Pure.DI.Benchmarks.Model.Service1(transientM11D06di6);
-      var transientM11D06di0 = new Pure.DI.Benchmarks.Model.CompositionRoot(transientM11D06di1, transientM11D06di2, transientM11D06di3, transientM11D06di4, transientM11D06di5);
-      return transientM11D06di0;
+      var transientM11D08di6 = new Pure.DI.Benchmarks.Model.Service2Enum(perResolveM11D08di28);
+      var transientM11D08di5 = new Pure.DI.Benchmarks.Model.Service3();
+      var transientM11D08di4 = new Pure.DI.Benchmarks.Model.Service2Enum(perResolveM11D08di28);
+      var transientM11D08di3 = new Pure.DI.Benchmarks.Model.Service2Enum(perResolveM11D08di28);
+      var transientM11D08di2 = new Pure.DI.Benchmarks.Model.Service2Enum(perResolveM11D08di28);
+      var transientM11D08di1 = new Pure.DI.Benchmarks.Model.Service1(transientM11D08di6);
+      var transientM11D08di0 = new Pure.DI.Benchmarks.Model.CompositionRoot(transientM11D08di1, transientM11D08di2, transientM11D08di3, transientM11D08di4, transientM11D08di5);
+      return transientM11D08di0;
     }
   }
   #endregion
@@ -128,7 +131,7 @@ partial class Enum
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>()
   {
-    return ResolverM11D06di<T>.Value.Resolve(this);
+    return ResolverM11D08di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -137,7 +140,7 @@ partial class Enum
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>(object? tag)
   {
-    return ResolverM11D06di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM11D08di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -146,10 +149,10 @@ partial class Enum
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM11D06di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM11D06di;
+    var index = (int)(_bucketSizeM11D08di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM11D08di;
     do {
-      ref var pair = ref _bucketsM11D06di[index];
+      ref var pair = ref _bucketsM11D08di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -165,10 +168,10 @@ partial class Enum
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM11D06di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM11D06di;
+    var index = (int)(_bucketSizeM11D08di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM11D08di;
     do {
-      ref var pair = ref _bucketsM11D06di[index];
+      ref var pair = ref _bucketsM11D08di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -245,27 +248,27 @@ partial class Enum
         "  Enum ..> CompositionRoot : ICompositionRoot Root";
   }
   
-  private readonly static int _bucketSizeM11D06di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Enum, object>>[] _bucketsM11D06di;
+  private readonly static int _bucketSizeM11D08di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Enum, object>>[] _bucketsM11D08di;
   
   
   static Enum()
   {
-    var valResolverM11D06di_0000 = new ResolverM11D06di_0000();
-    ResolverM11D06di<Pure.DI.Benchmarks.Model.ICompositionRoot>.Value = valResolverM11D06di_0000;
-    _bucketsM11D06di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Enum, object>>.Create(
+    var valResolverM11D08di_0000 = new ResolverM11D08di_0000();
+    ResolverM11D08di<Pure.DI.Benchmarks.Model.ICompositionRoot>.Value = valResolverM11D08di_0000;
+    _bucketsM11D08di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Enum, object>>.Create(
       1,
-      out _bucketSizeM11D06di,
+      out _bucketSizeM11D08di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Enum, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Enum, object>>(typeof(Pure.DI.Benchmarks.Model.ICompositionRoot), valResolverM11D06di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Enum, object>>(typeof(Pure.DI.Benchmarks.Model.ICompositionRoot), valResolverM11D08di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM11D06di<T>: global::Pure.DI.IResolver<Enum, T>
+  private sealed class ResolverM11D08di<T>: global::Pure.DI.IResolver<Enum, T>
   {
-    public static global::Pure.DI.IResolver<Enum, T> Value = new ResolverM11D06di<T>();
+    public static global::Pure.DI.IResolver<Enum, T> Value = new ResolverM11D08di<T>();
     
     public T Resolve(Enum composite)
     {
@@ -278,7 +281,7 @@ partial class Enum
     }
   }
   
-  private sealed class ResolverM11D06di_0000: global::Pure.DI.IResolver<Enum, Pure.DI.Benchmarks.Model.ICompositionRoot>
+  private sealed class ResolverM11D08di_0000: global::Pure.DI.IResolver<Enum, Pure.DI.Benchmarks.Model.ICompositionRoot>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.Benchmarks.Model.ICompositionRoot Resolve(Enum composition)
