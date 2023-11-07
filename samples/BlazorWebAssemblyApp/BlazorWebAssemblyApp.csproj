@@ -1,5 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
+    <PropertyGroup>
+        <TargetFramework>$(BaseTargetFramework)</TargetFramework>
+    </PropertyGroup>
+
     <ItemGroup>
         <ProjectReference Include="..\WeatherForecast\WeatherForecast.csproj"/>
         <ProjectReference Include="..\Clock\Clock.csproj"/>

@@ -3,6 +3,7 @@
     <Import Project="..\Directory.Build.props"/>
 
     <PropertyGroup>
+        <TargetFramework>$(BaseTargetFramework)</TargetFramework>
         <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>..\..\DevTeam.snk</AssemblyOriginatorKeyFile>
     </PropertyGroup>

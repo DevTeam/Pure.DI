@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <TargetFramework>$(BaseTargetFramework)</TargetFramework>
         <OutputType>Exe</OutputType>
         <RootNamespace>Build</RootNamespace>
         <ApplicationIcon>../docs/icon.ico</ApplicationIcon>

@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <TargetFramework>$(BaseTargetFramework)</TargetFramework>
         <PublishAot>true</PublishAot>
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
         <OutputType>Exe</OutputType>
