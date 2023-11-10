@@ -21,17 +21,29 @@ public class SourceGenerator: IIncrementalGenerator
             }
         });
 
-        var valuesProvider = context.AnalyzerConfigOptionsProvider
-            .Combine(context.ParseOptionsProvider)
-            .Combine(context.SyntaxProvider.CreateSyntaxProvider(
-                static (_, _) => true,
-                static (syntaxContext, _) => syntaxContext).Collect());
+        var metadata = context.MetadataReferencesProvider.Collect();
+        var analyzer = context.AnalyzerConfigOptionsProvider;
+        var parseOptions = context.ParseOptionsProvider;
+        var syntax = context.SyntaxProvider.CreateSyntaxProvider(
+            static (_, _) => true,
+            static (syntaxContext, _) => syntaxContext).Collect();
+        
+        var valuesProvider = metadata
+            .Combine(analyzer)
+            .Combine(parseOptions)
+            .Combine(syntax);
 
         context.RegisterSourceOutput(valuesProvider, (sourceProductionContext, options) =>
             _generator.Generate(
+                // options
                 options.Left.Right,
-                options.Left.Left,
+                // metadata
+                options.Left.Left.Left,
+                // analyzer
+                options.Left.Left.Right,
+                // context
                 sourceProductionContext,
+                // syntax
                 options.Right,
                 sourceProductionContext.CancellationToken));
     }

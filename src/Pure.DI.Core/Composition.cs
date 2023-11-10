@@ -96,6 +96,7 @@ internal partial class Composition
             .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.ApiMembersBuilder).To<ApiMembersBuilder>()
             .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.ResolversFieldsBuilder).To<ResolversFieldsBuilder>()
             .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.ToStringMethodBuilder).To<ToStringMethodBuilder>()
+            .Bind<IBuilder<MdSetup, SetupClassAttribute>>().To<SetupClassAttributeBuilder>()
         
         // PerResolve
             .DefaultLifetime(Lifetime.PerResolve)

@@ -982,6 +982,92 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldSupportExternalSetup()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           interface IService
+           {
+               string Dep { get; }
+               
+               int Val { get; }
+           }
+       
+           class Service: IService
+           {
+               public Service(string dep, int val)
+               { 
+                    Dep = dep;
+                    Val = val;
+               }
+       
+               public string Dep { get; }
+               
+               public int Val { get; }
+           }
+       
+           static class Setup
+           {
+               private static void SetupGlobalComposition()
+               {
+                   DI.Setup("Global", CompositionKind.Global)
+                       .Bind<IService>().To<Service>();
+               }
+       
+               private static void SetupInternalComposition()
+               {
+                   DI.Setup("InternalComposition", CompositionKind.Internal)
+                       .Bind<int>().To(_ => 99);
+               }
+               
+               private static void SetupExternalComposition1()
+               {
+                   DI.Setup("ExternalComposition1", CompositionKind.External)
+                       .DependsOn("InternalComposition")
+                       .Bind<string>().To(_ => "Abc");
+               }
+               
+               private static void SetupExternalComposition2()
+               {
+                   DI.Setup("ExternalComposition2", CompositionKind.External)
+                       .DependsOn("InternalComposition")
+                       .Bind<string>().To(_ => "Abc");
+               }
+       
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .DependsOn("ExternalComposition1")
+                       .Root<IService>("Result");
+               }
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   var composition = new Composition();
+                   var result = composition.Result;
+                   Console.WriteLine(result.Dep);
+                   Console.WriteLine(result.Val);
+               }
+           }
+       }
+       """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Abc", "99"), result);
+    }
+    
+    [Fact]
     public async Task ShouldSupportStaticRoot()
     {
         // Given

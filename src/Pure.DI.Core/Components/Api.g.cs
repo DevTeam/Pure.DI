@@ -674,6 +674,13 @@ namespace Pure.DI
     [global::System.AttributeUsage(global::System.AttributeTargets.Class | global::System.AttributeTargets.Interface | global::System.AttributeTargets.Struct)]
     [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     internal sealed class GenericTypeArgumentAttribute : global::System.Attribute { }
+
+    [global::System.AttributeUsage(global::System.AttributeTargets.Assembly, AllowMultiple = true)]
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    internal sealed class SetupAttribute : global::System.Attribute
+    {
+        public SetupAttribute(string code, string usingDirectives, string staticUsingDirectives) { }
+    }
     
     /// <summary>
     /// Represents an ordinal attribute.
@@ -879,7 +886,9 @@ namespace Pure.DI
         /// <summary>
         /// No partial classes will be created when this value is specified, but this setting is the baseline for all installations in the current project, and the API call <see cref="IConfiguration.DependsOn"/> is not required.
         /// </summary>
-        Global
+        Global,
+        
+        External
     }
 
     /// <summary>

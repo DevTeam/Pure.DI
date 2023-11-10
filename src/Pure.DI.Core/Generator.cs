@@ -9,6 +9,7 @@ public sealed class Generator
 
     public void Generate(
         ParseOptions parseOptions,
+        ImmutableArray<MetadataReference> metadataReferences,
         AnalyzerConfigOptionsProvider analyzerConfigOptionsProvider,
         in SourceProductionContext sourceProductionContext,
         in ImmutableArray<GeneratorSyntaxContext> changes,
@@ -19,6 +20,9 @@ public sealed class Generator
             return;
         }
 
+        var compilationReferences = metadataReferences.OfType<CompilationReference>().ToArray();
+        var portableExecutableReferences = metadataReferences.OfType<PortableExecutableReference>().ToArray();
+        
         Generate(
             new GeneratorOptions(parseOptions, analyzerConfigOptionsProvider),
             new GeneratorSources(sourceProductionContext),

@@ -55,14 +55,17 @@ internal sealed class MetadataBuilder(
             .ToDictionary(i =>  i.Name, i => i);
         
         var globalSetups = setups.Where(i => i.Kind == CompositionKind.Global).ToList();
-        foreach (var setup in setupMap.Values.Where(i => i.Kind == CompositionKind.Public).OrderBy(i => i.Name))
+        foreach (var setup in setupMap.Values.Where(i => i.Kind is CompositionKind.Public or CompositionKind.External).OrderBy(i => i.Name))
         {
-            var setupsChain = globalSetups
+            var dependencies = globalSetups
                 .Concat(ResolveDependencies(setup, setupMap, new HashSet<CompositionName>()))
-                .Concat(Enumerable.Repeat(setup, 1));
-            
+                .GroupBy(i => i.Name)
+                .Select(i => i.Last())
+                .ToImmutableArray();
+
+            var setupsChain = dependencies.Concat(Enumerable.Repeat(setup, 1));
             MergeSetups(setupsChain, out var mergedSetup, true);
-            yield return mergedSetup;
+            yield return mergedSetup with { Dependencies = dependencies };
         }
     }
 

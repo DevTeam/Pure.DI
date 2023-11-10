@@ -15,4 +15,5 @@ internal record MdSetup(
     in ImmutableArray<MdTypeAttribute> TypeAttributes,
     in ImmutableArray<MdTagAttribute> TagAttributes,
     in ImmutableArray<MdOrdinalAttribute> OrdinalAttributes,
-    ITypeConstructor? TypeConstructor = default);
+    ITypeConstructor? TypeConstructor = default,
+    in ImmutableArray<MdSetup> Dependencies = default);

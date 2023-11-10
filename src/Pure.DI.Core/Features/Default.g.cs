@@ -9,7 +9,7 @@ namespace Pure.DI
         [global::System.Diagnostics.Conditional("A2768DE22DE3E430C9653990D516CC9B")]
         private static void Setup()
         {
-            DI.Setup("", CompositionKind.Global)
+            DI.Setup("E2FF47DE-7FD9-4628-8862-839094FCEB46", CompositionKind.Global)
                 .TypeAttribute<TypeAttribute>()
                 .TagAttribute<TagAttribute>()
                 .OrdinalAttribute<OrdinalAttribute>()

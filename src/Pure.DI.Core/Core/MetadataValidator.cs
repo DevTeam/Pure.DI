@@ -21,7 +21,7 @@ internal sealed class MetadataValidator(ILogger<MetadataValidator> logger) : IVa
             return false;
         }
         
-        if (setup.Kind == CompositionKind.Public
+        if (setup.Kind != CompositionKind.Global
             && (!SyntaxFacts.IsValidIdentifier(setup.Name.ClassName)
                 || !IsValidOrEmptyIdentifier(setup.Name.Namespace.Replace('.', '_'))))
         {
