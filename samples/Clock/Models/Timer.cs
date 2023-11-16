@@ -30,7 +30,7 @@ internal class Timer : ITimer, IDisposable
 
     public void Dispose() => _timer.Dispose();
 
-    private void Tick(object state)
+    private void Tick(object? state)
     {
         IObserver<Tick>[] observers;
         lock (_observers)
