@@ -30,7 +30,13 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
         var apiCode = new LinesBuilder();
         if (hints.GetHint(Hint.Resolve, SettingState.On) == SettingState.On)
         {
-            var rootArgs = composition.Args.Where(i => i.Node.Arg?.Source.Kind == ArgKind.Root).ToArray();
+            var rootArgs = composition
+                .Args
+                .Where(i => i.Node.Arg?.Source.Kind == ArgKind.Root)
+                .GroupBy(i => i.Node.Binding.Id)
+                .Select(i => i.First())
+                .ToArray();
+
             foreach (var rootArg in rootArgs)
             {
                 _logger.CompileWarning($"The root argument \"{rootArg.Node.Arg}\" of the composition is used. This root cannot be resolved using \"Resolve\" methods, so an exception will be thrown when trying to do so.", rootArg.Node.Arg?.Source.Source.GetLocation() ?? composition.Source.Source.Source.GetLocation(), LogId.WarningRootArgInResolveMethod);

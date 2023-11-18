@@ -217,10 +217,10 @@ namespace Sample
 
            class Service: IService
            {
-               public Service(IDependency dep, string name)
+               public Service(IDependency dep, int id, string name)
                {
                    Dep = dep;
-                   Name = name;
+                   Name = name + "_" + id;
                }
 
                public IDependency Dep { get; }
@@ -239,7 +239,7 @@ namespace Sample
                        .Root<Dependency2>()
                        .RootArg<string>("serviceName")
                        .RootArg<int>("id")
-                       .Root<IService>("Service");
+                       .Root<IService>("GetService");
                }
            }
 
@@ -248,7 +248,7 @@ namespace Sample
                public static void Main()
                {
                    var composition = new Composition();
-                   Console.WriteLine(composition.Service("Some Name").Name);
+                   Console.WriteLine(composition.GetService("Some Name", 99).Name);
                }
            }
         }
@@ -259,7 +259,7 @@ namespace Sample
         result.Errors.Count.ShouldBe(0);
         result.Warnings.Count.ShouldBe(2);
         result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod).ShouldBe(2);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Some Name"), result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Some Name_99"), result);
     }
     
     [Fact]

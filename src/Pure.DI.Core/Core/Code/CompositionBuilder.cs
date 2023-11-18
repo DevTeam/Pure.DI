@@ -57,6 +57,7 @@ internal class CompositionBuilder: IBuilder<DependencyGraph, CompositionCode>
             
             var args = map.Values
                 .Where(i => i.Node.Arg is not null)
+                .OrderBy(i => i.Node.Binding.Id)
                 .ToImmutableArray();
             
             var rootArgs = args
