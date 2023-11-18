@@ -154,6 +154,7 @@ internal sealed class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup
         _contracts.Clear();
         _tags.Clear();
         _binding = default;
+        _defaultLifetime = default;
     }
 
     private void FinishSetup()
