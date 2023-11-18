@@ -188,5 +188,6 @@ internal sealed class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup
         _ordinalAttributes.Clear();
         _usingDirectives.Clear();
         _setup = default;
+        _defaultLifetime = default;
     }
 }

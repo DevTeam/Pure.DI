@@ -781,4 +781,50 @@ namespace Sample
         // Then
         result.Success.ShouldBeTrue(result);
     }
+    
+    [Fact]
+    public async Task ShouldResetDefaultLifetimeForEachSetup()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           interface IService {}
+           class Service: IService {}
+           static class Setup
+           {
+               private static void SetupBaseComposition()
+               {
+                   DI.Setup("BaseComposition", CompositionKind.Internal)
+                       .DefaultLifetime(Lifetime.Singleton);
+               }
+       
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition").DependsOn("BaseComposition")
+                       .Bind<IService>().To<Service>()               
+                       .Root<IService>("Service");
+               }
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   var composition = new Composition();
+                   Console.WriteLine(composition.Service != composition.Service);
+               }
+           }
+       }
+       """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
+    }
 }
