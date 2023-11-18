@@ -3,6 +3,7 @@ namespace Build;
 
 using System.CommandLine;
 using HostApi;
+using NuGet.Versioning;
 using Pure.DI;
 
 internal partial class Composition
@@ -20,6 +21,7 @@ internal partial class Composition
             .Bind<ITarget<int>>().Bind<ICommandProvider>().Tags(nameof(BenchmarksTarget)).To<BenchmarksTarget>()
             .Bind<ITarget<int>>().Bind<ICommandProvider>().Tags(nameof(DeployTarget)).To<DeployTarget>()
             .Bind<ITarget<string>>().Bind<ICommandProvider>().Tags(nameof(TemplateTarget)).To<TemplateTarget>()
+            .Bind<ITarget<NuGetVersion>>().Bind<ICommandProvider>().Tags(nameof(UpdateTarget)).To<UpdateTarget>()
             .Bind<IEnumerable<Command>>().To(ctx =>
             {
                 ctx.Inject(out IEnumerable<ICommandProvider> commandProviders);
