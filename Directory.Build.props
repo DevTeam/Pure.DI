@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <BasePackageId>Pure.DI</BasePackageId>
+        <InternalVersion>2.0.24</InternalVersion>
         <LangVersion>11</LangVersion>
         <BaseTargetFramework>net8.0</BaseTargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
