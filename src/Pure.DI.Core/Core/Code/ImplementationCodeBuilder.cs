@@ -37,7 +37,7 @@ internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
             visits.Add((VisitFieldAction, field.Ordinal));
             continue;
 
-            void VisitFieldAction(BuildContext context) => BuildField(context, field, fieldVariable);
+            void VisitFieldAction(BuildContext context) => InjectField(context, field, fieldVariable);
         }
         
         foreach (var property in implementation.Properties.Where(i => !i.Property.IsRequired && i.Property.SetMethod?.IsInitOnly != true))
@@ -47,7 +47,7 @@ internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
             visits.Add((VisitFieldAction, property.Ordinal));
             continue;
 
-            void VisitFieldAction(BuildContext context) => BuildProperty(context, property, propertyVariable);
+            void VisitFieldAction(BuildContext context) => InjectProperty(context, property, propertyVariable);
         }
         
         foreach (var method in implementation.Methods)
@@ -57,14 +57,16 @@ internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
             visits.Add((VisitMethodAction, method.Ordinal));
             continue;
 
-            void VisitMethodAction(BuildContext context) => BuildMethod(context, method, methodArgs);
+            void VisitMethodAction(BuildContext context) => CallInitMethod(context, method, methodArgs);
         }
 
         var onCreatedStatements = ctx.BuildTools.OnCreated(ctx, ctx.Variable).ToArray();
+        var hasOnCreatedHandler = ctx.BuildTools.OnCreated(ctx, variable).Any();
+        var hasAlternativeInjections = visits.Any();
         var tempVariableInit =
             ctx.DependencyGraph.Source.Hints.GetHint(Hint.ThreadSafe, SettingState.On) == SettingState.On
             && ctx.Variable.Node.Lifetime != Lifetime.Transient
-            && (visits.Any() || ctx.BuildTools.OnCreated(ctx, ctx.Variable).Any());
+            && (hasAlternativeInjections || hasOnCreatedHandler);
 
         if (tempVariableInit)
         {
@@ -75,9 +77,22 @@ internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
                 onCreatedStatements = ctx.BuildTools.OnCreated(ctx, ctx.Variable).ToArray();
             }
         }
-        
-        BuildConstructor(ctx, ctorArgs, requiredFields, requiredProperties);
-        
+
+        var instantiation = CreateInstantiation(ctx, ctorArgs, requiredFields, requiredProperties);
+        if (variable.Node.Lifetime != Lifetime.Transient
+            || hasAlternativeInjections
+            || tempVariableInit
+            || hasOnCreatedHandler)
+        {
+            ctx.Code.Append($"{ctx.BuildTools.GetDeclaration(variable)}{ctx.Variable.VariableName} = ");
+            ctx.Code.Append(instantiation);
+            ctx.Code.AppendLine(";");
+        }
+        else
+        {
+            variable.VariableCode = instantiation;
+        }
+
         foreach (var visit in visits.OrderBy(i => i.Ordinal ?? int.MaxValue))
         {
             _cancellationToken.ThrowIfCancellationRequested();
@@ -92,50 +107,46 @@ internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
         }
     }
     
-    private static void BuildConstructor(
+    private static string CreateInstantiation(
         BuildContext ctx,
         ImmutableArray<Variable> constructorArgs,
         ImmutableArray<(Variable RequiredVariable,DpField RequiredField)>.Builder requiredFields,
         ImmutableArray<(Variable RequiredVariable, DpProperty RequiredProperty)>.Builder requiredProperties)
     {
+        var code = new StringBuilder();
         var variable = ctx.Variable;
         var required = requiredFields.Select(i => (Variable: i.RequiredVariable, i.RequiredField.Field.Name))
             .Concat(requiredProperties.Select(i => (Variable: i.RequiredVariable, i.RequiredProperty.Property.Name)))
             .ToArray();
 
-        var hasRequired = required.Any();
         var args = string.Join(", ", constructorArgs.Select(i => ctx.BuildTools.OnInjected(ctx, i)));
-        var newStatement = variable.InstanceType.IsTupleType ? $"({args})" : $"new {variable.InstanceType}({args})";
-        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = {newStatement}{(hasRequired ? "" : ";")}");
-        if (!hasRequired)
+        code.Append(variable.InstanceType.IsTupleType ? $"({args})" : $"new {variable.InstanceType}({args})");
+        if (required.Any())
         {
-            return;
-        }
-
-        ctx.Code.AppendLine("{");
-        using (ctx.Code.Indent())
-        {
+            code.Append(" { ");
             for (var index = 0; index < required.Length; index++)
             {
                 var (v, name) = required[index];
-                ctx.Code.AppendLine($"{name} = {ctx.BuildTools.OnInjected(ctx, v)}{(index < required.Length - 1 ? "," : "")}");
+                code.Append($"{name} = {ctx.BuildTools.OnInjected(ctx, v)}{(index < required.Length - 1 ? ", " : "")}");
             }
+            
+            code.Append(" }");
         }
-
-        ctx.Code.AppendLine("};");
+        
+        return code.ToString();
     }
     
-    private static void BuildField(BuildContext ctx, DpField field, Variable fieldVariable)
+    private static void InjectField(BuildContext ctx, DpField field, Variable fieldVariable)
     {
         ctx.Code.AppendLine($"{ctx.Variable.VariableName}.{field.Field.Name} = {ctx.BuildTools.OnInjected(ctx, fieldVariable)};");
     }
 
-    private static void BuildProperty(BuildContext ctx, DpProperty property, Variable propertyVariable)
+    private static void InjectProperty(BuildContext ctx, DpProperty property, Variable propertyVariable)
     {
         ctx.Code.AppendLine($"{ctx.Variable.VariableName}.{property.Property.Name} = {ctx.BuildTools.OnInjected(ctx, propertyVariable)};");
     }
 
-    private static void BuildMethod(BuildContext ctx, DpMethod method, ImmutableArray<Variable> methodArgs)
+    private static void CallInitMethod(BuildContext ctx, DpMethod method, ImmutableArray<Variable> methodArgs)
     {
         var args = string.Join(", ", methodArgs.Select(i => ctx.BuildTools.OnInjected(ctx, i)));
         ctx.Code.AppendLine($"{ctx.Variable.VariableName}.{method.Method.Name}({args});");

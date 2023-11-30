@@ -23,7 +23,7 @@ internal class BuildTools : IBuildTools
     {
         if (ctx.DependencyGraph.Source.Hints.GetHint(Hint.OnDependencyInjection) != SettingState.On)
         {
-            return variable.VariableName;
+            return variable.VariableCode;
         }
 
         if (!_filter.IsMeetRegularExpression(
@@ -33,11 +33,11 @@ internal class BuildTools : IBuildTools
                 (Hint.OnDependencyInjectionTagRegularExpression, variable.Injection.Tag.ValueToString()),
                 (Hint.OnDependencyInjectionLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
         {
-            return variable.VariableName;
+            return variable.VariableCode;
         }
         
         var tag = GetTag(ctx, variable);
-        return $"{Names.OnDependencyInjectionMethodName}<{variable.ContractType}>({variable.VariableName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})";
+        return $"{Names.OnDependencyInjectionMethodName}<{variable.ContractType}>({variable.VariableCode}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})";
     }
     
     public IEnumerable<Line> OnCreated(BuildContext ctx, Variable variable)
