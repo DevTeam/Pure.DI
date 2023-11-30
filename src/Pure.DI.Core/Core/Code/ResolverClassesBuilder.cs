@@ -116,7 +116,9 @@ internal sealed class ResolverClassesBuilder: IBuilder<CompositionCode, Composit
         {
             if (defaultRoot is not null)
             {
-                code.AppendLine($"return composition.{defaultRoot.PropertyName};");
+                var isStatic = (defaultRoot.Kind & RootKinds.Static) == RootKinds.Static;
+                var isMethod = !defaultRoot.Args.IsEmpty || (defaultRoot.Kind & RootKinds.Method) == RootKinds.Method;
+                code.AppendLine($"return {(isStatic ? composition.Source.Source.Name.ClassName : "composition")}.{defaultRoot.PropertyName}{(isMethod ? "()": "")};");
             }
             else
             {
@@ -141,7 +143,9 @@ internal sealed class ResolverClassesBuilder: IBuilder<CompositionCode, Composit
 
             if (defaultRoot is not null)
             {
-                code.AppendLine($"if (Equals(tag, null)) return composition.{defaultRoot.PropertyName};");
+                var isStatic = (defaultRoot.Kind & RootKinds.Static) == RootKinds.Static;
+                var isMethod = !defaultRoot.Args.IsEmpty || (defaultRoot.Kind & RootKinds.Method) == RootKinds.Method;
+                code.AppendLine($"if (Equals(tag, null)) return {(isStatic ? composition.Source.Source.Name.ClassName : "composition")}.{defaultRoot.PropertyName}{(isMethod ? "()": "")};");
             }
 
             code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{Names.CannotResolve} \\\"{{tag}}\\\" of type {resolver.Type}.\");");

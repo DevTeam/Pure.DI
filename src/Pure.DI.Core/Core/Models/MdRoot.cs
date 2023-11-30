@@ -5,7 +5,8 @@ internal readonly record struct MdRoot(
     SemanticModel SemanticModel,
     ITypeSymbol RootType,
     string Name,
-    MdTag? Tag)
+    MdTag? Tag,
+    RootKinds Kind)
 {
     public override string ToString() => $"Root<{RootType}>(\"{Name}\", {Tag.ToString()})";   
 }

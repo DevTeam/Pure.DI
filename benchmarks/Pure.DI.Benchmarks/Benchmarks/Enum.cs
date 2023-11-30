@@ -17,14 +17,13 @@ public partial class Enum : BenchmarkBase
         // FormatCode = On
         // ToString = On
         DI.Setup(nameof(Enum))
-            .Bind<ICompositionRoot>().To<CompositionRoot>()
             .Bind<IService1>().To<Service1>()
             .Bind<IService2>().To<Service2Enum>()
             .Bind<IService3>().To<Service3>()
             .Bind<IService3>().Tags(2).To<Service3v2>()
             .Bind<IService3>().Tags(3).To<Service3v3>()
             .Bind<IService3>().Tags(4).To<Service3v4>()
-            .Root<ICompositionRoot>("Root");
+            .Root<CompositionRoot>("PureDIByCR", default, RootKinds.Method | RootKinds.Partial);
     
     protected override TActualContainer? CreateContainer<TActualContainer, TAbstractContainer>()
         where TActualContainer : class
@@ -41,19 +40,17 @@ public partial class Enum : BenchmarkBase
     }
 
     [Benchmark(Description = "Pure.DI Resolve<T>()")]
-    public ICompositionRoot PureDI() => Resolve<ICompositionRoot>();
+    public CompositionRoot PureDI() => Resolve<CompositionRoot>();
     
     [Benchmark(Description = "Pure.DI Resolve(Type)")]
-    public object PureDINonGeneric() => Resolve(typeof(ICompositionRoot));
+    public object PureDINonGeneric() => Resolve(typeof(CompositionRoot));
 
     [Benchmark(Description = "Pure.DI composition root")]
-    public ICompositionRoot PureDIByCR() => Root;
+    public partial CompositionRoot PureDIByCR();
 
     [Benchmark(Description = "Hand Coded", Baseline = true)]
-    public ICompositionRoot HandCoded() =>
-        new CompositionRoot(
-            new Service1(
-                new Service2Enum(EnumerableOfIService3())),
+    public CompositionRoot HandCoded() =>
+        new(new Service1(new Service2Enum(EnumerableOfIService3())),
             new Service2Enum(EnumerableOfIService3()),
             new Service2Enum(EnumerableOfIService3()),
             new Service2Enum(EnumerableOfIService3()),

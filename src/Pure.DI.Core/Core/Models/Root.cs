@@ -6,7 +6,8 @@ internal record Root(
     in Injection Injection,
     string Name,
     in ImmutableArray<Line> Lines,
-    in ImmutableArray<Variable> Args)
+    in ImmutableArray<Variable> Args,
+    RootKinds Kind)
 {
     public bool IsPublic => !string.IsNullOrWhiteSpace(Name);
 

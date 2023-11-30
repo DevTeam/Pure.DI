@@ -819,4 +819,193 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(ImmutableArray.Create("Initialize dep", "Initialize dep", "Initialize", "True", "Activate"), result);
     }
+    
+    [Fact]
+    public async Task ShouldSupportStaticRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .Bind<string>().To(_ => "Abc")
+                       .Root<string>("Root", default, RootKinds.Static);
+               }
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   Console.WriteLine(Composition.Root);
+               }
+           }
+       }
+       """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Abc"), result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportMethodRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .Bind<string>().To(_ => "Abc")
+                       .Root<string>("Root", default, RootKinds.Method);
+               }
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   Console.WriteLine(new Composition().Root());
+               }
+           }
+       }
+       """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Abc"), result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportStaticMethodRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .Bind<string>().To(_ => "Abc")
+                       .Root<string>("Root", default, RootKinds.Static | RootKinds.Method);
+               }
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   Console.WriteLine(Composition.Root());
+               }
+           }
+       }
+       """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Abc"), result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportPartialMethodRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           partial class Composition
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup(nameof(Composition))
+                       .Bind<string>().To(_ => "Abc")
+                       .Root<string>("Root", default, RootKinds.Partial | RootKinds.Method);
+               }
+               
+               public partial string Root();
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   Console.WriteLine(new Composition().Root());
+               }
+           }
+       }
+       """.RunAsync( new Options( LanguageVersion.CSharp9 ));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Abc"), result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportPartialStaticMethodRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           partial class Composition
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup(nameof(Composition))
+                       .Bind<string>().To(_ => "Abc")
+                       .Root<string>("Root", default, RootKinds.Partial | RootKinds.Static | RootKinds.Method);
+               }
+               
+               public static partial string Root();
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   Console.WriteLine(Composition.Root());
+               }
+           }
+       }
+       """.RunAsync( new Options( LanguageVersion.CSharp9 ));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Abc"), result);
+    }
 }

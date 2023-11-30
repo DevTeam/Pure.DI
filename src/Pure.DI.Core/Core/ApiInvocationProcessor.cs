@@ -212,7 +212,13 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                                 tag = new MdTag(0, semanticModel.GetConstantValue<object>(rootArgs[1].Expression));
                             }
 
-                            metadataVisitor.VisitRoot(new MdRoot(rootType, semanticModel, rootSymbol, name, tag));
+                            var rootKind = RootKinds.Default;
+                            if (rootArgs.Count >= 3)
+                            {
+                                rootKind = semanticModel.GetConstantValue<RootKinds>(rootArgs[2].Expression);
+                            }
+
+                            metadataVisitor.VisitRoot(new MdRoot(rootType, semanticModel, rootSymbol, name, tag, rootKind));
                         }
 
                         break;

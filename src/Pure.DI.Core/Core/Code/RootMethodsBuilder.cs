@@ -47,25 +47,47 @@ internal sealed class RootMethodsBuilder: IBuilder<CompositionCode, CompositionC
     private void BuildRoot(CompositionCode composition, ITypeSymbol type, Root root)
     {
         var code = composition.Code;
-        var hasRootArgs = !root.Args.IsEmpty;
+        var isMethod = !root.Args.IsEmpty || (root.Kind & RootKinds.Method) == RootKinds.Method;
         var rootArgsStr = "";
-        if (hasRootArgs)
+        if (isMethod)
         {
-            hasRootArgs = true;
+            isMethod = true;
             rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{arg.InstanceType} {arg.VariableName}"))})";
         }
 
-        if (hasRootArgs)
+        if (isMethod)
         {
             _buildTools.AddPureHeader(code);
         }
 
-        code.AppendLine($"{(root.IsPublic ? "public" : "private")} {type} {root.PropertyName}{rootArgsStr}");
+        var isStatic = (root.Kind & RootKinds.Static) == RootKinds.Static;
+        var isPartial = (root.Kind & RootKinds.Partial) == RootKinds.Partial;
+        var name = new StringBuilder();
+        name.Append(root.IsPublic ? "public" : "private");
+        if (isStatic)
+        {
+            name.Append(" static");
+        }
+
+        if (isPartial)
+        {
+            name.Append(" partial");
+        }
+        
+        name.Append(' ');
+        name.Append(type);
+        
+        name.Append(' ');
+        name.Append(root.PropertyName);
+        
+        name.Append(rootArgsStr);
+        
+        code.AppendLine(name.ToString());
         code.AppendLine("{");
         using (code.Indent())
         {
             var indentToken = Disposables.Empty;
-            if (!hasRootArgs)
+            if (!isMethod)
             {
                 _buildTools.AddPureHeader(code);
                 code.AppendLine("get");
@@ -96,7 +118,7 @@ internal sealed class RootMethodsBuilder: IBuilder<CompositionCode, CompositionC
                 indentToken.Dispose();
             }
 
-            if (!hasRootArgs)
+            if (!isMethod)
             {
                 code.AppendLine("}");
             }

@@ -20,12 +20,14 @@ internal sealed class RootsBuilder: IBuilder<DependencyGraph, IReadOnlyDictionar
             }
 
             string name;
+            var kind = RootKinds.Default;
             if (node.Root is { } root)
             {
                 if (dependencyGraph.Graph.TryGetInEdges(node, out var rootDependencies) && rootDependencies.Count == 1)
                 {
                     node = rootDependencies.Single().Source;
                     name = root.Source.Name;
+                    kind = root.Source.Kind;
                 }
                 else
                 {
@@ -48,7 +50,8 @@ internal sealed class RootsBuilder: IBuilder<DependencyGraph, IReadOnlyDictionar
                         injection,
                         name,
                         ImmutableArray<Line>.Empty,
-                        ImmutableArray<Variable>.Empty)));
+                        ImmutableArray<Variable>.Empty,
+                        kind)));
             }
         }
 

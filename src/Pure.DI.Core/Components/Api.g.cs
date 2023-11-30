@@ -869,6 +869,18 @@ namespace Pure.DI
         /// </summary>
         Global
     }
+
+    [Flags]
+    public enum RootKinds
+    {
+        Default = 0,
+        
+        Method = 1,
+        
+        Static = 2,
+        
+        Partial = 4
+    }
     
     /// <summary>
     /// An API for a Dependency Injection setup.
@@ -1000,7 +1012,7 @@ namespace Pure.DI
         /// <param name="tag">Optional argument specifying the tag for the root of the Composition.</param>
         /// <typeparam name="T">The Composition root type.</typeparam>
         /// <returns>API reference to the installation continuation chain.</returns>
-        IConfiguration Root<T>(string name = "", object tag = null);
+        IConfiguration Root<T>(string name = "", object tag = null, RootKinds kind = RootKinds.Default);
 
         /// <summary>
         /// Defines a hint for fine-tuning code generation.
@@ -1351,7 +1363,7 @@ namespace Pure.DI
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-            public IConfiguration Root<T>(string name, object tag)
+            public IConfiguration Root<T>(string name, object tag, RootKinds rootKind)
             {
                 return Configuration.Shared;
             }

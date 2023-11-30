@@ -220,7 +220,6 @@ public static class TestExtensions
                 MetadataReference.CreateFromFile(typeof(SortedSet<object>).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Uri).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(IGeneratorOptions).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(SourceGenerator).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Regex).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(IAsyncEnumerable<>).Assembly.Location));

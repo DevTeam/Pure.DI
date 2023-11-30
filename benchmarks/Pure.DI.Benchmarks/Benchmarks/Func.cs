@@ -17,11 +17,10 @@ public partial class Func : BenchmarkBase
         // FormatCode = On
         // ToString = On
         DI.Setup(nameof(Func))
-            .Bind<ICompositionRoot>().To<CompositionRoot>()
             .Bind<IService1>().To<Service1>()
             .Bind<IService2>().To<Service2Func>()
             .Bind<IService3>().To<Service3>()
-            .Root<ICompositionRoot>("Root");
+            .Root<CompositionRoot>("PureDIByCR", default, RootKinds.Method | RootKinds.Partial);
 
     protected override TActualContainer? CreateContainer<TActualContainer, TAbstractContainer>()
         where TActualContainer : class
@@ -35,16 +34,16 @@ public partial class Func : BenchmarkBase
     }
 
     [Benchmark(Description = "Pure.DI Resolve<T>()")]
-    public ICompositionRoot PureDI() => Resolve<ICompositionRoot>();
+    public CompositionRoot PureDI() => Resolve<CompositionRoot>();
     
     [Benchmark(Description = "Pure.DI Resolve(Type)")]
-    public object PureDINonGeneric() => Resolve(typeof(ICompositionRoot));
+    public object PureDINonGeneric() => Resolve(typeof(CompositionRoot));
 
     [Benchmark(Description = "Pure.DI composition root")]
-    public ICompositionRoot PureDIByCR() => Root;
+    public partial CompositionRoot PureDIByCR();
 
     [Benchmark(Description = "Hand Coded", Baseline = true)]
-    public ICompositionRoot HandCoded()
+    public CompositionRoot HandCoded()
     {
         var func = () => new Service3();
         return new CompositionRoot(
