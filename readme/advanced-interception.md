@@ -150,16 +150,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM11D08di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM11D30di;
   
   public Composition()
   {
-    _disposableSingletonsM11D08di = new global::System.IDisposable[0];
+    _disposableSingletonsM11D30di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM11D08di = new global::System.IDisposable[0];
+    _disposableSingletonsM11D30di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -171,9 +171,7 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM11D08di1 = new Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Dependency();
-      var transientM11D08di0 = new Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Service(OnDependencyInjection<Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IDependency>(transientM11D08di1, null, Pure.DI.Lifetime.Transient));
-      return OnDependencyInjection<Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService>(transientM11D08di0, null, Pure.DI.Lifetime.Transient);
+      return OnDependencyInjection<Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService>(new Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Service(OnDependencyInjection<Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IDependency>(new Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.Dependency(), null, Pure.DI.Lifetime.Transient)), null, Pure.DI.Lifetime.Transient);
     }
   }
   #endregion
@@ -185,7 +183,7 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>()
   {
-    return ResolverM11D08di<T>.Value.Resolve(this);
+    return ResolverM11D30di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -194,7 +192,7 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>(object? tag)
   {
-    return ResolverM11D08di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM11D30di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
@@ -203,10 +201,10 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM11D08di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM11D08di;
+    var index = (int)(_bucketSizeM11D30di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM11D30di;
     do {
-      ref var pair = ref _bucketsM11D08di[index];
+      ref var pair = ref _bucketsM11D30di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -222,10 +220,10 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM11D08di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM11D08di;
+    var index = (int)(_bucketSizeM11D30di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM11D30di;
     do {
-      ref var pair = ref _bucketsM11D08di[index];
+      ref var pair = ref _bucketsM11D30di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -268,27 +266,27 @@ partial class Composition
         "  Composition ..> Service : IService Root";
   }
   
-  private readonly static int _bucketSizeM11D08di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM11D08di;
+  private readonly static int _bucketSizeM11D30di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM11D30di;
   
   
   static Composition()
   {
-    var valResolverM11D08di_0000 = new ResolverM11D08di_0000();
-    ResolverM11D08di<Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService>.Value = valResolverM11D08di_0000;
-    _bucketsM11D08di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM11D30di_0000 = new ResolverM11D30di_0000();
+    ResolverM11D30di<Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService>.Value = valResolverM11D30di_0000;
+    _bucketsM11D30di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM11D08di,
+      out _bucketSizeM11D30di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService), valResolverM11D08di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService), valResolverM11D30di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM11D08di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM11D30di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM11D08di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM11D30di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -301,7 +299,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM11D08di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService>
+  private sealed class ResolverM11D30di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService>
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     public Pure.DI.UsageTests.Interception.AdvancedInterceptionScenario.IService Resolve(Composition composition)

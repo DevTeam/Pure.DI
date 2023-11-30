@@ -71,7 +71,7 @@ service.Dependency.DependencyName.ShouldBe("dependency 123");
 ```mermaid
 classDiagram
   class Composition {
-    +IService CreateService(string serviceName, int id, string dependencyName)
+    +IService CreateService(int id, string dependencyName, string serviceName)
   }
   Dependency --|> IDependency : 
   class Dependency {
@@ -104,16 +104,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM11D08di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM11D30di;
   
   public Composition()
   {
-    _disposableSingletonsM11D08di = new global::System.IDisposable[0];
+    _disposableSingletonsM11D30di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM11D08di = new global::System.IDisposable[0];
+    _disposableSingletonsM11D30di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -121,11 +121,9 @@ partial class Composition
   [global::System.Diagnostics.Contracts.Pure]
   #endif
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-  public Pure.DI.UsageTests.Basics.RootArgumentsScenario.IService CreateService(string serviceName, int id, string dependencyName)
+  public Pure.DI.UsageTests.Basics.RootArgumentsScenario.IService CreateService(int id, string dependencyName, string serviceName)
   {
-    var transientM11D08di1 = new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Dependency(id, dependencyName);
-    var transientM11D08di0 = new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Service(serviceName, transientM11D08di1);
-    return transientM11D08di0;
+    return new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Service(serviceName, new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Dependency(id, dependencyName));
   }
   #endregion
   
@@ -135,7 +133,7 @@ partial class Composition
     return
       "classDiagram\n" +
         "  class Composition {\n" +
-          "    +IService CreateService(string serviceName, int id, string dependencyName)\n" +
+          "    +IService CreateService(int id, string dependencyName, string serviceName)\n" +
         "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +

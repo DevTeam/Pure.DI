@@ -65,16 +65,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM11D08di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM11D30di;
   
   public Composition()
   {
-    _disposableSingletonsM11D08di = new global::System.IDisposable[0];
+    _disposableSingletonsM11D30di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM11D08di = new global::System.IDisposable[0];
+    _disposableSingletonsM11D30di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -86,8 +86,7 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM11D08di0 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
-      return transientM11D08di0;
+      return new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
     }
   }
   
@@ -99,9 +98,7 @@ partial class Composition
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
-      var transientM11D08di1 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
-      var transientM11D08di0 = new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(transientM11D08di1);
-      return transientM11D08di0;
+      return new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency());
     }
   }
   #endregion
