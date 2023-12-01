@@ -564,6 +564,96 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldSupportPerResolveWhenStruct()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           interface IDependency1 {}
+       
+           struct Dependency1: IDependency1 {}
+       
+           interface IDependency2
+           {
+               IDependency1 Dep1 { get; }
+           }
+       
+           struct Dependency2: IDependency2
+           {
+               public Dependency2(IDependency1 dep1) => Dep1 = dep1;
+       
+               public IDependency1 Dep1 { get; }
+           }
+       
+           interface IService
+           {
+               IDependency1 Dep1 { get; }
+       
+               IDependency2 Dep2 { get; }
+               
+               IDependency1 Dep3 { get; }
+           }
+       
+           class Service: IService
+           {
+               public Service(IDependency1 dep1, IDependency2 dep2, IDependency1 dep3)
+               {
+                   Dep1 = dep1;
+                   Dep2 = dep2;
+                   Dep3 = dep3;
+               }
+       
+               public IDependency1 Dep1 { get; }
+       
+               public IDependency2 Dep2 { get; }
+               
+               public IDependency1 Dep3 { get; }
+           }
+           
+           internal partial class Composition
+           {
+               partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime)            
+               {
+                   Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} created");            
+               }
+           }
+       
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .Hint(Hint.OnNewInstance, "On")
+                       .Bind<IDependency1>().As(Lifetime.PerResolve).To<Dependency1>()
+                       .Bind<IDependency2>().To<Dependency2>()
+                       .Bind<IService>().To<Service>()
+                       .Root<IService>("Service");
+               }
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   var composition = new Composition();
+                   var service = composition.Service;
+               }
+           }
+       }
+       """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Dependency1 '' PerResolve created", "Sample.Dependency2 '' Transient created", "Sample.Service '' Transient created"), result);
+    }
+    
+    [Fact]
     public async Task ShouldSupportPreResolveWithinSingleton()
     {
         // Given
