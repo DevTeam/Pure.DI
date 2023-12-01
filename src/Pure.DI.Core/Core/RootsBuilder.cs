@@ -20,7 +20,7 @@ internal sealed class RootsBuilder: IBuilder<DependencyGraph, IReadOnlyDictionar
             }
 
             string name;
-            var kind = RootKinds.Default;
+            RootKinds kind;
             if (node.Root is { } root)
             {
                 if (dependencyGraph.Graph.TryGetInEdges(node, out var rootDependencies) && rootDependencies.Count == 1)

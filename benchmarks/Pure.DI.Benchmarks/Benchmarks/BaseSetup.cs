@@ -1,4 +1,5 @@
 ﻿// ReSharper disable UnusedType.Global
+// ReSharper disable UnusedMember.Local
 namespace Pure.DI.Benchmarks.Benchmarks;
 
 internal class BaseSetup

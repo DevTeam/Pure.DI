@@ -14,11 +14,10 @@ internal sealed class ContractsBuilder: IBuilder<ContractsBuildContext, ISet<Inj
         var hasContextTag = binding.Factory is { HasContextTag: true };
         var contracts = new HashSet<Injection>();
         var bindingTags = new HashSet<object?>(binding.Tags.Select(i => i.Value));
-        foreach (var contract in binding.Contracts)
+        foreach (var (_, _, contractType, immutableArray) in binding.Contracts)
         {
-            var contractType = contract.ContractType;
             var contractTags = new HashSet<object?>(bindingTags);
-            foreach (var tag in contract.Tags)
+            foreach (var tag in immutableArray)
             {
                 contractTags.Add(tag.Value);
             }

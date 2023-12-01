@@ -1,3 +1,4 @@
+// ReSharper disable ClassNeverInstantiated.Global
 namespace WeatherForecast;
 
 internal class CounterService : ICounterService

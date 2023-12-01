@@ -1,6 +1,7 @@
 ﻿// ReSharper disable InvertIf
 // ReSharper disable once ClassNeverInstantiated.Global
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 namespace Pure.DI.Core;
 
 [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]

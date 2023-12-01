@@ -239,7 +239,7 @@ public static class TestExtensions
             return compilation;
         }
 
-        var hasError = errors.Any();
+        var hasError = errors.Count != 0;
         if (!hasError)
         {
             return compilation;

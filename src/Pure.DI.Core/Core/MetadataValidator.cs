@@ -35,11 +35,13 @@ internal sealed class MetadataValidator : IValidator<MdSetup>
 
         foreach (var root in setup.Roots)
         {
-            if (!IsValidOrEmptyIdentifier(root.Name))
+            if (IsValidOrEmptyIdentifier(root.Name))
             {
-                _logger.CompileError($"Invalid root name \"{root.Name}\".", root.Source.GetLocation(), LogId.ErrorInvalidMetadata);
-                isValid = false;
+                continue;
             }
+
+            _logger.CompileError($"Invalid root name \"{root.Name}\".", root.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+            isValid = false;
         }
 
         foreach (var routeGroups in setup.Roots.GroupBy(root => new Injection(root.RootType, root.Tag?.Value)))
@@ -118,6 +120,7 @@ internal sealed class MetadataValidator : IValidator<MdSetup>
             .Select(i => i.ContractType)
             .ToArray();
 
+        // ReSharper disable once InvertIf
         if (notSupportedContracts.Any())
         {
             _logger.CompileError($"{implementationType} does not implement {string.Join(", ", notSupportedContracts.Select(i => i.ToString()))}.", location, LogId.ErrorInvalidMetadata);

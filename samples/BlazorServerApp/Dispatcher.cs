@@ -1,3 +1,4 @@
+// ReSharper disable ClassNeverInstantiated.Global
 namespace BlazorServerApp;
 
 using System.Diagnostics.CodeAnalysis;
