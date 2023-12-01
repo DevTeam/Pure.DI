@@ -61,36 +61,36 @@ public abstract class BenchmarkBase
 
 #if !DEBUG
     [Benchmark]
-    public void Autofac() => _autofacContainer.Resolve<ICompositionRoot>();
+    public ICompositionRoot Autofac() => _autofacContainer.Resolve<ICompositionRoot>();
     
     [Benchmark]
-    public void DryIoc() => _dryIocContainer.Resolve<ICompositionRoot>();
+    public ICompositionRoot DryIoc() => _dryIocContainer.Resolve<ICompositionRoot>();
 
     [Benchmark(Description = "Simple Injector")]
-    public void SimpleInjector() => _simpleInjectorContainer.GetInstance<ICompositionRoot>();
+    public ICompositionRoot SimpleInjector() => _simpleInjectorContainer.GetInstance<ICompositionRoot>();
 
     [Benchmark]
-    public void LightInject() => _lightInjectContainer.GetInstance<ICompositionRoot>();
+    public ICompositionRoot LightInject() => _lightInjectContainer.GetInstance<ICompositionRoot>();
     
     [Benchmark(Description = "Microsoft DI")]
-    public void MicrosoftDependencyInjection() => _microsoftContainer.GetService<ICompositionRoot>();
+    public object? MicrosoftDependencyInjection() => _microsoftContainer.GetService<ICompositionRoot>();
     
     [Benchmark(Description = "Castle Windsor")]
-    public void CastleWindsor() => _windsorContainerContainer.Resolve<ICompositionRoot>();
+    public ICompositionRoot CastleWindsor() => _windsorContainerContainer.Resolve<ICompositionRoot>();
 
     [Benchmark]
-    public void Ninject() => _ninjectContainer.Get<ICompositionRoot>();
+    public ICompositionRoot Ninject() => _ninjectContainer.Get<ICompositionRoot>();
 
     [Benchmark]
-    public void Unity() => _unityContainer.Resolve<ICompositionRoot>();
+    public ICompositionRoot Unity() => _unityContainer.Resolve<ICompositionRoot>();
     
 #if LEGACY
     [Benchmark(Description = "IoC.Container")]
-    public void IoCContainer() => _iocContainer.Resolve<ICompositionRoot>();
+    public ICompositionRoot IoCContainer() => _iocContainer.Resolve<ICompositionRoot>();
 
     [Benchmark(Description = "IoC.Container composition root")]
     // ReSharper disable once InconsistentNaming
-    public void IoCContainerByCR() => _iocRootResolver();
+    public ICompositionRoot IoCContainerByCR() => _iocRootResolver();
 #endif
 #endif
 }

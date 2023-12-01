@@ -87,7 +87,7 @@ internal class ServiceCollectionFactory<TComposition>
     /// </summary>
     /// <param name="composition">An instance of composition.</param>
     /// <returns>An instance of <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/>.</returns>
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
 #endif
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]

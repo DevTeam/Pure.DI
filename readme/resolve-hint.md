@@ -65,25 +65,24 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM11D30di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM12D01di;
   
   public Composition()
   {
-    _disposableSingletonsM11D30di = new global::System.IDisposable[0];
+    _disposableSingletonsM12D01di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM11D30di = new global::System.IDisposable[0];
+    _disposableSingletonsM12D01di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
   public Pure.DI.UsageTests.Hints.ResolveHintScenario.IDependency DependencyRoot
   {
-    #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+    #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
     #endif
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
       return new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
@@ -92,10 +91,9 @@ partial class Composition
   
   public Pure.DI.UsageTests.Hints.ResolveHintScenario.IService Root
   {
-    #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+    #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
     #endif
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     get
     {
       return new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency());

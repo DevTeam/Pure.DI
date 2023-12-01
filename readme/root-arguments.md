@@ -104,23 +104,22 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM11D30di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM12D01di;
   
   public Composition()
   {
-    _disposableSingletonsM11D30di = new global::System.IDisposable[0];
+    _disposableSingletonsM12D01di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM11D30di = new global::System.IDisposable[0];
+    _disposableSingletonsM12D01di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
   [global::System.Diagnostics.Contracts.Pure]
   #endif
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public Pure.DI.UsageTests.Basics.RootArgumentsScenario.IService CreateService(int id, string dependencyName, string serviceName)
   {
     return new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Service(serviceName, new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Dependency(id, dependencyName));

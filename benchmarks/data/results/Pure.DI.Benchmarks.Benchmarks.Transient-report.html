@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>Pure.DI.Benchmarks.Benchmarks.Transient-20230730-130501</title>
+<title>Pure.DI.Benchmarks.Benchmarks.Transient-20231201-183455</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -13,29 +13,29 @@
 </head>
 <body>
 <pre><code>
-BenchmarkDotNet v0.13.6, Windows 11 (10.0.22621.1992/22H2/2022Update/SunValley2)
-Intel Core i7-10875H CPU 2.30GHz, 1 CPU, 16 logical and 8 physical cores
-.NET SDK 7.0.306
-  [Host]     : .NET 7.0.9 (7.0.923.32018), X64 RyuJIT AVX2
-  DefaultJob : .NET 7.0.9 (7.0.923.32018), X64 RyuJIT AVX2
+BenchmarkDotNet v0.13.10, Windows 10 (10.0.19045.3693/22H2/2022Update)
+12th Gen Intel Core i7-12800H, 1 CPU, 20 logical and 14 physical cores
+.NET SDK 8.0.100
+  [Host]     : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
+  DefaultJob : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
 </code></pre>
 <pre><code></code></pre>
 
 <table>
-<thead><tr><th>              Method</th><th>   Mean</th><th>  Error</th><th> StdDev</th><th>Ratio</th><th>RatioSD</th>
+<thead><tr><th>Method              </th><th>Mean   </th><th>Error  </th><th>StdDev </th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</thead><tbody><tr><td>&#39;Pure.DI composition root&#39;</td><td>3.905 ns</td><td>0.1264 ns</td><td>0.1120 ns</td><td>0.93</td><td>0.04</td>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>4.223 ns</td><td>0.1146 ns</td><td>0.1016 ns</td><td>1.00</td><td>0.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>5.156 ns</td><td>0.1445 ns</td><td>0.1207 ns</td><td>1.22</td><td>0.04</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>8.982 ns</td><td>0.1606 ns</td><td>0.1341 ns</td><td>2.13</td><td>0.05</td>
-</tr><tr><td>LightInject</td><td>12.760 ns</td><td>0.2849 ns</td><td>0.4086 ns</td><td>3.03</td><td>0.14</td>
-</tr><tr><td>DryIoc</td><td>21.621 ns</td><td>0.1693 ns</td><td>0.1501 ns</td><td>5.12</td><td>0.13</td>
-</tr><tr><td>&#39;Simple Injector&#39;</td><td>25.124 ns</td><td>0.2307 ns</td><td>0.2045 ns</td><td>5.95</td><td>0.14</td>
-</tr><tr><td>&#39;Microsoft DI&#39;</td><td>30.622 ns</td><td>0.6353 ns</td><td>0.8261 ns</td><td>7.20</td><td>0.23</td>
-</tr><tr><td>Unity</td><td>3,951.550 ns</td><td>66.6363 ns</td><td>71.3001 ns</td><td>938.96</td><td>29.00</td>
-</tr><tr><td>Autofac</td><td>9,226.310 ns</td><td>134.1379 ns</td><td>125.4727 ns</td><td>2,190.09</td><td>64.23</td>
-</tr><tr><td>&#39;Castle Windsor&#39;</td><td>20,472.355 ns</td><td>408.9786 ns</td><td>419.9909 ns</td><td>4,862.71</td><td>126.38</td>
-</tr><tr><td>Ninject</td><td>90,659.632 ns</td><td>1,803.9658 ns</td><td>5,028.7356 ns</td><td>22,181.39</td><td>1,190.28</td>
+</thead><tbody><tr><td>&#39;Pure.DI composition root&#39;</td><td>2.567 ns</td><td>0.0910 ns</td><td>0.2053 ns</td><td>1.06</td><td>0.08</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>2.674 ns</td><td>0.0732 ns</td><td>0.0649 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>4.267 ns</td><td>0.1284 ns</td><td>0.2314 ns</td><td>1.65</td><td>0.06</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>5.385 ns</td><td>0.1490 ns</td><td>0.2039 ns</td><td>2.05</td><td>0.07</td>
+</tr><tr><td>LightInject</td><td>6.946 ns</td><td>0.1196 ns</td><td>0.1119 ns</td><td>2.60</td><td>0.07</td>
+</tr><tr><td>&#39;Microsoft DI&#39;</td><td>8.779 ns</td><td>0.1213 ns</td><td>0.1135 ns</td><td>3.28</td><td>0.08</td>
+</tr><tr><td>DryIoc</td><td>10.785 ns</td><td>0.2122 ns</td><td>0.1985 ns</td><td>4.03</td><td>0.13</td>
+</tr><tr><td>&#39;Simple Injector&#39;</td><td>13.694 ns</td><td>0.1549 ns</td><td>0.1449 ns</td><td>5.12</td><td>0.15</td>
+</tr><tr><td>Unity</td><td>1,847.759 ns</td><td>35.8188 ns</td><td>35.1789 ns</td><td>691.91</td><td>16.10</td>
+</tr><tr><td>Autofac</td><td>3,979.434 ns</td><td>67.8391 ns</td><td>63.4567 ns</td><td>1,490.02</td><td>41.93</td>
+</tr><tr><td>&#39;Castle Windsor&#39;</td><td>8,041.327 ns</td><td>157.4099 ns</td><td>168.4268 ns</td><td>3,018.77</td><td>90.71</td>
+</tr><tr><td>Ninject</td><td>47,454.284 ns</td><td>2,476.5607 ns</td><td>7,145.4438 ns</td><td>18,505.08</td><td>1,610.17</td>
 </tr></tbody></table>
 </body>
 </html>

@@ -8,8 +8,5 @@ public sealed class Service2Func : IService2
     public Service2Func(Func<IService3> service3Factory)
     {
         service3Factory();
-        service3Factory();
-        service3Factory();
-        service3Factory();
     }
 }

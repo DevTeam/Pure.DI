@@ -6,13 +6,12 @@ Creating an object graph of 22 transient objects.
 ```mermaid
 classDiagram
   class Transient {
-    +ICompositionRoot Root
+    +CompositionRoot PureDIByCR
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  CompositionRoot --|> ICompositionRoot : 
   class CompositionRoot {
     +CompositionRoot(IService1 service1, IService2 service21, IService2 service22, IService2 service23, IService3 service3)
   }
@@ -27,9 +26,6 @@ classDiagram
   Service3 --|> IService3 : 
   class Service3 {
     +Service3()
-  }
-  class ICompositionRoot {
-    <<abstract>>
   }
   class IService2 {
     <<abstract>>
@@ -51,7 +47,7 @@ classDiagram
   Service2 *--  Service3 : IService3
   Service2 *--  Service3 : IService3
   Service1 *--  Service2 : IService2
-  Transient ..> CompositionRoot : ICompositionRoot Root
+  Transient ..> CompositionRoot : CompositionRoot PureDIByCR
 ```
 
 ### Generated code
@@ -62,61 +58,54 @@ classDiagram
 ```c#
 partial class Transient
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM11D30di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM12D01di;
   
   public Transient()
   {
-    _disposableSingletonsM11D30di = new global::System.IDisposable[0];
+    _disposableSingletonsM12D01di = new global::System.IDisposable[0];
   }
   
   internal Transient(Transient parent)
   {
-    _disposableSingletonsM11D30di = new global::System.IDisposable[0];
+    _disposableSingletonsM12D01di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
-  public Pure.DI.Benchmarks.Model.ICompositionRoot Root
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  public partial Pure.DI.Benchmarks.Model.CompositionRoot PureDIByCR()
   {
-    #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
-    [global::System.Diagnostics.Contracts.Pure]
-    #endif
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    get
-    {
-      return new Pure.DI.Benchmarks.Model.CompositionRoot(new Pure.DI.Benchmarks.Model.Service1(new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3())), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3()), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3()), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3()), new Pure.DI.Benchmarks.Model.Service3());
-    }
+    return new Pure.DI.Benchmarks.Model.CompositionRoot(new Pure.DI.Benchmarks.Model.Service1(new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3())), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3()), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3()), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3(), new Pure.DI.Benchmarks.Model.Service3()), new Pure.DI.Benchmarks.Model.Service3());
   }
   #endregion
   
   #region API
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
   [global::System.Diagnostics.Contracts.Pure]
   #endif
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>()
   {
-    return ResolverM11D30di<T>.Value.Resolve(this);
+    return ResolverM12D01di<T>.Value.Resolve(this);
   }
   
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
   [global::System.Diagnostics.Contracts.Pure]
   #endif
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public T Resolve<T>(object? tag)
   {
-    return ResolverM11D30di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM12D01di<T>.Value.ResolveByTag(this, tag);
   }
   
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
   [global::System.Diagnostics.Contracts.Pure]
   #endif
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM11D30di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM11D30di;
+    var index = (int)(_bucketSizeM12D01di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM12D01di;
     do {
-      ref var pair = ref _bucketsM11D30di[index];
+      ref var pair = ref _bucketsM12D01di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -126,16 +115,15 @@ partial class Transient
     throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
   
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
   [global::System.Diagnostics.Contracts.Pure]
   #endif
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM11D30di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM11D30di;
+    var index = (int)(_bucketSizeM12D01di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM12D01di;
     do {
-      ref var pair = ref _bucketsM11D30di[index];
+      ref var pair = ref _bucketsM12D01di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -151,13 +139,12 @@ partial class Transient
     return
       "classDiagram\n" +
         "  class Transient {\n" +
-          "    +ICompositionRoot Root\n" +
+          "    +CompositionRoot PureDIByCR\n" +
           "    + T ResolveᐸTᐳ()\n" +
           "    + T ResolveᐸTᐳ(object? tag)\n" +
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  CompositionRoot --|> ICompositionRoot : \n" +
         "  class CompositionRoot {\n" +
           "    +CompositionRoot(IService1 service1, IService2 service21, IService2 service22, IService2 service23, IService3 service3)\n" +
         "  }\n" +
@@ -172,9 +159,6 @@ partial class Transient
         "  Service3 --|> IService3 : \n" +
         "  class Service3 {\n" +
           "    +Service3()\n" +
-        "  }\n" +
-        "  class ICompositionRoot {\n" +
-          "    <<abstract>>\n" +
         "  }\n" +
         "  class IService2 {\n" +
           "    <<abstract>>\n" +
@@ -196,30 +180,30 @@ partial class Transient
         "  Service2 *--  Service3 : IService3\n" +
         "  Service2 *--  Service3 : IService3\n" +
         "  Service1 *--  Service2 : IService2\n" +
-        "  Transient ..> CompositionRoot : ICompositionRoot Root";
+        "  Transient ..> CompositionRoot : CompositionRoot PureDIByCR";
   }
   
-  private readonly static int _bucketSizeM11D30di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>[] _bucketsM11D30di;
+  private readonly static int _bucketSizeM12D01di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>[] _bucketsM12D01di;
   
   
   static Transient()
   {
-    var valResolverM11D30di_0000 = new ResolverM11D30di_0000();
-    ResolverM11D30di<Pure.DI.Benchmarks.Model.ICompositionRoot>.Value = valResolverM11D30di_0000;
-    _bucketsM11D30di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Transient, object>>.Create(
+    var valResolverM12D01di_0000 = new ResolverM12D01di_0000();
+    ResolverM12D01di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM12D01di_0000;
+    _bucketsM12D01di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Transient, object>>.Create(
       1,
-      out _bucketSizeM11D30di,
+      out _bucketSizeM12D01di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>(typeof(Pure.DI.Benchmarks.Model.ICompositionRoot), valResolverM11D30di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM12D01di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM11D30di<T>: global::Pure.DI.IResolver<Transient, T>
+  private sealed class ResolverM12D01di<T>: global::Pure.DI.IResolver<Transient, T>
   {
-    public static global::Pure.DI.IResolver<Transient, T> Value = new ResolverM11D30di<T>();
+    public static global::Pure.DI.IResolver<Transient, T> Value = new ResolverM12D01di<T>();
     
     public T Resolve(Transient composite)
     {
@@ -232,19 +216,17 @@ partial class Transient
     }
   }
   
-  private sealed class ResolverM11D30di_0000: global::Pure.DI.IResolver<Transient, Pure.DI.Benchmarks.Model.ICompositionRoot>
+  private sealed class ResolverM12D01di_0000: global::Pure.DI.IResolver<Transient, Pure.DI.Benchmarks.Model.CompositionRoot>
   {
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.Benchmarks.Model.ICompositionRoot Resolve(Transient composition)
+    public Pure.DI.Benchmarks.Model.CompositionRoot Resolve(Transient composition)
     {
-      return composition.Root;
+      return composition.PureDIByCR();
     }
     
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public Pure.DI.Benchmarks.Model.ICompositionRoot ResolveByTag(Transient composition, object tag)
+    public Pure.DI.Benchmarks.Model.CompositionRoot ResolveByTag(Transient composition, object tag)
     {
-      if (Equals(tag, null)) return composition.Root;
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.Benchmarks.Model.ICompositionRoot.");
+      if (Equals(tag, null)) return composition.PureDIByCR();
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.Benchmarks.Model.CompositionRoot.");
     }
   }
   #endregion

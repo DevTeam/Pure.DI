@@ -2,6 +2,7 @@
 $v=true
 $p=2
 $d=PerBlock
+$h=_PerBlock_ lifetime is similar to _PerResolve_ lifetime. Briefly, the difference is that instances of types with _PerBlock_ lifetime will be reused in the same composition without guarantee in order to increase performance. For example, when a _PerBlock_ instance is used as a dependency by a consumer created lazily, more than one instance will be created. This lifetime is well suited for read-only instances. In this scenario, it will save memory and CPU resources.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -40,7 +41,6 @@ class Service : IService
     public IDependency Dependency1 { get; }
             
     public IDependency Dependency2 { get; }
-    
     
     public IDependency Dependency3 { get; }
 }

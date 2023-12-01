@@ -10,7 +10,7 @@ internal class BuildTools : IBuildTools
     
     public void AddPureHeader(LinesBuilder code)
     {
-        code.AppendLine("#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER");
+        code.AppendLine("#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET");
         code.AppendLine($"[{Names.SystemNamespace}Diagnostics.Contracts.Pure]");
         code.AppendLine("#endif");
     }

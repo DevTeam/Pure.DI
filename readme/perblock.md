@@ -1,8 +1,8 @@
-#### Method injection
+#### PerBlock
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/MethodInjectionScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/PerBlockScenario.cs)
 
-To use dependency implementation for a method, simply add the _Ordinal_ attribute to that method, specifying the sequence number that will be used to define the call to that method:
+_PerBlock_ lifetime is similar to _PerResolve_ lifetime. Briefly, the difference is that instances of types with _PerBlock_ lifetime will be reused in the same composition without guarantee in order to increase performance. For example, when a _PerBlock_ instance is used as a dependency by a consumer created lazily, more than one instance will be created. This lifetime is well suited for read-only instances. In this scenario, it will save memory and CPU resources.
 
 ```c#
 interface IDependency { }
@@ -11,25 +11,42 @@ class Dependency : IDependency { }
 
 interface IService
 {
-    IDependency? Dependency { get; }
+    public IDependency Dependency1 { get; }
+
+    public IDependency Dependency2 { get; }
+
+    public IDependency Dependency3 { get; }
 }
 
 class Service : IService
 {
-    [Ordinal(0)]
-    public void SetDependency(IDependency dependency) =>
-        Dependency = dependency;
+    public Service(
+        IDependency dependency1,
+        IDependency dependency2,
+        Func<IDependency> dependencyFactory)
+    {
+        Dependency1 = dependency1;
+        Dependency2 = dependency2;
+        Dependency3 = dependencyFactory();
+    }
 
-    public IDependency? Dependency { get; private set; }
+    public IDependency Dependency1 { get; }
+
+    public IDependency Dependency2 { get; }
+
+    public IDependency Dependency3 { get; }
 }
 
 DI.Setup("Composition")
-    .Bind<IDependency>().To<Dependency>()
+    .Bind<IDependency>().As(Lifetime.PerBlock).To<Dependency>()
     .Bind<IService>().To<Service>().Root<IService>("Root");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependency.ShouldBeOfType<Dependency>();
+var service1 = composition.Root;
+var service2 = composition.Root;
+service1.Dependency1.ShouldBe(service1.Dependency2);
+service1.Dependency1.ShouldNotBe(service1.Dependency3);
+service2.Dependency1.ShouldNotBe(service1.Dependency1);
 ```
 
 <details open>
@@ -44,23 +61,26 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency1, IDependency dependency2, FuncᐸIDependencyᐳ dependencyFactory)
+  }
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
   }
-  Service --|> IService : 
-  class Service {
-    +Service()
-    +SetDependency(IDependency dependency) : Void
+  class FuncᐸIDependencyᐳ
+  class IService {
+    <<abstract>>
   }
   class IDependency {
     <<abstract>>
   }
-  class IService {
-    <<abstract>>
-  }
-  Service *--  Dependency : IDependency
+  Service o--  "PerBlock" Dependency : IDependency
+  Service o--  "PerBlock" Dependency : IDependency
+  Service o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
   Composition ..> Service : IService Root
+  FuncᐸIDependencyᐳ o--  "PerBlock" Dependency : IDependency
 ```
 
 </details>
@@ -84,16 +104,22 @@ partial class Composition
   }
   
   #region Composition Roots
-  public Pure.DI.UsageTests.Basics.MethodInjectionScenario.IService Root
+  public Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IService Root
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
     #endif
     get
     {
-      var transientM12D01di0 = new Pure.DI.UsageTests.Basics.MethodInjectionScenario.Service();
-      transientM12D01di0.SetDependency(new Pure.DI.UsageTests.Basics.MethodInjectionScenario.Dependency());
-      return transientM12D01di0;
+      var perResolveM12D01di23 = default(System.Func<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency>);
+      perResolveM12D01di23 = new global::System.Func<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency>(() =>
+      {
+          var perBlockM12D01di2 = new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency();
+          var value = perBlockM12D01di2;
+          return value;
+      });
+      var perBlockM12D01di1 = new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency();
+      return new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service(perBlockM12D01di1, perBlockM12D01di1, perResolveM12D01di23);
     }
   }
   #endregion
@@ -163,23 +189,26 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency1, IDependency dependency2, FuncᐸIDependencyᐳ dependencyFactory)\n" +
+        "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service()\n" +
-          "    +SetDependency(IDependency dependency) : Void\n" +
+        "  class FuncᐸIDependencyᐳ\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
         "  }\n" +
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Service *--  Dependency : IDependency\n" +
-        "  Composition ..> Service : IService Root";
+        "  Service o--  \"PerBlock\" Dependency : IDependency\n" +
+        "  Service o--  \"PerBlock\" Dependency : IDependency\n" +
+        "  Service o--  \"PerResolve\" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ\n" +
+        "  Composition ..> Service : IService Root\n" +
+        "  FuncᐸIDependencyᐳ o--  \"PerBlock\" Dependency : IDependency";
   }
   
   private readonly static int _bucketSizeM12D01di;
@@ -189,13 +218,13 @@ partial class Composition
   static Composition()
   {
     var valResolverM12D01di_0000 = new ResolverM12D01di_0000();
-    ResolverM12D01di<Pure.DI.UsageTests.Basics.MethodInjectionScenario.IService>.Value = valResolverM12D01di_0000;
+    ResolverM12D01di<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IService>.Value = valResolverM12D01di_0000;
     _bucketsM12D01di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
       out _bucketSizeM12D01di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.MethodInjectionScenario.IService), valResolverM12D01di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IService), valResolverM12D01di_0000)
       });
   }
   
@@ -215,17 +244,17 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM12D01di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.MethodInjectionScenario.IService>
+  private sealed class ResolverM12D01di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IService>
   {
-    public Pure.DI.UsageTests.Basics.MethodInjectionScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IService Resolve(Composition composition)
     {
       return composition.Root;
     }
     
-    public Pure.DI.UsageTests.Basics.MethodInjectionScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IService ResolveByTag(Composition composition, object tag)
     {
       if (Equals(tag, null)) return composition.Root;
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.MethodInjectionScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IService.");
     }
   }
   #endregion

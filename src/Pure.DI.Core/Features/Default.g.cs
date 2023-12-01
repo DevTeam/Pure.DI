@@ -50,7 +50,6 @@ namespace Pure.DI
                         return new global::System.Memory<TT>(arr);
                     })
                 .Bind<global::System.ReadOnlyMemory<TT>>()
-                    .As(Lifetime.PerBlock)
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
@@ -72,7 +71,6 @@ namespace Pure.DI
 #if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
                 .Bind<global::System.Collections.Generic.IReadOnlyCollection<TT>>()
                 .Bind<global::System.Collections.Generic.IReadOnlyList<TT>>()
-                    .As(Lifetime.PerBlock)
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
@@ -112,7 +110,6 @@ namespace Pure.DI
                     })
 #if NET || NETCOREAPP
                 .Bind<global::System.Collections.Immutable.ImmutableArray<TT>>()
-                    .As(Lifetime.PerBlock)
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
@@ -120,7 +117,6 @@ namespace Pure.DI
                     })
                 .Bind<global::System.Collections.Immutable.IImmutableList<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableList<TT>>()
-                    .As(Lifetime.PerBlock)
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
@@ -128,14 +124,12 @@ namespace Pure.DI
                     })
                 .Bind<global::System.Collections.Immutable.IImmutableSet<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableHashSet<TT>>()
-                    .As(Lifetime.PerBlock)
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
                         return global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableHashSet<TT>>(ref arr);
                     })
                 .Bind<global::System.Collections.Immutable.ImmutableSortedSet<TT>>()
-                    .As(Lifetime.PerBlock)
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
@@ -143,7 +137,6 @@ namespace Pure.DI
                     })
                 .Bind<global::System.Collections.Immutable.IImmutableQueue<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableQueue<TT>>()
-                    .As(Lifetime.PerBlock)
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
@@ -151,7 +144,6 @@ namespace Pure.DI
                     })
                 .Bind<global::System.Collections.Immutable.IImmutableStack<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableStack<TT>>()
-                    .As(Lifetime.PerBlock)
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
