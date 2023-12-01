@@ -73,8 +73,17 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
     private static void BuildArray(BuildContext ctx, DpConstruct array)
     {
         var variable = ctx.Variable;
-        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = new {array.Source.ElementType}[{variable.Args.Count.ToString()}] {{ {string.Join(", ", variable.Args.Select(i => ctx.BuildTools.OnInjected(ctx, i.Current)))} }};");
-        ctx.Code.AppendLines(ctx.BuildTools.OnCreated(ctx, variable));
+        var instantiation = $"new {array.Source.ElementType}[{variable.Args.Count.ToString()}] {{ {string.Join(", ", variable.Args.Select(i => ctx.BuildTools.OnInjected(ctx, i.Current)))} }}";
+        var onCreated = ctx.BuildTools.OnCreated(ctx, variable).ToArray();
+        if (onCreated.Any())
+        {
+            ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = {instantiation};");
+            ctx.Code.AppendLines(onCreated);
+        }
+        else
+        {
+            variable.VariableCode = instantiation;
+        }
     }
 
     private static void BuildSpan(BuildContext ctx, DpConstruct span)
