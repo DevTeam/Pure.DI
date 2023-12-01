@@ -9,9 +9,11 @@ internal class VariablesBuilder : IVariablesBuilder
         DependencyNode rootNode,
         Injection rootInjection)
     {
-        var rootBlock = new Block(default, new LinkedList<IStatement>());
+        var blockId = 0;
+        var blockMap = new Dictionary<int, Variable>();
+        var rootBlock = new Block(blockId++,default, new LinkedList<IStatement>());
         var transientId = 0;
-        var rootVar = GetVariable(rootBlock, map, rootNode, rootInjection, ref transientId);
+        var rootVar = GetVariable(rootBlock, rootBlock, map, blockMap, rootNode, rootInjection, ref transientId, out _);
         rootBlock.Statements.AddFirst(rootVar);
         var blocks = new Stack<Block>();
         blocks.Push(rootBlock);
@@ -55,12 +57,13 @@ internal class VariablesBuilder : IVariablesBuilder
                                 isAlreadyCreated = depNode.IsLazy();
                             }
 
-                            var depVariable = GetVariable(currentStatement, map, depNode, depInjection, ref transientId);
+                            var depVariable = GetVariable(currentStatement, currentBlock, map, blockMap, depNode, depInjection, ref transientId, out var isNew);
+                            isAlreadyCreated |= !isNew;
                             var isBlockStatement = !variable.Node.IsEnumerable() && !variable.Node.IsAsyncEnumerable() && !variable.Node.IsFactory();
-                            var isBlock = depNode.Lifetime != Lifetime.Transient || variable.Node.IsLazy();
+                            var isBlock = depNode.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock || variable.Node.IsLazy();
                             if (isBlock)
                             {
-                                var depBlock = new Block(currentStatement, new LinkedList<IStatement>());
+                                var depBlock = new Block(blockId++, currentStatement, new LinkedList<IStatement>());
                                 depBlock.Statements.AddFirst(depVariable);
                                 if (!isAlreadyCreated)
                                 {
@@ -101,19 +104,43 @@ internal class VariablesBuilder : IVariablesBuilder
     
     private static Variable GetVariable(
         IStatement? parent,
+        Block block,
         IDictionary<MdBinding, Variable> map,
+        IDictionary<int, Variable> blockMap,
         in DependencyNode node,
         in Injection injection,
-        ref int transientId)
+        ref int transientId,
+        out bool isNew)
     {
-        if (node.Lifetime == Lifetime.Transient && !node.IsArg())
+        if (!node.IsArg())
         {
-            return new Variable(parent, transientId++, node, injection, new List<IStatement>(),new VariableInfo(), node.IsLazy());
+            // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+            switch (node.Lifetime)
+            {
+                case Lifetime.Transient:
+                    isNew = true;
+                    return new Variable(parent, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), node.IsLazy());
+                
+                case Lifetime.PerBlock:
+                {
+                    if (blockMap.TryGetValue(block.Id, out var blockVariable))
+                    {
+                        isNew = false;
+                        return blockVariable;
+                    }
+                
+                    blockVariable = new Variable(parent, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), node.IsLazy());
+                    blockMap.Add(block.Id, blockVariable);
+                    isNew = true;
+                    return blockVariable;
+                }
+            }
         }
 
         if (map.TryGetValue(node.Binding, out var variable))
         {
             variable.Info.RefCount++;
+            isNew = true;
             return variable with
             {
                 Parent = parent,
@@ -124,6 +151,7 @@ internal class VariablesBuilder : IVariablesBuilder
 
         variable = new Variable(parent, node.Binding.Id, node, injection, new List<IStatement>(), new VariableInfo(), node.IsLazy());
         map.Add(node.Binding, variable);
+        isNew = true;
         return variable;
     }
 }

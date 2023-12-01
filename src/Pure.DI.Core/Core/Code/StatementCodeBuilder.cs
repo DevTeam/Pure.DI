@@ -21,7 +21,15 @@ internal class StatementCodeBuilder : ICodeBuilder<IStatement>
         switch (statement)
         {
             case Variable variable:
-                _variableBuilder.Build(ctx, variable);
+                if (!variable.IsCreated)
+                {
+                    _variableBuilder.Build(ctx, variable);
+                    if (variable.Node.Lifetime == Lifetime.PerBlock)
+                    {
+                        variable.IsCreated = true;
+                    }
+                }
+
                 break;
 
             case Block block:

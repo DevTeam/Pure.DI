@@ -60,7 +60,7 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
 
         if (variable.InstanceType.IsValueType)
         {
-            if (variable.Node.Lifetime != Lifetime.Transient && isThreadSafe)
+            if (variable.Node.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock && isThreadSafe)
             {
                 ctx.Code.AppendLine($"{Names.SystemNamespace}Threading.Thread.MemoryBarrier();");
             }
@@ -84,12 +84,6 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
     
     private static bool IsNewInstanceRequired(BuildContext ctx, Variable variable)
     {
-        // A transient instance must be created each time
-        if (variable.Node.Lifetime == Lifetime.Transient)
-        {
-            return true;
-        }
-        
         // Do not create an instance if it has already been created at this level or a level below it
         if (ctx.Level >= variable.Info.Level)
         {

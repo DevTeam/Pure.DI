@@ -99,7 +99,6 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
             && composition.Source.Source.Hints.GetHint(Hint.OnNewInstancePartial, SettingState.On) == SettingState.On)
         {
             apiCode.AppendLine();
-            apiCode.AppendLine(Names.MethodImplOptions);
             apiCode.AppendLine($"partial void {Names.OnNewInstanceMethodName}<T>(ref T value, object? tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
@@ -108,7 +107,6 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
             && composition.Source.Source.Hints.GetHint(Hint.OnDependencyInjectionPartial, SettingState.On) == SettingState.On)
         {
             apiCode.AppendLine();
-            apiCode.AppendLine(Names.MethodImplOptions);
             apiCode.AppendLine($"private partial T {Names.OnDependencyInjectionMethodName}<T>(in T value, object? tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
@@ -117,7 +115,6 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
             && composition.Source.Source.Hints.GetHint(Hint.OnCannotResolvePartial, SettingState.On) == SettingState.On)
         {
             apiCode.AppendLine();
-            apiCode.AppendLine(Names.MethodImplOptions);
             apiCode.AppendLine($"private partial T {Names.OnCannotResolve}<T>(object? tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }

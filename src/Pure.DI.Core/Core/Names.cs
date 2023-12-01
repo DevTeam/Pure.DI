@@ -15,7 +15,6 @@ internal static class Names
     public const string CannotResolve = "Cannot resolve composition root";
     
     // Others
-    public const string MethodImplOptions = $"[{SystemNamespace}Runtime.CompilerServices.MethodImpl(({SystemNamespace}Runtime.CompilerServices.MethodImplOptions)0x300)]";
     public static readonly string ResolverClassName = $"Resolver{Salt}";
     public const string DefaultApiMethodModifiers = "public";
     
@@ -43,6 +42,7 @@ internal static class Names
     
     // Vars
     private const string TransientVariablePrefix = "transient";
+    private const string PerBlockVariablePrefix = "perBlock";
     private const string PerResolveVariablePrefix = "perResolve";
     private const string SingletonVariablePrefix = "_singleton";
     private const string ArgVariablePrefix = "_arg";
@@ -65,6 +65,9 @@ internal static class Names
 
             case { Arg: { Source.Kind: ArgKind.Root } arg }:
                 return arg.Source.ArgName;
+            
+            case { Lifetime: Lifetime.PerBlock }:
+                return $"{PerBlockVariablePrefix}{Salt}{PerLifetimeId}";
 
             default:
                 return $"{TransientVariablePrefix}{Salt}{PerLifetimeId}";

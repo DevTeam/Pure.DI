@@ -109,7 +109,6 @@ internal sealed class ResolverClassesBuilder: IBuilder<CompositionCode, Composit
     {
         var defaultRoot = resolver.Roots.SingleOrDefault(i => i.Injection.Tag is null);
 
-        code.AppendLine(Names.MethodImplOptions);
         code.AppendLine($"public {resolver.Type} {Names.ResolveMethodName}({composition.Source.Source.Name.ClassName} composition)");
         code.AppendLine("{");
         using (code.Indent())
@@ -130,7 +129,6 @@ internal sealed class ResolverClassesBuilder: IBuilder<CompositionCode, Composit
 
         code.AppendLine();
 
-        code.AppendLine(Names.MethodImplOptions);
         code.AppendLine($"public {resolver.Type} {Names.ResolveByTagMethodName}({composition.Source.Source.Name.ClassName} composition, object tag)");
         code.AppendLine("{");
         using (code.Indent())

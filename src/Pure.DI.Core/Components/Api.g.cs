@@ -68,7 +68,7 @@ namespace Pure.DI
         Singleton,
 
         /// <summary>
-        /// Lifetime per resolve is similar to <see cref="Lifetime.Transient"/>, but the instance is reused in the same object com.
+        /// Lifetime <c>PerResolve</c> is similar to <see cref="Lifetime.Transient">, but the instance is reused in the same composition of objects.
         /// <example>
         /// For example:
         /// <code>
@@ -77,7 +77,19 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        PerResolve
+        PerResolve,
+        
+        /// <summary>
+        /// Lifetime <c>PerBlock</c> is similar to <see cref="Lifetime.Transient">, but the instance is reused in the same statement block.
+        /// <example>
+        /// For example:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().As(Lifetime.PerBlock).To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        PerBlock
     }
     
     /// <summary>
@@ -1293,7 +1305,7 @@ namespace Pure.DI
         /// <param name="compositionTypeName">This argument specifying the partial class name to generate.</param>
         /// <param name="kind">An optional argument specifying the kind of setup. Please <see cref="Pure.DI.CompositionKind"/> for details. It defaults to <c>Public</c>.</param>
         /// <returns>API reference to the installation continuation chain.</returns>
-        [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+        [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
         internal static IConfiguration Setup(string compositionTypeName, CompositionKind kind = CompositionKind.Public)
         {
             return Configuration.Shared;
@@ -1306,70 +1318,70 @@ namespace Pure.DI
             private Configuration() { }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T>(params object[] tags)
             {
                 return Binding.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration DependsOn(params string[] setupNames)
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration TypeAttribute<T>(int typeArgumentPosition = 0) where T : global::System.Attribute
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration TagAttribute<T>(int tagArgumentPosition = 0) where T : global::System.Attribute
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition = 0) where T : global::System.Attribute
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration DefaultLifetime(Pure.DI.Lifetime lifetime)
             {
                 return Configuration.Shared;
             }
             
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Arg<T>(string name, params object[] tags)
             {
                 return Configuration.Shared;
             }
             
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration RootArg<T>(string name, params object[] tags)
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Root<T>(string name, object tag, RootKinds rootKind)
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Hint(Hint hint, string value)
             {
                 return Configuration.Shared;
@@ -1383,42 +1395,42 @@ namespace Pure.DI
             private Binding() { }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T>(params object[] tags)
             {
                 return Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding As(Pure.DI.Lifetime lifetime)
             {
                 return Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Tags(params object[] tags)
             {
                 return Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T>()
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T>(global::System.Func<IContext, T> factory)
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T>(string sourceCodeStatement)
             {
                 return Configuration.Shared;

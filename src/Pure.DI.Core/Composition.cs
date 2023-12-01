@@ -15,6 +15,15 @@ internal partial class Composition
     [Conditional("DI")]
     private static void Setup() => DI.Setup(nameof(Composition))
         .Hint(Hint.Resolve, "Off")
+        .Bind<IReadOnlyCollection<TT>>()
+        .Bind<IReadOnlyList<TT>>()
+            .As(Lifetime.PerResolve)
+            .To(ctx =>
+            {
+                ctx.Inject<TT[]>(out var arr);
+                return arr;
+            })
+        
         .RootArg<IGeneratorOptions>("options")
         .RootArg<IGeneratorSources>("sources")
         .RootArg<IGeneratorDiagnostic>("diagnostic")

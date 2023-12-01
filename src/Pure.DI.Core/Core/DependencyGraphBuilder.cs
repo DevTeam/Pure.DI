@@ -128,7 +128,7 @@ internal sealed class DependencyGraphBuilder : IDependencyGraphBuilder
                                 _ => default(MdConstructKind?)
                             };
 
-                            var lifetime = constructKind == MdConstructKind.Enumerable ? Lifetime.PerResolve : Lifetime.Transient;
+                            var lifetime = constructKind == MdConstructKind.Enumerable ? Lifetime.PerBlock : Lifetime.Transient;
                             if (constructKind.HasValue)
                             {
                                 var enumerableBinding = CreateConstructBinding(setup, targetNode, injection, constructType, default, lifetime, ++maxId, constructKind.Value, false, default);

@@ -65,7 +65,7 @@ internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
         var hasAlternativeInjections = visits.Any();
         var tempVariableInit =
             ctx.DependencyGraph.Source.Hints.GetHint(Hint.ThreadSafe, SettingState.On) == SettingState.On
-            && ctx.Variable.Node.Lifetime != Lifetime.Transient
+            && ctx.Variable.Node.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock
             && (hasAlternativeInjections || hasOnCreatedHandler);
 
         if (tempVariableInit)
@@ -79,7 +79,7 @@ internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
         }
 
         var instantiation = CreateInstantiation(ctx, ctorArgs, requiredFields, requiredProperties);
-        if (variable.Node.Lifetime != Lifetime.Transient
+        if (variable.Node.Lifetime is not Lifetime.Transient
             || hasAlternativeInjections
             || tempVariableInit
             || hasOnCreatedHandler)

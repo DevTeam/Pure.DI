@@ -42,7 +42,15 @@ internal class FactoryCodeBuilder: ICodeBuilder<DpFactory>
         var lines = syntaxNode.ToString().Split('\n');
         
         // Replaces injection markers by injection code
-        using var resolvers = injections.Zip(variable.Args, (injection, argument) => (injection, argument)).GetEnumerator();
+        if (variable.Args.Count != injections.Count)
+        {
+            throw new CompileErrorException($"Dependency mapping error for {factory.Binding}.", factory.Source.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+        }
+        
+        using var resolvers = injections
+            .Zip(variable.Args, (injection, argument) => (injection, argument))
+            .GetEnumerator();
+        
         var indent = new Indent(0);
         foreach (var line in lines)
         {

@@ -29,7 +29,6 @@ internal sealed class StaticConstructorBuilder: IBuilder<CompositionCode, Compos
         // ReSharper disable once InvertIf
         if (hasOnNewRoot && composition.Source.Source.Hints.GetHint(Hint.OnNewRootPartial, SettingState.On) == SettingState.On)
         {
-            code.AppendLine(Names.MethodImplOptions);
             code.AppendLine($"private static partial void {Names.OnNewRootMethodName}<TContract, T>({Names.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, TContract> resolver, string name, object? tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }

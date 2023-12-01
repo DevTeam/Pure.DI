@@ -17,6 +17,13 @@ public partial class Func : BenchmarkBase
         // FormatCode = On
         // ToString = On
         DI.Setup(nameof(Func))
+            .Bind<Func<TT>>()
+                .As(Lifetime.PerBlock)
+                .To(ctx => new Func<TT>(() =>
+                {
+                    ctx.Inject<TT>(ctx.Tag, out var value);
+                    return value;
+                }))
             .Bind<IService1>().To<Service1>()
             .Bind<IService2>().To<Service2Func>()
             .Bind<IService3>().To<Service3>()

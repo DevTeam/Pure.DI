@@ -17,33 +17,27 @@ namespace Pure.DI
                     .As(Lifetime.PerResolve)
                     .To(ctx => new global::System.Func<TT>(() =>
                     {
-                        TT value;
-                        ctx.Inject<TT>(ctx.Tag, out value);
+                        ctx.Inject<TT>(ctx.Tag, out var value);
                         return value;
                     }))
                 .Bind<global::System.Collections.Generic.IComparer<TT>>()
                 .Bind<global::System.Collections.Generic.Comparer<TT>>()
-                    .As(Lifetime.PerResolve)
                     .To(_ => global::System.Collections.Generic.Comparer<TT>.Default)
                 .Bind<global::System.Collections.Generic.IEqualityComparer<TT>>()
                 .Bind<global::System.Collections.Generic.EqualityComparer<TT>>()
-                    .As(Lifetime.PerResolve)
                     .To(_ => global::System.Collections.Generic.EqualityComparer<TT>.Default)
 #if NETSTANDARD || NET || NETCOREAPP || NET40_OR_GREATER
                 .Bind<global::System.Lazy<TT>>()
                     .To(ctx =>
                     {
-                        global::System.Func<TT> func;
-                        ctx.Inject<global::System.Func<TT>>(ctx.Tag, out func);
+                        ctx.Inject<global::System.Func<TT>>(ctx.Tag, out var func);
                         return new global::System.Lazy<TT>(func, true);
                     })
                 .Bind<global::System.Lazy<TT, TT1>>()
                     .To(ctx =>
                     {
-                        global::System.Func<TT> func;
-                        ctx.Inject<global::System.Func<TT>>(ctx.Tag, out func);
-                        TT1 metadata;
-                        ctx.Inject<TT1>(ctx.Tag, out metadata);
+                        ctx.Inject<global::System.Func<TT>>(ctx.Tag, out var func);
+                        ctx.Inject<TT1>(ctx.Tag, out var metadata);
                         return new global::System.Lazy<TT, TT1>(func, metadata, true);
                     })
 #endif              
@@ -56,7 +50,7 @@ namespace Pure.DI
                         return new global::System.Memory<TT>(arr);
                     })
                 .Bind<global::System.ReadOnlyMemory<TT>>()
-                    .As(Lifetime.PerResolve)
+                    .As(Lifetime.PerBlock)
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
@@ -78,7 +72,7 @@ namespace Pure.DI
 #if NETSTANDARD || NET || NETCOREAPP || NET45_OR_GREATER
                 .Bind<global::System.Collections.Generic.IReadOnlyCollection<TT>>()
                 .Bind<global::System.Collections.Generic.IReadOnlyList<TT>>()
-                    .As(Lifetime.PerResolve)
+                    .As(Lifetime.PerBlock)
                     .To(ctx =>
                     {
                         ctx.Inject<TT[]>(out var arr);
@@ -118,55 +112,49 @@ namespace Pure.DI
                     })
 #if NET || NETCOREAPP
                 .Bind<global::System.Collections.Immutable.ImmutableArray<TT>>()
-                    .As(Lifetime.PerResolve)
+                    .As(Lifetime.PerBlock)
                     .To(ctx =>
                     {
-                        TT[] arr;
-                        ctx.Inject<TT[]>(out arr);
+                        ctx.Inject<TT[]>(out var arr);
                         return global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableArray<TT>>(ref arr);
                     })
                 .Bind<global::System.Collections.Immutable.IImmutableList<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableList<TT>>()
-                    .As(Lifetime.PerResolve)
+                    .As(Lifetime.PerBlock)
                     .To(ctx =>
                     {
-                        TT[] arr;
-                        ctx.Inject<TT[]>(out arr);
+                        ctx.Inject<TT[]>(out var arr);
                         return global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableList<TT>>(ref arr);
                     })
                 .Bind<global::System.Collections.Immutable.IImmutableSet<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableHashSet<TT>>()
-                    .As(Lifetime.PerResolve)
+                    .As(Lifetime.PerBlock)
                     .To(ctx =>
                     {
-                        TT[] arr;
-                        ctx.Inject<TT[]>(out arr);
+                        ctx.Inject<TT[]>(out var arr);
                         return global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableHashSet<TT>>(ref arr);
                     })
                 .Bind<global::System.Collections.Immutable.ImmutableSortedSet<TT>>()
-                    .As(Lifetime.PerResolve)
+                    .As(Lifetime.PerBlock)
                     .To(ctx =>
                     {
-                        TT[] arr;
-                        ctx.Inject<TT[]>(out arr);
+                        ctx.Inject<TT[]>(out var arr);
                         return global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableSortedSet<TT>>(ref arr);
                     })
                 .Bind<global::System.Collections.Immutable.IImmutableQueue<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableQueue<TT>>()
-                    .As(Lifetime.PerResolve)
+                    .As(Lifetime.PerBlock)
                     .To(ctx =>
                     {
-                        TT[] arr;
-                        ctx.Inject<TT[]>(out arr);
+                        ctx.Inject<TT[]>(out var arr);
                         return global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableQueue<TT>>(ref arr);
                     })
                 .Bind<global::System.Collections.Immutable.IImmutableStack<TT>>()
                 .Bind<global::System.Collections.Immutable.ImmutableStack<TT>>()
-                    .As(Lifetime.PerResolve)
+                    .As(Lifetime.PerBlock)
                     .To(ctx =>
                     {
-                        TT[] arr;
-                        ctx.Inject<TT[]>(out arr);
+                        ctx.Inject<TT[]>(out var arr);
                         return global::System.Runtime.CompilerServices.Unsafe.As<TT[], global::System.Collections.Immutable.ImmutableStack<TT>>(ref arr);
                     })
 #endif
