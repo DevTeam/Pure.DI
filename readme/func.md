@@ -74,16 +74,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM12D01di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM12D02di;
   
   public Composition()
   {
-    _disposableSingletonsM12D01di = new global::System.IDisposable[0];
+    _disposableSingletonsM12D02di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM12D01di = new global::System.IDisposable[0];
+    _disposableSingletonsM12D02di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -94,13 +94,14 @@ partial class Composition
     #endif
     get
     {
-      var perResolveM12D01di23 = default(System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>);
-      perResolveM12D01di23 = new global::System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>(() =>
-      {
-          var value = new Pure.DI.UsageTests.BCL.FuncScenario.Dependency();
-          return value;
-      });
-      return new Pure.DI.UsageTests.BCL.FuncScenario.Service(perResolveM12D01di23);
+      var perResolveM12D02di23 = default(System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>);
+      perResolveM12D02di23 = new global::System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>([global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)] () =>
+                          {
+      
+      var value = new Pure.DI.UsageTests.BCL.FuncScenario.Dependency();
+                              return value;
+                          });
+      return new Pure.DI.UsageTests.BCL.FuncScenario.Service(perResolveM12D02di23);
     }
   }
   #endregion
@@ -111,7 +112,7 @@ partial class Composition
   #endif
   public T Resolve<T>()
   {
-    return ResolverM12D01di<T>.Value.Resolve(this);
+    return ResolverM12D02di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -119,7 +120,7 @@ partial class Composition
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM12D01di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM12D02di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -127,10 +128,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM12D01di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM12D01di;
+    var index = (int)(_bucketSizeM12D02di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM12D02di;
     do {
-      ref var pair = ref _bucketsM12D01di[index];
+      ref var pair = ref _bucketsM12D02di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -145,10 +146,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM12D01di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM12D01di;
+    var index = (int)(_bucketSizeM12D02di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM12D02di;
     do {
-      ref var pair = ref _bucketsM12D01di[index];
+      ref var pair = ref _bucketsM12D02di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -159,58 +160,27 @@ partial class Composition
   }
   #endregion
   
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Composition {\n" +
-          "    +IService Root\n" +
-          "    + T ResolveᐸTᐳ()\n" +
-          "    + T ResolveᐸTᐳ(object? tag)\n" +
-          "    + object Resolve(Type type)\n" +
-          "    + object Resolve(Type type, object? tag)\n" +
-        "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(FuncᐸIDependencyᐳ dependencyFactory)\n" +
-        "  }\n" +
-        "  Dependency --|> IDependency : \n" +
-        "  class Dependency {\n" +
-          "    +Dependency()\n" +
-        "  }\n" +
-        "  class FuncᐸIDependencyᐳ\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IDependency {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Service o--  \"PerResolve\" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ\n" +
-        "  Composition ..> Service : IService Root\n" +
-        "  FuncᐸIDependencyᐳ *--  Dependency : IDependency";
-  }
-  
-  private readonly static int _bucketSizeM12D01di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM12D01di;
+  private readonly static int _bucketSizeM12D02di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM12D02di;
   
   
   static Composition()
   {
-    var valResolverM12D01di_0000 = new ResolverM12D01di_0000();
-    ResolverM12D01di<Pure.DI.UsageTests.BCL.FuncScenario.IService>.Value = valResolverM12D01di_0000;
-    _bucketsM12D01di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM12D02di_0000 = new ResolverM12D02di_0000();
+    ResolverM12D02di<Pure.DI.UsageTests.BCL.FuncScenario.IService>.Value = valResolverM12D02di_0000;
+    _bucketsM12D02di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM12D01di,
+      out _bucketSizeM12D02di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.FuncScenario.IService), valResolverM12D01di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.FuncScenario.IService), valResolverM12D02di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM12D01di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM12D02di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM12D01di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM12D02di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -223,7 +193,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM12D01di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.FuncScenario.IService>
+  private sealed class ResolverM12D02di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.FuncScenario.IService>
   {
     public Pure.DI.UsageTests.BCL.FuncScenario.IService Resolve(Composition composition)
     {
