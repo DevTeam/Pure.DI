@@ -4,6 +4,7 @@
 // ReSharper disable ConvertIfStatementToNullCoalescingAssignment
 // ReSharper disable InvertIf
 // ReSharper disable UnusedMember.Local
+
 #pragma warning disable CA1822
 namespace Pure.DI.Benchmarks.Benchmarks;
 
@@ -15,15 +16,13 @@ using Model;
 public partial class Singleton : BenchmarkBase
 {
     private static void SetupDI() =>
-        // ThreadSafe = Off
-        // FormatCode = On
-        // ToString = On
         DI.Setup(nameof(Singleton))
             .Bind<IService1>().As(Lifetime.Singleton).To<Service1>()
             .Bind<IService2>().To<Service2>()
             .Bind<IService3>().To<Service3>()
+            .Bind<IService4>().As(Lifetime.Singleton).To<Service4>()
             .Root<CompositionRoot>("PureDIByCR", default, RootKinds.Method | RootKinds.Partial);
-    
+
     protected override TActualContainer? CreateContainer<TActualContainer, TAbstractContainer>()
         where TActualContainer : class
     {
@@ -32,12 +31,13 @@ public partial class Singleton : BenchmarkBase
         abstractContainer.Register(typeof(IService1), typeof(Service1), AbstractLifetime.Singleton);
         abstractContainer.Register(typeof(IService2), typeof(Service2));
         abstractContainer.Register(typeof(IService3), typeof(Service3));
+        abstractContainer.Register(typeof(IService4), typeof(Service4), AbstractLifetime.Singleton);
         return abstractContainer.TryCreate();
     }
 
     [Benchmark(Description = "Pure.DI Resolve<T>()")]
     public CompositionRoot PureDI() => Resolve<CompositionRoot>();
-    
+
     [Benchmark(Description = "Pure.DI Resolve(Type)")]
     public object PureDINonGeneric() => Resolve(typeof(CompositionRoot));
 
@@ -46,30 +46,41 @@ public partial class Singleton : BenchmarkBase
 
     [Benchmark(Description = "Hand Coded", Baseline = true)]
     public CompositionRoot HandCoded() =>
-        new(SingletonService1.Shared,
+        new(
+            Singletons.Service1,
             new Service2(
-                new Service3(),
-                new Service3(),
-                new Service3(),
-                new Service3(),
-                new Service3()),
+                new Service3(Singletons.Service4, Singletons.Service4),
+                new Service3(Singletons.Service4, Singletons.Service4),
+                new Service3(Singletons.Service4, Singletons.Service4),
+                new Service3(Singletons.Service4, Singletons.Service4),
+                new Service3(Singletons.Service4, Singletons.Service4)),
             new Service2(
-                new Service3(),
-                new Service3(),
-                new Service3(),
-                new Service3(),
-                new Service3()),
+                new Service3(Singletons.Service4, Singletons.Service4),
+                new Service3(Singletons.Service4, Singletons.Service4),
+                new Service3(Singletons.Service4, Singletons.Service4),
+                new Service3(Singletons.Service4, Singletons.Service4),
+                new Service3(Singletons.Service4, Singletons.Service4)),
             new Service2(
-                new Service3(),
-                new Service3(),
-                new Service3(),
-                new Service3(),
-                new Service3()),
-            new Service3());
+                new Service3(Singletons.Service4, Singletons.Service4),
+                new Service3(Singletons.Service4, Singletons.Service4),
+                new Service3(Singletons.Service4, Singletons.Service4),
+                new Service3(Singletons.Service4, Singletons.Service4),
+                new Service3(Singletons.Service4, Singletons.Service4)),
+            new Service3(Singletons.Service4, Singletons.Service4),
+            Singletons.Service4,
+            Singletons.Service4);
 
-    private static class SingletonService1
+    private static class Singletons
     {
-        public static readonly Service1 Shared = new(new Service2(new Service3(), new Service3(), new Service3(), new Service3(), new Service3()));
+        public static readonly Service4 Service4 = new();
+
+        public static readonly Service1 Service1 = new(
+            new Service2(
+                new Service3(Service4, Service4),
+                new Service3(Service4, Service4),
+                new Service3(Service4, Service4),
+                new Service3(Service4, Service4),
+                new Service3(Service4, Service4)));
     }
 }
 #pragma warning restore CA1822

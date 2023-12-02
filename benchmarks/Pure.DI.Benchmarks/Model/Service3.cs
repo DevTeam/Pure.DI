@@ -2,4 +2,7 @@
 
 public sealed class Service3 : IService3
 {
+    public Service3(IService4 service41, IService4 service42)
+    {
+    }
 }

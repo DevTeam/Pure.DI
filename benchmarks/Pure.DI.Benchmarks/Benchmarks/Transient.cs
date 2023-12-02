@@ -13,13 +13,11 @@ using Model;
 public partial class Transient : BenchmarkBase
 {
     private static void SetupDI() =>
-        // ThreadSafe = Off
-        // FormatCode = On
-        // ToString = On
         DI.Setup(nameof(Transient))
             .Bind<IService1>().To<Service1>()
             .Bind<IService2>().To<Service2>()
             .Bind<IService3>().To<Service3>()
+            .Bind<IService4>().To<Service4>()
             .Root<CompositionRoot>("PureDIByCR", default, RootKinds.Method | RootKinds.Partial);
     
     protected override TActualContainer? CreateContainer<TActualContainer, TAbstractContainer>()
@@ -30,6 +28,7 @@ public partial class Transient : BenchmarkBase
         abstractContainer.Register(typeof(IService1), typeof(Service1));
         abstractContainer.Register(typeof(IService2), typeof(Service2));
         abstractContainer.Register(typeof(IService3), typeof(Service3));
+        abstractContainer.Register(typeof(IService4), typeof(Service4));
         return abstractContainer.TryCreate();
     }
 
@@ -44,31 +43,34 @@ public partial class Transient : BenchmarkBase
 
     [Benchmark(Description = "Hand Coded", Baseline = true)]
     public CompositionRoot HandCoded() =>
-        new(new Service1(
+        new(
+            new Service1(
                 new Service2(
-                    new Service3(),
-                    new Service3(),
-                    new Service3(),
-                    new Service3(),
-                    new Service3())),
+                    new Service3(new Service4(), new Service4()),
+                    new Service3(new Service4(), new Service4()),
+                    new Service3(new Service4(), new Service4()),
+                    new Service3(new Service4(), new Service4()),
+                    new Service3(new Service4(), new Service4()))),
             new Service2(
-                new Service3(),
-                new Service3(),
-                new Service3(),
-                new Service3(),
-                new Service3()),
+                new Service3(new Service4(), new Service4()),
+                new Service3(new Service4(), new Service4()),
+                new Service3(new Service4(), new Service4()),
+                new Service3(new Service4(), new Service4()),
+                new Service3(new Service4(), new Service4())),
             new Service2(
-                new Service3(),
-                new Service3(),
-                new Service3(),
-                new Service3(),
-                new Service3()),
+                new Service3(new Service4(), new Service4()),
+                new Service3(new Service4(), new Service4()),
+                new Service3(new Service4(), new Service4()),
+                new Service3(new Service4(), new Service4()),
+                new Service3(new Service4(), new Service4())),
             new Service2(
-                new Service3(),
-                new Service3(),
-                new Service3(),
-                new Service3(),
-                new Service3()),
-            new Service3());
+                new Service3(new Service4(), new Service4()),
+                new Service3(new Service4(), new Service4()),
+                new Service3(new Service4(), new Service4()),
+                new Service3(new Service4(), new Service4()),
+                new Service3(new Service4(), new Service4())),
+            new Service3(new Service4(), new Service4()),
+            new Service4(),
+            new Service4());
 }
 #pragma warning restore CA1822

@@ -2,6 +2,7 @@
 // ReSharper disable UnusedMethodReturnValue.Local
 // ReSharper disable ObjectCreationAsStatement
 // ReSharper disable UnusedMember.Local
+
 #pragma warning disable CA1822
 namespace Pure.DI.Benchmarks.Benchmarks;
 
@@ -13,20 +14,18 @@ using Model;
 public partial class Func : BenchmarkBase
 {
     private static void SetupDI() =>
-        // ThreadSafe = Off
-        // FormatCode = On
-        // ToString = On
         DI.Setup(nameof(Func))
             .Bind<Func<TT>>()
-                .As(Lifetime.PerBlock)
-                .To(ctx => new Func<TT>(() =>
-                {
-                    ctx.Inject<TT>(ctx.Tag, out var value);
-                    return value;
-                }))
+            .As(Lifetime.PerBlock)
+            .To(ctx => new Func<TT>(() =>
+            {
+                ctx.Inject<TT>(ctx.Tag, out var value);
+                return value;
+            }))
             .Bind<IService1>().To<Service1>()
             .Bind<IService2>().To<Service2Func>()
             .Bind<IService3>().To<Service3>()
+            .Bind<IService4>().To<Service4>()
             .Root<CompositionRoot>("PureDIByCR", default, RootKinds.Method | RootKinds.Partial);
 
     protected override TActualContainer? CreateContainer<TActualContainer, TAbstractContainer>()
@@ -37,12 +36,13 @@ public partial class Func : BenchmarkBase
         abstractContainer.Register(typeof(IService1), typeof(Service1));
         abstractContainer.Register(typeof(IService2), typeof(Service2Func));
         abstractContainer.Register(typeof(IService3), typeof(Service3));
+        abstractContainer.Register(typeof(IService4), typeof(Service4));
         return abstractContainer.TryCreate();
     }
 
     [Benchmark(Description = "Pure.DI Resolve<T>()")]
     public CompositionRoot PureDI() => Resolve<CompositionRoot>();
-    
+
     [Benchmark(Description = "Pure.DI Resolve(Type)")]
     public object PureDINonGeneric() => Resolve(typeof(CompositionRoot));
 
@@ -52,15 +52,15 @@ public partial class Func : BenchmarkBase
     [Benchmark(Description = "Hand Coded", Baseline = true)]
     public CompositionRoot HandCoded()
     {
-        var func = () => new Service3();
+        var func = () => new Service3(new Service4(), new Service4());
         return new CompositionRoot(
             new Service1(new Service2Func(func)),
             new Service2Func(func),
             new Service2Func(func),
             new Service2Func(func),
-            new Service3());
+            new Service3(new Service4(), new Service4()),
+            new Service4(),
+            new Service4());
     }
-
-    private static readonly Func<IService3> Service3Factory = () => new Service3();
 }
 #pragma warning restore CA1822

@@ -2,6 +2,7 @@
 // ReSharper disable UnusedMethodReturnValue.Local
 // ReSharper disable ObjectCreationAsStatement
 // ReSharper disable UnusedMember.Local
+
 #pragma warning disable CA1822
 namespace Pure.DI.Benchmarks.Benchmarks;
 
@@ -13,9 +14,6 @@ using Model;
 public partial class Enum : BenchmarkBase
 {
     private static void SetupDI() =>
-        // ThreadSafe = Off
-        // FormatCode = On
-        // ToString = On
         DI.Setup(nameof(Enum))
             .Bind<IService1>().To<Service1>()
             .Bind<IService2>().To<Service2Enum>()
@@ -23,8 +21,9 @@ public partial class Enum : BenchmarkBase
             .Bind<IService3>().Tags(2).To<Service3v2>()
             .Bind<IService3>().Tags(3).To<Service3v3>()
             .Bind<IService3>().Tags(4).To<Service3v4>()
+            .Bind<IService4>().To<Service4>()
             .Root<CompositionRoot>("PureDIByCR", default, RootKinds.Method | RootKinds.Partial);
-    
+
     protected override TActualContainer? CreateContainer<TActualContainer, TAbstractContainer>()
         where TActualContainer : class
     {
@@ -36,12 +35,13 @@ public partial class Enum : BenchmarkBase
         abstractContainer.Register(typeof(IService3), typeof(Service3v2), AbstractLifetime.Transient, "2");
         abstractContainer.Register(typeof(IService3), typeof(Service3v3), AbstractLifetime.Transient, "3");
         abstractContainer.Register(typeof(IService3), typeof(Service3v4), AbstractLifetime.Transient, "4");
+        abstractContainer.Register(typeof(IService4), typeof(Service4));
         return abstractContainer.TryCreate();
     }
 
     [Benchmark(Description = "Pure.DI Resolve<T>()")]
     public CompositionRoot PureDI() => Resolve<CompositionRoot>();
-    
+
     [Benchmark(Description = "Pure.DI Resolve(Type)")]
     public object PureDINonGeneric() => Resolve(typeof(CompositionRoot));
 
@@ -50,21 +50,22 @@ public partial class Enum : BenchmarkBase
 
     [Benchmark(Description = "Hand Coded", Baseline = true)]
     public CompositionRoot HandCoded() =>
-        new(new Service1(new Service2Enum(EnumerableOfIService3())),
+        new(
+            new Service1(new Service2Enum(EnumerableOfIService3())),
             new Service2Enum(EnumerableOfIService3()),
             new Service2Enum(EnumerableOfIService3()),
             new Service2Enum(EnumerableOfIService3()),
-            new Service3());
-
-    private static readonly Func<IService3> Service3Factory = () => new Service3();
+            new Service3(new Service4(), new Service4()),
+            new Service4(),
+            new Service4());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private static IEnumerable<IService3> EnumerableOfIService3()
     {
-        yield return new Service3();
-        yield return new Service3v2();
-        yield return new Service3v3();
-        yield return new Service3v4();
+        yield return new Service3(new Service4(), new Service4());
+        yield return new Service3v2(new Service4(), new Service4());
+        yield return new Service3v3(new Service4(), new Service4());
+        yield return new Service3v4(new Service4(), new Service4());
     }
 }
 #pragma warning disable CA1822
