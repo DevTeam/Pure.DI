@@ -3,8 +3,11 @@
 [Collection(nameof(NonParallelTestsCollectionDefinition))]
 public class EnumerableInjectionTests
 {
-    [Fact]
-    public async Task ShouldSupportEnumerableInjection()
+    [Theory]
+    [InlineData(LanguageVersion.CSharp8)]
+    [InlineData(LanguageVersion.CSharp9)]
+    [InlineData(LanguageVersion.CSharp10)]
+    public async Task ShouldSupportEnumerableInjection(LanguageVersion languageVersion)
     {
         // Given
 
@@ -62,7 +65,7 @@ namespace Sample
         }
     }                
 }
-""".RunAsync();
+""".RunAsync(new Options(languageVersion));
 
         // Then
         result.Success.ShouldBeTrue(result);

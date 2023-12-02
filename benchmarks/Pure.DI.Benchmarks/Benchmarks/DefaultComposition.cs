@@ -8,5 +8,12 @@ internal class DefaultComposition
         DI.Setup(nameof(DefaultComposition), CompositionKind.Global)
             .Hint(Hint.ThreadSafe, "Off")
             .Hint(Hint.ToString, "On")
-            .Hint(Hint.FormatCode, "On");
+            .Hint(Hint.FormatCode, "On")
+            .Bind<Func<TT>>()
+                .As(Lifetime.PerBlock)
+                .To(ctx => new Func<TT>(() =>
+                {
+                    ctx.Inject<TT>(ctx.Tag, out var value);
+                    return value;
+                }));
 }

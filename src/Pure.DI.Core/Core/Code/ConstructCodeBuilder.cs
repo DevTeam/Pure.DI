@@ -8,7 +8,7 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
         switch (construct.Source.Kind)
         {
             case MdConstructKind.Enumerable:
-                BuildEnumerable(ctx);
+                BuildEnumerable(ctx, construct);
                 break;
 
             case MdConstructKind.Array:
@@ -32,7 +32,7 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
                 break;
             
             case MdConstructKind.AsyncEnumerable:
-                BuildEnumerable(ctx, "async ");
+                BuildEnumerable(ctx, construct,"async ");
                 break;
 
             default:
@@ -40,12 +40,17 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
         }
     }
 
-    private static void BuildEnumerable(BuildContext ctx, string methodPrefix = "")
+    private static void BuildEnumerable(BuildContext ctx, in DpConstruct enumerable, string methodPrefix = "")
     {
         var variable = ctx.Variable;
         var code = ctx.Code;
         var level = ctx.Level + 1;
         var localFuncName = $"LocalFunc_{variable.VariableName}";
+        if (enumerable.Source.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp9)
+        {
+            code.AppendLine($"[{Names.SystemNamespace}Runtime.CompilerServices.MethodImpl(({Names.SystemNamespace}Runtime.CompilerServices.MethodImplOptions)0x300)]");
+        }
+
         code.AppendLine($"{methodPrefix}{variable.InstanceType} {localFuncName}()");
         code.AppendLine("{");
         using (code.Indent())
@@ -70,7 +75,7 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
         ctx.Code.AppendLines(ctx.BuildTools.OnCreated(ctx, variable));
     }
     
-    private static void BuildArray(BuildContext ctx, DpConstruct array)
+    private static void BuildArray(BuildContext ctx, in DpConstruct array)
     {
         var variable = ctx.Variable;
         var instantiation = $"new {array.Source.ElementType}[{variable.Args.Count.ToString()}] {{ {string.Join(", ", variable.Args.Select(i => ctx.BuildTools.OnInjected(ctx, i.Current)))} }}";
@@ -86,7 +91,7 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
         }
     }
 
-    private static void BuildSpan(BuildContext ctx, DpConstruct span)
+    private static void BuildSpan(BuildContext ctx, in DpConstruct span)
     {
         var variable = ctx.Variable;
         var createArray = $"{span.Source.ElementType}[{variable.Args.Count.ToString()}] {{ {string.Join(", ", variable.Args.Select(i => ctx.BuildTools.OnInjected(ctx, i.Current)))} }}";
@@ -112,7 +117,7 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
         ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = {Names.OnCannotResolve}<{variable.ContractType}>({variable.Injection.Tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()});");
     }
     
-    private static void BuildExplicitDefaultValue(BuildContext ctx, DpConstruct explicitDefault)
+    private static void BuildExplicitDefaultValue(BuildContext ctx, in DpConstruct explicitDefault)
     {
         var variable = ctx.Variable;
         ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = {explicitDefault.Source.ExplicitDefaultValue.ValueToString()};");

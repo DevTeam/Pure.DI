@@ -3,8 +3,11 @@
 [Collection(nameof(NonParallelTestsCollectionDefinition))]
 public class FuncTests
 {
-    [Fact]
-    public async Task ShouldSupportFuncForTransientDependencies()
+    [Theory]
+    [InlineData(LanguageVersion.CSharp8)]
+    [InlineData(LanguageVersion.CSharp9)]
+    [InlineData(LanguageVersion.CSharp10)]
+    public async Task ShouldSupportFuncForTransientDependencies(LanguageVersion languageVersion)
     {
         // Given
 
@@ -57,7 +60,7 @@ namespace Sample
         }
     }                
 }
-""".RunAsync();
+""".RunAsync(new Options(languageVersion));
 
         // Then
         result.Success.ShouldBeTrue(result);

@@ -4,6 +4,16 @@ namespace Pure.DI.Core.Code;
 
 internal sealed class FactoryRewriter : CSharpSyntaxRewriter
 {
+    private static readonly AttributeListSyntax MethodImplAttribute = SyntaxFactory.AttributeList().AddAttributes(
+            SyntaxFactory.Attribute(
+                SyntaxFactory.IdentifierName($"{Names.SystemNamespace}Runtime.CompilerServices.MethodImpl"),
+                SyntaxFactory.AttributeArgumentList().AddArguments(
+                    SyntaxFactory.AttributeArgument(
+                        SyntaxFactory.CastExpression(
+                            SyntaxFactory.ParseTypeName($"{Names.SystemNamespace}Runtime.CompilerServices.MethodImplOptions"),
+                            SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0x300)))))))
+        .WithTrailingTrivia(SyntaxTriviaList.Create(SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, " ")));
+    
     private static readonly IdentifierNameSyntax InjectionMarkerExpression = SyntaxFactory.IdentifierName(Names.InjectionMarker);
     private readonly DpFactory _factory;
     private readonly Variable _variable;
@@ -44,14 +54,22 @@ internal sealed class FactoryRewriter : CSharpSyntaxRewriter
 
     public override SyntaxNode? VisitParenthesizedLambdaExpression(ParenthesizedLambdaExpressionSyntax node)
     {
-        _nestedLambdaCounter++;
         try
         {
-            return base.VisitParenthesizedLambdaExpression(node);
+            _nestedLambdaCounter++;
+            var processedNode = base.VisitParenthesizedLambdaExpression(node);
+            if (_nestedBlockCounter > 0
+                || processedNode is not ParenthesizedLambdaExpressionSyntax lambda
+                || _factory.Source.SemanticModel.Compilation.GetLanguageVersion() < LanguageVersion.CSharp10)
+            {
+                return processedNode;
+            }
+
+            return lambda.AddAttributeLists(MethodImplAttribute);
         }
         finally
         {
-            _nestedLambdaCounter--;   
+            _nestedLambdaCounter--;
         }
     }
 

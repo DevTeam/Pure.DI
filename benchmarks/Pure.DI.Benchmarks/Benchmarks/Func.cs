@@ -15,13 +15,6 @@ public partial class Func : BenchmarkBase
 {
     private static void SetupDI() =>
         DI.Setup(nameof(Func))
-            .Bind<Func<TT>>()
-            .As(Lifetime.PerBlock)
-            .To(ctx => new Func<TT>(() =>
-            {
-                ctx.Inject<TT>(ctx.Tag, out var value);
-                return value;
-            }))
             .Bind<IService1>().To<Service1>()
             .Bind<IService2>().To<Service2Func>()
             .Bind<IService3>().To<Service3>()
@@ -52,7 +45,7 @@ public partial class Func : BenchmarkBase
     [Benchmark(Description = "Hand Coded", Baseline = true)]
     public CompositionRoot HandCoded()
     {
-        var func = () => new Service3(new Service4(), new Service4());
+        var func = new Func<IService3>(() => new Service3(new Service4(), new Service4()));
         return new CompositionRoot(
             new Service1(new Service2Func(func)),
             new Service2Func(func),
