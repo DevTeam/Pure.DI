@@ -10,10 +10,10 @@ internal class VariablesBuilder : IVariablesBuilder
         Injection rootInjection)
     {
         var blockId = 0;
-        var blockMap = new Dictionary<int, Variable>();
+        var blockMap = new Dictionary<(MdBinding, int), Variable>();
         var rootBlock = new Block(blockId++,default, new LinkedList<IStatement>());
         var transientId = 0;
-        var rootVar = GetVariable(rootBlock, rootBlock, map, blockMap, rootNode, rootInjection, ref transientId, out _);
+        var rootVar = GetVariable(rootBlock, rootBlock, map, blockMap, rootNode, rootInjection, ref transientId);
         rootBlock.Statements.AddFirst(rootVar);
         var blocks = new Stack<Block>();
         blocks.Push(rootBlock);
@@ -57,8 +57,7 @@ internal class VariablesBuilder : IVariablesBuilder
                                 isAlreadyCreated = depNode.IsLazy();
                             }
 
-                            var depVariable = GetVariable(currentStatement, currentBlock, map, blockMap, depNode, depInjection, ref transientId, out var isNew);
-                            isAlreadyCreated |= !isNew;
+                            var depVariable = GetVariable(currentStatement, currentBlock, map, blockMap, depNode, depInjection, ref transientId);
                             var isBlockStatement = !variable.Node.IsEnumerable() && !variable.Node.IsAsyncEnumerable() && !variable.Node.IsFactory();
                             var isBlock = depNode.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock || variable.Node.IsLazy();
                             if (isBlock)
@@ -106,11 +105,10 @@ internal class VariablesBuilder : IVariablesBuilder
         IStatement? parent,
         Block block,
         IDictionary<MdBinding, Variable> map,
-        IDictionary<int, Variable> blockMap,
+        IDictionary<(MdBinding, int), Variable> blockMap,
         in DependencyNode node,
         in Injection injection,
-        ref int transientId,
-        out bool isNew)
+        ref int transientId)
     {
         if (!node.IsArg())
         {
@@ -118,20 +116,22 @@ internal class VariablesBuilder : IVariablesBuilder
             switch (node.Lifetime)
             {
                 case Lifetime.Transient:
-                    isNew = true;
                     return new Variable(parent, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), node.IsLazy());
                 
                 case Lifetime.PerBlock:
                 {
-                    if (blockMap.TryGetValue(block.Id, out var blockVariable))
+                    if (blockMap.TryGetValue((node.Binding, block.Id), out var blockVariable))
                     {
-                        isNew = false;
-                        return blockVariable;
+                        return blockVariable with
+                        {
+                            Parent = parent,
+                            Injection = injection,
+                            Args = new List<IStatement>() 
+                        };
                     }
                 
                     blockVariable = new Variable(parent, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), node.IsLazy());
-                    blockMap.Add(block.Id, blockVariable);
-                    isNew = true;
+                    blockMap.Add((node.Binding, block.Id), blockVariable);
                     return blockVariable;
                 }
             }
@@ -140,7 +140,6 @@ internal class VariablesBuilder : IVariablesBuilder
         if (map.TryGetValue(node.Binding, out var variable))
         {
             variable.Info.RefCount++;
-            isNew = true;
             return variable with
             {
                 Parent = parent,
@@ -151,7 +150,6 @@ internal class VariablesBuilder : IVariablesBuilder
 
         variable = new Variable(parent, node.Binding.Id, node, injection, new List<IStatement>(), new VariableInfo(), node.IsLazy());
         map.Add(node.Binding, variable);
-        isNew = true;
         return variable;
     }
 }
