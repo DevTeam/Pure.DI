@@ -39,7 +39,7 @@ namespace Pure.DI
     internal enum Lifetime
     {
         /// <summary>
-        /// Creates a new instance of the requested type every time. This is the default value and can be omitted.
+        /// Specifies to create a new dependency instance each time. This is the default value and can be omitted.
         /// <example>
         /// For example:
         /// <code>
@@ -56,7 +56,7 @@ namespace Pure.DI
         Transient,
 
         /// <summary>
-        /// Creates an instance first time and then provides the same instance each time.
+        /// Ensures that there will be a single instance of the dependency for each composition instance.
         /// <example>
         /// For example:
         /// <code>
@@ -68,7 +68,7 @@ namespace Pure.DI
         Singleton,
 
         /// <summary>
-        /// Lifetime <c>PerResolve</c> is similar to <see cref="Lifetime.Transient">, but the instance is reused in the same composition of objects.
+        /// Guarantees that there will be a single instance of the dependency for each root of the composition.
         /// <example>
         /// For example:
         /// <code>
@@ -80,7 +80,7 @@ namespace Pure.DI
         PerResolve,
         
         /// <summary>
-        /// Lifetime <c>PerBlock</c> is similar to <see cref="Lifetime.Transient">, but the instance is reused in the same statement block.
+        /// Does not guarantee that there will be a single instance of the dependency for each root of the composition, but is useful to reduce the number of instances of type.
         /// <example>
         /// For example:
         /// <code>
