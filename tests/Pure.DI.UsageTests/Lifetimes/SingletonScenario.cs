@@ -2,6 +2,7 @@
 $v=true
 $p=0
 $d=Singleton
+$h=The _Singleton_ lifetime ensures that there will be a single instance of the dependency for each composition instance.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

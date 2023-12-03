@@ -103,19 +103,19 @@ classDiagram
 ```c#
 partial class PersonComposition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM12D02di;
-  private readonly int _argM12D02dipersonId;
+  private readonly global::System.IDisposable[] _disposableSingletonsM12D06di;
+  private readonly int _argM12D06dipersonId;
   
   public PersonComposition(int personId)
   {
-    _argM12D02dipersonId = personId;
-    _disposableSingletonsM12D02di = new global::System.IDisposable[0];
+    _argM12D06dipersonId = personId;
+    _disposableSingletonsM12D06di = new global::System.IDisposable[0];
   }
   
   internal PersonComposition(PersonComposition parent)
   {
-    _disposableSingletonsM12D02di = new global::System.IDisposable[0];
-    _argM12D02dipersonId = parent._argM12D02dipersonId;
+    _disposableSingletonsM12D06di = new global::System.IDisposable[0];
+    _argM12D06dipersonId = parent._argM12D06dipersonId;
   }
   
   #region Composition Roots
@@ -126,10 +126,10 @@ partial class PersonComposition
     #endif
     get
     {
-      string transientM12D02di1 = "Nik";
-      var transientM12D02di0 = new Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person(transientM12D02di1);
-      transientM12D02di0.Id = _argM12D02dipersonId;
-      return transientM12D02di0;
+      string transientM12D06di1 = "Nik";
+      var transientM12D06di0 = new Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person(transientM12D06di1);
+      transientM12D06di0.Id = _argM12D06dipersonId;
+      return transientM12D06di0;
     }
   }
   #endregion
@@ -140,7 +140,7 @@ partial class PersonComposition
   #endif
   public T Resolve<T>()
   {
-    return ResolverM12D02di<T>.Value.Resolve(this);
+    return ResolverM12D06di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -148,7 +148,7 @@ partial class PersonComposition
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM12D02di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM12D06di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -156,10 +156,10 @@ partial class PersonComposition
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM12D02di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM12D02di;
+    var index = (int)(_bucketSizeM12D06di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM12D06di;
     do {
-      ref var pair = ref _bucketsM12D02di[index];
+      ref var pair = ref _bucketsM12D06di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -174,10 +174,10 @@ partial class PersonComposition
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM12D02di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM12D02di;
+    var index = (int)(_bucketSizeM12D06di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM12D06di;
     do {
-      ref var pair = ref _bucketsM12D02di[index];
+      ref var pair = ref _bucketsM12D06di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -214,27 +214,27 @@ partial class PersonComposition
         "  PersonComposition ..> Person : IPerson Person";
   }
   
-  private readonly static int _bucketSizeM12D02di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[] _bucketsM12D02di;
+  private readonly static int _bucketSizeM12D06di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[] _bucketsM12D06di;
   
   
   static PersonComposition()
   {
-    var valResolverM12D02di_0000 = new ResolverM12D02di_0000();
-    ResolverM12D02di<Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson>.Value = valResolverM12D02di_0000;
-    _bucketsM12D02di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>.Create(
+    var valResolverM12D06di_0000 = new ResolverM12D06di_0000();
+    ResolverM12D06di<Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson>.Value = valResolverM12D06di_0000;
+    _bucketsM12D06di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>.Create(
       1,
-      out _bucketSizeM12D02di,
+      out _bucketSizeM12D06di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>(typeof(Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson), valResolverM12D02di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>(typeof(Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson), valResolverM12D06di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM12D02di<T>: global::Pure.DI.IResolver<PersonComposition, T>
+  private sealed class ResolverM12D06di<T>: global::Pure.DI.IResolver<PersonComposition, T>
   {
-    public static global::Pure.DI.IResolver<PersonComposition, T> Value = new ResolverM12D02di<T>();
+    public static global::Pure.DI.IResolver<PersonComposition, T> Value = new ResolverM12D06di<T>();
     
     public T Resolve(PersonComposition composite)
     {
@@ -247,7 +247,7 @@ partial class PersonComposition
     }
   }
   
-  private sealed class ResolverM12D02di_0000: global::Pure.DI.IResolver<PersonComposition, Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson>
+  private sealed class ResolverM12D06di_0000: global::Pure.DI.IResolver<PersonComposition, Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson>
   {
     public Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson Resolve(PersonComposition composition)
     {

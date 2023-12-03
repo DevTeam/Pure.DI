@@ -2,7 +2,7 @@
 $v=true
 $p=2
 $d=Transient
-$h=The _Transient _ lifetime is the default lifetime and can be omitted.
+$h=The _Transient _ lifetime specifies to create a new dependency instance each time. It is the default lifetime and can be omitted.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

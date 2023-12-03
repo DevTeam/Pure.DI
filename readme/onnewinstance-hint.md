@@ -97,20 +97,20 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM12D02di;
-  private Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency _singletonM12D02di21;
+  private readonly global::System.IDisposable[] _disposableSingletonsM12D06di;
+  private Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency _singletonM12D06di21;
   
   public Composition()
   {
-    _disposableSingletonsM12D02di = new global::System.IDisposable[0];
+    _disposableSingletonsM12D06di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM12D02di = new global::System.IDisposable[0];
-    lock (parent._disposableSingletonsM12D02di)
+    _disposableSingletonsM12D06di = new global::System.IDisposable[0];
+    lock (parent._disposableSingletonsM12D06di)
     {
-      _singletonM12D02di21 = parent._singletonM12D02di21;
+      _singletonM12D06di21 = parent._singletonM12D06di21;
     }
   }
   
@@ -122,24 +122,14 @@ partial class Composition
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM12D02di21, null))
+      if (object.ReferenceEquals(_singletonM12D06di21, null))
       {
-        lock (_disposableSingletonsM12D02di)
-        {
-          if (object.ReferenceEquals(_singletonM12D02di21, null))
-          {
-            Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency _singletonM12D02di21Temp;
-            _singletonM12D02di21Temp = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency();
-            OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency>(ref _singletonM12D02di21Temp, null, Pure.DI.Lifetime.Singleton);
-            global::System.Threading.Thread.MemoryBarrier();
-            _singletonM12D02di21 = _singletonM12D02di21Temp;
-          }
-        }
+          _singletonM12D06di21 = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency();
+          OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency>(ref _singletonM12D06di21, null, Pure.DI.Lifetime.Singleton);
       }
-      
-      var transientM12D02di0 = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service(_singletonM12D02di21);
-      OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service>(ref transientM12D02di0, null, Pure.DI.Lifetime.Transient);
-      return transientM12D02di0;
+      var transientM12D06di0 = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service(_singletonM12D06di21);
+      OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service>(ref transientM12D06di0, null, Pure.DI.Lifetime.Transient);
+      return transientM12D06di0;
     }
   }
   #endregion
@@ -150,7 +140,7 @@ partial class Composition
   #endif
   public T Resolve<T>()
   {
-    return ResolverM12D02di<T>.Value.Resolve(this);
+    return ResolverM12D06di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -158,7 +148,7 @@ partial class Composition
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM12D02di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM12D06di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -166,10 +156,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM12D02di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM12D02di;
+    var index = (int)(_bucketSizeM12D06di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM12D06di;
     do {
-      ref var pair = ref _bucketsM12D02di[index];
+      ref var pair = ref _bucketsM12D06di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -184,10 +174,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM12D02di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM12D02di;
+    var index = (int)(_bucketSizeM12D06di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM12D06di;
     do {
-      ref var pair = ref _bucketsM12D02di[index];
+      ref var pair = ref _bucketsM12D06di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -200,27 +190,56 @@ partial class Composition
   partial void OnNewInstance<T>(ref T value, object? tag, global::Pure.DI.Lifetime lifetime);
   #endregion
   
-  private readonly static int _bucketSizeM12D02di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM12D02di;
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService Root\n" +
+          "    + T ResolveᐸTᐳ()\n" +
+          "    + T ResolveᐸTᐳ(object? tag)\n" +
+          "    + object Resolve(Type type)\n" +
+          "    + object Resolve(Type type, object? tag)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service o--  \"Singleton\" Dependency : IDependency\n" +
+        "  Composition ..> Service : IService Root";
+  }
+  
+  private readonly static int _bucketSizeM12D06di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM12D06di;
   
   
   static Composition()
   {
-    var valResolverM12D02di_0000 = new ResolverM12D02di_0000();
-    ResolverM12D02di<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService>.Value = valResolverM12D02di_0000;
-    _bucketsM12D02di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM12D06di_0000 = new ResolverM12D06di_0000();
+    ResolverM12D06di<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService>.Value = valResolverM12D06di_0000;
+    _bucketsM12D06di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM12D02di,
+      out _bucketSizeM12D06di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService), valResolverM12D02di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService), valResolverM12D06di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM12D02di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM12D06di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM12D02di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM12D06di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -233,7 +252,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM12D02di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService>
+  private sealed class ResolverM12D06di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService>
   {
     public Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.IService Resolve(Composition composition)
     {

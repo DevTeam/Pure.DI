@@ -104,16 +104,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM12D02di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM12D06di;
   
   public Composition()
   {
-    _disposableSingletonsM12D02di = new global::System.IDisposable[0];
+    _disposableSingletonsM12D06di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM12D02di = new global::System.IDisposable[0];
+    _disposableSingletonsM12D06di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -126,6 +126,36 @@ partial class Composition
   }
   #endregion
   
+  
+  public override string ToString()
+  {
+    return
+      "classDiagram\n" +
+        "  class Composition {\n" +
+          "    +IService CreateService(int id, string dependencyName, string serviceName)\n" +
+        "  }\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency(Int32 id, String dependencyName)\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(String name, IDependency dependency)\n" +
+        "  }\n" +
+        "  class Int32\n" +
+        "  class String\n" +
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Dependency o-- Int32 : Argument \"id\"\n" +
+        "  Dependency o-- String : Argument \"dependencyName\"\n" +
+        "  Service o-- String : \"forService\"  Argument \"serviceName\"\n" +
+        "  Service *--  Dependency : IDependency\n" +
+        "  Composition ..> Service : IService CreateService";
+  }
 }
 ```
 
