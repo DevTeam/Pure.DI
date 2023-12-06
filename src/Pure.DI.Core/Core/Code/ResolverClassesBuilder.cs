@@ -136,19 +136,24 @@ internal sealed class ResolverClassesBuilder: IBuilder<CompositionCode, Composit
             var taggedRoots = resolver.Roots.Where(i => i.Injection.Tag is not null).ToArray();
             foreach (var taggedRoot in taggedRoots)
             {
-                code.AppendLine($"if (Equals(tag, {taggedRoot.Injection.Tag.ValueToString()})) return composition.{taggedRoot.PropertyName};");
+                code.AppendLine($"if (Equals(tag, {taggedRoot.Injection.Tag.ValueToString()})) return {GetRoot(composition, taggedRoot)};");
             }
 
             if (defaultRoot is not null)
             {
-                var isStatic = (defaultRoot.Kind & RootKinds.Static) == RootKinds.Static;
-                var isMethod = !defaultRoot.Args.IsEmpty || (defaultRoot.Kind & RootKinds.Method) == RootKinds.Method;
-                code.AppendLine($"if (Equals(tag, null)) return {(isStatic ? composition.Source.Source.Name.ClassName : "composition")}.{defaultRoot.PropertyName}{(isMethod ? "()": "")};");
+                code.AppendLine($"if (Equals(tag, null)) return {GetRoot(composition, defaultRoot)};");
             }
 
             code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{Names.CannotResolve} \\\"{{tag}}\\\" of type {resolver.Type}.\");");
         }
 
         code.AppendLine("}");
+    }
+
+    private static string GetRoot(CompositionCode composition, Root root)
+    {
+        var target = (root.Kind & RootKinds.Static) == RootKinds.Static ? composition.Source.Source.Name.ClassName : "composition";
+        var isMethod = !root.Args.IsEmpty || (root.Kind & RootKinds.Method) == RootKinds.Method;
+        return $"{target}.{root.PropertyName}{(isMethod ? "()": "")};";
     }
 }

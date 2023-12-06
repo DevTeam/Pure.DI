@@ -212,7 +212,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                                 tag = new MdTag(0, semanticModel.GetConstantValue<object>(rootArgs[1].Expression));
                             }
 
-                            var rootKind = RootKinds.Default;
+                            var rootKind = RootKinds.Public;
                             if (rootArgs.Count >= 3)
                             {
                                 rootKind = semanticModel.GetConstantValue<RootKinds>(rootArgs[2].Expression);

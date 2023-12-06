@@ -60,16 +60,20 @@ internal sealed class RootMethodsBuilder: IBuilder<CompositionCode, CompositionC
             _buildTools.AddPureHeader(code);
         }
 
-        var isStatic = (root.Kind & RootKinds.Static) == RootKinds.Static;
-        var isPartial = (root.Kind & RootKinds.Partial) == RootKinds.Partial;
+        var modifier = (root.Kind & RootKinds.Private) == RootKinds.Private 
+            ? "private"
+            : (root.Kind & RootKinds.Internal) == RootKinds.Internal
+                ? "internal"
+                : "public";
+
         var name = new StringBuilder();
-        name.Append(root.IsPublic ? "public" : "private");
-        if (isStatic)
+        name.Append(modifier);
+        if ((root.Kind & RootKinds.Static) == RootKinds.Static)
         {
             name.Append(" static");
         }
 
-        if (isPartial)
+        if ((root.Kind & RootKinds.Partial) == RootKinds.Partial)
         {
             name.Append(" partial");
         }

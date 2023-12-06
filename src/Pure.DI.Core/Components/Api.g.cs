@@ -882,16 +882,51 @@ namespace Pure.DI
         Global
     }
 
+    /// <summary>
+    /// Determines a kind of root of the composition.
+    /// </summary>
     [Flags]
     public enum RootKinds
     {
-        Default = 0,
+        /// <summary>
+        /// Specifies to use the default composition root kind.
+        /// </summary>
+        Default = RootKinds.Public | RootKinds.Property,
         
-        Method = 1,
+        /// <summary>
+        /// Specifies to use a <c>public</c> access modifier for the root of the composition.
+        /// </summary>
+        Public = 1,
         
-        Static = 2,
+        /// <summary>
+        /// Specifies to use a <c>internal</c> access modifier for the root of the composition.
+        /// </summary>
+        Internal = 2,
         
-        Partial = 4
+        /// <summary>
+        /// Specifies to use a <c>private</c> access modifier for the root of the composition.
+        /// </summary>
+        Private = 4,
+        
+        /// <summary>
+        /// Specifies to create a composition root as a property.
+        /// </summary>
+        Property = 8,
+        
+        /// <summary>
+        /// Specifies to create a composition root as a method.
+        /// </summary>
+        Method = 16,
+        
+        /// <summary>
+        /// Specifies to create a static root of the composition.
+        /// </summary>
+        Static = 32,
+        
+        /// <summary>
+        /// Specifies to create a partial root of the composition.
+        /// </summary>
+        Partial = 64
     }
     
     /// <summary>

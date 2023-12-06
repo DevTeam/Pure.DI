@@ -971,6 +971,47 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldSupportPartialPrivateMethodRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           partial class Composition
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup(nameof(Composition))
+                       .Bind<string>().To(_ => "Abc")
+                       .Root<string>("Root", default, RootKinds.Partial | RootKinds.Method | RootKinds.Private);
+               }
+               
+               private partial string Root();
+               
+               public string GetRoot() => Root();
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   Console.WriteLine(new Composition().GetRoot());
+               }
+           }
+       }
+       """.RunAsync( new Options( LanguageVersion.CSharp9 ));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Abc"), result);
+    }
+    
+    [Fact]
     public async Task ShouldSupportPartialStaticMethodRoot()
     {
         // Given
