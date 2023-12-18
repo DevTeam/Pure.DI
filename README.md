@@ -213,6 +213,7 @@ dotnet run
 - [Generics](readme/generics.md)
 - [Arguments](readme/arguments.md)
 - [Root arguments](readme/root-arguments.md)
+- [Composition root kinds](readme/composition-root-kinds.md)
 - [Tags](readme/tags.md)
 - [Auto-bindings](readme/auto-bindings.md)
 - [Child composition](readme/child-composition.md)
