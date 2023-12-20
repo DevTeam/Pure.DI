@@ -8,6 +8,7 @@ internal record Variable(
         ICollection<IStatement> Args,
         VariableInfo Info,
         bool IsLazy,
+        bool HasCycle,
         string NameOverride = "")
         : IStatement
 {

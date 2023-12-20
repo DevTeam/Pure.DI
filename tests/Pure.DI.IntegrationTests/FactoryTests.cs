@@ -734,4 +734,86 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
     }
+    
+    [Fact]
+    public async Task ShouldSupportSingletonWithinFactoryAndFunc()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           interface IDependency2 {}
+       
+           class Dependency2: IDependency2 { }
+           
+           interface IDependency3 {}
+       
+           class Dependency3
+           {
+               public Dependency3(IDependency2 depFactory)
+               {
+               }
+           }
+       
+           interface IDependency {}
+       
+           class Dependency: IDependency
+           {
+               public Dependency(IDependency2 depFactory)
+               {
+               }
+           }
+       
+           interface IService
+           {
+               IDependency Dep { get; }
+           }
+       
+           class Service: IService
+           {
+               private Func<IDependency> _depFactory;
+               public Service(Func<IDependency> depFactory, Dependency3 dep3)
+               {
+                   _depFactory = depFactory;
+               }
+       
+               public IDependency Dep => _depFactory();
+           }
+       
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .Bind<IDependency2>().As(Lifetime.Singleton).To<Dependency2>()
+                       .Bind<IDependency>().To(ctx =>
+                       {
+                            ctx.Inject<IDependency2>(out var dep2);
+                            return new Dependency(dep2);
+                       })
+                       .Bind<IService>().To<Service>()
+                       .Root<IService>("Service");
+               }
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   var composition = new Composition();
+               }
+           }
+       }
+       """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains(" = new Sample.Dependency2();")).ShouldBe(2);
+    }
+    
 }

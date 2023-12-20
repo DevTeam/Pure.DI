@@ -6,7 +6,7 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
     public void Build(BuildContext ctx, in Block block)
     {
         var variable = ctx.Variable;
-        if (!IsNewInstanceRequired(ctx, variable))
+        if (!IsNewInstanceRequired(variable))
         {
             return;
         }
@@ -19,7 +19,8 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
             variable.Node.Lifetime == Lifetime.Singleton
             // The "per resolve" instance should be created without checks if it is the only one in the composition
             || (variable.Node.Lifetime == Lifetime.PerResolve && variable.Info.RefCount > 1);
-        
+
+        var code = ctx.Code; 
         if (toCheckExistence)
         {
             var checkExpression = variable.InstanceType.IsValueType
@@ -28,18 +29,18 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
 
             if (lockIsRequired)
             {
-                ctx.Code.AppendLine($"if ({checkExpression})");
-                ctx.Code.AppendLine("{");
-                ctx.Code.IncIndent();
-                ctx.Code.AppendLine($"lock ({Names.DisposablesFieldName})");
-                ctx.Code.AppendLine("{");
-                ctx.Code.IncIndent();
+                code.AppendLine($"if ({checkExpression})");
+                code.AppendLine("{");
+                code.IncIndent();
+                code.AppendLine($"lock ({Names.DisposablesFieldName})");
+                code.AppendLine("{");
+                code.IncIndent();
                 ctx = ctx with { LockIsRequired = false };
             }
             
-            ctx.Code.AppendLine($"if ({checkExpression})");
-            ctx.Code.AppendLine("{");
-            ctx.Code.IncIndent();
+            code.AppendLine($"if ({checkExpression})");
+            code.AppendLine("{");
+            code.IncIndent();
             ctx = ctx with { Level = level + 1 };
         }
 
@@ -55,42 +56,47 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
 
         if (variable.Node.Lifetime == Lifetime.Singleton && variable.Node.IsDisposable())
         {
-            ctx.Code.AppendLine($"{Names.DisposablesFieldName}[{Names.DisposeIndexFieldName}++] = {variable.VariableName};");
+            code.AppendLine($"{Names.DisposablesFieldName}[{Names.DisposeIndexFieldName}++] = {variable.VariableName};");
         }
 
         if (variable.InstanceType.IsValueType)
         {
             if (variable.Node.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock && isThreadSafe)
             {
-                ctx.Code.AppendLine($"{Names.SystemNamespace}Threading.Thread.MemoryBarrier();");
+                code.AppendLine($"{Names.SystemNamespace}Threading.Thread.MemoryBarrier();");
             }
 
-            ctx.Code.AppendLine($"{variable.VariableName}Created = true;");
+            code.AppendLine($"{variable.VariableName}Created = true;");
         }
 
-        ctx.Code.DecIndent();
-        ctx.Code.AppendLine("}");
+        code.DecIndent();
+        code.AppendLine("}");
         if (!lockIsRequired)
         {
             return;
         }
         
-        ctx.Code.DecIndent();
-        ctx.Code.AppendLine("}");
-        ctx.Code.DecIndent();
-        ctx.Code.AppendLine("}");
-        ctx.Code.AppendLine();
+        code.DecIndent();
+        code.AppendLine("}");
+        code.DecIndent();
+        code.AppendLine("}");
+        code.AppendLine();
     }
     
-    private static bool IsNewInstanceRequired(BuildContext ctx, Variable variable)
+    private static bool IsNewInstanceRequired(Variable variable)
     {
-        // Do not create an instance if it has already been created at this level or a level below it
-        if (ctx.Level >= variable.Info.Level)
+        if (variable.Current.HasCycle)
         {
             return false;
         }
         
-        variable.Info.Level = ctx.Level;
+        var owners = variable.GetPath().TakeWhile(i => !i.Current.IsLazy).OfType<Block>().ToArray();
+        if (variable.Info.Owners.Intersect(owners).Any())
+        {
+            return false;
+        }
+
+        variable.Info.Owners.Add(owners.FirstOrDefault());
         return true;
     }
 }
