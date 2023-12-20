@@ -4,8 +4,9 @@ internal class VariableInfo
 {
     public readonly HashSet<Block> Owners = new();
     public int RefCount = 1;
-    
-    public bool IsCreated { get; set; }
+    public bool IsCreated;
+    public bool HasCode;
+    public LinesBuilder Code = new();
     
     public void Reset()
     {
