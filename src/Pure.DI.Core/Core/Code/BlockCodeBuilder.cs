@@ -94,7 +94,25 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
         finally
         {
             info.HasCode = true;
-            ctx.Code.AppendLines(info.Code.Lines);
+            if (block.Parent is not null
+                && info.PerBlockRefCount > 2) 
+            {
+                var localMethodName = $"{variable.VariableName}EnsureExists";
+                var localFunctionsCode = ctx.LocalFunctionsCode;
+                localFunctionsCode.AppendLine($"void {localMethodName}()");
+                localFunctionsCode.AppendLine("{");
+                using (localFunctionsCode.Indent())
+                {
+                    localFunctionsCode.AppendLines(info.Code.Lines);
+                }
+                
+                localFunctionsCode.AppendLine("}");
+                ctx.Code.AppendLine($"{localMethodName}();");
+            }
+            else
+            {
+                ctx.Code.AppendLines(info.Code.Lines);
+            }
         }
     }
     

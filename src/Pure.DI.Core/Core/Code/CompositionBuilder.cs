@@ -40,6 +40,7 @@ internal class CompositionBuilder: IBuilder<DependencyGraph, CompositionCode>
                 graph,
                 rootBlock.Current,
                 new LinesBuilder(),
+                new LinesBuilder(),
                 default,
                 default);
 
@@ -54,6 +55,7 @@ internal class CompositionBuilder: IBuilder<DependencyGraph, CompositionCode>
             
             _blockBuilder.Build(ctx, rootBlock);
             ctx.Code.AppendLine($"return {_buildTools.OnInjected(ctx, rootBlock.Current)};");
+            ctx.Code.AppendLines(ctx.LocalFunctionsCode.Lines);
             
             var args = map.Values
                 .Where(i => i.Node.Arg is not null)

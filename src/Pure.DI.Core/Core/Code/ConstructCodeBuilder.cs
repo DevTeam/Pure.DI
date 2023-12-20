@@ -48,7 +48,7 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
         var localFuncName = $"LocalFunc_{variable.VariableName}";
         if (enumerable.Source.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp9)
         {
-            code.AppendLine($"[{Names.SystemNamespace}Runtime.CompilerServices.MethodImpl(({Names.SystemNamespace}Runtime.CompilerServices.MethodImplOptions)0x300)]");
+            code.AppendLine($"[{Names.SystemNamespace}Runtime.CompilerServices.MethodImpl(({Names.SystemNamespace}Runtime.CompilerServices.MethodImplOptions)0x200)]");
         }
 
         code.AppendLine($"{methodPrefix}{variable.InstanceType} {localFuncName}()");

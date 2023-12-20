@@ -140,7 +140,7 @@ internal class VariablesBuilder : IVariablesBuilder
 
         if (map.TryGetValue(node.Binding, out var variable))
         {
-            variable.Info.RefCount++;
+            variable.Info.AddRef(parentBlock);
             return variable with
             {
                 Parent = parentBlock,

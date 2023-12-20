@@ -7,5 +7,6 @@ internal record BuildContext(
     DependencyGraph DependencyGraph,
     Variable Variable,
     LinesBuilder Code,
+    LinesBuilder LocalFunctionsCode,
     object? ContextTag,
     bool? LockIsRequired);
