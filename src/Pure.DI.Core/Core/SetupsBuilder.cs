@@ -31,13 +31,19 @@ internal sealed class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup
     {
         get
         {
-            _binding ??= new MdBinding();
+            if (_binding is { } binding)
+            {
+                return binding;
+            }
+            
+            var newBinding = new MdBinding();
             if (_defaultLifetime.HasValue)
             {
-                _binding = _binding.Value with { Lifetime = _defaultLifetime.Value.Lifetime };
+                newBinding = newBinding with { Lifetime = _defaultLifetime.Value.Lifetime };
             }
 
-            return _binding.Value;
+            _binding = newBinding;
+            return newBinding;
         }
 
         set => _binding = value;
@@ -130,9 +136,11 @@ internal sealed class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup
     public void VisitOrdinalAttribute(in MdOrdinalAttribute ordinalAttribute) =>
         _ordinalAttributes.Add(ordinalAttribute);
 
-    public void VisitLifetime(in MdLifetime lifetime) =>
+    public void VisitLifetime(in MdLifetime lifetime)
+    {
         Binding = Binding with { Lifetime = lifetime };
-    
+    }
+
     public void VisitTag(in MdTag tag) => _tags.Add(tag);
 
     public void VisitFinish() => FinishSetup();

@@ -44,6 +44,47 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldSupportTransientWhenDefaultLifetimeWasDefined()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           interface IService {}
+           class Service: IService {}
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .DefaultLifetime(Lifetime.Singleton)
+                       .Bind<IService>().As(Lifetime.Transient).To<Service>()
+                       .Root<IService>("Service");
+               }
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   var composition = new Composition();
+                   Console.WriteLine(composition.Service != composition.Service);
+               }
+           }
+       }
+       """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
+    }
+    
+    [Fact]
     public async Task ShouldAssumeTransientWhenNotSpecified()
     {
         // Given
