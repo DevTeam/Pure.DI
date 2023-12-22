@@ -95,7 +95,7 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
         {
             info.HasCode = true;
             if (block.Parent is not null
-                && info.PerBlockRefCount > 2) 
+                && info is { PerBlockRefCount: > 2, Code.Lines.Count: > 16 }) 
             {
                 var localMethodName = $"{variable.VariableName}EnsureExists";
                 var localFunctionsCode = ctx.LocalFunctionsCode;

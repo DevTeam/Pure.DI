@@ -22,7 +22,7 @@ internal sealed class LinesBuilder: IEnumerable<string>
 
     public int Count => _sb.Length > 0 ? 1 : 0 + _lines.Count;
 
-    public IEnumerable<Line> Lines
+    public IReadOnlyCollection<Line> Lines
     {
         get
         {
