@@ -44,7 +44,8 @@ internal class VariablesBuilder : IVariablesBuilder
                                 continue;
                             }
 
-                            var hasCycle = path.Any(i => i.Current.Node.Binding == depNode.Binding);
+                            var cycle = path.FirstOrDefault(i => i.Current.Node.Binding == depNode.Binding);
+                            var hasCycle = cycle is not null;
                             var isAlreadyCreated = false;
                             if (hasCycle)
                             {

@@ -29,7 +29,8 @@ internal class FactoryCodeBuilder: ICodeBuilder<DpFactory>
 
         if (syntaxNode is not BlockSyntax)
         {
-            code.Append($"{ctx.BuildTools.GetDeclaration(variable, true)}{variable.VariableName} = ");
+            code.Append($"{ctx.BuildTools.GetDeclaration(variable, true)}{variable.VariableName} = default({variable.InstanceType});");
+            code.Append($"{variable.VariableName} = ");
         }
         else
         {
@@ -44,7 +45,10 @@ internal class FactoryCodeBuilder: ICodeBuilder<DpFactory>
         // Replaces injection markers by injection code
         if (variable.Args.Count != injections.Count)
         {
-            throw new CompileErrorException($"Dependency mapping error for {factory.Binding}.", factory.Source.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+            throw new CompileErrorException(
+                $"{variable.Node.Lifetime} lifetime does not support cyclic dependencies.",
+                factory.Source.Source.GetLocation(),
+                LogId.ErrorInvalidMetadata);
         }
         
         using var resolvers = injections
