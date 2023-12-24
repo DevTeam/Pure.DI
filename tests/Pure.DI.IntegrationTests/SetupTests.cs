@@ -807,7 +807,9 @@ internal interface IDependency { }
     [Theory]
     [InlineData("PerResolve")]
     [InlineData("Singleton")]
-    public async Task ShouldSupportLazyInjectionWhenTheSameVarNames(string lifetime)
+    [InlineData("Transient")]
+    [InlineData("PerBlock")]
+    public async Task ShouldSupportTheSameFactoryVarNames(string lifetime)
     {
         // Given
 
@@ -822,7 +824,7 @@ internal interface IDependency { }
        
             public class Dependency : IDependency
             {
-                public Dependency(Func<string, IDependency2> dependency2) { }
+                public Dependency(int val) { }
             }
        
             public interface IDependency
@@ -854,13 +856,19 @@ internal interface IDependency { }
                 public static void Setup() =>
                     // FormatCode = On
                     DI.Setup(nameof(Composition))
+                        .Bind<int>().To(_ => {
+                            var Console = 33;
+                            return Console; 
+                         })
                         .Bind<IDependency>().As(Lifetime.###).To(ctx => {
-                           ctx.Inject<Dependency>(out var dep);
-                           return dep;
+                           var Console = 44;
+                           System.Console.WriteLine(Console);
+                           ctx.Inject<int>(out var dep2);
+                           return new Dependency(dep2);
                        })
                         .Bind<Func<string, IDependency2>>().As(Lifetime.###).To(ctx => new Func<string, IDependency2>(p => {
-                            ctx.Inject<IDependency>(out var dep);
-                            return new Dependency2(dep, p);
+                            ctx.Inject<IDependency>(out var dep2);
+                            return new Dependency2(dep2, p);
                         }))
                         .Bind<IService>().To<Service>().Root<IService>("Service");
             }

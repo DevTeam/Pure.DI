@@ -39,6 +39,7 @@ internal static class Names
     public static readonly string BucketSizeFieldName = $"_bucketSize{Salt}";
     public static readonly string DisposeIndexFieldName = "_disposeIndex" + Salt;
     public static readonly string DisposablesFieldName = "_disposableSingletons" + Salt;
+    public static readonly string LocalVarName = "local" + Salt;
     
     // Vars
     private const string TransientVariablePrefix = "transient";

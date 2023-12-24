@@ -100,5 +100,6 @@ internal partial class Composition
         // PerResolve
             .DefaultLifetime(Lifetime.PerResolve)
             .Bind<IObserver<LogEntry>>().To<LogObserver>()
-            .Bind<IFilter>().To<Filter>();
+            .Bind<IFilter>().To<Filter>()
+            .Bind<IIdGenerator>().To<IdGenerator>();
 }
