@@ -2,7 +2,7 @@
 
 using Core;
 
-[Collection(nameof(NonParallelTestsCollectionDefinition))]
+[Collection(nameof(IntegrationTestsCollectionDefinition))]
 public class SetupTests
 {
     [Fact]

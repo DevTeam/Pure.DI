@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
-[Collection(nameof(NonParallelTestsCollectionDefinition))]
+[Collection(nameof(IntegrationTestsCollectionDefinition))]
 public class EnumerableInjectionTests
 {
     [Theory]

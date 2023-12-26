@@ -56,7 +56,7 @@ enum State
 ### Here's our implementation
 
 ```c#
-public class CardboardBox<T>(T content) : IBox<T>
+class CardboardBox<T>(T content) : IBox<T>
 {
     public T Content { get; } = content;
 
@@ -170,7 +170,7 @@ class Program(IBox<ICat> box)
 {
   // Composition Root, a single place in an application
   // where the composition of the object graphs for an application take place
-  public static void Main() => new Composition().Root.Run();
+  static void Main() => new Composition().Root.Run();
 
   private void Run() => Console.WriteLine(box);
 }

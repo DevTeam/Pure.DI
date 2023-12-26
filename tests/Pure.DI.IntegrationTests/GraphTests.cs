@@ -4,7 +4,7 @@ using System.Text;
 using Core;
 using Core.Models;
 
-[Collection(nameof(NonParallelTestsCollectionDefinition))]
+[Collection(nameof(IntegrationTestsCollectionDefinition))]
 public class GraphTests
 {
     [Fact]
