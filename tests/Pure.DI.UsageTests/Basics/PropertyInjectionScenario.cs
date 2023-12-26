@@ -15,9 +15,9 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency { }
+interface IDependency;
 
-class Dependency : IDependency { }
+class Dependency : IDependency;
 
 interface IService
 {

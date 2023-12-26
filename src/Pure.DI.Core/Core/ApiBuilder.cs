@@ -2,15 +2,12 @@
 // ReSharper disable HeapView.DelegateAllocation
 namespace Pure.DI.Core;
 
-internal sealed class ApiBuilder : IBuilder<Unit, IEnumerable<Source>>
+internal sealed class ApiBuilder(IResources resources)
+    : IBuilder<Unit, IEnumerable<Source>>
 {
-    private readonly IResources _resources;
-
-    public ApiBuilder(IResources resources) => _resources = resources;
-
     public IEnumerable<Source> Build(Unit data)
     {
-        foreach (var resource in _resources.GetResource("""^[\w\.]+\.g\.cs$"""))
+        foreach (var resource in resources.GetResource("""^[\w\.]+\.g\.cs$"""))
         {
             SourceText source;
             using (resource)

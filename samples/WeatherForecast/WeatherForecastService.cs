@@ -3,12 +3,11 @@ namespace WeatherForecast;
 
 using Microsoft.Extensions.Logging;
 
-internal class WeatherForecastService : IWeatherForecastService
+internal class WeatherForecastService(ILogger<WeatherForecastService> logger)
+    : IWeatherForecastService
 {
-    private readonly ILogger<WeatherForecastService> _logger;
-
-    private static readonly string[] Summaries = 
-    {
+    private static readonly string[] Summaries =
+    [
         "Freezing",
         "Bracing",
         "Chilly",
@@ -19,10 +18,7 @@ internal class WeatherForecastService : IWeatherForecastService
         "Hot",
         "Sweltering",
         "Scorching"
-    };
-
-    public WeatherForecastService(ILogger<WeatherForecastService> logger) => 
-        _logger = logger;
+    ];
 
     public async IAsyncEnumerable<WeatherForecast> CreateWeatherForecastAsync()
     {
@@ -34,7 +30,7 @@ internal class WeatherForecastService : IWeatherForecastService
 
     private Task<WeatherForecast> CreateWeatherForecastAsync(int index)
     {
-        _logger.LogInformation("Create WeatherForecast {Index}", index);
+        logger.LogInformation("Create WeatherForecast {Index}", index);
         var result = new WeatherForecast
         {
             Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),

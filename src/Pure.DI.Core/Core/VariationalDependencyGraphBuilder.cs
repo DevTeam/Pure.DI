@@ -8,46 +8,26 @@ namespace Pure.DI.Core;
 
 using Variation = IEnumerator<ProcessingNode>;
 
-internal sealed class VariationalDependencyGraphBuilder : IBuilder<MdSetup, DependencyGraph>
+internal sealed class VariationalDependencyGraphBuilder(
+    ILogger<VariationalDependencyGraphBuilder> logger,
+    IGlobalOptions globalOptions,
+    IEnumerable<IBuilder<MdSetup, IEnumerable<DependencyNode>>> dependencyNodeBuilders,
+    IVariator<ProcessingNode> variator,
+    IMarker marker,
+    IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
+    IDependencyGraphBuilder graphBuilder,
+    CancellationToken cancellationToken)
+    : IBuilder<MdSetup, DependencyGraph>
 {
-    private readonly ILogger<VariationalDependencyGraphBuilder> _logger;
-    private readonly IGlobalOptions _globalOptions;
-    private readonly IReadOnlyCollection<IBuilder<MdSetup, IEnumerable<DependencyNode>>> _dependencyNodeBuilders;
-    private readonly IVariator<ProcessingNode> _variator;
-    private readonly IMarker _marker;
-    private readonly IBuilder<ContractsBuildContext, ISet<Injection>> _contractsBuilder;
-    private readonly IDependencyGraphBuilder _graphBuilder;
-    private readonly CancellationToken _cancellationToken;
-
-    public VariationalDependencyGraphBuilder(
-        ILogger<VariationalDependencyGraphBuilder> logger,
-        IGlobalOptions globalOptions,
-        IReadOnlyCollection<IBuilder<MdSetup, IEnumerable<DependencyNode>>> dependencyNodeBuilders,
-        IVariator<ProcessingNode> variator,
-        IMarker marker,
-        IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
-        IDependencyGraphBuilder graphBuilder,
-        CancellationToken cancellationToken)
-    {
-        _logger = logger;
-        _globalOptions = globalOptions;
-        _dependencyNodeBuilders = dependencyNodeBuilders;
-        _variator = variator;
-        _marker = marker;
-        _contractsBuilder = contractsBuilder;
-        _graphBuilder = graphBuilder;
-        _cancellationToken = cancellationToken;
-    }
-
     public DependencyGraph Build(MdSetup setup)
     {
-        var rawNodes = SortByPriority(_dependencyNodeBuilders.SelectMany(builder => builder.Build(setup))).Reverse();
+        var rawNodes = SortByPriority(dependencyNodeBuilders.SelectMany(builder => builder.Build(setup))).Reverse();
         var allNodes = new List<ProcessingNode>();
         var injections = new Dictionary<Injection, DependencyNode>();
         var allOverriddenInjections = new HashSet<Injection>();
         foreach (var node in rawNodes)
         {
-            var contracts = _contractsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag));
+            var contracts = contractsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag));
             var isRoot = node.Root is not null;
             if (!isRoot)
             {
@@ -74,41 +54,42 @@ internal sealed class VariationalDependencyGraphBuilder : IBuilder<MdSetup, Depe
 
                     if (node.Binding.SourceSetup.Kind != CompositionKind.Global)
                     {
-                        _logger.CompileWarning($"{item.Key.ToString()} has been overridden.", item.Value.Binding.Source.GetLocation(), LogId.WarningOverriddenBinding);
+                        logger.CompileWarning($"{item.Key.ToString()} has been overridden.", item.Value.Binding.Source.GetLocation(), LogId.WarningOverriddenBinding);
                     }
                 }
             }
 
             if (isRoot || contracts.Any())
             {
-                allNodes.Add(new ProcessingNode(node, contracts, _marker));
+                allNodes.Add(new ProcessingNode(node, contracts, marker));
             }
         }
 
         allNodes.Reverse();
-        var variations = new LinkedList<Variation>(CreateVariations(allNodes));
+        var variants = new LinkedList<Variation>(CreateVariants(allNodes));
         try
         {
-            var maxIterations = _globalOptions.MaxIterations;
+            var maxIterations = globalOptions.MaxIterations;
             DependencyGraph? first = default;
-            while (_variator.TryGetNextVariants(variations, node => !node.HasNode, out var nodes))
+            while (variator.TryGetNextVariants(variants, node => !node.HasNode, out var nodes))
             {
                 if (maxIterations-- <= 0)
                 {
-                    _logger.CompileError($"The maximum number of iterations {_globalOptions.MaxIterations.ToString()} was exceeded when building the optimal dependency graph. Try to specify the dependency graph more accurately.", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                    logger.CompileError($"The maximum number of iterations {globalOptions.MaxIterations.ToString()} was exceeded when building the optimal dependency graph. Try to specify the dependency graph more accurately.", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
                 }
                 
-                _cancellationToken.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfCancellationRequested();
 
-                var newNodes = SortByPriority(_graphBuilder.TryBuild(setup, nodes, out var dependencyGraph))
+                var newNodes = SortByPriority(graphBuilder.TryBuild(setup, nodes, out var dependencyGraph))
                     .Select(CreateProcessingNode)
                     .ToArray();
 
                 if (newNodes.Any())
                 {
-                    foreach (var newVariant in CreateVariations(newNodes))
+                    var newVariants = CreateVariants(newNodes);
+                    foreach (var newVariant in newVariants)
                     {
-                        variations.AddFirst(newVariant);
+                        variants.AddFirst(newVariant);
                     }
 
                     continue;
@@ -124,22 +105,23 @@ internal sealed class VariationalDependencyGraphBuilder : IBuilder<MdSetup, Depe
 
                 ProcessingNode CreateProcessingNode(DependencyNode dependencyNode) => new(
                     dependencyNode,
-                    _contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, MdTag.ContextTag)),
-                    _marker);
+                    contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, MdTag.ContextTag)),
+                    marker);
             }
 
             return first!;
         }
         finally
         {
-            foreach (var variation in variations)
+            foreach (var variant in variants)
             {
-                variation.Dispose();
+                variant.Dispose();
             }
         }
     }
 
-    private static IEnumerable<Variation> CreateVariations(IEnumerable<ProcessingNode> allNodes) =>
+    [SuppressMessage("ReSharper", "NotDisposedResourceIsReturned")]
+    private static IEnumerable<Variation> CreateVariants(IEnumerable<ProcessingNode> allNodes) =>
         allNodes.GroupBy(i => i.Node.Binding)
             .Select(i => i.GetEnumerator());
 

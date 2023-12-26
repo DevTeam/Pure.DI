@@ -1,12 +1,10 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal sealed class FactoryTypeRewriter: CSharpSyntaxRewriter, IBuilder<RewriterContext<MdFactory>, MdFactory>
+internal sealed class FactoryTypeRewriter(IMarker marker)
+    : CSharpSyntaxRewriter, IBuilder<RewriterContext<MdFactory>, MdFactory>
 {
-    private readonly IMarker _marker;
     private RewriterContext<MdFactory> _context;
-
-    public FactoryTypeRewriter(IMarker marker) => _marker = marker;
 
     public MdFactory Build(RewriterContext<MdFactory> context)
     {
@@ -52,7 +50,7 @@ internal sealed class FactoryTypeRewriter: CSharpSyntaxRewriter, IBuilder<Rewrit
         
         var semanticModel = _context.State.SemanticModel;
         var symbol = semanticModel.GetSymbolInfo(identifier).Symbol;
-        if (symbol is not ITypeSymbol type || !_marker.IsMarkerBased(type))
+        if (symbol is not ITypeSymbol type || !marker.IsMarkerBased(type))
         {
             return identifier;
         }

@@ -2,33 +2,26 @@
 // ReSharper disable IdentifierTypo
 namespace Pure.DI.Core;
 
-internal sealed class ImplementationVariantsBuilder: IBuilder<DpImplementation, IEnumerable<DpImplementation>>
+internal sealed class ImplementationVariantsBuilder(
+    IVariator<ImplementationVariant> implementationVariator,
+    CancellationToken cancellationToken)
+    : IBuilder<DpImplementation, IEnumerable<DpImplementation>>
 {
-    private readonly IVariator<ImplementationVariant> _implementationVariator;
-    private readonly CancellationToken _cancellationToken;
-
-    public ImplementationVariantsBuilder(
-        IVariator<ImplementationVariant> implementationVariator,
-        CancellationToken cancellationToken)
-    {
-        _implementationVariator = implementationVariator;
-        _cancellationToken = cancellationToken;
-    }
-
+    [SuppressMessage("ReSharper", "NotDisposedResourceIsReturned")]
     public IEnumerable<DpImplementation> Build(DpImplementation implementation)
     {
-        var variations =
-            implementation.Methods.Select(method => CreateVariations(method, ImplementationVariantKind.Method))
-            .Concat(Enumerable.Repeat(CreateVariations(implementation.Constructor, ImplementationVariantKind.Ctor), 1))
+        var variants =
+            implementation.Methods.Select(method => CreateVariants(method, ImplementationVariantKind.Method))
+            .Concat(Enumerable.Repeat(CreateVariants(implementation.Constructor, ImplementationVariantKind.Ctor), 1))
             .Select(i => i.GetEnumerator())
             .ToArray();
 
         try
         {
-            while (_implementationVariator.TryGetNextVariants(variations, _ => true, out var variants))
+            while (implementationVariator.TryGetNextVariants(variants, _ => true, out var curVariants))
             {
-                _cancellationToken.ThrowIfCancellationRequested();
-                yield return variants.Aggregate(
+                cancellationToken.ThrowIfCancellationRequested();
+                yield return curVariants.Aggregate(
                     implementation with { Methods = ImmutableArray<DpMethod>.Empty },
                     (current, variant) => variant.Kind switch 
                     {
@@ -40,14 +33,14 @@ internal sealed class ImplementationVariantsBuilder: IBuilder<DpImplementation, 
         }
         finally
         {
-            foreach (var variation in variations)
+            foreach (var variation in variants)
             {
                 variation.Dispose();
             }
         }
     }
     
-    private static IEnumerable<ImplementationVariant> CreateVariations(DpMethod method, ImplementationVariantKind kind)
+    private static IEnumerable<ImplementationVariant> CreateVariants(DpMethod method, ImplementationVariantKind kind)
     {
         yield return new ImplementationVariant(kind, method);
         

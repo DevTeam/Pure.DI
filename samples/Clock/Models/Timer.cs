@@ -6,7 +6,7 @@ using System.Collections.Generic;
 internal class Timer : ITimer, IDisposable
 {
     private readonly System.Threading.Timer _timer;
-    private readonly List<IObserver<Tick>> _observers = new();
+    private readonly List<IObserver<Tick>> _observers = [];
 
     // ReSharper disable once MemberCanBePrivate.Global
     public Timer(TimeSpan period) =>
@@ -44,11 +44,9 @@ internal class Timer : ITimer, IDisposable
         }
     }
 
-    private class Token : IDisposable
+    private class Token(Action action) : IDisposable
     {
-        private readonly Action _action;
-
-        public Token(Action action) => _action = action ?? throw new ArgumentNullException(nameof(action));
+        private readonly Action _action = action ?? throw new ArgumentNullException(nameof(action));
 
         public void Dispose() => _action();
     }

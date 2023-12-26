@@ -4,20 +4,14 @@ namespace Pure.DI.Core;
 
 using System.Collections.Concurrent;
 
-internal sealed class Cache<TKey, TValue> : ICache<TKey, TValue>
+internal sealed class Cache<TKey, TValue>(
+    Func<TKey, TValue> factory,
+    IEqualityComparer<TKey> comparer)
+    : ICache<TKey, TValue>
 {
-    private readonly Func<TKey, TValue> _factory;
-    private readonly ConcurrentDictionary<TKey, TValue> _dictionary;
+    private readonly ConcurrentDictionary<TKey, TValue> _dictionary = new(comparer);
 
-    public Cache(
-        Func<TKey, TValue> factory,
-        IEqualityComparer<TKey> comparer)
-    {
-        _factory = factory;
-        _dictionary = new ConcurrentDictionary<TKey, TValue>(comparer);
-    }
-
-    public TValue Get(in TKey key) => _dictionary.GetOrAdd(key, _factory);
+    public TValue Get(in TKey key) => _dictionary.GetOrAdd(key, factory);
 
     public void Set(in TKey key, in TValue value) => _dictionary[key] = value;
 }

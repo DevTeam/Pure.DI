@@ -22,17 +22,11 @@ using Xunit;
 // {
 using static Hint;
 
-interface IDependency
+interface IDependency;
+
+class Dependency(string name) : IDependency
 {
-}
-
-class Dependency : IDependency
-{
-    private readonly string _name;
-
-    public Dependency(string name) => _name = name;
-
-    public override string ToString() => _name;
+    public override string ToString() => name;
 }
 
 interface IService
@@ -40,13 +34,9 @@ interface IService
     IDependency Dependency { get; }
 }
 
-class Service : IService
+class Service(IDependency dependency) : IService
 {
-    public Service(IDependency dependency) =>
-        Dependency = dependency;
-
-    public IDependency Dependency { get; }
-    
+    public IDependency Dependency { get; } = dependency;
 }
 
 partial class Composition

@@ -23,14 +23,9 @@ class Service : IService
     public string GetMessage() => "Hello World";
 }
 
-class GreetingService : IService
+class GreetingService([Tag("base")] IService baseService): IService
 {
-    private readonly IService _baseService;
-
-    public GreetingService([Tag("base")] IService baseService) =>
-        _baseService = baseService;
-
-    public string GetMessage() => $"{_baseService.GetMessage()} !!!";
+    public string GetMessage() => $"{baseService.GetMessage()} !!!";
 }
 
 // }

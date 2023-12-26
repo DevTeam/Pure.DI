@@ -7,7 +7,7 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
 {
     private readonly Dictionary<TVertex, GraphEntry<TVertex, TEdge>> _inOutEdges;
     private readonly Dictionary<TVertex, GraphEntry<TVertex, TEdge>> _outInEdges;
-    private readonly List<TEdge> _edges = new();
+    private readonly List<TEdge> _edges = [];
 
     public Graph(
         IEnumerable<GraphEntry<TVertex, TEdge>> entries,
@@ -23,7 +23,7 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
             {
                 if (!outInEdges.TryGetValue(edge.Source, out var vertices))
                 {
-                    vertices = new List<TEdge>();
+                    vertices = [];
                     outInEdges.Add(edge.Source, vertices);
                 }
 

@@ -2,17 +2,13 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal sealed class MetadataValidator : IValidator<MdSetup>
+internal sealed class MetadataValidator(ILogger<MetadataValidator> logger) : IValidator<MdSetup>
 {
-    private readonly ILogger<MetadataValidator> _logger;
-
-    public MetadataValidator(ILogger<MetadataValidator> logger) => _logger = logger;
-
     public bool Validate(in MdSetup setup)
     {
         if (setup.Kind == CompositionKind.Public && !setup.Roots.Any())
         {
-            _logger.CompileWarning("None of the composition roots are declared. Add at least one root.", setup.Source.GetLocation(), LogId.WarningMetadataDefect);
+            logger.CompileWarning("None of the composition roots are declared. Add at least one root.", setup.Source.GetLocation(), LogId.WarningMetadataDefect);
         }
 
         var isValid = setup.Bindings
@@ -29,7 +25,7 @@ internal sealed class MetadataValidator : IValidator<MdSetup>
             && (!SyntaxFacts.IsValidIdentifier(setup.Name.ClassName)
                 || !IsValidOrEmptyIdentifier(setup.Name.Namespace.Replace('.', '_'))))
         {
-            _logger.CompileError($"Invalid composition type name \"{setup.Name}\".", (setup.Name.Source ?? setup.Source).GetLocation(), LogId.ErrorInvalidMetadata);
+            logger.CompileError($"Invalid composition type name \"{setup.Name}\".", (setup.Name.Source ?? setup.Source).GetLocation(), LogId.ErrorInvalidMetadata);
             isValid = false;
         }
 
@@ -40,7 +36,7 @@ internal sealed class MetadataValidator : IValidator<MdSetup>
                 continue;
             }
 
-            _logger.CompileError($"Invalid root name \"{root.Name}\".", root.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+            logger.CompileError($"Invalid root name \"{root.Name}\".", root.Source.GetLocation(), LogId.ErrorInvalidMetadata);
             isValid = false;
         }
 
@@ -54,7 +50,7 @@ internal sealed class MetadataValidator : IValidator<MdSetup>
 
             foreach (var root in roots.Skip(1))
             {
-                _logger.CompileError($"The composition root \"{root.Name}\" duplicates the previously declared root \"{roots[0].Name}\"", root.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                logger.CompileError($"The composition root \"{root.Name}\" duplicates the previously declared root \"{roots[0].Name}\"", root.Source.GetLocation(), LogId.ErrorInvalidMetadata);
                 isValid = false;
             }
         }
@@ -101,7 +97,7 @@ internal sealed class MetadataValidator : IValidator<MdSetup>
                     location = arg.Source.GetLocation();
                     if (!SyntaxFacts.IsValidIdentifier(arg.ArgName))
                     {
-                        _logger.CompileError($"Invalid argument name \"{arg.ArgName}\".", location, LogId.ErrorInvalidMetadata);
+                        logger.CompileError($"Invalid argument name \"{arg.ArgName}\".", location, LogId.ErrorInvalidMetadata);
                         isValid = false;
                     }
                 }
@@ -110,7 +106,7 @@ internal sealed class MetadataValidator : IValidator<MdSetup>
 
         if (implementationType == default || implementationType is IErrorTypeSymbol || semanticModel == default)
         {
-            _logger.CompileError("Invalid binding due to construction failure.", location, LogId.ErrorInvalidMetadata);
+            logger.CompileError("Invalid binding due to construction failure.", location, LogId.ErrorInvalidMetadata);
             return false;
         }
         
@@ -123,7 +119,7 @@ internal sealed class MetadataValidator : IValidator<MdSetup>
         // ReSharper disable once InvertIf
         if (notSupportedContracts.Any())
         {
-            _logger.CompileError($"{implementationType} does not implement {string.Join(", ", notSupportedContracts.Select(i => i.ToString()))}.", location, LogId.ErrorInvalidMetadata);
+            logger.CompileError($"{implementationType} does not implement {string.Join(", ", notSupportedContracts.Select(i => i.ToString()))}.", location, LogId.ErrorInvalidMetadata);
             isValid = false;
         }
 

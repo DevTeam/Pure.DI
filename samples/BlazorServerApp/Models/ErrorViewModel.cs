@@ -1,4 +1,5 @@
 // ReSharper disable NotAccessedField.Local
+// ReSharper disable UnusedMember.Local
 namespace BlazorServerApp.Models;
 
 using System.Diagnostics;
@@ -7,16 +8,14 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 [IgnoreAntiforgeryToken]
-public class ErrorViewModel : PageModel, IErrorViewModel
+public class ErrorViewModel(ILogger<ErrorViewModel> logger)
+    : PageModel, IErrorViewModel
 {
     public string? RequestId { get; set; }
 
     public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
-    private readonly ILogger<ErrorViewModel> _logger;
-
-    public ErrorViewModel(ILogger<ErrorViewModel> logger) => 
-        _logger = logger;
+    private readonly ILogger<ErrorViewModel> _logger = logger;
 
     public void OnGet() => 
         RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;

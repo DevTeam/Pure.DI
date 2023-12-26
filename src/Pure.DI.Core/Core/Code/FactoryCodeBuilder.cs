@@ -1,13 +1,9 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal class FactoryCodeBuilder: ICodeBuilder<DpFactory>
+internal class FactoryCodeBuilder(IIdGenerator idGenerator) : ICodeBuilder<DpFactory>
 {
-    private readonly IIdGenerator _idGenerator;
     private static readonly string InjectionStatement = $"{Names.InjectionMarker};";
-
-    public FactoryCodeBuilder(IIdGenerator idGenerator) => 
-        _idGenerator = idGenerator;
 
     public void Build(BuildContext ctx, in DpFactory factory)
     {
@@ -24,7 +20,7 @@ internal class FactoryCodeBuilder: ICodeBuilder<DpFactory>
         // Rewrites syntax tree
         var finishLabel = $"{variable.VariableName}Finish";
         var injections = new List<FactoryRewriter.Injection>();
-        var localVariableRenamingRewriter = new LocalVariableRenamingRewriter(_idGenerator, factory.Source.SemanticModel);
+        var localVariableRenamingRewriter = new LocalVariableRenamingRewriter(idGenerator, factory.Source.SemanticModel);
         var factoryExpression = localVariableRenamingRewriter.Rewrite(factory.Source.Factory);
         var factoryRewriter = new FactoryRewriter(factory, variable, finishLabel, injections);
          var lambda = factoryRewriter.Rewrite(factoryExpression);

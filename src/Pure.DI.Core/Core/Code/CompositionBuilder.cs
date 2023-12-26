@@ -2,28 +2,14 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal class CompositionBuilder: IBuilder<DependencyGraph, CompositionCode>
+internal class CompositionBuilder(
+    IBuildTools buildTools,
+    IVariablesBuilder variablesBuilder,
+    ICodeBuilder<Block> blockBuilder,
+    ICodeBuilder<IStatement> statementBuilder,
+    CancellationToken cancellationToken)
+    : IBuilder<DependencyGraph, CompositionCode>
 {
-    private readonly IBuildTools _buildTools;
-    private readonly IVariablesBuilder _variablesBuilder;
-    private readonly ICodeBuilder<Block> _blockBuilder;
-    private readonly ICodeBuilder<IStatement> _statementBuilder;
-    private readonly CancellationToken _cancellationToken;
-
-    public CompositionBuilder(
-        IBuildTools buildTools,
-        IVariablesBuilder variablesBuilder,
-        ICodeBuilder<Block> blockBuilder,
-        ICodeBuilder<IStatement> statementBuilder,
-        CancellationToken cancellationToken)
-    {
-        _buildTools = buildTools;
-        _variablesBuilder = variablesBuilder;
-        _blockBuilder = blockBuilder;
-        _statementBuilder = statementBuilder;
-        _cancellationToken = cancellationToken;
-    }
-
     public CompositionCode Build(DependencyGraph graph)
     {
         var roots = new List<Root>();
@@ -31,12 +17,12 @@ internal class CompositionBuilder: IBuilder<DependencyGraph, CompositionCode>
         var allArgs = new HashSet<Variable>();
         foreach (var root in graph.Roots.Values)
         {
-            _cancellationToken.ThrowIfCancellationRequested();
-            var rootBlock = _variablesBuilder.Build(graph.Graph, map, root.Node, root.Injection);
+            cancellationToken.ThrowIfCancellationRequested();
+            var rootBlock = variablesBuilder.Build(graph.Graph, map, root.Node, root.Injection);
             var ctx = new BuildContext(
                 0,
-                _buildTools,
-                _statementBuilder,
+                buildTools,
+                statementBuilder,
                 graph,
                 rootBlock.Current,
                 new LinesBuilder(),
@@ -53,8 +39,8 @@ internal class CompositionBuilder: IBuilder<DependencyGraph, CompositionCode>
                 }
             }
             
-            _blockBuilder.Build(ctx, rootBlock);
-            ctx.Code.AppendLine($"return {_buildTools.OnInjected(ctx, rootBlock.Current)};");
+            blockBuilder.Build(ctx, rootBlock);
+            ctx.Code.AppendLine($"return {buildTools.OnInjected(ctx, rootBlock.Current)};");
             ctx.Code.AppendLines(ctx.LocalFunctionsCode.Lines);
             
             var args = map.Values

@@ -1,12 +1,9 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal sealed class Logger<T> : ILogger<T>
+internal sealed class Logger<T>(IObserversProvider observersProvider) : ILogger<T>
 {
-    private readonly Lazy<IObserver<LogEntry>[]> _logEntryObservers;
-    
-    public Logger(IObserversProvider observersProvider) => 
-        _logEntryObservers = new Lazy<IObserver<LogEntry>[]>(() => observersProvider.GetObservers<LogEntry>().ToArray());
+    private readonly Lazy<IObserver<LogEntry>[]> _logEntryObservers = new(() => observersProvider.GetObservers<LogEntry>().ToArray());
 
     public void Log(in LogEntry logEntry)
     {

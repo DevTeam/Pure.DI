@@ -9,17 +9,16 @@ $h=This example shows how to build up an instance with all the necessary depende
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable UnusedMember.Global
 namespace Pure.DI.UsageTests.Basics.InstanceInitializationScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-interface IDependency
-{
-}
+interface IDependency;
 
-class Dependency : IDependency { }
+class Dependency : IDependency;
 
 interface IService
 {
@@ -30,18 +29,12 @@ interface IService
     bool IsInitialized { get; }
 }
 
-class Service : IService
+class Service(string serviceName, IDependency dependency): IService
 {
-    public Service(string serviceName, IDependency dependency)
-    {
-        ServiceName = serviceName;
-        Dependency = dependency;
-    }
+    public string ServiceName { get; } = serviceName;
 
-    public string ServiceName { get; }
-    
-    public IDependency Dependency { get; }
-    
+    public IDependency Dependency { get; } = dependency;
+
     public bool IsInitialized { get; private set; }
 
     public void Initialize() =>

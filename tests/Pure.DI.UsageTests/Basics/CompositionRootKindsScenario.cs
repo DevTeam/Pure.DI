@@ -10,26 +10,25 @@ $d=Composition root kinds
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedVariable
+// ReSharper disable UnusedMember.Local
 namespace Pure.DI.UsageTests.Basics.CompositionRootKindsScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-interface IDependency { }
+interface IDependency;
 
-class Dependency : IDependency { }
+class Dependency : IDependency;
 
-interface IService { }
+interface IService;
 
 class Service : IService
 {
     public Service(IDependency dependency) { }
 }
 
-class OtherService : IService
-{
-}
+class OtherService : IService;
 
 partial class Composition
 {

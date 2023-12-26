@@ -53,36 +53,32 @@ public partial class Array : BenchmarkBase
         new(
             new Service1(
                 new Service2Array(
-                    new IService3[]
-                    {
-                        new Service3(new Service4(), new Service4()),
+                [
+                    new Service3(new Service4(), new Service4()),
                         new Service3v2(new Service4(), new Service4()),
                         new Service3v3(new Service4(), new Service4()),
                         new Service3v4(new Service4(), new Service4())
-                    })),
+                ])),
             new Service2Array(
-                new IService3[]
-                {
-                    new Service3(new Service4(), new Service4()),
+            [
+                new Service3(new Service4(), new Service4()),
                     new Service3v2(new Service4(), new Service4()),
                     new Service3v3(new Service4(), new Service4()),
                     new Service3v4(new Service4(), new Service4())
-                }),
+            ]),
             new Service2Array(
-                new IService3[]
-                {
-                    new Service3(new Service4(), new Service4()),
+            [
+                new Service3(new Service4(), new Service4()),
                     new Service3v2(new Service4(), new Service4()),
                     new Service3v3(new Service4(), new Service4()),
                     new Service3v4(new Service4(), new Service4())
-                }),
-            new Service2Array(new IService3[]
-            {
+            ]),
+            new Service2Array([
                 new Service3(new Service4(), new Service4()),
                 new Service3v2(new Service4(), new Service4()),
                 new Service3v3(new Service4(), new Service4()),
                 new Service3v4(new Service4(), new Service4())
-            }),
+            ]),
             new Service3(new Service4(), new Service4()),
             new Service4(),
             new Service4());

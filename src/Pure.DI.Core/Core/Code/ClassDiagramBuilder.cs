@@ -3,19 +3,12 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilder>
+internal sealed class ClassDiagramBuilder(
+    IBuilder<ContractsBuildContext, ISet<Injection>> injectionsBuilder,
+    CancellationToken cancellationToken)
+    : IBuilder<CompositionCode, LinesBuilder>
 {
-    private readonly IBuilder<ContractsBuildContext, ISet<Injection>> _injectionsBuilder;
-    private readonly CancellationToken _cancellationToken;
     private static readonly FormatOptions DefaultFormatOptions = new();
-    
-    public ClassDiagramBuilder(
-        IBuilder<ContractsBuildContext, ISet<Injection>> injectionsBuilder,
-        CancellationToken cancellationToken)
-    {
-        _injectionsBuilder = injectionsBuilder;
-        _cancellationToken = cancellationToken;
-    }
 
     public LinesBuilder Build(CompositionCode composition)
     {
@@ -68,13 +61,13 @@ internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilde
             var graph = composition.Source.Graph;
             foreach (var node in graph.Vertices.GroupBy(i => i.Type, SymbolEqualityComparer.Default).Select(i => i.First()))
             {
-                _cancellationToken.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfCancellationRequested();
                 if (node.Root is not null)
                 {
                     continue;
                 }
                 
-                var contracts = _injectionsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag));
+                var contracts = injectionsBuilder.Build(new ContractsBuildContext(node.Binding, MdTag.ContextTag));
                 foreach (var contract in contracts)
                 {
                     if (node.Type.Equals(contract.Type, SymbolEqualityComparer.Default))
@@ -127,7 +120,7 @@ internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilde
             
             foreach (var dependency in graph.Edges)
             {
-                _cancellationToken.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfCancellationRequested();
                 if (dependency.Target.Root is not null && rootProperties.TryGetValue(dependency.Injection, out var root))
                 {
                     lines.AppendLine($"{composition.Source.Source.Name.ClassName} ..> {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatInjection(root.Injection, DefaultFormatOptions)} {root.PropertyName}");
@@ -244,57 +237,50 @@ internal sealed class ClassDiagramBuilder: IBuilder<CompositionCode, LinesBuilde
         string FinishGenericArgsSymbol = "ᐳ",
         string TypeArgsSeparator = "ˏ");
 
-    private class ClassDiagramWalker : DependenciesWalker<Unit>
+    private class ClassDiagramWalker(LinesBuilder lines, FormatOptions options)
+        : DependenciesWalker<Unit>
     {
-        private readonly LinesBuilder _lines;
         private readonly LinesBuilder _nodeLines = new();
-        private readonly FormatOptions _options;
-
-        public ClassDiagramWalker(LinesBuilder lines, FormatOptions options)
-        {
-            _lines = lines;
-            _options = options;
-        }
 
         public override void VisitDependencyNode(in Unit ctx, DependencyNode node)
         {
             base.VisitDependencyNode(ctx, node);
             if (!_nodeLines.Lines.Any())
             {
-                _lines.AppendLine($"class {FormatType(node.Type, _options)}");
+                lines.AppendLine($"class {FormatType(node.Type, options)}");
                 return;
             }
 
-            _lines.AppendLine($"class {FormatType(node.Type, _options)} {{");
-            using (_lines.Indent())
+            lines.AppendLine($"class {FormatType(node.Type, options)} {{");
+            using (lines.Indent())
             {
-                _lines.AppendLines(_nodeLines.Lines);
+                lines.AppendLines(_nodeLines.Lines);
             }
             
-            _lines.AppendLine("}");
+            lines.AppendLine("}");
         }
 
         public override void VisitConstructor(in Unit ctx, in DpMethod constructor)
         {
-            _nodeLines.AppendLine(FormatMethod(constructor.Method, _options));
+            _nodeLines.AppendLine(FormatMethod(constructor.Method, options));
             base.VisitConstructor(ctx, in constructor);
         }
 
         public override void VisitMethod(in Unit ctx, in DpMethod method)
         {
-            _nodeLines.AppendLine(FormatMethod(method.Method, _options));
+            _nodeLines.AppendLine(FormatMethod(method.Method, options));
             base.VisitMethod(ctx, in method);
         }
 
         public override void VisitProperty(in Unit ctx, in DpProperty property)
         {
-            _nodeLines.AppendLine(FormatProperty(property.Property, _options));
+            _nodeLines.AppendLine(FormatProperty(property.Property, options));
             base.VisitProperty(ctx, in property);
         }
 
         public override void VisitField(in Unit ctx, in DpField field)
         {
-            _nodeLines.AppendLine(FormatField(field.Field, _options));
+            _nodeLines.AppendLine(FormatField(field.Field, options));
             base.VisitField(ctx, in field);
         }
     }

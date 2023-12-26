@@ -2,7 +2,7 @@ namespace Pure.DI.Core;
 
 internal sealed class FactoryResolversSyntaxWalker : CSharpSyntaxWalker, IEnumerable<InvocationExpressionSyntax>
 {
-    private readonly List<InvocationExpressionSyntax> _resolvers = new();
+    private readonly List<InvocationExpressionSyntax> _resolvers = [];
 
     public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
     {

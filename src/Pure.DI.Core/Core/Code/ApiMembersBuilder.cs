@@ -1,22 +1,12 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class ApiMembersBuilder(
+    ILogger<ApiMembersBuilder> logger,
+    IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder,
+    IBuildTools buildTools)
+    : IBuilder<CompositionCode, CompositionCode>
 {
-    private readonly ILogger<ApiMembersBuilder> _logger;
-    private readonly IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> _resolversBuilder;
-    private readonly IBuildTools _buildTools;
-
-    public ApiMembersBuilder(
-        ILogger<ApiMembersBuilder> logger,
-        IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder,
-        IBuildTools buildTools)
-    {
-        _logger = logger;
-        _resolversBuilder = resolversBuilder;
-        _buildTools = buildTools;
-    }
-
     public CompositionCode Build(CompositionCode composition)
     {
         var code = composition.Code;
@@ -39,10 +29,10 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
 
             foreach (var rootArg in rootArgs)
             {
-                _logger.CompileWarning($"The root argument \"{rootArg.Node.Arg}\" of the composition is used. This root cannot be resolved using \"Resolve\" methods, so an exception will be thrown when trying to do so.", rootArg.Node.Arg?.Source.Source.GetLocation() ?? composition.Source.Source.Source.GetLocation(), LogId.WarningRootArgInResolveMethod);
+                logger.CompileWarning($"The root argument \"{rootArg.Node.Arg}\" of the composition is used. This root cannot be resolved using \"Resolve\" methods, so an exception will be thrown when trying to do so.", rootArg.Node.Arg?.Source.Source.GetLocation() ?? composition.Source.Source.Source.GetLocation(), LogId.WarningRootArgInResolveMethod);
             }
             
-            _buildTools.AddPureHeader(apiCode);
+            buildTools.AddPureHeader(apiCode);
             apiCode.AppendLine($"{hints.GetValueOrDefault(Hint.ResolveMethodModifiers, Names.DefaultApiMethodModifiers)} T {hints.GetValueOrDefault(Hint.ResolveMethodName, Names.ResolveMethodName)}<T>()");
             apiCode.AppendLine("{");
             using (apiCode.Indent())
@@ -55,7 +45,7 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
             apiCode.AppendLine();
             membersCounter++;
 
-            _buildTools.AddPureHeader(apiCode);
+            buildTools.AddPureHeader(apiCode);
             apiCode.AppendLine($"{hints.GetValueOrDefault(Hint.ResolveByTagMethodModifiers, Names.DefaultApiMethodModifiers)} T {hints.GetValueOrDefault(Hint.ResolveByTagMethodName, Names.ResolveMethodName)}<T>(object? tag)");
             apiCode.AppendLine("{");
             using (apiCode.Indent())
@@ -68,7 +58,7 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
             apiCode.AppendLine();
             membersCounter++;
 
-            var resolvers = _resolversBuilder.Build(composition.Roots).ToArray();
+            var resolvers = resolversBuilder.Build(composition.Roots).ToArray();
             CreateObjectResolverMethod(
                 hints.GetValueOrDefault(Hint.ObjectResolveMethodModifiers, Names.DefaultApiMethodModifiers),
                 hints.GetValueOrDefault(Hint.ObjectResolveMethodName, Names.ResolveMethodName),
@@ -140,7 +130,7 @@ internal sealed class ApiMembersBuilder: IBuilder<CompositionCode, CompositionCo
         bool byTag,
         LinesBuilder code)
     {
-        _buildTools.AddPureHeader(code);
+        buildTools.AddPureHeader(code);
         code.AppendLine($"{methodModifiers} object {methodName}({methodArgs})");
         code.AppendLine("{");
         using (code.Indent())

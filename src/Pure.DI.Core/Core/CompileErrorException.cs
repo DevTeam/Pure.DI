@@ -1,17 +1,11 @@
 namespace Pure.DI.Core;
 
-internal class CompileErrorException: Exception
+internal class CompileErrorException(string errorMessage, in Location location, string id)
+    : Exception
 {
-    public CompileErrorException(string errorMessage, in Location location, string id)
-    {
-        ErrorMessage = errorMessage;
-        Location = location;
-        Id = id;
-    }
+    public string ErrorMessage { get; } = errorMessage;
 
-    public string ErrorMessage { get; }
-    
-    public Location Location { get; }
-    
-    public string Id { get; }
+    public Location Location { get; } = location;
+
+    public string Id { get; } = id;
 }

@@ -13,9 +13,9 @@ namespace Pure.DI.UsageTests.Lifetimes.PerResolveScenario;
 using Xunit;
 
 // {
-interface IDependency { }
+interface IDependency;
 
-class Dependency : IDependency { }
+class Dependency : IDependency;
 
 interface IService
 {
@@ -24,19 +24,14 @@ interface IService
     public IDependency Dependency2 { get; }
 }
 
-class Service : IService
+class Service(
+    IDependency dependency1,
+    IDependency dependency2)
+    : IService
 {
-    public Service(
-        IDependency dependency1,
-        IDependency dependency2)
-    {
-        Dependency1 = dependency1;
-        Dependency2 = dependency2;
-    }
+    public IDependency Dependency1 { get; } = dependency1;
 
-    public IDependency Dependency1 { get; }
-            
-    public IDependency Dependency2 { get; }
+    public IDependency Dependency2 { get; } = dependency2;
 }
 // }
 

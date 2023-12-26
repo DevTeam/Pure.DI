@@ -25,21 +25,16 @@ using Shouldly;
 using Xunit;
 
 // {
-struct Dependency
-{
-}
+struct Dependency;
 
 interface IService
 {
     int Count { get; }
 }
 
-class Service : IService
+class Service(ReadOnlySpan<Dependency> dependencies) : IService
 {
-    public Service(ReadOnlySpan<Dependency> dependencies) => 
-        Count = dependencies.Length;
-
-    public int Count { get; }
+    public int Count { get; } = dependencies.Length;
 }
 // }
 

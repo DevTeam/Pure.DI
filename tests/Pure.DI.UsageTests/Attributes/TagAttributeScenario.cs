@@ -16,13 +16,13 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency { }
+interface IDependency;
 
-class AbcDependency : IDependency { }
+class AbcDependency : IDependency;
         
-class XyzDependency : IDependency { }
+class XyzDependency : IDependency;
         
-class Dependency : IDependency { }
+class Dependency : IDependency;
 
 interface IService
 {
@@ -31,19 +31,14 @@ interface IService
     IDependency Dependency2 { get; }
 }
 
-class Service : IService
+class Service(
+    [Tag("Abc")] IDependency dependency1,
+    [Tag("Xyz")] IDependency dependency2)
+    : IService
 {
-    public Service(
-        [Tag("Abc")] IDependency dependency1,
-        [Tag("Xyz")] IDependency dependency2)
-    {
-        Dependency1 = dependency1;
-        Dependency2 = dependency2;
-    }
+    public IDependency Dependency1 { get; } = dependency1;
 
-    public IDependency Dependency1 { get; }
-
-    public IDependency Dependency2 { get; }
+    public IDependency Dependency2 { get; } = dependency2;
 }
 // }
 

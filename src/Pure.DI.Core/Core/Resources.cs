@@ -2,15 +2,11 @@ namespace Pure.DI.Core;
 
 using System.Text.RegularExpressions;
 
-internal sealed class Resources: IResources
+internal sealed class Resources(ICache<string, Regex> regexCache) : IResources
 {
-    private readonly ICache<string, Regex> _regexCache;
-
-    public Resources(ICache<string,  Regex> regexCache) => _regexCache = regexCache;
-
     public IEnumerable<Resource> GetResource(string filter)
     {
-        var filterRegex = _regexCache.Get(filter);
+        var filterRegex = regexCache.Get(filter);
         var assembly = typeof(Resources).Assembly;
         return assembly
             .GetManifestResourceNames()

@@ -5,16 +5,13 @@
 namespace Pure.DI.Core;
 
 [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]
-internal sealed class TypeConstructor : ITypeConstructor
+internal sealed class TypeConstructor(IMarker marker) : ITypeConstructor
 {
-    private readonly IMarker _marker;
     private readonly Dictionary<ITypeSymbol, ITypeSymbol> _map = new(SymbolEqualityComparer.Default);
-    
-    public TypeConstructor(IMarker marker) => _marker = marker;
 
     public bool TryBind(ITypeSymbol source, ITypeSymbol target)
     {
-        if (_marker.IsMarker(source))
+        if (marker.IsMarker(source))
         {
             _map[source] = target;
             return true;
@@ -40,7 +37,7 @@ internal sealed class TypeConstructor : ITypeConstructor
                     return true;
                 }
 
-                if (_marker.IsMarker(source))
+                if (marker.IsMarker(source))
                 {
                     _map[source] = target;
                     return true;
@@ -122,7 +119,7 @@ internal sealed class TypeConstructor : ITypeConstructor
 
     public ITypeSymbol Construct(Compilation compilation, ITypeSymbol type)
     {
-        if (!_marker.IsMarkerBased(type))
+        if (!marker.IsMarkerBased(type))
         {
             return type;
         }

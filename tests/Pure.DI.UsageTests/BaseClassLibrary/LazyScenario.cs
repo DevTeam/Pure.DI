@@ -13,23 +13,18 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency { }
+interface IDependency;
 
-class Dependency : IDependency { }
+class Dependency : IDependency;
 
 interface IService
 {
     IDependency Dependency { get; }
 }
 
-class Service : IService
+class Service(Lazy<IDependency> dependency) : IService
 {
-    private readonly Lazy<IDependency> _dependency;
-
-    public Service(Lazy<IDependency> dependency) => 
-        _dependency = dependency;
-
-    public IDependency Dependency => _dependency.Value;
+    public IDependency Dependency => dependency.Value;
 }
 // }
 

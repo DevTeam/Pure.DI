@@ -11,14 +11,15 @@ $h=The tuples feature provides concise syntax to group multiple data elements in
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable UnusedMember.Global
 namespace Pure.DI.UsageTests.BCL.TupleScenario;
 
 using Xunit;
 
 // {
-interface IDependency { }
+interface IDependency;
 
-class Dependency : IDependency { }
+class Dependency : IDependency;
 
 readonly record struct Point(int X, int Y);
 
@@ -27,12 +28,9 @@ interface IService
     IDependency Dependency { get; }
 }
 
-class Service : IService
+class Service((Point Point, IDependency Dependency) tuple) : IService
 {
-    public Service((Point Point, IDependency Dependency) tuple) => 
-        Dependency = tuple.Dependency;
-
-    public IDependency Dependency { get; }
+    public IDependency Dependency { get; } = tuple.Dependency;
 }
 // }
 

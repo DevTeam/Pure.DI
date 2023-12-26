@@ -14,9 +14,9 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency { }
+interface IDependency;
 
-class Dependency : IDependency { }
+class Dependency : IDependency;
 
 interface IService
 {
@@ -25,12 +25,9 @@ interface IService
     IDependency Dependency { get;}
 }
 
-class Service : IService
+class Service(string name = "My Service") : IService
 {
-    public Service(string name = "My Service") => 
-        Name = name;
-
-    public string Name { get; }
+    public string Name { get; } = name;
 
     public required IDependency Dependency { get; init; } = new Dependency();
 }

@@ -1,20 +1,13 @@
 namespace Pure.DI.Core;
 
-internal class GeneratorOptions : IGeneratorOptions
+internal class GeneratorOptions(
+    ParseOptions parseOptions,
+    AnalyzerConfigOptionsProvider analyzerConfigOptionsProvider)
+    : IGeneratorOptions
 {
-    private readonly AnalyzerConfigOptionsProvider _analyzerConfigOptionsProvider;
+    public ParseOptions ParseOptions { get; } = parseOptions;
 
-    public GeneratorOptions(
-        ParseOptions parseOptions,
-        AnalyzerConfigOptionsProvider analyzerConfigOptionsProvider)
-    {
-        _analyzerConfigOptionsProvider = analyzerConfigOptionsProvider;
-        ParseOptions = parseOptions;
-    }
+    public AnalyzerConfigOptions GlobalOptions => analyzerConfigOptionsProvider.GlobalOptions;
 
-    public ParseOptions ParseOptions { get; }
-
-    public AnalyzerConfigOptions GlobalOptions => _analyzerConfigOptionsProvider.GlobalOptions;
-
-    public AnalyzerConfigOptions GetOptions(SyntaxTree tree) => _analyzerConfigOptionsProvider.GetOptions(tree);
+    public AnalyzerConfigOptions GetOptions(SyntaxTree tree) => analyzerConfigOptionsProvider.GetOptions(tree);
 }

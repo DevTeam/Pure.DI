@@ -2,13 +2,9 @@
 // ReSharper disable InvertIf
 namespace Pure.DI.Core.Code;
 
-internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
+internal class ImplementationCodeBuilder(CancellationToken cancellationToken)
+    : ICodeBuilder<DpImplementation>
 {
-    private readonly CancellationToken _cancellationToken;
-
-    public ImplementationCodeBuilder(CancellationToken cancellationToken) => 
-        _cancellationToken = cancellationToken;
-
     public void Build(BuildContext ctx, in DpImplementation implementation)
     {
         var variable = ctx.Variable;
@@ -95,7 +91,7 @@ internal class ImplementationCodeBuilder: ICodeBuilder<DpImplementation>
 
         foreach (var visit in visits.OrderBy(i => i.Ordinal ?? int.MaxValue))
         {
-            _cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
             visit.Run(ctx);
         }
 

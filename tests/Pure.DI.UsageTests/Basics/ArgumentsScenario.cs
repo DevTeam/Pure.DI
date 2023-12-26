@@ -20,11 +20,9 @@ interface IDependency
     int Id { get; }
 }
 
-class Dependency : IDependency
+class Dependency(int id) : IDependency
 {
-    public Dependency(int id) => Id = id;
-
-    public int Id { get; }
+    public int Id { get; } = id;
 }
 
 interface IService
@@ -34,19 +32,13 @@ interface IService
     IDependency Dependency { get; }
 }
 
-class Service : IService
+class Service(
+    [Tag("name")] string name,
+    IDependency dependency) : IService
 {
-    public Service(
-        [Tag("name")] string name,
-        IDependency dependency)
-    {
-        Name = name;
-        Dependency = dependency;
-    }
+    public string Name { get; } = name;
 
-    public string Name { get; }
-    
-    public IDependency Dependency { get; }
+    public IDependency Dependency { get; } = dependency;
 }
 // }
 

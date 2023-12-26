@@ -36,12 +36,9 @@ public interface IService
     void ServiceCall();
 }
 
-class Service : IService
+class Service(IDependency dependency) : IService
 {
-    public Service(IDependency dependency) =>
-        Dependency = dependency;
-
-    public IDependency Dependency { get; }
+    public IDependency Dependency { get; } = dependency;
 
     public void ServiceCall() { }
 }
@@ -56,7 +53,7 @@ internal partial class Composition: IInterceptor
         : this()
     {
         _log = log;
-        _interceptors = new IInterceptor[]{ this };
+        _interceptors = [this];
     }
 
     private partial T OnDependencyInjection<T>(

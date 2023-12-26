@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Benchmarks.Model;
+﻿// ReSharper disable UnusedParameter.Local
+namespace Pure.DI.Benchmarks.Model;
 
 public sealed class Service3 : IService3
 {

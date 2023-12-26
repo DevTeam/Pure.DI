@@ -3,18 +3,11 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal class StatementCodeBuilder : ICodeBuilder<IStatement>
+internal class StatementCodeBuilder(
+    ICodeBuilder<Block> blockBuilder,
+    ICodeBuilder<Variable> variableBuilder)
+    : ICodeBuilder<IStatement>
 {
-    private readonly ICodeBuilder<Block> _blockBuilder;
-    private readonly ICodeBuilder<Variable> _variableBuilder;
-    public StatementCodeBuilder(
-        ICodeBuilder<Block> blockBuilder,
-        ICodeBuilder<Variable> variableBuilder)
-    {
-        _blockBuilder = blockBuilder;
-        _variableBuilder = variableBuilder;
-    }
-
     public void Build(BuildContext ctx, in IStatement statement)
     {
         ctx = ctx with { ContextTag = statement.Current.Injection.Tag };
@@ -26,12 +19,12 @@ internal class StatementCodeBuilder : ICodeBuilder<IStatement>
                     break;
                 }
 
-                _variableBuilder.Build(ctx, variable);
+                variableBuilder.Build(ctx, variable);
                 variable.Info.IsCreated = true;
                 break;
 
             case Block block:
-                _blockBuilder.Build(ctx, block);
+                blockBuilder.Build(ctx, block);
                 break;
         }
     }

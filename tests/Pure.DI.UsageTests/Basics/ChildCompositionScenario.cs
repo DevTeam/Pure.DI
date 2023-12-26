@@ -31,12 +31,9 @@ interface IService
     IDependency Dependency { get; }
 }
 
-class Service : IService
+class Service(IDependency dependency) : IService
 {
-    public Service(IDependency dependency) =>
-        Dependency = dependency;
-
-    public IDependency Dependency { get; }
+    public IDependency Dependency { get; } = dependency;
 }
 // }
 

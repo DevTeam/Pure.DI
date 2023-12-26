@@ -279,21 +279,18 @@ public static class TestExtensions
     private static string GetSystemAssemblyPathByName(string assemblyName) =>
         Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location) ?? string.Empty, assemblyName);
 
-    private class TestAnalyzerConfigOptions : AnalyzerConfigOptions
+    private class TestAnalyzerConfigOptions(IDictionary<string, string> options)
+        : AnalyzerConfigOptions
     {
-        private readonly IDictionary<string, string> _options;
-
-        public TestAnalyzerConfigOptions(IDictionary<string, string> options) => _options = options;
-
 #pragma warning disable CS8765
         public override bool TryGetValue(string key, [UnscopedRef] out string? value)
 #pragma warning restore CS8765
-            => _options.TryGetValue(key, out value);
+            => options.TryGetValue(key, out value);
     }
 
     private class Observer<T> : IObserver<T>
     {
-        private readonly List<T> _values = new();
+        private readonly List<T> _values = [];
 
         public IReadOnlyList<T> Values => _values;
 

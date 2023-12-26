@@ -15,23 +15,20 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency { }
+interface IDependency;
 
-class AbcDependency : IDependency { }
+class AbcDependency : IDependency;
 
-class XyzDependency : IDependency { }
+class XyzDependency : IDependency;
 
 interface IService
 {
     ImmutableArray<IDependency> Dependencies { get; }
 }
 
-class Service : IService
+class Service(IEnumerable<IDependency> dependencies) : IService
 {
-    public Service(IEnumerable<IDependency> dependencies) => 
-        Dependencies = dependencies.ToImmutableArray();
-
-    public ImmutableArray<IDependency> Dependencies { get; }
+    public ImmutableArray<IDependency> Dependencies { get; } = dependencies.ToImmutableArray();
 }
 // }
 

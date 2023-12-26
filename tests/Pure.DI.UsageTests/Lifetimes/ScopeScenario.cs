@@ -31,12 +31,9 @@ interface IService
     public IDependency Dependency { get; }
 }
 
-class Service : IService
+class Service(IDependency dependency) : IService
 {
-    public Service(IDependency dependency) =>
-        Dependency = dependency;
-
-    public IDependency Dependency { get; }
+    public IDependency Dependency { get; } = dependency;
 }
 
 interface ISession: IDisposable
@@ -64,9 +61,7 @@ class Session : ISession
     public void Dispose() => _composition.Dispose();
 }
 
-partial class Composition
-{
-}
+partial class Composition;
 // }
 
 public class Scenario

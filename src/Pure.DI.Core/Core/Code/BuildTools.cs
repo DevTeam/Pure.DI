@@ -2,12 +2,8 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal class BuildTools : IBuildTools
+internal class BuildTools(IFilter filter) : IBuildTools
 {
-    private readonly IFilter _filter;
-
-    public BuildTools(IFilter filter) => _filter = filter;
-    
     public void AddPureHeader(LinesBuilder code)
     {
         code.AppendLine("#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET");
@@ -25,7 +21,7 @@ internal class BuildTools : IBuildTools
             return variable.VariableCode;
         }
 
-        if (!_filter.IsMeetRegularExpression(
+        if (!filter.IsMeetRegularExpression(
                 ctx.DependencyGraph.Source,
                 (Hint.OnDependencyInjectionImplementationTypeNameRegularExpression, variable.InstanceType.ToString()),
                 (Hint.OnDependencyInjectionContractTypeNameRegularExpression, variable.ContractType.ToString()),
@@ -51,7 +47,7 @@ internal class BuildTools : IBuildTools
             yield break;
         }
 
-        if (!_filter.IsMeetRegularExpression(
+        if (!filter.IsMeetRegularExpression(
                 ctx.DependencyGraph.Source,
                 (Hint.OnNewInstanceImplementationTypeNameRegularExpression, variable.Node.Type.ToString()),
                 (Hint.OnNewInstanceTagRegularExpression, variable.Injection.Tag.ValueToString()),

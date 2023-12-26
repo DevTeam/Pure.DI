@@ -4,15 +4,12 @@ namespace Pure.DI.Core;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.Operations;
 
-internal class ApiInvocationProcessor : IApiInvocationProcessor
+internal class ApiInvocationProcessor(CancellationToken cancellationToken)
+    : IApiInvocationProcessor
 {
-    private static readonly char[] TypeNamePartsSeparators = { '.' };
+    private static readonly char[] TypeNamePartsSeparators = ['.'];
     private static readonly Regex CommentRegex = new(@"//\s*(\w+)\s*=\s*(.+)\s*", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-    private readonly CancellationToken _cancellationToken;
     private readonly Hints _hints = new();
-    
-    public ApiInvocationProcessor(CancellationToken cancellationToken) =>
-        _cancellationToken = cancellationToken;
 
     public void ProcessInvocation(
         IMetadataVisitor metadataVisitor,
@@ -20,7 +17,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
         InvocationExpressionSyntax invocation,
         string @namespace)
     {
-        _cancellationToken.ThrowIfCancellationRequested();
+        cancellationToken.ThrowIfCancellationRequested();
         if (invocation.Expression is not MemberAccessExpressionSyntax memberAccess)
         {
             return;
@@ -35,7 +32,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                         switch (invocation.ArgumentList.Arguments)
                         {
                             case [{ Expression: SimpleLambdaExpressionSyntax lambdaExpression }]:
-                                var type = semanticModel.TryGetTypeSymbol<ITypeSymbol>(lambdaExpression, _cancellationToken) ?? semanticModel.GetTypeSymbol<ITypeSymbol>(lambdaExpression.Body, _cancellationToken);
+                                var type = semanticModel.TryGetTypeSymbol<ITypeSymbol>(lambdaExpression, cancellationToken) ?? semanticModel.GetTypeSymbol<ITypeSymbol>(lambdaExpression.Body, cancellationToken);
                                 // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
                                 if (type is INamedTypeSymbol { TypeArguments.Length: 2, TypeArguments: [_, { } resultType] })
                                 {
@@ -153,7 +150,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                                 new MdContract(
                                     semanticModel,
                                     invocation.ArgumentList,
-                                    semanticModel.GetTypeSymbol<ITypeSymbol>(contractType, _cancellationToken),
+                                    semanticModel.GetTypeSymbol<ITypeSymbol>(contractType, cancellationToken),
                                     BuildTags(semanticModel, invocation.ArgumentList.Arguments).ToImmutable()));
                         }
 
@@ -165,18 +162,18 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                             switch (invocation.ArgumentList.Arguments)
                             {
                                 case [{ Expression: SimpleLambdaExpressionSyntax lambdaExpression }]:
-                                    VisitFactory(metadataVisitor, semanticModel, semanticModel.GetTypeSymbol<ITypeSymbol>(implementationTypeName, _cancellationToken), lambdaExpression);
+                                    VisitFactory(metadataVisitor, semanticModel, semanticModel.GetTypeSymbol<ITypeSymbol>(implementationTypeName, cancellationToken), lambdaExpression);
                                     break;
                                 
                                 case [{ Expression: LiteralExpressionSyntax { Token.Value: string sourceCodeStatement } }]:
                                     var lambda = SyntaxFactory
                                         .SimpleLambdaExpression(SyntaxFactory.Parameter(SyntaxFactory.Identifier("_")))
                                         .WithExpressionBody(SyntaxFactory.IdentifierName(sourceCodeStatement));
-                                    VisitFactory(metadataVisitor, semanticModel, semanticModel.GetTypeSymbol<ITypeSymbol>(implementationTypeName, _cancellationToken), lambda, true);
+                                    VisitFactory(metadataVisitor, semanticModel, semanticModel.GetTypeSymbol<ITypeSymbol>(implementationTypeName, cancellationToken), lambda, true);
                                     break;
 
                                 case []:
-                                    metadataVisitor.VisitImplementation(new MdImplementation(semanticModel, implementationTypeName, semanticModel.GetTypeSymbol<INamedTypeSymbol>(implementationTypeName, _cancellationToken)));
+                                    metadataVisitor.VisitImplementation(new MdImplementation(semanticModel, implementationTypeName, semanticModel.GetTypeSymbol<INamedTypeSymbol>(implementationTypeName, cancellationToken)));
                                     break;
 
                                 default:
@@ -199,7 +196,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                         if (genericName.TypeArgumentList.Arguments is [{ } rootType])
                         {
                             var rootArgs = invocation.ArgumentList.Arguments;
-                            var rootSymbol = semanticModel.GetTypeSymbol<INamedTypeSymbol>(rootType, _cancellationToken);
+                            var rootSymbol = semanticModel.GetTypeSymbol<INamedTypeSymbol>(rootType, cancellationToken);
                             var name = "";
                             if (rootArgs.Count >= 1)
                             {
@@ -226,7 +223,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                     case nameof(IConfiguration.TypeAttribute):
                         if (genericName.TypeArgumentList.Arguments is [{ } typeAttributeType])
                         {
-                            metadataVisitor.VisitTypeAttribute(new MdTypeAttribute(semanticModel, invocation.ArgumentList, semanticModel.GetTypeSymbol<ITypeSymbol>(typeAttributeType, _cancellationToken), BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0));
+                            metadataVisitor.VisitTypeAttribute(new MdTypeAttribute(semanticModel, invocation.ArgumentList, semanticModel.GetTypeSymbol<ITypeSymbol>(typeAttributeType, cancellationToken), BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0));
                         }
 
                         break;
@@ -234,7 +231,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                     case nameof(IConfiguration.TagAttribute):
                         if (genericName.TypeArgumentList.Arguments is [{ } tagAttributeType])
                         {
-                            metadataVisitor.VisitTagAttribute(new MdTagAttribute(semanticModel, invocation.ArgumentList, semanticModel.GetTypeSymbol<ITypeSymbol>(tagAttributeType, _cancellationToken), BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0));
+                            metadataVisitor.VisitTagAttribute(new MdTagAttribute(semanticModel, invocation.ArgumentList, semanticModel.GetTypeSymbol<ITypeSymbol>(tagAttributeType, cancellationToken), BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0));
                         }
 
                         break;
@@ -242,7 +239,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                     case nameof(IConfiguration.OrdinalAttribute):
                         if (genericName.TypeArgumentList.Arguments is [{ } ordinalAttributeType])
                         {
-                            metadataVisitor.VisitOrdinalAttribute(new MdOrdinalAttribute(semanticModel, invocation.ArgumentList, semanticModel.GetTypeSymbol<ITypeSymbol>(ordinalAttributeType, _cancellationToken), BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0));
+                            metadataVisitor.VisitOrdinalAttribute(new MdOrdinalAttribute(semanticModel, invocation.ArgumentList, semanticModel.GetTypeSymbol<ITypeSymbol>(ordinalAttributeType, cancellationToken), BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0));
                         }
 
                         break;
@@ -271,7 +268,7 @@ internal class ApiInvocationProcessor : IApiInvocationProcessor
                 tags.Add(new MdTag(index - 1, semanticModel.GetConstantValue<object>(arg.Expression)));
             }
 
-            var argType = semanticModel.GetTypeSymbol<ITypeSymbol>(argTypeSyntax, _cancellationToken);
+            var argType = semanticModel.GetTypeSymbol<ITypeSymbol>(argTypeSyntax, cancellationToken);
             metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, argType, tags.ToImmutableArray()));
             metadataVisitor.VisitArg(new MdArg(semanticModel, argTypeSyntax, argType, name, kind));
         }

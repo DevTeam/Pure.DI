@@ -1,59 +1,48 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal sealed class ClassBuilder : IBuilder<CompositionCode, CompositionCode>
+internal sealed class ClassBuilder(
+    [Tag(WellknownTag.UsingDeclarationsBuilder)] IBuilder<CompositionCode, CompositionCode> usingDeclarationsBuilder,
+    [Tag(WellknownTag.SingletonFieldsBuilder)] IBuilder<CompositionCode, CompositionCode> singletonFieldsBuilder,
+    [Tag(WellknownTag.ArgFieldsBuilder)] IBuilder<CompositionCode, CompositionCode> argFieldsBuilder,
+    [Tag(WellknownTag.PrimaryConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> primaryConstructorBuilder,
+    [Tag(WellknownTag.DefaultConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> defaultConstructorBuilder,
+    [Tag(WellknownTag.ChildConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> childConstructorBuilder,
+    [Tag(WellknownTag.RootMethodsBuilder)] IBuilder<CompositionCode, CompositionCode> rootPropertiesBuilder,
+    [Tag(WellknownTag.ApiMembersBuilder)] IBuilder<CompositionCode, CompositionCode> apiMembersBuilder,
+    [Tag(WellknownTag.DisposeMethodBuilder)] IBuilder<CompositionCode, CompositionCode> disposeMethodBuilder,
+    [Tag(WellknownTag.ToStringMethodBuilder)] IBuilder<CompositionCode, CompositionCode> toStringBuilder,
+    [Tag(WellknownTag.ResolversFieldsBuilder)] IBuilder<CompositionCode, CompositionCode> resolversFieldsBuilder,
+    [Tag(WellknownTag.StaticConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> staticConstructorBuilder,
+    [Tag(WellknownTag.ResolverClassesBuilder)] IBuilder<CompositionCode, CompositionCode> resolversClassesBuilder,
+    IInformation information,
+    CancellationToken cancellationToken)
+    : IBuilder<CompositionCode, CompositionCode>
 {
-    
-    private readonly IBuilder<CompositionCode, CompositionCode> _usingDeclarationsBuilder;
-    private readonly IInformation _information;
-    private readonly CancellationToken _cancellationToken;
-    private readonly ImmutableArray<IBuilder<CompositionCode, CompositionCode>> _codeBuilders;
-    
-    public ClassBuilder(
-        [Tag(WellknownTag.UsingDeclarationsBuilder)] IBuilder<CompositionCode, CompositionCode> usingDeclarationsBuilder,
-        [Tag(WellknownTag.SingletonFieldsBuilder)] IBuilder<CompositionCode, CompositionCode> singletonFieldsBuilder,
-        [Tag(WellknownTag.ArgFieldsBuilder)] IBuilder<CompositionCode, CompositionCode> argFieldsBuilder,
-        [Tag(WellknownTag.PrimaryConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> primaryConstructorBuilder,
-        [Tag(WellknownTag.DefaultConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> defaultConstructorBuilder,
-        [Tag(WellknownTag.ChildConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> childConstructorBuilder,
-        [Tag(WellknownTag.RootMethodsBuilder)] IBuilder<CompositionCode, CompositionCode> rootPropertiesBuilder,
-        [Tag(WellknownTag.ApiMembersBuilder)] IBuilder<CompositionCode, CompositionCode> apiMembersBuilder,
-        [Tag(WellknownTag.DisposeMethodBuilder)] IBuilder<CompositionCode, CompositionCode> disposeMethodBuilder,
-        [Tag(WellknownTag.ToStringMethodBuilder)] IBuilder<CompositionCode, CompositionCode> toStringBuilder,
-        [Tag(WellknownTag.ResolversFieldsBuilder)] IBuilder<CompositionCode, CompositionCode> resolversFieldsBuilder,
-        [Tag(WellknownTag.StaticConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> staticConstructorBuilder,
-        [Tag(WellknownTag.ResolverClassesBuilder)] IBuilder<CompositionCode, CompositionCode> resolversClassesBuilder,
-        IInformation information,
-        CancellationToken cancellationToken)
-    {
-        _usingDeclarationsBuilder = usingDeclarationsBuilder;
-        _information = information;
-        _cancellationToken = cancellationToken;
-        _codeBuilders = ImmutableArray.Create(
-            singletonFieldsBuilder,
-            argFieldsBuilder,
-            primaryConstructorBuilder,
-            defaultConstructorBuilder,
-            childConstructorBuilder,
-            rootPropertiesBuilder,
-            apiMembersBuilder,
-            disposeMethodBuilder,
-            toStringBuilder,
-            resolversFieldsBuilder,
-            staticConstructorBuilder,
-            resolversClassesBuilder);
-    }
+    private readonly ImmutableArray<IBuilder<CompositionCode, CompositionCode>> _codeBuilders = ImmutableArray.Create(
+        singletonFieldsBuilder,
+        argFieldsBuilder,
+        primaryConstructorBuilder,
+        defaultConstructorBuilder,
+        childConstructorBuilder,
+        rootPropertiesBuilder,
+        apiMembersBuilder,
+        disposeMethodBuilder,
+        toStringBuilder,
+        resolversFieldsBuilder,
+        staticConstructorBuilder,
+        resolversClassesBuilder);
 
     public CompositionCode Build(CompositionCode composition)
     {
         var code = composition.Code;
         code.AppendLine("// <auto-generated/>");
-        code.AppendLine($"// by {_information.Description}");
+        code.AppendLine($"// by {information.Description}");
         code.AppendLine("#nullable enable");
         code.AppendLine("#pragma warning disable");
         code.AppendLine();
 
-        composition = _usingDeclarationsBuilder.Build(composition);
+        composition = usingDeclarationsBuilder.Build(composition);
         
         var nsIndent = Disposables.Empty;
         if (!string.IsNullOrWhiteSpace(composition.Source.Source.Name.Namespace))
@@ -73,7 +62,7 @@ internal sealed class ClassBuilder : IBuilder<CompositionCode, CompositionCode>
             // Generate class members
             foreach (var builder in _codeBuilders)
             {
-                _cancellationToken.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfCancellationRequested();
                 composition = builder.Build(composition);
             }
         }

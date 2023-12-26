@@ -15,13 +15,13 @@ namespace Pure.DI.UsageTests.Basics.MultiContractBindingsScenario;
 using Xunit;
 
 // {
-interface IDependency { }
+interface IDependency;
 
-interface IAdvancedDependency { }
+interface IAdvancedDependency;
 
-class Dependency : IDependency, IAdvancedDependency { }
+class Dependency : IDependency, IAdvancedDependency;
 
-interface IService { }
+interface IService;
 
 class Service : IService
 {

@@ -16,21 +16,18 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency { }
+interface IDependency;
 
-class Dependency : IDependency { }
+class Dependency : IDependency;
 
 interface IService
 {
     IDependency Dependency { get; }
 }
 
-class Service : IService
+class Service(IDependency dependency) : IService
 {
-    public Service(IDependency dependency) => 
-        Dependency = dependency;
-
-    public IDependency Dependency { get; }
+    public IDependency Dependency { get; } = dependency;
 }
 
 partial class ServiceProvider: IServiceProvider

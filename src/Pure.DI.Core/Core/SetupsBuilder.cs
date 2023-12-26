@@ -1,32 +1,25 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal sealed class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMetadataVisitor
+internal sealed class SetupsBuilder(
+    Func<IMetadataSyntaxWalker> metadataSyntaxWalkerFactory,
+    ICache<ImmutableArray<byte>, bool> setupCache)
+    : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMetadataVisitor
 {
-    private readonly Func<IMetadataSyntaxWalker> _metadataSyntaxWalkerFactory;
-    private readonly ICache<ImmutableArray<byte>, bool> _setupCache;
-    private readonly List<MdSetup> _setups = new();
-    private readonly List<MdBinding> _bindings = new();
-    private readonly List<MdRoot> _roots = new();
-    private readonly List<MdDependsOn> _dependsOn = new();
-    private readonly List<MdTypeAttribute> _typeAttributes = new();
-    private readonly List<MdTagAttribute> _tagAttributes = new();
-    private readonly List<MdOrdinalAttribute> _ordinalAttributes = new();
-    private readonly List<MdContract> _contracts = new();
-    private readonly List<MdTag> _tags = new();
-    private readonly List<MdUsingDirectives> _usingDirectives = new();
+    private readonly List<MdSetup> _setups = [];
+    private readonly List<MdBinding> _bindings = [];
+    private readonly List<MdRoot> _roots = [];
+    private readonly List<MdDependsOn> _dependsOn = [];
+    private readonly List<MdTypeAttribute> _typeAttributes = [];
+    private readonly List<MdTagAttribute> _tagAttributes = [];
+    private readonly List<MdOrdinalAttribute> _ordinalAttributes = [];
+    private readonly List<MdContract> _contracts = [];
+    private readonly List<MdTag> _tags = [];
+    private readonly List<MdUsingDirectives> _usingDirectives = [];
     private MdSetup? _setup;
     private MdBinding? _binding;
     private MdDefaultLifetime? _defaultLifetime;
 
-    public SetupsBuilder(
-        Func<IMetadataSyntaxWalker> metadataSyntaxWalkerFactory,
-        ICache<ImmutableArray<byte>, bool> setupCache)
-    {
-        _metadataSyntaxWalkerFactory = metadataSyntaxWalkerFactory;
-        _setupCache = setupCache;
-    }
-    
     private MdBinding Binding
     {
         get
@@ -52,15 +45,15 @@ internal sealed class SetupsBuilder : IBuilder<SyntaxUpdate, IEnumerable<MdSetup
     public IEnumerable<MdSetup> Build(SyntaxUpdate update)
     {
         var checkSum = update.Node.SyntaxTree.GetText().GetChecksum();
-        if (!_setupCache.Get(checkSum))
+        if (!setupCache.Get(checkSum))
         {
             return Array.Empty<MdSetup>();
         }
         
-        _metadataSyntaxWalkerFactory().Visit(this, update);
+        metadataSyntaxWalkerFactory().Visit(this, update);
         if (!_setups.Any())
         {
-            _setupCache.Set(checkSum, false);
+            setupCache.Set(checkSum, false);
         }
         
         return _setups;

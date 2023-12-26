@@ -3,20 +3,12 @@ namespace Pure.DI.Core.Code;
 
 using System.Collections.Generic;
 
-internal class LocalVariableRenamingRewriter : CSharpSyntaxRewriter
+internal class LocalVariableRenamingRewriter(
+    IIdGenerator idGenerator,
+    SemanticModel semanticModel)
+    : CSharpSyntaxRewriter(true)
 {
     private readonly Dictionary<string, string> _identifierNames = new();
-    private readonly IIdGenerator _idGenerator;
-    private readonly SemanticModel _semanticModel;
-
-    public LocalVariableRenamingRewriter(
-        IIdGenerator idGenerator,
-        SemanticModel semanticModel)
-        : base(true)
-    {
-        _idGenerator = idGenerator;
-        _semanticModel = semanticModel;
-    }
 
     public SimpleLambdaExpressionSyntax Rewrite(SimpleLambdaExpressionSyntax lambda) => 
         (SimpleLambdaExpressionSyntax)VisitSimpleLambdaExpression(lambda)!;
@@ -32,7 +24,7 @@ internal class LocalVariableRenamingRewriter : CSharpSyntaxRewriter
         if (_identifierNames.TryGetValue(token.Text, out var newName)
             && token.IsKind(SyntaxKind.IdentifierToken)
             && token.Parent is { } parent
-            && (_semanticModel.SyntaxTree != parent.SyntaxTree || _semanticModel.GetSymbolInfo(parent).Symbol is ILocalSymbol))
+            && (semanticModel.SyntaxTree != parent.SyntaxTree || semanticModel.GetSymbolInfo(parent).Symbol is ILocalSymbol))
         {
             token = SyntaxFactory.Identifier(newName);
         }
@@ -44,7 +36,7 @@ internal class LocalVariableRenamingRewriter : CSharpSyntaxRewriter
     {
         if (!_identifierNames.TryGetValue(name, out var newName))
         {
-            newName = $"{Names.LocalVarName}{_idGenerator.Generate()}";
+            newName = $"{Names.LocalVarName}{idGenerator.Generate()}";
             _identifierNames.Add(name, newName);
         }
 

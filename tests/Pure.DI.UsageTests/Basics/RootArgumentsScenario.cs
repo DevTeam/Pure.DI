@@ -23,17 +23,11 @@ interface IDependency
     public string DependencyName { get; }
 }
 
-class Dependency : IDependency
+class Dependency(int id, string dependencyName) : IDependency
 {
-    public Dependency(int id, string dependencyName)
-    {
-        Id = id;
-        DependencyName = dependencyName;
-    }
+    public int Id { get; } = id;
 
-    public int Id { get; }
-    
-    public string DependencyName { get; }
+    public string DependencyName { get; } = dependencyName;
 }
 
 interface IService
@@ -43,19 +37,14 @@ interface IService
     IDependency Dependency { get; }
 }
 
-class Service : IService
+class Service(
+    [Tag("forService")] string name,
+    IDependency dependency)
+    : IService
 {
-    public Service(
-        [Tag("forService")] string name,
-        IDependency dependency)
-    {
-        Name = name;
-        Dependency = dependency;
-    }
+    public string Name { get; } = name;
 
-    public string Name { get; }
-    
-    public IDependency Dependency { get; }
+    public IDependency Dependency { get; } = dependency;
 }
 // }
 

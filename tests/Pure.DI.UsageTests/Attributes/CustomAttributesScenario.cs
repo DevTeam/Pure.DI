@@ -47,22 +47,15 @@ class MyTypeAttribute : Attribute
     public MyTypeAttribute(Type type) { }
 }
 
-interface IPerson
+interface IPerson;
+
+class Person([MyTag("NikName")] string name) : IPerson
 {
-}
-
-class Person : IPerson
-{
-    private readonly string _name;
-
-    public Person([MyTag("NikName")] string name) =>
-        _name = name;
-
     [MyOrdinal(1)]
     [MyType(typeof(int))]
     internal object Id = "";
 
-    public override string ToString() => $"{Id} {_name}";
+    public override string ToString() => $"{Id} {name}";
 }
 // }
 

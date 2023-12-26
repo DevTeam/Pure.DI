@@ -16,24 +16,21 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency { }
+interface IDependency;
 
-class Dependency : IDependency { }
+class Dependency : IDependency;
 
 interface IService
 {
     ImmutableArray<IDependency> Dependencies { get; }
 }
 
-class Service : IService
+class Service(Func<IDependency> dependencyFactory) : IService
 {
-    public Service(Func<IDependency> dependencyFactory) =>
-        Dependencies = Enumerable
-            .Range(0, 10)
-            .Select(_ => dependencyFactory())
-            .ToImmutableArray();
-
-    public ImmutableArray<IDependency> Dependencies { get; }
+    public ImmutableArray<IDependency> Dependencies { get; } = Enumerable
+        .Range(0, 10)
+        .Select(_ => dependencyFactory())
+        .ToImmutableArray();
 }
 // }
 

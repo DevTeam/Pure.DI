@@ -1,13 +1,10 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal sealed class RootMethodsBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class RootMethodsBuilder(IBuildTools buildTools)
+    : IBuilder<CompositionCode, CompositionCode>
 {
-    private readonly IBuildTools _buildTools;
-    private static readonly string[] NewLineSeparators = { Environment.NewLine };
-
-    public RootMethodsBuilder(IBuildTools buildTools) => 
-        _buildTools = buildTools;
+    private static readonly string[] NewLineSeparators = [Environment.NewLine];
 
     public CompositionCode Build(CompositionCode composition)
     {
@@ -57,7 +54,7 @@ internal sealed class RootMethodsBuilder: IBuilder<CompositionCode, CompositionC
 
         if (isMethod)
         {
-            _buildTools.AddPureHeader(code);
+            buildTools.AddPureHeader(code);
         }
 
         var modifier = (root.Kind & RootKinds.Private) == RootKinds.Private 
@@ -93,7 +90,7 @@ internal sealed class RootMethodsBuilder: IBuilder<CompositionCode, CompositionC
             var indentToken = Disposables.Empty;
             if (!isMethod)
             {
-                _buildTools.AddPureHeader(code);
+                buildTools.AddPureHeader(code);
                 code.AppendLine("get");
                 code.AppendLine("{");
                 indentToken = code.Indent();

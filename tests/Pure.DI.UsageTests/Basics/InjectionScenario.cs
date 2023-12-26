@@ -11,28 +11,24 @@ $f=In addition to the dependency type, you can specify the dependency tag in the
 // ReSharper disable UnusedVariable
 // ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable UnusedMember.Global
 namespace Pure.DI.UsageTests.Basics.InjectionScenario;
 
 using Xunit;
 
 // {
-interface IDependency { }
+interface IDependency;
 
-class Dependency : IDependency
-{
-}
+class Dependency : IDependency;
 
 interface IService
 {
     IDependency Dependency { get; }
 }
 
-class Service : IService
+class Service(IDependency dependency) : IService
 {
-    public Service(IDependency dependency) =>
-        Dependency = dependency;
-
-    public IDependency Dependency { get; }
+    public IDependency Dependency { get; } = dependency;
 }
 // }
 

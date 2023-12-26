@@ -27,14 +27,16 @@ internal class ReadmeTarget : ITarget<int>, ICommandProvider
     private const string BodyKey = "b";
 
     private static readonly string[] Groups =
-    {
+    [
         "Basics",
         "Lifetimes",
         "Attributes",
         "BaseClassLibrary",
         "Interception",
         "Hints"
-    };
+    ];
+
+    private static readonly char[] Separator = ['='];
 
     public ReadmeTarget(
         Settings settings,
@@ -48,6 +50,7 @@ internal class ReadmeTarget : ITarget<int>, ICommandProvider
     }
 
     public Command Command { get; }
+
 
     public async Task<int> RunAsync(InvocationContext ctx)
     {
@@ -147,7 +150,7 @@ internal class ReadmeTarget : ITarget<int>, ICommandProvider
 
                 if (str.StartsWith("//}"))
                 {
-                    if (body.Any())
+                    if (body.Count != 0)
                     {
                         body.Add("");
                     }
@@ -159,9 +162,9 @@ internal class ReadmeTarget : ITarget<int>, ICommandProvider
                     continue;
                 }
 
-                if (part == Part.Comment && str.StartsWith("$"))
+                if (part == Part.Comment && "$".StartsWith(str))
                 {
-                    var parts = line[1..].Split(new[] { '=' }, 2, StringSplitOptions.RemoveEmptyEntries);
+                    var parts = line[1..].Split(Separator, 2, StringSplitOptions.RemoveEmptyEntries);
                     if (parts.Length > 0)
                     {
                         var key = parts[0].Trim();
@@ -200,7 +203,7 @@ internal class ReadmeTarget : ITarget<int>, ICommandProvider
                 }
             }
 
-            if (body.Any())
+            if (body.Count != 0)
             {
                 vars[BodyKey] = string.Join(Environment.NewLine, body);
             }
@@ -337,7 +340,7 @@ internal class ReadmeTarget : ITarget<int>, ICommandProvider
     private static async Task AddBenchmarks(string logsDirectory, TextWriter readmeWriter)
     {
         var benchmarksReportFiles = Directory.EnumerateFiles(logsDirectory, "*.html").ToArray();
-        if (benchmarksReportFiles.Any())
+        if (benchmarksReportFiles.Length != 0)
         {
             await readmeWriter.WriteLineAsync("");
             await readmeWriter.WriteLineAsync("## Benchmarks");

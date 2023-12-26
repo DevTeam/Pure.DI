@@ -1,13 +1,9 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal sealed class ToStringMethodBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class ToStringMethodBuilder(IBuilder<CompositionCode, LinesBuilder> classDiagramBuilder)
+    : IBuilder<CompositionCode, CompositionCode>
 {
-    private readonly IBuilder<CompositionCode, LinesBuilder> _classDiagramBuilder;
-
-    public ToStringMethodBuilder(IBuilder<CompositionCode, LinesBuilder> classDiagramBuilder) => 
-        _classDiagramBuilder = classDiagramBuilder;
-
     public CompositionCode Build(CompositionCode composition)
     {
         if (composition.Source.Source.Hints.GetHint(Hint.ToString) != SettingState.On)
@@ -22,7 +18,7 @@ internal sealed class ToStringMethodBuilder: IBuilder<CompositionCode, Compositi
             code.AppendLine();
         }
 
-        var classDiagram = _classDiagramBuilder.Build(composition);
+        var classDiagram = classDiagramBuilder.Build(composition);
         
         code.AppendLine("public override string ToString()");
         code.AppendLine("{");

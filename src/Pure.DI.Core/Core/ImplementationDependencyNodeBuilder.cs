@@ -3,20 +3,12 @@
 // ReSharper disable ConvertToAutoPropertyWhenPossible
 namespace Pure.DI.Core;
 
-internal sealed class ImplementationDependencyNodeBuilder : 
-    IBuilder<MdSetup, IEnumerable<DependencyNode>>
+internal sealed class ImplementationDependencyNodeBuilder(
+    ILogger<ImplementationDependencyNodeBuilder> logger,
+    IBuilder<DpImplementation, IEnumerable<DpImplementation>> implementationVariantsBuilder)
+    :
+        IBuilder<MdSetup, IEnumerable<DependencyNode>>
 {
-    private readonly ILogger<ImplementationDependencyNodeBuilder> _logger;
-    private readonly IBuilder<DpImplementation, IEnumerable<DpImplementation>> _implementationVariantsBuilder;
-
-    public ImplementationDependencyNodeBuilder(
-        ILogger<ImplementationDependencyNodeBuilder> logger,
-        IBuilder<DpImplementation, IEnumerable<DpImplementation>> implementationVariantsBuilder)
-    {
-        _logger = logger;
-        _implementationVariantsBuilder = implementationVariantsBuilder;
-    }
-
     public IEnumerable<DependencyNode> Build(MdSetup setup)
     {
         foreach (var binding in setup.Bindings)
@@ -138,7 +130,7 @@ internal sealed class ImplementationDependencyNodeBuilder :
                 var variantsWithOrdinal = implementationsWithOrdinal
                     .OrderBy(i => i.Constructor.Ordinal)
                     .SelectMany(impl => 
-                        _implementationVariantsBuilder.Build(impl)
+                        implementationVariantsBuilder.Build(impl)
                             .OrderByDescending(i => GetInjectionsCount(i)));
 
                 foreach (var node in CreateNodes(variantsWithOrdinal))
@@ -150,7 +142,7 @@ internal sealed class ImplementationDependencyNodeBuilder :
             }
 
             var implementations = baseImplementations
-                .SelectMany(impl => _implementationVariantsBuilder.Build(impl))
+                .SelectMany(implementationVariantsBuilder.Build)
                 .Select(impl => (Implementation: impl, InjectionsCount: GetInjectionsCount(impl)))
                 .ToArray();
 
@@ -214,7 +206,7 @@ internal sealed class ImplementationDependencyNodeBuilder :
                     var args = attributeData[0].ConstructorArguments;
                     if (attribute.ArgumentPosition > args.Length)
                     {
-                        _logger.CompileError($"The argument position {attribute.ArgumentPosition.ToString()} of attribute {attribute.Source} is out of range [0..{args.Length.ToString()}].", attribute.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                        logger.CompileError($"The argument position {attribute.ArgumentPosition.ToString()} of attribute {attribute.Source} is out of range [0..{args.Length.ToString()}].", attribute.Source.GetLocation(), LogId.ErrorInvalidMetadata);
                     }
 
                     var typedConstant = args[attribute.ArgumentPosition];

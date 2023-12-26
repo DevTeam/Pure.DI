@@ -3,19 +3,11 @@ namespace Pure.DI.Core;
 
 using System.Text.RegularExpressions;
 
-internal sealed class Filter : IFilter
+internal sealed class Filter(
+    ILogger<Filter> logger,
+    ICache<string, Regex> regexCache)
+    : IFilter
 {
-    private readonly ILogger<Filter> _logger;
-    private readonly ICache<string, Regex> _regexCache;
-
-    public Filter(
-        ILogger<Filter> logger,
-        ICache<string,  Regex> regexCache)
-    {
-        _logger = logger;
-        _regexCache = regexCache;
-    }
-
     public bool IsMeetRegularExpression(MdSetup setup, params (Hint setting, string value)[] settings) => 
         settings.All(i => IsMeetRegularExpression(setup, i.setting, i.value));
 
@@ -34,7 +26,7 @@ internal sealed class Filter : IFilter
 
         try
         {
-            var regex = _regexCache.Get(regularExpression.Trim());
+            var regex = regexCache.Get(regularExpression.Trim());
             if (!regex.IsMatch(value))
             {
                 return false;
@@ -42,7 +34,7 @@ internal sealed class Filter : IFilter
         }
         catch (ArgumentException ex)
         {
-            _logger.CompileError($"Invalid regular expression {regularExpression}. {ex.Message}", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+            logger.CompileError($"Invalid regular expression {regularExpression}. {ex.Message}", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
         }
 
         return true;

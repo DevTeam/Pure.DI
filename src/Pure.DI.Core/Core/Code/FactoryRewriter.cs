@@ -2,7 +2,12 @@
 // ReSharper disable InvertIf
 namespace Pure.DI.Core.Code;
 
-internal sealed class FactoryRewriter : CSharpSyntaxRewriter
+internal sealed class FactoryRewriter(
+    DpFactory factory,
+    Variable variable,
+    string finishLabel,
+    ICollection<FactoryRewriter.Injection> injections)
+    : CSharpSyntaxRewriter
 {
     private static readonly AttributeListSyntax MethodImplAttribute = SyntaxFactory.AttributeList().AddAttributes(
             SyntaxFactory.Attribute(
@@ -15,25 +20,9 @@ internal sealed class FactoryRewriter : CSharpSyntaxRewriter
         .WithTrailingTrivia(SyntaxTriviaList.Create(SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, " ")));
     
     private static readonly IdentifierNameSyntax InjectionMarkerExpression = SyntaxFactory.IdentifierName(Names.InjectionMarker);
-    private readonly DpFactory _factory;
-    private readonly Variable _variable;
-    private readonly string _finishLabel;
-    private readonly ICollection<Injection> _injections;
     private int _nestedLambdaCounter;
     private int _nestedBlockCounter;
 
-    public FactoryRewriter(
-        DpFactory factory,
-        Variable variable,
-        string finishLabel,
-        ICollection<Injection> injections)
-    {
-        _factory = factory;
-        _variable = variable;
-        _finishLabel = finishLabel;
-        _injections = injections;
-    }
-    
     public bool IsFinishMarkRequired { get; private set; }
 
     public SimpleLambdaExpressionSyntax Rewrite(SimpleLambdaExpressionSyntax lambda) => 
@@ -60,7 +49,7 @@ internal sealed class FactoryRewriter : CSharpSyntaxRewriter
             var processedNode = base.VisitParenthesizedLambdaExpression(node);
             if (_nestedBlockCounter > 0
                 || processedNode is not ParenthesizedLambdaExpressionSyntax lambda
-                || _factory.Source.SemanticModel.Compilation.GetLanguageVersion() < LanguageVersion.CSharp10)
+                || factory.Source.SemanticModel.Compilation.GetLanguageVersion() < LanguageVersion.CSharp10)
             {
                 return processedNode;
             }
@@ -118,7 +107,7 @@ internal sealed class FactoryRewriter : CSharpSyntaxRewriter
                 CreateAssignmentExpression(returnBody),
                 SyntaxFactory.GotoStatement(
                     SyntaxKind.GotoStatement,
-                    SyntaxFactory.IdentifierName(_finishLabel).WithLeadingTrivia(SyntaxFactory.Space)).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space)
+                    SyntaxFactory.IdentifierName(finishLabel).WithLeadingTrivia(SyntaxFactory.Space)).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space)
             ).WithLeadingTrivia(node.GetLeadingTrivia());
         }
         
@@ -129,7 +118,7 @@ internal sealed class FactoryRewriter : CSharpSyntaxRewriter
         SyntaxFactory.ExpressionStatement(
             SyntaxFactory.AssignmentExpression(
                 SyntaxKind.SimpleAssignmentExpression,
-                SyntaxFactory.IdentifierName(_variable.VariableName).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space), 
+                SyntaxFactory.IdentifierName(variable.VariableName).WithLeadingTrivia(SyntaxFactory.Space).WithTrailingTrivia(SyntaxFactory.Space), 
                 (ExpressionSyntax)Visit(returnBody).WithLeadingTrivia(SyntaxFactory.Space)));
 
     public override SyntaxNode? VisitInvocationExpression(InvocationExpressionSyntax invocation)
@@ -145,7 +134,7 @@ internal sealed class FactoryRewriter : CSharpSyntaxRewriter
                     },
                     Expression: IdentifierNameSyntax ctx
                 }
-                && ctx.Identifier.Text == _factory.Source.Context.Identifier.Text
+                && ctx.Identifier.Text == factory.Source.Context.Identifier.Text
                 && TryInject(invocation, out var visitInvocationExpression))
             {
                 return visitInvocationExpression;
@@ -159,7 +148,7 @@ internal sealed class FactoryRewriter : CSharpSyntaxRewriter
                     },
                     Expression: IdentifierNameSyntax ctx2
                 }
-                && ctx2.Identifier.Text == _factory.Source.Context.Identifier.Text
+                && ctx2.Identifier.Text == factory.Source.Context.Identifier.Text
                 && TryInject(invocation, out visitInvocationExpression))
             {
                 return visitInvocationExpression;
@@ -176,14 +165,14 @@ internal sealed class FactoryRewriter : CSharpSyntaxRewriter
         switch (invocation.ArgumentList.Arguments.Last().Expression)
         {
             case IdentifierNameSyntax identifierName:
-                _injections.Add(new Injection(identifierName.Identifier.Text, false));
+                injections.Add(new Injection(identifierName.Identifier.Text, false));
             {
                 visitInvocationExpression = InjectionMarkerExpression;
                 return true;
             }
 
             case DeclarationExpressionSyntax { Designation: SingleVariableDesignationSyntax singleVariableDesignationSyntax }:
-                _injections.Add(new Injection(singleVariableDesignationSyntax.Identifier.Text, true));
+                injections.Add(new Injection(singleVariableDesignationSyntax.Identifier.Text, true));
             {
                 visitInvocationExpression = InjectionMarkerExpression;
                 return true;
@@ -212,9 +201,9 @@ internal sealed class FactoryRewriter : CSharpSyntaxRewriter
     {
         if (node.IsKind(SyntaxKind.SimpleMemberAccessExpression)
             && node is { Expression: IdentifierNameSyntax identifierName, Name.Identifier.Text: nameof(IContext.Tag) } 
-            && identifierName.Identifier.Text == _factory.Source.Context.Identifier.Text)
+            && identifierName.Identifier.Text == factory.Source.Context.Identifier.Text)
         {
-            var token = SyntaxFactory.ParseToken(_variable.Injection.Tag.ValueToString());
+            var token = SyntaxFactory.ParseToken(variable.Injection.Tag.ValueToString());
             if (token.IsKind(SyntaxKind.NumericLiteralToken))
             {
                 return SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, token);

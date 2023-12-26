@@ -21,23 +21,20 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency { }
+interface IDependency;
 
-class Dependency : IDependency { }
+class Dependency : IDependency;
 
-interface IService { }
+interface IService;
 
 class Service : IService
 {
     public Service(IDependency dependency) { }
 }
 
-class Program
+class Program(IService service)
 {
-    public Program(IService service) =>
-        Service = service;
-
-    public IService Service { get; }
+    public IService Service { get; } = service;
 }
 // }
 

@@ -555,6 +555,6 @@ This project uses the "build as code" approach using [csharp-interactive](https:
 
 If you are using the Rider IDE, it already has a set of configurations to run these commands.
 
-### Prerequisites
+### Contribution Prerequisites
 
-Installed [.NET SDK 7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+Installed [.NET SDK 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)

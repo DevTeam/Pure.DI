@@ -1,13 +1,9 @@
 ﻿namespace Clock.ViewModels;
 
-internal abstract class ViewModel : INotifyPropertyChanged
+internal abstract class ViewModel(IDispatcher? dispatcher = null)
+    : INotifyPropertyChanged
 {
-    private readonly IDispatcher? _dispatcher;
-
     public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected ViewModel(IDispatcher? dispatcher = null) =>
-        _dispatcher = dispatcher;
 
     protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
@@ -17,12 +13,12 @@ internal abstract class ViewModel : INotifyPropertyChanged
             return;
         }
 
-        if (_dispatcher == null)
+        if (dispatcher == null)
         {
             propertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
             return;
         }
 
-        _dispatcher.Dispatch(() => propertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName)));
+        dispatcher.Dispatch(() => propertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName)));
     }
 }

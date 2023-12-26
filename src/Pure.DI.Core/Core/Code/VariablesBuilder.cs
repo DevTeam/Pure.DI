@@ -11,7 +11,7 @@ internal class VariablesBuilder : IVariablesBuilder
     {
         var blockId = 0;
         var blockMap = new Dictionary<(MdBinding, int), Variable>();
-        var rootBlock = new Block(blockId++,default, new LinkedList<IStatement>());
+        var rootBlock = new Block(blockId++,default, []);
         var transientId = 0;
         var rootVar = GetVariable(rootBlock, map, blockMap, rootNode, rootInjection, ref transientId, false);
         rootBlock.Statements.AddFirst(rootVar);
@@ -63,7 +63,7 @@ internal class VariablesBuilder : IVariablesBuilder
                             var isBlock = depNode.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock || variable.Node.IsLazy();
                             if (isBlock)
                             {
-                                var depBlock = new Block(blockId++, currentStatement, new LinkedList<IStatement>());
+                                var depBlock = new Block(blockId++, currentStatement, []);
                                 depBlock.Statements.AddFirst(depVariable);
                                 if (!isAlreadyCreated)
                                 {

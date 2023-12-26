@@ -4,13 +4,8 @@ using System;
 using Clock.ViewModels;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class Dispatcher : IDispatcher
+internal class Dispatcher(Lazy<FormMain> formMain) : IDispatcher
 {
-    private readonly Lazy<FormMain> _formMain;
-
-    public Dispatcher(Lazy<FormMain> formMain) => 
-        _formMain = formMain;
-
     public void Dispatch(Action action) =>
-        _formMain.Value.Invoke(action);
+        formMain.Value.Invoke(action);
 }

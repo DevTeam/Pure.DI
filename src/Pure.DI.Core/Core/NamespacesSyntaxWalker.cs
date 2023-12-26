@@ -1,24 +1,19 @@
 namespace Pure.DI.Core;
 
-internal sealed class NamespacesSyntaxWalker: CSharpSyntaxWalker, IEnumerable<string>
+internal sealed class NamespacesSyntaxWalker(SemanticModel semanticModel)
+    : CSharpSyntaxWalker, IEnumerable<string>
 {
-    private readonly SemanticModel _semanticModel;
-    private readonly HashSet<string> _namespaces = new();
-
-    public NamespacesSyntaxWalker(SemanticModel semanticModel)
-    {
-        _semanticModel = semanticModel;
-    }
+    private readonly HashSet<string> _namespaces = [];
 
     public override void VisitIdentifierName(IdentifierNameSyntax node)
     {
-        AddNamespace(_semanticModel.GetSymbolInfo(node).Symbol);
+        AddNamespace(semanticModel.GetSymbolInfo(node).Symbol);
         base.VisitIdentifierName(node);
     }
 
     public override void VisitGenericName(GenericNameSyntax node)
     {
-        AddNamespace(_semanticModel.GetSymbolInfo(node).Symbol);
+        AddNamespace(semanticModel.GetSymbolInfo(node).Symbol);
         base.VisitGenericName(node);
     }
 

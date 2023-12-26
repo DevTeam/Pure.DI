@@ -10,13 +10,14 @@ internal class BenchmarksTarget: ITarget<int>, ICommandProvider
     private readonly Settings _settings;
     private readonly ITeamCityWriter _teamCityWriter;
 
-    private static readonly string[] Reports = {
+    private static readonly string[] Reports =
+    [
         "Transient",
         "Singleton",
         "Func",
         "Array",
         "Enum"
-    };
+    ];
 
     public BenchmarksTarget(
         Settings settings, 

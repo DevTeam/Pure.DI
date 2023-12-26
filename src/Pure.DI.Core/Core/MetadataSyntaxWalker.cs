@@ -9,22 +9,15 @@
 
 namespace Pure.DI.Core;
 
-internal sealed class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntaxWalker
+internal sealed class MetadataSyntaxWalker(
+    IApiInvocationProcessor invocationProcessor,
+    CancellationToken cancellationToken)
+    : CSharpSyntaxWalker, IMetadataSyntaxWalker
 {
     private const string DISetup = $"{nameof(DI)}.{nameof(DI.Setup)}";
-    private readonly IApiInvocationProcessor _invocationProcessor;
-    private CancellationToken _cancellationToken;
     private readonly Stack<InvocationExpressionSyntax> _invocations = new();
     private string _namespace = string.Empty;
     private bool _isMetadata;
-
-    public MetadataSyntaxWalker(
-        IApiInvocationProcessor invocationProcessor,
-        CancellationToken cancellationToken)
-    {
-        _invocationProcessor = invocationProcessor;
-        _cancellationToken = cancellationToken;
-    }
 
     [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]
     public void Visit(IMetadataVisitor metadataVisitor, in SyntaxUpdate update)
@@ -47,7 +40,7 @@ internal sealed class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntax
 
         while (invocations.TryPop(out var invocation))
         {
-            _invocationProcessor.ProcessInvocation(metadataVisitor, update.SemanticModel, invocation, _namespace);
+            invocationProcessor.ProcessInvocation(metadataVisitor, update.SemanticModel, invocation, _namespace);
         }
 
         metadataVisitor.VisitFinish();
@@ -56,7 +49,7 @@ internal sealed class MetadataSyntaxWalker : CSharpSyntaxWalker, IMetadataSyntax
     // ReSharper disable once CognitiveComplexity
     public override void VisitInvocationExpression(InvocationExpressionSyntax invocation)
     {
-        _cancellationToken.ThrowIfCancellationRequested();
+        cancellationToken.ThrowIfCancellationRequested();
         if (_isMetadata || IsMetadata(invocation))
         {
             _invocations.Push(invocation);

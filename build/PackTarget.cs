@@ -53,17 +53,16 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
         {
             new Library(
                 "Pure.DI.MS",
-                new []{ "net8.0", "net7.0" },
-                new []{ "webapi" })
+                ["net8.0", "net7.0"],
+                ["webapi"])
         };
-        
-        var libraryPackageVersion = generatorPackageVersion;
+
         foreach (var library in libraries)
         {
             var props = new[]
             {
                 ("configuration", _settings.Configuration),
-                ("version", libraryPackageVersion.ToString())
+                ("version", generatorPackageVersion.ToString())
             };
 
             var libraryProjectDirectory = Path.GetFullPath(Path.Combine("src", library.Name));
@@ -78,7 +77,7 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
             Assertion.Succeed(libraryPackResult);
         
             var libraryPackageDir = Path.Combine(libraryProjectDirectory, "bin", _settings.Configuration);
-            var libraryPackageName = $"{library.Name}.{libraryPackageVersion.ToString()}.nupkg";
+            var libraryPackageName = $"{library.Name}.{generatorPackageVersion.ToString()}.nupkg";
             var libraryPackage = Path.Combine(libraryPackageDir, libraryPackageName);
             foreach (var templateName in library.TemplateNames)
             foreach (var framework in library.Frameworks)
@@ -109,7 +108,7 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
                             "Pure.DI",
                             "-n",
                             "-v",
-                            libraryPackageVersion.ToString(),
+                            generatorPackageVersion.ToString(),
                             "-f",
                             framework,
                             "-s",
@@ -121,7 +120,7 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
                         throw new InvalidOperationException("Cannot add the NuGet package reference.");
                     }
 
-                    DeleteNuGetPackageFromCache(library.Name, libraryPackageVersion, libraryPackageDir);
+                    DeleteNuGetPackageFromCache(library.Name, generatorPackageVersion, libraryPackageDir);
                     
                     exitCode = await new DotNetCustom(
                             "add",
@@ -130,7 +129,7 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
                             library.Name,
                             "-n",
                             "-v",
-                            libraryPackageVersion.ToString(),
+                            generatorPackageVersion.ToString(),
                             "-s",
                             libraryPackageDir,
                             "-f",

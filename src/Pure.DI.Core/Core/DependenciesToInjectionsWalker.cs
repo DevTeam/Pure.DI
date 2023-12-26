@@ -2,7 +2,7 @@ namespace Pure.DI.Core;
 
 internal sealed class DependenciesToInjectionsWalker: DependenciesWalker<Unit>, IEnumerable<InjectionInfo>
 {
-    private readonly List<InjectionInfo> _injections = new();
+    private readonly List<InjectionInfo> _injections = [];
 
     public override void VisitInjection(
         in Unit ctx,

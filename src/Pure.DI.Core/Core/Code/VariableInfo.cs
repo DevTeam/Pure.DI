@@ -2,8 +2,8 @@
 
 internal class VariableInfo
 {
-    private readonly HashSet<int> _perBlockRefCounts = new();
-    public readonly HashSet<Block> Owners = new();
+    private readonly HashSet<int> _perBlockRefCounts = [];
+    public readonly HashSet<Block> Owners = [];
     public bool IsCreated;
     public bool HasCode;
     public LinesBuilder Code = new();

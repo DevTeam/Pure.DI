@@ -1,10 +1,9 @@
 namespace Pure.DI.Core;
 
-internal sealed class DependenciesToLinesWalker: DependenciesWalker<Unit>, IEnumerable<string>
+internal sealed class DependenciesToLinesWalker(int indent)
+    : DependenciesWalker<Unit>, IEnumerable<string>
 {
-    private readonly LinesBuilder _lb;
-    
-    public DependenciesToLinesWalker(int indent) => _lb = new LinesBuilder(indent);
+    private readonly LinesBuilder _lb = new(indent);
 
     public override void VisitRoot(in Unit ctx, in DpRoot root)
     {

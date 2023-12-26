@@ -39,23 +39,20 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency { }
+interface IDependency;
 
-class AbcDependency : IDependency { }
+class AbcDependency : IDependency;
 
-class XyzDependency : IDependency { }
+class XyzDependency : IDependency;
 
 interface IService
 {
     IDependency[] Dependencies { get; }
 }
 
-class Service : IService
+class Service(IDependency[] dependencies) : IService
 {
-    public Service(IDependency[] dependencies) => 
-        Dependencies = dependencies;
-
-    public IDependency[] Dependencies { get; }
+    public IDependency[] Dependencies { get; } = dependencies;
 }
 // }
 

@@ -50,14 +50,13 @@ public class BucketsTests
         var pairs = Buckets<Type, int>.Create(
             divisor,
             out var bucketSize,
-            new[]
-            {
+            [
                 new Pair<Type, int>(typeof(string), 1),
                 new Pair<Type, int>(typeof(int), 2),
                 new Pair<Type, int>(typeof(double), 3),
                 new Pair<Type, int>(typeof(float), 4),
                 new Pair<Type, int>(typeof(char), 5)
-            }
+            ]
         );
 
         // When

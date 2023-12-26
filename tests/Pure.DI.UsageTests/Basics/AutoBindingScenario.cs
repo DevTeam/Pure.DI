@@ -15,9 +15,7 @@ namespace Pure.DI.UsageTests.Basics.AutoBindingScenario;
 using Xunit;
 
 // {
-class Dependency
-{
-}
+class Dependency;
 
 class Service
 {

@@ -16,9 +16,9 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency<T> { }
+interface IDependency<T>;
 
-class Dependency<T> : IDependency<T> { }
+class Dependency<T> : IDependency<T>;
 
 readonly record struct DependencyStruct<T> : IDependency<T> 
     where T: struct;
@@ -33,30 +33,23 @@ interface IService<T1, T2, TList, TDictionary>
     IDependency<T2> Dependency2 { get; }
 }
 
-class Service<T1, T2, TList, TDictionary> : IService<T1, T2, TList, TDictionary>
-    where T2: struct
-    where TList: IList<T1>
-    where TDictionary: IDictionary<T1, T2>
+class Service<T1, T2, TList, TDictionary>(
+    IDependency<T1> dependency1,
+    [Tag("value type")] IDependency<T2> dependency2)
+    : IService<T1, T2, TList, TDictionary>
+    where T2 : struct
+    where TList : IList<T1>
+    where TDictionary : IDictionary<T1, T2>
 {
-    public Service(
-        IDependency<T1> dependency1,
-        [Tag("value type")] IDependency<T2> dependency2)
-    {
-        Dependency1 = dependency1;
-        Dependency2 = dependency2;
-    }
-    
-    public IDependency<T1> Dependency1 { get; }
-    
-    public IDependency<T2> Dependency2 { get; }
+    public IDependency<T1> Dependency1 { get; } = dependency1;
+
+    public IDependency<T2> Dependency2 { get; } = dependency2;
 }
 
-class Program<T> where T : notnull
+class Program<T>(IService<T, int, List<T>, Dictionary<T, int>> service)
+    where T : notnull
 {
-    public IService<T, int, List<T>, Dictionary<T, int>> Service { get; }
-
-    public Program(IService<T, int, List<T>, Dictionary<T, int>> service) => 
-        Service = service;
+    public IService<T, int, List<T>, Dictionary<T, int>> Service { get; } = service;
 }
 // }
 

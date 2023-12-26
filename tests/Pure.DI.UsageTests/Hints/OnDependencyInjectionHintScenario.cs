@@ -14,6 +14,7 @@ $f=For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/REA
 // ReSharper disable UnusedVariable
 // ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable UnusedMember.Global
 namespace Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario;
 
 using System.Collections.Immutable;
@@ -23,25 +24,18 @@ using Xunit;
 // {
 using static Hint;
 
-interface IDependency
-{
-}
+interface IDependency;
 
-class Dependency : IDependency
-{
-}
+class Dependency : IDependency;
 
 interface IService
 {
     IDependency Dependency { get; }
 }
 
-class Service : IService
+class Service(IDependency dependency) : IService
 {
-    public Service(IDependency dependency) =>
-        Dependency = dependency;
-
-    public IDependency Dependency { get; }
+    public IDependency Dependency { get; } = dependency;
 }
 
 partial class Composition

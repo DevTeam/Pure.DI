@@ -9,6 +9,7 @@ $h=This example demonstrates how to create and initialize an instance manually. 
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable UnusedMember.Global
 namespace Pure.DI.UsageTests.Basics.FactoryScenario;
 
 using Shouldly;
@@ -22,12 +23,9 @@ interface IDependency
     bool IsInitialized { get; }
 }
 
-class Dependency : IDependency
+class Dependency(DateTimeOffset time) : IDependency
 {
-    public Dependency(DateTimeOffset time) => 
-        Time = time;
-
-    public DateTimeOffset Time { get; }
+    public DateTimeOffset Time { get; } = time;
 
     public bool IsInitialized { get; private set; }
 
@@ -40,12 +38,9 @@ interface IService
     IDependency Dependency { get; }
 }
 
-class Service : IService
+class Service(IDependency dependency) : IService
 {
-    public Service(IDependency dependency) =>
-        Dependency = dependency;
-
-    public IDependency Dependency { get; }
+    public IDependency Dependency { get; } = dependency;
 }
 // }
 

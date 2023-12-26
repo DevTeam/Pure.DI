@@ -2,23 +2,16 @@
 // ReSharper disable InvertIf
 namespace Pure.DI.Core;
 
-internal sealed class LogObserver: IObserver<LogEntry>
+internal sealed class LogObserver(
+    IBuilder<LogEntry, LogInfo> logInfoBuilder,
+    IGeneratorDiagnostic diagnostic)
+    : IObserver<LogEntry>
 {
-    private readonly IBuilder<LogEntry, LogInfo> _logInfoBuilder;
-    private readonly IGeneratorDiagnostic _diagnostic;
-    private readonly HashSet<DiagnosticInfo> _diagnostics = new();
-    
-    public LogObserver(
-        IBuilder<LogEntry, LogInfo> logInfoBuilder,
-        IGeneratorDiagnostic diagnostic)
-    {
-        _logInfoBuilder = logInfoBuilder;
-        _diagnostic = diagnostic;
-    }
+    private readonly HashSet<DiagnosticInfo> _diagnostics = [];
 
     public void OnNext(LogEntry logEntry)
     {
-        var logInfo = _logInfoBuilder.Build(logEntry);
+        var logInfo = logInfoBuilder.Build(logEntry);
         if (logInfo.DiagnosticDescriptor is { } descriptor)
         {
             lock (_diagnostics)
@@ -38,7 +31,7 @@ internal sealed class LogObserver: IObserver<LogEntry>
         {
             foreach (var (descriptor, location) in _diagnostics)
             {
-                _diagnostic.ReportDiagnostic(Diagnostic.Create(descriptor, location));
+                diagnostic.ReportDiagnostic(Diagnostic.Create(descriptor, location));
             }
 
             _diagnostics.Clear();

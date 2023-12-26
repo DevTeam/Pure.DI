@@ -14,21 +14,16 @@ namespace Pure.DI.UsageTests.BCL.WeakReferenceScenario;
 using Xunit;
 
 // {
-interface IDependency { }
+interface IDependency;
 
-class Dependency : IDependency { }
+class Dependency : IDependency;
 
-interface IService { }
+interface IService;
 
-class Service : IService
+class Service(WeakReference<IDependency> dependency) : IService
 {
-    private readonly WeakReference<IDependency> _dependency;
-
-    public Service(WeakReference<IDependency> dependency) => 
-        _dependency = dependency;
-
     public IDependency? Dependency => 
-        _dependency.TryGetTarget(out var value)
+        dependency.TryGetTarget(out var value)
             ? value
             : default;
 }

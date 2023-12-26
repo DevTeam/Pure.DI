@@ -14,33 +14,28 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency { }
+interface IDependency;
 
-class AbcDependency : IDependency { }
+class AbcDependency : IDependency;
 
-class XyzDependency : IDependency { }
+class XyzDependency : IDependency;
 
 interface IService
 {
     Task<IReadOnlyList<IDependency>> GetDependenciesAsync();
 }
 
-class Service : IService
+class Service(IAsyncEnumerable<IDependency> dependencies) : IService
 {
-    private readonly IAsyncEnumerable<IDependency> _dependencies;
-
-    public Service(IAsyncEnumerable<IDependency> dependencies) => 
-        _dependencies = dependencies;
-
     public async Task<IReadOnlyList<IDependency>> GetDependenciesAsync()
     {
-        var dependencies = new List<IDependency>();
-        await foreach (var dependency in _dependencies)
+        var dependencies1 = new List<IDependency>();
+        await foreach (var dependency in dependencies)
         {
-            dependencies.Add(dependency);
+            dependencies1.Add(dependency);
         }
 
-        return dependencies;
+        return dependencies1;
     }
 }
 // }

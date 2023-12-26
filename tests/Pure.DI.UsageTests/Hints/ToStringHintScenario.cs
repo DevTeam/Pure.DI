@@ -19,11 +19,11 @@ namespace Pure.DI.UsageTests.Hints.ToStringHintScenario;
 using Xunit;
 
 // {
-interface IDependency { }
+interface IDependency;
 
-class Dependency : IDependency { }
+class Dependency : IDependency;
 
-interface IService { }
+interface IService;
 
 class Service : IService
 {

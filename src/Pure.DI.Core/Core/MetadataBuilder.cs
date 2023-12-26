@@ -8,19 +8,11 @@
 // ReSharper disable LoopCanBeConvertedToQuery
 namespace Pure.DI.Core;
 
-internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>>
+internal sealed class MetadataBuilder(
+    Func<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>> setupsBuilderFactory,
+    CancellationToken cancellationToken)
+    : IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>>
 {
-    private readonly Func<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>> _setupsBuilderFactory;
-    private readonly CancellationToken _cancellationToken;
-
-    public MetadataBuilder(
-        Func<IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>> setupsBuilderFactory,
-        CancellationToken cancellationToken)
-    {
-        _setupsBuilderFactory = setupsBuilderFactory;
-        _cancellationToken = cancellationToken;
-    }
-
     public IEnumerable<MdSetup> Build(IEnumerable<SyntaxUpdate> updates)
     {
         var actualUpdates = 
@@ -38,13 +30,13 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
                 throw new CompileErrorException($"{Names.GeneratorName} does not support C# {languageVersion.ToDisplayString()}. Please use language version {LanguageVersion.CSharp8.ToDisplayString()} or greater.", update.Node.GetLocation(), LogId.ErrorNotSupportedLanguageVersion);
             }
             
-            var setupsBuilder = _setupsBuilderFactory();
+            var setupsBuilder = setupsBuilderFactory();
             foreach (var newSetup in setupsBuilder.Build(update))
             {
                 setups.Add(newSetup);    
             }
             
-            _cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
         }
         
         if (setups.Count == 0)
@@ -80,7 +72,7 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
     {
         foreach (var dependsOn in setup.DependsOn)
         {
-            _cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
             foreach (var compositionTypeName in dependsOn.CompositionTypeNames)
             {
                 if (!processed.Add(compositionTypeName))
@@ -145,7 +137,7 @@ internal sealed class MetadataBuilder : IBuilder<IEnumerable<SyntaxUpdate>, IEnu
                 usingDirectives.Add(usingDirective);   
             }
 
-            _cancellationToken.ThrowIfCancellationRequested();
+            cancellationToken.ThrowIfCancellationRequested();
         }
 
         mergedSetup = new MdSetup(
