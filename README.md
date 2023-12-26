@@ -36,38 +36,42 @@ Pure.DI is not a framework or library, but a source code generator for creating 
 ### Let's create an abstraction
 
 ```c#
-interface IBox<out T> { T Content { get; } }
+interface IBox<out T>
+{
+    T Content { get; }
+}
 
-interface ICat { State State { get; } }
+interface ICat
+{
+    State State { get; }
+}
 
-enum State { Alive, Dead }
+enum State
+{
+    Alive,
+    Dead
+}
 ```
 
 ### Here's our implementation
 
 ```c#
-class CardboardBox<T> : IBox<T>
+public class CardboardBox<T>(T content) : IBox<T>
 {
-    public CardboardBox(T content) =>
-        Content = content;
+    public T Content { get; } = content;
 
-    public T Content { get; }
+    public override string ToString() => $"[{Content}]";
 }
 
-class ShroedingersCat : ICat
+class ShroedingersCat(Lazy<State> superposition) : ICat
 {
-  // Represents the superposition of the states
-  private readonly Lazy<State> _superposition;
+    // The decoherence of the superposition
+    // at the time of observation via an irreversible process
+    public State State => superposition.Value;
 
-  public ShroedingersCat(Lazy<State> superposition) =>
-    _superposition = superposition;
-
-  // Decoherence of the superposition at the time
-  // of observation via an irreversible process
-  public State State => _superposition.Value;
-
-  public override string ToString() => $"{State} cat";
+    public override string ToString() => $"{State} cat";
 }
+
 ```
 
 It is important to note that our abstraction and implementation knows nothing about the magic of DI or any frameworks.
@@ -162,17 +166,13 @@ The `public Program Root { get; }` property here is a [*__Composition Root__*](h
 ### Time to open boxes!
 
 ```c#
-class Program
+class Program(IBox<ICat> box)
 {
   // Composition Root, a single place in an application
   // where the composition of the object graphs for an application take place
   public static void Main() => new Composition().Root.Run();
 
-  private readonly IBox<ICat> _box;
-
-  internal Program(IBox<ICat> box) => _box = box;
-
-  private void Run() => Console.WriteLine(_box);
+  private void Run() => Console.WriteLine(box);
 }
 ```
 
@@ -205,67 +205,6 @@ dotnet run
 
 ## Examples
 
-### Basics
-- [Composition roots](readme/composition-roots.md)
-- [Resolve methods](readme/resolve-methods.md)
-- [Factory](readme/factory.md)
-- [Injection](readme/injection.md)
-- [Generics](readme/generics.md)
-- [Arguments](readme/arguments.md)
-- [Root arguments](readme/root-arguments.md)
-- [Composition root kinds](readme/composition-root-kinds.md)
-- [Tags](readme/tags.md)
-- [Auto-bindings](readme/auto-bindings.md)
-- [Child composition](readme/child-composition.md)
-- [Multi-contract bindings](readme/multi-contract-bindings.md)
-- [Field injection](readme/field-injection.md)
-- [Method injection](readme/method-injection.md)
-- [Property injection](readme/property-injection.md)
-- [Complex generics](readme/complex-generics.md)
-- [Instance Initialization](readme/instance-initialization.md)
-- [Partial class](readme/partial-class.md)
-- [A few partial classes](readme/a-few-partial-classes.md)
-- [Dependent compositions](readme/dependent-compositions.md)
-- [Default values](readme/default-values.md)
-- [Required properties or fields](readme/required-properties-or-fields.md)
-### Lifetimes
-- [Singleton](readme/singleton.md)
-- [PerResolve](readme/perresolve.md)
-- [PerBlock](readme/perblock.md)
-- [Transient](readme/transient.md)
-- [Disposable singleton](readme/disposable-singleton.md)
-- [Scope](readme/scope.md)
-- [Default lifetime](readme/default-lifetime.md)
-### Attributes
-- [Constructor ordinal attribute](readme/constructor-ordinal-attribute.md)
-- [Member ordinal attribute](readme/member-ordinal-attribute.md)
-- [Tag attribute](readme/tag-attribute.md)
-- [Type attribute](readme/type-attribute.md)
-- [Custom attributes](readme/custom-attributes.md)
-### Base Class Library
-- [Func](readme/func.md)
-- [Enumerable](readme/enumerable.md)
-- [Array](readme/array.md)
-- [Lazy](readme/lazy.md)
-- [Span and ReadOnlySpan](readme/span-and-readonlyspan.md)
-- [Tuple](readme/tuple.md)
-- [Weak Reference](readme/weak-reference.md)
-- [Async Enumerable](readme/async-enumerable.md)
-- [Service collection](readme/service-collection.md)
-- [Func with arguments](readme/func-with-arguments.md)
-- [Service provider](readme/service-provider.md)
-- [Overriding the BCL binding](readme/overriding-the-bcl-binding.md)
-### Interception
-- [Decorator](readme/decorator.md)
-- [Interception](readme/interception.md)
-- [Advanced interception](readme/advanced-interception.md)
-### Hints
-- [Resolve hint](readme/resolve-hint.md)
-- [ThreadSafe hint](readme/threadsafe-hint.md)
-- [OnDependencyInjection hint](readme/ondependencyinjection-hint.md)
-- [OnCannotResolve hint](readme/oncannotresolve-hint.md)
-- [OnNewInstance hint](readme/onnewinstance-hint.md)
-- [ToString hint](readme/tostring-hint.md)
 ### Applications
 - Console
   - [Schrödinger's cat](readme/Console.md)
@@ -823,9 +762,9 @@ This project uses the "build as code" approach using [csharp-interactive](https:
 
 If you are using the Rider IDE, it already has a set of configurations to run these commands.
 
-### Prerequisites
+### Contribution Prerequisites
 
-Installed [.NET SDK 7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+Installed [.NET SDK 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
 
 ## Benchmarks

@@ -7,38 +7,42 @@
 ### Let's create an abstraction
 
 ```c#
-interface IBox<out T> { T Content { get; } }
+interface IBox<out T>
+{
+    T Content { get; }
+}
 
-interface ICat { State State { get; } }
+interface ICat
+{
+    State State { get; }
+}
 
-enum State { Alive, Dead }
+enum State
+{
+    Alive,
+    Dead
+}
 ```
 
 ### Here's our implementation
 
 ```c#
-class CardboardBox<T> : IBox<T>
+public class CardboardBox<T>(T content) : IBox<T>
 {
-    public CardboardBox(T content) =>
-        Content = content;
+    public T Content { get; } = content;
 
-    public T Content { get; }
+    public override string ToString() => $"[{Content}]";
 }
 
-class ShroedingersCat : ICat
+class ShroedingersCat(Lazy<State> superposition) : ICat
 {
-  // Represents the superposition of the states
-  private readonly Lazy<State> _superposition;
+    // The decoherence of the superposition
+    // at the time of observation via an irreversible process
+    public State State => superposition.Value;
 
-  public ShroedingersCat(Lazy<State> superposition) =>
-    _superposition = superposition;
-
-  // Decoherence of the superposition at the time
-  // of observation via an irreversible process
-  public State State => _superposition.Value;
-
-  public override string ToString() => $"{State} cat";
+    public override string ToString() => $"{State} cat";
 }
+
 ```
 
 It is important to note that our abstraction and implementation knows nothing about the magic of DI or any frameworks.
@@ -133,17 +137,13 @@ The `public Program Root { get; }` property here is a [*__Composition Root__*](h
 ### Time to open boxes!
 
 ```c#
-class Program
+class Program(IBox<ICat> box)
 {
   // Composition Root, a single place in an application
   // where the composition of the object graphs for an application take place
   public static void Main() => new Composition().Root.Run();
 
-  private readonly IBox<ICat> _box;
-
-  internal Program(IBox<ICat> box) => _box = box;
-
-  private void Run() => Console.WriteLine(_box);
+  private void Run() => Console.WriteLine(box);
 }
 ```
 

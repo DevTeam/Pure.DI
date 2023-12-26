@@ -58,21 +58,16 @@ public class CardboardBox<T>(T content) : IBox<T>
 
 public class ShroedingersCat(Lazy<State> superposition) : ICat
 {
-    // Represents the superposition of the states
-
-    // The decoherence of the superposition at the time of observation via an irreversible process
+    // The decoherence of the superposition
+    // at the time of observation via an irreversible process
     public State State => superposition.Value;
 
     public override string ToString() => $"{State} cat";
 }
 
-public partial class Program
+public partial class Program(IBox<ICat> box)
 {
-    private readonly IBox<ICat> _box;
-
-    internal Program(IBox<ICat> box) => _box = box;
-
-    private void Run() => Console.WriteLine(_box);
+    private void Run() => Console.WriteLine(box);
 }
 
 #pragma warning restore CA1050
