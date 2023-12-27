@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>$(Framework)</TargetFramework>
+        <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
         <IsPackable>true</IsPackable>
         <ImplicitUsings>false</ImplicitUsings>
