@@ -162,7 +162,7 @@ internal class ReadmeTarget : ITarget<int>, ICommandProvider
                     continue;
                 }
 
-                if (part == Part.Comment && "$".StartsWith(str))
+                if (part == Part.Comment && str.StartsWith('$'))
                 {
                     var parts = line[1..].Split(Separator, 2, StringSplitOptions.RemoveEmptyEntries);
                     if (parts.Length > 0)
