@@ -47,6 +47,53 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
         _teamCityWriter.PublishArtifact($"{generatorPackage} => .");
         packages.Add(generatorPackage);
         DeleteNuGetPackageFromCache("Pure.DI", generatorPackageVersion, Path.GetDirectoryName(generatorPackage)!);
+
+        var exitCode = await new DotNetCustom("new", "-i", "Pure.DI.Templates").RunAsync();
+        if (exitCode != 0)
+        {
+            throw new InvalidOperationException("Cannot install the project template \"Pure.DI.Templates\".");
+        }
+        
+        foreach (var framework in new[] {"net8.0", "net48", "net45", "net35", "netstandard1.6", "netstandard2.1"})
+        {
+            var tempDir = GetTempDir();
+            exitCode = await new DotNetNew(
+                    "dilib",
+                    "-n",
+                    "MyApp",
+                    "-o",
+                    tempDir,
+                    "--force",
+                    "-f", framework)
+                .RunAsync();
+            
+            if (exitCode != 0)
+            {
+                throw new InvalidOperationException($"Cannot create app for \"{framework}\".");
+            }
+            
+            exitCode = await new DotNetCustom(
+                    "add",
+                    Path.Combine(tempDir),
+                    "package",
+                    "Pure.DI",
+                    "-v",
+                    generatorPackageVersion.ToString(),
+                    "-s",
+                    Path.GetDirectoryName(generatorPackage)!)
+                .RunAsync();
+            
+            if (exitCode != 0)
+            {
+                throw new InvalidOperationException($"Cannot add \"Pure.DI\" package of \"{framework}\".");
+            }
+
+            exitCode = await new DotNetBuild().WithWorkingDirectory(tempDir).RunAsync();
+            if (exitCode != 0)
+            {
+                throw new InvalidOperationException($"Cannot build app for \"{framework}\".");
+            }
+        }
         
         // Libraries
         var libraries = new[]
@@ -82,11 +129,11 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
             foreach (var templateName in library.TemplateNames)
             foreach (var framework in library.Frameworks)
             {
-                var tempDir = Path.Combine(Path.GetTempPath(), $"Pure.DI{Guid.NewGuid().ToString()[..4]}");
+                var tempDir = GetTempDir();
                 Directory.CreateDirectory(tempDir);
                 try
                 {
-                    var exitCode = await  new DotNetNew(
+                    exitCode = await new DotNetNew(
                             templateName,
                             "-n",
                             "MyApp",
@@ -171,6 +218,9 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
         
         return packages;
     }
+
+    private static string GetTempDir() => 
+        Path.Combine(Path.GetTempPath(), $"Pure.DI_{Guid.NewGuid().ToString()[..4]}");
 
     private void DeleteNuGetPackageFromCache(string packageId, NuGetVersion minVersion, params string[] sources)
     {
