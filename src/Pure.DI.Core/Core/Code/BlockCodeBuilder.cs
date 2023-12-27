@@ -123,7 +123,13 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
             return false;
         }
         
-        var owners = variable.GetPath().TakeWhile(i => !i.Current.IsLazy).OfType<Block>().ToArray();
+        var owners = variable
+            .GetPath()
+            .Skip(1)
+            .TakeWhile(i => !i.Current.IsLazy)
+            .OfType<Block>()
+            .ToArray();
+
         if (variable.Info.Owners.Intersect(owners).Any())
         {
             return false;

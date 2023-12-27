@@ -54,7 +54,7 @@ internal sealed class MetadataBuilder(
             })
             .ToDictionary(i =>  i.Name, i => i);
         
-        var globalSetups = setups.Where(i => i.Kind == CompositionKind.Global).ToList();
+        var globalSetups = setups.Where(i => i.Kind == CompositionKind.Global).OrderBy(i => i.Name.ClassName).ToList();
         foreach (var setup in setupMap.Values.Where(i => i.Kind == CompositionKind.Public).OrderBy(i => i.Name))
         {
             var setupsChain = globalSetups

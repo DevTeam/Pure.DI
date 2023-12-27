@@ -59,8 +59,7 @@ internal class VariablesBuilder : IVariablesBuilder
                             }
 
                             var depVariable = GetVariable(currentBlock, map, blockMap, depNode, depInjection, ref transientId, hasCycle);
-                            var isBlockStatement = !variable.Node.IsEnumerable() && !variable.Node.IsAsyncEnumerable() && !variable.Node.IsFactory();
-                            var isBlock = depNode.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock || variable.Node.IsLazy();
+                            var isBlock = depNode.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock || variable.IsLazy;
                             if (isBlock)
                             {
                                 var depBlock = new Block(blockId++, currentStatement, []);
@@ -70,7 +69,7 @@ internal class VariablesBuilder : IVariablesBuilder
                                     blocks.Push(depBlock);
                                 }
 
-                                if (isBlockStatement)
+                                if (!variable.IsLazy)
                                 {
                                     currentBlock.Statements.AddFirst(depBlock);
                                 }
@@ -84,7 +83,7 @@ internal class VariablesBuilder : IVariablesBuilder
                                     stack.Push(depVariable);
                                 }
 
-                                if (isBlockStatement)
+                                if (!variable.IsLazy)
                                 {
                                     currentBlock.Statements.AddFirst(depVariable);
                                 }

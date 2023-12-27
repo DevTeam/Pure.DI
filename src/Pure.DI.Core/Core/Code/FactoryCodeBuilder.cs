@@ -31,8 +31,15 @@ internal class FactoryCodeBuilder(IIdGenerator idGenerator) : ICodeBuilder<DpFac
 
         if (syntaxNode is not BlockSyntax)
         {
-            code.Append($"{ctx.BuildTools.GetDeclaration(variable, true)}{variable.VariableName} = default({variable.InstanceType});");
-            code.Append($"{variable.VariableName} = ");
+            if (variable.Node.Lifetime is Lifetime.Singleton or Lifetime.PerResolve)
+            {
+                code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable, true)}{variable.VariableName} = default({variable.InstanceType});");
+                code.Append($"{variable.VariableName} = ");
+            }
+            else
+            {
+                code.Append($"{ctx.BuildTools.GetDeclaration(variable, true)}{variable.VariableName} = ");
+            }
         }
         else
         {

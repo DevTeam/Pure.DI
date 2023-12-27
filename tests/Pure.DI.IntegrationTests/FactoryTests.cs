@@ -789,6 +789,7 @@ namespace Sample
            {
                private static void SetupComposition()
                {
+                   // FormatCode = On
                    DI.Setup("Composition")
                        .Bind<IDependency2>().As(Lifetime.Singleton).To<Dependency2>()
                        .Bind<IDependency>().To(ctx =>
