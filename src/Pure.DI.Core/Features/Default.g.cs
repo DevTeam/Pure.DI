@@ -33,6 +33,8 @@ namespace Pure.DI
                         ctx.Inject<global::System.Func<TT>>(ctx.Tag, out var func);
                         return new global::System.Lazy<TT>(func, true);
                     })
+#endif                
+#if NETSTANDARD || NET || NETCOREAPP                
                 .Bind<global::System.Lazy<TT, TT1>>()
                     .To(ctx =>
                     {
@@ -40,7 +42,7 @@ namespace Pure.DI
                         ctx.Inject<TT1>(ctx.Tag, out var metadata);
                         return new global::System.Lazy<TT, TT1>(func, metadata, true);
                     })
-#endif              
+#endif
                 // Collections
 #if NETSTANDARD2_1 || NETCOREAPP2_1_OR_GREATER
                 .Bind<global::System.Memory<TT>>()
