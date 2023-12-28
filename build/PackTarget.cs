@@ -54,7 +54,7 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
             throw new InvalidOperationException("Cannot install the project template \"Pure.DI.Templates\".");
         }
         
-        foreach (var framework in new[] {"net8.0", "net48", "net45", "net35", "netstandard1.6", "netstandard2.1"})
+        foreach (var framework in new[] {"net8.0", "net48", "net45", "net35", "net20", "netstandard1.6", "netstandard2.1"})
         {
             var tempDir = GetTempDir();
             exitCode = await new DotNetNew(
@@ -71,7 +71,22 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
             {
                 throw new InvalidOperationException($"Cannot create app for \"{framework}\".");
             }
-            
+
+            if (!framework.Contains('.'))
+            {
+                exitCode = await new DotNetCustom(
+                        "add",
+                        Path.Combine(tempDir),
+                        "package",
+                        "Microsoft.NETFramework.ReferenceAssemblies")
+                    .RunAsync();
+
+                if (exitCode != 0)
+                {
+                    throw new InvalidOperationException($"Cannot add \"Microsoft.NETFramework.ReferenceAssemblies\" package of \"{framework}\".");
+                }
+            }
+
             exitCode = await new DotNetCustom(
                     "add",
                     Path.Combine(tempDir),
