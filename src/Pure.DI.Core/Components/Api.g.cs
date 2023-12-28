@@ -7,7 +7,7 @@ namespace System.Diagnostics.CodeAnalysis
 {
     // ReSharper disable UnusedType.Global
     [global::System.AttributeUsage(global::System.AttributeTargets.Assembly | global::System.AttributeTargets.Class | global::System.AttributeTargets.Constructor | global::System.AttributeTargets.Event | global::System.AttributeTargets.Method | global::System.AttributeTargets.Property | global::System.AttributeTargets.Struct, AllowMultiple = false, Inherited = false)]
-    public sealed class ExcludeFromCodeCoverageAttribute : global::System.Attribute
+    internal sealed class ExcludeFromCodeCoverageAttribute : global::System.Attribute
     {
     }
 }
@@ -16,8 +16,8 @@ namespace System.Diagnostics.CodeAnalysis
 #if NET20
 namespace System
 {
-    public delegate TResult Func<TResult>();
-    public delegate TResult Func<T, TResult>(T arg);
+    internal delegate TResult Func<TResult>();
+    internal delegate TResult Func<T, TResult>(T arg);
 }
 #endif
 
