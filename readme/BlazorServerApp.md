@@ -62,11 +62,11 @@ The [project file](/samples/BlazorServerApp/BlazorServerApp.csproj) looks like t
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.0.0">
+        <PackageReference Include="Pure.DI" Version="2.0.35">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.0.0" />
+        <PackageReference Include="Pure.DI.MS" Version="2.0.35" />
     </ItemGroup>
 
 </Project>
