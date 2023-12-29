@@ -38,7 +38,9 @@ public class Scenario
     {
 // {            
         DI.Setup("Composition")
-            .Bind<IDependency>().Bind<IAdvancedDependency>().To<Dependency>()
+            .Bind<IDependency, IAdvancedDependency>().To<Dependency>()
+            // .Bind<IDependency>().Bind<IAdvancedDependency>().To<Dependency>()
+            // is also allowed
             .Bind<IService>().To<Service>().Root<IService>("Root");
 
         var composition = new Composition();

@@ -947,6 +947,90 @@ namespace Pure.DI
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>API reference to the installation continuation chain.</returns>
         IBinding Bind<T>(params object[] tags);
+        
+        /// <summary>
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// </summary>
+        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
+        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <returns>API reference to the installation continuation chain.</returns>
+        IBinding Bind<T1, T2>(params object[] tags);
+        
+        /// <summary>
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// </summary>
+        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
+        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
+        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <returns>API reference to the installation continuation chain.</returns>
+        IBinding Bind<T1, T2, T3>(params object[] tags);
+        
+        /// <summary>
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// </summary>
+        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
+        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
+        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <returns>API reference to the installation continuation chain.</returns>
+        IBinding Bind<T1, T2, T3, T4>(params object[] tags);
+        
+        /// <summary>
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// </summary>
+        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
+        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
+        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <returns>API reference to the installation continuation chain.</returns>
+        IBinding Bind<T1, T2, T3, T4, T5>(params object[] tags);
+        
+        /// <summary>
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// </summary>
+        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
+        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
+        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
+        /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam> 
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <returns>API reference to the installation continuation chain.</returns>
+        IBinding Bind<T1, T2, T3, T4, T5, T6>(params object[] tags);
+        
+        /// <summary>
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// </summary>
+        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
+        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
+        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
+        /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam>
+        /// <typeparam name="T7">The type 7 of dependency to be bound.</typeparam>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <returns>API reference to the installation continuation chain.</returns>
+        IBinding Bind<T1, T2, T3, T4, T5, T6, T7>(params object[] tags);
+        
+        /// <summary>
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// </summary>
+        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
+        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
+        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
+        /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam>
+        /// <typeparam name="T7">The type 7 of dependency to be bound.</typeparam>
+        /// <typeparam name="T8">The type 8 of dependency to be bound.</typeparam>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <returns>API reference to the installation continuation chain.</returns>
+        IBinding Bind<T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags);
 
         /// <summary>
         /// Indicates the use of some single or multiple setups as base setups by name.
@@ -1094,6 +1178,90 @@ namespace Pure.DI
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>API reference to the installation continuation chain.</returns>
         IBinding Bind<T>(params object[] tags);
+        
+        /// <summary>
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// </summary>
+        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
+        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <returns>API reference to the installation continuation chain.</returns>
+        IBinding Bind<T1, T2>(params object[] tags);
+        
+        /// <summary>
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// </summary>
+        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
+        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
+        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <returns>API reference to the installation continuation chain.</returns>
+        IBinding Bind<T1, T2, T3>(params object[] tags);
+        
+        /// <summary>
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// </summary>
+        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
+        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
+        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <returns>API reference to the installation continuation chain.</returns>
+        IBinding Bind<T1, T2, T3, T4>(params object[] tags);
+        
+        /// <summary>
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// </summary>
+        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
+        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
+        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <returns>API reference to the installation continuation chain.</returns>
+        IBinding Bind<T1, T2, T3, T4, T5>(params object[] tags);
+        
+        /// <summary>
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// </summary>
+        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
+        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
+        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
+        /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam> 
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <returns>API reference to the installation continuation chain.</returns>
+        IBinding Bind<T1, T2, T3, T4, T5, T6>(params object[] tags);
+        
+        /// <summary>
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// </summary>
+        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
+        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
+        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
+        /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam>
+        /// <typeparam name="T7">The type 7 of dependency to be bound.</typeparam>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <returns>API reference to the installation continuation chain.</returns>
+        IBinding Bind<T1, T2, T3, T4, T5, T6, T7>(params object[] tags);
+        
+        /// <summary>
+        /// Begins binding definition for multiple dependencies. See <see cref="Bind{T}"/> for examples.
+        /// </summary>
+        /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
+        /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
+        /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
+        /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam>
+        /// <typeparam name="T7">The type 7 of dependency to be bound.</typeparam>
+        /// <typeparam name="T8">The type 8 of dependency to be bound.</typeparam>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <returns>API reference to the installation continuation chain.</returns>
+        IBinding Bind<T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags);
 
         /// <summary>
         /// Determines the <see cref="Lifetime"/> of a binding.
@@ -1361,6 +1529,55 @@ namespace Pure.DI
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
+            public IBinding Bind<T1, T2>(params object[] tags)
+            {
+                return Binding.Shared;
+            }
+
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
+            public IBinding Bind<T1, T2, T3>(params object[] tags)
+            {
+                return Binding.Shared;
+            }
+
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
+            public IBinding Bind<T1, T2, T3, T4>(params object[] tags)
+            {
+                return Binding.Shared;
+            }
+            
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
+            public IBinding Bind<T1, T2, T3, T4, T5>(params object[] tags)
+            {
+                return Binding.Shared;
+            }
+
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
+            public IBinding Bind<T1, T2, T3, T4, T5, T6>(params object[] tags)
+            {
+                return Binding.Shared;
+            }
+
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
+            public IBinding Bind<T1, T2, T3, T4, T5, T6, T7>(params object[] tags)
+            {
+                return Binding.Shared;
+            }
+
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
+            public IBinding Bind<T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags)
+            {
+                return Binding.Shared;
+            }
+
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration DependsOn(params string[] setupNames)
             {
                 return Configuration.Shared;
@@ -1432,6 +1649,55 @@ namespace Pure.DI
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T>(params object[] tags)
+            {
+                return Shared;
+            }
+
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
+            public IBinding Bind<T1, T2>(params object[] tags)
+            {
+                return Shared;
+            }
+
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
+            public IBinding Bind<T1, T2, T3>(params object[] tags)
+            {
+                return Shared;
+            }
+
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
+            public IBinding Bind<T1, T2, T3, T4>(params object[] tags)
+            {
+                return Shared;
+            }
+
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
+            public IBinding Bind<T1, T2, T3, T4, T5>(params object[] tags)
+            {
+                return Shared;
+            }
+
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
+            public IBinding Bind<T1, T2, T3, T4, T5, T6>(params object[] tags)
+            {
+                return Shared;
+            }
+
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
+            public IBinding Bind<T1, T2, T3, T4, T5, T6, T7>(params object[] tags)
+            {
+                return Shared;
+            }
+
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
+            public IBinding Bind<T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags)
             {
                 return Shared;
             }

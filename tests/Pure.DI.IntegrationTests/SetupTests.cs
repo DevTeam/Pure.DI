@@ -600,7 +600,7 @@ internal interface IDependency { }
     }
     
     [Fact]
-    public async Task ShouldSupportMultRoots()
+    public async Task ShouldSupportFewRoots()
     {
         // Given
 
@@ -1209,5 +1209,62 @@ namespace Sample
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(ImmutableArray.Create("Abc"), result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportFewBindings()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+       internal interface IDependency { }
+       
+           internal class Dependency : IDependency { }
+       
+           internal interface IService1 { }
+       
+           internal interface IService2 { }
+       
+           internal interface IService3 { }
+       
+           internal class Service : IService1, IService2, IService3
+           {
+               public Service(IDependency dependency)
+               {
+               }
+           }
+       
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .Bind<IDependency>().To<Dependency>()
+                       .Bind<IService1, IService2, IService3>().To<Service>()
+                       .Root<IService2>("Service2")
+                       .Root<IService3>("Service3");
+               }
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   var composition = new Composition();
+                   IService2 service2 = composition.Service2;
+                   IService3 service3 = composition.Service3;
+               }
+           }
+       }
+       """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
     }
 }

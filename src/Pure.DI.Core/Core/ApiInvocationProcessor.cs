@@ -144,14 +144,17 @@ internal class ApiInvocationProcessor(CancellationToken cancellationToken)
                 switch (genericName.Identifier.Text)
                 {
                     case nameof(IConfiguration.Bind):
-                        if (genericName.TypeArgumentList.Arguments is [{ } contractType])
+                        if (genericName.TypeArgumentList.Arguments is var contractTypes)
                         {
-                            metadataVisitor.VisitContract(
-                                new MdContract(
-                                    semanticModel,
-                                    invocation.ArgumentList,
-                                    semanticModel.GetTypeSymbol<ITypeSymbol>(contractType, cancellationToken),
-                                    BuildTags(semanticModel, invocation.ArgumentList.Arguments).ToImmutable()));
+                            foreach (var contractType in contractTypes)
+                            {
+                                metadataVisitor.VisitContract(
+                                    new MdContract(
+                                        semanticModel,
+                                        invocation.ArgumentList,
+                                        semanticModel.GetTypeSymbol<ITypeSymbol>(contractType, cancellationToken),
+                                        BuildTags(semanticModel, invocation.ArgumentList.Arguments).ToImmutable()));   
+                            }
                         }
 
                         break;
