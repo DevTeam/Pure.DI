@@ -64,8 +64,6 @@ public class Scenario
     [Fact]
     public void Run()
     {
-        // ToString = On
-        // FormatCode = On
 // {            
         DI.Setup("PersonComposition")
             .TagAttribute<MyTagAttribute>()
