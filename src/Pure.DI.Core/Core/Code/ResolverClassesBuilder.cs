@@ -147,6 +147,6 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
     {
         var target = (root.Kind & RootKinds.Static) == RootKinds.Static ? composition.Source.Source.Name.ClassName : "composition";
         var isMethod = !root.Args.IsEmpty || (root.Kind & RootKinds.Method) == RootKinds.Method;
-        return $"{target}.{root.PropertyName}{(isMethod ? "()": "")};";
+        return $"{target}.{root.PropertyName}{(isMethod ? "()": "")}";
     }
 }

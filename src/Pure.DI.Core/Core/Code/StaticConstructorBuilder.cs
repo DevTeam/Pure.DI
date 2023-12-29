@@ -23,6 +23,7 @@ internal sealed class StaticConstructorBuilder(IBuilder<ImmutableArray<Root>, IE
         if (hasOnNewRoot && composition.Source.Source.Hints.GetHint(Hint.OnNewRootPartial, SettingState.On) == SettingState.On)
         {
             code.AppendLine($"private static partial void {Names.OnNewRootMethodName}<TContract, T>({Names.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, TContract> resolver, string name, object? tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
+            code.AppendLine();
             membersCounter++;
         }
 
@@ -32,7 +33,6 @@ internal sealed class StaticConstructorBuilder(IBuilder<ImmutableArray<Root>, IE
             return composition;
         }
         
-        code.AppendLine();
         code.AppendLine($"static {composition.Source.Source.Name.ClassName}()");
         code.AppendLine("{");
         using (code.Indent())
