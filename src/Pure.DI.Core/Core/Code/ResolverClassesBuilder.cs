@@ -101,7 +101,6 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
     private static void ImplementInterface(CompositionCode composition, ResolverInfo resolver, LinesBuilder code)
     {
         var defaultRoot = resolver.Roots.SingleOrDefault(i => i.Injection.Tag is null);
-
         code.AppendLine($"public {resolver.Type} {Names.ResolveMethodName}({composition.Source.Source.Name.ClassName} composition)");
         code.AppendLine("{");
         using (code.Indent())
@@ -126,21 +125,57 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
         code.AppendLine("{");
         using (code.Indent())
         {
-            var taggedRoots = resolver.Roots.Where(i => i.Injection.Tag is not null).ToArray();
-            foreach (var taggedRoot in taggedRoots)
+            var taggedRoots = resolver.Roots;
+            foreach (var taggedRoot in taggedRoots.Where(i => !CanBeUsedInSwitch(i)))
             {
                 code.AppendLine($"if (Equals(tag, {taggedRoot.Injection.Tag.ValueToString()})) return {GetRoot(composition, taggedRoot)};");
             }
-
-            if (defaultRoot is not null)
+            
+            code.AppendLine("switch (tag)");
+            code.AppendLine("{");
+            using (code.Indent())
             {
-                code.AppendLine($"if (Equals(tag, null)) return {GetRoot(composition, defaultRoot)};");
+                foreach (var taggedRoot in taggedRoots.Where(CanBeUsedInSwitch).OrderBy(i => i.Injection.Tag is null))
+                {
+                    code.AppendLine($"case {taggedRoot.Injection.Tag.ValueToString()}:");
+                    using (code.Indent())
+                    {
+                        code.AppendLine($"return {GetRoot(composition, taggedRoot)};");
+                    }
+                }
             }
-
+            
+            code.AppendLine("}");
             code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{Names.CannotResolve} \\\"{{tag}}\\\" of type {resolver.Type}.\");");
         }
 
         code.AppendLine("}");
+    }
+
+    [SuppressMessage("ReSharper", "ConvertIfStatementToReturnStatement")]
+    private static bool CanBeUsedInSwitch(Root root)
+    {
+        if (root.Injection.Tag?.GetType() is not { } tagType)
+        {
+            return true;
+        }
+        
+        if (tagType.IsPrimitive)
+        {
+            return true;
+        }
+
+        if (tagType.IsEnum)
+        {
+            return true;
+        }
+
+        if (tagType == typeof(string))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private static string GetRoot(CompositionCode composition, Root root)
