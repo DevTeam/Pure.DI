@@ -46,8 +46,8 @@ service.Dependency.ShouldBe(dependency);
 ```mermaid
 classDiagram
   class ServiceProvider {
-    -IDependency RootM12D29di0001
-    -IService RootM12D29di0002
+    -IDependency RootM12D30di0001
+    -IService RootM12D30di0002
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object GetService(Type type)
@@ -68,8 +68,8 @@ classDiagram
     <<abstract>>
   }
   Service o--  "Singleton" Dependency : IDependency
-  ServiceProvider ..> Dependency : IDependency RootM12D29di0001
-  ServiceProvider ..> Service : IService RootM12D29di0002
+  ServiceProvider ..> Dependency : IDependency RootM12D30di0001
+  ServiceProvider ..> Service : IService RootM12D30di0002
 ```
 
 </details>
@@ -81,7 +81,7 @@ classDiagram
 partial class ServiceProvider
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM12D30di;
-  private Pure.DI.UsageTests.BCL.ServiceProviderScenario.Dependency _singletonM12D30di21;
+  private Pure.DI.UsageTests.BCL.ServiceProviderScenario.Dependency _singletonM12D30di21_Dependency;
   
   public ServiceProvider()
   {
@@ -93,7 +93,7 @@ partial class ServiceProvider
     _disposableSingletonsM12D30di = new global::System.IDisposable[0];
     lock (parent._disposableSingletonsM12D30di)
     {
-      _singletonM12D30di21 = parent._singletonM12D30di21;
+      _singletonM12D30di21_Dependency = parent._singletonM12D30di21_Dependency;
     }
   }
   
@@ -105,11 +105,11 @@ partial class ServiceProvider
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM12D30di21, null))
+      if (object.ReferenceEquals(_singletonM12D30di21_Dependency, null))
       {
-          _singletonM12D30di21 = new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Dependency();
+          _singletonM12D30di21_Dependency = new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Dependency();
       }
-      return _singletonM12D30di21;
+      return _singletonM12D30di21_Dependency;
     }
   }
   
@@ -120,11 +120,11 @@ partial class ServiceProvider
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM12D30di21, null))
+      if (object.ReferenceEquals(_singletonM12D30di21_Dependency, null))
       {
-          _singletonM12D30di21 = new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Dependency();
+          _singletonM12D30di21_Dependency = new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Dependency();
       }
-      return new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Service(_singletonM12D30di21);
+      return new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Service(_singletonM12D30di21_Dependency);
     }
   }
   #endregion

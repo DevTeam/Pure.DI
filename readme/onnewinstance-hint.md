@@ -93,7 +93,7 @@ classDiagram
 partial class Composition
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM12D30di;
-  private Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency _singletonM12D30di21;
+  private Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency _singletonM12D30di21_Dependency;
   
   public Composition()
   {
@@ -105,7 +105,7 @@ partial class Composition
     _disposableSingletonsM12D30di = new global::System.IDisposable[0];
     lock (parent._disposableSingletonsM12D30di)
     {
-      _singletonM12D30di21 = parent._singletonM12D30di21;
+      _singletonM12D30di21_Dependency = parent._singletonM12D30di21_Dependency;
     }
   }
   
@@ -117,14 +117,14 @@ partial class Composition
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM12D30di21, null))
+      if (object.ReferenceEquals(_singletonM12D30di21_Dependency, null))
       {
-          _singletonM12D30di21 = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency();
-          OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency>(ref _singletonM12D30di21, null, Pure.DI.Lifetime.Singleton);
+          _singletonM12D30di21_Dependency = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency();
+          OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency>(ref _singletonM12D30di21_Dependency, null, Pure.DI.Lifetime.Singleton);
       }
-      var transientM12D30di0 = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service(_singletonM12D30di21);
-      OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service>(ref transientM12D30di0, null, Pure.DI.Lifetime.Transient);
-      return transientM12D30di0;
+      var transientM12D30di0_Service = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service(_singletonM12D30di21_Dependency);
+      OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service>(ref transientM12D30di0_Service, null, Pure.DI.Lifetime.Transient);
+      return transientM12D30di0_Service;
     }
   }
   #endregion

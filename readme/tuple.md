@@ -94,8 +94,8 @@ partial class Composition
     #endif
     get
     {
-      Pure.DI.UsageTests.BCL.TupleScenario.Point transientM12D30di2 = new Point(7, 9);
-      return new Pure.DI.UsageTests.BCL.TupleScenario.Service((transientM12D30di2, new Pure.DI.UsageTests.BCL.TupleScenario.Dependency()));
+      Pure.DI.UsageTests.BCL.TupleScenario.Point transientM12D30di2_Point = new Point(7, 9);
+      return new Pure.DI.UsageTests.BCL.TupleScenario.Service((transientM12D30di2_Point, new Pure.DI.UsageTests.BCL.TupleScenario.Dependency()));
     }
   }
   #endregion

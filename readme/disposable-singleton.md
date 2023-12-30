@@ -82,7 +82,7 @@ partial class Composition: global::System.IDisposable
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM12D30di;
   private int _disposeIndexM12D30di;
-  private Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Dependency _singletonM12D30di21;
+  private Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Dependency _singletonM12D30di21_Dependency;
   
   public Composition()
   {
@@ -94,7 +94,7 @@ partial class Composition: global::System.IDisposable
     lock (parent._disposableSingletonsM12D30di)
     {
       _disposableSingletonsM12D30di = new global::System.IDisposable[1 - parent._disposeIndexM12D30di];
-      _singletonM12D30di21 = parent._singletonM12D30di21;
+      _singletonM12D30di21_Dependency = parent._singletonM12D30di21_Dependency;
     }
   }
   
@@ -106,12 +106,12 @@ partial class Composition: global::System.IDisposable
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM12D30di21, null))
+      if (object.ReferenceEquals(_singletonM12D30di21_Dependency, null))
       {
-          _singletonM12D30di21 = new Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Dependency();
-          _disposableSingletonsM12D30di[_disposeIndexM12D30di++] = _singletonM12D30di21;
+          _singletonM12D30di21_Dependency = new Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Dependency();
+          _disposableSingletonsM12D30di[_disposeIndexM12D30di++] = _singletonM12D30di21_Dependency;
       }
-      return new Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service(_singletonM12D30di21);
+      return new Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service(_singletonM12D30di21_Dependency);
     }
   }
   #endregion
@@ -187,7 +187,7 @@ partial class Composition: global::System.IDisposable
         }
       }
       
-      _singletonM12D30di21 = null;
+      _singletonM12D30di21_Dependency = null;
     }
   }
   

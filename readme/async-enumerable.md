@@ -108,13 +108,13 @@ partial class Composition
     get
     {
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x200)]
-      async System.Collections.Generic.IAsyncEnumerable<Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.IDependency> LocalFunc_transientM12D30di1()
+      async System.Collections.Generic.IAsyncEnumerable<Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.IDependency> LocalFunc_transientM12D30di1_IAsyncEnumerable()
       {
           yield return new Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.AbcDependency();
           yield return new Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.XyzDependency();
       }
-      var transientM12D30di1 = LocalFunc_transientM12D30di1();
-      return new Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.Service(transientM12D30di1);
+      var transientM12D30di1_IAsyncEnumerable = LocalFunc_transientM12D30di1_IAsyncEnumerable();
+      return new Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.Service(transientM12D30di1_IAsyncEnumerable);
     }
   }
   #endregion

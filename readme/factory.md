@@ -102,13 +102,13 @@ partial class Composition
     #endif
     get
     {
-      Pure.DI.UsageTests.Basics.FactoryScenario.Dependency transientM12D30di1;
+      Pure.DI.UsageTests.Basics.FactoryScenario.Dependency transientM12D30di1_Dependency;
       {
-          var localM12D30di1 = new Dependency(DateTimeOffset.Now);
-          localM12D30di1.Initialize();
-          transientM12D30di1 = localM12D30di1;
+          var localM12D30di1_dependency = new Dependency(DateTimeOffset.Now);
+          localM12D30di1_dependency.Initialize();
+          transientM12D30di1_Dependency = localM12D30di1_dependency;
       }
-      return new Pure.DI.UsageTests.Basics.FactoryScenario.Service(transientM12D30di1);
+      return new Pure.DI.UsageTests.Basics.FactoryScenario.Service(transientM12D30di1_Dependency);
     }
   }
   #endregion

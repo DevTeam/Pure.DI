@@ -99,13 +99,13 @@ partial class Composition
     get
     {
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x200)]
-      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableScenario.IDependency> LocalFunc_perBlockM12D30di1()
+      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableScenario.IDependency> LocalFunc_perBlockM12D30di1_IEnumerable()
       {
           yield return new Pure.DI.UsageTests.BCL.EnumerableScenario.AbcDependency();
           yield return new Pure.DI.UsageTests.BCL.EnumerableScenario.XyzDependency();
       }
-      var perBlockM12D30di1 = LocalFunc_perBlockM12D30di1();
-      return new Pure.DI.UsageTests.BCL.EnumerableScenario.Service(perBlockM12D30di1);
+      var perBlockM12D30di1_IEnumerable = LocalFunc_perBlockM12D30di1_IEnumerable();
+      return new Pure.DI.UsageTests.BCL.EnumerableScenario.Service(perBlockM12D30di1_IEnumerable);
     }
   }
   #endregion

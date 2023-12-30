@@ -100,7 +100,7 @@ classDiagram
 partial class Composition
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM12D30di;
-  private Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency _singletonM12D30di22;
+  private Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency _singletonM12D30di22_XyzDependency;
   
   public Composition()
   {
@@ -112,7 +112,7 @@ partial class Composition
     _disposableSingletonsM12D30di = new global::System.IDisposable[0];
     lock (parent._disposableSingletonsM12D30di)
     {
-      _singletonM12D30di22 = parent._singletonM12D30di22;
+      _singletonM12D30di22_XyzDependency = parent._singletonM12D30di22_XyzDependency;
     }
   }
   
@@ -124,11 +124,11 @@ partial class Composition
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM12D30di22, null))
+      if (object.ReferenceEquals(_singletonM12D30di22_XyzDependency, null))
       {
-          _singletonM12D30di22 = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
+          _singletonM12D30di22_XyzDependency = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
       }
-      return _singletonM12D30di22;
+      return _singletonM12D30di22_XyzDependency;
     }
   }
   
@@ -139,11 +139,11 @@ partial class Composition
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM12D30di22, null))
+      if (object.ReferenceEquals(_singletonM12D30di22_XyzDependency, null))
       {
-          _singletonM12D30di22 = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
+          _singletonM12D30di22_XyzDependency = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
       }
-      return new Pure.DI.UsageTests.Basics.TagsScenario.Service(new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency(), _singletonM12D30di22, new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency());
+      return new Pure.DI.UsageTests.Basics.TagsScenario.Service(new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency(), _singletonM12D30di22_XyzDependency, new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency());
     }
   }
   #endregion

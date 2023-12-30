@@ -90,13 +90,13 @@ partial class Composition
     #endif
     get
     {
-      Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.IDependency[] transientM12D30di1 = new IDependency[]
+      Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.IDependency[] transientM12D30di1_ = new IDependency[]
       {
           new AbcDependency(),
           new XyzDependency(),
           new AbcDependency()
       };
-      return new Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.Service(transientM12D30di1);
+      return new Pure.DI.UsageTests.BCL.OverridingBclBindingScenario.Service(transientM12D30di1_);
     }
   }
   #endregion

@@ -88,9 +88,9 @@ partial class Composition
     #endif
     get
     {
-      var transientM12D30di0 = new Pure.DI.UsageTests.Basics.PropertyInjectionScenario.Service();
-      transientM12D30di0.Dependency = new Pure.DI.UsageTests.Basics.PropertyInjectionScenario.Dependency();
-      return transientM12D30di0;
+      var transientM12D30di0_Service = new Pure.DI.UsageTests.Basics.PropertyInjectionScenario.Service();
+      transientM12D30di0_Service.Dependency = new Pure.DI.UsageTests.Basics.PropertyInjectionScenario.Dependency();
+      return transientM12D30di0_Service;
     }
   }
   #endregion

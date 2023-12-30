@@ -79,7 +79,7 @@ classDiagram
 partial class Composition
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM12D30di;
-  private readonly string _argM12D30diname;
+  private readonly string _argM12D30di_name;
   
   public Composition(string name)
   {
@@ -88,14 +88,14 @@ partial class Composition
       throw new global::System.ArgumentNullException("name");
     }
     
-    _argM12D30diname = name;
+    _argM12D30di_name = name;
     _disposableSingletonsM12D30di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
     _disposableSingletonsM12D30di = new global::System.IDisposable[0];
-    _argM12D30diname = parent._argM12D30diname;
+    _argM12D30di_name = parent._argM12D30di_name;
   }
   
   #region Composition Roots
@@ -108,7 +108,7 @@ partial class Composition
     {
       return new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Service()
       {
-          ServiceNameField = _argM12D30diname,
+          ServiceNameField = _argM12D30di_name,
           Dependency = new Pure.DI.UsageTests.Basics.RequiredPropertiesOrFieldsScenario.Dependency()
       };
     }

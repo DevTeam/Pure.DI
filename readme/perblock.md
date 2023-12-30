@@ -105,18 +105,17 @@ partial class Composition
     #endif
     get
     {
-      var perResolveM12D30di23 = default(System.Func<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency>);
-      perResolveM12D30di23 = default(System.Func<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency>);
-      perResolveM12D30di23 = new global::System.Func<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency>(
+      var perResolveM12D30di23_Func = default(System.Func<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency>);
+      perResolveM12D30di23_Func = new global::System.Func<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency>(
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
       () =>
       {
-          var perBlockM12D30di2 = new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency();
-          var localM12D30di1 = perBlockM12D30di2;
-          return localM12D30di1;
+          var perBlockM12D30di2_Dependency = new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency();
+          var localM12D30di1_value = perBlockM12D30di2_Dependency;
+          return localM12D30di1_value;
       });
-      var perBlockM12D30di1 = new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency();
-      return new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service(perBlockM12D30di1, perBlockM12D30di1, perResolveM12D30di23);
+      var perBlockM12D30di1_Dependency = new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency();
+      return new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service(perBlockM12D30di1_Dependency, perBlockM12D30di1_Dependency, perResolveM12D30di23_Func);
     }
   }
   #endregion

@@ -125,7 +125,7 @@ partial class Composition: global::System.IDisposable
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM12D30di;
   private int _disposeIndexM12D30di;
-  private Pure.DI.UsageTests.Lifetimes.ScopeScenario.Dependency _singletonM12D30di21;
+  private Pure.DI.UsageTests.Lifetimes.ScopeScenario.Dependency _singletonM12D30di21_Dependency;
   
   public Composition()
   {
@@ -137,7 +137,7 @@ partial class Composition: global::System.IDisposable
     lock (parent._disposableSingletonsM12D30di)
     {
       _disposableSingletonsM12D30di = new global::System.IDisposable[1 - parent._disposeIndexM12D30di];
-      _singletonM12D30di21 = parent._singletonM12D30di21;
+      _singletonM12D30di21_Dependency = parent._singletonM12D30di21_Dependency;
     }
   }
   
@@ -149,12 +149,12 @@ partial class Composition: global::System.IDisposable
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM12D30di21, null))
+      if (object.ReferenceEquals(_singletonM12D30di21_Dependency, null))
       {
-          _singletonM12D30di21 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Dependency();
-          _disposableSingletonsM12D30di[_disposeIndexM12D30di++] = _singletonM12D30di21;
+          _singletonM12D30di21_Dependency = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Dependency();
+          _disposableSingletonsM12D30di[_disposeIndexM12D30di++] = _singletonM12D30di21_Dependency;
       }
-      return new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service(_singletonM12D30di21);
+      return new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service(_singletonM12D30di21_Dependency);
     }
   }
   
@@ -165,8 +165,8 @@ partial class Composition: global::System.IDisposable
     #endif
     get
     {
-      var transientM12D30di1 = this;
-      return new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session(transientM12D30di1);
+      var transientM12D30di1_Composition = this;
+      return new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session(transientM12D30di1_Composition);
     }
   }
   #endregion
@@ -242,7 +242,7 @@ partial class Composition: global::System.IDisposable
         }
       }
       
-      _singletonM12D30di21 = null;
+      _singletonM12D30di21_Dependency = null;
     }
   }
   

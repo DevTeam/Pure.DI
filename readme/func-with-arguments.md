@@ -111,7 +111,7 @@ classDiagram
 partial class Composition
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM12D30di;
-  private Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock _singletonM12D30di21;
+  private Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock _singletonM12D30di21_Clock;
   
   public Composition()
   {
@@ -123,7 +123,7 @@ partial class Composition
     _disposableSingletonsM12D30di = new global::System.IDisposable[0];
     lock (parent._disposableSingletonsM12D30di)
     {
-      _singletonM12D30di21 = parent._singletonM12D30di21;
+      _singletonM12D30di21_Clock = parent._singletonM12D30di21_Clock;
     }
   }
   
@@ -135,17 +135,17 @@ partial class Composition
     #endif
     get
     {
-      System.Func<int, Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.IDependency> transientM12D30di1 = dependencyId =>
+      System.Func<int, Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.IDependency> transientM12D30di1_Func = dependencyId =>
       {
-          int transientM12D30di3 = dependencyId;
-          if (object.ReferenceEquals(_singletonM12D30di21, null))
+          int transientM12D30di3_Int32 = dependencyId;
+          if (object.ReferenceEquals(_singletonM12D30di21_Clock, null))
           {
-              _singletonM12D30di21 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock();
+              _singletonM12D30di21_Clock = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock();
           }
-          var localM12D30di1 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Dependency(_singletonM12D30di21, transientM12D30di3);
-          return localM12D30di1;
+          var localM12D30di1_dependency = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Dependency(_singletonM12D30di21_Clock, transientM12D30di3_Int32);
+          return localM12D30di1_dependency;
       };
-      return new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Service(transientM12D30di1);
+      return new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Service(transientM12D30di1_Func);
     }
   }
   #endregion

@@ -97,18 +97,18 @@ classDiagram
 partial class PersonComposition
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM12D30di;
-  private readonly int _argM12D30dipersonId;
+  private readonly int _argM12D30di_personId;
   
   public PersonComposition(int personId)
   {
-    _argM12D30dipersonId = personId;
+    _argM12D30di_personId = personId;
     _disposableSingletonsM12D30di = new global::System.IDisposable[0];
   }
   
   internal PersonComposition(PersonComposition parent)
   {
     _disposableSingletonsM12D30di = new global::System.IDisposable[0];
-    _argM12D30dipersonId = parent._argM12D30dipersonId;
+    _argM12D30di_personId = parent._argM12D30di_personId;
   }
   
   #region Composition Roots
@@ -119,10 +119,10 @@ partial class PersonComposition
     #endif
     get
     {
-      string transientM12D30di1 = "Nik";
-      var transientM12D30di0 = new Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person(transientM12D30di1);
-      transientM12D30di0.Id = _argM12D30dipersonId;
-      return transientM12D30di0;
+      string transientM12D30di1_String = "Nik";
+      var transientM12D30di0_Person = new Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person(transientM12D30di1_String);
+      transientM12D30di0_Person.Id = _argM12D30di_personId;
+      return transientM12D30di0_Person;
     }
   }
   #endregion

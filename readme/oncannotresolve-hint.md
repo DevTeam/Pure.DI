@@ -113,8 +113,8 @@ partial class Composition
     #endif
     get
     {
-      var transientM12D30di2 = OnCannotResolve<string>(null, Pure.DI.Lifetime.Transient);
-      return new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service(new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency(transientM12D30di2));
+      var transientM12D30di2_String = OnCannotResolve<string>(null, Pure.DI.Lifetime.Transient);
+      return new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service(new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency(transientM12D30di2_String));
     }
   }
   #endregion

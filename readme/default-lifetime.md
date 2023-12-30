@@ -78,8 +78,8 @@ classDiagram
 partial class Composition
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM12D30di;
-  private Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Service _singletonM12D30di22;
-  private Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Dependency _singletonM12D30di21;
+  private Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Service _singletonM12D30di22_Service;
+  private Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Dependency _singletonM12D30di21_Dependency;
   
   public Composition()
   {
@@ -91,8 +91,8 @@ partial class Composition
     _disposableSingletonsM12D30di = new global::System.IDisposable[0];
     lock (parent._disposableSingletonsM12D30di)
     {
-      _singletonM12D30di22 = parent._singletonM12D30di22;
-      _singletonM12D30di21 = parent._singletonM12D30di21;
+      _singletonM12D30di22_Service = parent._singletonM12D30di22_Service;
+      _singletonM12D30di21_Dependency = parent._singletonM12D30di21_Dependency;
     }
   }
   
@@ -104,15 +104,15 @@ partial class Composition
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM12D30di22, null))
+      if (object.ReferenceEquals(_singletonM12D30di22_Service, null))
       {
-          if (object.ReferenceEquals(_singletonM12D30di21, null))
+          if (object.ReferenceEquals(_singletonM12D30di21_Dependency, null))
           {
-              _singletonM12D30di21 = new Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Dependency();
+              _singletonM12D30di21_Dependency = new Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Dependency();
           }
-          _singletonM12D30di22 = new Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Service(_singletonM12D30di21, _singletonM12D30di21);
+          _singletonM12D30di22_Service = new Pure.DI.UsageTests.Lifetimes.DefaultLifetimeScenario.Service(_singletonM12D30di21_Dependency, _singletonM12D30di21_Dependency);
       }
-      return _singletonM12D30di22;
+      return _singletonM12D30di22_Service;
     }
   }
   #endregion

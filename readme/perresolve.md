@@ -96,12 +96,12 @@ partial class Composition
     #endif
     get
     {
-      var perResolveM12D30di21 = default(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency);
-      if (object.ReferenceEquals(perResolveM12D30di21, null))
+      var perResolveM12D30di21_Dependency = default(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency);
+      if (object.ReferenceEquals(perResolveM12D30di21_Dependency, null))
       {
-          perResolveM12D30di21 = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency();
+          perResolveM12D30di21_Dependency = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency();
       }
-      return new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service(perResolveM12D30di21, perResolveM12D30di21);
+      return new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service(perResolveM12D30di21_Dependency, perResolveM12D30di21_Dependency);
     }
   }
   #endregion

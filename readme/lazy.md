@@ -88,21 +88,20 @@ partial class Composition
     #endif
     get
     {
-      var perResolveM12D30di24 = default(System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>);
-      perResolveM12D30di24 = default(System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>);
-      perResolveM12D30di24 = new global::System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(
+      var perResolveM12D30di24_Func = default(System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>);
+      perResolveM12D30di24_Func = new global::System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
       () =>
       {
-          var localM12D30di1 = new Pure.DI.UsageTests.BCL.LazyScenario.Dependency();
-          return localM12D30di1;
+          var localM12D30di1_value = new Pure.DI.UsageTests.BCL.LazyScenario.Dependency();
+          return localM12D30di1_value;
       });
-      System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> transientM12D30di1;
+      System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> transientM12D30di1_Lazy;
       {
-          var localM12D30di2 = perResolveM12D30di24;
-          transientM12D30di1 = new global::System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(localM12D30di2, true);
+          var localM12D30di2_func = perResolveM12D30di24_Func;
+          transientM12D30di1_Lazy = new global::System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(localM12D30di2_func, true);
       }
-      return new Pure.DI.UsageTests.BCL.LazyScenario.Service(transientM12D30di1);
+      return new Pure.DI.UsageTests.BCL.LazyScenario.Service(transientM12D30di1_Lazy);
     }
   }
   #endregion

@@ -92,8 +92,8 @@ partial class Composition
     #endif
     get
     {
-      var transientM12D30di1 = "My Service";
-      return new Pure.DI.UsageTests.Basics.DefaultValuesScenario.Service(transientM12D30di1)
+      var transientM12D30di1_String = "My Service";
+      return new Pure.DI.UsageTests.Basics.DefaultValuesScenario.Service(transientM12D30di1_String)
       {
           Dependency = new Pure.DI.UsageTests.Basics.DefaultValuesScenario.Dependency()
       };

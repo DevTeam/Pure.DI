@@ -96,9 +96,9 @@ classDiagram
 partial class PersonComposition
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM12D30di;
-  private readonly int _argM12D30dipersonId;
-  private readonly string _argM12D30dipersonName;
-  private readonly System.DateTime _argM12D30dipersonBirthday;
+  private readonly int _argM12D30di_personId;
+  private readonly string _argM12D30di_personName;
+  private readonly System.DateTime _argM12D30di_personBirthday;
   
   public PersonComposition(int personId, string personName, System.DateTime personBirthday)
   {
@@ -107,18 +107,18 @@ partial class PersonComposition
       throw new global::System.ArgumentNullException("personName");
     }
     
-    _argM12D30dipersonId = personId;
-    _argM12D30dipersonName = personName;
-    _argM12D30dipersonBirthday = personBirthday;
+    _argM12D30di_personId = personId;
+    _argM12D30di_personName = personName;
+    _argM12D30di_personBirthday = personBirthday;
     _disposableSingletonsM12D30di = new global::System.IDisposable[0];
   }
   
   internal PersonComposition(PersonComposition parent)
   {
     _disposableSingletonsM12D30di = new global::System.IDisposable[0];
-    _argM12D30dipersonId = parent._argM12D30dipersonId;
-    _argM12D30dipersonName = parent._argM12D30dipersonName;
-    _argM12D30dipersonBirthday = parent._argM12D30dipersonBirthday;
+    _argM12D30di_personId = parent._argM12D30di_personId;
+    _argM12D30di_personName = parent._argM12D30di_personName;
+    _argM12D30di_personBirthday = parent._argM12D30di_personBirthday;
   }
   
   #region Composition Roots
@@ -129,11 +129,11 @@ partial class PersonComposition
     #endif
     get
     {
-      var transientM12D30di0 = new Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person();
-      transientM12D30di0.Id = _argM12D30dipersonId;
-      transientM12D30di0.FirstName = _argM12D30dipersonName;
-      transientM12D30di0.Birthday = _argM12D30dipersonBirthday;
-      return transientM12D30di0;
+      var transientM12D30di0_Person = new Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person();
+      transientM12D30di0_Person.Id = _argM12D30di_personId;
+      transientM12D30di0_Person.FirstName = _argM12D30di_personName;
+      transientM12D30di0_Person.Birthday = _argM12D30di_personBirthday;
+      return transientM12D30di0_Person;
     }
   }
   #endregion

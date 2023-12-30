@@ -89,7 +89,7 @@ classDiagram
 partial class Composition
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM12D30di;
-  private readonly string _argM12D30diserviceName;
+  private readonly string _argM12D30di_serviceName;
   
   public Composition(string serviceName)
   {
@@ -98,14 +98,14 @@ partial class Composition
       throw new global::System.ArgumentNullException("serviceName");
     }
     
-    _argM12D30diserviceName = serviceName;
+    _argM12D30di_serviceName = serviceName;
     _disposableSingletonsM12D30di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
     _disposableSingletonsM12D30di = new global::System.IDisposable[0];
-    _argM12D30diserviceName = parent._argM12D30diserviceName;
+    _argM12D30di_serviceName = parent._argM12D30di_serviceName;
   }
   
   #region Composition Roots
@@ -116,13 +116,13 @@ partial class Composition
     #endif
     get
     {
-      Pure.DI.UsageTests.Basics.InstanceInitializationScenario.Service transientM12D30di0;
+      Pure.DI.UsageTests.Basics.InstanceInitializationScenario.Service transientM12D30di0_Service;
       {
-          var localM12D30di1 = new Pure.DI.UsageTests.Basics.InstanceInitializationScenario.Service(_argM12D30diserviceName, new Pure.DI.UsageTests.Basics.InstanceInitializationScenario.Dependency());
-          localM12D30di1.Initialize();
-          transientM12D30di0 = localM12D30di1;
+          var localM12D30di1_service = new Pure.DI.UsageTests.Basics.InstanceInitializationScenario.Service(_argM12D30di_serviceName, new Pure.DI.UsageTests.Basics.InstanceInitializationScenario.Dependency());
+          localM12D30di1_service.Initialize();
+          transientM12D30di0_Service = localM12D30di1_service;
       }
-      return transientM12D30di0;
+      return transientM12D30di0_Service;
     }
   }
   #endregion

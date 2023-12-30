@@ -86,13 +86,13 @@ partial class Composition
     #endif
     get
     {
-      System.ReadOnlySpan<Pure.DI.UsageTests.BCL.SpanScenario.Dependency> transientM12D30di1 = stackalloc Pure.DI.UsageTests.BCL.SpanScenario.Dependency[3]
+      System.ReadOnlySpan<Pure.DI.UsageTests.BCL.SpanScenario.Dependency> transientM12D30di1_ReadOnlySpan = stackalloc Pure.DI.UsageTests.BCL.SpanScenario.Dependency[3]
       {
           new Pure.DI.UsageTests.BCL.SpanScenario.Dependency(),
           new Pure.DI.UsageTests.BCL.SpanScenario.Dependency(),
           new Pure.DI.UsageTests.BCL.SpanScenario.Dependency()
       };
-      return new Pure.DI.UsageTests.BCL.SpanScenario.Service(transientM12D30di1);
+      return new Pure.DI.UsageTests.BCL.SpanScenario.Service(transientM12D30di1_ReadOnlySpan);
     }
   }
   #endregion
