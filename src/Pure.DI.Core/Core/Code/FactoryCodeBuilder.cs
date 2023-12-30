@@ -25,21 +25,10 @@ internal class FactoryCodeBuilder(IIdGenerator idGenerator) : ICodeBuilder<DpFac
         var factoryRewriter = new FactoryRewriter(factory, variable, finishLabel, injections);
          var lambda = factoryRewriter.Rewrite(factoryExpression);
 
-        SyntaxNode syntaxNode = lambda.Block is not null
-            ? lambda.Block
-            : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);
-
+        SyntaxNode syntaxNode = lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);
         if (syntaxNode is not BlockSyntax)
         {
-            if (variable.Node.Lifetime is Lifetime.Singleton or Lifetime.PerResolve)
-            {
-                code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable, true)}{variable.VariableName} = default({variable.InstanceType});");
-                code.Append($"{variable.VariableName} = ");
-            }
-            else
-            {
-                code.Append($"{ctx.BuildTools.GetDeclaration(variable, true)}{variable.VariableName} = ");
-            }
+            code.Append($"{ctx.BuildTools.GetDeclaration(variable, true)}{variable.VariableName} = ");
         }
         else
         {

@@ -14,10 +14,10 @@ internal class LocalVariableRenamingRewriter(
         (SimpleLambdaExpressionSyntax)VisitSimpleLambdaExpression(lambda)!;
 
     public override SyntaxNode? VisitVariableDeclarator(VariableDeclaratorSyntax node) => 
-        base.VisitVariableDeclarator(node.WithIdentifier(SyntaxFactory.Identifier(GetNewName(node.Identifier.Text))));
+        base.VisitVariableDeclarator(node.WithIdentifier(SyntaxFactory.Identifier(GetUniqueName(node.Identifier.Text))));
 
     public override SyntaxNode? VisitSingleVariableDesignation(SingleVariableDesignationSyntax node) => 
-        base.VisitSingleVariableDesignation(node.WithIdentifier(SyntaxFactory.Identifier(GetNewName(node.Identifier.Text))));
+        base.VisitSingleVariableDesignation(node.WithIdentifier(SyntaxFactory.Identifier(GetUniqueName(node.Identifier.Text))));
 
     public override SyntaxToken VisitToken(SyntaxToken token)
     {
@@ -32,11 +32,11 @@ internal class LocalVariableRenamingRewriter(
         return base.VisitToken(token);
     }
 
-    private string GetNewName(string name)
+    private string GetUniqueName(string name)
     {
         if (!_identifierNames.TryGetValue(name, out var newName))
         {
-            newName = $"{Names.LocalVarName}{idGenerator.Generate()}";
+            newName = $"local{Names.Salt}{idGenerator.Generate()}_{name}";
             _identifierNames.Add(name, newName);
         }
 

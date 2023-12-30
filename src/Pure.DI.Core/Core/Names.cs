@@ -3,7 +3,7 @@ namespace Pure.DI.Core;
 
 internal static class Names
 {
-    private static readonly string Salt = $"M{DateTime.Now.Month:00}D{DateTime.Now.Day:00}di";
+    public static readonly string Salt = $"M{DateTime.Now.Month:00}D{DateTime.Now.Day:00}di";
     public const string GeneratorName = $"{nameof(Pure)}.{nameof(DI)}";
     public static readonly string InjectionMarker = "injection" + Salt;
     
@@ -39,7 +39,6 @@ internal static class Names
     public static readonly string BucketSizeFieldName = $"_bucketSize{Salt}";
     public static readonly string DisposeIndexFieldName = "_disposeIndex" + Salt;
     public static readonly string DisposablesFieldName = "_disposableSingletons" + Salt;
-    public static readonly string LocalVarName = "local" + Salt;
     
     // Vars
     private const string TransientVariablePrefix = "transient";
@@ -50,28 +49,29 @@ internal static class Names
     
     public static string GetVariableName(this in DependencyNode Node, int PerLifetimeId)
     {
+        var baseName = Node.Type.Name;
         switch (Node)
         {
             case { Lifetime: Lifetime.Singleton }:
             {
                 var binding = Node.Binding;
-                return $"{SingletonVariablePrefix}{Salt}{binding.Id}";
+                return $"{SingletonVariablePrefix}{Salt}{binding.Id}_{baseName}";
             }
 
             case { Lifetime: Lifetime.PerResolve }:
-                return $"{PerResolveVariablePrefix}{Salt}{PerLifetimeId}";
+                return $"{PerResolveVariablePrefix}{Salt}{PerLifetimeId}_{baseName}";
 
             case { Arg: { Source.Kind: ArgKind.Class } arg }:
-                return $"{ArgVariablePrefix}{Salt}{arg.Source.ArgName}";
+                return $"{ArgVariablePrefix}{Salt}_{arg.Source.ArgName}";
 
             case { Arg: { Source.Kind: ArgKind.Root } arg }:
                 return arg.Source.ArgName;
             
             case { Lifetime: Lifetime.PerBlock }:
-                return $"{PerBlockVariablePrefix}{Salt}{PerLifetimeId}";
+                return $"{PerBlockVariablePrefix}{Salt}{PerLifetimeId}_{baseName}";
 
             default:
-                return $"{TransientVariablePrefix}{Salt}{PerLifetimeId}";
+                return $"{TransientVariablePrefix}{Salt}{PerLifetimeId}_{baseName}";
         }
     }
     
