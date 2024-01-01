@@ -68,16 +68,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM12D30di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM01D01di;
   
   public Composition()
   {
-    _disposableSingletonsM12D30di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D01di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM12D30di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D01di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -88,20 +88,20 @@ partial class Composition
     #endif
     get
     {
-      var perResolveM12D30di24_Func = default(System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>);
-      perResolveM12D30di24_Func = new global::System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(
+      var perResolveM01D01di24_Func = default(System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>);
+      perResolveM01D01di24_Func = new global::System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
       () =>
       {
-          var localM12D30di1_value = new Pure.DI.UsageTests.BCL.LazyScenario.Dependency();
-          return localM12D30di1_value;
+          var value_M01D01di1 = new Pure.DI.UsageTests.BCL.LazyScenario.Dependency();
+          return value_M01D01di1;
       });
-      System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> transientM12D30di1_Lazy;
+      System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> transientM01D01di1_Lazy;
       {
-          var localM12D30di2_func = perResolveM12D30di24_Func;
-          transientM12D30di1_Lazy = new global::System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(localM12D30di2_func, true);
+          var func_M01D01di2 = perResolveM01D01di24_Func;
+          transientM01D01di1_Lazy = new global::System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(func_M01D01di2, true);
       }
-      return new Pure.DI.UsageTests.BCL.LazyScenario.Service(transientM12D30di1_Lazy);
+      return new Pure.DI.UsageTests.BCL.LazyScenario.Service(transientM01D01di1_Lazy);
     }
   }
   #endregion
@@ -112,7 +112,7 @@ partial class Composition
   #endif
   public T Resolve<T>()
   {
-    return ResolverM12D30di<T>.Value.Resolve(this);
+    return ResolverM01D01di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -120,7 +120,7 @@ partial class Composition
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM12D30di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM01D01di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -128,10 +128,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM12D30di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM12D30di;
+    var index = (int)(_bucketSizeM01D01di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM01D01di;
     do {
-      ref var pair = ref _bucketsM12D30di[index];
+      ref var pair = ref _bucketsM01D01di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -146,10 +146,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM12D30di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM12D30di;
+    var index = (int)(_bucketSizeM01D01di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM01D01di;
     do {
-      ref var pair = ref _bucketsM12D30di[index];
+      ref var pair = ref _bucketsM01D01di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -193,26 +193,26 @@ partial class Composition
         "  FuncᐸIDependencyᐳ *--  Dependency : IDependency";
   }
   
-  private readonly static int _bucketSizeM12D30di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM12D30di;
+  private readonly static int _bucketSizeM01D01di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM01D01di;
   
   static Composition()
   {
-    var valResolverM12D30di_0000 = new ResolverM12D30di_0000();
-    ResolverM12D30di<Pure.DI.UsageTests.BCL.LazyScenario.IService>.Value = valResolverM12D30di_0000;
-    _bucketsM12D30di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM01D01di_0000 = new ResolverM01D01di_0000();
+    ResolverM01D01di<Pure.DI.UsageTests.BCL.LazyScenario.IService>.Value = valResolverM01D01di_0000;
+    _bucketsM01D01di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM12D30di,
+      out _bucketSizeM01D01di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.LazyScenario.IService), valResolverM12D30di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.LazyScenario.IService), valResolverM01D01di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM12D30di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM01D01di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM12D30di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM01D01di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -225,7 +225,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM12D30di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.LazyScenario.IService>
+  private sealed class ResolverM01D01di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.LazyScenario.IService>
   {
     public Pure.DI.UsageTests.BCL.LazyScenario.IService Resolve(Composition composition)
     {
