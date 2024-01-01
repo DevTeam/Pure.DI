@@ -225,8 +225,8 @@ namespace Sample
             DI.Setup("Composition")
                 .Bind<IDependency>().To(ctx => new Dependency())
                 .Bind<IService>().To(ctx => {
-                    IDependency dependency1;
-                    ctx.Inject<IDependency>(out dependency1); new Service(dependency1); ctx.Inject<IDependency>(out var dependency2); return new Service(dependency2);
+                    IDependency @dependency1;
+                    ctx.Inject<IDependency>(out @dependency1); new Service(@dependency1); ctx.Inject<IDependency>(out var dependency2); return new Service(dependency2);
                 })    
                 .Root<IService>("Service");
         }

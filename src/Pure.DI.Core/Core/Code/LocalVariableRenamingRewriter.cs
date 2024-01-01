@@ -36,7 +36,7 @@ internal class LocalVariableRenamingRewriter(
     {
         if (!_identifierNames.TryGetValue(name, out var newName))
         {
-            newName = $"local{Names.Salt}{idGenerator.Generate()}_{name}";
+            newName = $"{name}_{Names.Salt}{idGenerator.Generate()}";
             _identifierNames.Add(name, newName);
         }
 
