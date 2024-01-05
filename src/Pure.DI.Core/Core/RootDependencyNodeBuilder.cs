@@ -15,7 +15,7 @@ internal sealed class RootDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<
                 ImmutableArray<MdContract>.Empty,
                 ImmutableArray<MdTag>.Empty);
             
-            yield return new DependencyNode(0, Root: new DpRoot(root, rootBinding, new Injection(root.RootType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), root.Tag?.Value)));
+            yield return new DependencyNode(0, rootBinding, Root: new DpRoot(root, rootBinding, new Injection(root.RootType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), root.Tag?.Value)));
         }
     }
 }

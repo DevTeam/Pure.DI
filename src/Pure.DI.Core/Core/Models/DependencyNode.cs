@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct DependencyNode(
+internal record DependencyNode(
     int Variation,
     in MdBinding Binding,
     ITypeSymbol Type,
@@ -12,6 +12,7 @@ internal readonly record struct DependencyNode(
 {
     public DependencyNode(
         int Variation,
+        in  MdBinding binding,
         in DpRoot? Root = default,
         in DpImplementation? Implementation = default,
         in DpFactory? Factory = default,
@@ -19,7 +20,7 @@ internal readonly record struct DependencyNode(
         in DpConstruct? Construct = default)
         :this(
             Variation,
-            Root?.Binding ?? Implementation?.Binding ?? Factory?.Binding ?? Arg?.Binding ?? Construct?.Binding ?? new MdBinding(),
+            binding,
             Root?.Source.RootType ?? Implementation?.Source.Type ?? Factory?.Source.Type ?? Arg?.Source.Type ?? Construct?.Source.Type!,
             Root,
             Implementation,
@@ -41,7 +42,7 @@ internal readonly record struct DependencyNode(
 
     public override string ToString() => string.Join(Environment.NewLine, ToStrings(0));
 
-    public bool Equals(DependencyNode other) => Binding.Equals(other.Binding);
+    public virtual bool Equals(DependencyNode? other) => Binding.Equals(other?.Binding);
 
     public override int GetHashCode() => Binding.GetHashCode();
 }

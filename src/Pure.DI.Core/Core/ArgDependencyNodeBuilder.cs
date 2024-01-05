@@ -11,7 +11,7 @@ internal sealed class ArgDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<D
                 continue;
             }
 
-            yield return new DependencyNode(0, Arg: new DpArg(arg, binding));
+            yield return new DependencyNode(0, binding, Arg: new DpArg(arg, binding));
         }
     }
 }

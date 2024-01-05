@@ -229,7 +229,7 @@ internal sealed class DependencyGraphBuilder(
                 var injection = injectionInfo.Injection;
                 var dependency = map.TryGetValue(injection, out var sourceNode)
                     ? new Dependency(true, sourceNode, injection, node.Node)
-                    : new Dependency(false, new DependencyNode(0), injection, node.Node);
+                    : new Dependency(false, new DependencyNode(0, node.Node.Binding), injection, node.Node);
 
                 edges.Add(dependency);
             }

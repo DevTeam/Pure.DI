@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct MdBinding(
+internal record MdBinding(
     int Id,
     in SyntaxNode Source,
     in MdSetup SourceSetup,
@@ -20,7 +20,7 @@ internal readonly record struct MdBinding(
         return string.Join(Environment.NewLine, walker);
     }
 
-    public bool Equals(MdBinding other) => Id == other.Id;
+    public virtual bool Equals(MdBinding? other) => Id == other?.Id;
 
     public override int GetHashCode() => Id;
 }

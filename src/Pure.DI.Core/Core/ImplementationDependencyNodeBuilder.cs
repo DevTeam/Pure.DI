@@ -161,7 +161,7 @@ internal sealed class ImplementationDependencyNodeBuilder(
     }
 
     private static IEnumerable<DependencyNode> CreateNodes(IEnumerable<DpImplementation> implementations) => 
-        implementations.Select((implementation, variantId) => new DependencyNode(variantId, Implementation: implementation));
+        implementations.Select((implementation, variantId) => new DependencyNode(variantId, implementation.Binding, Implementation: implementation));
 
     private static int GetInjectionsCount(in DpImplementation implementation)
     {

@@ -18,7 +18,7 @@ internal sealed class FactoryDependencyNodeBuilder : IBuilder<MdSetup, IEnumerab
                 injections.Add(new Injection(resolver.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), resolver.Tag?.Value));
             }
 
-            yield return new DependencyNode(0, Factory: new DpFactory(factory, binding, injections.ToImmutableArray()));
+            yield return new DependencyNode(0, binding, Factory: new DpFactory(factory, binding, injections.ToImmutableArray()));
         }
     }
 }

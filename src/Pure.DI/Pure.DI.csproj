@@ -14,8 +14,8 @@
     </PropertyGroup>
 
     <!--<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-       <DefineConstants>DEBUG_MODE</DefineConstants>
-     </PropertyGroup>-->
+       <DefineConstants>TRACE_MODE</DefineConstants>
+    </PropertyGroup>-->
 
     <ItemGroup>
         <ProjectReference Include="..\Pure.DI.Core\Pure.DI.Core.csproj"/>

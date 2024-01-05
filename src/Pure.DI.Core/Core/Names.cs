@@ -47,7 +47,7 @@ internal static class Names
     private const string SingletonVariablePrefix = "_singleton";
     private const string ArgVariablePrefix = "_arg";
     
-    public static string GetVariableName(this in DependencyNode Node, int PerLifetimeId)
+    public static string GetVariableName(this DependencyNode Node, int PerLifetimeId)
     {
         var baseName = Node.Type.Name;
         switch (Node)

@@ -19,7 +19,7 @@ internal sealed class ConstructDependencyNodeBuilder : IBuilder<MdSetup, IEnumer
                 injections.Add(new Injection(contract.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), tag));
             }
             
-            yield return new DependencyNode(0, Construct: new DpConstruct(construct, binding, injections.ToImmutableArray()));
+            yield return new DependencyNode(0, binding, Construct: new DpConstruct(construct, binding, injections.ToImmutableArray()));
         }
     }
 }
