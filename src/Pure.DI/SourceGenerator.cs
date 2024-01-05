@@ -15,7 +15,7 @@ public class SourceGenerator: IIncrementalGenerator
         
         context.RegisterPostInitializationOutput(initializationContext =>
         {
-            foreach (var apiSource in _generator.GetApi())
+            foreach (var apiSource in _generator.Api)
             {
                 initializationContext.AddSource(apiSource.HintName, apiSource.SourceText);
             }

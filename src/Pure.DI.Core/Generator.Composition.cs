@@ -8,39 +8,45 @@ namespace Pure.DI;
 
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using static Lifetime;
 
 // ReSharper disable once PartialTypeWithSinglePart
-internal partial class Composition
+public partial class Generator
 {
     [Conditional("DI")]
-    private static void Setup() => DI.Setup(nameof(Composition))
+    private static void Setup() => DI.Setup(nameof(Generator))
         .Hint(Hint.Resolve, "Off")
-        
+
         .RootArg<IGeneratorOptions>("options")
         .RootArg<IGeneratorSources>("sources")
         .RootArg<IGeneratorDiagnostic>("diagnostic")
         .RootArg<CancellationToken>("cancellationToken")
         
-        .Root<IBuilder<Unit, IEnumerable<Source>>>("ApiBuilder")
-        .Root<IObserversRegistry>("ObserversRegistry")
-        .Root<IBuilder<IEnumerable<SyntaxUpdate>, Unit>>("CreateGenerator")
+        .Root<IEnumerable<Source>>("Api")
+        .Root<IObserversRegistry>("Observers")
+        .Root<IBuilder<IEnumerable<SyntaxUpdate>, Unit>>("CreateGenerator", default, RootKinds.Private)
         
         // Transient
             .Bind<IApiInvocationProcessor>().To<ApiInvocationProcessor>()
             .Bind<IMetadataSyntaxWalker>().To<MetadataSyntaxWalker>()
             .Bind<IDependencyGraphBuilder>().To<DependencyGraphBuilder>()
             .Bind<ITypeConstructor>().To<TypeConstructor>()
+            .Bind<IEqualityComparer<string>>().To(_ => StringComparer.InvariantCultureIgnoreCase)
         
         // Singleton
-            .DefaultLifetime(Lifetime.Singleton)
-            .Bind<IObserversRegistry>().Bind<IObserversProvider>().As(Lifetime.Singleton).To<ObserversRegistry>()
-            .Bind<ICache<TT1, TT2>>().As(Lifetime.Singleton).To<Cache<TT1, TT2>>()
+            .DefaultLifetime(Singleton)
+            .Bind<ICache<TT1, TT2>>().To<Cache<TT1, TT2>>()
+            .Bind<IObserversRegistry>().Bind<IObserversProvider>().To<ObserversRegistry>()
+            .Bind<IEnumerable<Source>>().To(ctx =>
+            {
+                ctx.Inject<IBuilder<Unit, IEnumerable<Source>>>(out var api);
+                return api.Build(Unit.Shared);
+            })
         
         // PerBlock
-            .DefaultLifetime(Lifetime.PerBlock)
+            .DefaultLifetime(PerBlock)
             .Bind<IBuildTools>().To<BuildTools>()
             .Bind<ILogger<TT>>().To<Logger<TT>>()
-            .Bind<IEqualityComparer<string>>().To(_ => StringComparer.InvariantCultureIgnoreCase)
             .Bind<IResources>().To<Resources>()
             .Bind<IInformation>().To<Information>()
             .Bind<IGlobalOptions>().To<GlobalOptions>()
@@ -98,7 +104,7 @@ internal partial class Composition
             .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.ToStringMethodBuilder).To<ToStringMethodBuilder>()
         
         // PerResolve
-            .DefaultLifetime(Lifetime.PerResolve)
+            .DefaultLifetime(PerResolve)
             .Bind<IObserver<LogEntry>>().To<LogObserver>()
             .Bind<IFilter>().To<Filter>()
             .Bind<IIdGenerator>().To<IdGenerator>();

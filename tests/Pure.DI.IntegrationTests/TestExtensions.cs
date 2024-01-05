@@ -39,7 +39,7 @@ public static class TestExtensions
             : parseOptions.WithPreprocessorSymbols(runOptions.PreprocessorSymbols);
 
         var generator = new Generator();
-        var generatedApiSources = generator.GetApi().ToArray();
+        var generatedApiSources = generator.Api.ToArray();
         var compilation = CreateCompilation()
             .WithOptions(new CSharpCompilationOptions(OutputKind.ConsoleApplication).WithNullableContextOptions(runOptions.NullableContextOptions))
             .AddSyntaxTrees(generatedApiSources.Select(api => CSharpSyntaxTree.ParseText(api.SourceText, parseOptions)))
@@ -64,10 +64,10 @@ public static class TestExtensions
         var updates = compilationCopy.SyntaxTrees.Select(i => CreateUpdate(i, compilationCopy));
 
         var dependencyGraphObserver = new Observer<DependencyGraph>();
-        using var dependencyGraphObserverToken = generator.RegisterObserver(dependencyGraphObserver);
+        using var dependencyGraphObserverToken = generator.Observers.Register(dependencyGraphObserver);
 
         var logEntryObserver = new Observer<LogEntry>();
-        using var logEntryObserverToken = generator.RegisterObserver(logEntryObserver);
+        using var logEntryObserverToken = generator.Observers.Register(logEntryObserver);
 
         generator.Generate(contextOptions.Object, contextProducer.Object, contextDiagnostic.Object, updates, CancellationToken.None);
 
