@@ -5,7 +5,7 @@ internal sealed class LinesBuilder: IEnumerable<string>
 {
     private static readonly string[] Indents = new string[64]; 
     private readonly StringBuilder _sb = new(); 
-    private readonly List<Line> _lines = new(64);
+    private readonly List<Line> _lines = [];
     private readonly Indent _indent;
 
     static LinesBuilder()

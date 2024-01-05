@@ -1,4 +1,5 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 namespace Pure.DI.Core.Code;
 
 internal class FactoryCodeBuilder(IIdGenerator idGenerator) : ICodeBuilder<DpFactory>
@@ -38,8 +39,6 @@ internal class FactoryCodeBuilder(IIdGenerator idGenerator) : ICodeBuilder<DpFac
             }
         }
 
-        var lines = syntaxNode.ToString().Split('\n');
-        
         // Replaces injection markers by injection code
         if (variable.Args.Count != injections.Count)
         {
@@ -54,9 +53,11 @@ internal class FactoryCodeBuilder(IIdGenerator idGenerator) : ICodeBuilder<DpFac
             .GetEnumerator();
         
         var indent = new Indent(0);
-        foreach (var line in lines)
+        var text = syntaxNode.GetText();
+        foreach (var textLine in text.Lines)
         {
-            if (line.Trim() == InjectionStatement && resolvers.MoveNext())
+            var line = text.ToString(textLine.Span);
+            if (line.Contains(InjectionStatement) && resolvers.MoveNext())
             {
                 // When an injection marker
                 var (injection, argument) = resolvers.Current;

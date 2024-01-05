@@ -44,8 +44,14 @@ internal class CodeBuilder(
         composition = classBuilder.Build(composition);
 
         cancellationToken.ThrowIfCancellationRequested();
-        var classCode = string.Join(Environment.NewLine, composition.Code);
-        sources.AddSource($"{setup.Name.FullName}.g.cs", SourceText.From(classCode, Encoding.UTF8));
+        var code = new StringBuilder(composition.Code.Sum(i => i.Length + 2));
+        foreach (var line in composition.Code)
+        {
+            code.AppendLine(line);
+        }
+        
+        cancellationToken.ThrowIfCancellationRequested();
+        sources.AddSource($"{setup.Name.FullName}.g.cs", SourceText.From(code.ToString(), Encoding.UTF8));
         return Unit.Shared;
     }
 }

@@ -35,16 +35,16 @@ internal class BuildTools(IFilter filter) : IBuildTools
         return $"{Names.OnDependencyInjectionMethodName}<{variable.ContractType}>({variable.VariableCode}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})";
     }
     
-    public IEnumerable<Line> OnCreated(BuildContext ctx, Variable variable)
+    public IReadOnlyCollection<Line> OnCreated(BuildContext ctx, Variable variable)
     {
         if (variable.Node.Arg is not null)
         {
-            yield break;
+            return Array.Empty<Line>();
         }
 
         if (ctx.DependencyGraph.Source.Hints.GetHint(Hint.OnNewInstance) != SettingState.On)
         {
-            yield break;
+            return Array.Empty<Line>();
         }
 
         if (!filter.IsMeetRegularExpression(
@@ -53,11 +53,11 @@ internal class BuildTools(IFilter filter) : IBuildTools
                 (Hint.OnNewInstanceTagRegularExpression, variable.Injection.Tag.ValueToString()),
                 (Hint.OnNewInstanceLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
         {
-            yield break;
+            return Array.Empty<Line>();
         }
 
         var tag = GetTag(ctx, variable);
-        yield return new Line(0, $"{Names.OnNewInstanceMethodName}<{variable.InstanceType}>(ref {variable.VariableName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})" + ";");
+        return [new Line(0, $"{Names.OnNewInstanceMethodName}<{variable.InstanceType}>(ref {variable.VariableName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})" + ";")];
     }
 
     private static object? GetTag(BuildContext ctx, Variable variable)
