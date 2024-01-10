@@ -118,6 +118,11 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
     
     private static bool IsNewInstanceRequired(Variable variable)
     {
+        if (variable.Node.Lifetime == Lifetime.Transient)
+        {
+            return true;
+        }
+
         if (variable.Current.HasCycle)
         {
             return false;

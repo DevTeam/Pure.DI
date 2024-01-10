@@ -22,8 +22,6 @@ internal class VariablesBuilder : IVariablesBuilder
             var stack = new Stack<IStatement>(currentBlock.Statements);
             while (stack.TryPop(out var currentStatement))
             {
-                var path = currentStatement.GetPath().ToArray();
-                var hasLazy = path.Any(i => i.Current.IsLazy);
                 switch (currentStatement)
                 {
                     case Block block:
@@ -32,11 +30,14 @@ internal class VariablesBuilder : IVariablesBuilder
                     
                     case Variable variable:
                     {
-                        if (!graph.TryGetInEdges(variable.Node, out var dependencies))
+                        if (!graph.TryGetInEdges(variable.Node, out var dependencies)
+                            || dependencies.Count == 0)
                         {
                             continue;
                         }
 
+                        var path = currentStatement.GetPath().ToArray();
+                        var hasLazy = path.Any(i => i.Current.IsLazy);
                         foreach (var (isDepResolved, depNode, depInjection, _) in dependencies)
                         {
                             if (!isDepResolved)
@@ -59,7 +60,7 @@ internal class VariablesBuilder : IVariablesBuilder
                             }
 
                             var depVariable = GetVariable(currentBlock, map, blockMap, depNode, depInjection, ref transientId, hasCycle);
-                            var isBlock = depNode.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock || variable.IsLazy;
+                            var isBlock = depNode.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock || variable.Node.IsDelegate();
                             if (isBlock)
                             {
                                 var depBlock = new Block(blockId++, currentStatement, []);
@@ -120,7 +121,8 @@ internal class VariablesBuilder : IVariablesBuilder
                 
                 case Lifetime.PerBlock:
                 {
-                    if (blockMap.TryGetValue((node.Binding, parentBlock.Id), out var blockVariable))
+                    var perBlockKey = (node.Binding, parentBlock.Id);
+                    if (blockMap.TryGetValue(perBlockKey, out var blockVariable))
                     {
                         return blockVariable with
                         {
@@ -132,7 +134,7 @@ internal class VariablesBuilder : IVariablesBuilder
                     }
                 
                     blockVariable = new Variable(parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), node.IsLazy(), hasCycle);
-                    blockMap.Add((node.Binding, parentBlock.Id), blockVariable);
+                    blockMap.Add(perBlockKey, blockVariable);
                     return blockVariable;
                 }
             }

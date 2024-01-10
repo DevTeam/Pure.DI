@@ -14,7 +14,7 @@ internal static class DependencyNodeExtensions
     public static bool IsAsyncEnumerable(this DependencyNode node) =>
         node.Construct is { Source.Kind: MdConstructKind.AsyncEnumerable };
 
-    private static bool IsDelegate(this DependencyNode node) =>
+    public static bool IsDelegate(this DependencyNode node) =>
         node.Type.TypeKind == TypeKind.Delegate;
     
     public static bool IsLazy(this DependencyNode node) =>
