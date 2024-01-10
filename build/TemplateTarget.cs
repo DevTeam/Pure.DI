@@ -1,4 +1,5 @@
 // ReSharper disable StringLiteralTypo
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Build;
 
 using System.CommandLine;
@@ -6,7 +7,7 @@ using System.CommandLine.Invocation;
 using HostApi;
 using JetBrains.TeamCity.ServiceMessages.Write.Special;
 
-internal class TemplateTarget: ITarget<string>, ICommandProvider
+internal class TemplateTarget: Command, ITarget<string>
 {
     private readonly Settings _settings;
     private readonly ITeamCityWriter _teamCityWriter;
@@ -14,19 +15,17 @@ internal class TemplateTarget: ITarget<string>, ICommandProvider
     public TemplateTarget(
         Settings settings,
         ITeamCityWriter teamCityWriter)
+        : base("template", "Push NuGet packages")
     {
         _settings = settings;
         _teamCityWriter = teamCityWriter;
-        Command = new Command("template", "Push NuGet packages");
-        Command.SetHandler(RunAsync);
-        Command.AddAlias("t");
+        this.SetHandler(RunAsync);
+        AddAlias("t");
     }
     
-    public Command Command { get; }
-
     public Task<string> RunAsync(InvocationContext ctx)
     {
-        var templatePackageVersion = _settings.VersionOverride ?? Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI.Templates"), _settings.VersionRange);
+        var templatePackageVersion = _settings.VersionOverride ?? new NuGetRestoreSettings("Pure.DI.Templates").GetNextVersion(_settings.VersionRange);
         var props = new[]
         {
             ("configuration", _settings.Configuration),
@@ -38,7 +37,7 @@ internal class TemplateTarget: ITarget<string>, ICommandProvider
             .WithProject(Path.Combine(projectDirectory, "Pure.DI.Templates.csproj"))
             .WithProps(props);
 
-        Assertion.Succeed(pack.Build());
+        pack.Build().Succeed();
         
         var targetPackage = Path.Combine(projectDirectory, "bin", $"Pure.DI.Templates.{templatePackageVersion}.nupkg");
         _teamCityWriter.PublishArtifact($"{targetPackage} => .");
@@ -50,7 +49,7 @@ internal class TemplateTarget: ITarget<string>, ICommandProvider
                 .WithSources("https://api.nuget.org/v3/index.json")
                 .WithApiKey(_settings.NuGetKey);
 
-            Assertion.Succeed(push.Build());
+            push.Build().Succeed();
         }
         else
         {

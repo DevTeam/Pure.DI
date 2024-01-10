@@ -1,3 +1,4 @@
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Build;
 
 using System.CommandLine;
@@ -5,7 +6,7 @@ using System.CommandLine.Invocation;
 using HostApi;
 using JetBrains.TeamCity.ServiceMessages.Write.Special;
 
-internal class BenchmarksTarget: ITarget<int>, ICommandProvider
+internal class BenchmarksTarget: Command, ITarget<int>
 {
     private readonly Settings _settings;
     private readonly ITeamCityWriter _teamCityWriter;
@@ -22,16 +23,14 @@ internal class BenchmarksTarget: ITarget<int>, ICommandProvider
     public BenchmarksTarget(
         Settings settings, 
         ITeamCityWriter teamCityWriter)
+        : base("benchmarks", "Runs benchmarks")
     {
         _settings = settings;
         _teamCityWriter = teamCityWriter;
-        Command = new Command("benchmarks", "Runs benchmarks");
-        Command.SetHandler(RunAsync);
-        Command.AddAlias("b");
+        this.SetHandler(RunAsync);
+        AddAlias("b");
     }
     
-    public Command Command { get; }
-
     public Task<int> RunAsync(InvocationContext ctx)
     {
         var solutionDirectory = Tools.GetSolutionDirectory();
@@ -52,7 +51,7 @@ internal class BenchmarksTarget: ITarget<int>, ICommandProvider
                 .WithArgs("--artifacts", artifactsDirectory, "--", "--filter")
                 .AddArgs(Reports.Select(filter => $"*{filter}*").ToArray());
 
-            Assertion.Succeed(benchmark.Run(), "Benchmarking");
+            benchmark.Run().Succeed("Benchmarking");
         }
 
         var index = 0;

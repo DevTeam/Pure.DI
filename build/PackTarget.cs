@@ -1,6 +1,7 @@
 // ReSharper disable StringLiteralTypo
 // ReSharper disable HeapView.DelegateAllocation
 // ReSharper disable HeapView.ClosureAllocation
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Build;
 
 using System.CommandLine;
@@ -11,7 +12,7 @@ using HostApi;
 using JetBrains.TeamCity.ServiceMessages.Write.Special;
 using NuGet.Versioning;
 
-internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvider
+internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
 {
     private readonly Settings _settings;
     private readonly ITeamCityWriter _teamCityWriter;
@@ -21,24 +22,22 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
         Settings settings,
         ITeamCityWriter teamCityWriter,
         INuGet nuGet)
+        : base("pack", "Creates NuGet packages")
     {
         _settings = settings;
         _teamCityWriter = teamCityWriter;
         _nuGet = nuGet;
-        Command = new Command("pack", "Creates NuGet packages");
-        Command.SetHandler(RunAsync);
-        Command.AddAlias("p");
+        this.SetHandler(RunAsync);
+        AddAlias("p");
     }
     
-    public Command Command { get; }
-
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
     public async Task<IReadOnlyCollection<string>> RunAsync(InvocationContext ctx)
     {
         var packages = new List<string>();
         
         // Pure.DI generator package
-        var generatorPackageVersion = _settings.VersionOverride ?? Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI"), _settings.VersionRange);
+        var generatorPackageVersion = _settings.VersionOverride ?? new NuGetRestoreSettings("Pure.DI").GetNextVersion(_settings.VersionRange);
         var generatorProjectDirectory = Path.Combine("src", "Pure.DI");
         var generatorPackages = _settings.CodeAnalysis
             .Select(codeAnalysis => CreateGeneratorPackage(generatorPackageVersion, codeAnalysis, generatorProjectDirectory));
@@ -136,7 +135,7 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
                 .WithProject(Path.Combine(libraryProjectDirectory, $"{library.Name}.csproj"))
                 .BuildAsync();
         
-            Assertion.Succeed(libraryPackResult);
+            libraryPackResult.Succeed();
         
             var libraryPackageDir = Path.Combine(libraryProjectDirectory, "bin", _settings.Configuration);
             var libraryPackageName = $"{library.Name}.{generatorPackageVersion.ToString()}.nupkg";
@@ -277,7 +276,7 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
             .WithProps(props);
         
         var buildResult = build.Build();
-        Assertion.Succeed(buildResult);
+        buildResult.Succeed();
 
         var test = new DotNetTest()
             .WithProps(props)
@@ -287,7 +286,7 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
 
         var testResult = test.Build();
         WriteLine(testResult.ToString(), Color.Highlighted);
-        Assertion.Succeed(testResult);
+        testResult.Succeed();
 
         var pack = new DotNetPack()
             .WithProps(props)
@@ -296,7 +295,7 @@ internal class PackTarget: ITarget<IReadOnlyCollection<string>>, ICommandProvide
             .WithNoLogo(true)
             .WithProject(Path.Combine(projectDirectory, "Pure.DI.csproj"));
         
-        Assertion.Succeed(pack.Build());
+        pack.Build().Succeed();
         return Path.Combine(projectDirectory, "bin", $"roslyn{analyzerRoslynVersion}", _settings.Configuration, $"Pure.DI.{packageVersion.ToString()}.nupkg");
     }
     

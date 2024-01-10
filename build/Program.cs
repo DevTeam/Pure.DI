@@ -2,41 +2,22 @@
 using Build;using HostApi;
 using NuGet.Versioning;
 
-var autoIncrementingVersionRange = VersionRange.Parse("2.0.*");
+Directory.SetCurrentDirectory(Tools.GetSolutionDirectory());
+await new DotNetBuildServerShutdown().RunAsync();
 
 WriteLine(
-    NuGetVersion.TryParse(Property.Get("version"), out var versionOverride) 
-        ? $"The version has been overridden by {versionOverride}."
+    NuGetVersion.TryParse("version".Get(), out var version) 
+        ? $"The version has been overridden by {version}."
         : "The next version has been used.",
     Color.Highlighted);
 
-Directory.SetCurrentDirectory(Tools.GetSolutionDirectory());
 var settings = new Settings(
     Environment.GetEnvironmentVariable("TEAMCITY_VERSION") is not null,
     "Release",
-    autoIncrementingVersionRange,
-    versionOverride,
-    Property.Get("NuGetKey"),
+    VersionRange.Parse("2.0.*"),
+    version,
+    "NuGetKey".Get(),
     new CodeAnalysis(new Version(4, 3, 1)));
 
-return await new Composition(settings).Root.RunAsync(Args);
-
-internal partial class Program
-{
-    private readonly IEnumerable<Command> _commands;
-
-    public Program(IEnumerable<Command> commands) => 
-        _commands = commands;
-
-    private async Task<int> RunAsync(IEnumerable<string> args)
-    {
-        var rootCommand = new RootCommand();
-        foreach (var command in _commands)
-        {
-            rootCommand.AddCommand(command);
-        }
-        
-        await new DotNetBuildServerShutdown().RunAsync();
-        return await rootCommand.InvokeAsync(args.ToArray());
-    }
-}
+var composition = new Composition(settings);
+return await composition.Root.InvokeAsync(Args.ToArray());

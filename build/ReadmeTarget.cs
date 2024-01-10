@@ -1,5 +1,6 @@
 // ReSharper disable InvertIf
 // ReSharper disable ConvertIfStatementToSwitchStatement
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Build;
 
 using System.CommandLine;
@@ -8,7 +9,7 @@ using HostApi;
 using Pure.DI;
 using Pure.DI.Benchmarks.Benchmarks;
 
-internal class ReadmeTarget : ITarget<int>, ICommandProvider
+internal class ReadmeTarget : Command, ITarget<int>
 {
     private readonly Settings _settings;
     private readonly ITarget<int> _benchmarksTarget;
@@ -40,18 +41,14 @@ internal class ReadmeTarget : ITarget<int>, ICommandProvider
 
     public ReadmeTarget(
         Settings settings,
-        [Tag(nameof(BenchmarksTarget))] ITarget<int> benchmarksTarget)
+        [Tag(typeof(BenchmarksTarget))] ITarget<int> benchmarksTarget): base("readme", "Generates README.MD")
     {
         _settings = settings;
         _benchmarksTarget = benchmarksTarget;
-        Command = new Command("readme", "Generates README.MD");
-        Command.SetHandler(RunAsync);
-        Command.AddAlias("r");
+        this.SetHandler(RunAsync);
+        AddAlias("r");
     }
-
-    public Command Command { get; }
-
-
+    
     public async Task<int> RunAsync(InvocationContext ctx)
     {
         var solutionDirectory = Tools.GetSolutionDirectory();
@@ -71,7 +68,7 @@ internal class ReadmeTarget : ITarget<int>, ICommandProvider
 
         foreach (var project in projects)
         {
-            Assertion.Succeed(await new MSBuild().WithProject(project).WithTarget("clean;rebuild").BuildAsync());    
+            (await new MSBuild().WithProject(project).WithTarget("clean;rebuild").BuildAsync()).Succeed();    
         }
 
         await using var readmeWriter = File.CreateText(ReadmeFile);
@@ -224,7 +221,7 @@ internal class ReadmeTarget : ITarget<int>, ICommandProvider
 
     private async Task GenerateExamples(IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)> examples, TextWriter readmeWriter, string logsDirectory)
     {
-        var packageVersion = (_settings.VersionOverride ?? Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI"), _settings.VersionRange, 0)).ToString();
+        var packageVersion = (_settings.VersionOverride ?? new NuGetRestoreSettings("Pure.DI").GetNextVersion(_settings.VersionRange, 0)).ToString();
         foreach (var readmeFile in Directory.EnumerateFiles(Path.Combine(ReadmeDir), "*.md"))
         {
             if (readmeFile.EndsWith("Template.md", StringComparison.InvariantCultureIgnoreCase))

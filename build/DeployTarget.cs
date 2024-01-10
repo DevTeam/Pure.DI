@@ -1,3 +1,4 @@
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Build;
 
 using System.CommandLine;
@@ -5,24 +6,22 @@ using System.CommandLine.Invocation;
 using HostApi;
 using Pure.DI;
 
-internal class DeployTarget: ITarget<int>, ICommandProvider
+internal class DeployTarget: Command, ITarget<int>
 {
     private readonly Settings _settings;
     private readonly ITarget<IReadOnlyCollection<string>> _packTarget;
 
     public DeployTarget(
         Settings settings,
-        [Tag(nameof(PackTarget))] ITarget<IReadOnlyCollection<string>> packTarget)
+        [Tag(typeof(PackTarget))] ITarget<IReadOnlyCollection<string>> packTarget)
+        : base("deploy", "Push NuGet packages")
     {
         _settings = settings;
         _packTarget = packTarget;
-        Command = new Command("deploy", "Push NuGet packages");
-        Command.SetHandler(RunAsync);
-        Command.AddAlias("d");
+        this.SetHandler(RunAsync);
+        AddAlias("d");
     }
     
-    public Command Command { get; }
-
     public async Task<int> RunAsync(InvocationContext ctx)
     {
         if (!string.IsNullOrWhiteSpace(_settings.NuGetKey))
@@ -35,7 +34,7 @@ internal class DeployTarget: ITarget<int>, ICommandProvider
                     .WithSources("https://api.nuget.org/v3/index.json")
                     .WithApiKey(_settings.NuGetKey);
 
-                Assertion.Succeed(push.Build());   
+                push.Build().Succeed();   
             }
         }
         else

@@ -1,6 +1,7 @@
 // ReSharper disable StringLiteralTypo
 // ReSharper disable HeapView.DelegateAllocation
 // ReSharper disable HeapView.ClosureAllocation
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Build;
 
 using System.CommandLine;
@@ -9,27 +10,25 @@ using System.Diagnostics.CodeAnalysis;
 using HostApi;
 using NuGet.Versioning;
 
-internal class UpdateTarget: ITarget<NuGetVersion>, ICommandProvider
+internal class UpdateTarget: Command, ITarget<NuGetVersion>
 {
     private const string VersionPrefix = "PUREDI_API_V";
     private readonly Settings _settings;
 
     public UpdateTarget(
         Settings settings)
+        : base("update", "Updates internal DI version")
     {
         _settings = settings;
-        Command = new Command("update", "Updates internal DI version");
-        Command.SetHandler(RunAsync);
-        Command.AddAlias("u");
+        this.SetHandler(RunAsync);
+        AddAlias("u");
     }
     
-    public Command Command { get; }
-
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
     public Task<NuGetVersion> RunAsync(InvocationContext ctx)
     {
         var solutionDirectory = Tools.GetSolutionDirectory();
-        var currentVersion = _settings.VersionOverride ?? Tools.GetNextVersion(new NuGetRestoreSettings("Pure.DI"), _settings.VersionRange, 0);
+        var currentVersion = _settings.VersionOverride ?? new NuGetRestoreSettings("Pure.DI").GetNextVersion(_settings.VersionRange, 0);
         var propsFile = Path.Combine(solutionDirectory, "Directory.Build.props");
         var props = File.ReadAllLines(propsFile);
         var contents = new List<string>();

@@ -4,7 +4,7 @@ using HostApi;
 
 internal static class Property
 {
-    public static string Get(string name, string defaultProp = "", bool showWarning = false) =>
+    public static string Get(this string name, string defaultProp = "", bool showWarning = false) =>
         Get(Props, name, defaultProp, showWarning);
 
     private static string Get(IProperties props, string name, string defaultProp, bool showWarning = false)

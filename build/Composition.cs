@@ -1,31 +1,36 @@
 // ReSharper disable UnusedMember.Local
+// ReSharper disable UnusedParameterInPartialMethod
 namespace Build;
 
 using System.CommandLine;
 using HostApi;
-using NuGet.Versioning;
+using JetBrains.TeamCity.ServiceMessages.Write.Special;
 using Pure.DI;
 
 internal partial class Composition
 {
     private static void Setup() =>
-        // FormatCode = On
-        // Resolve = Off
-        DI.Setup("Composition")
+        DI.Setup(nameof(Composition))
+            .Root<RootCommand>("Root")
             .Arg<Settings>("settings")
-            .DefaultLifetime(Lifetime.PerResolve)
-            .Bind<INuGet>().As(Lifetime.PerResolve).To(_ => GetService<INuGet>())
-            .Bind<JetBrains.TeamCity.ServiceMessages.Write.Special.ITeamCityWriter>().As(Lifetime.PerResolve).To(_ => GetService<JetBrains.TeamCity.ServiceMessages.Write.Special.ITeamCityWriter>())
-            .Bind<ITarget<int>>().Bind<ICommandProvider>().Tags(nameof(ReadmeTarget)).To<ReadmeTarget>()
-            .Bind<ITarget<IReadOnlyCollection<string>>>().Bind<ICommandProvider>().Tags(nameof(PackTarget)).To<PackTarget>()
-            .Bind<ITarget<int>>().Bind<ICommandProvider>().Tags(nameof(BenchmarksTarget)).To<BenchmarksTarget>()
-            .Bind<ITarget<int>>().Bind<ICommandProvider>().Tags(nameof(DeployTarget)).To<DeployTarget>()
-            .Bind<ITarget<string>>().Bind<ICommandProvider>().Tags(nameof(TemplateTarget)).To<TemplateTarget>()
-            .Bind<ITarget<NuGetVersion>>().Bind<ICommandProvider>().Tags(nameof(UpdateTarget)).To<UpdateTarget>()
-            .Bind<IEnumerable<Command>>().To(ctx =>
+            .Hint(Hint.Resolve, "Off")
+            .Bind<ITeamCityWriter>().To(_ => GetService<ITeamCityWriter>())
+            .Bind<INuGet>().To(_ => GetService<INuGet>())
+            .Bind<Command>(typeof(ReadmeTarget)).To<ReadmeTarget>()
+            .Bind<Command, ITarget<IReadOnlyCollection<string>>>(typeof(PackTarget)).To<PackTarget>()
+            .Bind<Command, ITarget<int>>(typeof(BenchmarksTarget)).To<BenchmarksTarget>()
+            .Bind<Command>(typeof(DeployTarget)).To<DeployTarget>()
+            .Bind<Command>(typeof(TemplateTarget)).To<TemplateTarget>()
+            .Bind<Command>(typeof(UpdateTarget)).To<UpdateTarget>()
+            .Bind<RootCommand>().To(ctx =>
             {
-                ctx.Inject(out IEnumerable<ICommandProvider> commandProviders);
-                return commandProviders.Select(i => i.Command);
-            })
-            .Root<Program>("Root");
+                var rootCommand = new RootCommand();
+                ctx.Inject(out IEnumerable<Command> commands);
+                foreach (var command in commands)
+                {
+                    rootCommand.AddCommand(command);
+                }
+
+                return rootCommand;
+            });
 }

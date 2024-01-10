@@ -9,7 +9,7 @@ internal static partial class Tools
 {
     private static readonly Regex ReleaseRegex = CreateReleaseRegex();
     
-    public static NuGetVersion GetNextVersion(NuGetRestoreSettings settings, VersionRange versionRange, int incrementValue = 1) =>
+    public static NuGetVersion GetNextVersion(this NuGetRestoreSettings settings, VersionRange versionRange, int incrementValue = 1) =>
         GetService<INuGet>()
             .Restore(settings.WithHideWarningsAndErrors(true).WithVersionRange(versionRange).WithNoCache(true))
             .Where(i => i.Name == settings.PackageId)

@@ -5,7 +5,7 @@ using HostApi;
 
 internal static class Assertion
 {
-    public static bool Succeed(int? exitCode, string shortName)
+    public static bool Succeed(this int? exitCode, string shortName)
     {
         if (exitCode == 0)
         {
@@ -17,7 +17,7 @@ internal static class Assertion
         return false;
     }
     
-    public static bool Succeed(IEnumerable<int?> exitCode, string shortName)
+    public static bool Succeed(this IEnumerable<int?> exitCode, string shortName)
     {
         if (exitCode.All(i => i == 0))
         {
@@ -29,7 +29,7 @@ internal static class Assertion
         return false;
     }
 
-    public static async Task<bool> Succeed(Task<int?> exitCodeTask, string shortName) =>
+    public static async Task<bool> Succeed(this Task<int?> exitCodeTask, string shortName) =>
         Succeed(await exitCodeTask, shortName);
 
     private static bool CheckBuildResult(IBuildResult result)
@@ -51,7 +51,7 @@ internal static class Assertion
         return false;
     }
 
-    public static void Succeed(IBuildResult result)
+    public static void Succeed(this IBuildResult result)
     {
         if (!CheckBuildResult(result))
         {
@@ -59,7 +59,7 @@ internal static class Assertion
         }
     }
 
-    public static async Task<bool> Succeed(Task<IBuildResult> resultTask)
+    public static async Task<bool> Succeed(this Task<IBuildResult> resultTask)
     {
         if (CheckBuildResult(await resultTask))
         {
@@ -70,7 +70,7 @@ internal static class Assertion
         return true;
     }
 
-    public static async Task<bool> Succeed(Task<IBuildResult[]> resultsTask)
+    public static async Task<bool> Succeed(this Task<IBuildResult[]> resultsTask)
     {
         if ((await resultsTask).All(CheckBuildResult))
         {
