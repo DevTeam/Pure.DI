@@ -306,9 +306,9 @@ internal sealed class DependencyGraphBuilder(
         var semanticModel = targetNode.Binding.SemanticModel;
         var compilation = semanticModel.Compilation;
         var sourceType = injection.Type;
-        var typeConstructor = typeConstructorFactory();
         if (marker.IsMarkerBased(injection.Type))
         {
+            var typeConstructor = typeConstructorFactory();
             typeConstructor.TryBind(injection.Type, injection.Type);
             sourceType = typeConstructor.Construct(compilation, injection.Type);
         }
@@ -330,7 +330,7 @@ internal sealed class DependencyGraphBuilder(
         return newBinding;
     }
 
-    private static MdBinding CreateConstructBinding(
+    private MdBinding CreateConstructBinding(
         MdSetup setup,
         DependencyNode targetNode,
         Injection injection,
@@ -346,8 +346,8 @@ internal sealed class DependencyGraphBuilder(
         var dependencyContracts = new List<MdContract>();
         foreach (var nestedBinding in setup.Bindings.Where(i => i != targetNode.Binding))
         {
-            var matchedContracts = nestedBinding.Contracts.Where(i => SymbolEqualityComparer.Default.Equals(i.ContractType, elementType)).ToImmutableArray();
-            if (!matchedContracts.Any())
+            var matchedContracts = GetMatchedMdContracts(targetNode.Binding.SemanticModel.Compilation, elementType, nestedBinding).ToArray();
+            if (matchedContracts.Length == 0)
             {
                 continue;
             }
@@ -384,7 +384,28 @@ internal sealed class DependencyGraphBuilder(
                 hasExplicitDefaultValue,
                 explicitDefaultValue));
     }
-    
+
+    private IEnumerable<MdContract> GetMatchedMdContracts(Compilation compilation, ITypeSymbol elementType, MdBinding nestedBinding)
+    {
+        foreach (var contract in nestedBinding.Contracts)
+        {
+            var contractType = contract.ContractType;
+            if (marker.IsMarkerBased(contract.ContractType))
+            {
+                var typeConstructor = typeConstructorFactory();
+                if (typeConstructor.TryBind(contract.ContractType, elementType))
+                {
+                    contractType = typeConstructor.Construct(compilation, contract.ContractType);
+                }
+            }
+            
+            if (SymbolEqualityComparer.Default.Equals(contractType, elementType))
+            {
+                yield return contract;
+            }
+        }
+    }
+
     private ProcessingNode CreateNewProcessingNode(in Injection injection, DependencyNode dependencyNode)
     {
         var contracts = contractsBuilder.Build(new ContractsBuildContext(dependencyNode.Binding, injection.Tag));

@@ -73,6 +73,72 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldSupportEnumerableInjectionWhenGeneric()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency<T> {}
+
+    class Dependency<T>: IDependency<T>
+    {        
+        public Dependency()
+        {
+            Console.WriteLine("Dependency created");
+        }
+    }
+
+    interface IService
+    {                    
+    }
+
+    class Service: IService 
+    {
+        public Service(System.Collections.Generic.IEnumerable<IDependency<string>> deps)
+        { 
+            Console.WriteLine("Service creating");
+            foreach (var dep in deps)
+            {
+            }
+        }                            
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<IDependency<TT>>(1).To<Dependency<TT>>()
+                .Bind<IDependency<TT>>(2).To<Dependency<TT>>()
+                .Bind<IDependency<TT>>(3).To<Dependency<TT>>()
+                .Bind<IService>().To<Service>()
+                .Root<IService>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service = composition.Service;                                                     
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Service creating", "Dependency created", "Dependency created", "Dependency created"), result);
+    }
+    
+    [Fact]
     public async Task ShouldOverrideDefaultEnumerableInjection()
     {
         // Given

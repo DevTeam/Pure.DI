@@ -141,6 +141,121 @@ namespace Sample
     [InlineData("System.ReadOnlySpan")]
     [InlineData("System.Memory")]
     [InlineData("System.ReadOnlyMemory")]
+    public async Task ShouldSupportCollectionInjectionWhenGeneric(string collectionType, LanguageVersion languageVersion = LanguageVersion.CSharp9)
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    struct Point
+    {
+        int X, Y;        
+        
+        public Point(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+    } 
+
+    interface IDependency<T> {}
+
+    class Dependency<T>: IDependency<T>, IComparable<Dependency<T>>, IComparable
+    {        
+        public Dependency(ReadOnlySpan<Point> points1, Span<Point> points2)
+        {
+            Console.WriteLine("Dependency created");
+        }
+
+        public int CompareTo(Dependency<T> other) => GetHashCode() - other.GetHashCode();
+        
+        public int CompareTo(object obj) => GetHashCode() - obj.GetHashCode();
+    }
+
+    interface IService
+    {                    
+    }
+
+    class Service: IService 
+    {
+        public Service(###CollectionType###<IDependency<int>> deps)
+        { 
+            Console.WriteLine("Service creating");            
+        }                            
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            // FormatCode = On
+            DI.Setup("Composition")
+                .Bind<IDependency<TT>>(1).To<Dependency<TT>>()
+                .Bind<IDependency<TT>>(2).To<Dependency<TT>>()
+                .Bind<IDependency<TT>>(3).To<Dependency<TT>>()
+                .Bind<Point>(1).To(_ => new Point(1, 2))
+                .Bind<Point>(2).To(_ => new Point(2, 3))
+                .Bind<IService>().To<Service>()
+                .Root<IService>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            try 
+            {
+                var composition = new Composition();
+                var service = composition.Service;
+            }                                     
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }                
+        }
+    }                
+}
+""".Replace("###CollectionType###", collectionType).RunAsync(
+            new Options
+            {
+                LanguageVersion = languageVersion,
+                NullableContextOptions = NullableContextOptions.Disable
+            });
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency created", "Dependency created", "Dependency created", "Service creating"), result);
+    }
+    
+    [Theory]
+    [InlineData("System.Collections.Generic.IList")]
+    [InlineData("System.Collections.Immutable.ImmutableArray")]
+    [InlineData("System.Collections.Generic.IReadOnlyList")]
+    [InlineData("System.Collections.Generic.ISet")]
+    [InlineData("System.Collections.Generic.HashSet")]
+    [InlineData("System.Collections.Generic.SortedSet")]
+    [InlineData("System.Collections.Generic.Queue")]
+    [InlineData("System.Collections.Generic.Stack")]
+    [InlineData("System.Collections.Immutable.IImmutableList")]
+    [InlineData("System.Collections.Immutable.ImmutableList")]
+    [InlineData("System.Collections.Immutable.IImmutableSet")]
+    [InlineData("System.Collections.Immutable.ImmutableHashSet")]
+    [InlineData("System.Collections.Immutable.ImmutableSortedSet")]
+    [InlineData("System.Collections.Immutable.IImmutableQueue")]
+    [InlineData("System.Collections.Immutable.ImmutableQueue")]
+    [InlineData("System.Collections.Immutable.IImmutableStack")]
+    [InlineData("System.Collections.Immutable.ImmutableStack")]
+    [InlineData("System.Span")]
+    [InlineData("System.Span", LanguageVersion.CSharp8)]
+    [InlineData("System.ReadOnlySpan")]
+    [InlineData("System.Memory")]
+    [InlineData("System.ReadOnlyMemory")]
     public async Task ShouldSupportCollectionInjectionWhenHasNoBindings(string collectionType, LanguageVersion languageVersion = LanguageVersion.CSharp9)
     {
         // Given
