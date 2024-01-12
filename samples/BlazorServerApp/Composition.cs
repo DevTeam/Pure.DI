@@ -34,6 +34,7 @@ internal partial class Composition: ServiceProviderFactory<Composition>
                 .To<WeatherForecastService>()
                 .Root<IWeatherForecastService>()
             .Bind<ICounterService>()
+                .As(Singleton)
                 .To<CounterService>()
                 .Root<ICounterService>()
             

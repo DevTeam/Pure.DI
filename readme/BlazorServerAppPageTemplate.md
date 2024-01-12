@@ -31,6 +31,7 @@ internal partial class Composition: ServiceProviderFactory<Composition>
                 .To<WeatherForecastService>()
                 .Root<IWeatherForecastService>()
             .Bind<ICounterService>()
+                .As(Singleton)
                 .To<CounterService>()
                 .Root<ICounterService>()
             
@@ -47,7 +48,8 @@ Te web application entry point is in the [Program.cs](/samples/BlazorServerApp/P
 var builder = WebApplication.CreateBuilder(args);
 
 // Uses Composition as an alternative IServiceProviderFactory
-builder.Host.UseServiceProviderFactory(new Composition());
+using var composition = new Composition();
+builder.Host.UseServiceProviderFactory(composition);
 ```
 
 The [project file](/samples/BlazorServerApp/BlazorServerApp.csproj) looks like this:

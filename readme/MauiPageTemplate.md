@@ -40,7 +40,7 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
-        var composition = new Composition();
+        using var composition = new Composition();
         
         // Uses Composition as an alternative IServiceProviderFactory
         builder.ConfigureContainer(composition);

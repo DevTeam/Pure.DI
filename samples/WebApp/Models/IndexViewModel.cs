@@ -1,5 +1,16 @@
 namespace WebApp.Models;
 
-public record IndexViewModel(
-    string Title = "Welcome",
-    string AboutUrl = "https://docs.microsoft.com/aspnet/core");
+using WeatherForecast;
+
+public class IndexViewModel(
+    IWeatherForecastService weatherForecastService,
+    string title = "Welcome",
+    string aboutUrl = "https://github.com/DevTeam/Pure.DI")
+{
+    public string Title { get; } = title;
+    
+    public string AboutUrl { get; } = aboutUrl;
+
+    public IAsyncEnumerable<WeatherForecast> WeatherForecast =>
+        weatherForecastService.CreateWeatherForecastAsync();
+}

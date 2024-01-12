@@ -5,5 +5,26 @@
 
 <div class="text-center">
     <h1 class="display-4">@Model.Title</h1>
-    <p>Learn about <a href="@Model.AboutUrl">building Web apps with ASP.NET Core</a>.</p>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>Temp. (C)</th>
+            <th>Temp. (F)</th>
+            <th>Summary</th>
+        </tr>
+        </thead>
+        <tbody>
+        @await foreach (var forecast in @Model.WeatherForecast)
+        {
+            <tr>
+                <td>@forecast.Date.ToShortDateString()</td>
+                <td>@forecast.TemperatureC</td>
+                <td>@forecast.TemperatureF</td>
+                <td>@forecast.Summary</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <p>Learn about using <a href="@Model.AboutUrl">Pure.DI</a>.</p>
 </div>

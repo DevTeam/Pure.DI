@@ -13,7 +13,7 @@ public static class Program
     {
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
-        var composition = new Composition();
+        using var composition = new Composition();
         Application.Run(composition.FormMain);
     }
 }

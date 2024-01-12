@@ -1,13 +1,12 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace WeatherForecast;
 
-internal class CounterService : ICounterService
+public class CounterService : ICounterService
 {
-    private int _currentCount;
-    
-    public int IncrementCount()
-    {
-        _currentCount++;
-        return _currentCount;
-    }
+    private long _count;
+
+    public long Count => Interlocked.Read(ref _count);
+
+    public long IncrementCount() => 
+        Interlocked.Increment(ref _count);
 }

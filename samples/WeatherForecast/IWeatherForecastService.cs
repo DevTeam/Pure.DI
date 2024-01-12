@@ -1,6 +1,6 @@
 namespace WeatherForecast;
 
-internal  interface IWeatherForecastService
+public interface IWeatherForecastService
 {
     IAsyncEnumerable<WeatherForecast> CreateWeatherForecastAsync();
 }

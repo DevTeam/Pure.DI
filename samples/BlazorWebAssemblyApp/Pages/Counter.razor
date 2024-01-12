@@ -6,13 +6,19 @@
 
 <h1>Counter</h1>
 
-<p role="status">Current count: @_currentCount</p>
+<p role="status">Current count: @_count</p>
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
 @code {
-    int _currentCount;
+    long _count;
+
+    protected override void OnInitialized()
+    {
+        _count = CounterService.Count;
+        base.OnInitialized();
+    }
 
     private void IncrementCount() => 
-        _currentCount = CounterService.IncrementCount();
+        _count = CounterService.IncrementCount();
 }

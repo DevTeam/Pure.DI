@@ -5,7 +5,8 @@ using BlazorWebAssemblyApp;
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 // Uses Composition as an alternative IServiceProviderFactory
-builder.ConfigureContainer(new Composition());
+using var composition = new Composition();
+builder.ConfigureContainer(composition);
 
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");

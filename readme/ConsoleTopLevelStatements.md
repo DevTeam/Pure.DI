@@ -45,35 +45,25 @@ public enum State
     Dead
 }
 
-public class CardboardBox<T> : IBox<T>
+public class CardboardBox<T>(T content) : IBox<T>
 {
-    public CardboardBox(T content) => Content = content;
-
-    public T Content { get; }
+    public T Content { get; } = content;
 
     public override string ToString() => $"[{Content}]";
 }
 
-public class ShroedingersCat : ICat
+public class ShroedingersCat(Lazy<State> superposition) : ICat
 {
-    // Represents the superposition of the states
-    private readonly Lazy<State> _superposition;
-
-    public ShroedingersCat(Lazy<State> superposition) => _superposition = superposition;
-
-    // The decoherence of the superposition at the time of observation via an irreversible process
-    public State State => _superposition.Value;
+    // The decoherence of the superposition
+    // at the time of observation via an irreversible process
+    public State State => superposition.Value;
 
     public override string ToString() => $"{State} cat";
 }
 
-public partial class Program
+public partial class Program(IBox<ICat> box)
 {
-    private readonly IBox<ICat> _box;
-
-    internal Program(IBox<ICat> box) => _box = box;
-
-    private void Run() => Console.WriteLine(_box);
+    private void Run() => Console.WriteLine(box);
 }
 ```
 

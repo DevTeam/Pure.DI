@@ -12,7 +12,10 @@ internal partial class Composition: ServiceProviderFactory<Composition>
     private static void Setup() =>
         DI.Setup(nameof(Composition))
             .DependsOn(Base)
-            .Root<HomeController>();
+            .Bind<IWeatherForecastService>()
+                .As(Singleton)
+                .To<WeatherForecastService>()
+            .Root<WeatherForecastController>();
 }
 ```
 

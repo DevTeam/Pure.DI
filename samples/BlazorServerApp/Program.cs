@@ -3,7 +3,8 @@ using BlazorServerApp;
 var builder = WebApplication.CreateBuilder(args);
 
 // Uses Composition as an alternative IServiceProviderFactory
-builder.Host.UseServiceProviderFactory(new Composition());
+using var composition = new Composition();
+builder.Host.UseServiceProviderFactory(composition);
 
 // Add services to the container.
 builder.Services.AddRazorPages();

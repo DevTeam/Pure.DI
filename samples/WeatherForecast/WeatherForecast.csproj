@@ -5,9 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <InternalsVisibleTo Include="WebAPI"/>
-        <InternalsVisibleTo Include="BlazorServerApp"/>
-        <InternalsVisibleTo Include="BlazorWebAssemblyApp"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
     </ItemGroup>
 

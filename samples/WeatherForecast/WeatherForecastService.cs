@@ -3,7 +3,7 @@ namespace WeatherForecast;
 
 using Microsoft.Extensions.Logging;
 
-internal class WeatherForecastService(ILogger<WeatherForecastService> logger)
+public class WeatherForecastService(ILogger<WeatherForecastService> logger)
     : IWeatherForecastService
 {
     private static readonly string[] Summaries =

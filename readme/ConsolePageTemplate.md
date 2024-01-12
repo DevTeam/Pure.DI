@@ -15,7 +15,7 @@ public interface IBox<out T>
 
 public interface ICat
 {
-    State State { get; }[DebugHelper.cs](..%2Fsrc%2FPure.DI%2FDebugHelper.cs)
+    State State { get; }
 }
 
 public enum State
@@ -26,24 +26,18 @@ public enum State
 
 // Here is our implementation
 
-public class CardboardBox<T> : IBox<T>
+public class CardboardBox<T>(T content) : IBox<T>
 {
-    public CardboardBox(T content) => Content = content;
-
-    public T Content { get; }
+    public T Content { get; } = content;
 
     public override string ToString() => $"[{Content}]";
 }
 
-public class ShroedingersCat : ICat
+public class ShroedingersCat(Lazy<State> superposition) : ICat
 {
-    // Represents the superposition of the states
-    private readonly Lazy<State> _superposition;
-
-    public ShroedingersCat(Lazy<State> superposition) => _superposition = superposition;
-
-    // The decoherence of the superposition at the time of observation via an irreversible process
-    public State State => _superposition.Value;
+    // The decoherence of the superposition
+    // at the time of observation via an irreversible process
+    public State State => superposition.Value;
 
     public override string ToString() => $"{State} cat";
 }
@@ -75,17 +69,13 @@ internal partial class Composition
 
 // Time to open boxes!
 
-public class Program
+public class Program(IBox<ICat> box)
 {
     // Composition Root, a single place in an application
     // where the composition of the object graphs for an application take place
     public static void Main() => new Composition().Root.Run();
 
-    private readonly IBox<ICat> _box;
-
-    internal Program(IBox<ICat> box) => _box = box;
-
-    private void Run() => Console.WriteLine(_box);
+    private void Run() => Console.WriteLine(box);
 }
 ```
 

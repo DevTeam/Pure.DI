@@ -1,6 +1,8 @@
 namespace WeatherForecast;
 
-internal interface ICounterService
+public interface ICounterService
 {
-    int IncrementCount();
+    long Count { get; }
+    
+    long IncrementCount();
 }
