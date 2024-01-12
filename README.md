@@ -245,6 +245,7 @@ dotnet run
 ### Base Class Library
 - [Func](readme/func.md)
 - [Enumerable](readme/enumerable.md)
+- [Enumerable generics](readme/enumerable-generics.md)
 - [Array](readme/array.md)
 - [Lazy](readme/lazy.md)
 - [Span and ReadOnlySpan](readme/span-and-readonlyspan.md)
