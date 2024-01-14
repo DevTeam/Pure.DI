@@ -70,6 +70,11 @@ classDiagram
   class Service {
     +Service(String name, IDependency dependency)
   }
+  class TaskScheduler
+  class TaskCreationOptions
+  class TaskContinuationOptions
+  class TaskFactory
+  class CancellationToken
   class Int32
   class String
   class IDependency {
@@ -82,6 +87,10 @@ classDiagram
   Dependency o-- String : Argument "dependencyName"
   Service o-- String : "forService"  Argument "serviceName"
   Service *--  Dependency : IDependency
+  TaskFactory o-- CancellationToken : Argument "cancellationToken"
+  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
+  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
+  TaskFactory *--  TaskScheduler : TaskScheduler
   Composition ..> Service : IService CreateService
 ```
 
@@ -93,16 +102,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM01D12di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM01D14di;
   
   public Composition()
   {
-    _disposableSingletonsM01D12di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D14di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM01D12di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D14di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -131,6 +140,11 @@ partial class Composition
         "  class Service {\n" +
           "    +Service(String name, IDependency dependency)\n" +
         "  }\n" +
+        "  class TaskScheduler\n" +
+        "  class TaskCreationOptions\n" +
+        "  class TaskContinuationOptions\n" +
+        "  class TaskFactory\n" +
+        "  class CancellationToken\n" +
         "  class Int32\n" +
         "  class String\n" +
         "  class IDependency {\n" +
@@ -143,6 +157,10 @@ partial class Composition
         "  Dependency o-- String : Argument \"dependencyName\"\n" +
         "  Service o-- String : \"forService\"  Argument \"serviceName\"\n" +
         "  Service *--  Dependency : IDependency\n" +
+        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
+        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
+        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
+        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Composition ..> Service : IService CreateService";
   }
 }

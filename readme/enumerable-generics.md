@@ -38,22 +38,95 @@ stringService.Dependencies.Length.ShouldBe(2);
 stringService.Dependencies[0].ShouldBeOfType<AbcDependency<string>>();
 stringService.Dependencies[1].ShouldBeOfType<XyzDependency<string>>();
 ```
+
+<details open>
+<summary>Class Diagram</summary>
+
+```mermaid
+classDiagram
+  class Composition {
+    +IServiceᐸInt32ᐳ IntRoot
+    +IServiceᐸStringᐳ StringRoot
+    + T ResolveᐸTᐳ()
+    + T ResolveᐸTᐳ(object? tag)
+    + object Resolve(Type type)
+    + object Resolve(Type type, object? tag)
+  }
+  class IEnumerableᐸIDependencyᐸStringᐳᐳ
+  class IEnumerableᐸIDependencyᐸInt32ᐳᐳ
+  class TaskScheduler
+  class TaskCreationOptions
+  class TaskContinuationOptions
+  class TaskFactory
+  class CancellationToken
+  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 
+  class AbcDependencyᐸStringᐳ {
+    +AbcDependency()
+  }
+  XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : "Xyz" 
+  class XyzDependencyᐸStringᐳ {
+    +XyzDependency()
+  }
+  AbcDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : 
+  class AbcDependencyᐸInt32ᐳ {
+    +AbcDependency()
+  }
+  XyzDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : "Xyz" 
+  class XyzDependencyᐸInt32ᐳ {
+    +XyzDependency()
+  }
+  ServiceᐸInt32ᐳ --|> IServiceᐸInt32ᐳ : 
+  class ServiceᐸInt32ᐳ {
+    +Service(IEnumerableᐸIDependencyᐸInt32ᐳᐳ dependencies)
+  }
+  ServiceᐸStringᐳ --|> IServiceᐸStringᐳ : 
+  class ServiceᐸStringᐳ {
+    +Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
+  }
+  class IDependencyᐸStringᐳ {
+    <<abstract>>
+  }
+  class IDependencyᐸInt32ᐳ {
+    <<abstract>>
+  }
+  class IServiceᐸInt32ᐳ {
+    <<abstract>>
+  }
+  class IServiceᐸStringᐳ {
+    <<abstract>>
+  }
+  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : IDependencyᐸStringᐳ
+  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : "Xyz"  IDependencyᐸStringᐳ
+  IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  AbcDependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
+  IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  XyzDependencyᐸInt32ᐳ : "Xyz"  IDependencyᐸInt32ᐳ
+  TaskFactory o-- CancellationToken : Argument "cancellationToken"
+  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
+  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
+  TaskFactory *--  TaskScheduler : TaskScheduler
+  Composition ..> ServiceᐸInt32ᐳ : IServiceᐸInt32ᐳ IntRoot
+  Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ StringRoot
+  ServiceᐸInt32ᐳ o--  "PerBlock" IEnumerableᐸIDependencyᐸInt32ᐳᐳ : IEnumerableᐸIDependencyᐸInt32ᐳᐳ
+  ServiceᐸStringᐳ o--  "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
+```
+
+</details>
+
 <details>
 <summary>Pure.DI-generated partial class Composition</summary><blockquote>
 
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM01D12di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM01D14di;
   
   public Composition()
   {
-    _disposableSingletonsM01D12di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D14di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM01D12di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D14di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -65,13 +138,13 @@ partial class Composition
     get
     {
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x200)]
-      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IDependency<int>> LocalFunc_perBlockM01D12di1_IEnumerable()
+      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IDependency<int>> LocalFunc_perBlockM01D14di1_IEnumerable()
       {
           yield return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.AbcDependency<int>();
           yield return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.XyzDependency<int>();
       }
-      var perBlockM01D12di1_IEnumerable = LocalFunc_perBlockM01D12di1_IEnumerable();
-      return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service<int>(perBlockM01D12di1_IEnumerable);
+      var perBlockM01D14di1_IEnumerable = LocalFunc_perBlockM01D14di1_IEnumerable();
+      return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service<int>(perBlockM01D14di1_IEnumerable);
     }
   }
   
@@ -83,13 +156,13 @@ partial class Composition
     get
     {
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x200)]
-      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IDependency<string>> LocalFunc_perBlockM01D12di1_IEnumerable()
+      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IDependency<string>> LocalFunc_perBlockM01D14di1_IEnumerable()
       {
           yield return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.AbcDependency<string>();
           yield return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.XyzDependency<string>();
       }
-      var perBlockM01D12di1_IEnumerable = LocalFunc_perBlockM01D12di1_IEnumerable();
-      return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service<string>(perBlockM01D12di1_IEnumerable);
+      var perBlockM01D14di1_IEnumerable = LocalFunc_perBlockM01D14di1_IEnumerable();
+      return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service<string>(perBlockM01D14di1_IEnumerable);
     }
   }
   #endregion
@@ -100,7 +173,7 @@ partial class Composition
   #endif
   public T Resolve<T>()
   {
-    return ResolverM01D12di<T>.Value.Resolve(this);
+    return ResolverM01D14di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -108,7 +181,7 @@ partial class Composition
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM01D12di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM01D14di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -116,10 +189,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM01D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    var finish = index + _bucketSizeM01D12di;
+    var index = (int)(_bucketSizeM01D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var finish = index + _bucketSizeM01D14di;
     do {
-      ref var pair = ref _bucketsM01D12di[index];
+      ref var pair = ref _bucketsM01D14di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -134,10 +207,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM01D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    var finish = index + _bucketSizeM01D12di;
+    var index = (int)(_bucketSizeM01D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var finish = index + _bucketSizeM01D14di;
     do {
-      ref var pair = ref _bucketsM01D12di[index];
+      ref var pair = ref _bucketsM01D14di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -162,6 +235,11 @@ partial class Composition
         "  }\n" +
         "  class IEnumerableᐸIDependencyᐸStringᐳᐳ\n" +
         "  class IEnumerableᐸIDependencyᐸInt32ᐳᐳ\n" +
+        "  class TaskScheduler\n" +
+        "  class TaskCreationOptions\n" +
+        "  class TaskContinuationOptions\n" +
+        "  class TaskFactory\n" +
+        "  class CancellationToken\n" +
         "  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : \n" +
         "  class AbcDependencyᐸStringᐳ {\n" +
           "    +AbcDependency()\n" +
@@ -202,35 +280,39 @@ partial class Composition
         "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : \"Xyz\"  IDependencyᐸStringᐳ\n" +
         "  IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  AbcDependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ\n" +
         "  IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  XyzDependencyᐸInt32ᐳ : \"Xyz\"  IDependencyᐸInt32ᐳ\n" +
+        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
+        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
+        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
+        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Composition ..> ServiceᐸInt32ᐳ : IServiceᐸInt32ᐳ IntRoot\n" +
         "  Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ StringRoot\n" +
         "  ServiceᐸInt32ᐳ o--  \"PerBlock\" IEnumerableᐸIDependencyᐸInt32ᐳᐳ : IEnumerableᐸIDependencyᐸInt32ᐳᐳ\n" +
         "  ServiceᐸStringᐳ o--  \"PerBlock\" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ";
   }
   
-  private readonly static int _bucketSizeM01D12di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM01D12di;
+  private readonly static int _bucketSizeM01D14di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM01D14di;
   
   static Composition()
   {
-    var valResolverM01D12di_0000 = new ResolverM01D12di_0000();
-    ResolverM01D12di<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int>>.Value = valResolverM01D12di_0000;
-    var valResolverM01D12di_0001 = new ResolverM01D12di_0001();
-    ResolverM01D12di<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string>>.Value = valResolverM01D12di_0001;
-    _bucketsM01D12di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM01D14di_0000 = new ResolverM01D14di_0000();
+    ResolverM01D14di<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int>>.Value = valResolverM01D14di_0000;
+    var valResolverM01D14di_0001 = new ResolverM01D14di_0001();
+    ResolverM01D14di<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string>>.Value = valResolverM01D14di_0001;
+    _bucketsM01D14di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       4,
-      out _bucketSizeM01D12di,
+      out _bucketSizeM01D14di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[2]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int>), valResolverM01D12di_0000)
-        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string>), valResolverM01D12di_0001)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int>), valResolverM01D14di_0000)
+        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string>), valResolverM01D14di_0001)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM01D12di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM01D14di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM01D12di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM01D14di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -243,7 +325,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM01D12di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int>>
+  private sealed class ResolverM01D14di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int>>
   {
     public Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int> Resolve(Composition composition)
     {
@@ -261,7 +343,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM01D12di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string>>
+  private sealed class ResolverM01D14di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string>>
   {
     public Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string> Resolve(Composition composition)
     {

@@ -1,34 +1,48 @@
-#### Func
+#### Manually started tasks
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/FuncScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/ManualTaskScenario.cs)
 
-_Func<T>_ helps when the logic must enter instances of some type on demand or more than once. This is a very handy mechanism for instance replication. For example it is used when implementing the `Lazy<T>` injection.
+By default, tasks are started automatically when they are injected. But you can override this behavior as in the example below. It is recommended to use an argument of type <c>CancellationToken</c> to the composition root to be able to cancel the execution of a task. In this case, the composition root property is automatically converted to a method with a parameter of type <c>CancellationToken</c>.
 
 ```c#
-interface IDependency;
+interface IDependency { }
 
-class Dependency : IDependency;
+class Dependency : IDependency { }
 
 interface IService
 {
-    ImmutableArray<IDependency> Dependencies { get; }
+    Task RunAsync();
 }
 
-class Service(Func<IDependency> dependencyFactory) : IService
+class Service : IService
 {
-    public ImmutableArray<IDependency> Dependencies { get; } = Enumerable
-        .Range(0, 10)
-        .Select(_ => dependencyFactory())
-        .ToImmutableArray();
+    private readonly Task<IDependency> _dependencyTask;
+
+    public Service(Task<IDependency> dependencyTask)
+    {
+        _dependencyTask = dependencyTask;
+        _dependencyTask.Start();
+    }
+
+    public async Task RunAsync()
+    {
+        var dependency = await _dependencyTask;
+    }
 }
 
 DI.Setup("Composition")
+    .Bind<Task<TT>>().To(ctx =>
+    {
+        ctx.Inject(ctx.Tag, out Func<TT> factory);
+        ctx.Inject(out CancellationToken cancellationToken);
+        return new Task<TT>(factory, cancellationToken);
+    })
     .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>().Root<IService>("Root");
+    .Bind<IService>().To<Service>().Root<IService>("GetRoot");
 
 var composition = new Composition();
-var service = composition.Root;
-service.Dependencies.Length.ShouldBe(10);
+var service = composition.GetRoot(CancellationToken.None);
+await service.RunAsync();
 ```
 
 <details open>
@@ -37,7 +51,7 @@ service.Dependencies.Length.ShouldBe(10);
 ```mermaid
 classDiagram
   class Composition {
-    +IService Root
+    +IService GetRoot(System.Threading.CancellationToken cancellationToken)
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object Resolve(Type type)
@@ -45,7 +59,7 @@ classDiagram
   }
   Service --|> IService : 
   class Service {
-    +Service(FuncᐸIDependencyᐳ dependencyFactory)
+    +Service(TaskᐸIDependencyᐳ dependencyTask)
   }
   Dependency --|> IDependency : 
   class Dependency {
@@ -56,6 +70,7 @@ classDiagram
   class TaskContinuationOptions
   class TaskFactory
   class CancellationToken
+  class TaskᐸIDependencyᐳ
   class FuncᐸIDependencyᐳ
   class IService {
     <<abstract>>
@@ -63,12 +78,14 @@ classDiagram
   class IDependency {
     <<abstract>>
   }
-  Service o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+  Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
   TaskFactory o-- CancellationToken : Argument "cancellationToken"
   TaskFactory *--  TaskCreationOptions : TaskCreationOptions
   TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
   TaskFactory *--  TaskScheduler : TaskScheduler
-  Composition ..> Service : IService Root
+  Composition ..> Service : IService GetRoot
+  TaskᐸIDependencyᐳ o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+  TaskᐸIDependencyᐳ o-- CancellationToken : Argument "cancellationToken"
   FuncᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 
@@ -93,23 +110,26 @@ partial class Composition
   }
   
   #region Composition Roots
-  public Pure.DI.UsageTests.BCL.FuncScenario.IService Root
+  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
+  [global::System.Diagnostics.Contracts.Pure]
+  #endif
+  public Pure.DI.UsageTests.BCL.ManualTaskScenario.IService GetRoot(System.Threading.CancellationToken cancellationToken)
   {
-    #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-    [global::System.Diagnostics.Contracts.Pure]
-    #endif
-    get
+    var perResolveM01D14di32_Func = default(System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>);
+    perResolveM01D14di32_Func = new global::System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
+    () =>
     {
-      var perResolveM01D14di30_Func = default(System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>);
-      perResolveM01D14di30_Func = new global::System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>(
-      [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
-      () =>
-      {
-          var factory_M01D14di1 = new Pure.DI.UsageTests.BCL.FuncScenario.Dependency();
-          return factory_M01D14di1;
-      });
-      return new Pure.DI.UsageTests.BCL.FuncScenario.Service(perResolveM01D14di30_Func);
+        var factory_M01D14di1 = new Pure.DI.UsageTests.BCL.ManualTaskScenario.Dependency();
+        return factory_M01D14di1;
+    });
+    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency> transientM01D14di1_Task;
+    {
+        var factory_M01D14di2 = perResolveM01D14di32_Func;
+        var cancellationToken_M01D14di3 = cancellationToken;
+        transientM01D14di1_Task = new Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(factory_M01D14di2, cancellationToken_M01D14di3);
     }
+    return new Pure.DI.UsageTests.BCL.ManualTaskScenario.Service(transientM01D14di1_Task);
   }
   #endregion
   
@@ -135,16 +155,6 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM01D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM01D14di;
-    do {
-      ref var pair = ref _bucketsM01D14di[index];
-      if (ReferenceEquals(pair.Key, type))
-      {
-        return pair.Value.Resolve(this);
-      }
-    } while (++index < finish);
-    
     throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
   
@@ -153,16 +163,6 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM01D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM01D14di;
-    do {
-      ref var pair = ref _bucketsM01D14di[index];
-      if (ReferenceEquals(pair.Key, type))
-      {
-        return pair.Value.ResolveByTag(this, tag);
-      }
-    } while (++index < finish);
-    
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
   #endregion
@@ -172,7 +172,7 @@ partial class Composition
     return
       "classDiagram\n" +
         "  class Composition {\n" +
-          "    +IService Root\n" +
+          "    +IService GetRoot(System.Threading.CancellationToken cancellationToken)\n" +
           "    + T ResolveᐸTᐳ()\n" +
           "    + T ResolveᐸTᐳ(object? tag)\n" +
           "    + object Resolve(Type type)\n" +
@@ -180,7 +180,7 @@ partial class Composition
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
-          "    +Service(FuncᐸIDependencyᐳ dependencyFactory)\n" +
+          "    +Service(TaskᐸIDependencyᐳ dependencyTask)\n" +
         "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
@@ -191,6 +191,7 @@ partial class Composition
         "  class TaskContinuationOptions\n" +
         "  class TaskFactory\n" +
         "  class CancellationToken\n" +
+        "  class TaskᐸIDependencyᐳ\n" +
         "  class FuncᐸIDependencyᐳ\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
@@ -198,30 +199,17 @@ partial class Composition
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  Service o--  \"PerResolve\" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ\n" +
+        "  Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ\n" +
         "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
         "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
         "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
         "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
-        "  Composition ..> Service : IService Root\n" +
+        "  Composition ..> Service : IService GetRoot\n" +
+        "  TaskᐸIDependencyᐳ o--  \"PerResolve\" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ\n" +
+        "  TaskᐸIDependencyᐳ o-- CancellationToken : Argument \"cancellationToken\"\n" +
         "  FuncᐸIDependencyᐳ *--  Dependency : IDependency";
   }
   
-  private readonly static int _bucketSizeM01D14di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM01D14di;
-  
-  static Composition()
-  {
-    var valResolverM01D14di_0000 = new ResolverM01D14di_0000();
-    ResolverM01D14di<Pure.DI.UsageTests.BCL.FuncScenario.IService>.Value = valResolverM01D14di_0000;
-    _bucketsM01D14di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
-      1,
-      out _bucketSizeM01D14di,
-      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
-      {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.FuncScenario.IService), valResolverM01D14di_0000)
-      });
-  }
   
   #region Resolvers
   private sealed class ResolverM01D14di<T>: global::Pure.DI.IResolver<Composition, T>
@@ -238,29 +226,9 @@ partial class Composition
       throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
     }
   }
-  
-  private sealed class ResolverM01D14di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.FuncScenario.IService>
-  {
-    public Pure.DI.UsageTests.BCL.FuncScenario.IService Resolve(Composition composition)
-    {
-      return composition.Root;
-    }
-    
-    public Pure.DI.UsageTests.BCL.FuncScenario.IService ResolveByTag(Composition composition, object tag)
-    {
-      switch (tag)
-      {
-        case null:
-          return composition.Root;
-      }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.FuncScenario.IService.");
-    }
-  }
   #endregion
 }
 ```
 
 </blockquote></details>
 
-
-Be careful, replication takes into account the lifetime of the object.

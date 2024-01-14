@@ -67,6 +67,11 @@ classDiagram
   class XyzDependency {
     +XyzDependency()
   }
+  class TaskScheduler
+  class TaskCreationOptions
+  class TaskContinuationOptions
+  class TaskFactory
+  class CancellationToken
   class IService {
     <<abstract>>
   }
@@ -76,6 +81,10 @@ classDiagram
   IAsyncEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency
   IAsyncEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
   Service *--  IAsyncEnumerableᐸIDependencyᐳ : IAsyncEnumerableᐸIDependencyᐳ
+  TaskFactory o-- CancellationToken : Argument "cancellationToken"
+  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
+  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
+  TaskFactory *--  TaskScheduler : TaskScheduler
   Composition ..> Service : IService Root
 ```
 
@@ -87,16 +96,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM01D12di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM01D14di;
   
   public Composition()
   {
-    _disposableSingletonsM01D12di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D14di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM01D12di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D14di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -108,13 +117,13 @@ partial class Composition
     get
     {
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x200)]
-      async System.Collections.Generic.IAsyncEnumerable<Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.IDependency> LocalFunc_transientM01D12di1_IAsyncEnumerable()
+      async System.Collections.Generic.IAsyncEnumerable<Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.IDependency> LocalFunc_transientM01D14di1_IAsyncEnumerable()
       {
           yield return new Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.AbcDependency();
           yield return new Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.XyzDependency();
       }
-      var transientM01D12di1_IAsyncEnumerable = LocalFunc_transientM01D12di1_IAsyncEnumerable();
-      return new Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.Service(transientM01D12di1_IAsyncEnumerable);
+      var transientM01D14di1_IAsyncEnumerable = LocalFunc_transientM01D14di1_IAsyncEnumerable();
+      return new Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.Service(transientM01D14di1_IAsyncEnumerable);
     }
   }
   #endregion
@@ -125,7 +134,7 @@ partial class Composition
   #endif
   public T Resolve<T>()
   {
-    return ResolverM01D12di<T>.Value.Resolve(this);
+    return ResolverM01D14di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -133,7 +142,7 @@ partial class Composition
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM01D12di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM01D14di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -141,10 +150,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM01D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM01D12di;
+    var index = (int)(_bucketSizeM01D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM01D14di;
     do {
-      ref var pair = ref _bucketsM01D12di[index];
+      ref var pair = ref _bucketsM01D14di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -159,10 +168,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM01D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM01D12di;
+    var index = (int)(_bucketSizeM01D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM01D14di;
     do {
-      ref var pair = ref _bucketsM01D12di[index];
+      ref var pair = ref _bucketsM01D14di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -197,6 +206,11 @@ partial class Composition
         "  class XyzDependency {\n" +
           "    +XyzDependency()\n" +
         "  }\n" +
+        "  class TaskScheduler\n" +
+        "  class TaskCreationOptions\n" +
+        "  class TaskContinuationOptions\n" +
+        "  class TaskFactory\n" +
+        "  class CancellationToken\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
@@ -206,29 +220,33 @@ partial class Composition
         "  IAsyncEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency\n" +
         "  IAsyncEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency\n" +
         "  Service *--  IAsyncEnumerableᐸIDependencyᐳ : IAsyncEnumerableᐸIDependencyᐳ\n" +
+        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
+        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
+        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
+        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Composition ..> Service : IService Root";
   }
   
-  private readonly static int _bucketSizeM01D12di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM01D12di;
+  private readonly static int _bucketSizeM01D14di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM01D14di;
   
   static Composition()
   {
-    var valResolverM01D12di_0000 = new ResolverM01D12di_0000();
-    ResolverM01D12di<Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.IService>.Value = valResolverM01D12di_0000;
-    _bucketsM01D12di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM01D14di_0000 = new ResolverM01D14di_0000();
+    ResolverM01D14di<Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.IService>.Value = valResolverM01D14di_0000;
+    _bucketsM01D14di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM01D12di,
+      out _bucketSizeM01D14di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.IService), valResolverM01D12di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.IService), valResolverM01D14di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM01D12di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM01D14di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM01D12di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM01D14di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -241,7 +259,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM01D12di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.IService>
+  private sealed class ResolverM01D14di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.IService>
   {
     public Pure.DI.UsageTests.BCL.AsyncEnumerableScenario.IService Resolve(Composition composition)
     {

@@ -44,6 +44,11 @@ classDiagram
   class Service4 {
     +Service4()
   }
+  class TaskScheduler
+  class TaskCreationOptions
+  class TaskContinuationOptions
+  class TaskFactory
+  class CancellationToken
   class IService3 {
     <<abstract>>
   }
@@ -77,6 +82,10 @@ classDiagram
   Service3v4 *--  Service4 : IService4
   Service1 *--  Service2Array : IService2
   Service2Array *--  ArrayᐸIService3ᐳ : ArrayᐸIService3ᐳ
+  TaskFactory o-- CancellationToken : Argument "cancellationToken"
+  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
+  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
+  TaskFactory *--  TaskScheduler : TaskScheduler
   Array ..> CompositionRoot : CompositionRoot PureDIByCR
 ```
 
@@ -88,16 +97,16 @@ classDiagram
 ```c#
 partial class Array
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM01D12di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM01D14di;
   
   public Array()
   {
-    _disposableSingletonsM01D12di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D14di = new global::System.IDisposable[0];
   }
   
   internal Array(Array parent)
   {
-    _disposableSingletonsM01D12di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D14di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -116,7 +125,7 @@ partial class Array
   #endif
   public T Resolve<T>()
   {
-    return ResolverM01D12di<T>.Value.Resolve(this);
+    return ResolverM01D14di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -124,7 +133,7 @@ partial class Array
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM01D12di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM01D14di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -132,10 +141,10 @@ partial class Array
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM01D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM01D12di;
+    var index = (int)(_bucketSizeM01D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM01D14di;
     do {
-      ref var pair = ref _bucketsM01D12di[index];
+      ref var pair = ref _bucketsM01D14di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -150,10 +159,10 @@ partial class Array
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM01D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM01D12di;
+    var index = (int)(_bucketSizeM01D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM01D14di;
     do {
-      ref var pair = ref _bucketsM01D12di[index];
+      ref var pair = ref _bucketsM01D14di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -207,6 +216,11 @@ partial class Array
         "  class Service4 {\n" +
           "    +Service4()\n" +
         "  }\n" +
+        "  class TaskScheduler\n" +
+        "  class TaskCreationOptions\n" +
+        "  class TaskContinuationOptions\n" +
+        "  class TaskFactory\n" +
+        "  class CancellationToken\n" +
         "  class IService3 {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
@@ -240,29 +254,33 @@ partial class Array
         "  Service3v4 *--  Service4 : IService4\n" +
         "  Service1 *--  Service2Array : IService2\n" +
         "  Service2Array *--  ArrayᐸIService3ᐳ : ArrayᐸIService3ᐳ\n" +
+        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
+        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
+        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
+        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Array ..> CompositionRoot : CompositionRoot PureDIByCR";
   }
   
-  private readonly static int _bucketSizeM01D12di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>[] _bucketsM01D12di;
+  private readonly static int _bucketSizeM01D14di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>[] _bucketsM01D14di;
   
   static Array()
   {
-    var valResolverM01D12di_0000 = new ResolverM01D12di_0000();
-    ResolverM01D12di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM01D12di_0000;
-    _bucketsM01D12di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Array, object>>.Create(
+    var valResolverM01D14di_0000 = new ResolverM01D14di_0000();
+    ResolverM01D14di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM01D14di_0000;
+    _bucketsM01D14di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Array, object>>.Create(
       1,
-      out _bucketSizeM01D12di,
+      out _bucketSizeM01D14di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM01D12di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM01D14di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM01D12di<T>: global::Pure.DI.IResolver<Array, T>
+  private sealed class ResolverM01D14di<T>: global::Pure.DI.IResolver<Array, T>
   {
-    public static global::Pure.DI.IResolver<Array, T> Value = new ResolverM01D12di<T>();
+    public static global::Pure.DI.IResolver<Array, T> Value = new ResolverM01D14di<T>();
     
     public T Resolve(Array composite)
     {
@@ -275,7 +293,7 @@ partial class Array
     }
   }
   
-  private sealed class ResolverM01D12di_0000: global::Pure.DI.IResolver<Array, Pure.DI.Benchmarks.Model.CompositionRoot>
+  private sealed class ResolverM01D14di_0000: global::Pure.DI.IResolver<Array, Pure.DI.Benchmarks.Model.CompositionRoot>
   {
     public Pure.DI.Benchmarks.Model.CompositionRoot Resolve(Array composition)
     {

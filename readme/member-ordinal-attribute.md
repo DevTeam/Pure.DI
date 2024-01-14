@@ -75,6 +75,11 @@ classDiagram
     +String FirstName
     +DateTime Birthday
   }
+  class TaskScheduler
+  class TaskCreationOptions
+  class TaskContinuationOptions
+  class TaskFactory
+  class CancellationToken
   class Int32
   class String
   class DateTime
@@ -84,6 +89,10 @@ classDiagram
   Person o-- Int32 : Argument "personId"
   Person o-- String : Argument "personName"
   Person o-- DateTime : Argument "personBirthday"
+  TaskFactory o-- CancellationToken : Argument "cancellationToken"
+  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
+  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
+  TaskFactory *--  TaskScheduler : TaskScheduler
   PersonComposition ..> Person : IPerson Person
 ```
 
@@ -95,10 +104,10 @@ classDiagram
 ```c#
 partial class PersonComposition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM01D12di;
-  private readonly int _argM01D12di_personId;
-  private readonly string _argM01D12di_personName;
-  private readonly System.DateTime _argM01D12di_personBirthday;
+  private readonly global::System.IDisposable[] _disposableSingletonsM01D14di;
+  private readonly int _argM01D14di_personId;
+  private readonly string _argM01D14di_personName;
+  private readonly System.DateTime _argM01D14di_personBirthday;
   
   public PersonComposition(int personId, string personName, System.DateTime personBirthday)
   {
@@ -107,18 +116,18 @@ partial class PersonComposition
       throw new global::System.ArgumentNullException("personName");
     }
     
-    _argM01D12di_personId = personId;
-    _argM01D12di_personName = personName;
-    _argM01D12di_personBirthday = personBirthday;
-    _disposableSingletonsM01D12di = new global::System.IDisposable[0];
+    _argM01D14di_personId = personId;
+    _argM01D14di_personName = personName;
+    _argM01D14di_personBirthday = personBirthday;
+    _disposableSingletonsM01D14di = new global::System.IDisposable[0];
   }
   
   internal PersonComposition(PersonComposition parent)
   {
-    _disposableSingletonsM01D12di = new global::System.IDisposable[0];
-    _argM01D12di_personId = parent._argM01D12di_personId;
-    _argM01D12di_personName = parent._argM01D12di_personName;
-    _argM01D12di_personBirthday = parent._argM01D12di_personBirthday;
+    _disposableSingletonsM01D14di = new global::System.IDisposable[0];
+    _argM01D14di_personId = parent._argM01D14di_personId;
+    _argM01D14di_personName = parent._argM01D14di_personName;
+    _argM01D14di_personBirthday = parent._argM01D14di_personBirthday;
   }
   
   #region Composition Roots
@@ -129,11 +138,11 @@ partial class PersonComposition
     #endif
     get
     {
-      var transientM01D12di0_Person = new Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person();
-      transientM01D12di0_Person.Id = _argM01D12di_personId;
-      transientM01D12di0_Person.FirstName = _argM01D12di_personName;
-      transientM01D12di0_Person.Birthday = _argM01D12di_personBirthday;
-      return transientM01D12di0_Person;
+      var transientM01D14di0_Person = new Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person();
+      transientM01D14di0_Person.Id = _argM01D14di_personId;
+      transientM01D14di0_Person.FirstName = _argM01D14di_personName;
+      transientM01D14di0_Person.Birthday = _argM01D14di_personBirthday;
+      return transientM01D14di0_Person;
     }
   }
   #endregion
@@ -144,7 +153,7 @@ partial class PersonComposition
   #endif
   public T Resolve<T>()
   {
-    return ResolverM01D12di<T>.Value.Resolve(this);
+    return ResolverM01D14di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -152,7 +161,7 @@ partial class PersonComposition
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM01D12di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM01D14di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -160,10 +169,10 @@ partial class PersonComposition
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM01D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM01D12di;
+    var index = (int)(_bucketSizeM01D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM01D14di;
     do {
-      ref var pair = ref _bucketsM01D12di[index];
+      ref var pair = ref _bucketsM01D14di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -178,10 +187,10 @@ partial class PersonComposition
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM01D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM01D12di;
+    var index = (int)(_bucketSizeM01D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM01D14di;
     do {
-      ref var pair = ref _bucketsM01D12di[index];
+      ref var pair = ref _bucketsM01D14di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -210,6 +219,11 @@ partial class PersonComposition
           "    +String FirstName\n" +
           "    +DateTime Birthday\n" +
         "  }\n" +
+        "  class TaskScheduler\n" +
+        "  class TaskCreationOptions\n" +
+        "  class TaskContinuationOptions\n" +
+        "  class TaskFactory\n" +
+        "  class CancellationToken\n" +
         "  class Int32\n" +
         "  class String\n" +
         "  class DateTime\n" +
@@ -219,29 +233,33 @@ partial class PersonComposition
         "  Person o-- Int32 : Argument \"personId\"\n" +
         "  Person o-- String : Argument \"personName\"\n" +
         "  Person o-- DateTime : Argument \"personBirthday\"\n" +
+        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
+        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
+        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
+        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  PersonComposition ..> Person : IPerson Person";
   }
   
-  private readonly static int _bucketSizeM01D12di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[] _bucketsM01D12di;
+  private readonly static int _bucketSizeM01D14di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[] _bucketsM01D14di;
   
   static PersonComposition()
   {
-    var valResolverM01D12di_0000 = new ResolverM01D12di_0000();
-    ResolverM01D12di<Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson>.Value = valResolverM01D12di_0000;
-    _bucketsM01D12di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>.Create(
+    var valResolverM01D14di_0000 = new ResolverM01D14di_0000();
+    ResolverM01D14di<Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson>.Value = valResolverM01D14di_0000;
+    _bucketsM01D14di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>.Create(
       1,
-      out _bucketSizeM01D12di,
+      out _bucketSizeM01D14di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>(typeof(Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson), valResolverM01D12di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>(typeof(Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson), valResolverM01D14di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM01D12di<T>: global::Pure.DI.IResolver<PersonComposition, T>
+  private sealed class ResolverM01D14di<T>: global::Pure.DI.IResolver<PersonComposition, T>
   {
-    public static global::Pure.DI.IResolver<PersonComposition, T> Value = new ResolverM01D12di<T>();
+    public static global::Pure.DI.IResolver<PersonComposition, T> Value = new ResolverM01D14di<T>();
     
     public T Resolve(PersonComposition composite)
     {
@@ -254,7 +272,7 @@ partial class PersonComposition
     }
   }
   
-  private sealed class ResolverM01D12di_0000: global::Pure.DI.IResolver<PersonComposition, Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson>
+  private sealed class ResolverM01D14di_0000: global::Pure.DI.IResolver<PersonComposition, Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson>
   {
     public Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson Resolve(PersonComposition composition)
     {
