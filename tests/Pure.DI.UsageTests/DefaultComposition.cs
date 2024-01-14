@@ -6,7 +6,6 @@ internal class DefaultComposition
 {
     private static void Setup() =>
         DI.Setup(nameof(DefaultComposition), CompositionKind.Global)
-            .Hint(Hint.ThreadSafe, "Off")
             .Hint(Hint.ToString, "On")
             .Hint(Hint.FormatCode, "On");
 }

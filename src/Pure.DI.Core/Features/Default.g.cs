@@ -17,8 +17,8 @@ namespace Pure.DI
                     .As(Lifetime.PerResolve)
                     .To(ctx => new global::System.Func<TT>(() =>
                     {
-                        ctx.Inject<TT>(ctx.Tag, out var value);
-                        return value;
+                        ctx.Inject<TT>(ctx.Tag, out var factory);
+                        return factory;
                     }))
                 .Bind<global::System.Collections.Generic.IComparer<TT>>()
                 .Bind<global::System.Collections.Generic.Comparer<TT>>()
@@ -30,17 +30,49 @@ namespace Pure.DI
                 .Bind<global::System.Lazy<TT>>()
                     .To(ctx =>
                     {
-                        ctx.Inject<global::System.Func<TT>>(ctx.Tag, out var func);
-                        return new global::System.Lazy<TT>(func, true);
+                        ctx.Inject<global::System.Func<TT>>(ctx.Tag, out var factory);
+                        return new global::System.Lazy<TT>(factory, true);
+                    })
+                .RootArg<global::System.Threading.CancellationToken>("cancellationToken")
+                .Bind<global::System.Threading.Tasks.TaskScheduler>()
+                    .To(_ => global::System.Threading.Tasks.TaskScheduler.Default)
+                .Bind<global::System.Threading.Tasks.TaskCreationOptions>()
+                    .To(_ => global::System.Threading.Tasks.TaskCreationOptions.None)
+                .Bind<global::System.Threading.Tasks.TaskContinuationOptions>()
+                    .To(_ => global::System.Threading.Tasks.TaskContinuationOptions.None)
+                .Bind<global::System.Threading.Tasks.TaskFactory>().As(Lifetime.PerBlock)
+                    .To(ctx =>
+                    {
+                        ctx.Inject(out global::System.Threading.CancellationToken cancellationToken);
+                        ctx.Inject(out global::System.Threading.Tasks.TaskCreationOptions taskCreationOptions);
+                        ctx.Inject(out global::System.Threading.Tasks.TaskContinuationOptions taskContinuationOptions);
+                        ctx.Inject(out global::System.Threading.Tasks.TaskScheduler taskScheduler);
+                        return new global::System.Threading.Tasks.TaskFactory(cancellationToken, taskCreationOptions, taskContinuationOptions, taskScheduler);
+                    })
+                .Bind<global::System.Threading.Tasks.TaskFactory<TT>>().As(Lifetime.PerBlock)
+                    .To(ctx =>
+                    {
+                        ctx.Inject(out global::System.Threading.CancellationToken cancellationToken);
+                        ctx.Inject(out global::System.Threading.Tasks.TaskCreationOptions taskCreationOptions);
+                        ctx.Inject(out global::System.Threading.Tasks.TaskContinuationOptions taskContinuationOptions);
+                        ctx.Inject(out global::System.Threading.Tasks.TaskScheduler taskScheduler);
+                        return new global::System.Threading.Tasks.TaskFactory<TT>(cancellationToken, taskCreationOptions, taskContinuationOptions, taskScheduler);
+                    })
+                .Bind<global::System.Threading.Tasks.Task<TT>>()
+                    .To(ctx =>
+                    {
+                        ctx.Inject(ctx.Tag, out global::System.Func<TT> factory);
+                        ctx.Inject(out global::System.Threading.Tasks.TaskFactory<TT> taskFactory);
+                        return taskFactory.StartNew(factory);
                     })
 #endif                
 #if NETSTANDARD || NET || NETCOREAPP                
                 .Bind<global::System.Lazy<TT, TT1>>()
                     .To(ctx =>
                     {
-                        ctx.Inject<global::System.Func<TT>>(ctx.Tag, out var func);
+                        ctx.Inject<global::System.Func<TT>>(ctx.Tag, out var factory);
                         ctx.Inject<TT1>(ctx.Tag, out var metadata);
-                        return new global::System.Lazy<TT, TT1>(func, metadata, true);
+                        return new global::System.Lazy<TT, TT1>(factory, metadata, true);
                     })
 #endif
                 // Collections
