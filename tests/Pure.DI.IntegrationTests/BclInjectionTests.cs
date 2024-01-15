@@ -26,6 +26,12 @@ public class BclInjectionTests
     [InlineData("System.ReadOnlySpan")]
     [InlineData("System.Memory")]
     [InlineData("System.ReadOnlyMemory")]
+    [InlineData("System.Collections.Concurrent.IProducerConsumerCollection")]
+    [InlineData("System.Collections.Concurrent.ConcurrentBag")]
+    [InlineData("System.Collections.Concurrent.ConcurrentQueue")]
+    [InlineData("System.Collections.Concurrent.ConcurrentStack")]
+    [InlineData("System.Collections.Concurrent.BlockingCollection")]
+    
     public async Task ShouldSupportCollectionInjection(string collectionType, LanguageVersion languageVersion = LanguageVersion.CSharp9)
     {
         // Given
@@ -141,6 +147,11 @@ namespace Sample
     [InlineData("System.ReadOnlySpan")]
     [InlineData("System.Memory")]
     [InlineData("System.ReadOnlyMemory")]
+    [InlineData("System.Collections.Concurrent.IProducerConsumerCollection")]
+    [InlineData("System.Collections.Concurrent.ConcurrentBag")]
+    [InlineData("System.Collections.Concurrent.ConcurrentQueue")]
+    [InlineData("System.Collections.Concurrent.ConcurrentStack")]
+    [InlineData("System.Collections.Concurrent.BlockingCollection")]
     public async Task ShouldSupportCollectionInjectionWhenGeneric(string collectionType, LanguageVersion languageVersion = LanguageVersion.CSharp9)
     {
         // Given
@@ -256,6 +267,11 @@ namespace Sample
     [InlineData("System.ReadOnlySpan")]
     [InlineData("System.Memory")]
     [InlineData("System.ReadOnlyMemory")]
+    [InlineData("System.Collections.Concurrent.IProducerConsumerCollection")]
+    [InlineData("System.Collections.Concurrent.ConcurrentBag")]
+    [InlineData("System.Collections.Concurrent.ConcurrentQueue")]
+    [InlineData("System.Collections.Concurrent.ConcurrentStack")]
+    [InlineData("System.Collections.Concurrent.BlockingCollection")]
     public async Task ShouldSupportCollectionInjectionWhenHasNoBindings(string collectionType, LanguageVersion languageVersion = LanguageVersion.CSharp9)
     {
         // Given

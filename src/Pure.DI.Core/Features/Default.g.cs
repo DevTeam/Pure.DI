@@ -111,7 +111,34 @@ namespace Pure.DI
                         return arr;
                     })
 #endif
-#if NETSTANDARD || NET || NETCOREAPP || NET40_OR_GREATER
+#if NETSTANDARD1_1_OR_GREATER || NET || NETCOREAPP || NET40_OR_GREATER
+                .Bind<global::System.Collections.Concurrent.IProducerConsumerCollection<TT>>()
+                .Bind<global::System.Collections.Concurrent.ConcurrentBag<TT>>()
+                    .To(ctx =>
+                    {
+                        ctx.Inject<TT[]>(out var arr);
+                        return new global::System.Collections.Concurrent.ConcurrentBag<TT>(arr);
+                    })
+                .Bind<global::System.Collections.Concurrent.ConcurrentQueue<TT>>()
+                    .To(ctx =>
+                    {
+                        ctx.Inject<TT[]>(out var arr);
+                        return new global::System.Collections.Concurrent.ConcurrentQueue<TT>(arr);
+                    })
+                .Bind<global::System.Collections.Concurrent.ConcurrentStack<TT>>()
+                    .To(ctx =>
+                    {
+                        ctx.Inject<TT[]>(out var arr);
+                        return new global::System.Collections.Concurrent.ConcurrentStack<TT>(arr);
+                    })
+                .Bind<global::System.Collections.Concurrent.BlockingCollection<TT>>()
+                    .To(ctx =>
+                    {
+                        ctx.Inject<global::System.Collections.Concurrent.ConcurrentBag<TT>>(out var concurrentBag);
+                        return new global::System.Collections.Concurrent.BlockingCollection<TT>(concurrentBag);
+                    })
+#endif
+#if NETSTANDARD || NET || NETCOREAPP || NET40_OR_GREATER                
                 .Bind<global::System.Collections.Generic.ISet<TT>>()
 #endif
 #if NETSTANDARD || NET || NETCOREAPP || NET35_OR_GREATER

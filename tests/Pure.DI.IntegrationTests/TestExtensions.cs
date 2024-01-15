@@ -9,6 +9,7 @@
 
 namespace Pure.DI.IntegrationTests;
 
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -218,6 +219,7 @@ public static class TestExtensions
                 MetadataReference.CreateFromFile(typeof(IList<object>).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(IImmutableList<object>).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(SortedSet<object>).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(ConcurrentBag<object>).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Uri).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Regex).Assembly.Location),
