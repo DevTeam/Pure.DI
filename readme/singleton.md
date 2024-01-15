@@ -77,7 +77,7 @@ classDiagram
 partial class Composition
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM01D15di;
-  private Pure.DI.UsageTests.Lifetimes.SingletonScenario.Dependency _singletonM01D15di28_Dependency;
+  private Pure.DI.UsageTests.Lifetimes.SingletonScenario.Dependency _singletonM01D15di32_Dependency;
   
   public Composition()
   {
@@ -89,7 +89,7 @@ partial class Composition
     _disposableSingletonsM01D15di = new global::System.IDisposable[0];
     lock (parent._disposableSingletonsM01D15di)
     {
-      _singletonM01D15di28_Dependency = parent._singletonM01D15di28_Dependency;
+      _singletonM01D15di32_Dependency = parent._singletonM01D15di32_Dependency;
     }
   }
   
@@ -101,17 +101,17 @@ partial class Composition
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM01D15di28_Dependency, null))
+      if (object.ReferenceEquals(_singletonM01D15di32_Dependency, null))
       {
           lock (_disposableSingletonsM01D15di)
           {
-              if (object.ReferenceEquals(_singletonM01D15di28_Dependency, null))
+              if (object.ReferenceEquals(_singletonM01D15di32_Dependency, null))
               {
-                  _singletonM01D15di28_Dependency = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Dependency();
+                  _singletonM01D15di32_Dependency = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Dependency();
               }
           }
       }
-      return new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service(_singletonM01D15di28_Dependency, _singletonM01D15di28_Dependency);
+      return new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service(_singletonM01D15di32_Dependency, _singletonM01D15di32_Dependency);
     }
   }
   #endregion

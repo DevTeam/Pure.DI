@@ -91,15 +91,15 @@ partial class Composition
     #endif
     get
     {
-      var perResolveM01D15di30_Func = default(System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>);
-      perResolveM01D15di30_Func = new global::System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>(
+      var perResolveM01D15di34_Func = default(System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>);
+      perResolveM01D15di34_Func = new global::System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>(
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
       () =>
       {
           var factory_M01D15di1 = new Pure.DI.UsageTests.BCL.FuncScenario.Dependency();
           return factory_M01D15di1;
       });
-      return new Pure.DI.UsageTests.BCL.FuncScenario.Service(perResolveM01D15di30_Func);
+      return new Pure.DI.UsageTests.BCL.FuncScenario.Service(perResolveM01D15di34_Func);
     }
   }
   #endregion

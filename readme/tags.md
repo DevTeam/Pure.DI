@@ -100,7 +100,7 @@ classDiagram
 partial class Composition
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM01D15di;
-  private Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency _singletonM01D15di29_XyzDependency;
+  private Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency _singletonM01D15di33_XyzDependency;
   
   public Composition()
   {
@@ -112,7 +112,7 @@ partial class Composition
     _disposableSingletonsM01D15di = new global::System.IDisposable[0];
     lock (parent._disposableSingletonsM01D15di)
     {
-      _singletonM01D15di29_XyzDependency = parent._singletonM01D15di29_XyzDependency;
+      _singletonM01D15di33_XyzDependency = parent._singletonM01D15di33_XyzDependency;
     }
   }
   
@@ -124,17 +124,17 @@ partial class Composition
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM01D15di29_XyzDependency, null))
+      if (object.ReferenceEquals(_singletonM01D15di33_XyzDependency, null))
       {
           lock (_disposableSingletonsM01D15di)
           {
-              if (object.ReferenceEquals(_singletonM01D15di29_XyzDependency, null))
+              if (object.ReferenceEquals(_singletonM01D15di33_XyzDependency, null))
               {
-                  _singletonM01D15di29_XyzDependency = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
+                  _singletonM01D15di33_XyzDependency = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
               }
           }
       }
-      return _singletonM01D15di29_XyzDependency;
+      return _singletonM01D15di33_XyzDependency;
     }
   }
   
@@ -145,17 +145,17 @@ partial class Composition
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM01D15di29_XyzDependency, null))
+      if (object.ReferenceEquals(_singletonM01D15di33_XyzDependency, null))
       {
           lock (_disposableSingletonsM01D15di)
           {
-              if (object.ReferenceEquals(_singletonM01D15di29_XyzDependency, null))
+              if (object.ReferenceEquals(_singletonM01D15di33_XyzDependency, null))
               {
-                  _singletonM01D15di29_XyzDependency = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
+                  _singletonM01D15di33_XyzDependency = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
               }
           }
       }
-      return new Pure.DI.UsageTests.Basics.TagsScenario.Service(new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency(), _singletonM01D15di29_XyzDependency, new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency());
+      return new Pure.DI.UsageTests.Basics.TagsScenario.Service(new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency(), _singletonM01D15di33_XyzDependency, new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency());
     }
   }
   #endregion

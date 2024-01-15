@@ -111,7 +111,7 @@ classDiagram
 partial class Composition
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM01D15di;
-  private Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock _singletonM01D15di28_Clock;
+  private Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock _singletonM01D15di32_Clock;
   
   public Composition()
   {
@@ -123,7 +123,7 @@ partial class Composition
     _disposableSingletonsM01D15di = new global::System.IDisposable[0];
     lock (parent._disposableSingletonsM01D15di)
     {
-      _singletonM01D15di28_Clock = parent._singletonM01D15di28_Clock;
+      _singletonM01D15di32_Clock = parent._singletonM01D15di32_Clock;
     }
   }
   
@@ -138,17 +138,17 @@ partial class Composition
       System.Func<int, Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.IDependency> transientM01D15di1_Func = dependencyId =>
       {
           int transientM01D15di3_Int32 = dependencyId;
-          if (object.ReferenceEquals(_singletonM01D15di28_Clock, null))
+          if (object.ReferenceEquals(_singletonM01D15di32_Clock, null))
           {
               lock (_disposableSingletonsM01D15di)
               {
-                  if (object.ReferenceEquals(_singletonM01D15di28_Clock, null))
+                  if (object.ReferenceEquals(_singletonM01D15di32_Clock, null))
                   {
-                      _singletonM01D15di28_Clock = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock();
+                      _singletonM01D15di32_Clock = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock();
                   }
               }
           }
-          var dependency_M01D15di1 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Dependency(_singletonM01D15di28_Clock, transientM01D15di3_Int32);
+          var dependency_M01D15di1 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Dependency(_singletonM01D15di32_Clock, transientM01D15di3_Int32);
           return dependency_M01D15di1;
       };
       return new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Service(transientM01D15di1_Func);

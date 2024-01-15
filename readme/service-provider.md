@@ -81,7 +81,7 @@ classDiagram
 partial class ServiceProvider
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM01D15di;
-  private Pure.DI.UsageTests.BCL.ServiceProviderScenario.Dependency _singletonM01D15di28_Dependency;
+  private Pure.DI.UsageTests.BCL.ServiceProviderScenario.Dependency _singletonM01D15di32_Dependency;
   
   public ServiceProvider()
   {
@@ -93,7 +93,7 @@ partial class ServiceProvider
     _disposableSingletonsM01D15di = new global::System.IDisposable[0];
     lock (parent._disposableSingletonsM01D15di)
     {
-      _singletonM01D15di28_Dependency = parent._singletonM01D15di28_Dependency;
+      _singletonM01D15di32_Dependency = parent._singletonM01D15di32_Dependency;
     }
   }
   
@@ -105,17 +105,17 @@ partial class ServiceProvider
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM01D15di28_Dependency, null))
+      if (object.ReferenceEquals(_singletonM01D15di32_Dependency, null))
       {
           lock (_disposableSingletonsM01D15di)
           {
-              if (object.ReferenceEquals(_singletonM01D15di28_Dependency, null))
+              if (object.ReferenceEquals(_singletonM01D15di32_Dependency, null))
               {
-                  _singletonM01D15di28_Dependency = new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Dependency();
+                  _singletonM01D15di32_Dependency = new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Dependency();
               }
           }
       }
-      return _singletonM01D15di28_Dependency;
+      return _singletonM01D15di32_Dependency;
     }
   }
   
@@ -126,17 +126,17 @@ partial class ServiceProvider
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM01D15di28_Dependency, null))
+      if (object.ReferenceEquals(_singletonM01D15di32_Dependency, null))
       {
           lock (_disposableSingletonsM01D15di)
           {
-              if (object.ReferenceEquals(_singletonM01D15di28_Dependency, null))
+              if (object.ReferenceEquals(_singletonM01D15di32_Dependency, null))
               {
-                  _singletonM01D15di28_Dependency = new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Dependency();
+                  _singletonM01D15di32_Dependency = new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Dependency();
               }
           }
       }
-      return new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Service(_singletonM01D15di28_Dependency);
+      return new Pure.DI.UsageTests.BCL.ServiceProviderScenario.Service(_singletonM01D15di32_Dependency);
     }
   }
   #endregion

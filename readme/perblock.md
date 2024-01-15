@@ -105,8 +105,8 @@ partial class Composition
     #endif
     get
     {
-      var perResolveM01D15di30_Func = default(System.Func<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency>);
-      perResolveM01D15di30_Func = new global::System.Func<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency>(
+      var perResolveM01D15di34_Func = default(System.Func<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency>);
+      perResolveM01D15di34_Func = new global::System.Func<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency>(
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
       () =>
       {
@@ -115,7 +115,7 @@ partial class Composition
           return factory_M01D15di1;
       });
       var perBlockM01D15di1_Dependency = new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency();
-      return new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service(perBlockM01D15di1_Dependency, perBlockM01D15di1_Dependency, perResolveM01D15di30_Func);
+      return new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service(perBlockM01D15di1_Dependency, perBlockM01D15di1_Dependency, perResolveM01D15di34_Func);
     }
   }
   #endregion

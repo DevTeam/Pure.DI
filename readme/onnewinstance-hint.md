@@ -93,7 +93,7 @@ classDiagram
 partial class Composition
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM01D15di;
-  private Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency _singletonM01D15di28_Dependency;
+  private Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency _singletonM01D15di32_Dependency;
   
   public Composition()
   {
@@ -105,7 +105,7 @@ partial class Composition
     _disposableSingletonsM01D15di = new global::System.IDisposable[0];
     lock (parent._disposableSingletonsM01D15di)
     {
-      _singletonM01D15di28_Dependency = parent._singletonM01D15di28_Dependency;
+      _singletonM01D15di32_Dependency = parent._singletonM01D15di32_Dependency;
     }
   }
   
@@ -117,21 +117,21 @@ partial class Composition
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM01D15di28_Dependency, null))
+      if (object.ReferenceEquals(_singletonM01D15di32_Dependency, null))
       {
           lock (_disposableSingletonsM01D15di)
           {
-              if (object.ReferenceEquals(_singletonM01D15di28_Dependency, null))
+              if (object.ReferenceEquals(_singletonM01D15di32_Dependency, null))
               {
-                  Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency _singletonM01D15di28_DependencyTemp;
-                  _singletonM01D15di28_DependencyTemp = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency();
-                  OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency>(ref _singletonM01D15di28_DependencyTemp, null, Pure.DI.Lifetime.Singleton);
+                  Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency _singletonM01D15di32_DependencyTemp;
+                  _singletonM01D15di32_DependencyTemp = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency();
+                  OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency>(ref _singletonM01D15di32_DependencyTemp, null, Pure.DI.Lifetime.Singleton);
                   global::System.Threading.Thread.MemoryBarrier();
-                  _singletonM01D15di28_Dependency = _singletonM01D15di28_DependencyTemp;
+                  _singletonM01D15di32_Dependency = _singletonM01D15di32_DependencyTemp;
               }
           }
       }
-      var transientM01D15di0_Service = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service(_singletonM01D15di28_Dependency);
+      var transientM01D15di0_Service = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service(_singletonM01D15di32_Dependency);
       OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service>(ref transientM01D15di0_Service, null, Pure.DI.Lifetime.Transient);
       return transientM01D15di0_Service;
     }

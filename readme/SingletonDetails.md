@@ -70,8 +70,8 @@ classDiagram
 partial class Singleton
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM01D15di;
-  private Pure.DI.Benchmarks.Model.Service1 _singletonM01D15di29_Service1;
-  private Pure.DI.Benchmarks.Model.Service4 _singletonM01D15di32_Service4;
+  private Pure.DI.Benchmarks.Model.Service1 _singletonM01D15di33_Service1;
+  private Pure.DI.Benchmarks.Model.Service4 _singletonM01D15di36_Service4;
   
   public Singleton()
   {
@@ -83,8 +83,8 @@ partial class Singleton
     _disposableSingletonsM01D15di = new global::System.IDisposable[0];
     lock (parent._disposableSingletonsM01D15di)
     {
-      _singletonM01D15di29_Service1 = parent._singletonM01D15di29_Service1;
-      _singletonM01D15di32_Service4 = parent._singletonM01D15di32_Service4;
+      _singletonM01D15di33_Service1 = parent._singletonM01D15di33_Service1;
+      _singletonM01D15di36_Service4 = parent._singletonM01D15di36_Service4;
     }
   }
   
@@ -94,15 +94,15 @@ partial class Singleton
   #endif
   public partial Pure.DI.Benchmarks.Model.CompositionRoot PureDIByCR()
   {
-    if (object.ReferenceEquals(_singletonM01D15di32_Service4, null))
+    if (object.ReferenceEquals(_singletonM01D15di36_Service4, null))
     {
-        _singletonM01D15di32_Service4 = new Pure.DI.Benchmarks.Model.Service4();
+        _singletonM01D15di36_Service4 = new Pure.DI.Benchmarks.Model.Service4();
     }
-    if (object.ReferenceEquals(_singletonM01D15di29_Service1, null))
+    if (object.ReferenceEquals(_singletonM01D15di33_Service1, null))
     {
-        _singletonM01D15di29_Service1 = new Pure.DI.Benchmarks.Model.Service1(new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4)));
+        _singletonM01D15di33_Service1 = new Pure.DI.Benchmarks.Model.Service1(new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4)));
     }
-    return new Pure.DI.Benchmarks.Model.CompositionRoot(_singletonM01D15di29_Service1, new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4)), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4)), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4)), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di32_Service4, _singletonM01D15di32_Service4), _singletonM01D15di32_Service4, _singletonM01D15di32_Service4);
+    return new Pure.DI.Benchmarks.Model.CompositionRoot(_singletonM01D15di33_Service1, new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4)), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4)), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4)), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D15di36_Service4, _singletonM01D15di36_Service4), _singletonM01D15di36_Service4, _singletonM01D15di36_Service4);
   }
   #endregion
   

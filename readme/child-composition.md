@@ -88,7 +88,7 @@ partial class Composition: global::System.IDisposable
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM01D15di;
   private int _disposeIndexM01D15di;
-  private Pure.DI.UsageTests.Basics.ChildCompositionScenario.Dependency _singletonM01D15di28_Dependency;
+  private Pure.DI.UsageTests.Basics.ChildCompositionScenario.Dependency _singletonM01D15di32_Dependency;
   
   public Composition()
   {
@@ -100,7 +100,7 @@ partial class Composition: global::System.IDisposable
     lock (parent._disposableSingletonsM01D15di)
     {
       _disposableSingletonsM01D15di = new global::System.IDisposable[1 - parent._disposeIndexM01D15di];
-      _singletonM01D15di28_Dependency = parent._singletonM01D15di28_Dependency;
+      _singletonM01D15di32_Dependency = parent._singletonM01D15di32_Dependency;
     }
   }
   
@@ -112,18 +112,18 @@ partial class Composition: global::System.IDisposable
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM01D15di28_Dependency, null))
+      if (object.ReferenceEquals(_singletonM01D15di32_Dependency, null))
       {
           lock (_disposableSingletonsM01D15di)
           {
-              if (object.ReferenceEquals(_singletonM01D15di28_Dependency, null))
+              if (object.ReferenceEquals(_singletonM01D15di32_Dependency, null))
               {
-                  _singletonM01D15di28_Dependency = new Pure.DI.UsageTests.Basics.ChildCompositionScenario.Dependency();
-                  _disposableSingletonsM01D15di[_disposeIndexM01D15di++] = _singletonM01D15di28_Dependency;
+                  _singletonM01D15di32_Dependency = new Pure.DI.UsageTests.Basics.ChildCompositionScenario.Dependency();
+                  _disposableSingletonsM01D15di[_disposeIndexM01D15di++] = _singletonM01D15di32_Dependency;
               }
           }
       }
-      return new Pure.DI.UsageTests.Basics.ChildCompositionScenario.Service(_singletonM01D15di28_Dependency);
+      return new Pure.DI.UsageTests.Basics.ChildCompositionScenario.Service(_singletonM01D15di32_Dependency);
     }
   }
   #endregion
@@ -199,7 +199,7 @@ partial class Composition: global::System.IDisposable
         }
       }
       
-      _singletonM01D15di28_Dependency = null;
+      _singletonM01D15di32_Dependency = null;
     }
   }
   

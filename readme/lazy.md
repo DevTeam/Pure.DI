@@ -88,8 +88,8 @@ partial class Composition
     #endif
     get
     {
-      var perResolveM01D15di31_Func = default(System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>);
-      perResolveM01D15di31_Func = new global::System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(
+      var perResolveM01D15di35_Func = default(System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>);
+      perResolveM01D15di35_Func = new global::System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
       () =>
       {
@@ -98,7 +98,7 @@ partial class Composition
       });
       System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> transientM01D15di1_Lazy;
       {
-          var factory_M01D15di2 = perResolveM01D15di31_Func;
+          var factory_M01D15di2 = perResolveM01D15di35_Func;
           transientM01D15di1_Lazy = new global::System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(factory_M01D15di2, true);
       }
       return new Pure.DI.UsageTests.BCL.LazyScenario.Service(transientM01D15di1_Lazy);

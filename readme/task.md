@@ -115,7 +115,7 @@ partial class Composition
   #endif
   public Pure.DI.UsageTests.BCL.TaskScenario.IService GetRoot(System.Threading.CancellationToken cancellationToken)
   {
-    var perResolveM01D15di32_Func = default(System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>);
+    var perResolveM01D15di36_Func = default(System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>);
     System.Threading.Tasks.TaskScheduler transientM01D15di5_TaskScheduler = TaskScheduler.Current;
     System.Threading.Tasks.TaskContinuationOptions transientM01D15di4_TaskContinuationOptions = global::System.Threading.Tasks.TaskContinuationOptions.None;
     System.Threading.Tasks.TaskCreationOptions transientM01D15di3_TaskCreationOptions = global::System.Threading.Tasks.TaskCreationOptions.None;
@@ -127,7 +127,7 @@ partial class Composition
         var taskScheduler_M01D15di4 = transientM01D15di5_TaskScheduler;
         perBlockM01D15di2_TaskFactory = new global::System.Threading.Tasks.TaskFactory<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(cancellationToken_M01D15di1, taskCreationOptions_M01D15di2, taskContinuationOptions_M01D15di3, taskScheduler_M01D15di4);
     }
-    perResolveM01D15di32_Func = new global::System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(
+    perResolveM01D15di36_Func = new global::System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
     () =>
     {
@@ -136,7 +136,7 @@ partial class Composition
     });
     System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.TaskScenario.IDependency> transientM01D15di1_Task;
     {
-        var factory_M01D15di6 = perResolveM01D15di32_Func;
+        var factory_M01D15di6 = perResolveM01D15di36_Func;
         var taskFactory_M01D15di7 = perBlockM01D15di2_TaskFactory;
         transientM01D15di1_Task = taskFactory_M01D15di7.StartNew(factory_M01D15di6);
     }
