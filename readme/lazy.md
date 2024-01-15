@@ -46,11 +46,6 @@ classDiagram
   class Dependency {
     +Dependency()
   }
-  class TaskScheduler
-  class TaskCreationOptions
-  class TaskContinuationOptions
-  class TaskFactory
-  class CancellationToken
   class LazyᐸIDependencyᐳ
   class FuncᐸIDependencyᐳ
   class IService {
@@ -60,10 +55,6 @@ classDiagram
     <<abstract>>
   }
   Service *--  LazyᐸIDependencyᐳ : LazyᐸIDependencyᐳ
-  TaskFactory o-- CancellationToken : Argument "cancellationToken"
-  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-  TaskFactory *--  TaskScheduler : TaskScheduler
   Composition ..> Service : IService Root
   LazyᐸIDependencyᐳ o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
   FuncᐸIDependencyᐳ *--  Dependency : IDependency
@@ -188,11 +179,6 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class TaskScheduler\n" +
-        "  class TaskCreationOptions\n" +
-        "  class TaskContinuationOptions\n" +
-        "  class TaskFactory\n" +
-        "  class CancellationToken\n" +
         "  class LazyᐸIDependencyᐳ\n" +
         "  class FuncᐸIDependencyᐳ\n" +
         "  class IService {\n" +
@@ -202,10 +188,6 @@ partial class Composition
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service *--  LazyᐸIDependencyᐳ : LazyᐸIDependencyᐳ\n" +
-        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
-        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
-        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
-        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Composition ..> Service : IService Root\n" +
         "  LazyᐸIDependencyᐳ o--  \"PerResolve\" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ\n" +
         "  FuncᐸIDependencyᐳ *--  Dependency : IDependency";

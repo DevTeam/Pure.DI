@@ -44,11 +44,6 @@ classDiagram
   class Service4 {
     +Service4()
   }
-  class TaskScheduler
-  class TaskCreationOptions
-  class TaskContinuationOptions
-  class TaskFactory
-  class CancellationToken
   class IService3 {
     <<abstract>>
   }
@@ -82,10 +77,6 @@ classDiagram
   Service3v4 *--  Service4 : IService4
   Service1 *--  Service2Array : IService2
   Service2Array *--  ArrayᐸIService3ᐳ : ArrayᐸIService3ᐳ
-  TaskFactory o-- CancellationToken : Argument "cancellationToken"
-  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-  TaskFactory *--  TaskScheduler : TaskScheduler
   Array ..> CompositionRoot : CompositionRoot PureDIByCR
 ```
 
@@ -216,11 +207,6 @@ partial class Array
         "  class Service4 {\n" +
           "    +Service4()\n" +
         "  }\n" +
-        "  class TaskScheduler\n" +
-        "  class TaskCreationOptions\n" +
-        "  class TaskContinuationOptions\n" +
-        "  class TaskFactory\n" +
-        "  class CancellationToken\n" +
         "  class IService3 {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
@@ -254,10 +240,6 @@ partial class Array
         "  Service3v4 *--  Service4 : IService4\n" +
         "  Service1 *--  Service2Array : IService2\n" +
         "  Service2Array *--  ArrayᐸIService3ᐳ : ArrayᐸIService3ᐳ\n" +
-        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
-        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
-        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
-        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Array ..> CompositionRoot : CompositionRoot PureDIByCR";
   }
   

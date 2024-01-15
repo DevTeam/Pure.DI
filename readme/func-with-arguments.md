@@ -87,13 +87,8 @@ classDiagram
   class Clock {
     +Clock()
   }
-  class TaskScheduler
-  class TaskCreationOptions
-  class TaskContinuationOptions
-  class TaskFactory
   class Int32
   class FuncᐸInt32ˏIDependencyᐳ
-  class CancellationToken
   class IService {
     <<abstract>>
   }
@@ -103,10 +98,6 @@ classDiagram
   Dependency o--  "Singleton" Clock : IClock
   Dependency *--  Int32 : Int32
   Service *--  FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ
-  TaskFactory o-- CancellationToken : Argument "cancellationToken"
-  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-  TaskFactory *--  TaskScheduler : TaskScheduler
   FuncᐸInt32ˏIDependencyᐳ *--  Dependency : Dependency
   Composition ..> Service : IService Root
 ```
@@ -241,13 +232,8 @@ partial class Composition
         "  class Clock {\n" +
           "    +Clock()\n" +
         "  }\n" +
-        "  class TaskScheduler\n" +
-        "  class TaskCreationOptions\n" +
-        "  class TaskContinuationOptions\n" +
-        "  class TaskFactory\n" +
         "  class Int32\n" +
         "  class FuncᐸInt32ˏIDependencyᐳ\n" +
-        "  class CancellationToken\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
@@ -257,10 +243,6 @@ partial class Composition
         "  Dependency o--  \"Singleton\" Clock : IClock\n" +
         "  Dependency *--  Int32 : Int32\n" +
         "  Service *--  FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ\n" +
-        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
-        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
-        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
-        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  FuncᐸInt32ˏIDependencyᐳ *--  Dependency : Dependency\n" +
         "  Composition ..> Service : IService Root";
   }

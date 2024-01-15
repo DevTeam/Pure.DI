@@ -54,11 +54,6 @@ classDiagram
   }
   class IEnumerableᐸIDependencyᐸStringᐳᐳ
   class IEnumerableᐸIDependencyᐸInt32ᐳᐳ
-  class TaskScheduler
-  class TaskCreationOptions
-  class TaskContinuationOptions
-  class TaskFactory
-  class CancellationToken
   AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 
   class AbcDependencyᐸStringᐳ {
     +AbcDependency()
@@ -99,10 +94,6 @@ classDiagram
   IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : "Xyz"  IDependencyᐸStringᐳ
   IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  AbcDependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
   IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  XyzDependencyᐸInt32ᐳ : "Xyz"  IDependencyᐸInt32ᐳ
-  TaskFactory o-- CancellationToken : Argument "cancellationToken"
-  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-  TaskFactory *--  TaskScheduler : TaskScheduler
   Composition ..> ServiceᐸInt32ᐳ : IServiceᐸInt32ᐳ IntRoot
   Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ StringRoot
   ServiceᐸInt32ᐳ o--  "PerBlock" IEnumerableᐸIDependencyᐸInt32ᐳᐳ : IEnumerableᐸIDependencyᐸInt32ᐳᐳ
@@ -235,11 +226,6 @@ partial class Composition
         "  }\n" +
         "  class IEnumerableᐸIDependencyᐸStringᐳᐳ\n" +
         "  class IEnumerableᐸIDependencyᐸInt32ᐳᐳ\n" +
-        "  class TaskScheduler\n" +
-        "  class TaskCreationOptions\n" +
-        "  class TaskContinuationOptions\n" +
-        "  class TaskFactory\n" +
-        "  class CancellationToken\n" +
         "  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : \n" +
         "  class AbcDependencyᐸStringᐳ {\n" +
           "    +AbcDependency()\n" +
@@ -280,10 +266,6 @@ partial class Composition
         "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : \"Xyz\"  IDependencyᐸStringᐳ\n" +
         "  IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  AbcDependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ\n" +
         "  IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  XyzDependencyᐸInt32ᐳ : \"Xyz\"  IDependencyᐸInt32ᐳ\n" +
-        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
-        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
-        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
-        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Composition ..> ServiceᐸInt32ᐳ : IServiceᐸInt32ᐳ IntRoot\n" +
         "  Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ StringRoot\n" +
         "  ServiceᐸInt32ᐳ o--  \"PerBlock\" IEnumerableᐸIDependencyᐸInt32ᐳᐳ : IEnumerableᐸIDependencyᐸInt32ᐳᐳ\n" +

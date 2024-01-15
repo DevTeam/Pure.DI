@@ -7,11 +7,6 @@ using Core.Models;
 [Collection(nameof(IntegrationTestsCollectionDefinition))]
 public class GraphTests
 {
-    private static readonly Options DefaultOptions = new()
-    {
-        PreprocessorSymbols = ImmutableArray.Create("PUREDI_DISABLE_DEFAULT_BINDINGS")
-    };
-        
     [Fact]
     public async Task ShouldSupportBindToImplementation()
     {
@@ -54,7 +49,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -111,18 +106,14 @@ namespace Sample
 
     public class Program { public static void Main() { } }
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeFalse(result);
         result.Errors.Count.ShouldBe(0);
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
-        graphs[0].ConvertToString().ShouldBe("""
-Dependency()
-Service(Sample.IDependency dependency<--Sample.IDependency))
-  +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
-""");
+        graphs[0].ConvertToString().ShouldBe("");
     }
     
     [Fact]
@@ -168,7 +159,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -231,7 +222,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -288,7 +279,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -345,7 +336,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }               
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -407,7 +398,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -465,7 +456,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }               
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeFalse(result);
@@ -526,7 +517,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }               
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -585,7 +576,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }               
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -647,7 +638,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }               
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -740,7 +731,7 @@ namespace Sample
 """ + bindingCode;
 
         // When
-        var result = await setupCode.RunAsync(DefaultOptions);
+        var result = await setupCode.RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -798,7 +789,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }               
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -855,7 +846,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }               
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -912,7 +903,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }               
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -975,7 +966,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }               
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1061,7 +1052,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }               
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1115,7 +1106,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }               
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1177,7 +1168,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }               
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1231,7 +1222,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }               
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1297,7 +1288,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }               
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeFalse(result);
@@ -1391,7 +1382,7 @@ namespace Sample
         }
     }                
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1466,7 +1457,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1538,7 +1529,7 @@ namespace Sample
         }
     }                
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeTrue(result);
@@ -1620,7 +1611,7 @@ namespace Sample
 
     public class Program { public static void Main() { } }
 }
-""".RunAsync(DefaultOptions);
+""".RunAsync();
 
         // Then
         result.Success.ShouldBeFalse(result);
@@ -1631,7 +1622,6 @@ namespace Sample
         graphs[0].ConvertToString().ShouldBe("""
 Sample.IService() Root
   +[Sample.IService() Root]<--[Sample.IService]--[SimpleService()]
-Dependency()
 SimpleService()
 """);
     }

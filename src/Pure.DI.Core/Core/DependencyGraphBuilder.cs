@@ -7,6 +7,7 @@ namespace Pure.DI.Core;
 internal sealed class DependencyGraphBuilder(
     IEnumerable<IBuilder<MdSetup, IEnumerable<DependencyNode>>> dependencyNodeBuilders,
     IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
+    IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>> rootsBuilder,
     IMarker marker,
     Func<ITypeConstructor> typeConstructorFactory,
     Func<IBuilder<RewriterContext<MdFactory>, MdFactory>> factoryRewriterFactory,
@@ -119,7 +120,7 @@ internal sealed class DependencyGraphBuilder(
                         }
                         
                         // OnCannotResolve
-                        if (TryCreateOnCannotResolve(setup, targetNode, injection))
+                        if (TryCreateOnCannotResolve(setup, targetNode, injection, ref maxId, map, processed))
                         {
                             continue;
                         }
@@ -169,7 +170,7 @@ internal sealed class DependencyGraphBuilder(
                 }
                 
                 // OnCannotResolve
-                if (TryCreateOnCannotResolve(setup, targetNode, injection))
+                if (TryCreateOnCannotResolve(setup, targetNode, injection, ref maxId, map, processed))
                 {
                     continue;
                 }
@@ -178,28 +179,6 @@ internal sealed class DependencyGraphBuilder(
                 notProcessed.Add(node);
                 isValid = false;
                 break;
-
-                bool TryCreateOnCannotResolve(MdSetup mdSetup, DependencyNode ownerNode, Injection unresolvedInjection)
-                {
-                    if (mdSetup.Hints.GetHint(Hint.OnCannotResolve) == SettingState.On
-                        && filter.IsMeetRegularExpression(
-                            mdSetup,
-                            (Hint.OnCannotResolveContractTypeNameRegularExpression, unresolvedInjection.Type.ToString()),
-                            (Hint.OnCannotResolveTagRegularExpression, unresolvedInjection.Tag.ValueToString()),
-                            (Hint.OnCannotResolveLifetimeRegularExpression, ownerNode.Lifetime.ValueToString())))
-                    {
-                        var onCannotResolveBinding = CreateConstructBinding(mdSetup, ownerNode, unresolvedInjection, unresolvedInjection.Type, unresolvedInjection.Tag, ownerNode.Lifetime, ++maxId, MdConstructKind.OnCannotResolve, false, default);
-                        var onCannotResolveNodes = CreateNodes(mdSetup, onCannotResolveBinding);
-                        foreach (var onCannotResolveNode in onCannotResolveNodes)
-                        {
-                            map[unresolvedInjection] = onCannotResolveNode;
-                            processed.Add(CreateNewProcessingNode(unresolvedInjection, onCannotResolveNode));
-                            return true;
-                        }
-                    }
-
-                    return false;
-                }
             }
 
             if (!isValid)
@@ -237,16 +216,102 @@ internal sealed class DependencyGraphBuilder(
             entries.Add(new GraphEntry<DependencyNode, Dependency>(node.Node, edges.ToImmutableArray()));
         }
         
-        dependencyGraph = new DependencyGraph(
-            isValid,
-            setup,
-            new Graph<DependencyNode, Dependency>(entries.ToImmutableArray()),
-            map,
-            ImmutableDictionary<Injection, Root>.Empty);
-        
+        dependencyGraph = CreateGraph(setup, isValid, entries, map);
         return ImmutableArray<DependencyNode>.Empty;
     }
-    
+
+    private DependencyGraph CreateGraph(
+        MdSetup setup,
+        bool isValid,
+        IEnumerable<GraphEntry<DependencyNode, Dependency>> entries,
+        IReadOnlyDictionary<Injection, DependencyNode> map)
+    {
+        var graph = new Graph<DependencyNode, Dependency>(entries.ToImmutableArray());
+        var dependencyGraph = new DependencyGraph(
+            isValid,
+            setup,
+            graph,
+            map,
+            ImmutableDictionary<Injection, Root>.Empty);
+
+        if (isValid)
+        {
+            var roots = rootsBuilder.Build(dependencyGraph);
+            var nodes = new HashSet<DependencyNode>();
+            foreach (var root in roots)
+            {
+                if (!nodes.Add(root.Value.Node))
+                {
+                    continue;
+                }
+
+                var stack = new Stack<DependencyNode>();
+                stack.Push(root.Value.Node);
+                while (stack.TryPop(out var node))
+                {
+                    if (graph.TryGetInEdges(node, out var dependencies))
+                    {
+                        foreach (var dependency in dependencies)
+                        {
+                            var source = dependency.Source;
+                            if (nodes.Add(source))
+                            {
+                                stack.Push(source);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            dependencyGraph = dependencyGraph with
+            {
+                Graph = graph.Consolidate(nodes),
+                Roots = roots
+            };
+        }
+
+        return dependencyGraph;
+    }
+
+    private bool TryCreateOnCannotResolve(
+        MdSetup mdSetup,
+        DependencyNode ownerNode,
+        Injection unresolvedInjection,
+        ref int maxId,
+        IDictionary<Injection, DependencyNode> map,
+        ISet<ProcessingNode> processed)
+    {
+        if (mdSetup.Hints.GetHint(Hint.OnCannotResolve) == SettingState.On
+            && filter.IsMeetRegularExpression(
+                mdSetup,
+                (Hint.OnCannotResolveContractTypeNameRegularExpression, unresolvedInjection.Type.ToString()),
+                (Hint.OnCannotResolveTagRegularExpression, unresolvedInjection.Tag.ValueToString()),
+                (Hint.OnCannotResolveLifetimeRegularExpression, ownerNode.Lifetime.ValueToString())))
+        {
+            var onCannotResolveBinding = CreateConstructBinding(
+                mdSetup,
+                ownerNode,
+                unresolvedInjection,
+                unresolvedInjection.Type,
+                unresolvedInjection.Tag,
+                ownerNode.Lifetime,
+                ++maxId,
+                MdConstructKind.OnCannotResolve,
+                false,
+                default);
+
+            var onCannotResolveNodes = CreateNodes(mdSetup, onCannotResolveBinding);
+            foreach (var onCannotResolveNode in onCannotResolveNodes)
+            {
+                map[unresolvedInjection] = onCannotResolveNode;
+                processed.Add(CreateNewProcessingNode(unresolvedInjection, onCannotResolveNode));
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private static MdTag? CreateTag(in Injection injection, in MdTag? tag)
     {
         if (!tag.HasValue || !ReferenceEquals(tag.Value.Value, MdTag.ContextTag))

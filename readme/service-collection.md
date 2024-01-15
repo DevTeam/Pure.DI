@@ -47,8 +47,8 @@ service.Dependency.ShouldBe(dependency);
 ```mermaid
 classDiagram
   class Composition {
-    -IDependency RootM01D14di0001
-    -IService RootM01D14di0002
+    -IDependency RootM01D15di0001
+    -IService RootM01D15di0002
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object Resolve(Type type)
@@ -62,11 +62,6 @@ classDiagram
   class Dependency {
     +Dependency()
   }
-  class TaskScheduler
-  class TaskCreationOptions
-  class TaskContinuationOptions
-  class TaskFactory
-  class CancellationToken
   class IService {
     <<abstract>>
   }
@@ -74,12 +69,8 @@ classDiagram
     <<abstract>>
   }
   Service o--  "Singleton" Dependency : IDependency
-  TaskFactory o-- CancellationToken : Argument "cancellationToken"
-  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-  TaskFactory *--  TaskScheduler : TaskScheduler
-  Composition ..> Dependency : IDependency RootM01D14di0001
-  Composition ..> Service : IService RootM01D14di0002
+  Composition ..> Dependency : IDependency RootM01D15di0001
+  Composition ..> Service : IService RootM01D15di0002
 ```
 
 </details>
@@ -225,11 +216,6 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class TaskScheduler\n" +
-        "  class TaskCreationOptions\n" +
-        "  class TaskContinuationOptions\n" +
-        "  class TaskFactory\n" +
-        "  class CancellationToken\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
@@ -237,10 +223,6 @@ partial class Composition
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service o--  \"Singleton\" Dependency : IDependency\n" +
-        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
-        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
-        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
-        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Composition ..> Dependency : IDependency RootM01D15di0001\n" +
         "  Composition ..> Service : IService RootM01D15di0002";
   }

@@ -60,9 +60,10 @@ internal class ReadmeTarget : Command, ITarget<int>
         // Delete generated files
         Directory.Delete(Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator"), true);
 
+        var usageTestsProjects = Path.Combine(solutionDirectory, "tests", "Pure.DI.UsageTests", "Pure.DI.UsageTests.csproj");
         var projects = new[]
         {
-            Path.Combine(solutionDirectory, "tests", "Pure.DI.UsageTests", "Pure.DI.UsageTests.csproj"),
+            usageTestsProjects,
             Path.Combine(solutionDirectory, "benchmarks", "Pure.DI.Benchmarks", "Pure.DI.Benchmarks.csproj")
         };
 
@@ -70,6 +71,8 @@ internal class ReadmeTarget : Command, ITarget<int>
         {
             (await new MSBuild().WithProject(project).WithTarget("clean;rebuild").BuildAsync()).Succeed();    
         }
+
+        new DotNetTest(usageTestsProjects).Run();
 
         await using var readmeWriter = File.CreateText(ReadmeFile);
         

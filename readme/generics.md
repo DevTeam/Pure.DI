@@ -52,11 +52,6 @@ classDiagram
   class Service {
     +Service(IDependencyᐸInt32ᐳ intDependency, IDependencyᐸStringᐳ stringDependency)
   }
-  class TaskScheduler
-  class TaskCreationOptions
-  class TaskContinuationOptions
-  class TaskFactory
-  class CancellationToken
   DependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : 
   class DependencyᐸInt32ᐳ {
     +Dependency()
@@ -76,10 +71,6 @@ classDiagram
   }
   Service *--  DependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
   Service *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ
-  TaskFactory o-- CancellationToken : Argument "cancellationToken"
-  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-  TaskFactory *--  TaskScheduler : TaskScheduler
   Composition ..> Service : IService Root
 ```
 
@@ -185,11 +176,6 @@ partial class Composition
         "  class Service {\n" +
           "    +Service(IDependencyᐸInt32ᐳ intDependency, IDependencyᐸStringᐳ stringDependency)\n" +
         "  }\n" +
-        "  class TaskScheduler\n" +
-        "  class TaskCreationOptions\n" +
-        "  class TaskContinuationOptions\n" +
-        "  class TaskFactory\n" +
-        "  class CancellationToken\n" +
         "  DependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : \n" +
         "  class DependencyᐸInt32ᐳ {\n" +
           "    +Dependency()\n" +
@@ -209,10 +195,6 @@ partial class Composition
         "  }\n" +
         "  Service *--  DependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ\n" +
         "  Service *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ\n" +
-        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
-        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
-        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
-        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Composition ..> Service : IService Root";
   }
   

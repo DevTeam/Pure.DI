@@ -78,22 +78,13 @@ classDiagram
     +Person(String name)
     ~Object Id
   }
-  class TaskScheduler
-  class TaskCreationOptions
-  class TaskContinuationOptions
-  class TaskFactory
   class String
-  class CancellationToken
   class Int32
   class IPerson {
     <<abstract>>
   }
   Person *--  String : "NikName"  String
   Person o-- Int32 : Argument "personId"
-  TaskFactory o-- CancellationToken : Argument "cancellationToken"
-  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-  TaskFactory *--  TaskScheduler : TaskScheduler
   PersonComposition ..> Person : IPerson Person
 ```
 
@@ -206,22 +197,13 @@ partial class PersonComposition
           "    +Person(String name)\n" +
           "    ~Object Id\n" +
         "  }\n" +
-        "  class TaskScheduler\n" +
-        "  class TaskCreationOptions\n" +
-        "  class TaskContinuationOptions\n" +
-        "  class TaskFactory\n" +
         "  class String\n" +
-        "  class CancellationToken\n" +
         "  class Int32\n" +
         "  class IPerson {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  Person *--  String : \"NikName\"  String\n" +
         "  Person o-- Int32 : Argument \"personId\"\n" +
-        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
-        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
-        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
-        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  PersonComposition ..> Person : IPerson Person";
   }
   

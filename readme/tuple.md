@@ -53,12 +53,7 @@ classDiagram
   class Dependency {
     +Dependency()
   }
-  class TaskScheduler
-  class TaskCreationOptions
-  class TaskContinuationOptions
-  class TaskFactory
   class Point
-  class CancellationToken
   class IService {
     <<abstract>>
   }
@@ -68,10 +63,6 @@ classDiagram
   ValueTupleᐸPointˏIDependencyᐳ *--  Point : Point
   ValueTupleᐸPointˏIDependencyᐳ *--  Dependency : IDependency
   Service *--  ValueTupleᐸPointˏIDependencyᐳ : ValueTupleᐸPointˏIDependencyᐳ
-  TaskFactory o-- CancellationToken : Argument "cancellationToken"
-  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-  TaskFactory *--  TaskScheduler : TaskScheduler
   Composition ..> Service : IService Root
 ```
 
@@ -185,12 +176,7 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class TaskScheduler\n" +
-        "  class TaskCreationOptions\n" +
-        "  class TaskContinuationOptions\n" +
-        "  class TaskFactory\n" +
         "  class Point\n" +
-        "  class CancellationToken\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
@@ -200,10 +186,6 @@ partial class Composition
         "  ValueTupleᐸPointˏIDependencyᐳ *--  Point : Point\n" +
         "  ValueTupleᐸPointˏIDependencyᐳ *--  Dependency : IDependency\n" +
         "  Service *--  ValueTupleᐸPointˏIDependencyᐳ : ValueTupleᐸPointˏIDependencyᐳ\n" +
-        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
-        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
-        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
-        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Composition ..> Service : IService Root";
   }
   

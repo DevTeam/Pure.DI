@@ -48,11 +48,6 @@ classDiagram
   class Dependency {
     +Dependency()
   }
-  class TaskScheduler
-  class TaskCreationOptions
-  class TaskContinuationOptions
-  class TaskFactory
-  class CancellationToken
   class IService {
     <<abstract>>
   }
@@ -60,10 +55,6 @@ classDiagram
   ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'b'  Dependency
   ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'c'  Dependency
   Service *--  ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ
-  TaskFactory o-- CancellationToken : Argument "cancellationToken"
-  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-  TaskFactory *--  TaskScheduler : TaskScheduler
   Composition ..> Service : IService Root
 ```
 
@@ -179,11 +170,6 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class TaskScheduler\n" +
-        "  class TaskCreationOptions\n" +
-        "  class TaskContinuationOptions\n" +
-        "  class TaskFactory\n" +
-        "  class CancellationToken\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
@@ -191,10 +177,6 @@ partial class Composition
         "  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'b'  Dependency\n" +
         "  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'c'  Dependency\n" +
         "  Service *--  ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ\n" +
-        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
-        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
-        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
-        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Composition ..> Service : IService Root";
   }
   

@@ -31,11 +31,6 @@ classDiagram
   class Service4 {
     +Service4()
   }
-  class TaskScheduler
-  class TaskCreationOptions
-  class TaskContinuationOptions
-  class TaskFactory
-  class CancellationToken
   class IService2 {
     <<abstract>>
   }
@@ -63,10 +58,6 @@ classDiagram
   Service3 *--  Service4 : IService4
   Service3 *--  Service4 : IService4
   Service1 *--  Service2 : IService2
-  TaskFactory o-- CancellationToken : Argument "cancellationToken"
-  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-  TaskFactory *--  TaskScheduler : TaskScheduler
   Transient ..> CompositionRoot : CompositionRoot PureDIByCR
 ```
 
@@ -184,11 +175,6 @@ partial class Transient
         "  class Service4 {\n" +
           "    +Service4()\n" +
         "  }\n" +
-        "  class TaskScheduler\n" +
-        "  class TaskCreationOptions\n" +
-        "  class TaskContinuationOptions\n" +
-        "  class TaskFactory\n" +
-        "  class CancellationToken\n" +
         "  class IService2 {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
@@ -216,10 +202,6 @@ partial class Transient
         "  Service3 *--  Service4 : IService4\n" +
         "  Service3 *--  Service4 : IService4\n" +
         "  Service1 *--  Service2 : IService2\n" +
-        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
-        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
-        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
-        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Transient ..> CompositionRoot : CompositionRoot PureDIByCR";
   }
   

@@ -65,9 +65,6 @@ classDiagram
   class Dependency {
     +Dependency()
   }
-  class TaskScheduler
-  class TaskCreationOptions
-  class TaskContinuationOptions
   class TaskFactory
   class CancellationToken
   class TaskᐸIDependencyᐳ
@@ -186,9 +183,6 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class TaskScheduler\n" +
-        "  class TaskCreationOptions\n" +
-        "  class TaskContinuationOptions\n" +
         "  class TaskFactory\n" +
         "  class CancellationToken\n" +
         "  class TaskᐸIDependencyᐳ\n" +

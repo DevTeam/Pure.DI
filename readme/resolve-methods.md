@@ -47,7 +47,7 @@ classDiagram
   class Composition {
     +IDependency DependencySingleton
     +IService OtherService
-    -IService RootM01D14di0002
+    -IService RootM01D15di0002
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object Resolve(Type type)
@@ -65,11 +65,6 @@ classDiagram
   class OtherService {
     +OtherService()
   }
-  class TaskScheduler
-  class TaskCreationOptions
-  class TaskContinuationOptions
-  class TaskFactory
-  class CancellationToken
   class IService {
     <<abstract>>
   }
@@ -77,12 +72,8 @@ classDiagram
     <<abstract>>
   }
   Service *--  Dependency : IDependency
-  TaskFactory o-- CancellationToken : Argument "cancellationToken"
-  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-  TaskFactory *--  TaskScheduler : TaskScheduler
   Composition ..> Dependency : IDependency DependencySingleton
-  Composition ..> Service : IService RootM01D14di0002
+  Composition ..> Service : IService RootM01D15di0002
   Composition ..> OtherService : "Other" IService OtherService
 ```
 
@@ -220,11 +211,6 @@ partial class Composition
         "  class OtherService {\n" +
           "    +OtherService()\n" +
         "  }\n" +
-        "  class TaskScheduler\n" +
-        "  class TaskCreationOptions\n" +
-        "  class TaskContinuationOptions\n" +
-        "  class TaskFactory\n" +
-        "  class CancellationToken\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
@@ -232,10 +218,6 @@ partial class Composition
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service *--  Dependency : IDependency\n" +
-        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
-        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
-        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
-        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Composition ..> Dependency : IDependency DependencySingleton\n" +
         "  Composition ..> Service : IService RootM01D15di0002\n" +
         "  Composition ..> OtherService : \"Other\" IService OtherService";

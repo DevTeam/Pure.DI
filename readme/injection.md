@@ -49,23 +49,14 @@ classDiagram
   class Dependency {
     +Dependency()
   }
-  class TaskScheduler
-  class TaskCreationOptions
-  class TaskContinuationOptions
-  class TaskFactory
   Service --|> IService : 
   class Service
-  class CancellationToken
   class IDependency {
     <<abstract>>
   }
   class IService {
     <<abstract>>
   }
-  TaskFactory o-- CancellationToken : Argument "cancellationToken"
-  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-  TaskFactory *--  TaskScheduler : TaskScheduler
   Service *--  Dependency : IDependency
   Composition ..> Service : IService Root
 ```
@@ -177,23 +168,14 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class TaskScheduler\n" +
-        "  class TaskCreationOptions\n" +
-        "  class TaskContinuationOptions\n" +
-        "  class TaskFactory\n" +
         "  Service --|> IService : \n" +
         "  class Service\n" +
-        "  class CancellationToken\n" +
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
-        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
-        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
-        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Service *--  Dependency : IDependency\n" +
         "  Composition ..> Service : IService Root";
   }

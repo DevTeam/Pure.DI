@@ -54,20 +54,11 @@ classDiagram
   class Service {
     +Service(ArrayᐸIDependencyᐳ dependencies)
   }
-  class TaskScheduler
-  class TaskCreationOptions
-  class TaskContinuationOptions
-  class TaskFactory
   class ArrayᐸIDependencyᐳ
-  class CancellationToken
   class IService {
     <<abstract>>
   }
   Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ
-  TaskFactory o-- CancellationToken : Argument "cancellationToken"
-  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-  TaskFactory *--  TaskScheduler : TaskScheduler
   Composition ..> Service : IService Root
 ```
 
@@ -179,20 +170,11 @@ partial class Composition
         "  class Service {\n" +
           "    +Service(ArrayᐸIDependencyᐳ dependencies)\n" +
         "  }\n" +
-        "  class TaskScheduler\n" +
-        "  class TaskCreationOptions\n" +
-        "  class TaskContinuationOptions\n" +
-        "  class TaskFactory\n" +
         "  class ArrayᐸIDependencyᐳ\n" +
-        "  class CancellationToken\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ\n" +
-        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
-        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
-        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
-        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Composition ..> Service : IService Root";
   }
   

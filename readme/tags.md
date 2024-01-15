@@ -78,11 +78,6 @@ classDiagram
   class XyzDependency {
     +XyzDependency()
   }
-  class TaskScheduler
-  class TaskCreationOptions
-  class TaskContinuationOptions
-  class TaskFactory
-  class CancellationToken
   class IService {
     <<abstract>>
   }
@@ -92,10 +87,6 @@ classDiagram
   Service *--  AbcDependency : "Abc"  IDependency
   Service o--  "Singleton" XyzDependency : "Xyz"  IDependency
   Service *--  AbcDependency : IDependency
-  TaskFactory o-- CancellationToken : Argument "cancellationToken"
-  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-  TaskFactory *--  TaskScheduler : TaskScheduler
   Composition ..> XyzDependency : "Xyz" IDependency XyzRoot
   Composition ..> Service : IService Root
 ```
@@ -248,11 +239,6 @@ partial class Composition
         "  class XyzDependency {\n" +
           "    +XyzDependency()\n" +
         "  }\n" +
-        "  class TaskScheduler\n" +
-        "  class TaskCreationOptions\n" +
-        "  class TaskContinuationOptions\n" +
-        "  class TaskFactory\n" +
-        "  class CancellationToken\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
@@ -262,10 +248,6 @@ partial class Composition
         "  Service *--  AbcDependency : \"Abc\"  IDependency\n" +
         "  Service o--  \"Singleton\" XyzDependency : \"Xyz\"  IDependency\n" +
         "  Service *--  AbcDependency : IDependency\n" +
-        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
-        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
-        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
-        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Composition ..> XyzDependency : \"Xyz\" IDependency XyzRoot\n" +
         "  Composition ..> Service : IService Root";
   }

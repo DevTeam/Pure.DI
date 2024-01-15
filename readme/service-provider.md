@@ -46,8 +46,8 @@ service.Dependency.ShouldBe(dependency);
 ```mermaid
 classDiagram
   class ServiceProvider {
-    -IDependency RootM01D14di0001
-    -IService RootM01D14di0002
+    -IDependency RootM01D15di0001
+    -IService RootM01D15di0002
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object GetService(Type type)
@@ -61,11 +61,6 @@ classDiagram
   class Dependency {
     +Dependency()
   }
-  class TaskScheduler
-  class TaskCreationOptions
-  class TaskContinuationOptions
-  class TaskFactory
-  class CancellationToken
   class IService {
     <<abstract>>
   }
@@ -73,12 +68,8 @@ classDiagram
     <<abstract>>
   }
   Service o--  "Singleton" Dependency : IDependency
-  TaskFactory o-- CancellationToken : Argument "cancellationToken"
-  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-  TaskFactory *--  TaskScheduler : TaskScheduler
-  ServiceProvider ..> Dependency : IDependency RootM01D14di0001
-  ServiceProvider ..> Service : IService RootM01D14di0002
+  ServiceProvider ..> Dependency : IDependency RootM01D15di0001
+  ServiceProvider ..> Service : IService RootM01D15di0002
 ```
 
 </details>
@@ -224,11 +215,6 @@ partial class ServiceProvider
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class TaskScheduler\n" +
-        "  class TaskCreationOptions\n" +
-        "  class TaskContinuationOptions\n" +
-        "  class TaskFactory\n" +
-        "  class CancellationToken\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
@@ -236,10 +222,6 @@ partial class ServiceProvider
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service o--  \"Singleton\" Dependency : IDependency\n" +
-        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
-        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
-        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
-        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  ServiceProvider ..> Dependency : IDependency RootM01D15di0001\n" +
         "  ServiceProvider ..> Service : IService RootM01D15di0002";
   }

@@ -75,11 +75,6 @@ classDiagram
     +String FirstName
     +DateTime Birthday
   }
-  class TaskScheduler
-  class TaskCreationOptions
-  class TaskContinuationOptions
-  class TaskFactory
-  class CancellationToken
   class Int32
   class String
   class DateTime
@@ -89,10 +84,6 @@ classDiagram
   Person o-- Int32 : Argument "personId"
   Person o-- String : Argument "personName"
   Person o-- DateTime : Argument "personBirthday"
-  TaskFactory o-- CancellationToken : Argument "cancellationToken"
-  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-  TaskFactory *--  TaskScheduler : TaskScheduler
   PersonComposition ..> Person : IPerson Person
 ```
 
@@ -219,11 +210,6 @@ partial class PersonComposition
           "    +String FirstName\n" +
           "    +DateTime Birthday\n" +
         "  }\n" +
-        "  class TaskScheduler\n" +
-        "  class TaskCreationOptions\n" +
-        "  class TaskContinuationOptions\n" +
-        "  class TaskFactory\n" +
-        "  class CancellationToken\n" +
         "  class Int32\n" +
         "  class String\n" +
         "  class DateTime\n" +
@@ -233,10 +219,6 @@ partial class PersonComposition
         "  Person o-- Int32 : Argument \"personId\"\n" +
         "  Person o-- String : Argument \"personName\"\n" +
         "  Person o-- DateTime : Argument \"personBirthday\"\n" +
-        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
-        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
-        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
-        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  PersonComposition ..> Person : IPerson Person";
   }
   
