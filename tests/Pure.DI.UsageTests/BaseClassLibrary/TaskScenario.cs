@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=4
+$p=3
 $d=Task
 $h=By default, tasks are started automatically when they are injected. The composition root property is automatically transformed into a method with a parameter of type <c>CancellationToken</c>.
 $h=To start a task, an instance of type <c>TaskFactory<T></c> is used, with default settings:

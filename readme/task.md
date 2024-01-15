@@ -97,16 +97,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM01D14di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM01D15di;
   
   public Composition()
   {
-    _disposableSingletonsM01D14di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D15di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM01D14di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D15di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -115,32 +115,32 @@ partial class Composition
   #endif
   public Pure.DI.UsageTests.BCL.TaskScenario.IService GetRoot(System.Threading.CancellationToken cancellationToken)
   {
-    var perResolveM01D14di32_Func = default(System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>);
-    System.Threading.Tasks.TaskScheduler transientM01D14di5_TaskScheduler = TaskScheduler.Current;
-    System.Threading.Tasks.TaskContinuationOptions transientM01D14di4_TaskContinuationOptions = global::System.Threading.Tasks.TaskContinuationOptions.None;
-    System.Threading.Tasks.TaskCreationOptions transientM01D14di3_TaskCreationOptions = global::System.Threading.Tasks.TaskCreationOptions.None;
-    System.Threading.Tasks.TaskFactory<Pure.DI.UsageTests.BCL.TaskScenario.IDependency> perBlockM01D14di2_TaskFactory;
+    var perResolveM01D15di32_Func = default(System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>);
+    System.Threading.Tasks.TaskScheduler transientM01D15di5_TaskScheduler = TaskScheduler.Current;
+    System.Threading.Tasks.TaskContinuationOptions transientM01D15di4_TaskContinuationOptions = global::System.Threading.Tasks.TaskContinuationOptions.None;
+    System.Threading.Tasks.TaskCreationOptions transientM01D15di3_TaskCreationOptions = global::System.Threading.Tasks.TaskCreationOptions.None;
+    System.Threading.Tasks.TaskFactory<Pure.DI.UsageTests.BCL.TaskScenario.IDependency> perBlockM01D15di2_TaskFactory;
     {
-        var cancellationToken_M01D14di1 = cancellationToken;
-        var taskCreationOptions_M01D14di2 = transientM01D14di3_TaskCreationOptions;
-        var taskContinuationOptions_M01D14di3 = transientM01D14di4_TaskContinuationOptions;
-        var taskScheduler_M01D14di4 = transientM01D14di5_TaskScheduler;
-        perBlockM01D14di2_TaskFactory = new global::System.Threading.Tasks.TaskFactory<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(cancellationToken_M01D14di1, taskCreationOptions_M01D14di2, taskContinuationOptions_M01D14di3, taskScheduler_M01D14di4);
+        var cancellationToken_M01D15di1 = cancellationToken;
+        var taskCreationOptions_M01D15di2 = transientM01D15di3_TaskCreationOptions;
+        var taskContinuationOptions_M01D15di3 = transientM01D15di4_TaskContinuationOptions;
+        var taskScheduler_M01D15di4 = transientM01D15di5_TaskScheduler;
+        perBlockM01D15di2_TaskFactory = new global::System.Threading.Tasks.TaskFactory<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(cancellationToken_M01D15di1, taskCreationOptions_M01D15di2, taskContinuationOptions_M01D15di3, taskScheduler_M01D15di4);
     }
-    perResolveM01D14di32_Func = new global::System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(
+    perResolveM01D15di32_Func = new global::System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
     () =>
     {
-        var factory_M01D14di5 = new Pure.DI.UsageTests.BCL.TaskScenario.Dependency();
-        return factory_M01D14di5;
+        var factory_M01D15di5 = new Pure.DI.UsageTests.BCL.TaskScenario.Dependency();
+        return factory_M01D15di5;
     });
-    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.TaskScenario.IDependency> transientM01D14di1_Task;
+    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.TaskScenario.IDependency> transientM01D15di1_Task;
     {
-        var factory_M01D14di6 = perResolveM01D14di32_Func;
-        var taskFactory_M01D14di7 = perBlockM01D14di2_TaskFactory;
-        transientM01D14di1_Task = taskFactory_M01D14di7.StartNew(factory_M01D14di6);
+        var factory_M01D15di6 = perResolveM01D15di32_Func;
+        var taskFactory_M01D15di7 = perBlockM01D15di2_TaskFactory;
+        transientM01D15di1_Task = taskFactory_M01D15di7.StartNew(factory_M01D15di6);
     }
-    return new Pure.DI.UsageTests.BCL.TaskScenario.Service(transientM01D14di1_Task);
+    return new Pure.DI.UsageTests.BCL.TaskScenario.Service(transientM01D15di1_Task);
   }
   #endregion
   
@@ -150,7 +150,7 @@ partial class Composition
   #endif
   public T Resolve<T>()
   {
-    return ResolverM01D14di<T>.Value.Resolve(this);
+    return ResolverM01D15di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -158,7 +158,7 @@ partial class Composition
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM01D14di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM01D15di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -228,9 +228,9 @@ partial class Composition
   
   
   #region Resolvers
-  private sealed class ResolverM01D14di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM01D15di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM01D14di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM01D15di<T>();
     
     public T Resolve(Composition composite)
     {
