@@ -2,7 +2,7 @@
 #if !PUREDI_API_SUPPRESSION || PUREDI_API_V2
 #pragma warning disable
 
-#if NET20 || NET35 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
+#if !NET40_OR_GREATER && !NETSTANDARD2_0_OR_GREATER && !NETCOREAPP2_0_OR_GREATER 
 namespace System.Diagnostics.CodeAnalysis
 {
     // ReSharper disable UnusedType.Global

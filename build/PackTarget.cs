@@ -52,63 +52,45 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
         {
             throw new InvalidOperationException("Cannot install the project template \"Pure.DI.Templates\".");
         }
-        
-        foreach (var framework in new[] {"net8.0", "net48", "net45", "net35", "net20", "netstandard1.6", "netstandard2.1"})
+
+        var tempDir2 = GetTempDir();
+        try
         {
-            var tempDir = GetTempDir();
-            exitCode = await new DotNetNew(
-                    "dilib",
-                    "-n",
-                    "MyApp",
-                    "-o",
-                    tempDir,
-                    "--force",
-                    "-f", framework)
-                .RunAsync();
-            
-            if (exitCode != 0)
-            {
-                throw new InvalidOperationException($"Cannot create app for \"{framework}\".");
-            }
-
-            if (!framework.Contains('.'))
-            {
-                exitCode = await new DotNetCustom(
-                        "add",
-                        Path.Combine(tempDir),
-                        "package",
-                        "Microsoft.NETFramework.ReferenceAssemblies")
-                    .RunAsync();
-
-                if (exitCode != 0)
+            var frameworks = new[]
                 {
-                    throw new InvalidOperationException($"Cannot add \"Microsoft.NETFramework.ReferenceAssemblies\" package of \"{framework}\".");
-                }
-            }
+                    "net8.0",
+                    "net7.0",
+                    "net6.0",
+                    "net5.0",
+                    "netcoreapp3.1",
+                    "netcoreapp3.0",
+                    "netcoreapp2.2",
+                    "netcoreapp2.1",
+                    "netcoreapp2.0",
+                    "netcoreapp1.1",
+                    "netcoreapp1.0",
+                    "net48",
+                    "net45",
+                    "net35",
+                    "net20",
+                    "netstandard1.3",
+                    "netstandard1.4",
+                    "netstandard1.5",
+                    "netstandard1.6",
+                    "netstandard2.0",
+                    "netstandard2.1"
+                };
 
-            exitCode = await new DotNetCustom(
-                    "add",
-                    Path.Combine(tempDir),
-                    "package",
-                    "Pure.DI",
-                    "-v",
-                    generatorPackageVersion.ToString(),
-                    "-s",
-                    Path.GetDirectoryName(generatorPackage)!)
-                .RunAsync();
-            
-            if (exitCode != 0)
+            foreach (var framework in frameworks)
             {
-                throw new InvalidOperationException($"Cannot add \"Pure.DI\" package of \"{framework}\".");
-            }
-
-            exitCode = await new DotNetBuild().WithWorkingDirectory(tempDir).RunAsync();
-            if (exitCode != 0)
-            {
-                throw new InvalidOperationException($"Cannot build app for \"{framework}\".");
+                await TestForFrameworkAsync(tempDir2, framework, generatorPackageVersion, generatorPackage, ctx.GetCancellationToken());
             }
         }
-        
+        finally
+        {
+            Directory.Delete(tempDir2, true);
+        }
+
         // Libraries
         var libraries = new[]
         {
@@ -143,7 +125,7 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
             foreach (var templateName in library.TemplateNames)
             foreach (var framework in library.Frameworks)
             {
-                var tempDir = GetTempDir();
+                var tempDir = GetTempDir() + "_"  + framework;
                 Directory.CreateDirectory(tempDir);
                 try
                 {
@@ -161,7 +143,7 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
                     {
                         throw new InvalidOperationException($"Cannot create app from the template {templateName}.");
                     }
-
+                    
                     exitCode = await new DotNetCustom(
                             "add",
                             Path.Combine(tempDir),
@@ -214,7 +196,11 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
                         throw new InvalidOperationException("Cannot restore NuGet package.");
                     }
                     
-                    exitCode = await new DotNetBuild().WithWorkingDirectory(tempDir).WithNoRestore(true).RunAsync();
+                    exitCode = await new DotNetBuild()
+                        .WithWorkingDirectory(tempDir)
+                        .WithNoRestore(true)
+                        .RunAsync();
+
                     if (exitCode != 0)
                     {
                         throw new InvalidOperationException("Cannot build.");
@@ -231,6 +217,73 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
         }
         
         return packages;
+    }
+
+    private static async Task TestForFrameworkAsync(
+        string tempDir,
+        string framework,
+        NuGetVersion generatorPackageVersion,
+        string generatorPackage,
+        CancellationToken cancellationToken)
+    {
+        tempDir = Path.Combine(tempDir, "src", framework);
+        var exitCode = await new DotNetNew(
+                "dilib",
+                "-n",
+                "MyApp",
+                "-o",
+                tempDir,
+                "--force",
+                "-f", framework)
+            .RunAsync(cancellationToken: cancellationToken);
+
+        if (exitCode != 0)
+        {
+            throw new InvalidOperationException($"Cannot create app for \"{framework}\".");
+        }
+
+        exitCode =await new DotNetRestore().WithWorkingDirectory(tempDir).RunAsync(cancellationToken: cancellationToken);
+        if (exitCode != 0)
+        {
+            throw new InvalidOperationException($"Cannot restore for \"{framework}\".");
+        }
+        
+        if (!framework.Contains('.'))
+        {
+            exitCode = await new DotNetCustom(
+                    "add",
+                    Path.Combine(tempDir),
+                    "package",
+                    "Microsoft.NETFramework.ReferenceAssemblies")
+                .RunAsync(cancellationToken: cancellationToken);
+
+            if (exitCode != 0)
+            {
+                throw new InvalidOperationException($"Cannot add \"Microsoft.NETFramework.ReferenceAssemblies\" package of \"{framework}\".");
+            }
+        }
+
+        exitCode = await new DotNetCustom(
+                "add",
+                Path.Combine(tempDir),
+                "package",
+                "Pure.DI",
+                "-v",
+                generatorPackageVersion.ToString(),
+                "-s",
+                Path.GetDirectoryName(generatorPackage)!)
+            .RunAsync(cancellationToken: cancellationToken);
+
+        if (exitCode != 0)
+        {
+            throw new InvalidOperationException($"Cannot add \"Pure.DI\" package of \"{framework}\".");
+        }
+
+        exitCode = await new DotNetBuild().WithWorkingDirectory(tempDir).RunAsync(cancellationToken: cancellationToken);
+        if (exitCode != 0)
+        {
+            throw new InvalidOperationException($"Cannot build app for \"{framework}\".");
+        }
     }
 
     private static string GetTempDir() => 
