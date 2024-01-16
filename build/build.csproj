@@ -9,7 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="CSharpInteractive" Version="1.0.7" />
-        <PackageReference Include="Pure.DI" Version="$(InternalVersion)">
+        <PackageReference Include="Pure.DI" Version="2.0.42">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

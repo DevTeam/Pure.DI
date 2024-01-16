@@ -2,11 +2,11 @@
 
     <PropertyGroup>
         <RootNamespace>$(BasePackageId)</RootNamespace>
-        <DefineConstants>$(DefineConstants);PUREDI_API_SUPPRESSION;PUREDI_API_V2;PUREDI_DISABLE_DEFAULT_BINDINGS</DefineConstants>
+        <DefineConstants>$(DefineConstants);PUREDI_API_SUPPRESSION;PUREDI_API_V1</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="$(InternalVersion)">
+        <PackageReference Include="Pure.DI" Version="2.0.42">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
