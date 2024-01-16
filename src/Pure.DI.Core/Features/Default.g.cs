@@ -66,6 +66,14 @@ namespace Pure.DI
                         return taskFactory.StartNew(factory);
                     })
 #endif                
+#if NETSTANDARD1_6_OR_GREATER || NET || NETCOREAPP                
+                .Bind<global::System.Threading.Tasks.ValueTask<TT>>()
+                    .To(ctx =>
+                    {
+                        ctx.Inject(ctx.Tag, out TT value);
+                        return new global::System.Threading.Tasks.ValueTask<TT>(value);
+                    })
+#endif                
 #if NETSTANDARD || NET || NETCOREAPP                
                 .Bind<global::System.Lazy<TT, TT1>>()
                     .To(ctx =>
@@ -76,7 +84,7 @@ namespace Pure.DI
                     })
 #endif
                 // Collections
-#if NETSTANDARD2_1 || NETCOREAPP2_1_OR_GREATER
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP2_1_OR_GREATER
                 .Bind<global::System.Memory<TT>>()
                     .To(ctx =>
                     {

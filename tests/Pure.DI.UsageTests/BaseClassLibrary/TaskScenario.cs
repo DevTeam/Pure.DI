@@ -20,9 +20,15 @@ namespace Pure.DI.UsageTests.BCL.TaskScenario;
 using Xunit;
 
 // {
-interface IDependency { }
+interface IDependency
+{
+    ValueTask DoSomething();
+}
 
-class Dependency : IDependency { }
+class Dependency : IDependency
+{
+    public ValueTask DoSomething() => ValueTask.CompletedTask;
+}
 
 interface IService
 {
@@ -34,6 +40,7 @@ class Service(Task<IDependency> dependencyTask) : IService
     public async Task RunAsync()
     {
         var dependency = await dependencyTask;
+        await dependency.DoSomething();
     }
 }
 // }

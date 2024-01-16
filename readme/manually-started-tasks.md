@@ -94,16 +94,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM01D15di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM01D16di;
   
   public Composition()
   {
-    _disposableSingletonsM01D15di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D16di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM01D15di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D16di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -112,21 +112,21 @@ partial class Composition
   #endif
   public Pure.DI.UsageTests.BCL.ManualTaskScenario.IService GetRoot(System.Threading.CancellationToken cancellationToken)
   {
-    var perResolveM01D15di36_Func = default(System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>);
-    perResolveM01D15di36_Func = new global::System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(
+    var perResolveM01D16di37_Func = default(System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>);
+    perResolveM01D16di37_Func = new global::System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
     () =>
     {
-        var factory_M01D15di1 = new Pure.DI.UsageTests.BCL.ManualTaskScenario.Dependency();
-        return factory_M01D15di1;
+        var factory_M01D16di1 = new Pure.DI.UsageTests.BCL.ManualTaskScenario.Dependency();
+        return factory_M01D16di1;
     });
-    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency> transientM01D15di1_Task;
+    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency> transientM01D16di1_Task;
     {
-        var factory_M01D15di2 = perResolveM01D15di36_Func;
-        var cancellationToken_M01D15di3 = cancellationToken;
-        transientM01D15di1_Task = new Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(factory_M01D15di2, cancellationToken_M01D15di3);
+        var factory_M01D16di2 = perResolveM01D16di37_Func;
+        var cancellationToken_M01D16di3 = cancellationToken;
+        transientM01D16di1_Task = new Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(factory_M01D16di2, cancellationToken_M01D16di3);
     }
-    return new Pure.DI.UsageTests.BCL.ManualTaskScenario.Service(transientM01D15di1_Task);
+    return new Pure.DI.UsageTests.BCL.ManualTaskScenario.Service(transientM01D16di1_Task);
   }
   #endregion
   
@@ -136,7 +136,7 @@ partial class Composition
   #endif
   public T Resolve<T>()
   {
-    return ResolverM01D15di<T>.Value.Resolve(this);
+    return ResolverM01D16di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -144,7 +144,7 @@ partial class Composition
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM01D15di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM01D16di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -206,9 +206,9 @@ partial class Composition
   
   
   #region Resolvers
-  private sealed class ResolverM01D15di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM01D16di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM01D15di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM01D16di<T>();
     
     public T Resolve(Composition composite)
     {

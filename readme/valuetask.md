@@ -1,31 +1,39 @@
-#### Span and ReadOnlySpan
+#### ValueTask
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/SpanScenario.cs)
-
-Specifying `Span<T>` and `ReadOnlySpan<T>` work the same as with the array `T[]`.
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/ValueTaskScenario.cs)
 
 ```c#
-struct Dependency;
+interface IDependency
+{
+    ValueTask DoSomething();
+}
+
+class Dependency : IDependency
+{
+    public ValueTask DoSomething() => ValueTask.CompletedTask;
+}
 
 interface IService
 {
-    int Count { get; }
+    ValueTask RunAsync();
 }
 
-class Service(ReadOnlySpan<Dependency> dependencies) : IService
+class Service(ValueTask<IDependency> dependencyTask) : IService
 {
-    public int Count { get; } = dependencies.Length;
+    public async ValueTask RunAsync()
+    {
+        var dependency = await dependencyTask;
+        await dependency.DoSomething();
+    }
 }
 
 DI.Setup("Composition")
-    .Bind<Dependency>('a').To<Dependency>()
-    .Bind<Dependency>('b').To<Dependency>()
-    .Bind<Dependency>('c').To<Dependency>()
+    .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>().Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;
-service.Count.ShouldBe(3);
+await service.RunAsync();
 ```
 
 <details open>
@@ -40,22 +48,24 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  class ReadOnlySpanᐸDependencyᐳ
   Service --|> IService : 
   class Service {
-    +Service(ReadOnlySpanᐸDependencyᐳ dependencies)
+    +Service(ValueTaskᐸIDependencyᐳ dependencyTask)
   }
+  Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
   }
+  class ValueTaskᐸIDependencyᐳ
   class IService {
     <<abstract>>
   }
-  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'a'  Dependency
-  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'b'  Dependency
-  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'c'  Dependency
-  Service *--  ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ
+  class IDependency {
+    <<abstract>>
+  }
+  Service *--  ValueTaskᐸIDependencyᐳ : ValueTaskᐸIDependencyᐳ
   Composition ..> Service : IService Root
+  ValueTaskᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 
 </details>
@@ -79,20 +89,19 @@ partial class Composition
   }
   
   #region Composition Roots
-  public Pure.DI.UsageTests.BCL.SpanScenario.IService Root
+  public Pure.DI.UsageTests.BCL.ValueTaskScenario.IService Root
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
     #endif
     get
     {
-      System.ReadOnlySpan<Pure.DI.UsageTests.BCL.SpanScenario.Dependency> transientM01D16di1_ReadOnlySpan = stackalloc Pure.DI.UsageTests.BCL.SpanScenario.Dependency[3]
+      System.Threading.Tasks.ValueTask<Pure.DI.UsageTests.BCL.ValueTaskScenario.IDependency> transientM01D16di1_ValueTask;
       {
-          new Pure.DI.UsageTests.BCL.SpanScenario.Dependency(),
-          new Pure.DI.UsageTests.BCL.SpanScenario.Dependency(),
-          new Pure.DI.UsageTests.BCL.SpanScenario.Dependency()
-      };
-      return new Pure.DI.UsageTests.BCL.SpanScenario.Service(transientM01D16di1_ReadOnlySpan);
+          var value_M01D16di1 = new Pure.DI.UsageTests.BCL.ValueTaskScenario.Dependency();
+          transientM01D16di1_ValueTask = new global::System.Threading.Tasks.ValueTask<Pure.DI.UsageTests.BCL.ValueTaskScenario.IDependency>(value_M01D16di1);
+      }
+      return new Pure.DI.UsageTests.BCL.ValueTaskScenario.Service(transientM01D16di1_ValueTask);
     }
   }
   #endregion
@@ -162,22 +171,24 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  class ReadOnlySpanᐸDependencyᐳ\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
-          "    +Service(ReadOnlySpanᐸDependencyᐳ dependencies)\n" +
+          "    +Service(ValueTaskᐸIDependencyᐳ dependencyTask)\n" +
         "  }\n" +
+        "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
+        "  class ValueTaskᐸIDependencyᐳ\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'a'  Dependency\n" +
-        "  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'b'  Dependency\n" +
-        "  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'c'  Dependency\n" +
-        "  Service *--  ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ\n" +
-        "  Composition ..> Service : IService Root";
+        "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service *--  ValueTaskᐸIDependencyᐳ : ValueTaskᐸIDependencyᐳ\n" +
+        "  Composition ..> Service : IService Root\n" +
+        "  ValueTaskᐸIDependencyᐳ *--  Dependency : IDependency";
   }
   
   private readonly static int _bucketSizeM01D16di;
@@ -186,13 +197,13 @@ partial class Composition
   static Composition()
   {
     var valResolverM01D16di_0000 = new ResolverM01D16di_0000();
-    ResolverM01D16di<Pure.DI.UsageTests.BCL.SpanScenario.IService>.Value = valResolverM01D16di_0000;
+    ResolverM01D16di<Pure.DI.UsageTests.BCL.ValueTaskScenario.IService>.Value = valResolverM01D16di_0000;
     _bucketsM01D16di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
       out _bucketSizeM01D16di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.SpanScenario.IService), valResolverM01D16di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.ValueTaskScenario.IService), valResolverM01D16di_0000)
       });
   }
   
@@ -212,21 +223,21 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM01D16di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.SpanScenario.IService>
+  private sealed class ResolverM01D16di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.ValueTaskScenario.IService>
   {
-    public Pure.DI.UsageTests.BCL.SpanScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.BCL.ValueTaskScenario.IService Resolve(Composition composition)
     {
       return composition.Root;
     }
     
-    public Pure.DI.UsageTests.BCL.SpanScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.BCL.ValueTaskScenario.IService ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Root;
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.SpanScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.ValueTaskScenario.IService.");
     }
   }
   #endregion
@@ -235,15 +246,3 @@ partial class Composition
 
 </blockquote></details>
 
-
-This scenario is even more efficient in the case of `Span<T>` or `ReadOnlySpan<T>` when `T` is a value type. In this case, there is no heap allocation, and the composition root `IService` looks like this:
-```c#
-public IService Root
-{
-  get
-  {
-    ReadOnlySpan<Dependency> dependencies = stackalloc Dependency[3] { new Dependency(), new Dependency(), new Dependency() };
-    return new Service(dependencies);
-  }
-}
-```
