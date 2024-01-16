@@ -30,8 +30,14 @@ internal sealed class ImplementationDependencyNodeBuilder(
 
             var compilation = binding.SemanticModel.Compilation;
             var constructors = new List<DpMethod>();
+            var hasExplicitlyDeclaredCtor = implementationType.Constructors.Any(i => !i.IsImplicitlyDeclared);
             foreach (var constructor in implementationType.Constructors)
             {
+                if (hasExplicitlyDeclaredCtor && constructor.IsImplicitlyDeclared)
+                {
+                    continue;
+                }
+                
                 if (constructor.DeclaredAccessibility is not (Accessibility.Internal or Accessibility.Public or Accessibility.Friend))
                 {
                     continue;
