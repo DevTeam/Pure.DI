@@ -729,8 +729,6 @@ internal interface IDependency { }
     [Theory]
     [InlineData("PerResolve")]
     [InlineData("Singleton")]
-    // [InlineData("Transient")]
-    // [InlineData("PerBlock")]
     public async Task ShouldSupportLazyInjectionWhenFactory(string lifetime)
     {
         // Given

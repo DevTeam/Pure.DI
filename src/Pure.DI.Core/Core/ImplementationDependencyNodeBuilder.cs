@@ -30,10 +30,10 @@ internal sealed class ImplementationDependencyNodeBuilder(
 
             var compilation = binding.SemanticModel.Compilation;
             var constructors = new List<DpMethod>();
-            var hasExplicitlyDeclaredCtor = implementationType.Constructors.Any(i => !i.IsImplicitlyDeclared);
+            var hasExplicitlyDeclaredNonStaticCtor = implementationType.Constructors.Any(i => !i.IsImplicitlyDeclared && !i.IsStatic);
             foreach (var constructor in implementationType.Constructors)
             {
-                if (hasExplicitlyDeclaredCtor && constructor.IsImplicitlyDeclared)
+                if (hasExplicitlyDeclaredNonStaticCtor && constructor.IsImplicitlyDeclared)
                 {
                     continue;
                 }
