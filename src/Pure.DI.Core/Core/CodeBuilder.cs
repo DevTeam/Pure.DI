@@ -5,6 +5,7 @@ internal class CodeBuilder(
     IObserversProvider observersProvider,
     IBuilder<MdSetup, DependencyGraph> dependencyGraphBuilder,
     IValidator<DependencyGraph> dependencyGraphValidator,
+    IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>> rootsBuilder,
     [Tag(WellknownTag.CompositionBuilder)] IBuilder<DependencyGraph, CompositionCode> compositionBuilder,
     [Tag(WellknownTag.ClassBuilder)] IBuilder<CompositionCode, CompositionCode> classBuilder,
     IValidator<MdSetup> metadataValidator,
@@ -25,6 +26,10 @@ internal class CodeBuilder(
         {
             graphObserver.OnNext(dependencyGraph);
         }
+
+        cancellationToken.ThrowIfCancellationRequested();
+        var roots = rootsBuilder.Build(dependencyGraph);
+        dependencyGraph = dependencyGraph with { Roots = roots };
 
         cancellationToken.ThrowIfCancellationRequested();
         if (!dependencyGraphValidator.Validate(dependencyGraph))

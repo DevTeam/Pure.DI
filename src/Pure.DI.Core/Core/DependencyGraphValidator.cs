@@ -9,8 +9,7 @@ internal sealed class DependencyGraphValidator(
     public bool Validate(in DependencyGraph dependencyGraph)
     {
         var graph = dependencyGraph.Graph;
-        var isValid = dependencyGraph.IsValid;
-        if (isValid)
+        if (dependencyGraph.IsResolved)
         {
             return true;
         }

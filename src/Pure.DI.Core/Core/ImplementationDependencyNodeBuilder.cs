@@ -182,6 +182,11 @@ internal sealed class ImplementationDependencyNodeBuilder(
         Compilation compilation,
         ITypeConstructor? typeConstructor)
     {
+        if (parameters.Length == 0)
+        {
+            return ImmutableArray<DpParameter>.Empty;
+        }
+        
         var dependenciesBuilder = ImmutableArray.CreateBuilder<DpParameter>(parameters.Length);
         foreach (var parameter in parameters)
         {

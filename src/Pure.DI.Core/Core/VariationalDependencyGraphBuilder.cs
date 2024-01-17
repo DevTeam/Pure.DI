@@ -95,7 +95,7 @@ internal sealed class VariationalDependencyGraphBuilder(
                     continue;
                 }
 
-                if (dependencyGraph is { IsValid: true })
+                if (dependencyGraph is { IsResolved: true })
                 {
                     return dependencyGraph;
                 }

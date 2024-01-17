@@ -451,7 +451,7 @@ namespace Sample
         private static void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<int>().To(_ => 99)
             .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>(); 
+            .Bind<IService>().To<Service>().Root<IService>("Root"); 
     }
 
     public class Program { public static void Main() { } }               
@@ -463,9 +463,14 @@ namespace Sample
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
         graphs[0].ConvertToString().ShouldBe("""
+Sample.IService() Root
+  +[Sample.IService() Root]<--[Sample.IService]--[Service(Sample.IDependency dependency<--Sample.IDependency))]
+99
 Dependency(int id<--int), string abc<--string))
   +[Dependency(int id<--int), string abc<--string))]<--[int]--[99]
   -[Dependency(int id<--int), string abc<--string))]<--[string]--[unresolved]
+Service(Sample.IDependency dependency<--Sample.IDependency))
+  +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency(int id<--int), string abc<--string))]
 """);
 
         var errors = result.Logs.Where(i => i.Id == LogId.ErrorUnableToResolve).ToImmutableArray();

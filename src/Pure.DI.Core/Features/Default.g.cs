@@ -33,7 +33,7 @@ namespace Pure.DI
                         ctx.Inject<global::System.Func<TT>>(ctx.Tag, out var factory);
                         return new global::System.Lazy<TT>(factory, true);
                     })
-                .RootArg<global::System.Threading.CancellationToken>("cancellationToken")
+                .Bind<global::System.Threading.CancellationToken>().To(_ => global::System.Threading.CancellationToken.None)
                 .Bind<global::System.Threading.Tasks.TaskScheduler>()
                     .To(_ => global::System.Threading.Tasks.TaskScheduler.Default)
                 .Bind<global::System.Threading.Tasks.TaskCreationOptions>()

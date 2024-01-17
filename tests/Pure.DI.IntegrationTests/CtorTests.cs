@@ -351,4 +351,90 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(ImmutableArray.Create("99"), result);
     }
+    
+    [Fact]
+    public async Task ShouldSupportUseParameterLessCtor()
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using System.Threading;
+       using System.Threading.Tasks;
+       using Pure.DI;
+
+       namespace Sample
+       {
+           interface IDependency
+           {
+               ValueTask DoSomething(CancellationToken cancellationToken);
+           }
+           
+           class Dependency : IDependency
+           {
+               public ValueTask DoSomething(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+           }
+           
+           interface IService
+           {
+               Task RunAsync(CancellationToken cancellationToken);
+           }
+           
+           class Service : IService
+           {
+               private readonly Task<IDependency> _dependencyTask;
+           
+               public Service(Task<IDependency> dependencyTask)
+               {
+                   _dependencyTask = dependencyTask;
+                   _dependencyTask.Start();
+               }
+           
+               public async Task RunAsync(CancellationToken cancellationToken)
+               {
+                   var dependency = await _dependencyTask;
+                   await dependency.DoSomething(cancellationToken);
+               }
+           }
+       
+           static class Setup
+           {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .Hint(Hint.Resolve, "Off")
+                       .Bind<Task<TT>>().To(ctx =>
+                       {
+                           ctx.Inject(ctx.Tag, out Func<TT> factory);
+                           ctx.Inject(out CancellationToken cancellationToken);
+                           return new Task<TT>(factory, cancellationToken);
+                       })
+                       .Bind<IDependency>().To<Dependency>()
+                       .Bind<IService>().To<Service>().Root<IService>("Root")
+                       .Bind<CancellationTokenSource>().As(Lifetime.Singleton).To<CancellationTokenSource>()
+                       // Specifies to use CancellationToken from the composition root argument,
+                       // if not specified then CancellationToken.None will be used
+                       .Bind<CancellationToken>().To(ctx =>
+                       {
+                           ctx.Inject(out CancellationTokenSource cancellationTokenSource);
+                           return cancellationTokenSource.Token;
+                       });
+               }
+           }
+       
+           public class Program
+           {
+               public static void Main()
+               {
+                   var composition = new Composition();
+                   var service = composition.Root;
+               }
+           }
+       }
+       """.RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
 }

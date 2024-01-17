@@ -7,7 +7,6 @@ namespace Pure.DI.Core;
 internal sealed class DependencyGraphBuilder(
     IEnumerable<IBuilder<MdSetup, IEnumerable<DependencyNode>>> dependencyNodeBuilders,
     IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
-    IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>> rootsBuilder,
     IMarker marker,
     Func<ITypeConstructor> typeConstructorFactory,
     Func<IBuilder<RewriterContext<MdFactory>, MdFactory>> factoryRewriterFactory,
@@ -24,6 +23,7 @@ internal sealed class DependencyGraphBuilder(
         var maxId = 0;
         var map = new Dictionary<Injection, DependencyNode>(nodes.Count);
         var queue = new Queue<ProcessingNode>();
+        var roots = new List<DependencyNode>();
         foreach (var processingNode in nodes)
         {
             var node = processingNode.Node;
@@ -39,6 +39,10 @@ internal sealed class DependencyGraphBuilder(
                     map[contract] = node;
                 }
             }
+            else
+            {
+                roots.Add(node);
+            }
 
             if (!processingNode.IsMarkerBased)
             {
@@ -46,13 +50,13 @@ internal sealed class DependencyGraphBuilder(
             }
         }
 
-        var isValid = true;
         var processed = new HashSet<ProcessingNode>();
         var notProcessed = new HashSet<ProcessingNode>();
         var edgesMap = new Dictionary<ProcessingNode, List<Dependency>>();
         while (queue.TryDequeue(out var node))
         {
             var targetNode = node.Node;
+            var isProcessed = true;
             foreach (var (injection, hasExplicitDefaultValue, explicitDefaultValue) in node.Injections)
             {
                 cancellationToken.ThrowIfCancellationRequested();
@@ -177,16 +181,14 @@ internal sealed class DependencyGraphBuilder(
 
                 // Not processed
                 notProcessed.Add(node);
-                isValid = false;
+                isProcessed = false;
                 break;
             }
 
-            if (!isValid)
+            if (isProcessed)
             {
-                break;
+                processed.Add(node);
             }
-            
-            processed.Add(node);
         }
 
         foreach (var key in map.Keys.Where(i => ReferenceEquals(i.Tag, MdTag.ContextTag)).ToArray())
@@ -216,61 +218,52 @@ internal sealed class DependencyGraphBuilder(
             entries.Add(new GraphEntry<DependencyNode, Dependency>(node.Node, edges.ToImmutableArray()));
         }
         
-        dependencyGraph = CreateGraph(setup, isValid, entries, map);
+        dependencyGraph = CreateGraph(setup, roots, entries, map);
         return ImmutableArray<DependencyNode>.Empty;
     }
 
-    private DependencyGraph CreateGraph(
+    private static DependencyGraph CreateGraph(
         MdSetup setup,
-        bool isValid,
+        IEnumerable<DependencyNode> roots,
         IEnumerable<GraphEntry<DependencyNode, Dependency>> entries,
         IReadOnlyDictionary<Injection, DependencyNode> map)
     {
         var graph = new Graph<DependencyNode, Dependency>(entries.ToImmutableArray());
-        var dependencyGraph = new DependencyGraph(
-            isValid,
-            setup,
-            graph,
-            map,
-            ImmutableDictionary<Injection, Root>.Empty);
-
-        if (isValid)
+        var nodes = new HashSet<DependencyNode>();
+        foreach (var root in roots)
         {
-            var roots = rootsBuilder.Build(dependencyGraph);
-            var nodes = new HashSet<DependencyNode>();
-            foreach (var root in roots)
+            if (!nodes.Add(root))
             {
-                if (!nodes.Add(root.Value.Node))
-                {
-                    continue;
-                }
+                continue;
+            }
 
-                var stack = new Stack<DependencyNode>();
-                stack.Push(root.Value.Node);
-                while (stack.TryPop(out var node))
+            var stack = new Stack<DependencyNode>();
+            stack.Push(root);
+            while (stack.TryPop(out var node))
+            {
+                if (graph.TryGetInEdges(node, out var dependencies))
                 {
-                    if (graph.TryGetInEdges(node, out var dependencies))
+                    foreach (var dependency in dependencies)
                     {
-                        foreach (var dependency in dependencies)
+                        var source = dependency.Source;
+                        if (nodes.Add(source))
                         {
-                            var source = dependency.Source;
-                            if (nodes.Add(source))
-                            {
-                                stack.Push(source);
-                            }
+                            stack.Push(source);
                         }
                     }
                 }
             }
-            
-            dependencyGraph = dependencyGraph with
-            {
-                Graph = graph.Consolidate(nodes),
-                Roots = roots
-            };
         }
 
-        return dependencyGraph;
+        var consolidatedGraph = graph.Consolidate(nodes);
+        var isResolved = consolidatedGraph.Edges.All(i => i.IsResolved);
+        return new DependencyGraph(
+            isResolved,
+            setup,
+            consolidatedGraph,
+            map,
+            ImmutableSortedDictionary<Injection, Root>.Empty
+        );
     }
 
     private bool TryCreateOnCannotResolve(
