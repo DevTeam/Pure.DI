@@ -17,7 +17,7 @@ internal partial class Composition: ServiceProviderFactory<Composition>
         .Root<IClockViewModel>("ClockViewModel")
         
         // View Models
-        .Bind<IClockViewModel>().To<ClockViewModel>()
+        .Bind<IClockViewModel>().As(Lifetime.Singleton).To<ClockViewModel>()
 
         // Models
         .Bind<ILog<TT>>().To<Log<TT>>()
@@ -188,11 +188,11 @@ The [project file](/samples/MAUIApp/MAUIApp.csproj) looks like this:
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0-rc.2.23479.6"/>
-        <PackageReference Include="Pure.DI" Version="2.0.42">
+        <PackageReference Include="Pure.DI" Version="2.0.43">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.0.42" />
+        <PackageReference Include="Pure.DI.MS" Version="2.0.43" />
     </ItemGroup>
 
 </Project>

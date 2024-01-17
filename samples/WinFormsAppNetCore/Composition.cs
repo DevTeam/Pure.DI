@@ -18,7 +18,7 @@ internal partial class Composition
         .Bind<FormMain>().As(Singleton).To<FormMain>()
         
         // View Models
-        .Bind<IClockViewModel>().To<ClockViewModel>()
+        .Bind<IClockViewModel>().As(Singleton).To<ClockViewModel>()
 
         // Models
         .Bind<ILog<TT>>().To<Log<TT>>()

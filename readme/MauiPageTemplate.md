@@ -17,7 +17,7 @@ internal partial class Composition: ServiceProviderFactory<Composition>
         .Root<IClockViewModel>("ClockViewModel")
         
         // View Models
-        .Bind<IClockViewModel>().To<ClockViewModel>()
+        .Bind<IClockViewModel>().As(Lifetime.Singleton).To<ClockViewModel>()
 
         // Models
         .Bind<ILog<TT>>().To<Log<TT>>()
