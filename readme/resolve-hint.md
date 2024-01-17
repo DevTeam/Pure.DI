@@ -65,16 +65,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM01D16di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM01D17di;
   
   public Composition()
   {
-    _disposableSingletonsM01D16di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D17di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM01D16di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D17di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots

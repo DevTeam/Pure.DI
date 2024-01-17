@@ -2,16 +2,22 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/ManualTaskScenario.cs)
 
-By default, tasks are started automatically when they are injected. But you can override this behavior as in the example below. It is recommended to use an argument of type <c>CancellationToken</c> to the composition root to be able to cancel the execution of a task. In this case, the composition root property is automatically converted to a method with a parameter of type <c>CancellationToken</c>.
+By default, tasks are started automatically when they are injected. But you can override this behavior as shown in the example below. It is also recommended to add a binding for <c>CancellationToken</c> to be able to cancel the execution of a task.
 
 ```c#
-interface IDependency { }
+interface IDependency
+{
+    ValueTask DoSomething(CancellationToken cancellationToken);
+}
 
-class Dependency : IDependency { }
+class Dependency : IDependency
+{
+    public ValueTask DoSomething(CancellationToken cancellationToken) => ValueTask.CompletedTask;
+}
 
 interface IService
 {
-    Task RunAsync();
+    Task RunAsync(CancellationToken cancellationToken);
 }
 
 class Service : IService
@@ -24,13 +30,15 @@ class Service : IService
         _dependencyTask.Start();
     }
 
-    public async Task RunAsync()
+    public async Task RunAsync(CancellationToken cancellationToken)
     {
         var dependency = await _dependencyTask;
+        await dependency.DoSomething(cancellationToken);
     }
 }
 
 DI.Setup("Composition")
+    .Hint(Hint.Resolve, "Off")
     .Bind<Task<TT>>().To(ctx =>
     {
         ctx.Inject(ctx.Tag, out Func<TT> factory);
@@ -38,11 +46,18 @@ DI.Setup("Composition")
         return new Task<TT>(factory, cancellationToken);
     })
     .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>().Root<IService>("GetRoot");
+    .Bind<IService>().To<Service>().Root<IService>("GetRoot")
+    .Bind<CancellationTokenSource>().As(Lifetime.Singleton).To<CancellationTokenSource>()
+    // Specifies to use CancellationToken from the composition root argument,
+    // if not specified then CancellationToken.None will be used
+    .RootArg<CancellationToken>("cancellationToken");
 
 var composition = new Composition();
-var service = composition.GetRoot(CancellationToken.None);
-await service.RunAsync();
+using var cancellationTokenSource = new CancellationTokenSource();
+        
+// Creates a composition root with the CancellationToken passed to it
+var service = composition.GetRoot(cancellationTokenSource.Token);
+await service.RunAsync(cancellationTokenSource.Token);
 ```
 
 <details open>
@@ -52,10 +67,6 @@ await service.RunAsync();
 classDiagram
   class Composition {
     +IService GetRoot(System.Threading.CancellationToken cancellationToken)
-    + T ResolveᐸTᐳ()
-    + T ResolveᐸTᐳ(object? tag)
-    + object Resolve(Type type)
-    + object Resolve(Type type, object? tag)
   }
   Service --|> IService : 
   class Service {
@@ -94,16 +105,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM01D16di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM01D17di;
   
   public Composition()
   {
-    _disposableSingletonsM01D16di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D17di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM01D16di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D17di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -112,57 +123,24 @@ partial class Composition
   #endif
   public Pure.DI.UsageTests.BCL.ManualTaskScenario.IService GetRoot(System.Threading.CancellationToken cancellationToken)
   {
-    var perResolveM01D16di37_Func = default(System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>);
-    perResolveM01D16di37_Func = new global::System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(
+    var perResolveM01D17di40_Func = default(System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>);
+    perResolveM01D17di40_Func = new global::System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
     () =>
     {
-        var factory_M01D16di1 = new Pure.DI.UsageTests.BCL.ManualTaskScenario.Dependency();
-        return factory_M01D16di1;
+        var factory_M01D17di1 = new Pure.DI.UsageTests.BCL.ManualTaskScenario.Dependency();
+        return factory_M01D17di1;
     });
-    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency> transientM01D16di1_Task;
+    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency> transientM01D17di1_Task;
     {
-        var factory_M01D16di2 = perResolveM01D16di37_Func;
-        var cancellationToken_M01D16di3 = cancellationToken;
-        transientM01D16di1_Task = new Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(factory_M01D16di2, cancellationToken_M01D16di3);
+        var factory_M01D17di2 = perResolveM01D17di40_Func;
+        var cancellationToken_M01D17di3 = cancellationToken;
+        transientM01D17di1_Task = new Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(factory_M01D17di2, cancellationToken_M01D17di3);
     }
-    return new Pure.DI.UsageTests.BCL.ManualTaskScenario.Service(transientM01D16di1_Task);
+    return new Pure.DI.UsageTests.BCL.ManualTaskScenario.Service(transientM01D17di1_Task);
   }
   #endregion
   
-  #region API
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
-  public T Resolve<T>()
-  {
-    return ResolverM01D16di<T>.Value.Resolve(this);
-  }
-  
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
-  public T Resolve<T>(object? tag)
-  {
-    return ResolverM01D16di<T>.Value.ResolveByTag(this, tag);
-  }
-  
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
-  public object Resolve(global::System.Type type)
-  {
-    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
-  }
-  
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
-  public object Resolve(global::System.Type type, object? tag)
-  {
-    throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
-  }
-  #endregion
   
   public override string ToString()
   {
@@ -170,10 +148,6 @@ partial class Composition
       "classDiagram\n" +
         "  class Composition {\n" +
           "    +IService GetRoot(System.Threading.CancellationToken cancellationToken)\n" +
-          "    + T ResolveᐸTᐳ()\n" +
-          "    + T ResolveᐸTᐳ(object? tag)\n" +
-          "    + object Resolve(Type type)\n" +
-          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
@@ -203,24 +177,6 @@ partial class Composition
         "  TaskᐸIDependencyᐳ o-- CancellationToken : Argument \"cancellationToken\"\n" +
         "  FuncᐸIDependencyᐳ *--  Dependency : IDependency";
   }
-  
-  
-  #region Resolvers
-  private sealed class ResolverM01D16di<T>: global::Pure.DI.IResolver<Composition, T>
-  {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM01D16di<T>();
-    
-    public T Resolve(Composition composite)
-    {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
-    }
-    
-    public T ResolveByTag(Composition composite, object tag)
-    {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
-    }
-  }
-  #endregion
 }
 ```
 

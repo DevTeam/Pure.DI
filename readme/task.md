@@ -2,9 +2,9 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/TaskScenario.cs)
 
-By default, tasks are started automatically when they are injected. The composition root property is automatically transformed into a method with a parameter of type <c>CancellationToken</c>.
-To start a task, an instance of type <c>TaskFactory<T></c> is used, with default settings:
+By default, tasks are started automatically when they are injected. It is recommended to use an argument of type <c>CancellationToken</c> to the composition root to be able to cancel the execution of a task. In this case, the composition root property is automatically converted to a method with a parameter of type <c>CancellationToken</c>. To start a task, an instance of type <c>TaskFactory<T></c> is used, with default settings:
 
+- CancellationToken.None
 - TaskScheduler.Default
 - TaskCreationOptions.None
 - TaskContinuationOptions.None
@@ -14,37 +14,44 @@ But you can always override them, as in the example below for <c>TaskScheduler.C
 ```c#
 interface IDependency
 {
-    ValueTask DoSomething();
+    ValueTask DoSomething(CancellationToken cancellationToken);
 }
 
 class Dependency : IDependency
 {
-    public ValueTask DoSomething() => ValueTask.CompletedTask;
+    public ValueTask DoSomething(CancellationToken cancellationToken) => ValueTask.CompletedTask;
 }
 
 interface IService
 {
-    Task RunAsync();
+    Task RunAsync(CancellationToken cancellationToken);
 }
 
 class Service(Task<IDependency> dependencyTask) : IService
 {
-    public async Task RunAsync()
+    public async Task RunAsync(CancellationToken cancellationToken)
     {
         var dependency = await dependencyTask;
-        await dependency.DoSomething();
+        await dependency.DoSomething(cancellationToken);
     }
 }
 
 DI.Setup("Composition")
+    .Hint(Hint.Resolve, "Off")
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>().Root<IService>("GetRoot")
     // Overrides TaskScheduler.Default if necessary
-    .Bind<TaskScheduler>().To(_ => TaskScheduler.Current);
+    .Bind<TaskScheduler>().To(_ => TaskScheduler.Current)
+    // Specifies to use CancellationToken from the composition root argument,
+    // if not specified then CancellationToken.None will be used
+    .RootArg<CancellationToken>("cancellationToken");
 
 var composition = new Composition();
-var service = composition.GetRoot(CancellationToken.None);
-await service.RunAsync();
+using var cancellationTokenSource = new CancellationTokenSource();
+
+// Creates a composition root with the CancellationToken passed to it
+var service = composition.GetRoot(cancellationTokenSource.Token);
+await service.RunAsync(cancellationTokenSource.Token);
 ```
 
 <details open>
@@ -54,10 +61,6 @@ await service.RunAsync();
 classDiagram
   class Composition {
     +IService GetRoot(System.Threading.CancellationToken cancellationToken)
-    + T ResolveᐸTᐳ()
-    + T ResolveᐸTᐳ(object? tag)
-    + object Resolve(Type type)
-    + object Resolve(Type type, object? tag)
   }
   Service --|> IService : 
   class Service {
@@ -104,16 +107,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM01D16di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM01D17di;
   
   public Composition()
   {
-    _disposableSingletonsM01D16di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D17di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM01D16di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D17di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -122,68 +125,35 @@ partial class Composition
   #endif
   public Pure.DI.UsageTests.BCL.TaskScenario.IService GetRoot(System.Threading.CancellationToken cancellationToken)
   {
-    var perResolveM01D16di37_Func = default(System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>);
-    System.Threading.Tasks.TaskScheduler transientM01D16di5_TaskScheduler = TaskScheduler.Current;
-    System.Threading.Tasks.TaskContinuationOptions transientM01D16di4_TaskContinuationOptions = global::System.Threading.Tasks.TaskContinuationOptions.None;
-    System.Threading.Tasks.TaskCreationOptions transientM01D16di3_TaskCreationOptions = global::System.Threading.Tasks.TaskCreationOptions.None;
-    System.Threading.Tasks.TaskFactory<Pure.DI.UsageTests.BCL.TaskScenario.IDependency> perBlockM01D16di2_TaskFactory;
+    var perResolveM01D17di38_Func = default(System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>);
+    System.Threading.Tasks.TaskScheduler transientM01D17di5_TaskScheduler = TaskScheduler.Current;
+    System.Threading.Tasks.TaskContinuationOptions transientM01D17di4_TaskContinuationOptions = global::System.Threading.Tasks.TaskContinuationOptions.None;
+    System.Threading.Tasks.TaskCreationOptions transientM01D17di3_TaskCreationOptions = global::System.Threading.Tasks.TaskCreationOptions.None;
+    System.Threading.Tasks.TaskFactory<Pure.DI.UsageTests.BCL.TaskScenario.IDependency> perBlockM01D17di2_TaskFactory;
     {
-        var cancellationToken_M01D16di1 = cancellationToken;
-        var taskCreationOptions_M01D16di2 = transientM01D16di3_TaskCreationOptions;
-        var taskContinuationOptions_M01D16di3 = transientM01D16di4_TaskContinuationOptions;
-        var taskScheduler_M01D16di4 = transientM01D16di5_TaskScheduler;
-        perBlockM01D16di2_TaskFactory = new global::System.Threading.Tasks.TaskFactory<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(cancellationToken_M01D16di1, taskCreationOptions_M01D16di2, taskContinuationOptions_M01D16di3, taskScheduler_M01D16di4);
+        var cancellationToken_M01D17di1 = cancellationToken;
+        var taskCreationOptions_M01D17di2 = transientM01D17di3_TaskCreationOptions;
+        var taskContinuationOptions_M01D17di3 = transientM01D17di4_TaskContinuationOptions;
+        var taskScheduler_M01D17di4 = transientM01D17di5_TaskScheduler;
+        perBlockM01D17di2_TaskFactory = new global::System.Threading.Tasks.TaskFactory<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(cancellationToken_M01D17di1, taskCreationOptions_M01D17di2, taskContinuationOptions_M01D17di3, taskScheduler_M01D17di4);
     }
-    perResolveM01D16di37_Func = new global::System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(
+    perResolveM01D17di38_Func = new global::System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
     () =>
     {
-        var factory_M01D16di5 = new Pure.DI.UsageTests.BCL.TaskScenario.Dependency();
-        return factory_M01D16di5;
+        var factory_M01D17di5 = new Pure.DI.UsageTests.BCL.TaskScenario.Dependency();
+        return factory_M01D17di5;
     });
-    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.TaskScenario.IDependency> transientM01D16di1_Task;
+    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.TaskScenario.IDependency> transientM01D17di1_Task;
     {
-        var factory_M01D16di6 = perResolveM01D16di37_Func;
-        var taskFactory_M01D16di7 = perBlockM01D16di2_TaskFactory;
-        transientM01D16di1_Task = taskFactory_M01D16di7.StartNew(factory_M01D16di6);
+        var factory_M01D17di6 = perResolveM01D17di38_Func;
+        var taskFactory_M01D17di7 = perBlockM01D17di2_TaskFactory;
+        transientM01D17di1_Task = taskFactory_M01D17di7.StartNew(factory_M01D17di6);
     }
-    return new Pure.DI.UsageTests.BCL.TaskScenario.Service(transientM01D16di1_Task);
+    return new Pure.DI.UsageTests.BCL.TaskScenario.Service(transientM01D17di1_Task);
   }
   #endregion
   
-  #region API
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
-  public T Resolve<T>()
-  {
-    return ResolverM01D16di<T>.Value.Resolve(this);
-  }
-  
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
-  public T Resolve<T>(object? tag)
-  {
-    return ResolverM01D16di<T>.Value.ResolveByTag(this, tag);
-  }
-  
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
-  public object Resolve(global::System.Type type)
-  {
-    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
-  }
-  
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
-  public object Resolve(global::System.Type type, object? tag)
-  {
-    throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
-  }
-  #endregion
   
   public override string ToString()
   {
@@ -191,10 +161,6 @@ partial class Composition
       "classDiagram\n" +
         "  class Composition {\n" +
           "    +IService GetRoot(System.Threading.CancellationToken cancellationToken)\n" +
-          "    + T ResolveᐸTᐳ()\n" +
-          "    + T ResolveᐸTᐳ(object? tag)\n" +
-          "    + object Resolve(Type type)\n" +
-          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
@@ -232,24 +198,6 @@ partial class Composition
         "  TaskFactoryᐸIDependencyᐳ *--  TaskContinuationOptions : TaskContinuationOptions\n" +
         "  TaskFactoryᐸIDependencyᐳ *--  TaskScheduler : TaskScheduler";
   }
-  
-  
-  #region Resolvers
-  private sealed class ResolverM01D16di<T>: global::Pure.DI.IResolver<Composition, T>
-  {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM01D16di<T>();
-    
-    public T Resolve(Composition composite)
-    {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
-    }
-    
-    public T ResolveByTag(Composition composite, object tag)
-    {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
-    }
-  }
-  #endregion
 }
 ```
 
