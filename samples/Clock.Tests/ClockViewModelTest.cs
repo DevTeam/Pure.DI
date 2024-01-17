@@ -7,6 +7,12 @@ using ViewModels;
 [TestClass]
 public class ClockViewModelTest
 {
+    private readonly Mock<IDispatcher> _dispatcher = new();
+
+    public ClockViewModelTest() =>
+        _dispatcher.Setup(i => i.Dispatch(It.IsAny<Action>()))
+            .Callback<Action>(action => action());
+
     [TestMethod]
     public void ShouldProvideDateTimeToDisplay()
     {
@@ -15,7 +21,10 @@ public class ClockViewModelTest
         var clock = new Mock<IClock>();
         clock.SetupGet(i => i.Now).Returns(now);
 
-        var viewModel = new ClockViewModel(Mock.Of<ILog<ClockViewModel>>(), clock.Object, Mock.Of<ITimer>());
+        var viewModel = new ClockViewModel(
+            Mock.Of<ILog<ClockViewModel>>(),
+            clock.Object,
+            Mock.Of<ITimer>()) { Dispatcher = _dispatcher.Object };
 
         // When
         var date = viewModel.Date;
@@ -37,7 +46,14 @@ public class ClockViewModelTest
             .Callback(new Action<IObserver<Tick>>(o => { observer = o; }))
             .Returns(Mock.Of<IDisposable>());
 
-        var viewModel = new ClockViewModel(Mock.Of<ILog<ClockViewModel>>(), Mock.Of<IClock>(), timer.Object);
+        var viewModel = new ClockViewModel(
+            Mock.Of<ILog<ClockViewModel>>(),
+            Mock.Of<IClock>(),
+            timer.Object)
+        {
+            Dispatcher = _dispatcher.Object
+        };
+
         var propertyNames = new List<string?>();
         viewModel.PropertyChanged += (_, args) => { propertyNames.Add(args.PropertyName); };
 
@@ -60,7 +76,13 @@ public class ClockViewModelTest
             .Setup(i => i.Subscribe(It.IsAny<IObserver<Tick>>()))
             .Returns(subscription.Object);
 
-        var viewModel = new ClockViewModel(Mock.Of<ILog<ClockViewModel>>(), Mock.Of<IClock>(), timer.Object);
+        var viewModel = new ClockViewModel(
+            Mock.Of<ILog<ClockViewModel>>(),
+            Mock.Of<IClock>(),
+            timer.Object)
+        {
+            Dispatcher = _dispatcher.Object
+        };
 
         // When
         ((IDisposable)viewModel).Dispose();

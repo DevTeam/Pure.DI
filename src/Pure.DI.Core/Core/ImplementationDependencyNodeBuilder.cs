@@ -55,10 +55,14 @@ internal sealed class ImplementationDependencyNodeBuilder(
                 throw new CompileErrorException($"The instance of {implementationType} cannot be instantiated due to no accessible constructor available.", implementation.Source.GetLocation(), LogId.ErrorInvalidMetadata);
             }
 
+            var members = new List<ISymbol>();
+            GetMembers(implementationType, members);
+            
             var methods = new List<DpMethod>();
             var fields = new List<DpField>();
             var properties = new List<DpProperty>();
-            foreach (var member in implementationType.GetMembers())
+            
+            foreach (var member in members)
             {
                 if (member.IsStatic || member.DeclaredAccessibility is not (Accessibility.Internal or Accessibility.Public or Accessibility.Friend))
                 {
@@ -163,6 +167,21 @@ internal sealed class ImplementationDependencyNodeBuilder(
             {
                 yield return node;
             }
+        }
+    }
+
+    private static void GetMembers(ITypeSymbol type, List<ISymbol> members)
+    {
+        while (true)
+        {
+            members.AddRange(type.GetMembers());
+            if (type.BaseType is { } baseType)
+            {
+                type = baseType;
+                continue;
+            }
+
+            break;
         }
     }
 

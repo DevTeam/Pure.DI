@@ -12,13 +12,11 @@ internal class ClockViewModel : ViewModel, IClockViewModel, IDisposable, IObserv
     public ClockViewModel(
         ILog<ClockViewModel> log,
         IClock clock,
-        ITimer timer,
-        IDispatcher? dispatcher = null)
-        : base(dispatcher)
+        ITimer timer)
     {
         _log = log;
-        _clock = clock ?? throw new ArgumentNullException(nameof(clock));
-        _timerToken = (timer ?? throw new ArgumentNullException(nameof(timer))).Subscribe(this);
+        _clock = clock;
+        _timerToken = timer.Subscribe(this);
     }
 
     public string Time => _clock.Now.ToString("T");

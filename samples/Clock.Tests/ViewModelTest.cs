@@ -6,29 +6,17 @@ using ViewModels;
 [TestClass]
 public class ViewModelTest
 {
+    private readonly  Mock<IDispatcher> _dispatcher = new();
+
+    public ViewModelTest() =>
+        _dispatcher.Setup(i => i.Dispatch(It.IsAny<Action>()))
+            .Callback<Action>(action => action());
+
     [TestMethod]
     public void ShouldRaisePropertyChangedEvent()
     {
         // Given
-        var model = new TestViewModel();
-
-        // When
-        model.RaiseOnPropertyChanged("SomeName1");
-        model.RaiseOnPropertyChanged("SomeName2");
-
-        // Then
-        model.PropertyNames.Count.ShouldBe(2);
-        model.PropertyNames.ShouldContain("SomeName1");
-        model.PropertyNames.ShouldContain("SomeName2");
-    }
-
-    [TestMethod]
-    public void ShouldRaisePropertyChangedEventWhenDispatcher()
-    {
-        // Given
-        var dispatcher = new Mock<IDispatcher>();
-        dispatcher.Setup(i => i.Dispatch(It.IsAny<Action>())).Callback(new Action<Action>(a => a()));
-        var model = new TestViewModel(dispatcher.Object);
+        var model = new TestViewModel { Dispatcher = _dispatcher.Object };
 
         // When
         model.RaiseOnPropertyChanged("SomeName");
@@ -36,14 +24,14 @@ public class ViewModelTest
         // Then
         model.PropertyNames.Count.ShouldBe(1);
         model.PropertyNames.ShouldContain("SomeName");
-        dispatcher.Verify(i => i.Dispatch(It.IsAny<Action>()), Times.Once);
+        _dispatcher.Verify(i => i.Dispatch(It.IsAny<Action>()), Times.Once);
     }
 
     private class TestViewModel : ViewModel
     {
         private readonly List<string?> _propertyNames = [];
 
-        public TestViewModel(IDispatcher? dispatcher = null) : base(dispatcher) =>
+        public TestViewModel() =>
             PropertyChanged += (_, args) => { _propertyNames.Add(args.PropertyName); };
 
         public IReadOnlyList<string?> PropertyNames => _propertyNames.AsReadOnly();
