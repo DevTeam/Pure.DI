@@ -262,6 +262,9 @@ namespace Pure.DI
                     })
 #endif
 #endif
+#if NET6_0_OR_GREATER
+                .Bind<global::System.Random>().To(_ => global::System.Random.Shared)
+#endif
                     ;
         }
     }
