@@ -36,6 +36,7 @@ class Service : IService
     public Service(Task<IDependency> dependencyTask)
     {
         _dependencyTask = dependencyTask;
+        // This is where the task starts
         _dependencyTask.Start();
     }
 
@@ -55,18 +56,21 @@ public class Scenario
 // {
         DI.Setup("Composition")
             .Hint(Hint.Resolve, "Off")
+            // Overrides the default binding that performs an auto-start of a task
+            // when it is created. This binding will simply create the task.
+            // The start will be handled by the consumer.
             .Bind<Task<TT>>().To(ctx =>
             {
                 ctx.Inject(ctx.Tag, out Func<TT> factory);
                 ctx.Inject(out CancellationToken cancellationToken);
                 return new Task<TT>(factory, cancellationToken);
             })
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>().Root<IService>("GetRoot")
-            .Bind<CancellationTokenSource>().As(Lifetime.Singleton).To<CancellationTokenSource>()
             // Specifies to use CancellationToken from the composition root argument,
             // if not specified then CancellationToken.None will be used
-            .RootArg<CancellationToken>("cancellationToken");
+            .RootArg<CancellationToken>("cancellationToken")
+            .Bind<IDependency>().To<Dependency>()
+            .Bind<IService>().To<Service>()
+            .Root<IService>("GetRoot");
 
         var composition = new Composition();
         using var cancellationTokenSource = new CancellationTokenSource();

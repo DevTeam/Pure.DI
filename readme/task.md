@@ -38,13 +38,13 @@ class Service(Task<IDependency> dependencyTask) : IService
 
 DI.Setup("Composition")
     .Hint(Hint.Resolve, "Off")
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>().Root<IService>("GetRoot")
     // Overrides TaskScheduler.Default if necessary
     .Bind<TaskScheduler>().To(_ => TaskScheduler.Current)
     // Specifies to use CancellationToken from the composition root argument,
     // if not specified then CancellationToken.None will be used
-    .RootArg<CancellationToken>("cancellationToken");
+    .RootArg<CancellationToken>("cancellationToken")
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>().Root<IService>("GetRoot");
 
 var composition = new Composition();
 using var cancellationTokenSource = new CancellationTokenSource();

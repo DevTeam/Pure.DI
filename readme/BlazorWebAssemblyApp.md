@@ -61,11 +61,11 @@ The [project file](/samples/BlazorWebAssemblyApp/BlazorWebAssemblyApp.csproj) lo
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.0.43">
+        <PackageReference Include="Pure.DI" Version="2.0.44">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.0.43" />
+        <PackageReference Include="Pure.DI.MS" Version="2.0.44" />
     </ItemGroup>
 
 </Project>

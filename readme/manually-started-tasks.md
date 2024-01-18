@@ -27,6 +27,7 @@ class Service : IService
     public Service(Task<IDependency> dependencyTask)
     {
         _dependencyTask = dependencyTask;
+        // This is where the task starts
         _dependencyTask.Start();
     }
 
@@ -39,18 +40,21 @@ class Service : IService
 
 DI.Setup("Composition")
     .Hint(Hint.Resolve, "Off")
+    // Overrides the default binding that performs an auto-start of a task
+    // when it is created. This binding will simply create the task.
+    // The start will be handled by the consumer.
     .Bind<Task<TT>>().To(ctx =>
     {
         ctx.Inject(ctx.Tag, out Func<TT> factory);
         ctx.Inject(out CancellationToken cancellationToken);
         return new Task<TT>(factory, cancellationToken);
     })
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>().Root<IService>("GetRoot")
-    .Bind<CancellationTokenSource>().As(Lifetime.Singleton).To<CancellationTokenSource>()
     // Specifies to use CancellationToken from the composition root argument,
     // if not specified then CancellationToken.None will be used
-    .RootArg<CancellationToken>("cancellationToken");
+    .RootArg<CancellationToken>("cancellationToken")
+    .Bind<IDependency>().To<Dependency>()
+    .Bind<IService>().To<Service>()
+    .Root<IService>("GetRoot");
 
 var composition = new Composition();
 using var cancellationTokenSource = new CancellationTokenSource();
@@ -123,8 +127,8 @@ partial class Composition
   #endif
   public Pure.DI.UsageTests.BCL.ManualTaskScenario.IService GetRoot(System.Threading.CancellationToken cancellationToken)
   {
-    var perResolveM01D18di40_Func = default(System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>);
-    perResolveM01D18di40_Func = new global::System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(
+    var perResolveM01D18di38_Func = default(System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>);
+    perResolveM01D18di38_Func = new global::System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
     () =>
     {
@@ -133,7 +137,7 @@ partial class Composition
     });
     System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency> transientM01D18di1_Task;
     {
-        var factory_M01D18di2 = perResolveM01D18di40_Func;
+        var factory_M01D18di2 = perResolveM01D18di38_Func;
         var cancellationToken_M01D18di3 = cancellationToken;
         transientM01D18di1_Task = new Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(factory_M01D18di2, cancellationToken_M01D18di3);
     }
