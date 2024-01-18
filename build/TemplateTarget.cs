@@ -15,7 +15,7 @@ internal class TemplateTarget: Command, ITarget<string>
     public TemplateTarget(
         Settings settings,
         ITeamCityWriter teamCityWriter)
-        : base("template", "Push NuGet packages")
+        : base("template", "Creates and push templates")
     {
         _settings = settings;
         _teamCityWriter = teamCityWriter;

@@ -14,7 +14,7 @@ internal class DeployTarget: Command, ITarget<int>
     public DeployTarget(
         Settings settings,
         [Tag(typeof(PackTarget))] ITarget<IReadOnlyCollection<string>> packTarget)
-        : base("deploy", "Push NuGet packages")
+        : base("deploy", "Push packages")
     {
         _settings = settings;
         _packTarget = packTarget;

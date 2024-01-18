@@ -41,7 +41,7 @@ internal class ReadmeTarget : Command, ITarget<int>
 
     public ReadmeTarget(
         Settings settings,
-        [Tag(typeof(BenchmarksTarget))] ITarget<int> benchmarksTarget): base("readme", "Generates README.MD")
+        [Tag(typeof(BenchmarksTarget))] ITarget<int> benchmarksTarget): base("readme", $"Generates {ReadmeHeaderFile}")
     {
         _settings = settings;
         _benchmarksTarget = benchmarksTarget;
