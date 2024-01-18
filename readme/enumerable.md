@@ -46,10 +46,6 @@ classDiagram
     + object Resolve(Type type, object? tag)
   }
   class IEnumerableᐸIDependencyᐳ
-  Service --|> IService : 
-  class Service {
-    +Service(IEnumerableᐸIDependencyᐳ dependencies)
-  }
   AbcDependency --|> IDependency : 
   class AbcDependency {
     +AbcDependency()
@@ -58,10 +54,14 @@ classDiagram
   class XyzDependency {
     +XyzDependency()
   }
-  class IService {
-    <<abstract>>
+  Service --|> IService : 
+  class Service {
+    +Service(IEnumerableᐸIDependencyᐳ dependencies)
   }
   class IDependency {
+    <<abstract>>
+  }
+  class IService {
     <<abstract>>
   }
   IEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency
@@ -176,10 +176,6 @@ partial class Composition
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  class IEnumerableᐸIDependencyᐳ\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(IEnumerableᐸIDependencyᐳ dependencies)\n" +
-        "  }\n" +
         "  AbcDependency --|> IDependency : \n" +
         "  class AbcDependency {\n" +
           "    +AbcDependency()\n" +
@@ -188,10 +184,14 @@ partial class Composition
         "  class XyzDependency {\n" +
           "    +XyzDependency()\n" +
         "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IEnumerableᐸIDependencyᐳ dependencies)\n" +
         "  }\n" +
         "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  IEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency\n" +

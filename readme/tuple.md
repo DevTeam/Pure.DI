@@ -45,19 +45,19 @@ classDiagram
   class ValueTupleᐸPointˏIDependencyᐳ {
     +ValueTuple(Point item1, IDependency item2)
   }
-  Service --|> IService : 
-  class Service {
-    +Service(ValueTupleᐸPointˏIDependencyᐳ tuple)
-  }
+  class Point
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
   }
-  class Point
-  class IService {
-    <<abstract>>
+  Service --|> IService : 
+  class Service {
+    +Service(ValueTupleᐸPointˏIDependencyᐳ tuple)
   }
   class IDependency {
+    <<abstract>>
+  }
+  class IService {
     <<abstract>>
   }
   ValueTupleᐸPointˏIDependencyᐳ *--  Point : Point
@@ -168,19 +168,19 @@ partial class Composition
         "  class ValueTupleᐸPointˏIDependencyᐳ {\n" +
           "    +ValueTuple(Point item1, IDependency item2)\n" +
         "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(ValueTupleᐸPointˏIDependencyᐳ tuple)\n" +
-        "  }\n" +
+        "  class Point\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class Point\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(ValueTupleᐸPointˏIDependencyᐳ tuple)\n" +
         "  }\n" +
         "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  ValueTupleᐸPointˏIDependencyᐳ *--  Point : Point\n" +

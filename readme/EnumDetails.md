@@ -16,6 +16,14 @@ classDiagram
     +CompositionRoot(IService1 service1, IService2 service21, IService2 service22, IService2 service23, IService3 service3, IService4 service41, IService4 service42)
   }
   class IEnumerableᐸIService3ᐳ
+  Service1 --|> IService1 : 
+  class Service1 {
+    +Service1(IService2 service2)
+  }
+  Service2Enum --|> IService2 : 
+  class Service2Enum {
+    +Service2Enum(IEnumerableᐸIService3ᐳ services)
+  }
   Service3 --|> IService3 : 
   class Service3 {
     +Service3(IService4 service41, IService4 service42)
@@ -32,25 +40,17 @@ classDiagram
   class Service3v4 {
     +Service3v4(IService4 service41, IService4 service42)
   }
-  Service1 --|> IService1 : 
-  class Service1 {
-    +Service1(IService2 service2)
-  }
-  Service2Enum --|> IService2 : 
-  class Service2Enum {
-    +Service2Enum(IEnumerableᐸIService3ᐳ services)
-  }
   Service4 --|> IService4 : 
   class Service4 {
     +Service4()
-  }
-  class IService3 {
-    <<abstract>>
   }
   class IService1 {
     <<abstract>>
   }
   class IService2 {
+    <<abstract>>
+  }
+  class IService3 {
     <<abstract>>
   }
   class IService4 {
@@ -67,16 +67,16 @@ classDiagram
   IEnumerableᐸIService3ᐳ *--  Service3v2 : 2  IService3
   IEnumerableᐸIService3ᐳ *--  Service3v3 : 3  IService3
   IEnumerableᐸIService3ᐳ *--  Service3v4 : 4  IService3
-  Service3 *--  Service4 : IService4
-  Service3 *--  Service4 : IService4
-  Service3v2 *--  Service4 : IService4
-  Service3v2 *--  Service4 : IService4
-  Service3v3 *--  Service4 : IService4
-  Service3v3 *--  Service4 : IService4
-  Service3v4 *--  Service4 : IService4
-  Service3v4 *--  Service4 : IService4
   Service1 *--  Service2Enum : IService2
   Service2Enum o--  "PerBlock" IEnumerableᐸIService3ᐳ : IEnumerableᐸIService3ᐳ
+  Service3 *--  Service4 : IService4
+  Service3 *--  Service4 : IService4
+  Service3v2 *--  Service4 : IService4
+  Service3v2 *--  Service4 : IService4
+  Service3v3 *--  Service4 : IService4
+  Service3v3 *--  Service4 : IService4
+  Service3v4 *--  Service4 : IService4
+  Service3v4 *--  Service4 : IService4
   Enum ..> CompositionRoot : CompositionRoot PureDIByCR
 ```
 
@@ -188,6 +188,14 @@ partial class Enum
           "    +CompositionRoot(IService1 service1, IService2 service21, IService2 service22, IService2 service23, IService3 service3, IService4 service41, IService4 service42)\n" +
         "  }\n" +
         "  class IEnumerableᐸIService3ᐳ\n" +
+        "  Service1 --|> IService1 : \n" +
+        "  class Service1 {\n" +
+          "    +Service1(IService2 service2)\n" +
+        "  }\n" +
+        "  Service2Enum --|> IService2 : \n" +
+        "  class Service2Enum {\n" +
+          "    +Service2Enum(IEnumerableᐸIService3ᐳ services)\n" +
+        "  }\n" +
         "  Service3 --|> IService3 : \n" +
         "  class Service3 {\n" +
           "    +Service3(IService4 service41, IService4 service42)\n" +
@@ -204,25 +212,17 @@ partial class Enum
         "  class Service3v4 {\n" +
           "    +Service3v4(IService4 service41, IService4 service42)\n" +
         "  }\n" +
-        "  Service1 --|> IService1 : \n" +
-        "  class Service1 {\n" +
-          "    +Service1(IService2 service2)\n" +
-        "  }\n" +
-        "  Service2Enum --|> IService2 : \n" +
-        "  class Service2Enum {\n" +
-          "    +Service2Enum(IEnumerableᐸIService3ᐳ services)\n" +
-        "  }\n" +
         "  Service4 --|> IService4 : \n" +
         "  class Service4 {\n" +
           "    +Service4()\n" +
-        "  }\n" +
-        "  class IService3 {\n" +
-          "    <<abstract>>\n" +
         "  }\n" +
         "  class IService1 {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  class IService2 {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IService3 {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  class IService4 {\n" +
@@ -239,16 +239,16 @@ partial class Enum
         "  IEnumerableᐸIService3ᐳ *--  Service3v2 : 2  IService3\n" +
         "  IEnumerableᐸIService3ᐳ *--  Service3v3 : 3  IService3\n" +
         "  IEnumerableᐸIService3ᐳ *--  Service3v4 : 4  IService3\n" +
-        "  Service3 *--  Service4 : IService4\n" +
-        "  Service3 *--  Service4 : IService4\n" +
-        "  Service3v2 *--  Service4 : IService4\n" +
-        "  Service3v2 *--  Service4 : IService4\n" +
-        "  Service3v3 *--  Service4 : IService4\n" +
-        "  Service3v3 *--  Service4 : IService4\n" +
-        "  Service3v4 *--  Service4 : IService4\n" +
-        "  Service3v4 *--  Service4 : IService4\n" +
         "  Service1 *--  Service2Enum : IService2\n" +
         "  Service2Enum o--  \"PerBlock\" IEnumerableᐸIService3ᐳ : IEnumerableᐸIService3ᐳ\n" +
+        "  Service3 *--  Service4 : IService4\n" +
+        "  Service3 *--  Service4 : IService4\n" +
+        "  Service3v2 *--  Service4 : IService4\n" +
+        "  Service3v2 *--  Service4 : IService4\n" +
+        "  Service3v3 *--  Service4 : IService4\n" +
+        "  Service3v3 *--  Service4 : IService4\n" +
+        "  Service3v4 *--  Service4 : IService4\n" +
+        "  Service3v4 *--  Service4 : IService4\n" +
         "  Enum ..> CompositionRoot : CompositionRoot PureDIByCR";
   }
   

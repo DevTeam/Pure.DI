@@ -49,18 +49,18 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  Service --|> IService : 
-  class Service {
-    +Service(IDependency dependency1, IDependency dependency2)
-  }
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
   }
-  class IService {
-    <<abstract>>
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency1, IDependency dependency2)
   }
   class IDependency {
+    <<abstract>>
+  }
+  class IService {
     <<abstract>>
   }
   Service o--  "PerResolve" Dependency : IDependency
@@ -96,18 +96,18 @@ partial class Composition
     #endif
     get
     {
-      var perResolveM01D18di33_Dependency = default(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency);
-      if (object.ReferenceEquals(perResolveM01D18di33_Dependency, null))
+      var perResolveM01D18di34_Dependency = default(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency);
+      if (object.ReferenceEquals(perResolveM01D18di34_Dependency, null))
       {
           lock (_disposableSingletonsM01D18di)
           {
-              if (object.ReferenceEquals(perResolveM01D18di33_Dependency, null))
+              if (object.ReferenceEquals(perResolveM01D18di34_Dependency, null))
               {
-                  perResolveM01D18di33_Dependency = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency();
+                  perResolveM01D18di34_Dependency = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency();
               }
           }
       }
-      return new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service(perResolveM01D18di33_Dependency, perResolveM01D18di33_Dependency);
+      return new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service(perResolveM01D18di34_Dependency, perResolveM01D18di34_Dependency);
     }
   }
   #endregion
@@ -177,18 +177,18 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(IDependency dependency1, IDependency dependency2)\n" +
-        "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency1, IDependency dependency2)\n" +
         "  }\n" +
         "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service o--  \"PerResolve\" Dependency : IDependency\n" +

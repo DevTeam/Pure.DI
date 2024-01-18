@@ -58,26 +58,18 @@ Let's bind the abstractions to their implementations and set up the creation of 
 ```c#
 partial class Composition
 {
-  // In fact, this code is never run,
-  // and the method can have any name or be a constructor, for example,
-  // and can be in any part of the compiled code
-  // because this is just a hint to set up an object graph.
-  // Here the customization is part of the generated class, just as an example.
-  // But in general it can be done anywhere in the code.
   private static void Setup() => 
     DI.Setup(nameof(Composition))
         // Models a random subatomic event that may or may not occur
         .Bind<Random>().As(Singleton).To<Random>()
-        // Represents a quantum superposition of 2 states:
-        // Alive or Dead
+        // Represents a quantum superposition of 2 states: Alive or Dead
         .Bind<State>().To(ctx =>
         {
           ctx.Inject<Random>(out var random);
           return (State)random.Next(2);
         })
-        // Represents schrodinger's cat
         .Bind<ICat>().To<ShroedingersCat>()
-        // Represents a cardboard box with any content
+        // Represents a cardboard box with any contents
         .Bind<IBox<TT>>().To<CardboardBox<TT>>()
         // Composition Root
         .Root<Program>("Root");
@@ -89,8 +81,8 @@ The above code specifies the generation of a partial class named *__Composition_
 ```c#
 partial class Composition
 {
-    private object _lockObject = new object();
-    private Random _randomSingleton;    
+    private object _lock = new object();
+    private Random _random;    
     
     public Program Root
     {
@@ -98,18 +90,18 @@ partial class Composition
       {
         Func<State> stateFunc = new Func<State>(() =>
         {
-          if (_randomSingleton == null)
+          if (_random == null)
           {
-            lock (_lockObject)
+            lock (_lock)
             {
-              if (_randomSingleton == null)
+              if (_random == null)
               {
-                _randomSingleton = new Random();
+                _random = new Random();
               }
             }
           }
           
-          return (State)_randomSingleton.Next(2);      
+          return (State)_random.Next(2);      
         });
         
         return new Program(
@@ -120,15 +112,9 @@ partial class Composition
       }
     }
     
-    public T Resolve<T>()
-    {
-        ...
-    }
+    public T Resolve<T>() { ... }
     
-    public object Resolve(Type type)
-    {
-        ...
-    }    
+    public object Resolve(Type type) { ... }    
 }
 ```
 

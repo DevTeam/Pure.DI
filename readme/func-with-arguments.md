@@ -79,26 +79,26 @@ classDiagram
   class Dependency {
     +Dependency(IClock clock, Int32 id)
   }
-  Service --|> IService : 
-  class Service {
-    +Service(FuncᐸInt32ˏIDependencyᐳ dependencyFactory)
-  }
+  class Int32
+  class FuncᐸInt32ˏIDependencyᐳ
   Clock --|> IClock : 
   class Clock {
     +Clock()
   }
-  class Int32
-  class FuncᐸInt32ˏIDependencyᐳ
-  class IService {
-    <<abstract>>
+  Service --|> IService : 
+  class Service {
+    +Service(FuncᐸInt32ˏIDependencyᐳ dependencyFactory)
   }
   class IClock {
     <<abstract>>
   }
+  class IService {
+    <<abstract>>
+  }
   Dependency o--  "Singleton" Clock : IClock
   Dependency *--  Int32 : Int32
-  Service *--  FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ
   FuncᐸInt32ˏIDependencyᐳ *--  Dependency : Dependency
+  Service *--  FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ
   Composition ..> Service : IService Root
 ```
 
@@ -111,7 +111,7 @@ classDiagram
 partial class Composition
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM01D18di;
-  private Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock _singletonM01D18di33_Clock;
+  private Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock _singletonM01D18di34_Clock;
   
   public Composition()
   {
@@ -123,7 +123,7 @@ partial class Composition
     _disposableSingletonsM01D18di = new global::System.IDisposable[0];
     lock (parent._disposableSingletonsM01D18di)
     {
-      _singletonM01D18di33_Clock = parent._singletonM01D18di33_Clock;
+      _singletonM01D18di34_Clock = parent._singletonM01D18di34_Clock;
     }
   }
   
@@ -138,17 +138,17 @@ partial class Composition
       System.Func<int, Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.IDependency> transientM01D18di1_Func = dependencyId =>
       {
           int transientM01D18di3_Int32 = dependencyId;
-          if (object.ReferenceEquals(_singletonM01D18di33_Clock, null))
+          if (object.ReferenceEquals(_singletonM01D18di34_Clock, null))
           {
               lock (_disposableSingletonsM01D18di)
               {
-                  if (object.ReferenceEquals(_singletonM01D18di33_Clock, null))
+                  if (object.ReferenceEquals(_singletonM01D18di34_Clock, null))
                   {
-                      _singletonM01D18di33_Clock = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock();
+                      _singletonM01D18di34_Clock = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Clock();
                   }
               }
           }
-          var dependency_M01D18di1 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Dependency(_singletonM01D18di33_Clock, transientM01D18di3_Int32);
+          var dependency_M01D18di1 = new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Dependency(_singletonM01D18di34_Clock, transientM01D18di3_Int32);
           return dependency_M01D18di1;
       };
       return new Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario.Service(transientM01D18di1_Func);
@@ -224,26 +224,26 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency(IClock clock, Int32 id)\n" +
         "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(FuncᐸInt32ˏIDependencyᐳ dependencyFactory)\n" +
-        "  }\n" +
+        "  class Int32\n" +
+        "  class FuncᐸInt32ˏIDependencyᐳ\n" +
         "  Clock --|> IClock : \n" +
         "  class Clock {\n" +
           "    +Clock()\n" +
         "  }\n" +
-        "  class Int32\n" +
-        "  class FuncᐸInt32ˏIDependencyᐳ\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(FuncᐸInt32ˏIDependencyᐳ dependencyFactory)\n" +
         "  }\n" +
         "  class IClock {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
         "  Dependency o--  \"Singleton\" Clock : IClock\n" +
         "  Dependency *--  Int32 : Int32\n" +
-        "  Service *--  FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ\n" +
         "  FuncᐸInt32ˏIDependencyᐳ *--  Dependency : Dependency\n" +
+        "  Service *--  FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ\n" +
         "  Composition ..> Service : IService Root";
   }
   

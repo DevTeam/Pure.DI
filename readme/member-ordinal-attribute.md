@@ -68,6 +68,9 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
+  class Int32
+  class String
+  class DateTime
   Person --|> IPerson : 
   class Person {
     +Person()
@@ -75,9 +78,6 @@ classDiagram
     +String FirstName
     +DateTime Birthday
   }
-  class Int32
-  class String
-  class DateTime
   class IPerson {
     <<abstract>>
   }
@@ -203,6 +203,9 @@ partial class PersonComposition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
+        "  class Int32\n" +
+        "  class String\n" +
+        "  class DateTime\n" +
         "  Person --|> IPerson : \n" +
         "  class Person {\n" +
           "    +Person()\n" +
@@ -210,9 +213,6 @@ partial class PersonComposition
           "    +String FirstName\n" +
           "    +DateTime Birthday\n" +
         "  }\n" +
-        "  class Int32\n" +
-        "  class String\n" +
-        "  class DateTime\n" +
         "  class IPerson {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

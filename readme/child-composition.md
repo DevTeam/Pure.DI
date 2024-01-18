@@ -60,18 +60,18 @@ classDiagram
     + object Resolve(Type type, object? tag)
   }
   Composition --|> IDisposable
-  Service --|> IService : 
-  class Service {
-    +Service(IDependency dependency)
-  }
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
   }
-  class IService {
-    <<abstract>>
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency)
   }
   class IDependency {
+    <<abstract>>
+  }
+  class IService {
     <<abstract>>
   }
   Service o--  "Singleton" Dependency : IDependency
@@ -88,7 +88,7 @@ partial class Composition: global::System.IDisposable
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM01D18di;
   private int _disposeIndexM01D18di;
-  private Pure.DI.UsageTests.Basics.ChildCompositionScenario.Dependency _singletonM01D18di33_Dependency;
+  private Pure.DI.UsageTests.Basics.ChildCompositionScenario.Dependency _singletonM01D18di34_Dependency;
   
   public Composition()
   {
@@ -100,7 +100,7 @@ partial class Composition: global::System.IDisposable
     lock (parent._disposableSingletonsM01D18di)
     {
       _disposableSingletonsM01D18di = new global::System.IDisposable[1 - parent._disposeIndexM01D18di];
-      _singletonM01D18di33_Dependency = parent._singletonM01D18di33_Dependency;
+      _singletonM01D18di34_Dependency = parent._singletonM01D18di34_Dependency;
     }
   }
   
@@ -112,18 +112,18 @@ partial class Composition: global::System.IDisposable
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM01D18di33_Dependency, null))
+      if (object.ReferenceEquals(_singletonM01D18di34_Dependency, null))
       {
           lock (_disposableSingletonsM01D18di)
           {
-              if (object.ReferenceEquals(_singletonM01D18di33_Dependency, null))
+              if (object.ReferenceEquals(_singletonM01D18di34_Dependency, null))
               {
-                  _singletonM01D18di33_Dependency = new Pure.DI.UsageTests.Basics.ChildCompositionScenario.Dependency();
-                  _disposableSingletonsM01D18di[_disposeIndexM01D18di++] = _singletonM01D18di33_Dependency;
+                  _singletonM01D18di34_Dependency = new Pure.DI.UsageTests.Basics.ChildCompositionScenario.Dependency();
+                  _disposableSingletonsM01D18di[_disposeIndexM01D18di++] = _singletonM01D18di34_Dependency;
               }
           }
       }
-      return new Pure.DI.UsageTests.Basics.ChildCompositionScenario.Service(_singletonM01D18di33_Dependency);
+      return new Pure.DI.UsageTests.Basics.ChildCompositionScenario.Service(_singletonM01D18di34_Dependency);
     }
   }
   #endregion
@@ -199,7 +199,7 @@ partial class Composition: global::System.IDisposable
         }
       }
       
-      _singletonM01D18di33_Dependency = null;
+      _singletonM01D18di34_Dependency = null;
     }
   }
   
@@ -217,18 +217,18 @@ partial class Composition: global::System.IDisposable
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  Composition --|> IDisposable\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(IDependency dependency)\n" +
-        "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency)\n" +
         "  }\n" +
         "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service o--  \"Singleton\" Dependency : IDependency\n" +

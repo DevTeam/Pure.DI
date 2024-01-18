@@ -48,6 +48,7 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
+  class String
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
@@ -58,7 +59,6 @@ classDiagram
     +String ServiceNameField
     +IDependency Dependency
   }
-  class String
   class IDependency {
     <<abstract>>
   }
@@ -180,6 +180,7 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
+        "  class String\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
@@ -190,7 +191,6 @@ partial class Composition
           "    +String ServiceNameField\n" +
           "    +IDependency Dependency\n" +
         "  }\n" +
-        "  class String\n" +
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

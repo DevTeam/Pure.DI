@@ -38,20 +38,20 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  Service --|> IService : 
-  class Service {
-    +Service(LazyᐸIDependencyᐳ dependency)
-  }
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
   }
+  Service --|> IService : 
+  class Service {
+    +Service(LazyᐸIDependencyᐳ dependency)
+  }
   class LazyᐸIDependencyᐳ
   class FuncᐸIDependencyᐳ
-  class IService {
+  class IDependency {
     <<abstract>>
   }
-  class IDependency {
+  class IService {
     <<abstract>>
   }
   Service *--  LazyᐸIDependencyᐳ : LazyᐸIDependencyᐳ
@@ -88,8 +88,8 @@ partial class Composition
     #endif
     get
     {
-      var perResolveM01D18di36_Func = default(System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>);
-      perResolveM01D18di36_Func = new global::System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(
+      var perResolveM01D18di37_Func = default(System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>);
+      perResolveM01D18di37_Func = new global::System.Func<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
       () =>
       {
@@ -98,7 +98,7 @@ partial class Composition
       });
       System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency> transientM01D18di1_Lazy;
       {
-          var factory_M01D18di2 = perResolveM01D18di36_Func;
+          var factory_M01D18di2 = perResolveM01D18di37_Func;
           transientM01D18di1_Lazy = new global::System.Lazy<Pure.DI.UsageTests.BCL.LazyScenario.IDependency>(factory_M01D18di2, true);
       }
       return new Pure.DI.UsageTests.BCL.LazyScenario.Service(transientM01D18di1_Lazy);
@@ -171,20 +171,20 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(LazyᐸIDependencyᐳ dependency)\n" +
-        "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(LazyᐸIDependencyᐳ dependency)\n" +
+        "  }\n" +
         "  class LazyᐸIDependencyᐳ\n" +
         "  class FuncᐸIDependencyᐳ\n" +
-        "  class IService {\n" +
+        "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  class IDependency {\n" +
+        "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service *--  LazyᐸIDependencyᐳ : LazyᐸIDependencyᐳ\n" +

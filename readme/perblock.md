@@ -55,19 +55,19 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  Service --|> IService : 
-  class Service {
-    +Service(IDependency dependency1, IDependency dependency2, FuncᐸIDependencyᐳ dependencyFactory)
-  }
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
   }
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency1, IDependency dependency2, FuncᐸIDependencyᐳ dependencyFactory)
+  }
   class FuncᐸIDependencyᐳ
-  class IService {
+  class IDependency {
     <<abstract>>
   }
-  class IDependency {
+  class IService {
     <<abstract>>
   }
   Service o--  "PerBlock" Dependency : IDependency
@@ -105,8 +105,8 @@ partial class Composition
     #endif
     get
     {
-      var perResolveM01D18di35_Func = default(System.Func<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency>);
-      perResolveM01D18di35_Func = new global::System.Func<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency>(
+      var perResolveM01D18di36_Func = default(System.Func<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency>);
+      perResolveM01D18di36_Func = new global::System.Func<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency>(
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
       () =>
       {
@@ -115,7 +115,7 @@ partial class Composition
           return factory_M01D18di1;
       });
       var perBlockM01D18di1_Dependency = new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency();
-      return new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service(perBlockM01D18di1_Dependency, perBlockM01D18di1_Dependency, perResolveM01D18di35_Func);
+      return new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service(perBlockM01D18di1_Dependency, perBlockM01D18di1_Dependency, perResolveM01D18di36_Func);
     }
   }
   #endregion
@@ -185,19 +185,19 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(IDependency dependency1, IDependency dependency2, FuncᐸIDependencyᐳ dependencyFactory)\n" +
-        "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency1, IDependency dependency2, FuncᐸIDependencyᐳ dependencyFactory)\n" +
+        "  }\n" +
         "  class FuncᐸIDependencyᐳ\n" +
-        "  class IService {\n" +
+        "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  class IDependency {\n" +
+        "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service o--  \"PerBlock\" Dependency : IDependency\n" +

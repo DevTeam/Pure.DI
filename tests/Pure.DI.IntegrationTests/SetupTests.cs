@@ -305,6 +305,50 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldOverrideBindingWhenGlobal()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    static class Setup
+    {
+        private static void SetupGlobalComposition()
+        {
+            DI.Setup("", CompositionKind.Global)
+                .Root<string>("Result")
+                .Bind<string>().To(_ => "Abc");
+        }
+
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<string>().To(_ => "Xyz");
+        }
+    }          
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            Console.WriteLine(composition.Result);                                           
+        }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Xyz"), result);
+    }
+    
+    [Fact]
     public async Task ShouldOverrideBindingWhenDependency()
     {
         // Given

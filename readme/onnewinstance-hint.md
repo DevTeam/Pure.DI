@@ -66,18 +66,18 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  Service --|> IService : 
-  class Service {
-    +Service(IDependency dependency)
-  }
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
   }
-  class IService {
-    <<abstract>>
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency)
   }
   class IDependency {
+    <<abstract>>
+  }
+  class IService {
     <<abstract>>
   }
   Service o--  "Singleton" Dependency : IDependency
@@ -93,7 +93,7 @@ classDiagram
 partial class Composition
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM01D18di;
-  private Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency _singletonM01D18di33_Dependency;
+  private Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency _singletonM01D18di34_Dependency;
   
   public Composition()
   {
@@ -105,7 +105,7 @@ partial class Composition
     _disposableSingletonsM01D18di = new global::System.IDisposable[0];
     lock (parent._disposableSingletonsM01D18di)
     {
-      _singletonM01D18di33_Dependency = parent._singletonM01D18di33_Dependency;
+      _singletonM01D18di34_Dependency = parent._singletonM01D18di34_Dependency;
     }
   }
   
@@ -117,21 +117,21 @@ partial class Composition
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM01D18di33_Dependency, null))
+      if (object.ReferenceEquals(_singletonM01D18di34_Dependency, null))
       {
           lock (_disposableSingletonsM01D18di)
           {
-              if (object.ReferenceEquals(_singletonM01D18di33_Dependency, null))
+              if (object.ReferenceEquals(_singletonM01D18di34_Dependency, null))
               {
-                  Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency _singletonM01D18di33_DependencyTemp;
-                  _singletonM01D18di33_DependencyTemp = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency();
-                  OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency>(ref _singletonM01D18di33_DependencyTemp, null, Pure.DI.Lifetime.Singleton);
+                  Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency _singletonM01D18di34_DependencyTemp;
+                  _singletonM01D18di34_DependencyTemp = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency();
+                  OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Dependency>(ref _singletonM01D18di34_DependencyTemp, null, Pure.DI.Lifetime.Singleton);
                   global::System.Threading.Thread.MemoryBarrier();
-                  _singletonM01D18di33_Dependency = _singletonM01D18di33_DependencyTemp;
+                  _singletonM01D18di34_Dependency = _singletonM01D18di34_DependencyTemp;
               }
           }
       }
-      var transientM01D18di0_Service = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service(_singletonM01D18di33_Dependency);
+      var transientM01D18di0_Service = new Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service(_singletonM01D18di34_Dependency);
       OnNewInstance<Pure.DI.UsageTests.Hints.OnNewInstanceHintScenario.Service>(ref transientM01D18di0_Service, null, Pure.DI.Lifetime.Transient);
       return transientM01D18di0_Service;
     }
@@ -205,18 +205,18 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(IDependency dependency)\n" +
-        "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency)\n" +
         "  }\n" +
         "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service o--  \"Singleton\" Dependency : IDependency\n" +

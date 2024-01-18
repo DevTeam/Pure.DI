@@ -43,19 +43,19 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  Service --|> IService : 
-  class Service {
-    +Service(FuncᐸIDependencyᐳ dependencyFactory)
-  }
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
   }
+  Service --|> IService : 
+  class Service {
+    +Service(FuncᐸIDependencyᐳ dependencyFactory)
+  }
   class FuncᐸIDependencyᐳ
-  class IService {
+  class IDependency {
     <<abstract>>
   }
-  class IDependency {
+  class IService {
     <<abstract>>
   }
   Service o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
@@ -91,15 +91,15 @@ partial class Composition
     #endif
     get
     {
-      var perResolveM01D18di35_Func = default(System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>);
-      perResolveM01D18di35_Func = new global::System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>(
+      var perResolveM01D18di36_Func = default(System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>);
+      perResolveM01D18di36_Func = new global::System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>(
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
       () =>
       {
           var factory_M01D18di1 = new Pure.DI.UsageTests.BCL.FuncScenario.Dependency();
           return factory_M01D18di1;
       });
-      return new Pure.DI.UsageTests.BCL.FuncScenario.Service(perResolveM01D18di35_Func);
+      return new Pure.DI.UsageTests.BCL.FuncScenario.Service(perResolveM01D18di36_Func);
     }
   }
   #endregion
@@ -169,19 +169,19 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(FuncᐸIDependencyᐳ dependencyFactory)\n" +
-        "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(FuncᐸIDependencyᐳ dependencyFactory)\n" +
+        "  }\n" +
         "  class FuncᐸIDependencyᐳ\n" +
-        "  class IService {\n" +
+        "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  class IDependency {\n" +
+        "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service o--  \"PerResolve\" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ\n" +

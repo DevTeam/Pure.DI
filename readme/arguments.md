@@ -58,25 +58,25 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  Service --|> IService : 
-  class Service {
-    +Service(String name, IDependency dependency)
-  }
+  class Int32
+  class String
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency(Int32 id)
   }
-  class Int32
-  class String
-  class IService {
-    <<abstract>>
+  Service --|> IService : 
+  class Service {
+    +Service(String name, IDependency dependency)
   }
   class IDependency {
     <<abstract>>
   }
+  class IService {
+    <<abstract>>
+  }
+  Dependency o-- Int32 : Argument "id"
   Service o-- String : "name"  Argument "serviceName"
   Service *--  Dependency : IDependency
-  Dependency o-- Int32 : Argument "id"
   Composition ..> Service : IService Root
 ```
 
@@ -189,25 +189,25 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(String name, IDependency dependency)\n" +
-        "  }\n" +
+        "  class Int32\n" +
+        "  class String\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency(Int32 id)\n" +
         "  }\n" +
-        "  class Int32\n" +
-        "  class String\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(String name, IDependency dependency)\n" +
         "  }\n" +
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Dependency o-- Int32 : Argument \"id\"\n" +
         "  Service o-- String : \"name\"  Argument \"serviceName\"\n" +
         "  Service *--  Dependency : IDependency\n" +
-        "  Dependency o-- Int32 : Argument \"id\"\n" +
         "  Composition ..> Service : IService Root";
   }
   

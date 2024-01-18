@@ -48,19 +48,19 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  Service --|> IService : 
-  class Service {
-    +Service(ValueTaskᐸIDependencyᐳ dependencyTask)
-  }
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
   }
+  Service --|> IService : 
+  class Service {
+    +Service(ValueTaskᐸIDependencyᐳ dependencyTask)
+  }
   class ValueTaskᐸIDependencyᐳ
-  class IService {
+  class IDependency {
     <<abstract>>
   }
-  class IDependency {
+  class IService {
     <<abstract>>
   }
   Service *--  ValueTaskᐸIDependencyᐳ : ValueTaskᐸIDependencyᐳ
@@ -171,19 +171,19 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(ValueTaskᐸIDependencyᐳ dependencyTask)\n" +
-        "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(ValueTaskᐸIDependencyᐳ dependencyTask)\n" +
+        "  }\n" +
         "  class ValueTaskᐸIDependencyᐳ\n" +
-        "  class IService {\n" +
+        "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  class IDependency {\n" +
+        "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service *--  ValueTaskᐸIDependencyᐳ : ValueTaskᐸIDependencyᐳ\n" +

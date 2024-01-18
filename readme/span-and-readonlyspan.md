@@ -41,12 +41,12 @@ classDiagram
     + object Resolve(Type type, object? tag)
   }
   class ReadOnlySpanᐸDependencyᐳ
+  class Dependency {
+    +Dependency()
+  }
   Service --|> IService : 
   class Service {
     +Service(ReadOnlySpanᐸDependencyᐳ dependencies)
-  }
-  class Dependency {
-    +Dependency()
   }
   class IService {
     <<abstract>>
@@ -163,12 +163,12 @@ partial class Composition
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  class ReadOnlySpanᐸDependencyᐳ\n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
           "    +Service(ReadOnlySpanᐸDependencyᐳ dependencies)\n" +
-        "  }\n" +
-        "  class Dependency {\n" +
-          "    +Dependency()\n" +
         "  }\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +

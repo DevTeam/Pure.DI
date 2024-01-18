@@ -62,6 +62,8 @@ classDiagram
   class Composition {
     +IService CreateService(int id, string dependencyName, string serviceName)
   }
+  class Int32
+  class String
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency(Int32 id, String dependencyName)
@@ -70,8 +72,6 @@ classDiagram
   class Service {
     +Service(String name, IDependency dependency)
   }
-  class Int32
-  class String
   class IDependency {
     <<abstract>>
   }
@@ -123,6 +123,8 @@ partial class Composition
         "  class Composition {\n" +
           "    +IService CreateService(int id, string dependencyName, string serviceName)\n" +
         "  }\n" +
+        "  class Int32\n" +
+        "  class String\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency(Int32 id, String dependencyName)\n" +
@@ -131,8 +133,6 @@ partial class Composition
         "  class Service {\n" +
           "    +Service(String name, IDependency dependency)\n" +
         "  }\n" +
-        "  class Int32\n" +
-        "  class String\n" +
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

@@ -28,7 +28,7 @@ namespace Sample
 
     class CardboardBox<T> : IBox<T>
     {
-        public CardboardBox(T content, State state) => Content = content;
+        public CardboardBox(T content) => Content = content;
 
         public T Content { get; }
 
@@ -54,19 +54,15 @@ namespace Sample
     {
         private static void Setup()
         {
-            // Resolve = Off
-            // FormatCode = On
             DI.Setup(nameof(Composition))
-                .Bind<int>().To(_ => 99)
                 // Models a random subatomic event that may or may not occur
-                .Bind<Random>().To<Random>()
+                .Bind<Random>().As(Singleton).To<Random>()
                 // Represents a quantum superposition of 2 states: Alive or Dead
-                .Bind<State>().As(Singleton).To(ctx =>
+                .Bind<State>().To(ctx =>
                 {
                     ctx.Inject<Random>(out var random);
                     return (State)random.Next(2);
                 }) 
-                // Represents schrodinger's cat
                 .Bind<ICat>().To<ShroedingersCat>()
                 // Represents a cardboard box with any content
                 .Bind<IBox<TT>>().To<CardboardBox<TT>>()                
@@ -91,12 +87,16 @@ namespace Sample
         }
     }                
 }
-""".RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp8, NullableContextOptions = NullableContextOptions.Disable } );
+""".RunAsync(new Options
+        {
+            LanguageVersion = LanguageVersion.CSharp8,
+            NullableContextOptions = NullableContextOptions.Disable,
+            PreprocessorSymbols = ["NET", "NET6_0_OR_GREATER"]
+        } );
 
         // Then
         result.Success.ShouldBeTrue(result);
         (result.StdOut.Contains("[Dead cat]") || result.StdOut.Contains("[Alive cat]")).ShouldBeTrue(result);
-        // result.RootBlocks.Count.ShouldBe(1);
-        // result.RootBlocks[0].Block.ToString().ShouldBe("[[[6-6-2: System.Random], 5-5-1: Sample.State, 4-4-1: System.Func<Sample.State>], 3-3-0: System.Lazy<Sample.State>, 2-2-0: Sample.ShroedingersCat, 1-1-0: Sample.CardboardBox<Sample.ICat>, 0-0-0: Sample.Program]");
+        result.GeneratedCode.Contains("= new System.Random();").ShouldBeTrue();
     }
 }

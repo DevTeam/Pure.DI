@@ -121,13 +121,13 @@ internal sealed class VariationalDependencyGraphBuilder(
     }
 
     [SuppressMessage("ReSharper", "NotDisposedResourceIsReturned")]
-    private static IEnumerable<Variation> CreateVariants(IEnumerable<ProcessingNode> allNodes) =>
-        allNodes.GroupBy(i => i.Node.Binding)
+    private static IEnumerable<Variation> CreateVariants(IEnumerable<ProcessingNode> nodes) =>
+        nodes.GroupBy(i => i.Node.Binding)
             .Select(i => i.GetEnumerator());
 
     private static IEnumerable<DependencyNode> SortByPriority(IEnumerable<DependencyNode> nodes) =>
-        nodes
-            .OrderBy(i => i.Implementation?.Constructor.Ordinal ?? int.MaxValue)
-            .ThenByDescending(i => i.Implementation?.Constructor.Parameters.Count(p => !p.ParameterSymbol.IsOptional))
-            .ThenByDescending(i => i.Implementation?.Constructor.Method.DeclaredAccessibility);
+        nodes.GroupBy(i => i.Binding)
+            .SelectMany(grp => grp.OrderBy(i => i.Implementation?.Constructor.Ordinal ?? int.MaxValue)
+                .ThenByDescending(i => i.Implementation?.Constructor.Parameters.Count(p => !p.ParameterSymbol.IsOptional))
+                .ThenByDescending(i => i.Implementation?.Constructor.Method.DeclaredAccessibility));
 }

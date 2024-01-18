@@ -62,33 +62,33 @@ classDiagram
   class Composition {
     +IService GetRoot(System.Threading.CancellationToken cancellationToken)
   }
-  Service --|> IService : 
-  class Service {
-    +Service(TaskᐸIDependencyᐳ dependencyTask)
-  }
-  Dependency --|> IDependency : 
-  class Dependency {
-    +Dependency()
-  }
   class TaskCreationOptions
   class TaskContinuationOptions
   class TaskFactory
   class TaskScheduler
   class CancellationToken
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
+  }
+  Service --|> IService : 
+  class Service {
+    +Service(TaskᐸIDependencyᐳ dependencyTask)
+  }
   class TaskᐸIDependencyᐳ
   class FuncᐸIDependencyᐳ
   class TaskFactoryᐸIDependencyᐳ
-  class IService {
-    <<abstract>>
-  }
   class IDependency {
     <<abstract>>
   }
-  Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
+  class IService {
+    <<abstract>>
+  }
   TaskFactory o-- CancellationToken : Argument "cancellationToken"
   TaskFactory *--  TaskCreationOptions : TaskCreationOptions
   TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
   TaskFactory *--  TaskScheduler : TaskScheduler
+  Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
   Composition ..> Service : IService GetRoot
   TaskᐸIDependencyᐳ o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
   TaskᐸIDependencyᐳ o--  "PerBlock" TaskFactoryᐸIDependencyᐳ : TaskFactoryᐸIDependencyᐳ
@@ -125,7 +125,7 @@ partial class Composition
   #endif
   public Pure.DI.UsageTests.BCL.TaskScenario.IService GetRoot(System.Threading.CancellationToken cancellationToken)
   {
-    var perResolveM01D18di38_Func = default(System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>);
+    var perResolveM01D18di39_Func = default(System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>);
     System.Threading.Tasks.TaskScheduler transientM01D18di5_TaskScheduler = TaskScheduler.Current;
     System.Threading.Tasks.TaskContinuationOptions transientM01D18di4_TaskContinuationOptions = global::System.Threading.Tasks.TaskContinuationOptions.None;
     System.Threading.Tasks.TaskCreationOptions transientM01D18di3_TaskCreationOptions = global::System.Threading.Tasks.TaskCreationOptions.None;
@@ -137,7 +137,7 @@ partial class Composition
         var taskScheduler_M01D18di4 = transientM01D18di5_TaskScheduler;
         perBlockM01D18di2_TaskFactory = new global::System.Threading.Tasks.TaskFactory<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(cancellationToken_M01D18di1, taskCreationOptions_M01D18di2, taskContinuationOptions_M01D18di3, taskScheduler_M01D18di4);
     }
-    perResolveM01D18di38_Func = new global::System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(
+    perResolveM01D18di39_Func = new global::System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
     () =>
     {
@@ -146,7 +146,7 @@ partial class Composition
     });
     System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.TaskScenario.IDependency> transientM01D18di1_Task;
     {
-        var factory_M01D18di6 = perResolveM01D18di38_Func;
+        var factory_M01D18di6 = perResolveM01D18di39_Func;
         var taskFactory_M01D18di7 = perBlockM01D18di2_TaskFactory;
         transientM01D18di1_Task = taskFactory_M01D18di7.StartNew(factory_M01D18di6);
     }
@@ -162,33 +162,33 @@ partial class Composition
         "  class Composition {\n" +
           "    +IService GetRoot(System.Threading.CancellationToken cancellationToken)\n" +
         "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(TaskᐸIDependencyᐳ dependencyTask)\n" +
-        "  }\n" +
-        "  Dependency --|> IDependency : \n" +
-        "  class Dependency {\n" +
-          "    +Dependency()\n" +
-        "  }\n" +
         "  class TaskCreationOptions\n" +
         "  class TaskContinuationOptions\n" +
         "  class TaskFactory\n" +
         "  class TaskScheduler\n" +
         "  class CancellationToken\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
+        "  }\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(TaskᐸIDependencyᐳ dependencyTask)\n" +
+        "  }\n" +
         "  class TaskᐸIDependencyᐳ\n" +
         "  class FuncᐸIDependencyᐳ\n" +
         "  class TaskFactoryᐸIDependencyᐳ\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ\n" +
+        "  class IService {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
         "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
         "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
         "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
         "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
+        "  Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ\n" +
         "  Composition ..> Service : IService GetRoot\n" +
         "  TaskᐸIDependencyᐳ o--  \"PerResolve\" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ\n" +
         "  TaskᐸIDependencyᐳ o--  \"PerBlock\" TaskFactoryᐸIDependencyᐳ : TaskFactoryᐸIDependencyᐳ\n" +

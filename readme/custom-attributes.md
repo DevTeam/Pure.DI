@@ -73,13 +73,13 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
+  class String
+  class Int32
   Person --|> IPerson : 
   class Person {
     +Person(String name)
     ~Object Id
   }
-  class String
-  class Int32
   class IPerson {
     <<abstract>>
   }
@@ -192,13 +192,13 @@ partial class PersonComposition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
+        "  class String\n" +
+        "  class Int32\n" +
         "  Person --|> IPerson : \n" +
         "  class Person {\n" +
           "    +Person(String name)\n" +
           "    ~Object Id\n" +
         "  }\n" +
-        "  class String\n" +
-        "  class Int32\n" +
         "  class IPerson {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

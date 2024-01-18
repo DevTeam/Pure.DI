@@ -66,9 +66,8 @@ internal partial class Composition
                 ctx.Inject<Random>(out var random);
                 return (State)random.Next(2);
             })
-            // Represents schrodinger's cat
             .Bind<ICat>().To<ShroedingersCat>()
-            // Represents a cardboard box with any content
+            // Represents a cardboard box with any contents
             .Bind<IBox<TT>>().To<CardboardBox<TT>>()
             // Composition Root
             .Root<Program>("Root");

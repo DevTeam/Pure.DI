@@ -67,11 +67,11 @@ classDiagram
   class Service {
     +Service(String serviceName, IDependency dependency)
   }
+  class String
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
   }
-  class String
   class IDependency {
     <<abstract>>
   }
@@ -195,11 +195,11 @@ partial class Composition
         "  class Service {\n" +
           "    +Service(String serviceName, IDependency dependency)\n" +
         "  }\n" +
+        "  class String\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class String\n" +
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

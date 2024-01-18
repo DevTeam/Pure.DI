@@ -65,10 +65,6 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  Service --|> IService : 
-  class Service {
-    +Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
-  }
   AbcDependency --|> IDependency : "Abc" 
   AbcDependency --|> IDependency : 
   class AbcDependency {
@@ -78,10 +74,14 @@ classDiagram
   class XyzDependency {
     +XyzDependency()
   }
-  class IService {
-    <<abstract>>
+  Service --|> IService : 
+  class Service {
+    +Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
   }
   class IDependency {
+    <<abstract>>
+  }
+  class IService {
     <<abstract>>
   }
   Service *--  AbcDependency : "Abc"  IDependency
@@ -100,7 +100,7 @@ classDiagram
 partial class Composition
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM01D18di;
-  private Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency _singletonM01D18di34_XyzDependency;
+  private Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency _singletonM01D18di35_XyzDependency;
   
   public Composition()
   {
@@ -112,7 +112,7 @@ partial class Composition
     _disposableSingletonsM01D18di = new global::System.IDisposable[0];
     lock (parent._disposableSingletonsM01D18di)
     {
-      _singletonM01D18di34_XyzDependency = parent._singletonM01D18di34_XyzDependency;
+      _singletonM01D18di35_XyzDependency = parent._singletonM01D18di35_XyzDependency;
     }
   }
   
@@ -124,17 +124,17 @@ partial class Composition
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM01D18di34_XyzDependency, null))
+      if (object.ReferenceEquals(_singletonM01D18di35_XyzDependency, null))
       {
           lock (_disposableSingletonsM01D18di)
           {
-              if (object.ReferenceEquals(_singletonM01D18di34_XyzDependency, null))
+              if (object.ReferenceEquals(_singletonM01D18di35_XyzDependency, null))
               {
-                  _singletonM01D18di34_XyzDependency = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
+                  _singletonM01D18di35_XyzDependency = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
               }
           }
       }
-      return _singletonM01D18di34_XyzDependency;
+      return _singletonM01D18di35_XyzDependency;
     }
   }
   
@@ -145,17 +145,17 @@ partial class Composition
     #endif
     get
     {
-      if (object.ReferenceEquals(_singletonM01D18di34_XyzDependency, null))
+      if (object.ReferenceEquals(_singletonM01D18di35_XyzDependency, null))
       {
           lock (_disposableSingletonsM01D18di)
           {
-              if (object.ReferenceEquals(_singletonM01D18di34_XyzDependency, null))
+              if (object.ReferenceEquals(_singletonM01D18di35_XyzDependency, null))
               {
-                  _singletonM01D18di34_XyzDependency = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
+                  _singletonM01D18di35_XyzDependency = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
               }
           }
       }
-      return new Pure.DI.UsageTests.Basics.TagsScenario.Service(new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency(), _singletonM01D18di34_XyzDependency, new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency());
+      return new Pure.DI.UsageTests.Basics.TagsScenario.Service(new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency(), _singletonM01D18di35_XyzDependency, new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency());
     }
   }
   #endregion
@@ -226,10 +226,6 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)\n" +
-        "  }\n" +
         "  AbcDependency --|> IDependency : \"Abc\" \n" +
         "  AbcDependency --|> IDependency : \n" +
         "  class AbcDependency {\n" +
@@ -239,10 +235,14 @@ partial class Composition
         "  class XyzDependency {\n" +
           "    +XyzDependency()\n" +
         "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)\n" +
         "  }\n" +
         "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service *--  AbcDependency : \"Abc\"  IDependency\n" +

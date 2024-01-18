@@ -15,6 +15,10 @@ classDiagram
   class CompositionRoot {
     +CompositionRoot(IService1 service1, IService2 service21, IService2 service22, IService2 service23, IService3 service3, IService4 service41, IService4 service42)
   }
+  Service1 --|> IService1 : 
+  class Service1 {
+    +Service1(IService2 service2)
+  }
   Service2 --|> IService2 : 
   class Service2 {
     +Service2(IService3 service31, IService3 service32, IService3 service33, IService3 service34, IService3 service35)
@@ -23,21 +27,17 @@ classDiagram
   class Service3 {
     +Service3(IService4 service41, IService4 service42)
   }
-  Service1 --|> IService1 : 
-  class Service1 {
-    +Service1(IService2 service2)
-  }
   Service4 --|> IService4 : 
   class Service4 {
     +Service4()
+  }
+  class IService1 {
+    <<abstract>>
   }
   class IService2 {
     <<abstract>>
   }
   class IService3 {
-    <<abstract>>
-  }
-  class IService1 {
     <<abstract>>
   }
   class IService4 {
@@ -50,14 +50,14 @@ classDiagram
   CompositionRoot *--  Service3 : IService3
   CompositionRoot o--  "Singleton" Service4 : IService4
   CompositionRoot o--  "Singleton" Service4 : IService4
-  Service2 *--  Service3 : IService3
-  Service2 *--  Service3 : IService3
-  Service2 *--  Service3 : IService3
-  Service2 *--  Service3 : IService3
-  Service2 *--  Service3 : IService3
-  Service3 o--  "Singleton" Service4 : IService4
-  Service3 o--  "Singleton" Service4 : IService4
   Service1 *--  Service2 : IService2
+  Service2 *--  Service3 : IService3
+  Service2 *--  Service3 : IService3
+  Service2 *--  Service3 : IService3
+  Service2 *--  Service3 : IService3
+  Service2 *--  Service3 : IService3
+  Service3 o--  "Singleton" Service4 : IService4
+  Service3 o--  "Singleton" Service4 : IService4
   Singleton ..> CompositionRoot : CompositionRoot PureDIByCR
 ```
 
@@ -70,8 +70,8 @@ classDiagram
 partial class Singleton
 {
   private readonly global::System.IDisposable[] _disposableSingletonsM01D18di;
-  private Pure.DI.Benchmarks.Model.Service1 _singletonM01D18di34_Service1;
-  private Pure.DI.Benchmarks.Model.Service4 _singletonM01D18di37_Service4;
+  private Pure.DI.Benchmarks.Model.Service1 _singletonM01D18di35_Service1;
+  private Pure.DI.Benchmarks.Model.Service4 _singletonM01D18di38_Service4;
   
   public Singleton()
   {
@@ -83,8 +83,8 @@ partial class Singleton
     _disposableSingletonsM01D18di = new global::System.IDisposable[0];
     lock (parent._disposableSingletonsM01D18di)
     {
-      _singletonM01D18di34_Service1 = parent._singletonM01D18di34_Service1;
-      _singletonM01D18di37_Service4 = parent._singletonM01D18di37_Service4;
+      _singletonM01D18di35_Service1 = parent._singletonM01D18di35_Service1;
+      _singletonM01D18di38_Service4 = parent._singletonM01D18di38_Service4;
     }
   }
   
@@ -94,15 +94,15 @@ partial class Singleton
   #endif
   public partial Pure.DI.Benchmarks.Model.CompositionRoot PureDIByCR()
   {
-    if (object.ReferenceEquals(_singletonM01D18di37_Service4, null))
+    if (object.ReferenceEquals(_singletonM01D18di38_Service4, null))
     {
-        _singletonM01D18di37_Service4 = new Pure.DI.Benchmarks.Model.Service4();
+        _singletonM01D18di38_Service4 = new Pure.DI.Benchmarks.Model.Service4();
     }
-    if (object.ReferenceEquals(_singletonM01D18di34_Service1, null))
+    if (object.ReferenceEquals(_singletonM01D18di35_Service1, null))
     {
-        _singletonM01D18di34_Service1 = new Pure.DI.Benchmarks.Model.Service1(new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4)));
+        _singletonM01D18di35_Service1 = new Pure.DI.Benchmarks.Model.Service1(new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4)));
     }
-    return new Pure.DI.Benchmarks.Model.CompositionRoot(_singletonM01D18di34_Service1, new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4)), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4)), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4)), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di37_Service4, _singletonM01D18di37_Service4), _singletonM01D18di37_Service4, _singletonM01D18di37_Service4);
+    return new Pure.DI.Benchmarks.Model.CompositionRoot(_singletonM01D18di35_Service1, new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4)), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4)), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4)), new Pure.DI.Benchmarks.Model.Service3(_singletonM01D18di38_Service4, _singletonM01D18di38_Service4), _singletonM01D18di38_Service4, _singletonM01D18di38_Service4);
   }
   #endregion
   
@@ -174,6 +174,10 @@ partial class Singleton
         "  class CompositionRoot {\n" +
           "    +CompositionRoot(IService1 service1, IService2 service21, IService2 service22, IService2 service23, IService3 service3, IService4 service41, IService4 service42)\n" +
         "  }\n" +
+        "  Service1 --|> IService1 : \n" +
+        "  class Service1 {\n" +
+          "    +Service1(IService2 service2)\n" +
+        "  }\n" +
         "  Service2 --|> IService2 : \n" +
         "  class Service2 {\n" +
           "    +Service2(IService3 service31, IService3 service32, IService3 service33, IService3 service34, IService3 service35)\n" +
@@ -182,21 +186,17 @@ partial class Singleton
         "  class Service3 {\n" +
           "    +Service3(IService4 service41, IService4 service42)\n" +
         "  }\n" +
-        "  Service1 --|> IService1 : \n" +
-        "  class Service1 {\n" +
-          "    +Service1(IService2 service2)\n" +
-        "  }\n" +
         "  Service4 --|> IService4 : \n" +
         "  class Service4 {\n" +
           "    +Service4()\n" +
+        "  }\n" +
+        "  class IService1 {\n" +
+          "    <<abstract>>\n" +
         "  }\n" +
         "  class IService2 {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  class IService3 {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IService1 {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  class IService4 {\n" +
@@ -209,14 +209,14 @@ partial class Singleton
         "  CompositionRoot *--  Service3 : IService3\n" +
         "  CompositionRoot o--  \"Singleton\" Service4 : IService4\n" +
         "  CompositionRoot o--  \"Singleton\" Service4 : IService4\n" +
-        "  Service2 *--  Service3 : IService3\n" +
-        "  Service2 *--  Service3 : IService3\n" +
-        "  Service2 *--  Service3 : IService3\n" +
-        "  Service2 *--  Service3 : IService3\n" +
-        "  Service2 *--  Service3 : IService3\n" +
-        "  Service3 o--  \"Singleton\" Service4 : IService4\n" +
-        "  Service3 o--  \"Singleton\" Service4 : IService4\n" +
         "  Service1 *--  Service2 : IService2\n" +
+        "  Service2 *--  Service3 : IService3\n" +
+        "  Service2 *--  Service3 : IService3\n" +
+        "  Service2 *--  Service3 : IService3\n" +
+        "  Service2 *--  Service3 : IService3\n" +
+        "  Service2 *--  Service3 : IService3\n" +
+        "  Service3 o--  \"Singleton\" Service4 : IService4\n" +
+        "  Service3 o--  \"Singleton\" Service4 : IService4\n" +
         "  Singleton ..> CompositionRoot : CompositionRoot PureDIByCR";
   }
   

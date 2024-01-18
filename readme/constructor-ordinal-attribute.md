@@ -49,11 +49,11 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
+  class String
   Service --|> IService : 
   class Service {
     ~Service(String name)
   }
-  class String
   class IService {
     <<abstract>>
   }
@@ -167,11 +167,11 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
+        "  class String\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
           "    ~Service(String name)\n" +
         "  }\n" +
-        "  class String\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +

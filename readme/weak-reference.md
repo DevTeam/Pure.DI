@@ -40,18 +40,18 @@ classDiagram
   class WeakReferenceᐸIDependencyᐳ {
     +WeakReference(IDependency target)
   }
-  Service --|> IService : 
-  class Service {
-    +Service(WeakReferenceᐸIDependencyᐳ dependency)
-  }
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
   }
-  class IService {
-    <<abstract>>
+  Service --|> IService : 
+  class Service {
+    +Service(WeakReferenceᐸIDependencyᐳ dependency)
   }
   class IDependency {
+    <<abstract>>
+  }
+  class IService {
     <<abstract>>
   }
   WeakReferenceᐸIDependencyᐳ *--  Dependency : IDependency
@@ -160,18 +160,18 @@ partial class Composition
         "  class WeakReferenceᐸIDependencyᐳ {\n" +
           "    +WeakReference(IDependency target)\n" +
         "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(WeakReferenceᐸIDependencyᐳ dependency)\n" +
-        "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
+        "  Service --|> IService : \n" +
+        "  class Service {\n" +
+          "    +Service(WeakReferenceᐸIDependencyᐳ dependency)\n" +
         "  }\n" +
         "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  WeakReferenceᐸIDependencyᐳ *--  Dependency : IDependency\n" +

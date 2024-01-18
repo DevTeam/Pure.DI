@@ -39,13 +39,13 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  GreetingService --|> IService : 
-  class GreetingService {
-    +GreetingService(IService baseService)
-  }
   Service --|> IService : "base" 
   class Service {
     +Service()
+  }
+  GreetingService --|> IService : 
+  class GreetingService {
+    +GreetingService(IService baseService)
   }
   class IService {
     <<abstract>>
@@ -152,13 +152,13 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  GreetingService --|> IService : \n" +
-        "  class GreetingService {\n" +
-          "    +GreetingService(IService baseService)\n" +
-        "  }\n" +
         "  Service --|> IService : \"base\" \n" +
         "  class Service {\n" +
           "    +Service()\n" +
+        "  }\n" +
+        "  GreetingService --|> IService : \n" +
+        "  class GreetingService {\n" +
+          "    +GreetingService(IService baseService)\n" +
         "  }\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
