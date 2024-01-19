@@ -25,7 +25,7 @@ internal partial class Composition: ServiceProviderFactory<Composition>
             .Bind<ILog<TT>>().To<Log<TT>>()
             .Bind<TimeSpan>().To(_ => TimeSpan.FromSeconds(1))
             .Bind<ITimer>().As(Singleton).To<Timer>()
-            .Bind<IClock>().To<SystemClock>()
+            .Bind<IClock>().As(PerBlock).To<SystemClock>()
             .Bind<IWeatherForecastService>()
                 .As(Singleton)
                 .To<WeatherForecastService>()

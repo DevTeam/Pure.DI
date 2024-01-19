@@ -24,7 +24,11 @@ public class ClockViewModelTest
         var viewModel = new ClockViewModel(
             Mock.Of<ILog<ClockViewModel>>(),
             clock.Object,
-            Mock.Of<ITimer>()) { Dispatcher = _dispatcher.Object };
+            Mock.Of<ITimer>())
+        {
+            Dispatcher = _dispatcher.Object,
+            Log = Mock.Of<ILog<ViewModel>>()
+        };
 
         // When
         var date = viewModel.Date;
@@ -51,7 +55,8 @@ public class ClockViewModelTest
             Mock.Of<IClock>(),
             timer.Object)
         {
-            Dispatcher = _dispatcher.Object
+            Dispatcher = _dispatcher.Object,
+            Log = Mock.Of<ILog<ViewModel>>()
         };
 
         var propertyNames = new List<string?>();
@@ -81,7 +86,8 @@ public class ClockViewModelTest
             Mock.Of<IClock>(),
             timer.Object)
         {
-            Dispatcher = _dispatcher.Object
+            Dispatcher = _dispatcher.Object,
+            Log = Mock.Of<ILog<ViewModel>>()
         };
 
         // When

@@ -35,7 +35,7 @@ internal class BuildTools(IFilter filter) : IBuildTools
         return $"{Names.OnDependencyInjectionMethodName}<{variable.ContractType}>({variable.VariableCode}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})";
     }
     
-    public IReadOnlyCollection<Line> OnCreated(BuildContext ctx, Variable variable)
+    public IEnumerable<Line> OnCreated(BuildContext ctx, Variable variable)
     {
         if (variable.Node.Arg is not null)
         {

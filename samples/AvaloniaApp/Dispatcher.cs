@@ -3,7 +3,8 @@
 using Clock.ViewModels;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-internal class Dispatcher(Avalonia.Threading.IDispatcher dispatcher): IDispatcher
+internal class Dispatcher: IDispatcher
 {
-    public void Dispatch(Action action) => dispatcher.Post(action);
+    public void Dispatch(Action action) =>
+        Avalonia.Threading.Dispatcher.UIThread.Post(action);
 }

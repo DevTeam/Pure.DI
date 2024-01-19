@@ -5,12 +5,17 @@ using System.Collections.Generic;
 // ReSharper disable once ClassNeverInstantiated.Global
 internal class Timer : ITimer, IDisposable
 {
+    private readonly ILog<Timer> _log;
     private readonly System.Threading.Timer _timer;
     private readonly List<IObserver<Tick>> _observers = [];
 
     // ReSharper disable once MemberCanBePrivate.Global
-    public Timer(TimeSpan period) =>
+    public Timer(ILog<Timer> log, TimeSpan period)
+    {
+        _log = log;
         _timer = new System.Threading.Timer(Tick, null, TimeSpan.Zero, period);
+        _log.Info("Created");
+    }
 
     public IDisposable Subscribe(IObserver<Tick> observer)
     {
@@ -19,16 +24,24 @@ internal class Timer : ITimer, IDisposable
             _observers.Add(observer);
         }
 
+        _log.Info("Subscribed");
+        
         return new Token(() =>
         {
             lock (observer)
             {
                 _observers.Remove(observer);
             }
+            
+            _log.Info("Unsubscribed");
         });
     }
 
-    public void Dispose() => _timer.Dispose();
+    public void Dispose()
+    {
+        _timer.Dispose();
+        _log.Info("Disposed");
+    }
 
     private void Tick(object? state)
     {

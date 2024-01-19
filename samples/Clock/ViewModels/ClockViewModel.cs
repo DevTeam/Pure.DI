@@ -17,6 +17,7 @@ internal class ClockViewModel : ViewModel, IClockViewModel, IDisposable, IObserv
         _log = log;
         _clock = clock;
         _timerToken = timer.Subscribe(this);
+        log.Info("Created");
     }
 
     public string Time => _clock.Now.ToString("T");
@@ -25,14 +26,18 @@ internal class ClockViewModel : ViewModel, IClockViewModel, IDisposable, IObserv
 
     void IObserver<Tick>.OnNext(Tick value)
     {
+        _log.Info("Tick");
         OnPropertyChanged(nameof(Time));
         OnPropertyChanged(nameof(Date));
-        _log.Info($"{Date} {Time}");
     }
 
     void IObserver<Tick>.OnError(Exception error) { }
 
     void IObserver<Tick>.OnCompleted() { }
 
-    void IDisposable.Dispose() => _timerToken.Dispose();
+    void IDisposable.Dispose()
+    {
+        _timerToken.Dispose();
+        _log.Info("Disposed");
+    }
 }

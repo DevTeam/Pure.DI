@@ -78,7 +78,7 @@ internal class BindingBuilder
                     _arg);
             }
 
-            throw new CompileErrorException($"The binding is defined incorrectly.", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+            throw new CompileErrorException("The binding is defined incorrectly.", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
         }
         finally
         {

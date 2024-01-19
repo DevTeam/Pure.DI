@@ -1,7 +1,8 @@
 ﻿// ReSharper disable TemplateIsNotCompileTimeConstantProblem
 // ReSharper disable ContextualLoggerProblem
-namespace MAUIApp;
+namespace BlazorServerApp;
 
+using Clock.Models;
 using Microsoft.Extensions.Logging;
 
 internal class Log<T>(ILogger<T> logger) : ILog<T>

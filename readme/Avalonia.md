@@ -11,19 +11,19 @@ internal partial class Composition
 {
     private static void Setup() => DI.Setup(nameof(Composition))
         // Root
+        .Root<MainWindow>("MainWindow")
         .Root<IClockViewModel>("ClockViewModel")
         
         // View Models
-        .Bind<IClockViewModel>().As(Lifetime.Singleton).To<ClockViewModel>()
+        .Bind<IClockViewModel>().As(Singleton).To<ClockViewModel>()
 
         // Models
         .Bind<ILog<TT>>().To<Log<TT>>()
         .Bind<TimeSpan>().To(_ => TimeSpan.FromSeconds(1))
-        .Bind<ITimer>().As(Lifetime.Singleton).To<Clock.Models.Timer>()
-        .Bind<IClock>().To<SystemClock>()
+        .Bind<ITimer>().As(Singleton).To<Clock.Models.Timer>()
+        .Bind<IClock>().As(PerBlock).To<SystemClock>()
     
         // Infrastructure
-        .Bind<Avalonia.Threading.IDispatcher>().To(_ => Avalonia.Threading.Dispatcher.UIThread)
         .Bind<IDispatcher>().To<Dispatcher>();
 }
 ```
@@ -55,12 +55,13 @@ public class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
+            && Resources["Composition"] is Composition composition)
         {
             // Assignment of the main window
-            desktop.MainWindow = new MainWindow();
+            desktop.MainWindow = composition.MainWindow;
             // Handles disposables
-            desktop.Exit += (_, _) => ((Composition)Resources["Composition"]!).Dispose();
+            desktop.Exit += (_, _) => composition.Dispose();
         }
 
         base.OnFrameworkInitializationCompleted();
@@ -105,7 +106,7 @@ The [project file](/samples/AvaloniaApp/AvaloniaApp.csproj) looks like this:
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.0.44">
+        <PackageReference Include="Pure.DI" Version="2.0.45">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

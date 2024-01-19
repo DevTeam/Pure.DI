@@ -15,6 +15,7 @@ internal partial class Composition: ServiceProviderFactory<Composition>
             
             // View Models
             .Bind<IClockViewModel>()
+                .As(Singleton)
                 .To<ClockViewModel>()
                 .Root<IClockViewModel>("ClockViewModel")
 
@@ -22,7 +23,7 @@ internal partial class Composition: ServiceProviderFactory<Composition>
             .Bind<ILog<TT>>().To<Log<TT>>()
             .Bind<TimeSpan>().To(_ => TimeSpan.FromSeconds(1))
             .Bind<ITimer>().As(Singleton).To<Timer>()
-            .Bind<IClock>().To<SystemClock>()
+            .Bind<IClock>().As(PerBlock).To<SystemClock>()
             .Bind<IWeatherForecastService>()
                 .As(Singleton)
                 .To<WeatherForecastService>()
@@ -61,11 +62,11 @@ The [project file](/samples/BlazorWebAssemblyApp/BlazorWebAssemblyApp.csproj) lo
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.0.44">
+        <PackageReference Include="Pure.DI" Version="2.0.45">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.0.44" />
+        <PackageReference Include="Pure.DI.MS" Version="2.0.45" />
     </ItemGroup>
 
 </Project>

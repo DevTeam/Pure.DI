@@ -22,10 +22,10 @@ internal partial class Composition
         .Bind<ILog<TT>>().To<Log<TT>>()
         .Bind<TimeSpan>().To(_ => TimeSpan.FromSeconds(1))
         .Bind<ITimer>().As(Singleton).To<Clock.Models.Timer>()
-        .Bind<IClock>().To<SystemClock>()
+        .Bind<IClock>().As(PerBlock).To<SystemClock>()
     
         // Infrastructure
-        .Bind<IDispatcher>().To<Dispatcher>();
+        .Bind<IDispatcher>().As(Singleton).To<Dispatcher>();
 }
 ```
 
@@ -55,7 +55,7 @@ The [project file](/samples/WinFormsApp/WinFormsApp.csproj) looks like this:
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.0.44">
+        <PackageReference Include="Pure.DI" Version="2.0.45">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

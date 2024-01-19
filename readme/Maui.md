@@ -13,17 +13,17 @@ internal partial class Composition: ServiceProviderFactory<Composition>
         .DependsOn(Base)
 
         // Roots
-        .Root<App>("App")
+        .Root<AppShell>("AppShell")
         .Root<IClockViewModel>("ClockViewModel")
         
         // View Models
-        .Bind<IClockViewModel>().As(Lifetime.Singleton).To<ClockViewModel>()
+        .Bind<IClockViewModel>().As(Singleton).To<ClockViewModel>()
 
         // Models
         .Bind<ILog<TT>>().To<Log<TT>>()
         .Bind<TimeSpan>().To(_ => TimeSpan.FromSeconds(1))
-        .Bind<ITimer>().As(Lifetime.Singleton).To<Timer>()
-        .Bind<IClock>().To<SystemClock>()
+        .Bind<ITimer>().As(Singleton).To<Timer>()
+        .Bind<IClock>().As(PerBlock).To<SystemClock>()
     
         // Infrastructure
         .Bind<IDispatcher>().To<Dispatcher>();
@@ -40,18 +40,34 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
-        using var composition = new Composition();
+        var composition = new Composition();
         
         // Uses Composition as an alternative IServiceProviderFactory
         builder.ConfigureContainer(composition);
         
         builder
-            .UseMauiApp(_ => composition.App)
+            .UseMauiApp(_ => new App(composition))
+            .ConfigureLifecycleEvents(events =>
+            {
+                // Handles disposables
+#if WINDOWS
+                events.AddWindows(windows => windows
+                    .OnClosed((_, _) => composition.Dispose()));
+#endif
+#if ANDROID
+                events.AddAndroid(android => android
+                    .OnStop(_ => composition.Dispose()));
+#endif
+            })
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
+
+#if DEBUG
+        builder.Logging.AddDebug();
+#endif
 
         return builder.Build();
     }
@@ -188,11 +204,11 @@ The [project file](/samples/MAUIApp/MAUIApp.csproj) looks like this:
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0-rc.2.23479.6"/>
-        <PackageReference Include="Pure.DI" Version="2.0.44">
+        <PackageReference Include="Pure.DI" Version="2.0.45">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.0.44" />
+        <PackageReference Include="Pure.DI.MS" Version="2.0.45" />
     </ItemGroup>
 
 </Project>

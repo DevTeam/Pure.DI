@@ -2,13 +2,10 @@
 
 public partial class App: Application
 {
-    internal App(
-        Composition composition,
-        Func<AppShell> appShellFactory)
+    internal App(Composition composition)
     {
         InitializeComponent();
-        
         Resources["Composition"] = composition;
-        MainPage = appShellFactory();
+        MainPage = composition.AppShell;
     }
 }

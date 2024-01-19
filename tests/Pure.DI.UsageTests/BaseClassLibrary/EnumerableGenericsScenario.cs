@@ -8,6 +8,7 @@ $d=Enumerable generics
 // ReSharper disable CheckNamespace
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UnusedTypeParameter
 namespace Pure.DI.UsageTests.BCL.EnumerableGenericsScenario;
 
 using System.Collections.Immutable;

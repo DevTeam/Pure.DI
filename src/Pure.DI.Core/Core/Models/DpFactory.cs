@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core.Models;
+﻿// ReSharper disable NotAccessedPositionalProperty.Global
+namespace Pure.DI.Core.Models;
 
 internal readonly record struct DpFactory(
     in MdFactory Source,

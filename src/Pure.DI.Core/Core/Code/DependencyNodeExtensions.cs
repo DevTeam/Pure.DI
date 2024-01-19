@@ -5,13 +5,10 @@ internal static class DependencyNodeExtensions
     public static bool IsArg(this DependencyNode node) => 
         node.Arg is not null;
     
-    public static bool IsFactory(this DependencyNode node) => 
-        node.Factory is not null;
-    
-    public static bool IsEnumerable(this DependencyNode node) =>
+    private static bool IsEnumerable(this DependencyNode node) =>
         node.Construct is { Source.Kind: MdConstructKind.Enumerable };
-    
-    public static bool IsAsyncEnumerable(this DependencyNode node) =>
+
+    private static bool IsAsyncEnumerable(this DependencyNode node) =>
         node.Construct is { Source.Kind: MdConstructKind.AsyncEnumerable };
 
     public static bool IsDelegate(this DependencyNode node) =>

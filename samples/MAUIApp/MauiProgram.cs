@@ -2,18 +2,32 @@
 
 namespace MAUIApp;
 
+using Microsoft.Maui.LifecycleEvents;
+
 public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
-        using var composition = new Composition();
+        var composition = new Composition();
         
         // Uses Composition as an alternative IServiceProviderFactory
         builder.ConfigureContainer(composition);
         
         builder
-            .UseMauiApp(_ => composition.App)
+            .UseMauiApp(_ => new App(composition))
+            .ConfigureLifecycleEvents(events =>
+            {
+                // Handles disposables
+#if WINDOWS
+                events.AddWindows(windows => windows
+                    .OnClosed((_, _) => composition.Dispose()));
+#endif
+#if ANDROID
+                events.AddAndroid(android => android
+                    .OnStop(_ => composition.Dispose()));
+#endif
+            })
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

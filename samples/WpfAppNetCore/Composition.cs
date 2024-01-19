@@ -4,6 +4,7 @@
 namespace WpfAppNetCore;
 
 using Pure.DI;
+using static Pure.DI.Lifetime;
 
 internal partial class Composition
 {
@@ -12,13 +13,13 @@ internal partial class Composition
         .Root<IClockViewModel>("ClockViewModel")
         
         // View Models
-        .Bind<IClockViewModel>().As(Lifetime.Singleton).To<ClockViewModel>()
+        .Bind<IClockViewModel>().As(Singleton).To<ClockViewModel>()
 
         // Models
         .Bind<ILog<TT>>().To<Log<TT>>()
         .Bind<TimeSpan>().To(_ => TimeSpan.FromSeconds(1))
-        .Bind<Clock.Models.ITimer>().As(Lifetime.Singleton).To<Clock.Models.Timer>()
-        .Bind<IClock>().To<SystemClock>()
+        .Bind<Clock.Models.ITimer>().As(Singleton).To<Clock.Models.Timer>()
+        .Bind<IClock>().As(PerBlock).To<SystemClock>()
     
         // Infrastructure
         .Bind<IDispatcher>().To<Dispatcher>();

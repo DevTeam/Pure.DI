@@ -88,16 +88,16 @@ classDiagram
 ```c#
 partial class Array
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM01D18di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM01D19di;
   
   public Array()
   {
-    _disposableSingletonsM01D18di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D19di = new global::System.IDisposable[0];
   }
   
   internal Array(Array parent)
   {
-    _disposableSingletonsM01D18di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D19di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -116,7 +116,7 @@ partial class Array
   #endif
   public T Resolve<T>()
   {
-    return ResolverM01D18di<T>.Value.Resolve(this);
+    return ResolverM01D19di<T>.Value.Resolve(this);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -124,7 +124,7 @@ partial class Array
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM01D18di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM01D19di<T>.Value.ResolveByTag(this, tag);
   }
   
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -132,10 +132,10 @@ partial class Array
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM01D18di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM01D18di;
+    var index = (int)(_bucketSizeM01D19di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM01D19di;
     do {
-      ref var pair = ref _bucketsM01D18di[index];
+      ref var pair = ref _bucketsM01D19di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -150,10 +150,10 @@ partial class Array
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM01D18di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM01D18di;
+    var index = (int)(_bucketSizeM01D19di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM01D19di;
     do {
-      ref var pair = ref _bucketsM01D18di[index];
+      ref var pair = ref _bucketsM01D19di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -243,26 +243,26 @@ partial class Array
         "  Array ..> CompositionRoot : CompositionRoot PureDIByCR";
   }
   
-  private readonly static int _bucketSizeM01D18di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>[] _bucketsM01D18di;
+  private readonly static int _bucketSizeM01D19di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>[] _bucketsM01D19di;
   
   static Array()
   {
-    var valResolverM01D18di_0000 = new ResolverM01D18di_0000();
-    ResolverM01D18di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM01D18di_0000;
-    _bucketsM01D18di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Array, object>>.Create(
+    var valResolverM01D19di_0000 = new ResolverM01D19di_0000();
+    ResolverM01D19di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM01D19di_0000;
+    _bucketsM01D19di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Array, object>>.Create(
       1,
-      out _bucketSizeM01D18di,
+      out _bucketSizeM01D19di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM01D18di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM01D19di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM01D18di<T>: global::Pure.DI.IResolver<Array, T>
+  private sealed class ResolverM01D19di<T>: global::Pure.DI.IResolver<Array, T>
   {
-    public static global::Pure.DI.IResolver<Array, T> Value = new ResolverM01D18di<T>();
+    public static global::Pure.DI.IResolver<Array, T> Value = new ResolverM01D19di<T>();
     
     public T Resolve(Array composite)
     {
@@ -275,7 +275,7 @@ partial class Array
     }
   }
   
-  private sealed class ResolverM01D18di_0000: global::Pure.DI.IResolver<Array, Pure.DI.Benchmarks.Model.CompositionRoot>
+  private sealed class ResolverM01D19di_0000: global::Pure.DI.IResolver<Array, Pure.DI.Benchmarks.Model.CompositionRoot>
   {
     public Pure.DI.Benchmarks.Model.CompositionRoot Resolve(Array composition)
     {

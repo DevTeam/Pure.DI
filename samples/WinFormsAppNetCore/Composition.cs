@@ -24,7 +24,7 @@ internal partial class Composition
         .Bind<ILog<TT>>().To<Log<TT>>()
         .Bind<TimeSpan>().To(_ => TimeSpan.FromSeconds(1))
         .Bind<ITimer>().As(Singleton).To<Clock.Models.Timer>()
-        .Bind<IClock>().To<SystemClock>()
+        .Bind<IClock>().As(PerBlock).To<SystemClock>()
     
         // Infrastructure
         .Bind<IDispatcher>().To<Dispatcher>();

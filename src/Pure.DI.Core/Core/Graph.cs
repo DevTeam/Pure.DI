@@ -5,7 +5,7 @@ internal sealed class Graph<TVertex, TEdge> : IGraph<TVertex, TEdge>
     where TEdge : IEdge<TVertex>
     where TVertex : notnull
 {
-    private readonly List<GraphEntry<TVertex, TEdge>> _entries = new();
+    private readonly List<GraphEntry<TVertex, TEdge>> _entries = [];
     private readonly Dictionary<TVertex, GraphEntry<TVertex, TEdge>> _inOutEdges;
     private readonly Dictionary<TVertex, GraphEntry<TVertex, TEdge>> _outInEdges;
     private readonly List<TEdge> _edges = [];
