@@ -808,9 +808,21 @@ Thank you for your interest in contributing to the _Pure.DI_ project! First of a
 
 This project uses the "build as code" approach using [csharp-interactive](https://github.com/DevTeam/csharp-interactive). The entire build logic is a regular [console .NET application](/build). You can use the [build.cmd](/build.cmd) and [build.sh](/build.sh) files with the appropriate command in the parameters to perform all basic actions on the project, e.g:
 
-- _readme_ - generates README.MD
-- _pack_ - creates NuGet packages
-- _benchmarks_ - runs benchmark tests
+| Command       | Description                 |
+|---------------|-----------------------------|
+| r, readme     | Generates README.md         |
+| p, pack       | Creates NuGet packages      |
+| b, benchmarks | Runs benchmarks             |
+| d, deploy     | Push packages               |
+| t, template   | Creates and push templates  |
+| u, update     | Updates internal DI version |
+
+For example:
+
+```
+./build.sh pack
+./build.cmd benchmarks
+```
 
 If you are using the Rider IDE, it already has a set of configurations to run these commands.
 
