@@ -21,7 +21,7 @@ internal static class Property
         }
         else
         {
-            Info(message);
+            WriteLine(message, Color.Details);
         }
 
         return defaultProp;

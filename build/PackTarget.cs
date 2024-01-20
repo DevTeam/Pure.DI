@@ -2,6 +2,8 @@
 // ReSharper disable HeapView.DelegateAllocation
 // ReSharper disable HeapView.ClosureAllocation
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable ReturnTypeCanBeEnumerable.Local
+// ReSharper disable InvertIf
 namespace Build;
 
 using System.CommandLine;
@@ -90,13 +92,20 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
         {
             Directory.Delete(tempDir2, true);
         }
+        
+        var sdks = GetSdks();
+        WriteLine("Installed the .NET SDK packages:", Color.Details);
+        foreach (var sdk in sdks)
+        {
+            WriteLine($"\t{sdk}", Color.Details);
+        }
 
         // Libraries
         var libraries = new[]
         {
             new Library(
                 "Pure.DI.MS",
-                ["net8.0", "net7.0"],
+                sdks.Select(v => $"net{v.Version.Major}.{v.Version.Minor}").ToArray(),
                 ["webapi"])
         };
 
@@ -125,6 +134,7 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
             foreach (var templateName in library.TemplateNames)
             foreach (var framework in library.Frameworks)
             {
+                WriteLine($"Testing {library.Name} library under {framework}.", Color.Details);
                 var tempDir = GetTempDir() + "_"  + framework;
                 Directory.CreateDirectory(tempDir);
                 try
@@ -219,6 +229,49 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
         return packages;
     }
 
+    [SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance")]
+    private static IReadOnlyCollection<NuGetVersion> GetSdks()
+    {
+        bool? getVersions = default;
+        var versions = new List<NuGetVersion>();
+        new DotNetCustom("--info").Run(output =>
+        {
+            switch (getVersions)
+            {
+                case null when output.Line.Contains(".NET SDKs installed:"):
+                    getVersions = true;
+                    return;
+
+                case true:
+                {
+                    var line = output.Line.Trim();
+                    if (line == string.Empty)
+                    {
+                        getVersions = false;
+                    }
+                    else
+                    {
+                        var parts = line.Split('[', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+                        if (parts.Length == 2
+                            && NuGetVersion.TryParse(parts[0], out var version))
+                        {
+                            versions.Add(version);
+                        }
+                    }
+
+                    break;
+                }
+            }
+        });
+
+        return versions
+            .GroupBy(i => (i.Version.Major, i.Version.Minor))
+            .Select(i => i.First())
+            .OrderBy(i => i.Major)
+            .ThenBy(i => i.Minor)
+            .ToArray();
+    }
+
     private static async Task TestForFrameworkAsync(
         string tempDir,
         string framework,
@@ -226,6 +279,7 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
         string generatorPackage,
         CancellationToken cancellationToken)
     {
+        WriteLine($"Compatibility check for {framework}.", Color.Details);
         tempDir = Path.Combine(tempDir, "src", framework);
         var exitCode = await new DotNetNew(
                 "dilib",
@@ -313,7 +367,7 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
     {
         var analyzerRoslynPackageVersion = codeAnalysis.AnalyzerRoslynPackageVersion;
         var analyzerRoslynVersion = new Version(analyzerRoslynPackageVersion.Major, analyzerRoslynPackageVersion.Minor);
-        WriteLine($"Build package for Roslyn {analyzerRoslynVersion}.", Color.Highlighted);
+        WriteLine($"Build package for Roslyn {analyzerRoslynVersion}.", Color.Details);
 
         var props = new[]
         {

@@ -1,0 +1,1 @@
+wsl ./build.sh %*

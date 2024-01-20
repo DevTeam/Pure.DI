@@ -29,6 +29,6 @@ internal static class GraphExtensions
                }
           }
 
-          return sb.ToString();
+          return sb.Replace("\r", "").ToString();
      }
 }

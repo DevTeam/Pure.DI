@@ -9,7 +9,7 @@ WriteLine(
     NuGetVersion.TryParse("version".Get(), out var version) 
         ? $"The version has been overridden by {version}."
         : "The next version has been used.",
-    Color.Highlighted);
+    Color.Details);
 
 var settings = new Settings(
     Environment.GetEnvironmentVariable("TEAMCITY_VERSION") is not null,

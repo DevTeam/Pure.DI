@@ -61,7 +61,7 @@ Sample.IService()
 Dependency()
 Service(Sample.IDependency dependency<--Sample.IDependency))
   +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
-""");
+""".Replace("\r", ""));
     }
     
     [Fact]
@@ -171,7 +171,7 @@ Sample.IService() MyService
 Dependency()
 Service(Sample.IDependency dependency<--Sample.IDependency))
   +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
-""");
+""".Replace("\r", ""));
     }
     
     [Fact]
@@ -234,7 +234,7 @@ Sample.IService()
 Dependency()
 Service(Sample.IDependency dependency<--Sample.IDependency))
   +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
-""");
+""".Replace("\r", ""));
     }
     
     [Fact]
@@ -291,7 +291,7 @@ Sample.IService()
 new Dependency()
 Service(Sample.IDependency dependency<--Sample.IDependency))
   +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[new Dependency()]
-""");
+""".Replace("\r", ""));
     }
     
     [Fact]
@@ -348,7 +348,7 @@ Sample.IService()
 Sample.IDependency dep
 Service(Sample.IDependency dependency<--Sample.IDependency))
   +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Sample.IDependency dep]
-""");
+""".Replace("\r", ""));
     }
     
     [Fact]
@@ -410,7 +410,7 @@ Sample.IService()
 Dependency()
 Service(Sample.IDependency dependency<--Sample.IDependency))
   +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
-""");
+""".Replace("\r", ""));
     }
     
     [Fact]
@@ -471,7 +471,7 @@ Dependency(int id<--int), string abc<--string))
   -[Dependency(int id<--int), string abc<--string))]<--[string]--[unresolved]
 Service(Sample.IDependency dependency<--Sample.IDependency))
   +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency(int id<--int), string abc<--string))]
-""");
+""".Replace("\r", ""));
 
         var errors = result.Logs.Where(i => i.Id == LogId.ErrorUnableToResolve).ToImmutableArray();
         errors.Length.ShouldBe(1);
@@ -534,7 +534,7 @@ Sample.IService()
 Dependency()
 Service(Sample.IDependency dependency<--Sample.IDependency))
   +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
-""");
+""".Replace("\r", ""));
     }
     
     [Fact]
@@ -593,7 +593,7 @@ Sample.IService()
 Dependency()
 Service(Sample.IDependency dependency<--Sample.IDependency))
   +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
-""");
+""".Replace("\r", ""));
     }
     
     [Fact]
@@ -657,7 +657,7 @@ Sample.IDependency()
 Dependency()
 Service(Sample.IDependency dependency<--Sample.IDependency))
   +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
-""");
+""".Replace("\r", ""));
     }
     
     [Theory]
@@ -742,12 +742,12 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         var graphs = GetGraphs(result);
         graphs.Length.ShouldBe(1, result);
-        graphs[0].ConvertToString().ShouldBe("""
+        graphs[0].ConvertToString().ShouldBe(("""
 Sample.IService() 
   +[Sample.IService() ]<--[Sample.IService]--[Service(Sample.IDependency0 dependency<--Sample.IDependency0))]
 Service(Sample.IDependency0 dependency<--Sample.IDependency0))
   +[Service(Sample.IDependency0 dependency<--Sample.IDependency0))]<--[Sample.IDependency0]--[Dependency0(Sample.IDependency1 dep<--Sample.IDependency1))]
-""" + graphText);
+""" + graphText).Replace("\r", ""));
     }
     
     [Fact]
@@ -806,7 +806,7 @@ Sample.IService()
 Dependency()
 Service(Sample.IDependency dependency<--Sample.IDependency))
   +[Service(Sample.IDependency dependency<--Sample.IDependency))]<--[Sample.IDependency]--[Dependency()]
-""");
+""".Replace("\r", ""));
     }
     
     [Fact]
@@ -863,7 +863,7 @@ Sample.IService()
 Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))
   +[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]<--[Sample.IDependency<int>]--[Dependency<int>()]
 Dependency<int>()
-""");
+""".Replace("\r", ""));
     }
     
     [Fact]
@@ -920,7 +920,7 @@ Sample.IService()
 Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))
   +[Service(Sample.IDependency<int> dependency<--Sample.IDependency<int>))]<--[Sample.IDependency<int>]--[new Dependency<int>(new int[1])]
 new Dependency<int>(new int[1])
-""");
+""".Replace("\r", ""));
     }
     
     [Fact]
@@ -1003,7 +1003,7 @@ new int[] {1, 2, 3}
                 ctx.Inject<string>("MyStr", out var str);
                 return new Dependency<int>(array, str);
             }]<--[string("MyStr")]--["Abc"]
-""");
+""".Replace("\r", ""));
     }
     
     [Fact]
@@ -1071,7 +1071,7 @@ Service(Sample.IDependency<System.Collections.Generic.IDictionary<int, double>, 
 Dependency2()
 Dependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>(Sample.Dependency2 dep<--Sample.Dependency2))
   +[Dependency<System.Collections.Generic.IDictionary<int, double>, System.Collections.Generic.IList<string>>(Sample.Dependency2 dep<--Sample.Dependency2))]<--[Sample.Dependency2]--[Dependency2()]
-""");
+""".Replace("\r", ""));
     }
     
     [Fact]
@@ -1123,7 +1123,7 @@ Sample.IService()
 Service(Sample.Dependency dependency<--Sample.Dependency))
   +[Service(Sample.Dependency dependency<--Sample.Dependency))]<--[Sample.Dependency]--[Dependency()]
 Dependency()
-""");
+""".Replace("\r", ""));
     }
     
     [Fact]
@@ -1187,7 +1187,7 @@ Service(Sample.Dependency dependency<--Sample.Dependency))
   +[Service(Sample.Dependency dependency<--Sample.Dependency))]<--[Sample.Dependency]--[Dependency(Sample.IDependency2 dep<--Sample.IDependency2))]
 Dependency(Sample.IDependency2 dep<--Sample.IDependency2))
   +[Dependency(Sample.IDependency2 dep<--Sample.IDependency2))]<--[Sample.IDependency2]--[Dependency2()]
-""");
+""".Replace("\r", ""));
     }
     
     [Fact]
@@ -1239,7 +1239,7 @@ Sample.IService()
 Service(Sample.Dependency<string> dependency<--Sample.Dependency<string>))
   +[Service(Sample.Dependency<string> dependency<--Sample.Dependency<string>))]<--[Sample.Dependency<string>]--[Dependency<string>()]
 Dependency<string>()
-""");
+""".Replace("\r", ""));
     }
     
     [Fact]
@@ -1308,7 +1308,7 @@ Dependency2(Sample.IService service<--Sample.IService))
   +[Dependency2(Sample.IService service<--Sample.IService))]<--[Sample.IService]--[Service(Sample.IDependency1 dep<--Sample.IDependency1))]
 Service(Sample.IDependency1 dep<--Sample.IDependency1))
   +[Service(Sample.IDependency1 dep<--Sample.IDependency1))]<--[Sample.IDependency1]--[Dependency1(Sample.IDependency2 dep<--Sample.IDependency2))]
-""");
+""".Replace("\r", ""));
         
         var errors = result.Logs.Where(i => i.Id == LogId.ErrorCyclicDependency).ToImmutableArray();
         errors.Length.ShouldBe(1);
@@ -1405,7 +1405,7 @@ Service(Sample.IDependency dep<--Sample.IDependency), int id<--int(99)), string 
 string serviceName
 int id
 int depId
-""");
+""".Replace("\r", ""));
     }
     
     [Fact]
@@ -1474,14 +1474,14 @@ Sample.IService1()
 Dependency1()
 Service1(Sample.IDependency1 dependency<--Sample.IDependency1))
   +[Service1(Sample.IDependency1 dependency<--Sample.IDependency1))]<--[Sample.IDependency1]--[Dependency1()]
-""");
+""".Replace("\r", ""));
         graphs[1].ConvertToString().ShouldBe("""
 Sample.IService2() 
   +[Sample.IService2() ]<--[Sample.IService2]--[Service2(Sample.IDependency2 dependency<--Sample.IDependency2))]
 Dependency2()
 Service2(Sample.IDependency2 dependency<--Sample.IDependency2))
   +[Service2(Sample.IDependency2 dependency<--Sample.IDependency2))]<--[Sample.IDependency2]--[Dependency2()]
-""");
+""".Replace("\r", ""));
     }
     
     [Fact]
@@ -1552,7 +1552,7 @@ System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.
   +[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]<--[Sample.IDependency(1)]--[Dependency()]
   +[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]<--[Sample.IDependency(2)]--[Dependency()]
   +[System.Collections.Generic.IEnumerable<Sample.IDependency> enumerable of Sample.IDependency(1), Sample.IDependency(2), Sample.IDependency(3)]<--[Sample.IDependency(3)]--[Dependency()]
-""");
+""".Replace("\r", ""));
     }
     
     [Fact]
@@ -1628,7 +1628,7 @@ namespace Sample
 Sample.IService() Root
   +[Sample.IService() Root]<--[Sample.IService]--[SimpleService()]
 SimpleService()
-""");
+""".Replace("\r", ""));
     }
 
     private static DependencyGraph[] GetGraphs(Result result) => 
