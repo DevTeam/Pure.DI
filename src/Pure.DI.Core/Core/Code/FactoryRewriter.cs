@@ -25,8 +25,8 @@ internal sealed class FactoryRewriter(
 
     public bool IsFinishMarkRequired { get; private set; }
 
-    public SimpleLambdaExpressionSyntax Rewrite(SimpleLambdaExpressionSyntax lambda) => 
-        (SimpleLambdaExpressionSyntax)VisitSimpleLambdaExpression(lambda)!;
+    public LambdaExpressionSyntax Rewrite(LambdaExpressionSyntax lambda) => 
+        (LambdaExpressionSyntax)Visit(lambda);
 
     public override SyntaxNode? VisitSimpleLambdaExpression(SimpleLambdaExpressionSyntax node)
     {

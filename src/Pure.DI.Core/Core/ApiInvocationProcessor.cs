@@ -31,7 +31,7 @@ internal class ApiInvocationProcessor(CancellationToken cancellationToken)
                     case nameof(IBinding.To):
                         switch (invocation.ArgumentList.Arguments)
                         {
-                            case [{ Expression: SimpleLambdaExpressionSyntax lambdaExpression }]:
+                            case [{ Expression: LambdaExpressionSyntax lambdaExpression }]:
                                 var type = semanticModel.TryGetTypeSymbol<ITypeSymbol>(lambdaExpression, cancellationToken) ?? semanticModel.GetTypeSymbol<ITypeSymbol>(lambdaExpression.Body, cancellationToken);
                                 // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
                                 if (type is INamedTypeSymbol { TypeArguments.Length: 2, TypeArguments: [_, { } resultType] })
@@ -281,9 +281,24 @@ internal class ApiInvocationProcessor(CancellationToken cancellationToken)
         IMetadataVisitor metadataVisitor,
         SemanticModel semanticModel,
         ITypeSymbol resultType,
-        SimpleLambdaExpressionSyntax lambdaExpression,
+        LambdaExpressionSyntax lambdaExpression,
         bool isManual = false)
     {
+        ParameterSyntax contextParameter;
+        switch (lambdaExpression)
+        {
+            case SimpleLambdaExpressionSyntax simpleLambda:
+                contextParameter = simpleLambda.Parameter;
+                break;
+
+            case ParenthesizedLambdaExpressionSyntax { ParameterList.Parameters: [{} singleParameter] }:
+                contextParameter = singleParameter;
+                break;
+
+            default:
+                return;
+        }
+        
         var resolversWalker = new FactoryResolversSyntaxWalker();
         resolversWalker.Visit(lambdaExpression);
         var position = 0;
@@ -315,7 +330,7 @@ internal class ApiInvocationProcessor(CancellationToken cancellationToken)
                             && memberAccessExpression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
                             && memberAccessExpression.Name.Identifier.Text == nameof(IContext.Tag)
                             && memberAccessExpression.Expression is IdentifierNameSyntax identifierName 
-                            && identifierName.Identifier.Text == lambdaExpression.Parameter.Identifier.Text;
+                            && identifierName.Identifier.Text == contextParameter.Identifier.Text;
                         
                         var resolverTag = new MdTag(0, hasContextTag ? MdTag.ContextTag : semanticModel.GetConstantValue<object>(tag.Expression));
                         if (arguments.Count > 0 && semanticModel.GetOperation(arguments[1]) is IArgumentOperation argumentOperation2)
@@ -349,7 +364,7 @@ internal class ApiInvocationProcessor(CancellationToken cancellationToken)
                 lambdaExpression,
                 resultType,
                 lambdaExpression,
-                lambdaExpression.Parameter,
+                contextParameter,
                 resolvers,
                 hasContextTag));
     }

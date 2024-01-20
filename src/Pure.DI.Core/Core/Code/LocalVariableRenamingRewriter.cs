@@ -10,8 +10,8 @@ internal class LocalVariableRenamingRewriter(
 {
     private readonly Dictionary<string, string> _identifierNames = new();
 
-    public SimpleLambdaExpressionSyntax Rewrite(SimpleLambdaExpressionSyntax lambda) => 
-        (SimpleLambdaExpressionSyntax)VisitSimpleLambdaExpression(lambda)!;
+    public LambdaExpressionSyntax Rewrite(LambdaExpressionSyntax lambda) => 
+        (LambdaExpressionSyntax)Visit(lambda);
 
     public override SyntaxNode? VisitVariableDeclarator(VariableDeclaratorSyntax node) => 
         base.VisitVariableDeclarator(node.WithIdentifier(SyntaxFactory.Identifier(GetUniqueName(node.Identifier.Text))));

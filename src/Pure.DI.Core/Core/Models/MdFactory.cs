@@ -5,7 +5,7 @@ internal readonly record struct MdFactory(
     SemanticModel SemanticModel,
     SyntaxNode Source,
     ITypeSymbol Type,
-    SimpleLambdaExpressionSyntax Factory,
+    LambdaExpressionSyntax Factory,
     ParameterSyntax Context,
     in ImmutableArray<MdResolver> Resolvers,
     bool HasContextTag)

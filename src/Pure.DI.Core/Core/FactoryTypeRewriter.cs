@@ -10,7 +10,7 @@ internal sealed class FactoryTypeRewriter(IMarker marker)
     {
         _context = context;
         var factory = context.State;
-        var newFactory = (SimpleLambdaExpressionSyntax)VisitSimpleLambdaExpression(factory.Factory)!;
+        var newFactory = (LambdaExpressionSyntax)Visit(factory.Factory);
         return factory with
         {
             Type = context.TypeConstructor.Construct(factory.SemanticModel.Compilation, factory.Type),
