@@ -105,7 +105,10 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
         {
             new Library(
                 "Pure.DI.MS",
-                sdks.Select(v => $"net{v.Version.Major}.{v.Version.Minor}").ToArray(),
+                sdks
+                    .Where(i => i.Version.Major >= 7)
+                    .Select(v => $"net{v.Version.Major}.{v.Version.Minor}")
+                    .ToArray(),
                 ["webapi"])
         };
 
