@@ -164,7 +164,7 @@ internal class ApiInvocationProcessor(CancellationToken cancellationToken)
                         {
                             switch (invocation.ArgumentList.Arguments)
                             {
-                                case [{ Expression: SimpleLambdaExpressionSyntax lambdaExpression }]:
+                                case [{ Expression: LambdaExpressionSyntax lambdaExpression }]:
                                     VisitFactory(metadataVisitor, semanticModel, semanticModel.GetTypeSymbol<ITypeSymbol>(implementationTypeName, cancellationToken), lambdaExpression);
                                     break;
                                 

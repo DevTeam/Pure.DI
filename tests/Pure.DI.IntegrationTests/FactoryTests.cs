@@ -124,6 +124,66 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldSupportFactoryWhenGenericParenthesis()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency {}
+
+    interface IService
+    {
+        IDependency Dep { get; }
+    }
+
+    class Service: IService 
+    {
+        public Service(IDependency dep)
+        { 
+            Dep = dep;           
+        }
+
+        public IDependency Dep { get; }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<IDependency>((ctx) => new Dependency())
+                .Bind<IService>().To<Service>()    
+                .Root<IService>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service1 = composition.Service;
+            var service2 = composition.Service;
+            Console.WriteLine(service1.Dep != service2.Dep);                                            
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
+    }
+    
+    [Fact]
     public async Task ShouldSupportFactoryWhenBlock()
     {
         // Given
