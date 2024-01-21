@@ -109,16 +109,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM01D20di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM01D21di;
   
   public Composition()
   {
-    _disposableSingletonsM01D20di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D21di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM01D20di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D21di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -127,21 +127,21 @@ partial class Composition
   #endif
   public Pure.DI.UsageTests.BCL.ManualTaskScenario.IService GetRoot(System.Threading.CancellationToken cancellationToken)
   {
-    var perResolveM01D20di39_Func = default(System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>);
-    perResolveM01D20di39_Func = new global::System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(
+    var perResolveM01D21di39_Func = default(System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>);
+    perResolveM01D21di39_Func = new global::System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
     () =>
     {
-        var factory_M01D20di1 = new Pure.DI.UsageTests.BCL.ManualTaskScenario.Dependency();
-        return factory_M01D20di1;
+        var factory_M01D21di1 = new Pure.DI.UsageTests.BCL.ManualTaskScenario.Dependency();
+        return factory_M01D21di1;
     });
-    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency> transientM01D20di1_Task;
+    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency> transientM01D21di1_Task;
     {
-        var factory_M01D20di2 = perResolveM01D20di39_Func;
-        var cancellationToken_M01D20di3 = cancellationToken;
-        transientM01D20di1_Task = new Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(factory_M01D20di2, cancellationToken_M01D20di3);
+        var factory_M01D21di2 = perResolveM01D21di39_Func;
+        var cancellationToken_M01D21di3 = cancellationToken;
+        transientM01D21di1_Task = new Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(factory_M01D21di2, cancellationToken_M01D21di3);
     }
-    return new Pure.DI.UsageTests.BCL.ManualTaskScenario.Service(transientM01D20di1_Task);
+    return new Pure.DI.UsageTests.BCL.ManualTaskScenario.Service(transientM01D21di1_Task);
   }
   #endregion
   

@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>Pure.DI.Benchmarks.Benchmarks.Transient-20231202-151947</title>
+<title>Pure.DI.Benchmarks.Benchmarks.Transient-20240111-201242</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -13,29 +13,29 @@
 </head>
 <body>
 <pre><code>
-BenchmarkDotNet v0.13.10, Windows 10 (10.0.19045.3693/22H2/2022Update)
-12th Gen Intel Core i7-12800H, 1 CPU, 20 logical and 14 physical cores
-.NET SDK 8.0.100
-  [Host]     : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
-  DefaultJob : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
+BenchmarkDotNet v0.13.12, Windows 11 (10.0.22000.2538/21H2/SunValley) (Hyper-V)
+Intel Xeon CPU E5-2673 v4 2.30GHz, 1 CPU, 2 logical cores and 1 physical core
+.NET SDK 8.0.101
+  [Host]     : .NET 8.0.1 (8.0.123.58001), X64 RyuJIT AVX2
+  DefaultJob : .NET 8.0.1 (8.0.123.58001), X64 RyuJIT AVX2
 </code></pre>
 <pre><code></code></pre>
 
 <table>
-<thead><tr><th>Method              </th><th>Mean    </th><th>Error  </th><th>StdDev  </th><th>Median  </th><th>Ratio</th><th>RatioSD</th>
+<thead><tr><th>Method              </th><th>Mean   </th><th>Error  </th><th>StdDev </th><th>Median </th><th>Ratio</th><th>RatioSD</th>
 </tr>
-</thead><tbody><tr><td>&#39;Pure.DI composition root&#39;</td><td>2.807 ns</td><td>0.0642 ns</td><td>0.0601 ns</td><td>2.788 ns</td><td>0.91</td><td>0.03</td>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>3.094 ns</td><td>0.0856 ns</td><td>0.0759 ns</td><td>3.077 ns</td><td>1.00</td><td>0.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>4.256 ns</td><td>0.1074 ns</td><td>0.1358 ns</td><td>4.236 ns</td><td>1.37</td><td>0.06</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>5.225 ns</td><td>0.1382 ns</td><td>0.1226 ns</td><td>5.196 ns</td><td>1.69</td><td>0.06</td>
-</tr><tr><td>LightInject</td><td>6.533 ns</td><td>0.0650 ns</td><td>0.0507 ns</td><td>6.547 ns</td><td>2.11</td><td>0.07</td>
-</tr><tr><td>&#39;Microsoft DI&#39;</td><td>7.974 ns</td><td>0.0794 ns</td><td>0.0742 ns</td><td>7.953 ns</td><td>2.58</td><td>0.07</td>
-</tr><tr><td>DryIoc</td><td>9.074 ns</td><td>0.1408 ns</td><td>0.1175 ns</td><td>9.061 ns</td><td>2.93</td><td>0.08</td>
-</tr><tr><td>&#39;Simple Injector&#39;</td><td>11.827 ns</td><td>0.1604 ns</td><td>0.1339 ns</td><td>11.809 ns</td><td>3.83</td><td>0.10</td>
-</tr><tr><td>Unity</td><td>4,630.964 ns</td><td>92.1425 ns</td><td>213.5543 ns</td><td>4,556.618 ns</td><td>1,602.44</td><td>81.03</td>
-</tr><tr><td>Autofac</td><td>10,010.291 ns</td><td>97.0520 ns</td><td>86.0341 ns</td><td>9,986.434 ns</td><td>3,237.55</td><td>80.95</td>
-</tr><tr><td>&#39;Castle Windsor&#39;</td><td>19,726.745 ns</td><td>216.7254 ns</td><td>202.7251 ns</td><td>19,745.923 ns</td><td>6,385.97</td><td>175.51</td>
-</tr><tr><td>Ninject</td><td>118,514.248 ns</td><td>6,058.9369 ns</td><td>17,384.2256 ns</td><td>117,667.383 ns</td><td>40,179.25</td><td>7,865.92</td>
+</thead><tbody><tr><td>&#39;Pure.DI composition root&#39;</td><td>11.23 ns</td><td>0.344 ns</td><td>0.621 ns</td><td>11.09 ns</td><td>1.00</td><td>0.08</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>11.33 ns</td><td>0.347 ns</td><td>0.634 ns</td><td>11.25 ns</td><td>1.00</td><td>0.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>14.72 ns</td><td>0.398 ns</td><td>0.489 ns</td><td>14.67 ns</td><td>1.30</td><td>0.09</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>19.49 ns</td><td>0.506 ns</td><td>0.583 ns</td><td>19.33 ns</td><td>1.72</td><td>0.11</td>
+</tr><tr><td>LightInject</td><td>31.31 ns</td><td>2.212 ns</td><td>6.523 ns</td><td>30.18 ns</td><td>2.88</td><td>0.59</td>
+</tr><tr><td>DryIoc</td><td>34.09 ns</td><td>0.798 ns</td><td>1.630 ns</td><td>34.10 ns</td><td>3.01</td><td>0.22</td>
+</tr><tr><td>&#39;Microsoft DI&#39;</td><td>41.37 ns</td><td>3.576 ns</td><td>10.544 ns</td><td>34.89 ns</td><td>3.71</td><td>1.01</td>
+</tr><tr><td>&#39;Simple Injector&#39;</td><td>44.45 ns</td><td>1.007 ns</td><td>2.168 ns</td><td>44.36 ns</td><td>3.94</td><td>0.27</td>
+</tr><tr><td>Unity</td><td>14,662.48 ns</td><td>290.224 ns</td><td>530.691 ns</td><td>14,679.60 ns</td><td>1,298.03</td><td>77.94</td>
+</tr><tr><td>Autofac</td><td>41,917.44 ns</td><td>825.209 ns</td><td>1,589.898 ns</td><td>41,942.43 ns</td><td>3,707.59</td><td>238.16</td>
+</tr><tr><td>&#39;Castle Windsor&#39;</td><td>104,650.62 ns</td><td>8,021.294 ns</td><td>23,650.965 ns</td><td>90,893.53 ns</td><td>9,381.34</td><td>2,220.44</td>
+</tr><tr><td>Ninject</td><td>362,858.07 ns</td><td>11,562.597 ns</td><td>32,612.509 ns</td><td>357,935.25 ns</td><td>32,477.38</td><td>2,567.04</td>
 </tr></tbody></table>
 </body>
 </html>
