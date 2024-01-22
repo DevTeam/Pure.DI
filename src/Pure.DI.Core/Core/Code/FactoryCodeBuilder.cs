@@ -24,8 +24,8 @@ internal class FactoryCodeBuilder(IIdGenerator idGenerator) : ICodeBuilder<DpFac
         var localVariableRenamingRewriter = new LocalVariableRenamingRewriter(idGenerator, factory.Source.SemanticModel);
         var factoryExpression = localVariableRenamingRewriter.Rewrite(factory.Source.Factory);
         var factoryRewriter = new FactoryRewriter(factory, variable, finishLabel, injections);
-         var lambda = factoryRewriter.Rewrite(factoryExpression);
-
+        var lambda = factoryRewriter.Rewrite(factoryExpression);
+        new FactoryValidator(factory).Validate(lambda); 
         SyntaxNode syntaxNode = lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);
         if (syntaxNode is not BlockSyntax)
         {

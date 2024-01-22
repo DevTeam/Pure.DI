@@ -1,5 +1,7 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+using Core;
+
 [Collection(nameof(IntegrationTestsCollectionDefinition))]
 public class FactoryTests
 {
@@ -862,6 +864,156 @@ namespace Sample
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(ImmutableArray.Create("null", "Created"), result);
+    }
+    
+    [Theory]
+    [InlineData("ctx2")]
+    [InlineData("Console")]
+    public async Task ShouldRaiseCompilationErrorWhenContextIsUsingDirectly(string contextArgName)
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency {}
+
+    interface IService
+    {
+        IDependency Dep { get; }
+    }
+
+    class Service: IService 
+    {
+        public Service(IDependency dep)
+        { 
+            Dep = dep;
+            Console.WriteLine("Created");           
+        }
+
+        public IDependency Dep { get; }
+    }
+
+    internal partial class Composition
+    {
+        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)            
+        {
+            return value;                  
+        }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            // OnDependencyInjection = On
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>()
+                .Bind<IService>().To(#ctx# => {
+                    System.Console.WriteLine(#ctx#);
+                    ctx.Inject<IDependency>(out var dependency);
+                    return new Service(dependency);
+                })    
+                .Root<IService>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();      
+            var service = composition.Service;                                                 
+        }
+    }                
+}
+""".Replace("#ctx#", contextArgName).RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors
+            .Count(i => i is { Id: LogId.ErrorInvalidMetadata } && i.Message == $"It is not possible to use \"{contextArgName}\" directly. Only its methods or properties can be used.")
+            .ShouldBe(1);
+    }
+    
+    [Fact]
+    public async Task ShouldRaiseCompilationErrorWhenContextIsUsingDirectlyNegative()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency {}
+
+    interface IService
+    {
+        IDependency Dep { get; }
+    }
+
+    class Service: IService 
+    {
+        public Service(IDependency dep)
+        { 
+            Dep = dep;
+            Console.WriteLine("Created");           
+        }
+
+        public IDependency Dep { get; }
+    }
+
+    internal partial class Composition
+    {
+        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)            
+        {
+            return value;                  
+        }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            // OnDependencyInjection = On
+            DI.Setup("Composition")
+                .Bind<IDependency>().To<Dependency>()
+                .Bind<IService>().To(WriteLine => {
+                    System.Console.WriteLine(ctx2);
+                    ctx.Inject<IDependency>(out var dependency);
+                    return new Service(dependency);
+                })    
+                .Root<IService>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();      
+            var service = composition.Service;                                                 
+        }
+    }                
+}
+""".RunAsync(new Options(LanguageVersion.CSharp9, CheckCompilationErrors: false));
+
+        // Then
+        result.Success.ShouldBeFalse(result);
+        result.Errors
+            .Count(i => i is { Id: LogId.ErrorInvalidMetadata, Message: "It is not possible to use \"ctx2\" directly. Only its methods or properties can be used." })
+            .ShouldBe(0);
     }
     
     [Fact]
