@@ -218,6 +218,11 @@ internal sealed class FactoryRewriter(
             {
                 return SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, token);
             }
+            
+            if (token.IsKind(SyntaxKind.NullKeyword))
+            {
+                return SyntaxFactory.LiteralExpression(SyntaxKind.StringLiteralExpression, token);
+            }
         }
         
         return base.VisitMemberAccessExpression(node);
