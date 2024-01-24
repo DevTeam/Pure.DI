@@ -1,6 +1,6 @@
 ﻿namespace Pure.DI.Core.Models;
 
-internal readonly record struct DpParameter(
+internal record DpParameter(
     IParameterSymbol ParameterSymbol,
     in Injection Injection)
 {

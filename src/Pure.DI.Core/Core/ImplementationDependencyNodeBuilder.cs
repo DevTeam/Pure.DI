@@ -6,11 +6,11 @@ namespace Pure.DI.Core;
 internal sealed class ImplementationDependencyNodeBuilder(
     ILogger<ImplementationDependencyNodeBuilder> logger,
     IBuilder<DpImplementation, IEnumerable<DpImplementation>> implementationVariantsBuilder)
-    :
-        IBuilder<MdSetup, IEnumerable<DependencyNode>>
+    : IBuilder<MdSetup, IEnumerable<DependencyNode>>
 {
     public IEnumerable<DependencyNode> Build(MdSetup setup)
     {
+        var injectionsWalker = new DependenciesToInjectionsCountWalker();
         foreach (var binding in setup.Bindings)
         {
             if (binding.Implementation is not { } implementation)
@@ -55,14 +55,10 @@ internal sealed class ImplementationDependencyNodeBuilder(
                 throw new CompileErrorException($"The instance of {implementationType} cannot be instantiated due to no accessible constructor available.", implementation.Source.GetLocation(), LogId.ErrorInvalidMetadata);
             }
 
-            var members = new List<ISymbol>();
-            GetMembers(implementationType, members);
-            
             var methods = new List<DpMethod>();
             var fields = new List<DpField>();
             var properties = new List<DpProperty>();
-            
-            foreach (var member in members)
+            foreach (var member in GetMembers(implementationType))
             {
                 if (member.IsStatic || member.DeclaredAccessibility is not (Accessibility.Internal or Accessibility.Public or Accessibility.Friend))
                 {
@@ -123,27 +119,27 @@ internal sealed class ImplementationDependencyNodeBuilder(
                 }
             }
 
-            var baseImplementations = constructors
+            var methodsArray = methods.ToImmutableArray();
+            var propertiesArray = properties.ToImmutableArray();
+            var fieldsArray = fields.ToImmutableArray();
+            var implementations = constructors
                 .Select(constructor => 
                     new DpImplementation(
                         implementation,
                         binding,
                         constructor,
-                        methods.ToImmutableArray(),
-                        properties.ToImmutableArray(),
-                        fields.ToImmutableArray()))
+                        methodsArray,
+                        propertiesArray,
+                        fieldsArray))
                 .ToArray();
 
-            var implementationsWithOrdinal = baseImplementations.Where(i => i.Constructor.Ordinal.HasValue).ToArray();
+            var implementationsWithOrdinal = implementations
+                .Where(i => i.Constructor.Ordinal.HasValue)
+                .ToArray();
+
             if (implementationsWithOrdinal.Any())
             {
-                var variantsWithOrdinal = implementationsWithOrdinal
-                    .OrderBy(i => i.Constructor.Ordinal)
-                    .SelectMany(impl => 
-                        implementationVariantsBuilder.Build(impl)
-                            .OrderByDescending(i => GetInjectionsCount(i)));
-
-                foreach (var node in CreateNodes(variantsWithOrdinal))
+                foreach (var node in CreateNodes(injectionsWalker, implementationsWithOrdinal.OrderBy(i => i.Constructor.Ordinal)))
                 {
                     yield return node;
                 }
@@ -151,27 +147,29 @@ internal sealed class ImplementationDependencyNodeBuilder(
                 continue;
             }
 
-            var implementations = baseImplementations
-                .SelectMany(implementationVariantsBuilder.Build)
-                .Select(impl => (Implementation: impl, InjectionsCount: GetInjectionsCount(impl)))
-                .ToArray();
-
-            var maxInjectionsCount = implementations.Max(i => i.InjectionsCount);
-            
-            var orderedImplementations = implementations
-                .OrderBy(i => maxInjectionsCount - i.InjectionsCount)
-                .ThenByDescending(i => i.Implementation.Constructor.Method.DeclaredAccessibility)
-                .Select(i => i.Implementation);
-
-            foreach (var node in CreateNodes(orderedImplementations))
+            foreach (var node in CreateNodes(injectionsWalker, implementations))
             {
                 yield return node;
             }
         }
     }
 
-    private static void GetMembers(ITypeSymbol type, List<ISymbol> members)
+    private IEnumerable<DependencyNode> CreateNodes(DependenciesToInjectionsCountWalker walker, IEnumerable<DpImplementation> implementations) =>
+        implementations
+            .OrderByDescending(i => GetInjectionsCount(walker, i.Constructor))
+            .ThenByDescending(i => i.Constructor.Method.DeclaredAccessibility)
+            .SelectMany(implementationVariantsBuilder.Build)
+            .Select((implementation, variantId) => new DependencyNode(variantId, implementation.Binding, Implementation: implementation));
+
+    private static int GetInjectionsCount(DependenciesToInjectionsCountWalker walker, in DpMethod constructor)
     {
+        walker.VisitConstructor(Unit.Shared, constructor);
+        return walker.Count;
+    }
+
+    private static IEnumerable<ISymbol> GetMembers(ITypeSymbol type)
+    {
+        var members = new List<ISymbol>();
         while (true)
         {
             members.AddRange(type.GetMembers());
@@ -183,16 +181,8 @@ internal sealed class ImplementationDependencyNodeBuilder(
 
             break;
         }
-    }
 
-    private static IEnumerable<DependencyNode> CreateNodes(IEnumerable<DpImplementation> implementations) => 
-        implementations.Select((implementation, variantId) => new DependencyNode(variantId, implementation.Binding, Implementation: implementation));
-
-    private static int GetInjectionsCount(in DpImplementation implementation)
-    {
-        var injectionsWalker = new DependenciesToInjectionsCountWalker();
-        injectionsWalker.VisitImplementation(Unit.Shared, implementation);
-        return injectionsWalker.Count;
+        return members;
     }
 
     private ImmutableArray<DpParameter> GetParameters(
@@ -257,15 +247,19 @@ internal sealed class ImplementationDependencyNodeBuilder(
 
     private sealed class DependenciesToInjectionsCountWalker: DependenciesWalker<Unit>
     {
-        private int _count;
+        public int Count { get; private set; }
 
-        public int Count => _count;
+        public override void VisitConstructor(in Unit ctx, in DpMethod constructor)
+        {
+            Count = 0;
+            base.VisitConstructor(in ctx, in constructor);
+        }
 
         public override void VisitInjection(
             in Unit ctx,
             in Injection injection,
             bool hasExplicitDefaultValue,
             object? explicitDefaultValue,
-            in ImmutableArray<Location> locations) => _count++;
+            in ImmutableArray<Location> locations) => Count++;
     }
 }

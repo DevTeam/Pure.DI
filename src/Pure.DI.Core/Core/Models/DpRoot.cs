@@ -1,7 +1,7 @@
 // ReSharper disable NotAccessedPositionalProperty.Global
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct DpRoot(
+internal record DpRoot(
     in MdRoot Source,
     in MdBinding Binding,
     in Injection Injection)

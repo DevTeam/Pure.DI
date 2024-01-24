@@ -12,7 +12,7 @@ internal record DependencyNode(
 {
     public DependencyNode(
         int Variation,
-        in  MdBinding binding,
+        in MdBinding binding,
         in DpRoot? Root = default,
         in DpImplementation? Implementation = default,
         in DpFactory? Factory = default,

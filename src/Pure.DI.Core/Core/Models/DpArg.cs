@@ -1,6 +1,6 @@
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct DpArg(
+internal record DpArg(
     in MdArg Source,
     in MdBinding Binding)
 {

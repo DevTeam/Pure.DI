@@ -1,7 +1,7 @@
 ﻿// ReSharper disable HeapView.ObjectAllocation
 namespace Pure.DI.Core.Models;
 
-internal readonly record struct DpImplementation(
+internal record DpImplementation(
     in MdImplementation Source,
     in MdBinding Binding,
     in DpMethod Constructor,

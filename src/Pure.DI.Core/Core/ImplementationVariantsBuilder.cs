@@ -43,7 +43,6 @@ internal sealed class ImplementationVariantsBuilder(
     private static IEnumerable<ImplementationVariant> CreateVariants(DpMethod method, ImplementationVariantKind kind)
     {
         yield return new ImplementationVariant(kind, method);
-        
         for (var i = method.Parameters.Length - 1; i >= 0; i--)
         {
             if (!method.Parameters[i].ParameterSymbol.IsOptional)
