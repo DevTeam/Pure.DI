@@ -377,7 +377,8 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
             ("configuration", _settings.Configuration),
             ("version", packageVersion.ToString()),
             ("AnalyzerRoslynVersion", analyzerRoslynVersion.ToString()),
-            ("AnalyzerRoslynPackageVersion", analyzerRoslynPackageVersion.ToString())
+            ("AnalyzerRoslynPackageVersion", analyzerRoslynPackageVersion.ToString()),
+            ("CI", "true")
         };
         
         var build = new MSBuild()

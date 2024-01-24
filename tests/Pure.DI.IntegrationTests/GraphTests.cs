@@ -4,7 +4,6 @@ using System.Text;
 using Core;
 using Core.Models;
 
-[Collection(nameof(IntegrationTestsCollectionDefinition))]
 public class GraphTests
 {
     [Fact]

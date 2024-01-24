@@ -1,6 +1,5 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
-[Collection(nameof(IntegrationTestsCollectionDefinition))]
 public class BenchmarksTests
 {
     private const string Models = """

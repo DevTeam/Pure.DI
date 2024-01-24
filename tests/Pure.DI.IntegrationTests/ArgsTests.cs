@@ -2,7 +2,6 @@
 
 using Core;
 
-[Collection(nameof(IntegrationTestsCollectionDefinition))]
 public class ArgsTests
 {
     [Fact]
