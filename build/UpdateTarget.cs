@@ -27,6 +27,7 @@ internal class UpdateTarget: Command, ITarget<NuGetVersion>
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
     public Task<NuGetVersion> RunAsync(InvocationContext ctx)
     {
+        Info("Updating internal DI version");
         var solutionDirectory = Tools.GetSolutionDirectory();
         var currentVersion = _settings.VersionOverride ?? new NuGetRestoreSettings("Pure.DI").GetNextVersion(_settings.VersionRange, 0);
         var propsFile = Path.Combine(solutionDirectory, "Directory.Build.props");
@@ -45,7 +46,7 @@ internal class UpdateTarget: Command, ITarget<NuGetVersion>
         }
         
         File.WriteAllLines(propsFile, contents);
-        WriteLine($"The internal version of Pure.DI has been updated to {currentVersion}.", Color.Highlighted);
+        WriteLine($"The internal version of Pure.DI has been updated to {currentVersion}.", Color.Details);
         
         var projectDir = Path.Combine(solutionDirectory, "src", "Pure.DI.Core");
         var files =

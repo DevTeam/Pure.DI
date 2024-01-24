@@ -33,6 +33,7 @@ internal class BenchmarksTarget: Command, ITarget<int>
     
     public Task<int> RunAsync(InvocationContext ctx)
     {
+        Info("Benchmarking");
         var solutionDirectory = Tools.GetSolutionDirectory();
         var logsDirectory = Path.Combine(solutionDirectory, ".logs");
         Directory.CreateDirectory(logsDirectory);

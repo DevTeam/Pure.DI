@@ -36,6 +36,7 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
     public async Task<IReadOnlyCollection<string>> RunAsync(InvocationContext ctx)
     {
+        Info("Packing");
         var packages = new List<string>();
         
         // Pure.DI generator package
@@ -137,7 +138,7 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
             foreach (var templateName in library.TemplateNames)
             foreach (var framework in library.Frameworks)
             {
-                WriteLine($"Testing {library.Name} library under {framework}.", Color.Details);
+                Info($"Testing {library.Name} library under {framework}.");
                 var tempDir = GetTempDir() + "_"  + framework;
                 Directory.CreateDirectory(tempDir);
                 try
@@ -282,7 +283,7 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
         string generatorPackage,
         CancellationToken cancellationToken)
     {
-        WriteLine($"Compatibility check for {framework}.", Color.Details);
+        Info($"Compatibility check for {framework}.");
         tempDir = Path.Combine(tempDir, "src", framework);
         var exitCode = await new DotNetNew(
                 "dilib",
@@ -370,17 +371,21 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
     {
         var analyzerRoslynPackageVersion = codeAnalysis.AnalyzerRoslynPackageVersion;
         var analyzerRoslynVersion = new Version(analyzerRoslynPackageVersion.Major, analyzerRoslynPackageVersion.Minor);
-        WriteLine($"Build package for Roslyn {analyzerRoslynVersion}.", Color.Details);
+        Info($"Build package for Roslyn {analyzerRoslynVersion}.");
 
-        var props = new[]
-        {
+        List<(string, string)> props = [
             ("configuration", _settings.Configuration),
             ("version", packageVersion.ToString()),
             ("AnalyzerRoslynVersion", analyzerRoslynVersion.ToString()),
-            ("AnalyzerRoslynPackageVersion", analyzerRoslynPackageVersion.ToString()),
-            ("CI", "true")
-        };
+            ("AnalyzerRoslynPackageVersion", analyzerRoslynPackageVersion.ToString())
+        ];
+
+        if (_settings.BuildServer)
+        {
+            props.Add(("CI", "true"));
+        }
         
+        Info($"Building {codeAnalysis.AnalyzerRoslynPackageVersion}");
         var build = new MSBuild()
             .WithTarget("clean;rebuild")
             .WithRestore(true)
@@ -389,6 +394,7 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
         var buildResult = build.Build();
         buildResult.Succeed();
 
+        Info($"Testing {codeAnalysis.AnalyzerRoslynPackageVersion}");
         var test = new DotNetTest()
             .WithProps(props)
             .WithConfiguration(_settings.Configuration)
@@ -396,9 +402,10 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
             .WithNoLogo(true);
 
         var testResult = test.Build();
-        WriteLine(testResult.ToString(), Color.Highlighted);
+        WriteLine(testResult.ToString(), Color.Details);
         testResult.Succeed();
 
+        Info($"Packing {codeAnalysis.AnalyzerRoslynPackageVersion}");
         var pack = new DotNetPack()
             .WithProps(props)
             .WithConfiguration(_settings.Configuration)
@@ -413,6 +420,7 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
     private string MergeGeneratorPackages(NuGetVersion packageVersion, IEnumerable<string> mergingPackages, string projectDirectory)
     {
         var targetPackage = Path.GetFullPath(Path.Combine(projectDirectory, "bin", _settings.Configuration, $"Pure.DI.{packageVersion}.nupkg"));
+        Info($"Creating NuGet package {targetPackage}");
         var targetDir = Path.GetDirectoryName(targetPackage);
         if (!string.IsNullOrWhiteSpace(targetDir))
         {
@@ -437,7 +445,7 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
             {
                 if (entry.Length <= 0 || !paths.Add(entry.FullName))
                 {
-                    Info($"{entry.FullName,-100} - skipped");
+                    WriteLine($"{entry.FullName,-100} - skipped", Color.Details);
                     continue;
                 }
 
@@ -454,7 +462,7 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
                     }
                 } while (size > 0);
                 newStream.Flush();
-                Info($"{entry.FullName,-100} - merged");
+                WriteLine($"{entry.FullName,-100} - merged", Color.Details);
             }
         }
         

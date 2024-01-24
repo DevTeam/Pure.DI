@@ -25,6 +25,7 @@ internal class TemplateTarget: Command, ITarget<string>
     
     public Task<string> RunAsync(InvocationContext ctx)
     {
+        Info("Creating templates");
         var templatePackageVersion = _settings.VersionOverride ?? new NuGetRestoreSettings("Pure.DI.Templates").GetNextVersion(_settings.VersionRange);
         var props = new[]
         {

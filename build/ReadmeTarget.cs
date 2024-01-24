@@ -51,6 +51,7 @@ internal class ReadmeTarget : Command, ITarget<int>
     
     public async Task<int> RunAsync(InvocationContext ctx)
     {
+        Info($"Generating {ReadmeFile}");
         var solutionDirectory = Tools.GetSolutionDirectory();
         var logsDirectory = Path.Combine(solutionDirectory, ".logs");
         
@@ -97,7 +98,7 @@ internal class ReadmeTarget : Command, ITarget<int>
 
     private static async Task AddContent(string sourceFile, TextWriter readmeWriter, string readmeDir = ReadmeDir)
     {
-        WriteLine($"Adding a content from \"{sourceFile}\"", Color.Details);
+        Info($"Adding a content from \"{sourceFile}\"");
         foreach (var line in await File.ReadAllLinesAsync(Path.Combine(readmeDir, sourceFile)))
         {
             await readmeWriter.WriteLineAsync(line);
@@ -249,7 +250,7 @@ internal class ReadmeTarget : Command, ITarget<int>
         foreach (var (groupName, exampleItems) in examples)
         {
             var groupTitle = new string(FormatTitle(groupName).ToArray());
-            WriteLine($"Processing examples group \"{groupTitle}\"", Color.Details);
+            Info($"Processing examples group \"{groupTitle}\"");
             await readmeWriter.WriteLineAsync($"### {groupTitle}");
             foreach (var vars in exampleItems)
             {
@@ -350,7 +351,7 @@ internal class ReadmeTarget : Command, ITarget<int>
             {
                 var benchmarksReportFile = files[fileIndex];
                 var reportName = new string(Path.GetFileNameWithoutExtension(benchmarksReportFile).SkipWhile(ch => ch != ' ').Skip(1).ToArray());
-                WriteLine($"Processing benchmarks \"{reportName}\"", Color.Details);
+                Info($"Processing benchmarks \"{reportName}\"");
                 var lines = await File.ReadAllLinesAsync(benchmarksReportFile);
                 await readmeWriter.WriteLineAsync("<details>");
                 await readmeWriter.WriteLineAsync($"<summary>{reportName}</summary>");

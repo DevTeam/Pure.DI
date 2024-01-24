@@ -24,6 +24,7 @@ internal class DeployTarget: Command, ITarget<int>
     
     public async Task<int> RunAsync(InvocationContext ctx)
     {
+        Info("Deployment");
         if (!string.IsNullOrWhiteSpace(_settings.NuGetKey))
         {
             var packages = await _packTarget.RunAsync(ctx);
