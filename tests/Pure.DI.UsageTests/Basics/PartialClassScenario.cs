@@ -11,6 +11,7 @@ $f=The partial class is also useful for specifying access modifiers to the gener
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ArrangeTypeModifiers
+#pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Basics.PartialClassScenario;
 
 using System.Diagnostics;
@@ -24,10 +25,7 @@ class Dependency : IDependency;
 
 interface IService;
 
-class Service : IService
-{
-    public Service(IDependency dependency) { }
-}
+class Service(IDependency dependency) : IService;
 
 // The partial class is also useful for specifying access modifiers to the generated class
 partial class Composition

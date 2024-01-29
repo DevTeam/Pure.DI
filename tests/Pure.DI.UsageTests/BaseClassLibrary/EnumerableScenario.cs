@@ -28,7 +28,8 @@ interface IService
 
 class Service(IEnumerable<IDependency> dependencies) : IService
 {
-    public ImmutableArray<IDependency> Dependencies { get; } = dependencies.ToImmutableArray();
+    public ImmutableArray<IDependency> Dependencies { get; }
+        = dependencies.ToImmutableArray();
 }
 // }
 

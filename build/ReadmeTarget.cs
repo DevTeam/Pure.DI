@@ -268,16 +268,12 @@ internal class ReadmeTarget : Command, ITarget<int>
                     await examplesWriter.WriteLineAsync("");
                     await examplesWriter.WriteLineAsync(header);
                 }
-
+                
                 await examplesWriter.WriteLineAsync("");
                 await examplesWriter.WriteLineAsync("```c#");
                 await examplesWriter.WriteLineAsync(vars[BodyKey]);
                 await examplesWriter.WriteLineAsync("```");
-
-                var exampleName = Path.GetFileNameWithoutExtension(vars[SourceKey]);
-                await AddClassDiagram(logsDirectory, exampleName, examplesWriter);
-                await AddExample(logsDirectory, $"Pure.DI.UsageTests.*.{exampleName}.*.g.cs", examplesWriter);
-
+                
                 var footer = vars[FooterKey];
                 if (!string.IsNullOrWhiteSpace(footer))
                 {
@@ -285,6 +281,10 @@ internal class ReadmeTarget : Command, ITarget<int>
                     await examplesWriter.WriteLineAsync(footer);
                 }
 
+                var exampleName = Path.GetFileNameWithoutExtension(vars[SourceKey]);
+                await AddClassDiagram(logsDirectory, exampleName, examplesWriter);
+                await AddExample(logsDirectory, $"Pure.DI.UsageTests.*.{exampleName}.*.g.cs", examplesWriter);
+                
                 await examplesWriter.FlushAsync();
             }
         }

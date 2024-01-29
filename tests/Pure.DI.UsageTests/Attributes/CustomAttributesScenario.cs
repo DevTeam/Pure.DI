@@ -14,6 +14,7 @@ $h=You can also use combined attributes, and each method in the list above has a
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ArrangeTypeModifiers
+#pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Attributes.CustomAttributesScenario;
 
 using Xunit;
@@ -24,28 +25,19 @@ using Xunit;
     | AttributeTargets.Method |
     AttributeTargets.Property |
     AttributeTargets.Field)]
-class MyOrdinalAttribute : Attribute
-{
-    public MyOrdinalAttribute(int ordinal) { }
-}
+class MyOrdinalAttribute(int ordinal) : Attribute;
 
 [AttributeUsage(
     AttributeTargets.Parameter
     | AttributeTargets.Property
     | AttributeTargets.Field)]
-class MyTagAttribute : Attribute
-{
-    public MyTagAttribute(object tag) { }
-}
+class MyTagAttribute(object tag) : Attribute;
 
 [AttributeUsage(
     AttributeTargets.Parameter
     | AttributeTargets.Property
     | AttributeTargets.Field)]
-class MyTypeAttribute : Attribute
-{
-    public MyTypeAttribute(Type type) { }
-}
+class MyTypeAttribute(Type type) : Attribute;
 
 interface IPerson;
 

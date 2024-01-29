@@ -13,6 +13,7 @@ $h=- _CompositionKind.Global_ - the composition class will also not be created, 
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable RedundantAssignment
 // ReSharper disable ArrangeTypeModifiers
+#pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Basics.DependentCompositionsScenario;
 
 using Pure.DI;
@@ -27,10 +28,7 @@ class Dependency : IDependency;
 
 interface IService;
 
-class Service : IService
-{
-    public Service(IDependency dependency) { }
-}
+class Service(IDependency dependency) : IService;
 
 class Program(IService service)
 {

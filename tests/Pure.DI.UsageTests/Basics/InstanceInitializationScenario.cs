@@ -37,8 +37,7 @@ class Service(string serviceName, IDependency dependency): IService
 
     public bool IsInitialized { get; private set; }
 
-    public void Initialize() =>
-        IsInitialized = true;
+    public void Initialize() => IsInitialized = true;
 }
 // }
 

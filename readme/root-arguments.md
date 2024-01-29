@@ -48,11 +48,16 @@ DI.Setup("Composition")
     .RootArg<string>("serviceName", "forService");
 
 var composition = new Composition();
+        
+// service = new Service("Abc", new Dependency(123, "dependency 123"));
 var service = composition.CreateService(serviceName: "Abc", id: 123, dependencyName: "dependency 123");
+        
 service.Name.ShouldBe("Abc");
 service.Dependency.Id.ShouldBe(123);
 service.Dependency.DependencyName.ShouldBe("dependency 123");
 ```
+
+When using composition root arguments, compilation warnings are shown if `Resolve` methods are generated, since these methods will not be able to create these roots. You can disable the creation of `Resolve` methods using the `Hint(Hint.Resolve, "Off")` hint, or ignore them but remember the risks of using `Resolve` methods.
 
 <details open>
 <summary>Class Diagram</summary>
@@ -93,16 +98,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM01D21di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM01D30di;
   
   public Composition()
   {
-    _disposableSingletonsM01D21di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D30di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM01D21di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D30di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -150,5 +155,3 @@ partial class Composition
 
 </blockquote></details>
 
-
-When using composition root arguments, compilation warnings are shown if `Resolve` methods are generated, since these methods will not be able to create these roots. You can disable the creation of `Resolve` methods using the `Hint(Hint.Resolve, "Off")` hint, or ignore them but remember the risks of using `Resolve` methods.

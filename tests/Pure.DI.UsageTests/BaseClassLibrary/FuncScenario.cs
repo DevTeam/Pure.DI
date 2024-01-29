@@ -27,10 +27,11 @@ interface IService
 
 class Service(Func<IDependency> dependencyFactory) : IService
 {
-    public ImmutableArray<IDependency> Dependencies { get; } = Enumerable
-        .Range(0, 10)
-        .Select(_ => dependencyFactory())
-        .ToImmutableArray();
+    public ImmutableArray<IDependency> Dependencies { get; } =
+        Enumerable
+            .Range(0, 10)
+            .Select(_ => dependencyFactory())
+            .ToImmutableArray();
 }
 // }
 

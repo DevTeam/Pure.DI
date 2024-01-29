@@ -10,6 +10,7 @@ $h=The setting code for one Composition can be located in several methods and/or
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ArrangeTypeModifiers
+#pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Basics.SeveralPartialClassesScenario;
 
 using Shouldly;
@@ -22,10 +23,7 @@ class Dependency : IDependency;
 
 interface IService;
 
-class Service : IService
-{
-    public Service(IDependency dependency) { }
-}
+class Service(IDependency dependency) : IService;
 
 partial class Composition
 {

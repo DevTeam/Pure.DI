@@ -192,6 +192,8 @@ dotnet run
 ## Examples
 
 ### Basics
+- [Auto-bindings](readme/auto-bindings.md)
+- [Injections of abstractions](readme/injections-of-abstractions.md)
 - [Composition roots](readme/composition-roots.md)
 - [Resolve methods](readme/resolve-methods.md)
 - [Factory](readme/factory.md)
@@ -201,7 +203,6 @@ dotnet run
 - [Root arguments](readme/root-arguments.md)
 - [Composition root kinds](readme/composition-root-kinds.md)
 - [Tags](readme/tags.md)
-- [Auto-bindings](readme/auto-bindings.md)
 - [Child composition](readme/child-composition.md)
 - [Multi-contract bindings](readme/multi-contract-bindings.md)
 - [Field injection](readme/field-injection.md)
@@ -212,6 +213,7 @@ dotnet run
 - [Partial class](readme/partial-class.md)
 - [A few partial classes](readme/a-few-partial-classes.md)
 - [Dependent compositions](readme/dependent-compositions.md)
+- [Global compositions](readme/global-compositions.md)
 - [Default values](readme/default-values.md)
 - [Required properties or fields](readme/required-properties-or-fields.md)
 ### Lifetimes

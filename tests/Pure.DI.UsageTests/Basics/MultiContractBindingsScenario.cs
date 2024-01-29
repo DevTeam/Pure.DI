@@ -10,6 +10,7 @@ $h=An unlimited number of contracts can be attached to one implementation. Inclu
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable UnusedVariable
 // ReSharper disable ArrangeTypeModifiers
+#pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Basics.MultiContractBindingsScenario;
 
 using Xunit;
@@ -23,12 +24,10 @@ class Dependency : IDependency, IAdvancedDependency;
 
 interface IService;
 
-class Service : IService
-{
-    public Service(
-        IDependency dependency,
-        IAdvancedDependency advancedDependency) { }
-}
+class Service(
+    IDependency dependency,
+    IAdvancedDependency advancedDependency)
+    : IService;
 // }
 
 public class Scenario

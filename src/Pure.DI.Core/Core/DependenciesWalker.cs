@@ -94,13 +94,21 @@ internal class DependenciesWalker<TContext>
 
     public virtual void VisitProperty(in TContext ctx, in DpProperty property)
     {
-        var value = property.Property.SetMethod?.Parameters[0];
-        var hasExplicitDefaultValue = value?.HasExplicitDefaultValue ?? false;
+        if (property.Property.SetMethod is not { } setMethod)
+        {
+            return;
+        }
+
+        if (setMethod.Parameters is not [{ } parameter])
+        {
+            return;
+        }
+        
         VisitInjection(
             ctx,
             property.Injection,
-            value?.HasExplicitDefaultValue ?? false,
-            hasExplicitDefaultValue ? value?.ExplicitDefaultValue : default,
+            parameter.HasExplicitDefaultValue,
+            parameter.HasExplicitDefaultValue ? parameter.ExplicitDefaultValue : default,
             property.Property.Locations);
     }
 

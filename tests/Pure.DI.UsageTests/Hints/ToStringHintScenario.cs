@@ -14,6 +14,7 @@ $f=For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/REA
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable ArrangeTypeModifiers
+#pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Hints.ToStringHintScenario;
 
 using Xunit;
@@ -25,10 +26,7 @@ class Dependency : IDependency;
 
 interface IService;
 
-class Service : IService
-{
-    public Service(IDependency dependency) { }
-}
+class Service(IDependency dependency) : IService;
 // }
 
 public class Scenario

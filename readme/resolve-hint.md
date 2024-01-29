@@ -14,10 +14,7 @@ class Dependency : IDependency;
 
 interface IService;
 
-class Service : IService
-{
-    public Service(IDependency dependency) { }
-}
+class Service(IDependency dependency) : IService;
 
 DI.Setup("Composition")
     .Hint(Resolve, "Off")
@@ -28,6 +25,8 @@ var composition = new Composition();
 var service = composition.Root;
 var dependencyRoot = composition.DependencyRoot;
 ```
+
+For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/README.md#setup-hints) page.
 
 <details open>
 <summary>Class Diagram</summary>
@@ -65,16 +64,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM01D21di;
+  private readonly global::System.IDisposable[] _disposableSingletonsM01D30di;
   
   public Composition()
   {
-    _disposableSingletonsM01D21di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D30di = new global::System.IDisposable[0];
   }
   
   internal Composition(Composition parent)
   {
-    _disposableSingletonsM01D21di = new global::System.IDisposable[0];
+    _disposableSingletonsM01D30di = new global::System.IDisposable[0];
   }
   
   #region Composition Roots
@@ -133,5 +132,3 @@ partial class Composition
 
 </blockquote></details>
 
-
-For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/README.md#setup-hints) page.

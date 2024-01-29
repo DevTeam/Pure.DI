@@ -29,8 +29,7 @@ class Dependency(DateTimeOffset time) : IDependency
 
     public bool IsInitialized { get; private set; }
 
-    public void Initialize() =>
-        IsInitialized = true;
+    public void Initialize() => IsInitialized = true;
 }
 
 interface IService

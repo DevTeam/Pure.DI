@@ -58,7 +58,10 @@ public class Scenario
             .Arg<string>("serviceName", "name");
 
         var composition = new Composition(serviceName: "Abc", id: 123);
+        
+        // service = new Service("Abc", new Dependency(123));
         var service = composition.Root;
+        
         service.Name.ShouldBe("Abc");
         service.Dependency.Id.ShouldBe(123);
 // }

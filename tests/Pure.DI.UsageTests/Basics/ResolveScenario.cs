@@ -10,6 +10,7 @@ $h=This example shows how to resolve the composition roots using the _Resolve_ m
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedVariable
+#pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Basics.ResolveScenario;
 
 using Shouldly;
@@ -22,10 +23,7 @@ class Dependency : IDependency;
 
 interface IService;
 
-class Service : IService
-{
-    public Service(IDependency dependency) { }
-}
+class Service(IDependency dependency) : IService;
 
 class OtherService : IService;
 // }
@@ -38,7 +36,8 @@ public class Scenario
 // {            
         DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
-                // Creates a regular public root
+                // Specifies to create a regular public composition root
+                // of type "IDependency" with the name "DependencySingleton":
                 .Root<IDependency>("DependencySingleton")
             .Bind<IService>().To<Service>()
                 // Creates a private root that is only accessible from _Resolve_ methods:

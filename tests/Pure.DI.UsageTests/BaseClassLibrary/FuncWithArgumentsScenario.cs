@@ -11,6 +11,7 @@ $d=Func with arguments
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable UnusedMember.Global
 // ReSharper disable VariableHidesOuterVariable
+#pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.BCL.FuncWithArgumentsScenario;
 
 using System.Collections.Immutable;
@@ -33,12 +34,9 @@ interface IDependency
     int Id { get; }
 }
 
-class Dependency : IDependency
+class Dependency(IClock clock, int id) : IDependency
 {
-    public Dependency(IClock clock, int id) => 
-        Id = id;
-
-    public int Id { get; }
+    public int Id => id;
 }
 
 interface IService
