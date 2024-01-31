@@ -95,10 +95,15 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
         {
             info.HasCode = true;
             if (block.Parent is not null
-                && info is { PerBlockRefCount: > 2, Code.Lines.Count: > 16 }) 
+                && info is { PerBlockRefCount: > 2, Code.Lines.Count: > 4 }) 
             {
-                var localMethodName = $"{variable.VariableName}EnsureExists";
                 var localFunctionsCode = ctx.LocalFunctionsCode;
+                var localMethodName = $"{Names.LocalMethodPrefix}{variable.VariableName}{Names.EnsureExistsMethodNamePostfix}";
+                if (variable.Node.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp9)
+                {
+                    localFunctionsCode.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x300)]");
+                }
+                
                 localFunctionsCode.AppendLine($"void {localMethodName}()");
                 localFunctionsCode.AppendLine("{");
                 using (localFunctionsCode.Indent())

@@ -11,6 +11,10 @@ internal static class Names
     public const string ApiNamespace = $"global::{GeneratorName}.";
     public const string SystemNamespace = $"global::{nameof(System)}.";
     
+    //
+    public const string MethodImplAttribute = $"{SystemNamespace}Runtime.CompilerServices.MethodImpl";
+    public const string MethodImplOptions = $"{SystemNamespace}Runtime.CompilerServices.MethodImplOptions";
+    
     // Messages
     public const string CannotResolve = "Cannot resolve composition root";
     
@@ -33,6 +37,10 @@ internal static class Names
     public const string OnDependencyInjectionMethodName = "OnDependencyInjection";
     public const string OnCannotResolve = "OnCannotResolve";
     public const string OnNewRootMethodName = "OnNewRoot";
+    
+    // Local methods
+    public const string LocalMethodPrefix = "Local";
+    public const string EnsureExistsMethodNamePostfix = "EnsureExists";
     
     // Fields
     public static readonly string BucketsFieldName = $"_buckets{Salt}";

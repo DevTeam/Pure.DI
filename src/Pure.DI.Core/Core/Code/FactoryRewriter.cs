@@ -11,11 +11,11 @@ internal sealed class FactoryRewriter(
 {
     private static readonly AttributeListSyntax MethodImplAttribute = SyntaxFactory.AttributeList().AddAttributes(
             SyntaxFactory.Attribute(
-                SyntaxFactory.IdentifierName($"{Names.SystemNamespace}Runtime.CompilerServices.MethodImpl"),
+                SyntaxFactory.IdentifierName(Names.MethodImplAttribute),
                 SyntaxFactory.AttributeArgumentList().AddArguments(
                     SyntaxFactory.AttributeArgument(
                         SyntaxFactory.CastExpression(
-                            SyntaxFactory.ParseTypeName($"{Names.SystemNamespace}Runtime.CompilerServices.MethodImplOptions"),
+                            SyntaxFactory.ParseTypeName(Names.MethodImplOptions),
                             SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0x300)))))))
         .WithTrailingTrivia(SyntaxTriviaList.Create(SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, " ")));
     

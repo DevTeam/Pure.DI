@@ -45,10 +45,10 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
         var variable = ctx.Variable;
         var code = ctx.Code;
         var level = ctx.Level + 1;
-        var localFuncName = $"LocalFunc_{variable.VariableName}";
+        var localFuncName = $"{Names.LocalMethodPrefix}{variable.VariableName}";
         if (enumerable.Source.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp9)
         {
-            code.AppendLine($"[{Names.SystemNamespace}Runtime.CompilerServices.MethodImpl(({Names.SystemNamespace}Runtime.CompilerServices.MethodImplOptions)0x200)]");
+            code.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x200)]");
         }
 
         code.AppendLine($"{methodPrefix}{variable.InstanceType} {localFuncName}()");
