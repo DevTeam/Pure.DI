@@ -14,12 +14,18 @@ internal class UpdateTarget: Command, ITarget<NuGetVersion>
 {
     private const string VersionPrefix = "PUREDI_API_V";
     private readonly Settings _settings;
+    private readonly Paths _paths;
+    private readonly NuGetVersions _nuGetVersions;
 
     public UpdateTarget(
-        Settings settings)
+        Settings settings,
+        Paths paths,
+        NuGetVersions nuGetVersions)
         : base("update", "Updates internal DI version")
     {
         _settings = settings;
+        _paths = paths;
+        _nuGetVersions = nuGetVersions;
         this.SetHandler(RunAsync);
         AddAlias("u");
     }
@@ -28,8 +34,8 @@ internal class UpdateTarget: Command, ITarget<NuGetVersion>
     public Task<NuGetVersion> RunAsync(InvocationContext ctx)
     {
         Info("Updating internal DI version");
-        var solutionDirectory = Tools.GetSolutionDirectory();
-        var currentVersion = _settings.VersionOverride ?? new NuGetRestoreSettings("Pure.DI").GetNextVersion(_settings.VersionRange, 0);
+        var solutionDirectory = _paths.GetSolutionDirectory();
+        var currentVersion = _settings.VersionOverride ?? _nuGetVersions.GetNext(new NuGetRestoreSettings("Pure.DI"), _settings.VersionRange, 0);
         var propsFile = Path.Combine(solutionDirectory, "Directory.Build.props");
         var props = File.ReadAllLines(propsFile);
         var contents = new List<string>();

@@ -9,6 +9,7 @@ using JetBrains.TeamCity.ServiceMessages.Write.Special;
 internal class BenchmarksTarget: Command, ITarget<int>
 {
     private readonly Settings _settings;
+    private readonly Paths _paths;
     private readonly ITeamCityWriter _teamCityWriter;
 
     private static readonly string[] Reports =
@@ -21,11 +22,13 @@ internal class BenchmarksTarget: Command, ITarget<int>
     ];
 
     public BenchmarksTarget(
-        Settings settings, 
+        Settings settings,
+        Paths paths,
         ITeamCityWriter teamCityWriter)
         : base("benchmarks", "Runs benchmarks")
     {
         _settings = settings;
+        _paths = paths;
         _teamCityWriter = teamCityWriter;
         this.SetHandler(RunAsync);
         AddAlias("b");
@@ -34,7 +37,7 @@ internal class BenchmarksTarget: Command, ITarget<int>
     public Task<int> RunAsync(InvocationContext ctx)
     {
         Info("Benchmarking");
-        var solutionDirectory = Tools.GetSolutionDirectory();
+        var solutionDirectory = _paths.GetSolutionDirectory();
         var logsDirectory = Path.Combine(solutionDirectory, ".logs");
         Directory.CreateDirectory(logsDirectory);
         var artifactsDirectory = Path.Combine(solutionDirectory, "benchmarks", "data");

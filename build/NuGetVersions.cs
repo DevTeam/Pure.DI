@@ -1,22 +1,23 @@
-// ReSharper disable HeapView.ImplicitCapture
+﻿// ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable MemberCanBeMadeStatic.Global
 namespace Build;
 
 using System.Text.RegularExpressions;
 using HostApi;
 using NuGet.Versioning;
 
-internal static partial class Tools
+internal partial class NuGetVersions
 {
     private static readonly Regex ReleaseRegex = CreateReleaseRegex();
     
-    public static NuGetVersion GetNextVersion(this NuGetRestoreSettings settings, VersionRange versionRange, int incrementValue = 1) =>
+    public NuGetVersion GetNext(NuGetRestoreSettings settings, VersionRange versionRange, int patchIncrement = 1) =>
         GetService<INuGet>()
             .Restore(settings.WithHideWarningsAndErrors(true).WithVersionRange(versionRange).WithNoCache(true))
             .Where(i => i.Name == settings.PackageId)
             .Select(i => i.NuGetVersion)
             .Select(i => i.Release != string.Empty 
                 ? GetNextRelease(versionRange, i)
-                : new NuGetVersion(i.Major, i.Minor, i.Patch + incrementValue))
+                : new NuGetVersion(i.Major, i.Minor, i.Patch + patchIncrement))
             .Max() ?? new NuGetVersion(2, 0, 0);
 
     private static NuGetVersion GetNextRelease(VersionRangeBase versionRange, NuGetVersion version)
@@ -40,25 +41,7 @@ internal static partial class Tools
         
         return new NuGetVersion(version.Major, version.Minor, version.Patch, match.Groups[1].Value + (index + 1));
     }
-    
-    public static string GetSolutionDirectory()
-    {
-        var solutionFile = TryFindFile(Environment.CurrentDirectory, "Pure.DI.sln") ?? Environment.CurrentDirectory;
-        return Path.GetDirectoryName(solutionFile) ?? Environment.CurrentDirectory;
-    }
-
-    private static string? TryFindFile(string? path, string searchPattern)
-    {
-        string? target = default;
-        while (path != default && target == default)
-        {
-            target = Directory.EnumerateFileSystemEntries(path, searchPattern).FirstOrDefault();
-            path = Path.GetDirectoryName(path);
-        }
-
-        return target;
-    }
-
+ 
     [GeneratedRegex("""([^\d]+)([\d]*)""")]
     private static partial Regex CreateReleaseRegex();
 }

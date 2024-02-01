@@ -1,10 +1,14 @@
+// ReSharper disable MemberCanBeMadeStatic.Global
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Build;
 
+using System.Diagnostics.CodeAnalysis;
 using HostApi;
 
-internal static class Property
+internal class Properties
 {
-    public static string Get(this string name, string defaultProp = "", bool showWarning = false) =>
+    [SuppressMessage("Performance", "CA1822:Mark members as static")]
+    public string Get(string name, string defaultProp = "", bool showWarning = false) =>
         Get(Props, name, defaultProp, showWarning);
 
     private static string Get(IProperties props, string name, string defaultProp, bool showWarning = false)

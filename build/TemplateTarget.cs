@@ -10,14 +10,17 @@ using JetBrains.TeamCity.ServiceMessages.Write.Special;
 internal class TemplateTarget: Command, ITarget<string>
 {
     private readonly Settings _settings;
+    private readonly NuGetVersions _nuGetVersions;
     private readonly ITeamCityWriter _teamCityWriter;
 
     public TemplateTarget(
         Settings settings,
+        NuGetVersions nuGetVersions,
         ITeamCityWriter teamCityWriter)
         : base("template", "Creates and push templates")
     {
         _settings = settings;
+        _nuGetVersions = nuGetVersions;
         _teamCityWriter = teamCityWriter;
         this.SetHandler(RunAsync);
         AddAlias("t");
@@ -26,7 +29,7 @@ internal class TemplateTarget: Command, ITarget<string>
     public Task<string> RunAsync(InvocationContext ctx)
     {
         Info("Creating templates");
-        var templatePackageVersion = _settings.VersionOverride ?? new NuGetRestoreSettings("Pure.DI.Templates").GetNextVersion(_settings.VersionRange);
+        var templatePackageVersion = _settings.VersionOverride ?? _nuGetVersions.GetNext(new NuGetRestoreSettings("Pure.DI.Templates"), _settings.VersionRange);
         var props = new[]
         {
             ("configuration", _settings.Configuration),

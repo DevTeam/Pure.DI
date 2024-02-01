@@ -17,16 +17,19 @@ using NuGet.Versioning;
 internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
 {
     private readonly Settings _settings;
+    private readonly NuGetVersions _nuGetVersions;
     private readonly ITeamCityWriter _teamCityWriter;
     private readonly INuGet _nuGet;
 
     public PackTarget(
         Settings settings,
+        NuGetVersions nuGetVersions,
         ITeamCityWriter teamCityWriter,
         INuGet nuGet)
         : base("pack", "Creates NuGet packages")
     {
         _settings = settings;
+        _nuGetVersions = nuGetVersions;
         _teamCityWriter = teamCityWriter;
         _nuGet = nuGet;
         this.SetHandler(RunAsync);
@@ -40,7 +43,7 @@ internal class PackTarget: Command, ITarget<IReadOnlyCollection<string>>
         var packages = new List<string>();
         
         // Pure.DI generator package
-        var generatorPackageVersion = _settings.VersionOverride ?? new NuGetRestoreSettings("Pure.DI").GetNextVersion(_settings.VersionRange);
+        var generatorPackageVersion = _settings.VersionOverride ?? _nuGetVersions.GetNext(new NuGetRestoreSettings("Pure.DI"), _settings.VersionRange);
         var generatorProjectDirectory = Path.Combine("src", "Pure.DI");
         var generatorPackages = _settings.CodeAnalysis
             .Select(codeAnalysis => CreateGeneratorPackage(generatorPackageVersion, codeAnalysis, generatorProjectDirectory));

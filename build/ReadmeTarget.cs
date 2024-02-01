@@ -12,6 +12,8 @@ using Pure.DI.Benchmarks.Benchmarks;
 internal class ReadmeTarget : Command, ITarget<int>
 {
     private readonly Settings _settings;
+    private readonly Paths _paths;
+    private readonly NuGetVersions _nuGetVersions;
     private readonly ITarget<int> _benchmarksTarget;
     private const string ReadmeDir = "readme";
     private const string ReadmeHeaderFile = "README.md";
@@ -41,9 +43,13 @@ internal class ReadmeTarget : Command, ITarget<int>
 
     public ReadmeTarget(
         Settings settings,
+        Paths paths,
+        NuGetVersions nuGetVersions,
         [Tag(typeof(BenchmarksTarget))] ITarget<int> benchmarksTarget): base("readme", $"Generates {ReadmeHeaderFile}")
     {
         _settings = settings;
+        _paths = paths;
+        _nuGetVersions = nuGetVersions;
         _benchmarksTarget = benchmarksTarget;
         this.SetHandler(RunAsync);
         AddAlias("r");
@@ -52,7 +58,7 @@ internal class ReadmeTarget : Command, ITarget<int>
     public async Task<int> RunAsync(InvocationContext ctx)
     {
         Info($"Generating {ReadmeFile}");
-        var solutionDirectory = Tools.GetSolutionDirectory();
+        var solutionDirectory = _paths.GetSolutionDirectory();
         var logsDirectory = Path.Combine(solutionDirectory, ".logs");
         
         // Run benchmarks
@@ -105,10 +111,10 @@ internal class ReadmeTarget : Command, ITarget<int>
         }
     }
 
-    private static async Task<IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)>> CreateExamples(InvocationContext ctx)
+    private async Task<IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)>> CreateExamples(InvocationContext ctx)
     {
         var items = new List<Dictionary<string, string>>();
-        var testsDir = Path.Combine(Tools.GetSolutionDirectory(), "tests", "Pure.DI.UsageTests");
+        var testsDir = Path.Combine(_paths.GetSolutionDirectory(), "tests", "Pure.DI.UsageTests");
         var files = Directory.EnumerateFiles(testsDir, "*.cs", SearchOption.AllDirectories);
         foreach (var file in files)
         {
@@ -225,7 +231,7 @@ internal class ReadmeTarget : Command, ITarget<int>
 
     private async Task GenerateExamples(IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)> examples, TextWriter readmeWriter, string logsDirectory)
     {
-        var packageVersion = (_settings.VersionOverride ?? new NuGetRestoreSettings("Pure.DI").GetNextVersion(_settings.VersionRange, 0)).ToString();
+        var packageVersion = (_settings.VersionOverride ?? _nuGetVersions.GetNext(new NuGetRestoreSettings("Pure.DI"), _settings.VersionRange, 0)).ToString();
         foreach (var readmeFile in Directory.EnumerateFiles(Path.Combine(ReadmeDir), "*.md"))
         {
             if (readmeFile.EndsWith("Template.md", StringComparison.InvariantCultureIgnoreCase))

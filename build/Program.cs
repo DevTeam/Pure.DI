@@ -1,23 +1,38 @@
-﻿using System.CommandLine;
-using Build;using HostApi;
-using NuGet.Versioning;
+﻿using Build;
+using HostApi;
+using System.CommandLine;
+using JetBrains.TeamCity.ServiceMessages.Write.Special;
+using Pure.DI;
 
-Directory.SetCurrentDirectory(Tools.GetSolutionDirectory());
-await new DotNetBuildServerShutdown().RunAsync();
+DI.Setup(nameof(Composition))
+    .Root<Program>("Root")
+    .Bind<ITeamCityWriter>().To(_ => GetService<ITeamCityWriter>())
+    .Bind<INuGet>().To(_ => GetService<INuGet>())
+    .DefaultLifetime(Lifetime.Singleton)
+    .Bind<Settings>().To<Settings>()
+    .Bind<Command>(typeof(ReadmeTarget)).To<ReadmeTarget>()
+    .Bind<Command, ITarget<IReadOnlyCollection<string>>>(typeof(PackTarget)).To<PackTarget>()
+    .Bind<Command, ITarget<int>>(typeof(BenchmarksTarget)).To<BenchmarksTarget>()
+    .Bind<Command>(typeof(DeployTarget)).To<DeployTarget>()
+    .Bind<Command>(typeof(TemplateTarget)).To<TemplateTarget>()
+    .Bind<Command>(typeof(UpdateTarget)).To<UpdateTarget>();
 
-WriteLine(
-    NuGetVersion.TryParse("version".Get(), out var version) 
-        ? $"The version has been overridden by {version}."
-        : "The next version has been used.",
-    Color.Details);
+await new Composition().Root.RunAsync();
 
-var settings = new Settings(
-    Environment.GetEnvironmentVariable("TEAMCITY_VERSION") is not null,
-    "Release",
-    VersionRange.Parse("2.0.*"),
-    version,
-    "NuGetKey".Get(),
-    new CodeAnalysis(new Version(4, 3, 1)));
+internal partial class Program(
+    RootCommand rootCommand,
+    Paths paths,
+    IEnumerable<Command> commands)
+{
+    private async Task RunAsync()
+    {
+        foreach (var command in commands)
+        {
+            rootCommand.AddCommand(command);
+        }
 
-var composition = new Composition(settings);
-return await composition.Root.InvokeAsync(Args.ToArray());
+        Directory.SetCurrentDirectory(paths.GetSolutionDirectory());
+        await new DotNetBuildServerShutdown().RunAsync();
+        await rootCommand.InvokeAsync(Args.ToArray());
+    }
+}
