@@ -1,10 +1,7 @@
 ﻿namespace Clock.Tests;
 
-using System.Collections.Generic;
 using Models;
-using ViewModels;
 
-[TestClass]
 public class ViewModelTest
 {
     private readonly  Mock<IDispatcher> _dispatcher = new();
@@ -13,7 +10,7 @@ public class ViewModelTest
         _dispatcher.Setup(i => i.Dispatch(It.IsAny<Action>()))
             .Callback<Action>(action => action());
 
-    [TestMethod]
+    [Fact]
     public void ShouldRaisePropertyChangedEvent()
     {
         // Given

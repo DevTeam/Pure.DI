@@ -1,10 +1,7 @@
 namespace Clock.Tests;
 
-using System.Collections.Generic;
 using Models;
-using ViewModels;
 
-[TestClass]
 public class ClockViewModelTest
 {
     private readonly Mock<IDispatcher> _dispatcher = new();
@@ -13,7 +10,7 @@ public class ClockViewModelTest
         _dispatcher.Setup(i => i.Dispatch(It.IsAny<Action>()))
             .Callback<Action>(action => action());
 
-    [TestMethod]
+    [Fact]
     public void ShouldProvideDateTimeToDisplay()
     {
         // Given
@@ -39,7 +36,7 @@ public class ClockViewModelTest
         time.ShouldBe(now.ToString("T"));
     }
 
-    [TestMethod]
+    [Fact]
     public void ShouldRefreshDateTimeWhenTimerTick()
     {
         // Given
@@ -71,7 +68,7 @@ public class ClockViewModelTest
         propertyNames.Count(i => i == nameof(IClockViewModel.Time)).ShouldBe(2);
     }
 
-    [TestMethod]
+    [Fact]
     public void ShouldDisposeTimerSubscriptionWhenDispose()
     {
         // Given

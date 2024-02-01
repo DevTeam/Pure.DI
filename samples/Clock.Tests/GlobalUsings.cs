@@ -1,4 +1,6 @@
 global using System;
+global using System.Collections.Generic;
+global using Clock.ViewModels;
 global using Shouldly;
-global using Microsoft.VisualStudio.TestTools.UnitTesting;
 global using Moq;
+global using Xunit;
