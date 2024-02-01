@@ -1,16 +1,17 @@
 // ReSharper disable HeapView.ImplicitCapture
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBeMadeStatic.Global
-namespace Build;
-
-using System.Diagnostics.CodeAnalysis;
+namespace Build.Tools;
 
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
-internal class Paths
+internal class Paths : IPaths
 {
-    public string GetSolutionDirectory() => 
+    public string SolutionDirectory =>
         Path.GetDirectoryName(TryFindFile(Environment.CurrentDirectory, "Pure.DI.sln"))
         ?? Environment.CurrentDirectory;
+
+    public string TempDirectory =>
+        Path.Combine(Path.GetTempPath(), "Pure.DI", $"{Guid.NewGuid().ToString()[..4]}");
 
     private static string? TryFindFile(string? path, string searchPattern)
     {

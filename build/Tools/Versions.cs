@@ -1,24 +1,29 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable MemberCanBeMadeStatic.Global
-namespace Build;
+namespace Build.Tools;
 
 using System.Text.RegularExpressions;
-using HostApi;
 using NuGet.Versioning;
 
-internal partial class NuGetVersions
+internal partial class Versions(
+    Settings settings,
+    INuGet nuGet) : IVersions
 {
     private static readonly Regex ReleaseRegex = CreateReleaseRegex();
-    
-    public NuGetVersion GetNext(NuGetRestoreSettings settings, VersionRange versionRange, int patchIncrement = 1) =>
-        GetService<INuGet>()
-            .Restore(settings.WithHideWarningsAndErrors(true).WithVersionRange(versionRange).WithNoCache(true))
-            .Where(i => i.Name == settings.PackageId)
+
+    public NuGetVersion GetNext(NuGetRestoreSettings restoreSettings, VersionRange versionRange, int patchIncrement = 1) =>
+        nuGet
+            .Restore(restoreSettings.WithHideWarningsAndErrors(true).WithVersionRange(versionRange).WithNoCache(true))
+            .Where(i => i.Name == restoreSettings.PackageId)
             .Select(i => i.NuGetVersion)
             .Select(i => i.Release != string.Empty 
                 ? GetNextRelease(versionRange, i)
                 : new NuGetVersion(i.Major, i.Minor, i.Patch + patchIncrement))
-            .Max() ?? new NuGetVersion(2, 0, 0);
+            .Max()
+        ?? new NuGetVersion(
+            settings.VersionRange.MinVersion.Major,
+            settings.VersionRange.MinVersion.Minor,
+            settings.VersionRange.MinVersion.Patch);
 
     private static NuGetVersion GetNextRelease(VersionRangeBase versionRange, NuGetVersion version)
     {

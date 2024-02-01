@@ -2,40 +2,31 @@
 // ReSharper disable HeapView.DelegateAllocation
 // ReSharper disable HeapView.ClosureAllocation
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Build;
+namespace Build.Targets;
 
-using System.CommandLine;
-using System.CommandLine.Invocation;
-using System.Diagnostics.CodeAnalysis;
-using HostApi;
 using NuGet.Versioning;
 
-internal class UpdateTarget: Command, ITarget<NuGetVersion>
+internal class UpdateTarget(
+    Settings settings,
+    ICommands commands,
+    IPaths paths,
+    IVersions versions)
+    : IInitializable, ITarget<NuGetVersion>
 {
     private const string VersionPrefix = "PUREDI_API_V";
-    private readonly Settings _settings;
-    private readonly Paths _paths;
-    private readonly NuGetVersions _nuGetVersions;
 
-    public UpdateTarget(
-        Settings settings,
-        Paths paths,
-        NuGetVersions nuGetVersions)
-        : base("update", "Updates internal DI version")
-    {
-        _settings = settings;
-        _paths = paths;
-        _nuGetVersions = nuGetVersions;
-        this.SetHandler(RunAsync);
-        AddAlias("u");
-    }
+    public ValueTask InitializeAsync() => commands.Register(
+        this,
+        "Updates internal DI version",
+        "update",
+        "u");
     
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
-    public Task<NuGetVersion> RunAsync(InvocationContext ctx)
+    public ValueTask<NuGetVersion> RunAsync(CancellationToken cancellationToken)
     {
         Info("Updating internal DI version");
-        var solutionDirectory = _paths.GetSolutionDirectory();
-        var currentVersion = _settings.VersionOverride ?? _nuGetVersions.GetNext(new NuGetRestoreSettings("Pure.DI"), _settings.VersionRange, 0);
+        var solutionDirectory = paths.SolutionDirectory;
+        var currentVersion = settings.VersionOverride ?? versions.GetNext(new NuGetRestoreSettings("Pure.DI"), settings.VersionRange, 0);
         var propsFile = Path.Combine(solutionDirectory, "Directory.Build.props");
         var props = File.ReadAllLines(propsFile);
         var contents = new List<string>();
@@ -96,6 +87,6 @@ internal class UpdateTarget: Command, ITarget<NuGetVersion>
         new DotNetBuildServerShutdown().Run();
         new DotNetRestore().Run();
         new DotNetBuild().Run();
-        return Task.FromResult(currentVersion);
+        return ValueTask.FromResult(currentVersion);
     }
 }

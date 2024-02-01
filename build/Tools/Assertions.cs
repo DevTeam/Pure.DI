@@ -1,6 +1,4 @@
-namespace Build;
-
-using HostApi;
+namespace Build.Tools;
 
 internal static class Assertions
 {

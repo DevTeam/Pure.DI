@@ -3,12 +3,11 @@
 namespace Build;
 
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
-using HostApi;
 using NuGet.Versioning;
+using IProperties = Tools.IProperties;
 
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
-internal class Settings(Properties properties)
+internal class Settings(IProperties properties)
 {
     public bool BuildServer { get; } = Environment.GetEnvironmentVariable("TEAMCITY_VERSION") is not null;
 
@@ -18,17 +17,17 @@ internal class Settings(Properties properties)
 
     public NuGetVersion? VersionOverride { get; } = GetVersionOverride(properties);
 
-    public string NuGetKey { get; } = properties.Get("NuGetKey");
+    public string NuGetKey { get; } = properties["NuGetKey"];
 
     public ImmutableArray<CodeAnalysis> CodeAnalysis { get; } =
     [
         new CodeAnalysis(new Version(4, 3, 1))
     ];
 
-    private static NuGetVersion GetVersionOverride(Properties properties)
+    private static NuGetVersion GetVersionOverride(IProperties properties)
     {
         WriteLine(
-            NuGetVersion.TryParse(properties.Get("version"), out var version) 
+            NuGetVersion.TryParse(properties["version"], out var version) 
                 ? $"The version has been overridden by {version}."
                 : "The next version has been used.",
             Color.Details);

@@ -1,20 +1,18 @@
 // ReSharper disable InvertIf
 // ReSharper disable ConvertIfStatementToSwitchStatement
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Build;
+namespace Build.Targets;
 
-using System.CommandLine;
-using System.CommandLine.Invocation;
-using HostApi;
-using Pure.DI;
 using Pure.DI.Benchmarks.Benchmarks;
 
-internal class ReadmeTarget : Command, ITarget<int>
+internal class ReadmeTarget(
+    Settings settings,
+    ICommands commands,
+    IPaths paths,
+    IVersions versions,
+    [Tag(typeof(BenchmarksTarget))] ITarget<int> benchmarksTarget)
+    : IInitializable, ITarget<int>
 {
-    private readonly Settings _settings;
-    private readonly Paths _paths;
-    private readonly NuGetVersions _nuGetVersions;
-    private readonly ITarget<int> _benchmarksTarget;
     private const string ReadmeDir = "readme";
     private const string ReadmeHeaderFile = "README.md";
     private const string ReadmeTemplateFile = "ReadmeTemplate.md";
@@ -41,28 +39,20 @@ internal class ReadmeTarget : Command, ITarget<int>
 
     private static readonly char[] Separator = ['='];
 
-    public ReadmeTarget(
-        Settings settings,
-        Paths paths,
-        NuGetVersions nuGetVersions,
-        [Tag(typeof(BenchmarksTarget))] ITarget<int> benchmarksTarget): base("readme", $"Generates {ReadmeHeaderFile}")
-    {
-        _settings = settings;
-        _paths = paths;
-        _nuGetVersions = nuGetVersions;
-        _benchmarksTarget = benchmarksTarget;
-        this.SetHandler(RunAsync);
-        AddAlias("r");
-    }
+    public ValueTask InitializeAsync() => commands.Register(
+        this,
+        $"Generates {ReadmeHeaderFile}",
+        "readme",
+        "r");
     
-    public async Task<int> RunAsync(InvocationContext ctx)
+    public async ValueTask<int> RunAsync(CancellationToken cancellationToken)
     {
         Info($"Generating {ReadmeFile}");
-        var solutionDirectory = _paths.GetSolutionDirectory();
+        var solutionDirectory = paths.SolutionDirectory;
         var logsDirectory = Path.Combine(solutionDirectory, ".logs");
         
         // Run benchmarks
-        await _benchmarksTarget.RunAsync(ctx);
+        await benchmarksTarget.RunAsync(cancellationToken);
         
         // Delete generated files
         Directory.Delete(Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator"), true);
@@ -76,7 +66,7 @@ internal class ReadmeTarget : Command, ITarget<int>
 
         foreach (var project in projects)
         {
-            (await new MSBuild().WithProject(project).WithTarget("clean;rebuild").BuildAsync()).Succeed();    
+            (await new MSBuild().WithProject(project).WithTarget("clean;rebuild").BuildAsync(cancellationToken: cancellationToken)).Succeed();    
         }
 
         new DotNetTest(usageTestsProjects).Run();
@@ -89,7 +79,7 @@ internal class ReadmeTarget : Command, ITarget<int>
         
         await readmeWriter.WriteLineAsync("");
         
-        var examples = await CreateExamples(ctx);
+        var examples = await CreateExamples(cancellationToken);
         await GenerateExamples(examples, readmeWriter, logsDirectory);
 
         await AddContent(FooterTemplateFile, readmeWriter);
@@ -98,7 +88,7 @@ internal class ReadmeTarget : Command, ITarget<int>
         
         await AddBenchmarks(logsDirectory, readmeWriter);
 
-        await readmeWriter.FlushAsync();
+        await readmeWriter.FlushAsync(cancellationToken);
         return 0;
     }
 
@@ -111,10 +101,10 @@ internal class ReadmeTarget : Command, ITarget<int>
         }
     }
 
-    private async Task<IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)>> CreateExamples(InvocationContext ctx)
+    private async Task<IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)>> CreateExamples(CancellationToken cancellationToken)
     {
         var items = new List<Dictionary<string, string>>();
-        var testsDir = Path.Combine(_paths.GetSolutionDirectory(), "tests", "Pure.DI.UsageTests");
+        var testsDir = Path.Combine(paths.SolutionDirectory, "tests", "Pure.DI.UsageTests");
         var files = Directory.EnumerateFiles(testsDir, "*.cs", SearchOption.AllDirectories);
         foreach (var file in files)
         {
@@ -134,7 +124,7 @@ internal class ReadmeTarget : Command, ITarget<int>
             var body = new List<string>();
             var localBody = new List<string>();
             var offset = int.MaxValue;
-            foreach (var line in await File.ReadAllLinesAsync(file, ctx.GetCancellationToken()))
+            foreach (var line in await File.ReadAllLinesAsync(file, cancellationToken))
             {
                 var str = line.Trim().Replace(" ", "");
                 if (str.StartsWith("/*"))
@@ -231,7 +221,7 @@ internal class ReadmeTarget : Command, ITarget<int>
 
     private async Task GenerateExamples(IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)> examples, TextWriter readmeWriter, string logsDirectory)
     {
-        var packageVersion = (_settings.VersionOverride ?? _nuGetVersions.GetNext(new NuGetRestoreSettings("Pure.DI"), _settings.VersionRange, 0)).ToString();
+        var packageVersion = (settings.VersionOverride ?? versions.GetNext(new NuGetRestoreSettings("Pure.DI"), settings.VersionRange, 0)).ToString();
         foreach (var readmeFile in Directory.EnumerateFiles(Path.Combine(ReadmeDir), "*.md"))
         {
             if (readmeFile.EndsWith("Template.md", StringComparison.InvariantCultureIgnoreCase))

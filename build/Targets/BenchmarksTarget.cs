@@ -1,17 +1,13 @@
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Build;
+namespace Build.Targets;
 
-using System.CommandLine;
-using System.CommandLine.Invocation;
-using HostApi;
-using JetBrains.TeamCity.ServiceMessages.Write.Special;
-
-internal class BenchmarksTarget: Command, ITarget<int>
+internal class BenchmarksTarget(
+    Settings settings,
+    ICommands commands,
+    IPaths paths,
+    ITeamCityArtifactsWriter artifactsWriter)
+    : IInitializable, ITarget<int>
 {
-    private readonly Settings _settings;
-    private readonly Paths _paths;
-    private readonly ITeamCityWriter _teamCityWriter;
-
     private static readonly string[] Reports =
     [
         "Transient",
@@ -21,27 +17,20 @@ internal class BenchmarksTarget: Command, ITarget<int>
         "Enum"
     ];
 
-    public BenchmarksTarget(
-        Settings settings,
-        Paths paths,
-        ITeamCityWriter teamCityWriter)
-        : base("benchmarks", "Runs benchmarks")
-    {
-        _settings = settings;
-        _paths = paths;
-        _teamCityWriter = teamCityWriter;
-        this.SetHandler(RunAsync);
-        AddAlias("b");
-    }
-    
-    public Task<int> RunAsync(InvocationContext ctx)
+    public ValueTask InitializeAsync() => commands.Register(
+        this,
+        "Runs benchmarks",
+        "benchmarks",
+        "mb");
+
+    public ValueTask<int> RunAsync(CancellationToken cancellationToken)
     {
         Info("Benchmarking");
-        var solutionDirectory = _paths.GetSolutionDirectory();
+        var solutionDirectory = paths.SolutionDirectory;
         var logsDirectory = Path.Combine(solutionDirectory, ".logs");
         Directory.CreateDirectory(logsDirectory);
         var artifactsDirectory = Path.Combine(solutionDirectory, "benchmarks", "data");
-        if (!_settings.BuildServer && Directory.Exists(artifactsDirectory))
+        if (!settings.BuildServer && Directory.Exists(artifactsDirectory))
         {
             Warning($"The directory \"{artifactsDirectory}\" exists, benchmarks are skipped. Delete this directory to re-run the benchmarks.");
         }
@@ -51,7 +40,7 @@ internal class BenchmarksTarget: Command, ITarget<int>
         
             var benchmark = new DotNetRun()
                 .WithProject(Path.Combine("benchmarks", "Pure.DI.Benchmarks", "Pure.DI.Benchmarks.csproj"))
-                .WithConfiguration(_settings.Configuration)
+                .WithConfiguration(settings.Configuration)
                 .WithArgs("--artifacts", artifactsDirectory, "--", "--filter")
                 .AddArgs(Reports.Select(filter => $"*{filter}*").ToArray());
 
@@ -71,9 +60,9 @@ internal class BenchmarksTarget: Command, ITarget<int>
 
             var reportFile = Path.Combine(logsDirectory, $"{index++:00} {reportName}.html");
             File.Copy(reportFileNameHtml, reportFile, true);
-            _teamCityWriter.PublishArtifact($"{reportFileNameHtml} => .");
+            artifactsWriter.PublishArtifact($"{reportFileNameHtml} => .");
         }
 
-        return Task.FromResult(0);
+        return ValueTask.FromResult(0);
     }
 }

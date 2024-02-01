@@ -1,38 +1,28 @@
 ﻿using Build;
-using HostApi;
-using System.CommandLine;
-using JetBrains.TeamCity.ServiceMessages.Write.Special;
-using Pure.DI;
+using IProperties = Build.Tools.IProperties;
 
 DI.Setup(nameof(Composition))
-    .Root<Program>("Root")
-    .Bind<ITeamCityWriter>().To(_ => GetService<ITeamCityWriter>())
-    .Bind<INuGet>().To(_ => GetService<INuGet>())
-    .DefaultLifetime(Lifetime.Singleton)
+    .Root<ITarget<int>>("RootTarget")
+    .DefaultLifetime(Lifetime.PerBlock)
     .Bind<Settings>().To<Settings>()
-    .Bind<Command>(typeof(ReadmeTarget)).To<ReadmeTarget>()
-    .Bind<Command, ITarget<IReadOnlyCollection<string>>>(typeof(PackTarget)).To<PackTarget>()
-    .Bind<Command, ITarget<int>>(typeof(BenchmarksTarget)).To<BenchmarksTarget>()
-    .Bind<Command>(typeof(DeployTarget)).To<DeployTarget>()
-    .Bind<Command>(typeof(TemplateTarget)).To<TemplateTarget>()
-    .Bind<Command>(typeof(UpdateTarget)).To<UpdateTarget>();
+    .Bind<RootCommand>().To<RootCommand>()
+    .Bind<ITeamCityArtifactsWriter>().To(_ => GetService<ITeamCityWriter>())
+    .Bind<INuGet>().To(_ => GetService<INuGet>())
+    // Tools
+    .Bind<ICommands>().To<Commands>()
+    .Bind<IPaths>().To<Paths>()
+    .Bind<IProperties>().To<Properties>()
+    .Bind<ISdk>().To<Sdk>()
+    .Bind<IVersions>().To<Versions>()
+    // Targets
+    .Bind<ITarget<int>>().To<RootTarget>()
+    .Bind<IInitializable, ITarget<BuildResult>>(typeof(TestTarget)).To<TestTarget>()
+    .Bind<IInitializable, ITarget<BuildResult>>(typeof(CompatibilityCheckTarget)).To<CompatibilityCheckTarget>()
+    .Bind<IInitializable, ITarget<BuildResult>>(typeof(PackTarget)).To<PackTarget>()
+    .Bind<IInitializable>(typeof(ReadmeTarget)).To<ReadmeTarget>()
+    .Bind<IInitializable, ITarget<int>>(typeof(BenchmarksTarget)).To<BenchmarksTarget>()
+    .Bind<IInitializable>(typeof(DeployTarget)).To<DeployTarget>()
+    .Bind<IInitializable>(typeof(TemplateTarget)).To<TemplateTarget>()
+    .Bind<IInitializable>(typeof(UpdateTarget)).To<UpdateTarget>();
 
-await new Composition().Root.RunAsync();
-
-internal partial class Program(
-    RootCommand rootCommand,
-    Paths paths,
-    IEnumerable<Command> commands)
-{
-    private async Task RunAsync()
-    {
-        foreach (var command in commands)
-        {
-            rootCommand.AddCommand(command);
-        }
-
-        Directory.SetCurrentDirectory(paths.GetSolutionDirectory());
-        await new DotNetBuildServerShutdown().RunAsync();
-        await rootCommand.InvokeAsync(Args.ToArray());
-    }
-}
+return await new Composition().RootTarget.RunAsync(CancellationToken.None);
