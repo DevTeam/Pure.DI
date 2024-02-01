@@ -31,7 +31,7 @@ class Service(
     public IDependency Dependency3 { get; } = dependencyFactory();
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IDependency>().As(Lifetime.PerBlock).To<Dependency>()
     .Bind<IService>().To<Service>().Root<IService>("Root");
 

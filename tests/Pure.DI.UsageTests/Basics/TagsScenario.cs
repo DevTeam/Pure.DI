@@ -54,7 +54,7 @@ public class Scenario
     public void Run()
     {
 // {            
-        DI.Setup("Composition")
+        DI.Setup(nameof(Composition))
             .Bind<IDependency>("Abc", default).To<AbcDependency>()
             .Bind<IDependency>("Xyz")
                 .As(Lifetime.Singleton)

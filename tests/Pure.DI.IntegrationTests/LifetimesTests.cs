@@ -20,7 +20,7 @@ namespace Sample
     {
         private static void SetupComposition()
         {
-            DI.Setup("Composition")
+            DI.Setup(nameof(Composition))
                 .Bind<IService>().As(Lifetime.Transient).To<Service>()               
                 .Root<IService>("Service");
         }
@@ -60,7 +60,7 @@ namespace Sample
            {
                private static void SetupComposition()
                {
-                   DI.Setup("Composition")
+                   DI.Setup(nameof(Composition))
                        .DefaultLifetime(Lifetime.Singleton)
                        .Bind<IService>().As(Lifetime.Transient).To<Service>()
                        .Root<IService>("Service");
@@ -101,7 +101,7 @@ namespace Sample
     {
         private static void SetupComposition()
         {
-            DI.Setup("Composition")
+            DI.Setup(nameof(Composition))
                 .Bind<IService>().To<Service>()               
                 .Root<IService>("Service");
         }
@@ -163,7 +163,7 @@ namespace Sample
     {
         private static void SetupComposition()
         {
-            DI.Setup("Composition")
+            DI.Setup(nameof(Composition))
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
                 .Bind<IService>().To<Service>()
                 .Root<IDependency>("Dependency")
@@ -228,7 +228,7 @@ namespace Sample
     {
         private static void SetupComposition()
         {
-            DI.Setup("Composition")
+            DI.Setup(nameof(Composition))
                 .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
                 .Bind<IService>().To<Service>()               
                 .Root<IService>("Service");
@@ -331,7 +331,7 @@ namespace Sample
         private static void SetupComposition()
         {
             // FormatCode = On
-            DI.Setup("Composition")
+            DI.Setup(nameof(Composition))
                 .Bind<IDependency1>().To<Dependency1>()
                 .Bind<IDependency2>().As(Lifetime.Singleton).To<Dependency2>()
                 .Bind<IDependency3>().As(Lifetime.Singleton).To<Dependency3>()
@@ -454,7 +454,7 @@ namespace Sample
     {
         private static void SetupComposition()
         {
-            DI.Setup("Composition")
+            DI.Setup(nameof(Composition))
                 .Bind<IDependency1>().To<Dependency1>()
                 .Bind<IDependency2>().As(Lifetime.Singleton).To<Dependency2>()
                 .Bind<IDependency3>().As(Lifetime.Singleton).To<Dependency3>()
@@ -498,7 +498,7 @@ namespace Sample
     {
         private static void SetupComposition()
         {
-            DI.Setup("Composition")
+            DI.Setup(nameof(Composition))
                 .Bind<IService>().As(Lifetime.Singleton).To<Service>()               
                 .Root<IService>("Service");
         }
@@ -577,7 +577,7 @@ namespace Sample
     {
         private static void SetupComposition()
         {
-            DI.Setup("Composition")
+            DI.Setup(nameof(Composition))
                 .Bind<IDependency1>().As(Lifetime.PerResolve).To<Dependency1>()
                 .Bind<IDependency2>().To<Dependency2>()
                 .Bind<IService>().To<Service>()               
@@ -668,7 +668,7 @@ namespace Sample
            {
                private static void SetupComposition()
                {
-                   DI.Setup("Composition")
+                   DI.Setup(nameof(Composition))
                        .Hint(Hint.OnNewInstance, "On")
                        .Bind<IDependency1>().As(Lifetime.PerResolve).To<Dependency1>()
                        .Bind<IDependency2>().To<Dependency2>()
@@ -748,7 +748,7 @@ namespace Sample
     {
         private static void SetupComposition()
         {
-            DI.Setup("Composition")
+            DI.Setup(nameof(Composition))
                 .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>()
                 .Bind<ISin>().As(Lifetime.Singleton).To<Sin>()
                 .Bind<IService>().To<Service>()               

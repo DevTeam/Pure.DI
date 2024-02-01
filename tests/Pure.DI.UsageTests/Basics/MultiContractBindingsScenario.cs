@@ -36,7 +36,7 @@ public class Scenario
     public void Run()
     {
 // {            
-        DI.Setup("Composition")
+        DI.Setup(nameof(Composition))
             .Bind<IDependency, IAdvancedDependency>().To<Dependency>()
             // .Bind<IDependency>().Bind<IAdvancedDependency>().To<Dependency>()
             // is also allowed

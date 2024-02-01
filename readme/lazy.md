@@ -17,7 +17,7 @@ class Service(Lazy<IDependency> dependency) : IService
     public IDependency Dependency => dependency.Value;
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>().Root<IService>("Root");
 

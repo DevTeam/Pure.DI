@@ -57,7 +57,7 @@ public class Scenario
     public void Run()
     {
 // {            
-        DI.Setup("PersonComposition")
+        DI.Setup(nameof(PersonComposition))
             .TagAttribute<MyTagAttribute>()
             .OrdinalAttribute<MyOrdinalAttribute>()
             .TypeAttribute<MyTypeAttribute>()

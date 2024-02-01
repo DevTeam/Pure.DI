@@ -29,7 +29,7 @@ class Service(string serviceName, IDependency dependency): IService
     public void Initialize() => IsInitialized = true;
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IDependency>().To<Dependency>()
     .Arg<string>("serviceName")
     .Bind<IService>()

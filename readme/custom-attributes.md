@@ -39,7 +39,7 @@ class Person([MyTag("NikName")] string name) : IPerson
     public override string ToString() => $"{Id} {name}";
 }
 
-DI.Setup("PersonComposition")
+DI.Setup(nameof(PersonComposition))
     .TagAttribute<MyTagAttribute>()
     .OrdinalAttribute<MyOrdinalAttribute>()
     .TypeAttribute<MyTypeAttribute>()

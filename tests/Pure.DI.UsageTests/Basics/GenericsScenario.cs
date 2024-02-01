@@ -53,7 +53,7 @@ public class Scenario
     public void Run()
     {
 // {            
-        DI.Setup("Composition")
+        DI.Setup(nameof(Composition))
             .Bind<IDependency<TT>>().To<Dependency<TT>>()
             .Bind<IService>().To<Service>().Root<IService>("Root");
 

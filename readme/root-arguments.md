@@ -36,7 +36,7 @@ class Service(
     public IDependency Dependency { get; } = dependency;
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Hint(Hint.Resolve, "Off")
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>().Root<IService>("CreateService")

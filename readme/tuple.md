@@ -21,7 +21,7 @@ class Service((Point Point, IDependency Dependency) tuple) : IService
     public IDependency Dependency { get; } = tuple.Dependency;
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IDependency>().To<Dependency>()
     .Bind<Point>().To(_ => new Point(7, 9))
     .Bind<IService>().To<Service>().Root<IService>("Root");

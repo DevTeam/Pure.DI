@@ -48,7 +48,7 @@ public class Scenario
     public void Run()
     {
 // {            
-        DI.Setup("Composition")
+        DI.Setup(nameof(Composition))
             .Bind<IService>().To<Service>().Root<IService>("Root");
 
         var composition = new Composition();

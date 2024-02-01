@@ -59,7 +59,7 @@ public class Scenario
     public void Run()
     {
 // {            
-        DI.Setup("Composition")
+        DI.Setup(nameof(Composition))
             .Bind<IDependency<TT>>().To<Dependency<TT>>()
             .Bind<IDependency<TTS>>("value type").To<DependencyStruct<TTS>>()
             .Bind<IService<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()

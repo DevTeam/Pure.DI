@@ -41,7 +41,7 @@ internal partial class Composition
         _log.Add(typeof(T).Name);
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Hint(OnNewInstance, "On")
     .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
     .Bind<IService>().To<Service>().Root<IService>("Root");

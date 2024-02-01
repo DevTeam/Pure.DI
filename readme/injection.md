@@ -19,7 +19,7 @@ class Service(IDependency dependency) : IService
     public IDependency Dependency { get; } = dependency;
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>()
         .To(ctx =>

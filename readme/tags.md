@@ -35,7 +35,7 @@ class Service(
     public IDependency Dependency3 { get; } = dependency3;
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IDependency>("Abc", default).To<AbcDependency>()
     .Bind<IDependency>("Xyz")
         .As(Lifetime.Singleton)

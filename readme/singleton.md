@@ -26,7 +26,7 @@ class Service(
     public IDependency Dependency2 { get; } = dependency2;
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
     .Bind<IService>().To<Service>().Root<IService>("Root");
 

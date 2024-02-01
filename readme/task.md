@@ -36,7 +36,7 @@ class Service(Task<IDependency> dependencyTask) : IService
     }
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Hint(Hint.Resolve, "Off")
     // Overrides TaskScheduler.Default if necessary
     .Bind<TaskScheduler>().To(_ => TaskScheduler.Current)

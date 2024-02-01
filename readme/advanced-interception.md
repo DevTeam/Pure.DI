@@ -92,7 +92,7 @@ internal partial class Composition: IInterceptor
 }
 
 // OnDependencyInjection = On
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
 

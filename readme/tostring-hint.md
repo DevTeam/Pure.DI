@@ -14,7 +14,7 @@ interface IService;
 
 class Service(IDependency dependency) : IService;
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Hint(Hint.ToString, "On")
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>().Root<IService>("MyService");

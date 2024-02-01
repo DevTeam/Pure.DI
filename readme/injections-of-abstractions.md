@@ -24,7 +24,7 @@ class Program(IService service)
     public void Run() => service.DoSomething();
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     // Binding abstractions to their implementations:
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>()

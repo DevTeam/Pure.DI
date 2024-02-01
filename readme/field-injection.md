@@ -22,7 +22,7 @@ class Service : IService
     public IDependency? Dependency => DependencyVal;
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>().Root<IService>("Root");
 

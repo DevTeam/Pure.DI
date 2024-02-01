@@ -18,7 +18,7 @@ class Service(
     IAdvancedDependency advancedDependency)
     : IService;
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IDependency, IAdvancedDependency>().To<Dependency>()
     // .Bind<IDependency>().Bind<IAdvancedDependency>().To<Dependency>()
     // is also allowed

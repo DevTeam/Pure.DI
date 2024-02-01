@@ -17,7 +17,7 @@ class Service(WeakReference<IDependency> dependency) : IService
             : default;
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>().Root<IService>("Root");
 

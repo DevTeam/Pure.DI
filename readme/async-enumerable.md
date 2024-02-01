@@ -30,7 +30,7 @@ class Service(IAsyncEnumerable<IDependency> dependencies) : IService
     }
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IDependency>().To<AbcDependency>()
     .Bind<IDependency>(2).To<XyzDependency>()
     .Bind<IService>().To<Service>().Root<IService>("Root");

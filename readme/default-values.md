@@ -21,7 +21,7 @@ class Service(string name = "My Service") : IService
     public required IDependency Dependency { get; init; } = new Dependency();
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>().Root<IService>("Root");
 

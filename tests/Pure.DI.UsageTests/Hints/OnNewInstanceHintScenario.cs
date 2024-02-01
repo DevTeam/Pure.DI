@@ -64,7 +64,7 @@ public class Scenario
     public void Run()
     {
 // {
-        DI.Setup("Composition")
+        DI.Setup(nameof(Composition))
             .Hint(OnNewInstance, "On")
             .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
             .Bind<IService>().To<Service>().Root<IService>("Root");

@@ -15,7 +15,7 @@ class Service(IDependency dependency) : IService;
 
 class OtherService : IService;
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IService>().To<Service>()
         // Specifies to create a regular public composition root
         // of type "IService" with the name "MyRoot":

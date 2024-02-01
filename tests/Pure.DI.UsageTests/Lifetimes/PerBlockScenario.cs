@@ -46,7 +46,7 @@ public class Scenario
     public void Run()
     {
 // {            
-        DI.Setup("Composition")
+        DI.Setup(nameof(Composition))
             .Bind<IDependency>().As(Lifetime.PerBlock).To<Dependency>()
             .Bind<IService>().To<Service>().Root<IService>("Root");
 

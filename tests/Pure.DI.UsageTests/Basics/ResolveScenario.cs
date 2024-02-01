@@ -34,7 +34,7 @@ public class Scenario
     public void Run()
     {
 // {            
-        DI.Setup("Composition")
+        DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>()
                 // Specifies to create a regular public composition root
                 // of type "IDependency" with the name "DependencySingleton":

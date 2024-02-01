@@ -52,7 +52,7 @@ public class Scenario
     public async Task Run()
     {
 // {            
-        DI.Setup("Composition")
+        DI.Setup(nameof(Composition))
             .Hint(Hint.Resolve, "Off")
             // Overrides TaskScheduler.Default if necessary
             .Bind<TaskScheduler>().To(_ => TaskScheduler.Current)

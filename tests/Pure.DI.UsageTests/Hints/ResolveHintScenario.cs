@@ -36,7 +36,7 @@ public class Scenario
     public void Run()
     {
 // {            
-        DI.Setup("Composition")
+        DI.Setup(nameof(Composition))
             .Hint(Resolve, "Off")
             .Bind<IDependency>().To<Dependency>().Root<IDependency>("DependencyRoot")
             .Bind<IService>().To<Service>().Root<IService>("Root");

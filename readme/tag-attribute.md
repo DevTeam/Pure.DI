@@ -30,7 +30,7 @@ class Service(
     public IDependency Dependency2 { get; } = dependency2;
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IDependency>("Abc").To<AbcDependency>()
     .Bind<IDependency>("Xyz").To<XyzDependency>()
     .Bind<IService>().To<Service>().Root<IService>("Root");

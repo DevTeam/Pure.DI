@@ -27,7 +27,7 @@ class Service(ValueTask<IDependency> dependencyTask) : IService
     }
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>().Root<IService>("Root");
 

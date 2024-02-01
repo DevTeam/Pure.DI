@@ -43,7 +43,7 @@ public class Scenario
     {
         // Resolve = Off
 // {            
-        DI.Setup("Composition")
+        DI.Setup(nameof(Composition))
             // Binding abstractions to their implementations:
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()

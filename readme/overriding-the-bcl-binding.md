@@ -21,7 +21,7 @@ class Service(IDependency[] dependencies) : IService
     public IDependency[] Dependencies { get; } = dependencies;
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IDependency[]>().To(_ => new IDependency[]
     {
         new AbcDependency(),

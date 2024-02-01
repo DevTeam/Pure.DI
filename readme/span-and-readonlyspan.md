@@ -17,7 +17,7 @@ class Service(ReadOnlySpan<Dependency> dependencies) : IService
     public int Count { get; } = dependencies.Length;
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<Dependency>('a').To<Dependency>()
     .Bind<Dependency>('b').To<Dependency>()
     .Bind<Dependency>('c').To<Dependency>()

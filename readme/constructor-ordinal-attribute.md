@@ -27,7 +27,7 @@ class Service : IService
     public override string ToString() => _name;
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Arg<string>("serviceName")
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>().Root<IService>("Root");

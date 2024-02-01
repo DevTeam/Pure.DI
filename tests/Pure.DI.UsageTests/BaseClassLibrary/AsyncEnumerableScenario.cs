@@ -46,7 +46,7 @@ public class Scenario
     public async Task Run()
     {
 // {            
-        DI.Setup("Composition")
+        DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<AbcDependency>()
             .Bind<IDependency>(2).To<XyzDependency>()
             .Bind<IService>().To<Service>().Root<IService>("Root");

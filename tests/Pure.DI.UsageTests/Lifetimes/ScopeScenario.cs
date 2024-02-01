@@ -70,7 +70,7 @@ public class Scenario
     public void Run()
     {
 // {            
-        DI.Setup("Composition")
+        DI.Setup(nameof(Composition))
             // In a fact it is "scoped" singleton here
             .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
             .Bind<IService>().To<Service>().Root<IService>("Service")

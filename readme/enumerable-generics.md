@@ -20,7 +20,7 @@ class Service<T>(IEnumerable<IDependency<T>> dependencies) : IService<T>
         = dependencies.ToImmutableArray();
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IDependency<TT>>().To<AbcDependency<TT>>()
     .Bind<IDependency<TT>>("Xyz").To<XyzDependency<TT>>()
     .Bind<IService<TT>>().To<Service<TT>>()

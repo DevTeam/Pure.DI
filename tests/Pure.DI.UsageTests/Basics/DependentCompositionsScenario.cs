@@ -48,15 +48,15 @@ public class Scenario
             .Bind<IDependency>().To<Dependency>();
         
         // This setup generates code and can also be used as a dependency
-        DI.Setup("Composition")
+        DI.Setup(nameof(Composition))
             // Uses "BaseComposition" setup
             .DependsOn("BaseComposition")
             .Bind<IService>().To<Service>().Root<IService>("Root");
         
         // As in the previous case, this setup generates code and can also be used as a dependency
-        DI.Setup("OtherComposition")
+        DI.Setup(nameof(OtherComposition))
             // Uses "Composition" setup
-            .DependsOn("Composition")
+            .DependsOn(nameof(Composition))
             .Root<Program>("Program");
         
         var composition = new Composition();

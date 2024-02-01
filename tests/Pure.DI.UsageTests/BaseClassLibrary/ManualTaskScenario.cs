@@ -54,7 +54,7 @@ public class Scenario
     public async Task Run()
     {
 // {
-        DI.Setup("Composition")
+        DI.Setup(nameof(Composition))
             .Hint(Hint.Resolve, "Off")
             // Overrides the default binding that performs an auto-start of a task
             // when it is created. This binding will simply create the task.

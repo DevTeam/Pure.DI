@@ -41,7 +41,7 @@ class Person : IPerson
     }
 }
 
-DI.Setup("PersonComposition")
+DI.Setup(nameof(PersonComposition))
     .Arg<int>("personId")
     .Arg<string>("personName")
     .Arg<DateTime>("personBirthday")

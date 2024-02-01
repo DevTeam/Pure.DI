@@ -53,7 +53,7 @@ public class Scenario
     public void Run()
     {
 // {            
-        DI.Setup("Composition")
+        DI.Setup(nameof(Composition))
             .Bind<IService>().To<Service>()
                 // Specifies to create a regular public composition root
                 // of type "IService" with the name "MyRoot":

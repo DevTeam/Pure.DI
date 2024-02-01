@@ -31,7 +31,7 @@ class Service(IDependency dependency) : IService
     public IDependency Dependency { get; } = dependency;
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IDependency>().To(_ =>
     {
         var dependency = new Dependency(DateTimeOffset.Now);

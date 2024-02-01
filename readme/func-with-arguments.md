@@ -39,7 +39,7 @@ class Service : IService
     public ImmutableArray<IDependency> Dependencies { get; }
 }
 
-DI.Setup("Composition")
+DI.Setup(nameof(Composition))
     .Bind<IClock>().As(Lifetime.Singleton).To<Clock>()
     // Binds a dependency of type int
     // to the source code statement "dependencyId"

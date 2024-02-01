@@ -17,7 +17,7 @@ return;
 // Since this method is needed only at the compile time.
 [Conditional("DI")]
 static void Setup() =>
-    DI.Setup("Composition")
+    DI.Setup(nameof(Composition))
         // Models a random subatomic event that may or may not occur
         .Bind<Random>().As(Singleton).To<Random>()
         // Represents a quantum superposition of 2 states: Alive or Dead
