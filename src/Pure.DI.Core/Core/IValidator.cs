@@ -1,6 +1,6 @@
 namespace Pure.DI.Core;
 
-internal interface IValidator<T>
+internal interface IValidator<in T>
 {
-    bool Validate(in T data);
+    bool Validate(T data);
 }

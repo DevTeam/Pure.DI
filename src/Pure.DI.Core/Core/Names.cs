@@ -11,7 +11,7 @@ internal static class Names
     public const string ApiNamespace = $"global::{GeneratorName}.";
     public const string SystemNamespace = $"global::{nameof(System)}.";
     
-    //
+    // Attributes
     public const string MethodImplAttribute = $"{SystemNamespace}Runtime.CompilerServices.MethodImpl";
     public const string MethodImplOptions = $"{SystemNamespace}Runtime.CompilerServices.MethodImplOptions";
     

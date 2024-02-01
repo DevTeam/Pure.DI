@@ -2,8 +2,9 @@ namespace Pure.DI.Core;
 
 internal static class SettingsExtension
 {
-    public static SettingState GetHint(this IHints hints, Hint hint, SettingState defaultValue = SettingState.Off) =>
-        hints.TryGetValue(hint, out var valueStr) && Enum.TryParse<SettingState>(valueStr, true, out var value)
+    public static T GetHint<T>(this IHints hints, Hint hint, T defaultValue = default) 
+        where T : struct =>
+        hints.TryGetValue(hint, out var valueStr) && Enum.TryParse<T>(valueStr, true, out var value)
             ? value
             : defaultValue;
     
