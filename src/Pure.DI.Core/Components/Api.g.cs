@@ -658,7 +658,27 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         /// <seealso cref="IConfiguration.Hint"/>
-        FormatCode
+        FormatCode,
+        
+        /// <summary>
+        /// <c>Error</c> or <c>Warning</c> or <c>Info</c> or <c>Hidden</c>. Indicates the severity level of the situation when, in the binding, an implementation does not implement a contract. <c>Error</c> by default.
+        /// <example>
+        /// For example:
+        /// <code>
+        /// // FormatCode = On
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.SeverityOfNotImplementedContracts, "On")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        SeverityOfNotImplementedContract
     }
 
     /// <summary>

@@ -255,35 +255,36 @@ DI.Setup("Composition")
 
 Both approaches can be used in combination with each other.
 
-| Hint                                                                                                                               | Values             | Default   | C# version |
-|------------------------------------------------------------------------------------------------------------------------------------|--------------------|-----------|------------|
-| [Resolve](#resolve-hint)                                                                                                           | _On_ or _Off_      | _On_      |            |
-| [OnNewInstance](#onnewinstance-hint)                                                                                               | _On_ or _Off_      | _Off_     | 9.0        |
-| [OnNewInstanceImplementationTypeNameRegularExpression](#onnewinstanceimplementationtypenameregularexpression-hint)                 | Regular expression | .+        |            |
-| [OnNewInstanceTagRegularExpression](#onnewinstancetagregularexpression-hint)                                                       | Regular expression | .+        |            |
-| [OnNewInstanceLifetimeRegularExpression](#onnewinstancelifetimeregularexpression-hint)                                             | Regular expression | .+        |            |
-| [OnDependencyInjection](#ondependencyinjection-hint)                                                                               | _On_ or _Off_      | _Off_     | 9.0        | 
-| [OnDependencyInjectionImplementationTypeNameRegularExpression](#OnDependencyInjectionImplementationTypeNameRegularExpression-Hint) | Regular expression | .+        |            |
-| [OnDependencyInjectionContractTypeNameRegularExpression](#ondependencyinjectioncontracttypenameregularexpression-hint)             | Regular expression | .+        |            |
-| [OnDependencyInjectionTagRegularExpression](#ondependencyinjectiontagregularexpression-hint)                                       | Regular expression | .+        |            |
-| [OnDependencyInjectionLifetimeRegularExpression](#ondependencyinjectionlifetimeregularexpression-hint)                             | Regular expression | .+        |            |
-| [OnCannotResolve](#oncannotresolve-hint)                                                                                           | _On_ or _Off_      | _Off_     | 9.0        |
-| [OnCannotResolveContractTypeNameRegularExpression](#oncannotresolvecontracttypenameregularexpression-hint)                         | Regular expression | .+        |            |
-| [OnCannotResolveTagRegularExpression](#oncannotresolvetagregularexpression-hint)                                                   | Regular expression | .+        |            |
-| [OnCannotResolveLifetimeRegularExpression](#oncannotresolvelifetimeregularexpression-hint)                                         | Regular expression | .+        |            |
-| [OnNewRoot](#onnewroot-hint)                                                                                                       | _On_ or _Off_      | _Off_     |            |
-| [ToString](#tostring-hint)                                                                                                         | _On_ or _Off_      | _Off_     |            |
-| [ThreadSafe](#threadsafe-hint)                                                                                                     | _On_ or _Off_      | _On_      |            |
-| [ResolveMethodModifiers](#resolvemethodmodifiers-hint)                                                                             | Method modifier    | _public_  |            |
-| [ResolveMethodName](#resolvemethodname-hint)                                                                                       | Method name        | _Resolve_ |            |
-| [ResolveByTagMethodModifiers](#resolvebytagmethodmodifiers-hint)                                                                   | Method modifier    | _public_  |            |
-| [ResolveByTagMethodName](#resolvebytagmethodname-hint)                                                                             | Method name        | _Resolve_ |            |
-| [ObjectResolveMethodModifiers](#objectresolvemethodmodifiers-hint)                                                                 | Method modifier    | _public_  |            |
-| [ObjectResolveMethodName](#objectresolvemethodname-hint)                                                                           | Method name        | _Resolve_ |            |
-| [ObjectResolveByTagMethodModifiers](#objectresolvebytagmethodmodifiers-hint)                                                       | Method modifier    | _public_  |            |
-| [ObjectResolveByTagMethodName](#objectresolvebytagmethodname-hint)                                                                 | Method name        | _Resolve_ |            |
-| [DisposeMethodModifiers](#disposemethodmodifiers-hint)                                                                             | Method modifier    | _public_  |            |
-| [FormatCode](#formatcode-hint)                                                                                                     |  _On_ or _Off_     | _Off_     |            |
+| Hint                                                                                                                               | Values                                     | Default   | C# version |
+|------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|-----------|------------|
+| [Resolve](#resolve-hint)                                                                                                           | _On_ or _Off_                              | _On_      |            |
+| [OnNewInstance](#onnewinstance-hint)                                                                                               | _On_ or _Off_                              | _Off_     | 9.0        |
+| [OnNewInstanceImplementationTypeNameRegularExpression](#onnewinstanceimplementationtypenameregularexpression-hint)                 | Regular expression                         | .+        |            |
+| [OnNewInstanceTagRegularExpression](#onnewinstancetagregularexpression-hint)                                                       | Regular expression                         | .+        |            |
+| [OnNewInstanceLifetimeRegularExpression](#onnewinstancelifetimeregularexpression-hint)                                             | Regular expression                         | .+        |            |
+| [OnDependencyInjection](#ondependencyinjection-hint)                                                                               | _On_ or _Off_                              | _Off_     | 9.0        | 
+| [OnDependencyInjectionImplementationTypeNameRegularExpression](#OnDependencyInjectionImplementationTypeNameRegularExpression-Hint) | Regular expression                         | .+        |            |
+| [OnDependencyInjectionContractTypeNameRegularExpression](#ondependencyinjectioncontracttypenameregularexpression-hint)             | Regular expression                         | .+        |            |
+| [OnDependencyInjectionTagRegularExpression](#ondependencyinjectiontagregularexpression-hint)                                       | Regular expression                         | .+        |            |
+| [OnDependencyInjectionLifetimeRegularExpression](#ondependencyinjectionlifetimeregularexpression-hint)                             | Regular expression                         | .+        |            |
+| [OnCannotResolve](#oncannotresolve-hint)                                                                                           | _On_ or _Off_                              | _Off_     | 9.0        |
+| [OnCannotResolveContractTypeNameRegularExpression](#oncannotresolvecontracttypenameregularexpression-hint)                         | Regular expression                         | .+        |            |
+| [OnCannotResolveTagRegularExpression](#oncannotresolvetagregularexpression-hint)                                                   | Regular expression                         | .+        |            |
+| [OnCannotResolveLifetimeRegularExpression](#oncannotresolvelifetimeregularexpression-hint)                                         | Regular expression                         | .+        |            |
+| [OnNewRoot](#onnewroot-hint)                                                                                                       | _On_ or _Off_                              | _Off_     |            |
+| [ToString](#tostring-hint)                                                                                                         | _On_ or _Off_                              | _Off_     |            |
+| [ThreadSafe](#threadsafe-hint)                                                                                                     | _On_ or _Off_                              | _On_      |            |
+| [ResolveMethodModifiers](#resolvemethodmodifiers-hint)                                                                             | Method modifier                            | _public_  |            |
+| [ResolveMethodName](#resolvemethodname-hint)                                                                                       | Method name                                | _Resolve_ |            |
+| [ResolveByTagMethodModifiers](#resolvebytagmethodmodifiers-hint)                                                                   | Method modifier                            | _public_  |            |
+| [ResolveByTagMethodName](#resolvebytagmethodname-hint)                                                                             | Method name                                | _Resolve_ |            |
+| [ObjectResolveMethodModifiers](#objectresolvemethodmodifiers-hint)                                                                 | Method modifier                            | _public_  |            |
+| [ObjectResolveMethodName](#objectresolvemethodname-hint)                                                                           | Method name                                | _Resolve_ |            |
+| [ObjectResolveByTagMethodModifiers](#objectresolvebytagmethodmodifiers-hint)                                                       | Method modifier                            | _public_  |            |
+| [ObjectResolveByTagMethodName](#objectresolvebytagmethodname-hint)                                                                 | Method name                                | _Resolve_ |            |
+| [DisposeMethodModifiers](#disposemethodmodifiers-hint)                                                                             | Method modifier                            | _public_  |            |
+| [FormatCode](#formatcode-hint)                                                                                                     | _On_ or _Off_                              | _Off_     |            |
+| [SeverityOfNotImplementedContract Hint](#severityofnotimplementedcontract-hint)                                                    | _Error_ or _Warning_ or _Info_ or _Hidden_ | _Error_   |            |
 
 The list of hints will be gradually expanded to meet the needs and desires for fine-tuning code generation. Please feel free to add your ideas.
 
@@ -451,6 +452,15 @@ Overrides the modifiers of the `public void Dispose()` method.
 ### FormatCode Hint
 
 Specifies whether the generated code should be formatted. This option consumes a lot of CPU resources. This hint may be useful when studying the generated code or, for example, when making presentations.
+
+### SeverityOfNotImplementedContract Hint
+
+Indicates the severity level of the situation when, in the binding, an implementation does not implement a contract. Possible values:
+
+- _"Error"_, it is default value.
+- _"Warning"_ - something suspicious but allowed.
+- _"Info"_ - information that does not indicate a problem.
+- _"Hidden"_ - what's not a problem.
 
 </details>
 

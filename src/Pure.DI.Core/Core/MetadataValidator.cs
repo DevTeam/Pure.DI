@@ -1,10 +1,13 @@
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable InvertIf
 namespace Pure.DI.Core;
 
-internal sealed class MetadataValidator(ILogger<MetadataValidator> logger) : IValidator<MdSetup>
+internal sealed class MetadataValidator(
+    ILogger<MetadataValidator> logger)
+    : IValidator<MdSetup>
 {
-    public bool Validate(in MdSetup setup)
+    public bool Validate(MdSetup setup)
     {
         if (setup.Kind == CompositionKind.Public && !setup.Roots.Any())
         {
@@ -14,7 +17,7 @@ internal sealed class MetadataValidator(ILogger<MetadataValidator> logger) : IVa
         var isValid = setup.Bindings
             .Aggregate(
                 true, 
-                (current, binding) => current & Validate(binding));
+                (current, binding) => current & Validate(setup, binding));
 
         if (!isValid)
         {
@@ -68,7 +71,7 @@ internal sealed class MetadataValidator(ILogger<MetadataValidator> logger) : IVa
         || SyntaxFacts.IsValidIdentifier(identifier);
 
     [SuppressMessage("MicrosoftCodeAnalysisCorrectness", "RS1024:Symbols should be compared for equality")]
-    private bool Validate(in MdBinding binding)
+    private bool Validate(MdSetup setup, in MdBinding binding)
     {
         var isValid = true;
         ITypeSymbol? implementationType = default;
@@ -103,24 +106,43 @@ internal sealed class MetadataValidator(ILogger<MetadataValidator> logger) : IVa
                 }
             }
         }
-
+        
         if (implementationType == default || implementationType is IErrorTypeSymbol || semanticModel == default)
         {
             logger.CompileError("Invalid binding due to construction failure.", location, LogId.ErrorInvalidMetadata);
             return false;
         }
-        
-        var supportedContracts = new HashSet<ITypeSymbol>(GetBaseTypes(implementationType), SymbolEqualityComparer.Default) { implementationType };
-        var notSupportedContracts = binding.Contracts
-            .Where(contract => !supportedContracts.Contains(contract.ContractType))
-            .Select(i => i.ContractType)
-            .ToArray();
 
-        // ReSharper disable once InvertIf
-        if (notSupportedContracts.Any())
+        var severityOfNotImplementedContract = setup.Hints.GetHint(Hint.SeverityOfNotImplementedContract, DiagnosticSeverity.Error);
+        if (severityOfNotImplementedContract > DiagnosticSeverity.Hidden)
         {
-            logger.CompileError($"{implementationType} does not implement {string.Join(", ", notSupportedContracts.Select(i => i.ToString()))}.", location, LogId.ErrorInvalidMetadata);
-            isValid = false;
+            var supportedContracts = new HashSet<ITypeSymbol>(GetBaseTypes(implementationType), SymbolEqualityComparer.Default) { implementationType };
+            var notSupportedContracts = binding.Contracts
+                .Where(contract => !supportedContracts.Contains(contract.ContractType))
+                .Select(i => i.ContractType)
+                .ToArray();
+
+            // ReSharper disable once InvertIf
+            if (notSupportedContracts.Any())
+            {
+                var message = $"{implementationType} does not implement {string.Join(", ", notSupportedContracts.Select(i => i.ToString()))}.";
+                // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+                switch (severityOfNotImplementedContract)
+                {
+                    case DiagnosticSeverity.Error:
+                        logger.CompileError(message, location, LogId.ErrorInvalidMetadata);
+                        isValid = false;
+                        break;
+
+                    case DiagnosticSeverity.Warning:
+                        logger.CompileWarning(message, location, LogId.WarningMetadataDefect);
+                        break;
+
+                    case DiagnosticSeverity.Info:
+                        logger.CompileInfo(message, location, LogId.InfoMetadataDefect);
+                        break;
+                }
+            }
         }
 
         return isValid;

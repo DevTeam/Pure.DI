@@ -98,7 +98,7 @@ internal sealed class RootMethodsBuilder(IBuildTools buildTools)
 
             try
             {
-                if (composition.Source.Source.Hints.GetHint(Hint.FormatCode) == SettingState.On)
+                if (composition.Source.Source.Hints.GetHint<SettingState>(Hint.FormatCode) == SettingState.On)
                 {
                     var codeText = string.Join(Environment.NewLine, root.Lines);
                     var syntaxTree = CSharpSyntaxTree.ParseText(codeText);

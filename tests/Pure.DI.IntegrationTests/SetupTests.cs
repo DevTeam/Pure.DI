@@ -1,6 +1,7 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
 using Core;
+using Core.Models;
 
 public class SetupTests
 {
@@ -1307,5 +1308,64 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
+    }
+    
+    [Theory]
+    [InlineData(DiagnosticSeverity.Error,  LogId.ErrorInvalidMetadata)]
+    [InlineData(DiagnosticSeverity.Warning,  LogId.WarningMetadataDefect)]
+    [InlineData(DiagnosticSeverity.Info,  LogId.InfoMetadataDefect)]
+    [InlineData(DiagnosticSeverity.Hidden,  "")]
+    internal async Task ShouldReportWhenContractWasNotImplemented(DiagnosticSeverity severity, string logId)
+    {
+        // Given
+
+        // When
+        var result = await """
+       using System;
+       using Pure.DI;
+
+       namespace Sample
+       {
+            interface IService
+            {
+            }
+
+            class Service 
+            {
+            }
+       
+            static class Setup
+            {
+               private static void SetupComposition()
+               {
+                   DI.Setup("Composition")
+                       .Hint(Hint.SeverityOfNotImplementedContract, "#severity#")
+                       .Bind<IService>().To<Service>()
+                       .Root<Service>("MyRoot");
+               }
+            }
+
+            public class Program
+            {
+               public static void Main()
+               {
+                   var composition = new Composition();
+               }
+            }
+       }
+       """.Replace("#severity#", severity.ToString()).RunAsync();
+
+        // Then
+        result.Success.ShouldBe(severity <= DiagnosticSeverity.Info , result);
+        if (severity != DiagnosticSeverity.Hidden)
+        {
+            result.Logs
+                .Count(i => i.Severity == severity && i.Id == logId && i.Message.Contains("Sample.Service does not implement Sample.IService."))
+                .ShouldBe(1);
+        }
+        else
+        {
+            result.Logs.ShouldBeEmpty();
+        }
     }
 }

@@ -6,7 +6,7 @@ internal sealed class DependencyGraphValidator(
     CancellationToken cancellationToken)
     : IValidator<DependencyGraph>
 {
-    public bool Validate(in DependencyGraph dependencyGraph)
+    public bool Validate(DependencyGraph dependencyGraph)
     {
         var graph = dependencyGraph.Graph;
         if (dependencyGraph.IsResolved)

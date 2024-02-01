@@ -274,7 +274,7 @@ internal sealed class DependencyGraphBuilder(
         IDictionary<Injection, DependencyNode> map,
         ISet<ProcessingNode> processed)
     {
-        if (mdSetup.Hints.GetHint(Hint.OnCannotResolve) == SettingState.On
+        if (mdSetup.Hints.GetHint<SettingState>(Hint.OnCannotResolve) == SettingState.On
             && filter.IsMeetRegularExpression(
                 mdSetup,
                 (Hint.OnCannotResolveContractTypeNameRegularExpression, unresolvedInjection.Type.ToString()),

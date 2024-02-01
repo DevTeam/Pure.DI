@@ -6,7 +6,7 @@ internal sealed class ToStringMethodBuilder(IBuilder<CompositionCode, LinesBuild
 {
     public CompositionCode Build(CompositionCode composition)
     {
-        if (composition.Source.Source.Hints.GetHint(Hint.ToString) != SettingState.On)
+        if (composition.Source.Source.Hints.GetHint<SettingState>(Hint.ToString) != SettingState.On)
         {
             return composition;
         }

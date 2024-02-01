@@ -18,7 +18,7 @@ internal sealed class StaticConstructorBuilder(IBuilder<ImmutableArray<Root>, IE
         }
         
         var membersCounter = 0;
-        var hasOnNewRoot = composition.Source.Source.Hints.GetHint(Hint.OnNewRoot) == SettingState.On;
+        var hasOnNewRoot = composition.Source.Source.Hints.GetHint<SettingState>(Hint.OnNewRoot) == SettingState.On;
         // ReSharper disable once InvertIf
         if (hasOnNewRoot && composition.Source.Source.Hints.GetHint(Hint.OnNewRootPartial, SettingState.On) == SettingState.On)
         {

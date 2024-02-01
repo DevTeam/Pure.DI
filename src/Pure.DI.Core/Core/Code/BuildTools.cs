@@ -16,7 +16,7 @@ internal class BuildTools(IFilter filter) : IBuildTools
     
     public string OnInjected(BuildContext ctx, Variable variable)
     {
-        if (ctx.DependencyGraph.Source.Hints.GetHint(Hint.OnDependencyInjection) != SettingState.On)
+        if (ctx.DependencyGraph.Source.Hints.GetHint<SettingState>(Hint.OnDependencyInjection) != SettingState.On)
         {
             return variable.VariableCode;
         }
@@ -42,7 +42,7 @@ internal class BuildTools(IFilter filter) : IBuildTools
             return Array.Empty<Line>();
         }
 
-        if (ctx.DependencyGraph.Source.Hints.GetHint(Hint.OnNewInstance) != SettingState.On)
+        if (ctx.DependencyGraph.Source.Hints.GetHint<SettingState>(Hint.OnNewInstance) != SettingState.On)
         {
             return Array.Empty<Line>();
         }
