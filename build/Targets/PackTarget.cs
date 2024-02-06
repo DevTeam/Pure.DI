@@ -13,14 +13,14 @@ internal class PackTarget(
     [Tag(typeof(CompatibilityCheckTarget))] ITarget<BuildResult> compatibilityCheckTarget)
     : IInitializable, ITarget<BuildResult>
 {
-    public ValueTask InitializeAsync() => commands.Register(
+    public Task InitializeAsync() => commands.Register(
         this,
         "Creates NuGet packages",
         "pack",
         "p");
 
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
-    public async ValueTask<BuildResult> RunAsync(CancellationToken cancellationToken)
+    public async Task<BuildResult> RunAsync(CancellationToken cancellationToken)
     {
         Info("Packing");
         var buildResult = await compatibilityCheckTarget.RunAsync(cancellationToken);

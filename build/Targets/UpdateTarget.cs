@@ -15,14 +15,14 @@ internal class UpdateTarget(
 {
     private const string VersionPrefix = "PUREDI_API_V";
 
-    public ValueTask InitializeAsync() => commands.Register(
+    public Task InitializeAsync() => commands.Register(
         this,
         "Updates internal DI version",
         "update",
         "u");
     
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
-    public ValueTask<NuGetVersion> RunAsync(CancellationToken cancellationToken)
+    public Task<NuGetVersion> RunAsync(CancellationToken cancellationToken)
     {
         Info("Updating internal DI version");
         var solutionDirectory = paths.SolutionDirectory;
@@ -87,6 +87,6 @@ internal class UpdateTarget(
         new DotNetBuildServerShutdown().Run();
         new DotNetRestore().Run();
         new DotNetBuild().Run();
-        return ValueTask.FromResult(currentVersion);
+        return Task.FromResult(currentVersion);
     }
 }

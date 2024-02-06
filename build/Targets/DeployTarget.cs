@@ -7,13 +7,13 @@ internal class DeployTarget(
     [Tag(typeof(PackTarget))] ITarget<BuildResult> packTarget)
     : IInitializable, ITarget<int>
 {
-    public ValueTask InitializeAsync() => commands.Register(
+    public Task InitializeAsync() => commands.Register(
         this, 
         "Deploys packages",
         "deploy",
         "dp");
     
-    public async ValueTask<int> RunAsync(CancellationToken cancellationToken)
+    public async Task<int> RunAsync(CancellationToken cancellationToken)
     {
         Info("Deployment");
         if (!string.IsNullOrWhiteSpace(settings.NuGetKey))

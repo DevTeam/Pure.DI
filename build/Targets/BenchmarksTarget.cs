@@ -17,13 +17,13 @@ internal class BenchmarksTarget(
         "Enum"
     ];
 
-    public ValueTask InitializeAsync() => commands.Register(
+    public Task InitializeAsync() => commands.Register(
         this,
         "Runs benchmarks",
         "benchmarks",
         "mb");
 
-    public ValueTask<int> RunAsync(CancellationToken cancellationToken)
+    public Task<int> RunAsync(CancellationToken cancellationToken)
     {
         Info("Benchmarking");
         var solutionDirectory = paths.SolutionDirectory;
@@ -63,6 +63,6 @@ internal class BenchmarksTarget(
             artifactsWriter.PublishArtifact($"{reportFileNameHtml} => .");
         }
 
-        return ValueTask.FromResult(0);
+        return Task.FromResult(0);
     }
 }

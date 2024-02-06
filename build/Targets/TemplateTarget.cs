@@ -9,13 +9,13 @@ internal class TemplateTarget(
     ITeamCityArtifactsWriter artifactsWriter)
     : IInitializable, ITarget<string>
 {
-    public ValueTask InitializeAsync() => commands.Register(
+    public Task InitializeAsync() => commands.Register(
         this,
         "Creates and deploys templates",
         "template",
         "dt");
     
-    public ValueTask<string> RunAsync(CancellationToken cancellationToken)
+    public Task<string> RunAsync(CancellationToken cancellationToken)
     {
         Info("Creating templates");
         var templatePackageVersion = settings.VersionOverride ?? versions.GetNext(new NuGetRestoreSettings("Pure.DI.Templates"), settings.VersionRange);
@@ -49,6 +49,6 @@ internal class TemplateTarget(
             Warning($"The NuGet key was not specified, the package {targetPackage} will not be pushed.");
         }
 
-        return ValueTask.FromResult(targetPackage);
+        return Task.FromResult(targetPackage);
     }
 }

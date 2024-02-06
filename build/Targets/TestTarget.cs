@@ -16,14 +16,14 @@ internal class TestTarget(
     ISdk sdk)
     : IInitializable, ITarget<BuildResult>
 {
-    public ValueTask InitializeAsync() => commands.Register(
+    public Task InitializeAsync() => commands.Register(
         this,
         "Builds and tests packages",
         "test",
         "t");
     
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
-    public async ValueTask<BuildResult> RunAsync(CancellationToken cancellationToken)
+    public async Task<BuildResult> RunAsync(CancellationToken cancellationToken)
     {
         Info("Building");
         var packages = new List<string>();

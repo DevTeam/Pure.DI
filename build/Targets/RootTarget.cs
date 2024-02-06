@@ -8,7 +8,7 @@ internal class RootTarget(
     IPaths paths)
     : ITarget<int>
 {
-    public async ValueTask<int> RunAsync(CancellationToken cancellationToken)
+    public async Task<int> RunAsync(CancellationToken cancellationToken)
     {
         Directory.SetCurrentDirectory(paths.SolutionDirectory);
         await new DotNetBuildServerShutdown().RunAsync(cancellationToken: cancellationToken);

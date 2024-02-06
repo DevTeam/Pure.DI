@@ -39,13 +39,13 @@ internal class ReadmeTarget(
 
     private static readonly char[] Separator = ['='];
 
-    public ValueTask InitializeAsync() => commands.Register(
+    public Task InitializeAsync() => commands.Register(
         this,
         $"Generates {ReadmeHeaderFile}",
         "readme",
         "r");
     
-    public async ValueTask<int> RunAsync(CancellationToken cancellationToken)
+    public async Task<int> RunAsync(CancellationToken cancellationToken)
     {
         Info($"Generating {ReadmeFile}");
         var solutionDirectory = paths.SolutionDirectory;
@@ -55,7 +55,11 @@ internal class ReadmeTarget(
         await benchmarksTarget.RunAsync(cancellationToken);
         
         // Delete generated files
-        Directory.Delete(Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator"), true);
+        var generatedFiles = Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator");
+        if (Directory.Exists(generatedFiles))
+        {
+            Directory.Delete(generatedFiles, true);
+        }
 
         var usageTestsProjects = Path.Combine(solutionDirectory, "tests", "Pure.DI.UsageTests", "Pure.DI.UsageTests.csproj");
         var projects = new[]
@@ -66,7 +70,8 @@ internal class ReadmeTarget(
 
         foreach (var project in projects)
         {
-            (await new MSBuild().WithProject(project).WithTarget("clean;rebuild").BuildAsync(cancellationToken: cancellationToken)).Succeed();    
+            var buildResult = await new MSBuild().WithProject(project).WithTarget("clean;rebuild").BuildAsync(cancellationToken: cancellationToken);
+            buildResult.Succeed();    
         }
 
         new DotNetTest(usageTestsProjects).Run();

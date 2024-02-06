@@ -9,6 +9,7 @@ $h=A _scope_ scenario can be easily implemented with singleton instances and chi
 // ReSharper disable CheckNamespace
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable UnusedMember.Local
 namespace Pure.DI.UsageTests.Lifetimes.ScopeScenario;
 
 using Xunit;
@@ -33,35 +34,33 @@ interface IService
 
 class Service(IDependency dependency) : IService
 {
-    public IDependency Dependency { get; } = dependency;
+    public IDependency Dependency => dependency;
 }
 
-interface ISession: IDisposable
+interface ISession : IDisposable
 {
-    IService Service { get; }
+    IService SessionRoot { get; }
 }
 
-class Session : ISession
+class Session: Composition, ISession;
+
+class Program(Func<ISession> sessionFactory)
 {
-    private readonly Composition _composition;
-
-    // To make a composition type injectable, don't forget to create a partial class for composition
-    public Session(Composition composition)
-    {
-        // Creates child container that represents a "scope" for this session
-        _composition = new Composition(composition);
-
-        // You must be careful not to use the "Service" root before the session is created
-        // otherwise one instance will be shared across all sessions
-        Service = _composition.Service;
-    }
-
-    public IService Service { get; }
-    
-    public void Dispose() => _composition.Dispose();
+    public ISession CreateSession() => sessionFactory();
 }
 
-partial class Composition;
+partial class Composition
+{
+    private static void Setup() =>
+        DI.Setup(nameof(Composition))
+            // This is actually a singleton
+            // that will be created in the scope of the session instance.
+            .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+            .Bind<IService>().To<Service>()
+            .Bind<ISession>().To<Session>()
+            .Root<IService>("SessionRoot")
+            .Root<Program>("ProgramRoot");
+}
 // }
 
 public class Scenario
@@ -70,23 +69,29 @@ public class Scenario
     public void Run()
     {
 // {            
-        DI.Setup(nameof(Composition))
-            // In a fact it is "scoped" singleton here
-            .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-            .Bind<IService>().To<Service>().Root<IService>("Service")
-            .Bind<ISession>().To<Session>().Root<ISession>("Session");
+        var composition = new Composition();
+        var programRoot = composition.ProgramRoot;
+        
+        // Creates session #1
+        var session1 = programRoot.CreateSession();
+        var dependencyInSession1 = session1.SessionRoot.Dependency;
+        dependencyInSession1.ShouldBe(session1.SessionRoot.Dependency);
+        
+        // Creates session #2
+        using var session2 = programRoot.CreateSession();
+        var dependencyInSession2 = session2.SessionRoot.Dependency;
+        dependencyInSession1.ShouldNotBe(dependencyInSession2);
 
-        using var composition = new Composition();
-        
-        var session1 = composition.Session;
-        session1.Service.Dependency.ShouldBe(session1.Service.Dependency);
-        
-        using var session2 = composition.Session;
-        session1.Service.Dependency.ShouldNotBe(session2.Service.Dependency);
-        
+        // Disposes of session #1
         session1.Dispose();
-        session1.Service.Dependency.IsDisposed.ShouldBeTrue();
-        session2.Service.Dependency.IsDisposed.ShouldBeFalse();
+        dependencyInSession1.IsDisposed.ShouldBeTrue();
+        
+        // Session #2 is still not finalized
+        session2.SessionRoot.Dependency.IsDisposed.ShouldBeFalse();
+        
+        // Disposes of session #1
+        session2.Dispose();
+        dependencyInSession2.IsDisposed.ShouldBeTrue();
 // }
         new Composition().SaveClassDiagram();
     }

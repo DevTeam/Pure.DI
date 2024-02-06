@@ -16,14 +16,14 @@ internal class CompatibilityCheckTarget(
     [Tag(typeof(TestTarget))] ITarget<BuildResult> testTarget)
     : IInitializable, ITarget<BuildResult>
 {
-    public ValueTask InitializeAsync() => commands.Register(
+    public Task InitializeAsync() => commands.Register(
         this,
         "Compatibility checks",
         "check",
         "c");
 
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
-    public async ValueTask<BuildResult> RunAsync(CancellationToken cancellationToken)
+    public async Task<BuildResult> RunAsync(CancellationToken cancellationToken)
     {
         Info("Compatibility checks");
         var buildResult = await testTarget.RunAsync(cancellationToken);

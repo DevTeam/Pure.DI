@@ -5,8 +5,7 @@ namespace Build.Tools;
 [SuppressMessage("Reliability", "CA2012:Use ValueTasks correctly")]
 internal class Commands(RootCommand rootCommand) : ICommands
 {
-    public ValueTask Register<T>(
-        ITarget<T> target,
+    public Task Register<T>(ITarget<T> target,
         string description,
         string name,
         params string[] aliases)
@@ -19,6 +18,6 @@ internal class Commands(RootCommand rootCommand) : ICommands
         }
         
         rootCommand.AddCommand(command);
-        return ValueTask.CompletedTask;
+        return Task.CompletedTask;
     }
 }

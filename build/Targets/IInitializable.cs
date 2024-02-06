@@ -2,5 +2,5 @@
 
 internal interface IInitializable
 {
-    ValueTask InitializeAsync();
+    Task InitializeAsync();
 }
