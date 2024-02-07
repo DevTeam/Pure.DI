@@ -27,6 +27,7 @@ internal sealed class PrimaryConstructorBuilder: IBuilder<CompositionCode, Compo
         code.AppendLine("{");
         using (code.Indent())
         {
+            code.AppendLine($"{Names.LockFieldName} = new object();");
             foreach (var arg in classArgs)
             {
                 if (arg.InstanceType.IsValueType)
@@ -49,8 +50,11 @@ internal sealed class PrimaryConstructorBuilder: IBuilder<CompositionCode, Compo
             {
                 code.AppendLine($"{arg.VariableName} = {arg.Node.Arg?.Source.ArgName};");
             }
-            
-            code.AppendLine($"{Names.DisposablesFieldName} = new {Names.IDisposableInterfaceName}[{composition.DisposableSingletonsCount.ToString()}];");
+
+            if (composition.DisposableSingletonsCount > 0)
+            {
+                code.AppendLine($"{Names.DisposablesFieldName} = new {Names.IDisposableInterfaceName}[{composition.DisposableSingletonsCount.ToString()}];");
+            }
         }
 
         code.AppendLine("}");

@@ -8,7 +8,7 @@ internal enum WellknownTag
     RootMethodsBuilder,
     UsingDeclarationsBuilder,
     ArgFieldsBuilder,
-    SingletonFieldsBuilder,
+    FieldsBuilder,
     ChildConstructorBuilder,
     PrimaryConstructorBuilder,
     DefaultConstructorBuilder,

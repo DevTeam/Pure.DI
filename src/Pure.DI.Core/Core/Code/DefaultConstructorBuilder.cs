@@ -21,7 +21,11 @@ internal sealed class DefaultConstructorBuilder: IBuilder<CompositionCode, Compo
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine($"{Names.DisposablesFieldName} = new {Names.IDisposableInterfaceName}[{composition.DisposableSingletonsCount.ToString()}];");
+            code.AppendLine($"{Names.LockFieldName} = new object();");
+            if (composition.DisposableSingletonsCount > 0)
+            {
+                code.AppendLine($"{Names.DisposablesFieldName} = new {Names.IDisposableInterfaceName}[{composition.DisposableSingletonsCount.ToString()}];");
+            }
         }
 
         code.AppendLine("}");

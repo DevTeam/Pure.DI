@@ -18,22 +18,14 @@ internal sealed class ChildConstructorBuilder: IBuilder<CompositionCode, Composi
         code.AppendLine("{");
         using (code.Indent())
         {
-            if (composition.DisposableSingletonsCount == 0)
-            {
-                code.AppendLine($"{Names.DisposablesFieldName} = new {Names.IDisposableInterfaceName}[0];");
-            }
-
             if (composition.Singletons.Any())
             {
-                code.AppendLine($"lock ({ParentCompositionArgName}.{Names.DisposablesFieldName})");
+                code.AppendLine($"lock ({ParentCompositionArgName}.{Names.LockFieldName})");
                 code.AppendLine("{");
                 using (code.Indent())
                 {
-                    if (composition.DisposableSingletonsCount > 0)
-                    {
-                        code.AppendLine($"{Names.DisposablesFieldName} = new {Names.IDisposableInterfaceName}[{composition.DisposableSingletonsCount.ToString()} - {ParentCompositionArgName}.{Names.DisposeIndexFieldName}];");
-                    }
-
+                    code.AppendLine($"{Names.LockFieldName} = {ParentCompositionArgName}.{Names.LockFieldName};");
+                    
                     foreach (var singletonField in composition.Singletons)
                     {
                         code.AppendLine($"{singletonField.VariableName} = {ParentCompositionArgName}.{singletonField.VariableName};");

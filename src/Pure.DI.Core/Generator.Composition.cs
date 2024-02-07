@@ -93,7 +93,7 @@ public partial class Generator
             .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.RootMethodsBuilder).To<RootMethodsBuilder>()
             .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.UsingDeclarationsBuilder).To<UsingDeclarationsBuilder>()
             .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.ArgFieldsBuilder).To<ArgFieldsBuilder>()
-            .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.SingletonFieldsBuilder).To<SingletonFieldsBuilder>()
+            .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.FieldsBuilder).To<FieldsBuilder>()
             .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.ChildConstructorBuilder).To<ChildConstructorBuilder>()
             .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.PrimaryConstructorBuilder).To<PrimaryConstructorBuilder>()
             .Bind<IBuilder<CompositionCode, CompositionCode>>(WellknownTag.DefaultConstructorBuilder).To<DefaultConstructorBuilder>()

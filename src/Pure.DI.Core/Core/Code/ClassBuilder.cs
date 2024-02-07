@@ -3,7 +3,7 @@ namespace Pure.DI.Core.Code;
 
 internal sealed class ClassBuilder(
     [Tag(WellknownTag.UsingDeclarationsBuilder)] IBuilder<CompositionCode, CompositionCode> usingDeclarationsBuilder,
-    [Tag(WellknownTag.SingletonFieldsBuilder)] IBuilder<CompositionCode, CompositionCode> singletonFieldsBuilder,
+    [Tag(WellknownTag.FieldsBuilder)] IBuilder<CompositionCode, CompositionCode> singletonFieldsBuilder,
     [Tag(WellknownTag.ArgFieldsBuilder)] IBuilder<CompositionCode, CompositionCode> argFieldsBuilder,
     [Tag(WellknownTag.PrimaryConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> primaryConstructorBuilder,
     [Tag(WellknownTag.DefaultConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> defaultConstructorBuilder,

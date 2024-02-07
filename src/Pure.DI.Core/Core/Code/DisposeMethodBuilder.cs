@@ -21,7 +21,7 @@ internal sealed class DisposeMethodBuilder: IBuilder<CompositionCode, Compositio
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine($"lock ({Names.DisposablesFieldName})");
+            code.AppendLine($"lock ({Names.LockFieldName})");
             code.AppendLine("{");
             using (code.Indent())
             {

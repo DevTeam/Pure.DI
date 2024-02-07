@@ -41,7 +41,7 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
                     code.AppendLine($"if ({checkExpression})");
                     code.AppendLine("{");
                     code.IncIndent();
-                    code.AppendLine($"lock ({Names.DisposablesFieldName})");
+                    code.AppendLine($"lock ({Names.LockFieldName})");
                     code.AppendLine("{");
                     code.IncIndent();
                     ctx = ctx with { LockIsRequired = false };
