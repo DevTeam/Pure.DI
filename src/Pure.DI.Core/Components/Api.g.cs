@@ -56,7 +56,7 @@ namespace Pure.DI
         Transient,
 
         /// <summary>
-        /// Ensures that there will be a single instance of the dependency for each composition instance.
+        /// Ensures that there will be a single instance of the dependency for each composition.
         /// <example>
         /// For example:
         /// <code>
@@ -89,7 +89,19 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// </summary>
-        PerBlock
+        PerBlock,
+        
+        /// <summary>
+        /// Ensures that there will be a single instance of the dependency for each scope.
+        /// <example>
+        /// For example:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().As(Lifetime.Singleton).To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        Scoped
     }
     
     /// <summary>

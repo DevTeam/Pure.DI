@@ -6,5 +6,7 @@ internal record CompositionCode(
     in ImmutableArray<Variable> Singletons,
     in ImmutableArray<Variable> Args,
     in ImmutableArray<Root> Roots,
-    int DisposableSingletonsCount,
+    int DisposablesCount,
+    int DisposablesScopedCount,
+    bool IsThreadSafe,
     int MembersCount = 0);

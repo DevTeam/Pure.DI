@@ -3,11 +3,11 @@ namespace Pure.DI.Core.Code;
 
 internal sealed class ClassBuilder(
     [Tag(WellknownTag.UsingDeclarationsBuilder)] IBuilder<CompositionCode, CompositionCode> usingDeclarationsBuilder,
-    [Tag(WellknownTag.FieldsBuilder)] IBuilder<CompositionCode, CompositionCode> singletonFieldsBuilder,
+    [Tag(WellknownTag.FieldsBuilder)] IBuilder<CompositionCode, CompositionCode> fieldsBuilder,
     [Tag(WellknownTag.ArgFieldsBuilder)] IBuilder<CompositionCode, CompositionCode> argFieldsBuilder,
-    [Tag(WellknownTag.PrimaryConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> primaryConstructorBuilder,
+    [Tag(WellknownTag.ParameterizedConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> parameterizedConstructorBuilder,
     [Tag(WellknownTag.DefaultConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> defaultConstructorBuilder,
-    [Tag(WellknownTag.ChildConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> childConstructorBuilder,
+    [Tag(WellknownTag.ScopeConstructorBuilder)] IBuilder<CompositionCode, CompositionCode> scopeConstructorBuilder,
     [Tag(WellknownTag.RootMethodsBuilder)] IBuilder<CompositionCode, CompositionCode> rootPropertiesBuilder,
     [Tag(WellknownTag.ApiMembersBuilder)] IBuilder<CompositionCode, CompositionCode> apiMembersBuilder,
     [Tag(WellknownTag.DisposeMethodBuilder)] IBuilder<CompositionCode, CompositionCode> disposeMethodBuilder,
@@ -20,11 +20,11 @@ internal sealed class ClassBuilder(
     : IBuilder<CompositionCode, CompositionCode>
 {
     private readonly ImmutableArray<IBuilder<CompositionCode, CompositionCode>> _codeBuilders = ImmutableArray.Create(
-        singletonFieldsBuilder,
+        fieldsBuilder,
         argFieldsBuilder,
-        primaryConstructorBuilder,
+        parameterizedConstructorBuilder,
         defaultConstructorBuilder,
-        childConstructorBuilder,
+        scopeConstructorBuilder,
         rootPropertiesBuilder,
         apiMembersBuilder,
         disposeMethodBuilder,
@@ -53,7 +53,7 @@ internal sealed class ClassBuilder(
         }
 
         code.AppendLine($"[{Names.SystemNamespace}Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]");
-        var implementingInterfaces = composition.DisposableSingletonsCount > 0 ? $": {Names.IDisposableInterfaceName}" : "";
+        var implementingInterfaces = composition.DisposablesCount > 0 ? $": {Names.IDisposableInterfaceName}" : "";
         code.AppendLine($"partial class {composition.Source.Source.Name.ClassName}{implementingInterfaces}");
         code.AppendLine("{");
 

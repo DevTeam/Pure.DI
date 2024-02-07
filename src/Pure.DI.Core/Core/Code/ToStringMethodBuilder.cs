@@ -13,11 +13,6 @@ internal sealed class ToStringMethodBuilder(IBuilder<CompositionCode, LinesBuild
 
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
-        if (composition.MembersCount > 0)
-        {
-            code.AppendLine();
-        }
-
         var classDiagram = classDiagramBuilder.Build(composition);
         
         code.AppendLine("public override string ToString()");

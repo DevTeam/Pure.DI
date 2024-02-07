@@ -46,14 +46,16 @@ internal static class Names
     public static readonly string BucketsFieldName = $"_buckets{Salt}";
     public static readonly string BucketSizeFieldName = $"_bucketSize{Salt}";
     public static readonly string DisposeIndexFieldName = "_disposeIndex" + Salt;
-    public static readonly string DisposablesFieldName = "_disposableSingletons" + Salt;
+    public static readonly string DisposablesFieldName = "_disposables" + Salt;
     public static readonly string LockFieldName = "_lock" + Salt;
+    public static readonly string ParentFieldName = "_root" + Salt;
     
     // Vars
     private const string TransientVariablePrefix = "transient";
     private const string PerBlockVariablePrefix = "perBlock";
     private const string PerResolveVariablePrefix = "perResolve";
     private const string SingletonVariablePrefix = "_singleton";
+    private const string ScopedVariablePrefix = "_scoped";
     private const string ArgVariablePrefix = "_arg";
     
     public static string GetVariableName(this DependencyNode Node, int PerLifetimeId)
@@ -65,6 +67,12 @@ internal static class Names
             {
                 var binding = Node.Binding;
                 return $"{SingletonVariablePrefix}{Salt}{binding.Id}_{baseName}";
+            }
+            
+            case { Lifetime: Lifetime.Scoped }:
+            {
+                var binding = Node.Binding;
+                return $"{ScopedVariablePrefix}{Salt}{binding.Id}_{baseName}";
             }
 
             case { Lifetime: Lifetime.PerResolve }:

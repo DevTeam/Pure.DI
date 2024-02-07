@@ -17,14 +17,22 @@ internal sealed class DefaultConstructorBuilder: IBuilder<CompositionCode, Compo
             code.AppendLine();
         }
 
+        code.AppendLine("/// <summary>");
+        code.AppendLine("/// This constructor creates a new instance of the composition.");
+        code.AppendLine("/// </summary>");
         code.AppendLine($"public {composition.Source.Source.Name.ClassName}()");
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine($"{Names.LockFieldName} = new object();");
-            if (composition.DisposableSingletonsCount > 0)
+            code.AppendLine($"{Names.ParentFieldName} = this;");
+            if (composition.IsThreadSafe)
             {
-                code.AppendLine($"{Names.DisposablesFieldName} = new {Names.IDisposableInterfaceName}[{composition.DisposableSingletonsCount.ToString()}];");
+                code.AppendLine($"{Names.LockFieldName} = new object();");
+            }
+            
+            if (composition.DisposablesCount > 0)
+            {
+                code.AppendLine($"{Names.DisposablesFieldName} = new {Names.IDisposableInterfaceName}[{composition.DisposablesCount.ToString()}];");
             }
         }
 

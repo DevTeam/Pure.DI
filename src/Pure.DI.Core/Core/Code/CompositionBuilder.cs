@@ -15,6 +15,7 @@ internal class CompositionBuilder(
         var roots = new List<Root>();
         var map = new VariablesMap();
         var allArgs = new HashSet<Variable>();
+        var isThreadSafe = false;
         foreach (var root in graph.Roots.Values)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -64,10 +65,12 @@ internal class CompositionBuilder(
             }
             
             roots.Add(processedRoot);
+            isThreadSafe |= map.IsThreadSafe(graph.Source.Hints);
             map.Reset();
         }
 
         var singletons = map.GetSingletons().ToImmutableArray();
+        var disposableSingletons =  singletons.Where(i => i.Node.IsDisposable()).ToArray();
         var publicRoots = roots
             .OrderByDescending(i => i.IsPublic)
             .ThenBy(i => i.Node.Binding.Id)
@@ -80,6 +83,8 @@ internal class CompositionBuilder(
             singletons,
             allArgs.OrderBy(i => i.Node.Binding.Id).ToImmutableArray(),
             publicRoots,
-            singletons.Count(i => i.Node.IsDisposable()));
+            disposableSingletons.Length,
+            disposableSingletons.Count(i => i.Node.Lifetime == Lifetime.Scoped),
+            isThreadSafe);
     }
 }

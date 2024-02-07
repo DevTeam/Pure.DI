@@ -1279,4 +1279,229 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
     }
+    
+    [Fact]
+    public async Task ShouldSupportScopedAsSingleton()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    internal interface IDependency { }
+
+    internal class Dependency : IDependency { }
+
+    internal interface IService
+    {
+        public IDependency Dependency1 { get; }
+                
+        public IDependency Dependency2 { get; }
+    }
+
+    internal class Service : IService
+    {
+        public Service(Func<IDependency> dependency1, IDependency dependency2)
+        {
+            Dependency1 = dependency1();
+            Dependency2 = dependency2;
+        }
+
+        public IDependency Dependency1 { get; }
+                
+        public IDependency Dependency2 { get; }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup(nameof(Composition))
+                .Bind<IDependency>().As(Lifetime.Scoped).To<Dependency>()
+                .Bind<IService>().To<Service>()
+                .Root<IDependency>("Dependency")
+                .Root<IService>("Root");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service1 = composition.Root;
+            var service2 = composition.Root;
+            Console.WriteLine(service1.Dependency1 == service1.Dependency2);                    
+            Console.WriteLine(service2.Dependency1 == service1.Dependency1);
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True"), result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportScoped()
+    {
+        // Given
+
+        // When
+        var result = await """
+    using System;
+    using Pure.DI;
+    using static Pure.DI.Lifetime; 
+
+    namespace Sample
+    {
+    interface ISingletonDep
+    {
+        bool IsDisposed { get; }
+    }
+
+    class SingletonDep
+        : ISingletonDep, IDisposable
+    {
+        public bool IsDisposed { get; private set; }
+
+        public void Dispose() => IsDisposed = true;
+    }
+
+    interface IScopedDep
+    {
+        ISingletonDep SingletonDep { get; }
+
+        bool IsDisposed { get; }
+    }
+
+    class ScopedDep : IScopedDep, IDisposable
+    {
+        private readonly ISingletonDep _singletonDep;
+
+        public ScopedDep(ISingletonDep singletonDep)
+        {
+            _singletonDep = singletonDep;
+        }
+
+        public ISingletonDep SingletonDep => _singletonDep;
+        
+        public bool IsDisposed { get; private set; }
+
+        public void Dispose() => IsDisposed = true;
+    }
+
+    interface IService
+    {
+        IScopedDep ScopedDep { get; }
+    }
+
+    class Service : IService
+    {
+        private readonly IScopedDep _scopedDep;
+
+        public Service(IScopedDep scopedDep)
+        {
+            _scopedDep = scopedDep;
+        }
+
+        public IScopedDep ScopedDep => _scopedDep;
+    }
+
+    // Implements a session
+    class Session : Composition
+    {
+        public Session(Composition composition) : base(composition)
+        {
+        }
+    }
+
+    class ProgramRoot
+    {
+        private readonly ISingletonDep _singletonDep;
+        private readonly Func<Session> _sessionFactory;
+
+        public ProgramRoot(ISingletonDep singletonDep,
+            Func<Session> sessionFactory)
+        {
+            _singletonDep = singletonDep;
+            _sessionFactory = sessionFactory;
+        }
+
+        public ISingletonDep SingletonDep => _singletonDep;
+        
+        public Session CreateSession() => _sessionFactory();
+    }
+
+    partial class Composition
+    {
+        private static void Setup() =>
+            DI.Setup(nameof(Composition))
+                .Bind<ISingletonDep>()
+                    .As(Singleton)
+                    .To<SingletonDep>()
+                .Bind<IScopedDep>()
+                    .As(Scoped)
+                    .To<ScopedDep>()
+                .Bind<IService>().To<Service>()
+                .Root<IService>("SessionRoot")
+                .Root<ProgramRoot>("ProgramRoot");
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var program = composition.ProgramRoot;
+
+            // Creates session #1
+            var session1 = program.CreateSession();
+            var scopedDepInSession1 = session1.SessionRoot.ScopedDep;
+            System.Console.WriteLine(scopedDepInSession1 == session1.SessionRoot.ScopedDep);
+
+            // Checks that the singleton instances are identical
+            System.Console.WriteLine(scopedDepInSession1.SingletonDep == program.SingletonDep);
+
+            // Creates session #2
+            var session2 = program.CreateSession();
+            var scopedDepInSession2 = session2.SessionRoot.ScopedDep;
+            System.Console.WriteLine(scopedDepInSession2 == session2.SessionRoot.ScopedDep);
+
+            // Checks that the scoped instances are not identical in different sessions
+            System.Console.WriteLine(scopedDepInSession1 != scopedDepInSession2);
+
+            // Checks that the singleton instances are identical in different sessions
+            System.Console.WriteLine(scopedDepInSession1.SingletonDep == scopedDepInSession2.SingletonDep);
+
+            // Disposes of session #1
+            session1.Dispose();
+            // Checks that the scoped instance is finalized
+            System.Console.WriteLine(scopedDepInSession1.IsDisposed);
+
+            // Session #2 is still not finalized
+            System.Console.WriteLine(session2.SessionRoot.ScopedDep.IsDisposed);
+
+            // Disposes of session #2
+            session2.Dispose();
+            // Checks that the scoped instance is finalized
+            System.Console.WriteLine(scopedDepInSession2.IsDisposed);
+
+            // Disposes of composition
+            composition.Dispose();
+            System.Console.WriteLine(scopedDepInSession1.SingletonDep.IsDisposed);
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True", "True", "True", "True", "True", "False", "True", "True"), result);
+    }
 }

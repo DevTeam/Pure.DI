@@ -8,28 +8,28 @@ internal sealed class FieldsBuilder: IBuilder<CompositionCode, CompositionCode>
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
         
-        // Lock field
-        code.AppendLine($"private readonly object {Names.LockFieldName};");
-        
-        // Disposables field
-        if (composition.DisposableSingletonsCount > 0)
+        // _parent filed
+        code.AppendLine($"private readonly {composition.Source.Source.Name.ClassName} {Names.ParentFieldName};");
+        membersCounter++;
+
+        if (composition.IsThreadSafe)
         {
-            code.AppendLine($"private readonly {Names.IDisposableInterfaceName}[] {Names.DisposablesFieldName};");
+            // _lock field
+            code.AppendLine($"private readonly object {Names.LockFieldName};");
             membersCounter++;
         }
 
-        if (composition.Singletons.Length == 0)
+        if (composition.DisposablesCount > 0)
         {
-            return composition with { MembersCount = membersCounter };
-        }
-        
-        if (composition.DisposableSingletonsCount > 0)
-        {
-            // DisposeIndex field
+            // _disposables field
+            code.AppendLine($"private readonly {Names.IDisposableInterfaceName}[] {Names.DisposablesFieldName};");
+            membersCounter++;
+            
+            // _disposeIndex field
             code.AppendLine($"private int {Names.DisposeIndexFieldName};");
             membersCounter++;
         }
-
+        
         // Singleton fields
         foreach (var singletonField in composition.Singletons)
         {
@@ -47,7 +47,7 @@ internal sealed class FieldsBuilder: IBuilder<CompositionCode, CompositionCode>
                 membersCounter++;
             }
         }
-
+        
         return composition with { MembersCount = membersCounter };
     }
 }

@@ -17,10 +17,10 @@ public partial class Singleton : BenchmarkBase
 {
     private static void SetupDI() =>
         DI.Setup(nameof(Singleton))
-            .Bind<IService1>().As(Lifetime.Singleton).To<Service1>()
+            .Bind<IService1>().As(Lifetime.Scoped).To<Service1>()
             .Bind<IService2>().To<Service2>()
             .Bind<IService3>().To<Service3>()
-            .Bind<IService4>().As(Lifetime.Singleton).To<Service4>()
+            .Bind<IService4>().As(Lifetime.Scoped).To<Service4>()
             .Root<CompositionRoot>("PureDIByCR", default, RootKinds.Method | RootKinds.Partial);
 
     protected override TActualContainer? CreateContainer<TActualContainer, TAbstractContainer>()

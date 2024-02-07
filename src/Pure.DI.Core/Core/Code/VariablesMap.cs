@@ -10,7 +10,7 @@ internal class VariablesMap: Dictionary<MdBinding, Variable>
         }
 
         var classBindings = this
-            .Where(i => i.Value.Node.Arg is not null || i.Value.Node.Lifetime != Lifetime.Singleton)
+            .Where(i => i.Value.Node.Arg is not null || i.Value.Node.Lifetime is not (Lifetime.Singleton or Lifetime.Scoped))
             .Select(i => i.Key)
             .ToArray();
 
@@ -21,8 +21,12 @@ internal class VariablesMap: Dictionary<MdBinding, Variable>
     }
 
     public IEnumerable<Variable> GetSingletons() => this
-        .Where(i => i.Key.Lifetime?.Value == Lifetime.Singleton)
+        .Where(i => i.Key.Lifetime?.Value is Lifetime.Singleton or Lifetime.Scoped)
         .Select(i => i.Value);
+    
+    public bool IsThreadSafe(IHints sourceHints) =>
+        sourceHints.GetHint(Hint.ThreadSafe, SettingState.On) == SettingState.On
+        && this.Any(i => i.Key.Lifetime?.Value is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve);
     
     public IEnumerable<Variable> GetPerResolves() => this
         .Where(i => i.Key.Lifetime?.Value == Lifetime.PerResolve)

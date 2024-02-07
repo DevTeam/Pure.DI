@@ -7,7 +7,7 @@ internal sealed class DisposeMethodBuilder: IBuilder<CompositionCode, Compositio
     {
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
-        if (composition.DisposableSingletonsCount == 0)
+        if (composition.DisposablesCount == 0)
         {
             return composition with { MembersCount = membersCounter };
         }

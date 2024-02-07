@@ -115,6 +115,7 @@ internal sealed class ApiMembersBuilder(
             code.AppendLine("#region API");
             code.AppendLines(apiCode.Lines);
             code.AppendLine("#endregion");
+            code.AppendLine();
         }
 
         return composition with { MembersCount = membersCounter };

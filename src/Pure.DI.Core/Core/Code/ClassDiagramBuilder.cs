@@ -52,7 +52,7 @@ internal sealed class ClassDiagramBuilder(
                 lines.AppendLine($"class {composition.Source.Source.Name.ClassName}");
             }
 
-            if (composition.DisposableSingletonsCount > 0)
+            if (composition.DisposablesCount > 0)
             {
                 lines.AppendLine($"{composition.Source.Source.Name.ClassName} --|> IDisposable");
             }

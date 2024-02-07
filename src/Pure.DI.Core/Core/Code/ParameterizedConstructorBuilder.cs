@@ -1,7 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal sealed class PrimaryConstructorBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class ParameterizedConstructorBuilder: IBuilder<CompositionCode, CompositionCode>
 {
     public CompositionCode Build(CompositionCode composition)
     {
@@ -23,11 +23,29 @@ internal sealed class PrimaryConstructorBuilder: IBuilder<CompositionCode, Compo
         }
         
         var classArgs = composition.Args.Where(arg => arg.Node.Arg?.Source.Kind == ArgKind.Class).ToArray();
+        code.AppendLine("/// <summary>");
+        code.AppendLine("/// This parameterized constructor creates a new instance of the composition with arguments.");
+        code.AppendLine("/// </summary>");
+        foreach (var arg in classArgs)
+        {
+            if (arg.Node.Arg?.Source is not {} mdArg)
+            {
+                continue;
+            }
+            
+            code.AppendLine($"/// <param name=\"{mdArg.ArgName}\">The composition argument of type <see cref=\"{mdArg.Type}\"/>.</param>");
+        }
+
         code.AppendLine($"public {composition.Source.Source.Name.ClassName}({string.Join(", ", classArgs.Select(arg => $"{arg.InstanceType} {arg.Node.Arg?.Source.ArgName}"))})");
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine($"{Names.LockFieldName} = new object();");
+            code.AppendLine($"{Names.ParentFieldName} = this;");
+            if (composition.IsThreadSafe)
+            {
+                code.AppendLine($"{Names.LockFieldName} = new object();");
+            }
+            
             foreach (var arg in classArgs)
             {
                 if (arg.InstanceType.IsValueType)
@@ -35,7 +53,7 @@ internal sealed class PrimaryConstructorBuilder: IBuilder<CompositionCode, Compo
                     continue;
                 }
 
-                code.AppendLine($"if ({Names.SystemNamespace}Object.ReferenceEquals({arg.Node.Arg?.Source.ArgName}, null))");
+                code.AppendLine($"if (ReferenceEquals({arg.Node.Arg?.Source.ArgName}, null))");
                 code.AppendLine("{");
                 using (code.Indent())
                 {
@@ -51,9 +69,9 @@ internal sealed class PrimaryConstructorBuilder: IBuilder<CompositionCode, Compo
                 code.AppendLine($"{arg.VariableName} = {arg.Node.Arg?.Source.ArgName};");
             }
 
-            if (composition.DisposableSingletonsCount > 0)
+            if (composition.DisposablesCount > 0)
             {
-                code.AppendLine($"{Names.DisposablesFieldName} = new {Names.IDisposableInterfaceName}[{composition.DisposableSingletonsCount.ToString()}];");
+                code.AppendLine($"{Names.DisposablesFieldName} = new {Names.IDisposableInterfaceName}[{composition.DisposablesCount.ToString()}];");
             }
         }
 
