@@ -10,17 +10,19 @@ $h=A _scope_ scenario can be easily implemented with singleton instances and chi
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Local
+#pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Lifetimes.ScopeScenario;
 
 using Xunit;
 
 // {
+
 interface IDependency
 {
     bool IsDisposed { get; }
 }
 
-class Dependency : IDependency, IDisposable
+class Dependency: IDependency, IDisposable
 {
     public bool IsDisposed { get; private set; }
 
@@ -42,7 +44,9 @@ interface ISession : IDisposable
     IService SessionRoot { get; }
 }
 
-class Session: Composition, ISession;
+class Session(Composition composition):
+    Composition(composition),
+    ISession;
 
 class Program(Func<ISession> sessionFactory)
 {
@@ -53,8 +57,8 @@ partial class Composition
 {
     private static void Setup() =>
         DI.Setup(nameof(Composition))
-            // This is actually a singleton
-            // that will be created in the scope of the session instance.
+            // This singleton will be actually created
+            // in the scope of a session
             .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
             .Bind<IService>().To<Service>()
             .Bind<ISession>().To<Session>()
@@ -81,7 +85,7 @@ public class Scenario
         using var session2 = programRoot.CreateSession();
         var dependencyInSession2 = session2.SessionRoot.Dependency;
         dependencyInSession1.ShouldNotBe(dependencyInSession2);
-
+        
         // Disposes of session #1
         session1.Dispose();
         dependencyInSession1.IsDisposed.ShouldBeTrue();
