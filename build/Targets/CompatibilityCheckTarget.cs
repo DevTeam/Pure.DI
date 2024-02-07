@@ -10,11 +10,13 @@ namespace Build.Targets;
 using NuGet.Versioning;
 
 internal class CompatibilityCheckTarget(
+    Settings settings,
     ICommands commands,
     IPaths paths,
     INuGet nuGet,
-    [Tag(typeof(TestTarget))] ITarget<BuildResult> testTarget)
-    : IInitializable, ITarget<BuildResult>
+    [Tag(typeof(GeneratorTarget))] ITarget<string> generatorTarget,
+    [Tag(typeof(LibrariesTarget))] ITarget<IReadOnlyCollection<Library>> librariesTarget)
+    : IInitializable, ITarget<IReadOnlyCollection<string>>
 {
     public Task InitializeAsync() => commands.Register(
         this,
@@ -23,12 +25,13 @@ internal class CompatibilityCheckTarget(
         "c");
 
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
-    public async Task<BuildResult> RunAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<string>> RunAsync(CancellationToken cancellationToken)
     {
         Info("Compatibility checks");
-        var buildResult = await testTarget.RunAsync(cancellationToken);
+        var generatorPackage = await generatorTarget.RunAsync(cancellationToken);
+        var libraries = await librariesTarget.RunAsync(cancellationToken);
 
-        DeleteNuGetPackageFromCache("Pure.DI", buildResult.GeneratorPackageVersion, Path.GetDirectoryName(buildResult.GeneratorPackage)!);
+        DeleteNuGetPackageFromCache("Pure.DI", settings.Version, Path.GetDirectoryName(generatorPackage)!);
 
         var exitCode = await new DotNetCustom("new", "-i", "Pure.DI.Templates").RunAsync(cancellationToken: cancellationToken);
         if (exitCode != 0)
@@ -63,20 +66,23 @@ internal class CompatibilityCheckTarget(
 
         foreach (var framework in frameworks)
         {
-            await CompatibilityCheckAsync(buildResult, framework, cancellationToken);
+            await CompatibilityCheckAsync(generatorPackage, framework, cancellationToken);
         }
+        
+        var packages = new List<string> { generatorPackage };
 
         // Libraries
-        foreach (var library in buildResult.Libraries)
+        foreach (var library in libraries)
         {
-            await CompatibilityCheckAsync(buildResult, library);
+            await CompatibilityCheckAsync(generatorPackage, library, cancellationToken);
+            packages.Add(library.PackagePath);
         }
 
-        return buildResult;
+        return packages;
     }
 
     private async Task CompatibilityCheckAsync(
-        BuildResult buildResult,
+        string generatorPackage,
         string framework,
         CancellationToken cancellationToken)
     {
@@ -127,9 +133,9 @@ internal class CompatibilityCheckTarget(
                     "package",
                     "Pure.DI",
                     "-v",
-                    buildResult.GeneratorPackageVersion.ToString(),
+                    settings.Version.ToString(),
                     "-s",
-                    Path.GetDirectoryName(buildResult.GeneratorPackage)!)
+                    Path.GetDirectoryName(generatorPackage)!)
                 .RunAsync(cancellationToken: cancellationToken);
 
             if (exitCode != 0)
@@ -152,7 +158,7 @@ internal class CompatibilityCheckTarget(
         }
     }
 
-    private async Task CompatibilityCheckAsync(BuildResult buildResult, Library library)
+    private async Task CompatibilityCheckAsync(string generatorPackage, Library library, CancellationToken cancellationToken)
     {
         var tempDirectory = paths.TempDirectory;
         try
@@ -171,7 +177,7 @@ internal class CompatibilityCheckTarget(
                         tempDirForFramework,
                         "--force",
                         "-f", framework)
-                    .RunAsync();
+                    .RunAsync(cancellationToken: cancellationToken);
 
                 if (exitCode != 0)
                 {
@@ -185,12 +191,12 @@ internal class CompatibilityCheckTarget(
                         "Pure.DI",
                         "-n",
                         "-v",
-                        buildResult.GeneratorPackageVersion.ToString(),
+                        settings.Version.ToString(),
                         "-f",
                         framework,
                         "-s",
-                        Path.GetDirectoryName(buildResult.GeneratorPackage)!)
-                    .RunAsync();
+                        Path.GetDirectoryName(generatorPackage)!)
+                    .RunAsync(cancellationToken: cancellationToken);
 
                 if (exitCode != 0)
                 {
@@ -198,7 +204,7 @@ internal class CompatibilityCheckTarget(
                 }
 
                 var libraryPackageDir = Path.GetDirectoryName(library.PackagePath)!;
-                DeleteNuGetPackageFromCache(library.Name, buildResult.GeneratorPackageVersion, libraryPackageDir);
+                DeleteNuGetPackageFromCache(library.Name, settings.Version, libraryPackageDir);
 
                 exitCode = await new DotNetCustom(
                         "add",
@@ -207,12 +213,12 @@ internal class CompatibilityCheckTarget(
                         library.Name,
                         "-n",
                         "-v",
-                        buildResult.GeneratorPackageVersion.ToString(),
+                        settings.Version.ToString(),
                         "-s",
                         libraryPackageDir,
                         "-f",
                         framework)
-                    .RunAsync();
+                    .RunAsync(cancellationToken: cancellationToken);
 
                 if (exitCode != 0)
                 {
@@ -223,8 +229,8 @@ internal class CompatibilityCheckTarget(
                     .WithWorkingDirectory(tempDirForFramework)
                     .WithForce(true)
                     .WithNoCache(true)
-                    .AddSources(Path.GetDirectoryName(buildResult.GeneratorPackage)!, libraryPackageDir)
-                    .RunAsync();
+                    .AddSources(Path.GetDirectoryName(generatorPackage)!, libraryPackageDir)
+                    .RunAsync(cancellationToken: cancellationToken);
 
                 if (exitCode != 0)
                 {
@@ -234,7 +240,7 @@ internal class CompatibilityCheckTarget(
                 exitCode = await new DotNetBuild()
                     .WithWorkingDirectory(tempDirForFramework)
                     .WithNoRestore(true)
-                    .RunAsync();
+                    .RunAsync(cancellationToken: cancellationToken);
 
                 if (exitCode != 0)
                 {

@@ -9,8 +9,7 @@ using NuGet.Versioning;
 internal class UpdateTarget(
     Settings settings,
     ICommands commands,
-    IPaths paths,
-    IVersions versions)
+    IPaths paths)
     : IInitializable, ITarget<NuGetVersion>
 {
     private const string VersionPrefix = "PUREDI_API_V";
@@ -26,7 +25,7 @@ internal class UpdateTarget(
     {
         Info("Updating internal DI version");
         var solutionDirectory = paths.SolutionDirectory;
-        var currentVersion = settings.VersionOverride ?? versions.GetNext(new NuGetRestoreSettings("Pure.DI"), settings.VersionRange, 0);
+        var currentVersion = settings.Version;
         var propsFile = Path.Combine(solutionDirectory, "Directory.Build.props");
         var props = File.ReadAllLines(propsFile);
         var contents = new List<string>();

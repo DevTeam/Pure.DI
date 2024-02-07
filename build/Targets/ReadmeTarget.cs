@@ -6,7 +6,6 @@ namespace Build.Targets;
 using Pure.DI.Benchmarks.Benchmarks;
 
 internal class ReadmeTarget(
-    Settings settings,
     ICommands commands,
     IPaths paths,
     IVersions versions,
@@ -226,7 +225,7 @@ internal class ReadmeTarget(
 
     private async Task GenerateExamples(IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)> examples, TextWriter readmeWriter, string logsDirectory)
     {
-        var packageVersion = (settings.VersionOverride ?? versions.GetNext(new NuGetRestoreSettings("Pure.DI"), settings.VersionRange, 0)).ToString();
+        var packageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), Settings.VersionRange, 0).ToString();
         foreach (var readmeFile in Directory.EnumerateFiles(Path.Combine(ReadmeDir), "*.md"))
         {
             if (readmeFile.EndsWith("Template.md", StringComparison.InvariantCultureIgnoreCase))

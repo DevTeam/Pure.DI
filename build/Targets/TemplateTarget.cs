@@ -5,7 +5,6 @@ namespace Build.Targets;
 internal class TemplateTarget(
     Settings settings,
     ICommands commands,
-    IVersions versions,
     ITeamCityArtifactsWriter artifactsWriter)
     : IInitializable, ITarget<string>
 {
@@ -18,11 +17,10 @@ internal class TemplateTarget(
     public Task<string> RunAsync(CancellationToken cancellationToken)
     {
         Info("Creating templates");
-        var templatePackageVersion = settings.VersionOverride ?? versions.GetNext(new NuGetRestoreSettings("Pure.DI.Templates"), settings.VersionRange);
         var props = new[]
         {
             ("configuration", settings.Configuration),
-            ("version", templatePackageVersion.ToString()!)
+            ("version", settings.Version.ToString()!)
         };
 
         var projectDirectory = Path.Combine("src", "Pure.DI.Templates");
@@ -32,7 +30,7 @@ internal class TemplateTarget(
 
         pack.Build().Succeed();
         
-        var targetPackage = Path.Combine(projectDirectory, "bin", $"Pure.DI.Templates.{templatePackageVersion}.nupkg");
+        var targetPackage = Path.Combine(projectDirectory, "bin", $"Pure.DI.Templates.{settings.Version}.nupkg");
         artifactsWriter.PublishArtifact($"{targetPackage} => .");
 
         if (!string.IsNullOrWhiteSpace(settings.NuGetKey))

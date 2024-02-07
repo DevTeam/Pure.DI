@@ -5,9 +5,7 @@ namespace Build.Tools;
 using System.Text.RegularExpressions;
 using NuGet.Versioning;
 
-internal partial class Versions(
-    Settings settings,
-    INuGet nuGet) : IVersions
+internal partial class Versions(INuGet nuGet) : IVersions
 {
     private static readonly Regex ReleaseRegex = CreateReleaseRegex();
 
@@ -21,9 +19,9 @@ internal partial class Versions(
                 : new NuGetVersion(i.Major, i.Minor, i.Patch + patchIncrement))
             .Max()
         ?? new NuGetVersion(
-            settings.VersionRange.MinVersion.Major,
-            settings.VersionRange.MinVersion.Minor,
-            settings.VersionRange.MinVersion.Patch);
+            versionRange.MinVersion.Major,
+            versionRange.MinVersion.Minor,
+            versionRange.MinVersion.Patch);
 
     private static NuGetVersion GetNextRelease(VersionRangeBase versionRange, NuGetVersion version)
     {

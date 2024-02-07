@@ -4,7 +4,7 @@ namespace Build.Targets;
 internal class DeployTarget(
     Settings settings,
     ICommands commands,
-    [Tag(typeof(PackTarget))] ITarget<BuildResult> packTarget)
+    [Tag(typeof(PackTarget))] ITarget<IReadOnlyCollection<string>> packTarget)
     : IInitializable, ITarget<int>
 {
     public Task InitializeAsync() => commands.Register(
@@ -18,8 +18,8 @@ internal class DeployTarget(
         Info("Deployment");
         if (!string.IsNullOrWhiteSpace(settings.NuGetKey))
         {
-            var buildResult = await packTarget.RunAsync(cancellationToken);
-            foreach (var package in buildResult.Packages)
+            var packages = await packTarget.RunAsync(cancellationToken);
+            foreach (var package in packages)
             {
                 var push = new DotNetNuGetPush()
                     .WithPackage(package)

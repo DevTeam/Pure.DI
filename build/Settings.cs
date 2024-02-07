@@ -7,15 +7,19 @@ using NuGet.Versioning;
 using IProperties = Tools.IProperties;
 
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
-internal class Settings(IProperties properties)
+internal class Settings(
+    IProperties properties,
+    IVersions versions)
 {
+    public static readonly VersionRange VersionRange = VersionRange.Parse("2.0.*");
+    
+    private readonly Lazy<NuGetVersion> _version = new(() => GetVersion(properties, versions));
+    
     public bool BuildServer { get; } = Environment.GetEnvironmentVariable("TEAMCITY_VERSION") is not null;
 
     public string Configuration => "Release";
 
-    public VersionRange VersionRange { get; } = VersionRange.Parse("2.0.*");
-
-    public NuGetVersion? VersionOverride { get; } = GetVersionOverride(properties);
+    public NuGetVersion Version => _version.Value;
 
     public string NuGetKey { get; } = properties["NuGetKey"];
 
@@ -24,7 +28,7 @@ internal class Settings(IProperties properties)
         new CodeAnalysis(new Version(4, 3, 1))
     ];
 
-    private static NuGetVersion GetVersionOverride(IProperties properties)
+    private static NuGetVersion GetVersion(IProperties properties, IVersions versions)
     {
         WriteLine(
             NuGetVersion.TryParse(properties["version"], out var version) 
@@ -32,6 +36,6 @@ internal class Settings(IProperties properties)
                 : "The next version has been used.",
             Color.Details);
 
-        return version;
+        return versions.GetNext(new NuGetRestoreSettings("Pure.DI"),  VersionRange);
     }
 }

@@ -9,81 +9,29 @@ namespace Build.Targets;
 using System.IO.Compression;
 using NuGet.Versioning;
 
-internal class TestTarget(
+internal class GeneratorTarget(
     Settings settings,
-    ICommands commands,
-    IVersions versions,
-    ISdk sdk)
-    : IInitializable, ITarget<BuildResult>
+    ICommands commands)
+    : IInitializable, ITarget<string>
 {
     public Task InitializeAsync() => commands.Register(
         this,
-        "Builds and tests packages",
-        "test",
-        "t");
+        "Builds and tests generator",
+        "generator",
+        "g");
     
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
-    public async Task<BuildResult> RunAsync(CancellationToken cancellationToken)
+    public Task<string> RunAsync(CancellationToken cancellationToken)
     {
-        Info("Building");
-        var packages = new List<string>();
-        
+        Info("Building generator");
         // Generator package
-        var generatorPackageVersion = settings.VersionOverride ?? versions.GetNext(new NuGetRestoreSettings("Pure.DI"), settings.VersionRange);
         var generatorProjectDirectory = Path.Combine("src", "Pure.DI");
         var generatorPackages = settings.CodeAnalysis
-            .Select(codeAnalysis => CreateGeneratorPackage(generatorPackageVersion, codeAnalysis, generatorProjectDirectory));
+            .Select(codeAnalysis => CreateGeneratorPackage(settings.Version, codeAnalysis, generatorProjectDirectory));
 
-        var generatorPackage = Path.GetFullPath(MergeGeneratorPackages(generatorPackageVersion, generatorPackages, generatorProjectDirectory));
-        packages.Add(generatorPackage);
-        
-        // Libraries
-        Library[] libraries =
-        [
-            new Library(
-                "Pure.DI.MS",
-                GetPackagePath("Pure.DI.MS", generatorPackageVersion),
-                sdk.Versions
-                    .Where(i => i.Version.Major >= 7)
-                    .Select(v => $"net{v.Version.Major}.{v.Version.Minor}")
-                    .ToArray(),
-                ["webapi"])
-        ];
-
-        foreach (var library in libraries)
-        {
-            var props = new[]
-            {
-                ("configuration", settings.Configuration),
-                ("version", generatorPackageVersion.ToString())
-            };
-
-            var libraryPackResult = await new DotNetPack()
-                .WithProps(props)
-                .WithConfiguration(settings.Configuration)
-                .WithNoBuild(true)
-                .WithNoLogo(true)
-                .WithProject(Path.Combine(Path.GetFullPath(Path.Combine("src", library.Name)), $"{library.Name}.csproj"))
-                .BuildAsync(cancellationToken: cancellationToken);
-
-            libraryPackResult.Succeed();
-        }
-
-        return new BuildResult(
-            packages,
-            generatorPackageVersion,
-            generatorPackage,
-            libraries);
+        return Task.FromResult(Path.GetFullPath(MergeGeneratorPackages(settings.Version, generatorPackages, generatorProjectDirectory)));
     }
-
-    private string GetPackagePath(string library, NuGetVersion version)
-    {
-        var libraryProjectDirectory = Path.GetFullPath(Path.Combine("src", library));
-        var libraryPackageDir = Path.Combine(libraryProjectDirectory, "bin", settings.Configuration);
-        var libraryPackageName = $"{library}.{version.ToString()}.nupkg";
-        return Path.Combine(libraryPackageDir, libraryPackageName);
-    }
-
+    
     private string CreateGeneratorPackage(NuGetVersion packageVersion, CodeAnalysis codeAnalysis, string projectDirectory)
     {
         var analyzerRoslynPackageVersion = codeAnalysis.AnalyzerRoslynPackageVersion;
