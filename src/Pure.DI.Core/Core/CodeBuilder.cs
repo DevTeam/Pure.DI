@@ -3,7 +3,7 @@ namespace Pure.DI.Core;
 
 internal class CodeBuilder(
     IObserversProvider observersProvider,
-    IBuilder<MdSetup, DependencyGraph> dependencyGraphBuilder,
+    IBuilder<MdSetup, DependencyGraph?> dependencyGraphBuilder,
     IValidator<DependencyGraph> dependencyGraphValidator,
     IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>> rootsBuilder,
     [Tag(WellknownTag.CompositionBuilder)] IBuilder<DependencyGraph, CompositionCode> compositionBuilder,
@@ -22,6 +22,11 @@ internal class CodeBuilder(
 
         cancellationToken.ThrowIfCancellationRequested();
         var dependencyGraph = dependencyGraphBuilder.Build(setup);
+        if (dependencyGraph is null)
+        {
+            return Unit.Shared;
+        }
+
         foreach (var graphObserver in observersProvider.GetObservers<DependencyGraph>())
         {
             graphObserver.OnNext(dependencyGraph);

@@ -17,9 +17,9 @@ internal sealed class VariationalDependencyGraphBuilder(
     IBuilder<ContractsBuildContext, ISet<Injection>> contractsBuilder,
     IDependencyGraphBuilder graphBuilder,
     CancellationToken cancellationToken)
-    : IBuilder<MdSetup, DependencyGraph>
+    : IBuilder<MdSetup, DependencyGraph?>
 {
-    public DependencyGraph Build(MdSetup setup)
+    public DependencyGraph? Build(MdSetup setup)
     {
         var rawNodes = SortByPriority(dependencyNodeBuilders.SelectMany(builder => builder.Build(setup))).Reverse();
         var allNodes = new List<ProcessingNode>();
@@ -109,7 +109,7 @@ internal sealed class VariationalDependencyGraphBuilder(
                     marker);
             }
 
-            return first!;
+            return first;
         }
         finally
         {

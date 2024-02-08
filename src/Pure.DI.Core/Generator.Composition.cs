@@ -69,7 +69,7 @@ public partial class Generator
             .Bind<IBuilder<MdSetup, IEnumerable<DependencyNode>>>(typeof(ConstructDependencyNodeBuilder)).To<ConstructDependencyNodeBuilder>()
             .Bind<IBuilder<MdSetup, IEnumerable<DependencyNode>>>(typeof(ImplementationDependencyNodeBuilder)).To<ImplementationDependencyNodeBuilder>()
             .Bind<IBuilder<MdSetup, IEnumerable<DependencyNode>>>(typeof(RootDependencyNodeBuilder)).To<RootDependencyNodeBuilder>()
-            .Bind<IBuilder<MdSetup, DependencyGraph>>().To<VariationalDependencyGraphBuilder>()
+            .Bind<IBuilder<MdSetup, DependencyGraph?>>().To<VariationalDependencyGraphBuilder>()
             .Bind<IBuilder<DpImplementation, IEnumerable<DpImplementation>>>().To<ImplementationVariantsBuilder>()
             .Bind<IBuilder<Unit, IEnumerable<Source>>>().To<ApiBuilder>()
             .Bind<IBuilder<MdSetup, Unit>>().To<CodeBuilder>()
