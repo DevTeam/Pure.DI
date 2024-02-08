@@ -147,7 +147,7 @@ namespace Pure.DI
         Resolve,
         
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to generate partial <c>OnNewInstance</c> method. <c>Off</c> by default.
+        /// <c>On</c> or <c>Off</c>. Determines whether to use partial <c>OnNewInstance</c> method. <c>Off</c> by default.
         /// <example>
         /// For example:
         /// <code>
@@ -166,6 +166,24 @@ namespace Pure.DI
         /// <seealso cref="IConfiguration.Hint"/>
         OnNewInstance,
         
+        /// <summary>
+        /// <c>On</c> or <c>Off</c>. Determines whether to generate partial <c>OnNewInstance</c> method when the _OnNewInstance_ hint is <c>On</c>. <c>On</c> by default.
+        /// <example>
+        /// For example:
+        /// <code>
+        /// // OnNewInstancePartial = On
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.OnNewInstancePartial, "On")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
         OnNewInstancePartial,
         
         /// <summary>
@@ -229,7 +247,7 @@ namespace Pure.DI
         OnNewInstanceLifetimeRegularExpression,
         
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to generate partial <c>OnDependencyInjection</c> method to control of dependency injection. <c>Off</c> by default.
+        /// <c>On</c> or <c>Off</c>. Determines whether to use partial <c>OnDependencyInjection</c> method to control of dependency injection. <c>Off</c> by default.
         /// <example>
         /// For example:
         /// <code>
@@ -248,6 +266,24 @@ namespace Pure.DI
         /// <seealso cref="IConfiguration.Hint"/>
         OnDependencyInjection,
         
+        /// <summary>
+        /// <c>On</c> or <c>Off</c>. Determines whether to generate partial <c>OnDependencyInjection</c> method when the _OnDependencyInjection_ hint is <c>On</c> to control of dependency injection. <c>On</c> by default.
+        /// <example>
+        /// For example:
+        /// <code>
+        /// // OnDependencyInjectionPartial = On
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.OnDependencyInjectionPartial, "On")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
         OnDependencyInjectionPartial,
         
         /// <summary>
@@ -331,7 +367,7 @@ namespace Pure.DI
         OnDependencyInjectionLifetimeRegularExpression,
         
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to generate a partial <c>OnCannotResolve<T>(...)</c> method to handle a scenario in which the dependency cannot be resolved. <c>Off</c> by default.
+        /// <c>On</c> or <c>Off</c>. Determines whether to use a partial <c>OnCannotResolve<T>(...)</c> method to handle a scenario in which the dependency cannot be resolved. <c>Off</c> by default.
         /// <example>
         /// For example:
         /// <code>
@@ -350,6 +386,24 @@ namespace Pure.DI
         /// <seealso cref="IConfiguration.Hint"/>
         OnCannotResolve,
         
+        /// <summary>
+        /// <c>On</c> or <c>Off</c>. Determines whether to generate a partial <c>OnCannotResolve<T>(...)</c> method when the _OnCannotResolve_ hint is <c>On</c> to handle a scenario in which the dependency cannot be resolved. <c>On</c> by default.
+        /// <example>
+        /// For example:
+        /// <code>
+        /// // OnCannotResolvePartial = On
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.OnCannotResolvePartial, "On")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
         OnCannotResolvePartial,
         
         /// <summary>
@@ -413,7 +467,7 @@ namespace Pure.DI
         OnCannotResolveLifetimeRegularExpression,
         
         /// <summary>
-        /// <c>On</c> or <c>Off</c>. Determines whether to generate a static partial <c>OnNewRoot&lt;T&gt;(...)</c> method to handle the new Composition root registration event. <c>Off</c> by default.
+        /// <c>On</c> or <c>Off</c>. Determines whether to use a static partial <c>OnNewRoot&lt;T&gt;(...)</c> method to handle the new Composition root registration event. <c>Off</c> by default.
         /// <example>
         /// For example:
         /// <code>
@@ -432,6 +486,24 @@ namespace Pure.DI
         /// <seealso cref="IConfiguration.Hint"/>
         OnNewRoot,
         
+        /// <summary>
+        /// <c>On</c> or <c>Off</c>. Determines whether to generate a static partial <c>OnNewRoot&lt;T&gt;(...)</c> method when the _OnNewRoot_ hint is <c>On</c> to handle the new Composition root registration event. <c>On</c> by default.
+        /// <example>
+        /// For example:
+        /// <code>
+        /// // OnNewRootPartial = On
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.OnNewRootPartial, "On")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
         OnNewRootPartial,
         
         /// <summary>
