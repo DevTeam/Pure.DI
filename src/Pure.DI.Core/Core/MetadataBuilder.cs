@@ -108,6 +108,7 @@ internal sealed class MetadataBuilder(
         var ordinalAttributesBuilder = ImmutableArray.CreateBuilder<MdOrdinalAttribute>(2);
         var usingDirectives = ImmutableArray.CreateBuilder<MdUsingDirectives>(2);
         var bindingId = 0;
+        var comments = new List<string>();
         foreach (var setup in setups)
         {
             source = setup.Source;
@@ -137,6 +138,11 @@ internal sealed class MetadataBuilder(
                 usingDirectives.Add(usingDirective);   
             }
 
+            if (setup.Kind == CompositionKind.Public)
+            {
+                comments.AddRange(setup.Comments);
+            }
+
             cancellationToken.ThrowIfCancellationRequested();
         }
 
@@ -151,6 +157,7 @@ internal sealed class MetadataBuilder(
             resolveDependsOn ? ImmutableArray<MdDependsOn>.Empty : dependsOnBuilder.ToImmutable(),
             typeAttributesBuilder.ToImmutable(),
             tagAttributesBuilder.ToImmutable(),
-            ordinalAttributesBuilder.ToImmutable());
+            ordinalAttributesBuilder.ToImmutable(),
+            comments);
     }
 }

@@ -16,7 +16,10 @@ internal sealed class DisposeMethodBuilder: IBuilder<CompositionCode, Compositio
         {
             code.AppendLine();
         }
-        
+
+        code.AppendLine("/// <summary>");
+        code.AppendLine("/// <inheritdoc/>");
+        code.AppendLine("/// </summary>");
         code.AppendLine($"{composition.Source.Source.Hints.GetValueOrDefault(Hint.DisposeMethodModifiers, Names.DefaultApiMethodModifiers)} void Dispose()");
         code.AppendLine("{");
         using (code.Indent())
@@ -68,6 +71,7 @@ internal sealed class DisposeMethodBuilder: IBuilder<CompositionCode, Compositio
         
         code.AppendLine();
         code.AppendLine($"partial void {Names.OnDisposeExceptionMethodName}<T>(T disposableInstance, Exception exception) where T : {Names.IDisposableInterfaceName};");
+        code.AppendLine();
         membersCounter++;
 
         return composition with { MembersCount = membersCounter };

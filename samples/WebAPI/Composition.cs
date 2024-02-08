@@ -16,5 +16,6 @@ internal partial class Composition: ServiceProviderFactory<Composition>
             .Bind<IWeatherForecastService>()
                 .As(Singleton)
                 .To<WeatherForecastService>()
+            // Provides the composition root for Weather Forecast controller
             .Root<WeatherForecastController>();
 }

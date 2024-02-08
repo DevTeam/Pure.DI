@@ -61,7 +61,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {    
         // OnDependencyInjection = On
         // OnDependencyInjectionContractTypeNameRegularExpression = IService
         DI.Setup(nameof(Composition))

@@ -33,17 +33,19 @@ public class Scenario
     [Fact]
     public void Run()
     {
-// {            
+// {    
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>()
                 // Specifies to create a regular public composition root
-                // of type "IDependency" with the name "DependencySingleton":
+                // of type "IDependency" with the name "DependencySingleton"
                 .Root<IDependency>("DependencySingleton")
             .Bind<IService>().To<Service>()
-                // Creates a private root that is only accessible from _Resolve_ methods:
+                // Specifies to create a private root
+                // that is only accessible from _Resolve_ methods
                 .Root<IService>()
             .Bind<IService>("Other").To<OtherService>()
-                // Creates a public root named _OtherService_ using the _Other_ tag:
+                // Specifies to create a public root named _OtherService_
+                // using the _Other_ tag
                 .Root<IService>("OtherService", "Other");
 
         var composition = new Composition();

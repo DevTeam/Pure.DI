@@ -3,6 +3,10 @@ namespace Pure.DI.Core.Code;
 
 internal sealed class DefaultConstructorBuilder: IBuilder<CompositionCode, CompositionCode>
 {
+    public DefaultConstructorBuilder()
+    {
+    }
+
     public CompositionCode Build(CompositionCode composition)
     {
         if (composition.Args.Any())
@@ -18,7 +22,7 @@ internal sealed class DefaultConstructorBuilder: IBuilder<CompositionCode, Compo
         }
 
         code.AppendLine("/// <summary>");
-        code.AppendLine("/// This constructor creates a new instance of the composition.");
+        code.AppendLine($"/// This constructor creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/>.");
         code.AppendLine("/// </summary>");
         code.AppendLine($"public {composition.Source.Source.Name.ClassName}()");
         code.AppendLine("{");

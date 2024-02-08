@@ -7,7 +7,8 @@ internal readonly record struct MdArg(
     SyntaxNode Source,
     ITypeSymbol Type,
     string ArgName,
-    ArgKind Kind)
+    ArgKind Kind,
+    IReadOnlyCollection<string> Comments)
 {
     public override string ToString() => $"{(Kind == ArgKind.Root ? "RootArg" : "Arg")}<{Type}>(\"{ArgName}\")";
 }

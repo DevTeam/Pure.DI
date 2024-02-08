@@ -15,6 +15,9 @@ internal sealed class ToStringMethodBuilder(IBuilder<CompositionCode, LinesBuild
         var membersCounter = composition.MembersCount;
         var classDiagram = classDiagramBuilder.Build(composition);
         
+        code.AppendLine("/// <summary>");
+        code.AppendLine("/// This method provides a class diagram in mermaid format. To see this diagram, simply call the method and copy the text to this site https://mermaid.live/.");
+        code.AppendLine("/// </summary>");
         code.AppendLine("public override string ToString()");
         code.AppendLine("{");
         using (code.Indent())

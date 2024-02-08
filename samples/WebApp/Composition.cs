@@ -14,7 +14,8 @@ internal partial class Composition: ServiceProviderFactory<Composition>
         DI.Setup(nameof(Composition))
             .DependsOn(Base)
             .Bind<IWeatherForecastService>()
-            .As(Singleton)
-            .To<WeatherForecastService>()
+                .As(Singleton)
+                .To<WeatherForecastService>()
+            // Provides the composition root for Home controller
             .Root<HomeController>();
 }

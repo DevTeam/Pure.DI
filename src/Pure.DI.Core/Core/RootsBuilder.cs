@@ -17,11 +17,13 @@ internal sealed class RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injectio
 
             string name;
             RootKinds kind;
+            MdRoot source;
             if (node.Root is { } root)
             {
                 if (dependencyGraph.Graph.TryGetInEdges(node, out var rootDependencies) && rootDependencies.Count == 1)
                 {
                     node = rootDependencies.Single().Source;
+                    source = root.Source;
                     name = root.Source.Name;
                     kind = root.Source.Kind;
                 }
@@ -43,6 +45,7 @@ internal sealed class RootsBuilder(IBuilder<ContractsBuildContext, ISet<Injectio
                     new Root(
                         0,
                         node,
+                        source,
                         injection,
                         name,
                         ImmutableArray<Line>.Empty,

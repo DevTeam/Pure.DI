@@ -53,7 +53,9 @@ partial class Composition
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().As(Scoped).To<Dependency>()
             .Bind<IService>().To<Service>()
+            // Session composition root
             .Root<IService>("SessionRoot")
+            // Program composition root
             .Root<Program>("ProgramRoot");
 }
 // }

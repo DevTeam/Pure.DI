@@ -31,14 +31,14 @@ public class Scenario
     {
         // Resolve = Off
 // {        
-        // Specifies to create a partial class "Composition":
+        // Specifies to create a partial class "Composition"
         DI.Setup("Composition")
-            // Specifies to create a property "MyService":
+            // Specifies to create a property "MyService"
             .Root<Service>("MyService");
         
         var composition = new Composition();
 
-        // service = new Service(new Dependency());
+        // service = new Service(new Dependency())
         var service = composition.MyService;
 // }
         composition.SaveClassDiagram();

@@ -15,4 +15,5 @@ internal record MdSetup(
     in ImmutableArray<MdTypeAttribute> TypeAttributes,
     in ImmutableArray<MdTagAttribute> TagAttributes,
     in ImmutableArray<MdOrdinalAttribute> OrdinalAttributes,
+    IReadOnlyCollection<string> Comments,
     ITypeConstructor? TypeConstructor = default);

@@ -390,7 +390,7 @@ This is a regular expression for filtering by _lifetime_. This hint is also usef
 
 ### ToString Hint
 
-Determines whether to generate the _ToString()_ method. This method provides a textual class diagram in [mermaid](https://mermaid.js.org/) format. To see this diagram, just call the ToString method and copy the text to [this site](https://mermaid.live/).
+Determines whether to generate the _ToString()_ method. This method provides a class diagram in [mermaid](https://mermaid.js.org/) format. To see this diagram, just call the ToString method and copy the text to [this site](https://mermaid.live/).
 
 ```c#
 // ToString = On

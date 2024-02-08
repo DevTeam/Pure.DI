@@ -9,7 +9,7 @@ using static Pure.DI.Lifetime;
 internal partial class Composition
 {
     private static void Setup() => DI.Setup(nameof(Composition))
-        // Root
+        // Provides the composition root for clock view model
         .Root<IClockViewModel>("ClockViewModel")
         
         // View Models

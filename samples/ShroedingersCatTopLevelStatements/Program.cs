@@ -29,7 +29,7 @@ static void Setup() =>
         .Bind<ICat>().To<ShroedingersCat>()
         // Represents a cardboard box with any contents
         .Bind<IBox<TT>>().To<CardboardBox<TT>>()
-        // Composition Root
+        // Provides the composition root
         .Root<Program>("Root");
 
 public interface IBox<out T>

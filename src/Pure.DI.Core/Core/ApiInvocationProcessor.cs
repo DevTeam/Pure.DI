@@ -1,14 +1,14 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.Operations;
 
-internal class ApiInvocationProcessor(CancellationToken cancellationToken)
+internal class ApiInvocationProcessor(
+    IComments comments,
+    CancellationToken cancellationToken)
     : IApiInvocationProcessor
 {
     private static readonly char[] TypeNamePartsSeparators = ['.'];
-    private static readonly Regex CommentRegex = new(@"//\s*(\w+)\s*=\s*(.+)\s*", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.Singleline);
     private readonly Hints _hints = new();
 
     public void ProcessInvocation(
@@ -23,6 +23,21 @@ internal class ApiInvocationProcessor(CancellationToken cancellationToken)
             return;
         }
 
+        var prevInvocation = invocation.DescendantNodes().FirstOrDefault(i => i is InvocationExpressionSyntax);
+        List<string> invocationComments;
+        if (prevInvocation is null)
+        {
+            invocationComments = comments.GetComments(
+                invocation.GetLeadingTrivia()
+                    .Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia))).ToList();
+        }
+        else
+        {
+            invocationComments = comments.GetComments(
+                    invocation.DescendantTrivia(node => node != prevInvocation, true)
+                        .Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia))).ToList();
+        }
+        
         switch (memberAccess.Name)
         {
             case IdentifierNameSyntax identifierName:
@@ -89,13 +104,14 @@ internal class ApiInvocationProcessor(CancellationToken cancellationToken)
                                         CreateCompositionName(semanticModel.GetRequiredConstantValue<string>(publicCompositionType), @namespace, invocation.ArgumentList),
                                         ImmutableArray<MdUsingDirectives>.Empty,
                                         CompositionKind.Public,
-                                        GetSettings(invocation),
+                                        ApplyHints(invocationComments),
                                         ImmutableArray<MdBinding>.Empty,
                                         ImmutableArray<MdRoot>.Empty,
                                         ImmutableArray<MdDependsOn>.Empty,
                                         ImmutableArray<MdTypeAttribute>.Empty,
                                         ImmutableArray<MdTagAttribute>.Empty,
-                                        ImmutableArray<MdOrdinalAttribute>.Empty));
+                                        ImmutableArray<MdOrdinalAttribute>.Empty,
+                                        comments.FilterHints(invocationComments).ToList()));
                                 break;
 
                             case [{ Expression: { } publicCompositionType }, { Expression: { } kindExpression }]:
@@ -105,13 +121,14 @@ internal class ApiInvocationProcessor(CancellationToken cancellationToken)
                                         CreateCompositionName(semanticModel.GetRequiredConstantValue<string>(publicCompositionType), @namespace, invocation.ArgumentList),
                                         ImmutableArray<MdUsingDirectives>.Empty,
                                         semanticModel.GetRequiredConstantValue<CompositionKind>(kindExpression),
-                                        GetSettings(invocation),
+                                        ApplyHints(invocationComments),
                                         ImmutableArray<MdBinding>.Empty,
                                         ImmutableArray<MdRoot>.Empty,
                                         ImmutableArray<MdDependsOn>.Empty,
                                         ImmutableArray<MdTypeAttribute>.Empty,
                                         ImmutableArray<MdTagAttribute>.Empty,
-                                        ImmutableArray<MdOrdinalAttribute>.Empty));
+                                        ImmutableArray<MdOrdinalAttribute>.Empty,
+                                        comments.FilterHints(invocationComments).ToList()));
                                 break;
 
                             default:
@@ -188,11 +205,11 @@ internal class ApiInvocationProcessor(CancellationToken cancellationToken)
                         break;
 
                     case nameof(IConfiguration.Arg):
-                        VisitArg(metadataVisitor, semanticModel, ArgKind.Class, invocation, genericName);
+                        VisitArg(metadataVisitor, semanticModel, ArgKind.Class, invocation, genericName, invocationComments);
                         break;
                     
                     case nameof(IConfiguration.RootArg):
-                        VisitArg(metadataVisitor, semanticModel, ArgKind.Root, invocation, genericName);
+                        VisitArg(metadataVisitor, semanticModel, ArgKind.Root, invocation, genericName, invocationComments);
                         break;
 
                     case nameof(IConfiguration.Root):
@@ -218,7 +235,7 @@ internal class ApiInvocationProcessor(CancellationToken cancellationToken)
                                 rootKind = semanticModel.GetConstantValue<RootKinds>(rootArgs[2].Expression);
                             }
 
-                            metadataVisitor.VisitRoot(new MdRoot(rootType, semanticModel, rootSymbol, name, tag, rootKind));
+                            metadataVisitor.VisitRoot(new MdRoot(rootType, semanticModel, rootSymbol, name, tag, rootKind, invocationComments));
                         }
 
                         break;
@@ -257,7 +274,8 @@ internal class ApiInvocationProcessor(CancellationToken cancellationToken)
         SemanticModel semanticModel,
         ArgKind kind,
         InvocationExpressionSyntax invocation,
-        GenericNameSyntax genericName)
+        GenericNameSyntax genericName,
+        IReadOnlyCollection<string> argComments)
     {
         // ReSharper disable once InvertIf
         if (genericName.TypeArgumentList.Arguments is [{ } argTypeSyntax]
@@ -273,7 +291,7 @@ internal class ApiInvocationProcessor(CancellationToken cancellationToken)
 
             var argType = semanticModel.GetTypeSymbol<ITypeSymbol>(argTypeSyntax, cancellationToken);
             metadataVisitor.VisitContract(new MdContract(semanticModel, invocation, argType, tags.ToImmutableArray()));
-            metadataVisitor.VisitArg(new MdArg(semanticModel, argTypeSyntax, argType, name, kind));
+            metadataVisitor.VisitArg(new MdArg(semanticModel, argTypeSyntax, argType, name, kind, argComments));
         }
     }
 
@@ -382,28 +400,12 @@ internal class ApiInvocationProcessor(CancellationToken cancellationToken)
             metadataVisitor.VisitUsingDirectives(new MdUsingDirectives(namespaces.ToImmutableArray(), ImmutableArray<string>.Empty));
         }
     }
-
-    private IHints GetSettings(SyntaxNode node)
+    
+    private IHints ApplyHints(IEnumerable<string> invocationComments)
     {
-        var comments = (
-                from trivia in node.GetLeadingTrivia()
-                where trivia.IsKind(SyntaxKind.SingleLineCommentTrivia)
-                select trivia.ToFullString().Trim()
-                into comment
-                select CommentRegex.Match(comment)
-                into match
-                where match.Success
-                select match)
-            .ToArray();
-
-        foreach (var comment in comments)
+        foreach (var hint in comments.GetHints(invocationComments))
         {
-            if (!Enum.TryParse(comment.Groups[1].Value, true, out Hint setting))
-            {
-                continue;
-            }
-
-            _hints[setting] = comment.Groups[2].Value;
+            _hints[hint.Key] = hint.Value;
         }
 
         return _hints;

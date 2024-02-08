@@ -1,7 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal sealed class ParameterizedConstructorBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class ParameterizedConstructorBuilder(IComments comments): IBuilder<CompositionCode, CompositionCode>
 {
     public CompositionCode Build(CompositionCode composition)
     {
@@ -24,7 +24,7 @@ internal sealed class ParameterizedConstructorBuilder: IBuilder<CompositionCode,
         
         var classArgs = composition.Args.Where(arg => arg.Node.Arg?.Source.Kind == ArgKind.Class).ToArray();
         code.AppendLine("/// <summary>");
-        code.AppendLine("/// This parameterized constructor creates a new instance of the composition with arguments.");
+        code.AppendLine($"/// This parameterized constructor creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/> with arguments.");
         code.AppendLine("/// </summary>");
         foreach (var arg in classArgs)
         {
@@ -32,8 +32,21 @@ internal sealed class ParameterizedConstructorBuilder: IBuilder<CompositionCode,
             {
                 continue;
             }
-            
-            code.AppendLine($"/// <param name=\"{mdArg.ArgName}\">The composition argument of type <see cref=\"{mdArg.Type}\"/>.</param>");
+
+            if (mdArg.Comments.Count > 0)
+            {
+                code.AppendLine($"/// <param name=\"{mdArg.ArgName}\">");
+                foreach (var comment in comments.Format(mdArg.Comments))
+                {
+                    code.AppendLine(comment);
+                }
+
+                code.AppendLine("/// </param>");
+            }
+            else
+            {
+                code.AppendLine($"/// <param name=\"{mdArg.ArgName}\">The composition argument of type <see cref=\"{mdArg.Type}\"/>.</param>");   
+            }
         }
 
         code.AppendLine($"public {composition.Source.Source.Name.ClassName}({string.Join(", ", classArgs.Select(arg => $"{arg.InstanceType} {arg.Node.Arg?.Source.ArgName}"))})");

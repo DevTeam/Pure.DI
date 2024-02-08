@@ -19,9 +19,11 @@ internal partial class Composition: ServiceProviderFactory<Composition>
             // View Models
             .Bind<IClockViewModel>()
                 .To<ClockViewModel>()
+                // Provides the composition root for Clock view model
                 .Root<IClockViewModel>("ClockViewModel")
             .Bind<IErrorViewModel>()
                 .To<ErrorViewModel>()
+                // Provides the composition root for Error view model
                 .Root<IErrorViewModel>()
 
             // Services
@@ -32,10 +34,12 @@ internal partial class Composition: ServiceProviderFactory<Composition>
             .Bind<IWeatherForecastService>()
                 .As(Singleton)
                 .To<WeatherForecastService>()
+                // Provides the composition root for Weather Forecast service
                 .Root<IWeatherForecastService>()
             .Bind<ICounterService>()
                 .As(Singleton)
                 .To<CounterService>()
+                // Provides the composition root for Counter service
                 .Root<ICounterService>()
             
             // Infrastructure

@@ -3,6 +3,7 @@ namespace Pure.DI.Core.Models;
 internal record Root(
     int Index,
     DependencyNode Node,
+    MdRoot Source,
     in Injection Injection,
     string Name,
     in ImmutableArray<Line> Lines,

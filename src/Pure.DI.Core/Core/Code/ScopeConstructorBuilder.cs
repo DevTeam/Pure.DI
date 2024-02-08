@@ -3,7 +3,7 @@ namespace Pure.DI.Core.Code;
 
 internal sealed class ScopeConstructorBuilder: IBuilder<CompositionCode, CompositionCode>
 {
-    private const string ParentCompositionArgName = "parent";
+    private const string BaseCompositionArgName = "baseComposition";
 
     public CompositionCode Build(CompositionCode composition)
     {
@@ -15,14 +15,14 @@ internal sealed class ScopeConstructorBuilder: IBuilder<CompositionCode, Composi
         }
 
         code.AppendLine("/// <summary>");
-        code.AppendLine($"/// This constructor creates a new composition scope based on a <paramref name=\"{ParentCompositionArgName}\"/> composition. This allows the <see cref=\"Lifetime.Scoped\"/> life time to be applied.");
+        code.AppendLine($"/// This constructor creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/> scope based on <paramref name=\"{BaseCompositionArgName}\"/>. This allows the <see cref=\"Lifetime.Scoped\"/> life time to be applied.");
         code.AppendLine("/// </summary>");
-        code.AppendLine($"/// <param name=\"{ParentCompositionArgName}\">A base composition.</param>");
-        code.AppendLine($"protected {composition.Source.Source.Name.ClassName}({composition.Source.Source.Name.ClassName} {ParentCompositionArgName})");
+        code.AppendLine($"/// <param name=\"{BaseCompositionArgName}\">Base composition.</param>");
+        code.AppendLine($"protected {composition.Source.Source.Name.ClassName}({composition.Source.Source.Name.ClassName} {BaseCompositionArgName})");
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine($"{Names.ParentFieldName} = {ParentCompositionArgName}.{Names.ParentFieldName};");
+            code.AppendLine($"{Names.ParentFieldName} = {BaseCompositionArgName}.{Names.ParentFieldName};");
             if (composition.IsThreadSafe)
             {
                 code.AppendLine($"{Names.LockFieldName} = {Names.ParentFieldName}.{Names.LockFieldName};");
@@ -38,7 +38,7 @@ internal sealed class ScopeConstructorBuilder: IBuilder<CompositionCode, Composi
             {
                 foreach (var argsField in classArgs)
                 {
-                    code.AppendLine($"{argsField.VariableName} = {ParentCompositionArgName}.{argsField.VariableName};");
+                    code.AppendLine($"{argsField.VariableName} = {BaseCompositionArgName}.{argsField.VariableName};");
                 }
             }
         }
