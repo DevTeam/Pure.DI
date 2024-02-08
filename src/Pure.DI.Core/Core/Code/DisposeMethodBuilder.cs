@@ -17,9 +17,15 @@ internal sealed class DisposeMethodBuilder: IBuilder<CompositionCode, Compositio
             code.AppendLine();
         }
 
-        code.AppendLine("/// <summary>");
-        code.AppendLine("/// <inheritdoc/>");
-        code.AppendLine("/// </summary>");
+        var hints = composition.Source.Source.Hints;
+        var isCommentsEnabled = hints.GetHint(Hint.Comments, SettingState.On) == SettingState.On;
+        if (isCommentsEnabled)
+        {
+            code.AppendLine("/// <summary>");
+            code.AppendLine("/// <inheritdoc/>");
+            code.AppendLine("/// </summary>");
+        }
+
         code.AppendLine($"{composition.Source.Source.Hints.GetValueOrDefault(Hint.DisposeMethodModifiers, Names.DefaultApiMethodModifiers)} void Dispose()");
         code.AppendLine("{");
         using (code.Indent())

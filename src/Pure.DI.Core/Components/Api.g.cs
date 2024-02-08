@@ -764,7 +764,27 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         /// <seealso cref="IConfiguration.Hint"/>
-        SeverityOfNotImplementedContract
+        SeverityOfNotImplementedContract,
+        
+        /// <summary>
+        /// <c>On</c> or <c>Off</c>. Specifies whether the generated code should be commented. <c>On</c> by default.
+        /// <example>
+        /// For example:
+        /// <code>
+        /// // Comments = Off
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.Comments, "Off")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        Comments
     }
 
     /// <summary>
@@ -1601,14 +1621,15 @@ namespace Pure.DI
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
-        ///     .Bind&amp;lt;IService&amp;gt;()
+        ///     .Bind&lt;IService&gt;()
         ///     To(ctx =&gt;
         ///     {
         ///         ctx.Inject&lt;IDependency&gt;(out var dependency);
         ///         return new Service(dependency);
         ///     })
         /// </code>
-        /// and another example:
+        /// <br/>
+        /// and another example:<br/>
         /// <code>
         /// DI.Setup("Composition")
         ///     .Bind&lt;IService&gt;()
@@ -1663,6 +1684,18 @@ namespace Pure.DI
         /// </summary>
         /// <example>
         /// <code>
+        /// interface IDependency;
+        ///
+        /// 
+        /// class Dependency : IDependency;
+        ///
+        /// 
+        /// interface IService;
+        ///
+        /// 
+        /// class Service(IDependency dependency) : IService;
+        ///
+        /// 
         /// DI.Setup("Composition")
         ///   .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;()
         ///   .Bind&lt;IService&gt;().To&lt;Service&gt;()

@@ -83,18 +83,23 @@ internal sealed class RootMethodsBuilder(IBuildTools buildTools, IComments comme
         
         name.Append(rootArgsStr);
 
-        var rootComments = root.Source.Comments;
-        if (rootComments.Count > 0)
+        var hints = composition.Source.Source.Hints;
+        var isCommentsEnabled = hints.GetHint(Hint.Comments, SettingState.On) == SettingState.On;
+        if (isCommentsEnabled)
         {
-            code.AppendLine("/// <summary>");
-            foreach (var comment in comments.Format(rootComments))
+            var rootComments = root.Source.Comments;
+            if (rootComments.Count > 0)
             {
-                code.AppendLine(comment);
+                code.AppendLine("/// <summary>");
+                foreach (var comment in comments.Format(rootComments))
+                {
+                    code.AppendLine(comment);
+                }
+
+                code.AppendLine("/// </summary>");
             }
-            
-            code.AppendLine("/// </summary>");
         }
-        
+
         code.AppendLine(name.ToString());
         code.AppendLine("{");
         using (code.Indent())

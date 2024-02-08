@@ -23,29 +23,34 @@ internal sealed class ParameterizedConstructorBuilder(IComments comments): IBuil
         }
         
         var classArgs = composition.Args.Where(arg => arg.Node.Arg?.Source.Kind == ArgKind.Class).ToArray();
-        code.AppendLine("/// <summary>");
-        code.AppendLine($"/// This parameterized constructor creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/> with arguments.");
-        code.AppendLine("/// </summary>");
-        foreach (var arg in classArgs)
+        var hints = composition.Source.Source.Hints;
+        var isCommentsEnabled = hints.GetHint(Hint.Comments, SettingState.On) == SettingState.On;
+        if (isCommentsEnabled)
         {
-            if (arg.Node.Arg?.Source is not {} mdArg)
+            code.AppendLine("/// <summary>");
+            code.AppendLine($"/// This parameterized constructor creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/> with arguments.");
+            code.AppendLine("/// </summary>");
+            foreach (var arg in classArgs)
             {
-                continue;
-            }
-
-            if (mdArg.Comments.Count > 0)
-            {
-                code.AppendLine($"/// <param name=\"{mdArg.ArgName}\">");
-                foreach (var comment in comments.Format(mdArg.Comments))
+                if (arg.Node.Arg?.Source is not { } mdArg)
                 {
-                    code.AppendLine(comment);
+                    continue;
                 }
 
-                code.AppendLine("/// </param>");
-            }
-            else
-            {
-                code.AppendLine($"/// <param name=\"{mdArg.ArgName}\">The composition argument of type <see cref=\"{mdArg.Type}\"/>.</param>");   
+                if (mdArg.Comments.Count > 0)
+                {
+                    code.AppendLine($"/// <param name=\"{mdArg.ArgName}\">");
+                    foreach (var comment in comments.Format(mdArg.Comments))
+                    {
+                        code.AppendLine(comment);
+                    }
+
+                    code.AppendLine("/// </param>");
+                }
+                else
+                {
+                    code.AppendLine($"/// <param name=\"{mdArg.ArgName}\">The composition argument of type <see cref=\"{mdArg.Type}\"/>.</param>");
+                }
             }
         }
 

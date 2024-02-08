@@ -50,8 +50,9 @@ public class Scenario
 // {            
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>().Root<IService>("Root")
-            // Some argument
+            .Bind<IService>().To<Service>()
+            .Root<IService>("Root")
+            // Some kind of identifier
             .Arg<int>("id")
             // An argument can be tagged (e.g., tag "name")
             // to be injectable by type and this tag

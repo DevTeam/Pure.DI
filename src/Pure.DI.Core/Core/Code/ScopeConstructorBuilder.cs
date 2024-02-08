@@ -14,10 +14,16 @@ internal sealed class ScopeConstructorBuilder: IBuilder<CompositionCode, Composi
             code.AppendLine();
         }
 
-        code.AppendLine("/// <summary>");
-        code.AppendLine($"/// This constructor creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/> scope based on <paramref name=\"{BaseCompositionArgName}\"/>. This allows the <see cref=\"Lifetime.Scoped\"/> life time to be applied.");
-        code.AppendLine("/// </summary>");
-        code.AppendLine($"/// <param name=\"{BaseCompositionArgName}\">Base composition.</param>");
+        var hints = composition.Source.Source.Hints;
+        var isCommentsEnabled = hints.GetHint(Hint.Comments, SettingState.On) == SettingState.On;
+        if (isCommentsEnabled)
+        {
+            code.AppendLine("/// <summary>");
+            code.AppendLine($"/// This constructor creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/> scope based on <paramref name=\"{BaseCompositionArgName}\"/>. This allows the <see cref=\"Lifetime.Scoped\"/> life time to be applied.");
+            code.AppendLine("/// </summary>");
+            code.AppendLine($"/// <param name=\"{BaseCompositionArgName}\">Base composition.</param>");
+        }
+
         code.AppendLine($"protected {composition.Source.Source.Name.ClassName}({composition.Source.Source.Name.ClassName} {BaseCompositionArgName})");
         code.AppendLine("{");
         using (code.Indent())

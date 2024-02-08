@@ -17,6 +17,7 @@ internal sealed class ApiMembersBuilder(
         }
 
         var hints = composition.Source.Source.Hints;
+        var isCommentsEnabled = hints.GetHint(Hint.Comments, SettingState.On) == SettingState.On;
         var apiCode = new LinesBuilder();
         if (hints.GetHint(Hint.Resolve, SettingState.On) == SettingState.On)
         {
@@ -31,12 +32,16 @@ internal sealed class ApiMembersBuilder(
             {
                 logger.CompileWarning($"The root argument \"{rootArg.Node.Arg}\" of the composition is used. This root cannot be resolved using \"Resolve\" methods, so an exception will be thrown when trying to do so.", rootArg.Node.Arg?.Source.Source.GetLocation() ?? composition.Source.Source.Source.GetLocation(), LogId.WarningRootArgInResolveMethod);
             }
-            
-            apiCode.AppendLine("/// <summary>");
-            apiCode.AppendLine("/// Resolves the composition root.");
-            apiCode.AppendLine("/// </summary>");
-            apiCode.AppendLine("/// <typeparam name=\"T\">The type of the composition root.</typeparam>");
-            apiCode.AppendLine("/// <returns>A composition root.</returns>");
+
+            if (isCommentsEnabled)
+            {
+                apiCode.AppendLine("/// <summary>");
+                apiCode.AppendLine("/// Resolves the composition root.");
+                apiCode.AppendLine("/// </summary>");
+                apiCode.AppendLine("/// <typeparam name=\"T\">The type of the composition root.</typeparam>");
+                apiCode.AppendLine("/// <returns>A composition root.</returns>");
+            }
+
             buildTools.AddPureHeader(apiCode);
             apiCode.AppendLine($"{hints.GetValueOrDefault(Hint.ResolveMethodModifiers, Names.DefaultApiMethodModifiers)} T {hints.GetValueOrDefault(Hint.ResolveMethodName, Names.ResolveMethodName)}<T>()");
             apiCode.AppendLine("{");
@@ -50,12 +55,16 @@ internal sealed class ApiMembersBuilder(
             apiCode.AppendLine();
             membersCounter++;
 
-            apiCode.AppendLine("/// <summary>");
-            apiCode.AppendLine("/// Resolves the composition root by tag.");
-            apiCode.AppendLine("/// </summary>");
-            apiCode.AppendLine("/// <typeparam name=\"T\">The type of the composition root.</typeparam>");
-            apiCode.AppendLine("/// <param name=\"tag\">The tag of a composition root.</param>");
-            apiCode.AppendLine("/// <returns>A composition root.</returns>");
+            if (isCommentsEnabled)
+            {
+                apiCode.AppendLine("/// <summary>");
+                apiCode.AppendLine("/// Resolves the composition root by tag.");
+                apiCode.AppendLine("/// </summary>");
+                apiCode.AppendLine("/// <typeparam name=\"T\">The type of the composition root.</typeparam>");
+                apiCode.AppendLine("/// <param name=\"tag\">The tag of a composition root.</param>");
+                apiCode.AppendLine("/// <returns>A composition root.</returns>");
+            }
+
             buildTools.AddPureHeader(apiCode);
             apiCode.AppendLine($"{hints.GetValueOrDefault(Hint.ResolveByTagMethodModifiers, Names.DefaultApiMethodModifiers)} T {hints.GetValueOrDefault(Hint.ResolveByTagMethodName, Names.ResolveMethodName)}<T>(object? tag)");
             apiCode.AppendLine("{");
@@ -70,11 +79,15 @@ internal sealed class ApiMembersBuilder(
             membersCounter++;
 
             var resolvers = resolversBuilder.Build(composition.Roots).ToArray();
-            apiCode.AppendLine("/// <summary>");
-            apiCode.AppendLine("/// Resolves the composition root.");
-            apiCode.AppendLine("/// </summary>");
-            apiCode.AppendLine("/// <param name=\"type\">The type of the composition root.</param>");
-            apiCode.AppendLine("/// <returns>A composition root.</returns>");
+            if (isCommentsEnabled)
+            {
+                apiCode.AppendLine("/// <summary>");
+                apiCode.AppendLine("/// Resolves the composition root.");
+                apiCode.AppendLine("/// </summary>");
+                apiCode.AppendLine("/// <param name=\"type\">The type of the composition root.</param>");
+                apiCode.AppendLine("/// <returns>A composition root.</returns>");
+            }
+
             CreateObjectResolverMethod(
                 hints.GetValueOrDefault(Hint.ObjectResolveMethodModifiers, Names.DefaultApiMethodModifiers),
                 hints.GetValueOrDefault(Hint.ObjectResolveMethodName, Names.ResolveMethodName),
@@ -88,12 +101,16 @@ internal sealed class ApiMembersBuilder(
             membersCounter++;
             
             apiCode.AppendLine();
-            apiCode.AppendLine("/// <summary>");
-            apiCode.AppendLine("/// Resolves the composition root by tag.");
-            apiCode.AppendLine("/// </summary>");
-            apiCode.AppendLine("/// <param name=\"type\">The type of the composition root.</param>");
-            apiCode.AppendLine("/// <param name=\"tag\">The tag of a composition root.</param>");
-            apiCode.AppendLine("/// <returns>A composition root.</returns>");
+            if (isCommentsEnabled)
+            {
+                apiCode.AppendLine("/// <summary>");
+                apiCode.AppendLine("/// Resolves the composition root by tag.");
+                apiCode.AppendLine("/// </summary>");
+                apiCode.AppendLine("/// <param name=\"type\">The type of the composition root.</param>");
+                apiCode.AppendLine("/// <param name=\"tag\">The tag of a composition root.</param>");
+                apiCode.AppendLine("/// <returns>A composition root.</returns>");
+            }
+
             CreateObjectResolverMethod(
                 hints.GetValueOrDefault(Hint.ObjectResolveByTagMethodModifiers, Names.DefaultApiMethodModifiers),
                 hints.GetValueOrDefault(Hint.ObjectResolveByTagMethodName, Names.ResolveMethodName),

@@ -289,6 +289,7 @@ Both approaches can be used in combination with each other.
 | [DisposeMethodModifiers](#disposemethodmodifiers-hint)                                                                             | Method modifier                            |            | _public_  |
 | [FormatCode](#formatcode-hint)                                                                                                     | _On_ or _Off_                              |            | _Off_     |
 | [SeverityOfNotImplementedContract](#severityofnotimplementedcontract-hint)                                                         | _Error_ or _Warning_ or _Info_ or _Hidden_ |            | _Error_   |
+| [Comments](#comments-hint)                                                                                                         | _On_ or _Off_                              |            | _On_     |
 
 The list of hints will be gradually expanded to meet the needs and desires for fine-tuning code generation. Please feel free to add your ideas.
 
@@ -509,6 +510,26 @@ Indicates the severity level of the situation when, in the binding, an implement
 - _"Hidden"_ - what's not a problem.
 
 </details>
+
+### Comments Hint
+
+Specifies whether the generated code should be commented.
+
+```c#
+// Represents the composition class
+DI.Setup(nameof(Composition))
+    .Bind<IService>().To<Service>()
+    // Provides a composition root of my service
+    .Root<IService>("MyService");
+```
+
+Appropriate comments will be added to the generated ```Composition``` class and the documentation for the class, depending on the IDE used, will look something like this:
+
+![ReadmeDocumentation1.png](readme/ReadmeDocumentation1.png)
+
+Then documentation for the composition root:
+
+![ReadmeDocumentation2.png](readme/ReadmeDocumentation2.png)
 
 ## NuGet packages
 

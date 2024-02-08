@@ -21,9 +21,15 @@ internal sealed class DefaultConstructorBuilder: IBuilder<CompositionCode, Compo
             code.AppendLine();
         }
 
-        code.AppendLine("/// <summary>");
-        code.AppendLine($"/// This constructor creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/>.");
-        code.AppendLine("/// </summary>");
+        var hints = composition.Source.Source.Hints;
+        var isCommentsEnabled = hints.GetHint(Hint.Comments, SettingState.On) == SettingState.On;
+        if (isCommentsEnabled)
+        {
+            code.AppendLine("/// <summary>");
+            code.AppendLine($"/// This constructor creates a new instance of <see cref=\"{composition.Source.Source.Name.ClassName}\"/>.");
+            code.AppendLine("/// </summary>");
+        }
+
         code.AppendLine($"public {composition.Source.Source.Name.ClassName}()");
         code.AppendLine("{");
         using (code.Indent())
