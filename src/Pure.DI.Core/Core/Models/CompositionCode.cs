@@ -9,4 +9,5 @@ internal record CompositionCode(
     int DisposablesCount,
     int DisposablesScopedCount,
     bool IsThreadSafe,
+    in ImmutableArray<Line> Diagram,
     int MembersCount = 0);

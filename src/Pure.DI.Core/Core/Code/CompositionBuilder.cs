@@ -7,6 +7,7 @@ internal class CompositionBuilder(
     IVariablesBuilder variablesBuilder,
     ICodeBuilder<Block> blockBuilder,
     ICodeBuilder<IStatement> statementBuilder,
+    IBuilder<CompositionCode, LinesBuilder> classDiagramBuilder,
     CancellationToken cancellationToken)
     : IBuilder<DependencyGraph, CompositionCode>
 {
@@ -77,7 +78,7 @@ internal class CompositionBuilder(
             .ThenBy(i => i.PropertyName)
             .ToImmutableArray();
         
-        return new CompositionCode(
+        var composition = new CompositionCode(
             graph,
             new LinesBuilder(),
             singletons,
@@ -85,6 +86,15 @@ internal class CompositionBuilder(
             publicRoots,
             disposableSingletons.Length,
             disposableSingletons.Count(i => i.Node.Lifetime == Lifetime.Scoped),
-            isThreadSafe);
+            isThreadSafe,
+            ImmutableArray<Line>.Empty);
+        
+        if (graph.Source.Hints.GetHint<SettingState>(Hint.ToString) == SettingState.On)
+        {
+            var diagram = classDiagramBuilder.Build(composition);
+            composition = composition with { Diagram = diagram.Lines.ToImmutableArray() };
+        }
+
+        return composition;
     }
 }

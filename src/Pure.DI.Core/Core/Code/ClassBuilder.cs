@@ -1,6 +1,8 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
+using System.Buffers.Text;
+
 internal sealed class ClassBuilder(
     [Tag(WellknownTag.UsingDeclarationsBuilder)] IBuilder<CompositionCode, CompositionCode> usingDeclarationsBuilder,
     [Tag(WellknownTag.FieldsBuilder)] IBuilder<CompositionCode, CompositionCode> fieldsBuilder,
@@ -17,6 +19,7 @@ internal sealed class ClassBuilder(
     [Tag(WellknownTag.ResolverClassesBuilder)] IBuilder<CompositionCode, CompositionCode> resolversClassesBuilder,
     IInformation information,
     IComments comments,
+    IBuilder<IEnumerable<string>, Uri> mermaidUrlBuilder,
     CancellationToken cancellationToken)
     : IBuilder<CompositionCode, CompositionCode>
 {
@@ -72,6 +75,12 @@ internal sealed class ClassBuilder(
                     }
 
                     code.AppendLine("/// </para>");
+                }
+                
+                if (!composition.Diagram.IsEmpty)
+                {
+                    var diagramUrl = mermaidUrlBuilder.Build(composition.Diagram.Select(i => i.Text));
+                    code.AppendLine($"/// <a href=\"{diagramUrl}\">Class diagram</a><br/>");
                 }
 
                 var orderedRoots = composition.Roots

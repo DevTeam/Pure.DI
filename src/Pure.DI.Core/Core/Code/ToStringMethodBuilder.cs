@@ -1,19 +1,18 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal sealed class ToStringMethodBuilder(IBuilder<CompositionCode, LinesBuilder> classDiagramBuilder)
+internal sealed class ToStringMethodBuilder
     : IBuilder<CompositionCode, CompositionCode>
 {
     public CompositionCode Build(CompositionCode composition)
     {
-        if (composition.Source.Source.Hints.GetHint<SettingState>(Hint.ToString) != SettingState.On)
+        if (composition.Diagram.IsEmpty)
         {
             return composition;
         }
 
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
-        var classDiagram = classDiagramBuilder.Build(composition);
         var hints = composition.Source.Source.Hints;
         var isCommentsEnabled = hints.GetHint(Hint.Comments, SettingState.On) == SettingState.On;
         if (isCommentsEnabled)
@@ -30,7 +29,7 @@ internal sealed class ToStringMethodBuilder(IBuilder<CompositionCode, LinesBuild
             code.AppendLine("return");
             using (code.Indent())
             {
-                var lines = classDiagram.Lines.ToArray();
+                var lines = composition.Diagram;
                 for (var i = 0; i < lines.Length; i++)
                 {
                     var line = lines[i];
