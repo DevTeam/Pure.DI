@@ -36,10 +36,13 @@ DI.Setup("Composition")
 ```c#
 partial class Composition
 {
+    // Default constructor
     public Composition() { }
 
-    internal Composition(Composition parent) { }
+    // Scope constructor
+    internal Composition(Composition baseComposition) { }
 
+    // Composition root
     public IService Root
     {
         get
@@ -108,7 +111,7 @@ No composition class will be created when this value is specified, but this setu
 
 It's quite trivial, this constructor simply initializes the internal state.
 
-### Argument constructor
+### Parameterized constructor
 
 It replaces the default constructor and is only created if at least one argument is specified. For example:
 
@@ -127,16 +130,9 @@ public Composition(string name, int id) { ... }
 
 and there is no default constructor. It is important to remember that only those arguments that are used in the object graph will appear in the constructor. Arguments that are not involved cannot be defined, as they are omitted from the constructor parameters to save resources.
 
-### Child constructor
+### Scope constructor
 
-This constructor is always available and is used to create a child composition based on the parent composition:
-
-```c#
-var parentComposition = new Composition();
-var childComposition = new Composition(parentComposition); 
-```
-
-The child composition inherits the state of the parent composition in the form of arguments and singleton objects. The states are copied, and the compositions are completely independent. All singleton objects previously created in the parent composition are also made available in the child composition.
+This constructor creates a composition instance for the new scope. This allows ``Lifetime.Scoped`` to be applied. Pleas see [this](readme/scope.md) example for details.
 
 </details>
 

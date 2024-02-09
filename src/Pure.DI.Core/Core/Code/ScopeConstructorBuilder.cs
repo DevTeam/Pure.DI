@@ -24,7 +24,7 @@ internal sealed class ScopeConstructorBuilder: IBuilder<CompositionCode, Composi
             code.AppendLine($"/// <param name=\"{BaseCompositionArgName}\">Base composition.</param>");
         }
 
-        code.AppendLine($"protected {composition.Source.Source.Name.ClassName}({composition.Source.Source.Name.ClassName} {BaseCompositionArgName})");
+        code.AppendLine($"internal {composition.Source.Source.Name.ClassName}({composition.Source.Source.Name.ClassName} {BaseCompositionArgName})");
         code.AppendLine("{");
         using (code.Indent())
         {
