@@ -50,10 +50,7 @@ internal class CompositionBuilder(
                 .OrderBy(i => i.Node.Binding.Id)
                 .ToImmutableArray();
             
-            var rootArgs = args
-                .Where(i => i.Node.Arg?.Source.Kind == ArgKind.Root)
-                .ToImmutableArray();
-
+            var rootArgs = args.GetArgsOfKind(ArgKind.Root).ToImmutableArray();
             var processedRoot = root with
             {
                 Lines = ctx.Code.Lines.ToImmutableArray(),

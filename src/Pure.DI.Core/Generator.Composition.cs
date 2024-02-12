@@ -59,6 +59,11 @@ public partial class Generator
             .Bind<IVariator<TT>>().To<Variator<TT>>()
             .Bind<Func<string, Regex>>().To(_ => new Func<string, Regex>(value => new Regex(value, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase)))
         
+            // Commenters
+            .Bind<ICommenter<Unit>>(typeof(ClassCommenter)).To<ClassCommenter>()
+            .Bind<ICommenter<Unit>>(typeof(ParameterizedConstructorCommenter)).To<ParameterizedConstructorCommenter>()
+            .Bind<ICommenter<Root>>(typeof(RootMethodsCommenter)).To<RootMethodsCommenter>()
+        
             // Builders
             .Bind<IBuilder<IEnumerable<SyntaxUpdate>, IEnumerable<MdSetup>>>().To<MetadataBuilder>()
             .Bind<IBuilder<LogEntry, LogInfo>>().To<LogInfoBuilder>()

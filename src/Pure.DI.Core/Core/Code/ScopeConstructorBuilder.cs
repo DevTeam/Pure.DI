@@ -39,7 +39,7 @@ internal sealed class ScopeConstructorBuilder: IBuilder<CompositionCode, Composi
                 code.AppendLine($"{Names.DisposablesFieldName} = new {Names.IDisposableInterfaceName}[{composition.DisposablesScopedCount.ToString()}];");
             }
             
-            var classArgs = composition.Args.Where(i => i.Node.Arg?.Source.Kind == ArgKind.Class).ToArray();
+            var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToArray();
             if (classArgs.Any())
             {
                 foreach (var argsField in classArgs)

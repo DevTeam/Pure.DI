@@ -5,7 +5,7 @@ internal sealed class ArgFieldsBuilder: IBuilder<CompositionCode, CompositionCod
 {
     public CompositionCode Build(CompositionCode composition)
     {
-        var classArgs = composition.Args.Where(i => i.Node.Arg?.Source.Kind == ArgKind.Class).ToArray();
+        var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToArray();
         if (!classArgs.Any())
         {
             return composition;

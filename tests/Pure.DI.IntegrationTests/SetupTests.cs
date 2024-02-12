@@ -1,7 +1,6 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
 using Core;
-using Core.Models;
 
 public class SetupTests
 {

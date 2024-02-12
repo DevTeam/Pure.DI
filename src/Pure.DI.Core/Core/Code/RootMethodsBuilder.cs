@@ -1,7 +1,9 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal sealed class RootMethodsBuilder(IBuildTools buildTools, IComments comments)
+internal sealed class RootMethodsBuilder(
+    IBuildTools buildTools,
+    [Tag(typeof(RootMethodsCommenter))] ICommenter<Root> rootCommenter)
     : IBuilder<CompositionCode, CompositionCode>
 {
     private static readonly string[] NewLineSeparators = [Environment.NewLine];
@@ -83,23 +85,8 @@ internal sealed class RootMethodsBuilder(IBuildTools buildTools, IComments comme
         
         name.Append(rootArgsStr);
 
-        var hints = composition.Source.Source.Hints;
-        var isCommentsEnabled = hints.GetHint(Hint.Comments, SettingState.On) == SettingState.On;
-        if (isCommentsEnabled)
-        {
-            var rootComments = root.Source.Comments;
-            if (rootComments.Count > 0)
-            {
-                code.AppendLine("/// <summary>");
-                foreach (var comment in comments.Format(rootComments))
-                {
-                    code.AppendLine(comment);
-                }
-
-                code.AppendLine("/// </summary>");
-            }
-        }
-
+        rootCommenter.AddComments(composition, root);
+        
         code.AppendLine(name.ToString());
         code.AppendLine("{");
         using (code.Indent())

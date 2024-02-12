@@ -46,12 +46,4 @@ namespace Sample
         result.GeneratedCode.Contains("/// My root line 1").ShouldBeTrue();
         result.GeneratedCode.Contains("/// My root line 2").ShouldBeTrue();
     }
-    
-    public class Abc
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        public int Id => 10;
-    }
 }

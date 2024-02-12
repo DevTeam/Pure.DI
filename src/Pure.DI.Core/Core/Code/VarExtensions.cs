@@ -11,4 +11,7 @@ internal static class VarExtensions
             parent = parent.Parent;
         }
     }
+
+    public static IEnumerable<Variable> GetArgsOfKind(this in ImmutableArray<Variable> args, ArgKind kind) => 
+        args.Where(arg => arg.Node.Arg?.Source.Kind == kind);
 }

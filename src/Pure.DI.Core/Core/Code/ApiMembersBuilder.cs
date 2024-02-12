@@ -22,8 +22,7 @@ internal sealed class ApiMembersBuilder(
         if (hints.GetHint(Hint.Resolve, SettingState.On) == SettingState.On)
         {
             var rootArgs = composition
-                .Args
-                .Where(i => i.Node.Arg?.Source.Kind == ArgKind.Root)
+                .Args.GetArgsOfKind(ArgKind.Root)
                 .GroupBy(i => i.Node.Binding.Id)
                 .Select(i => i.First())
                 .ToArray();

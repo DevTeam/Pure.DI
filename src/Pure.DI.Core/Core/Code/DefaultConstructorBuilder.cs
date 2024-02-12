@@ -3,10 +3,6 @@ namespace Pure.DI.Core.Code;
 
 internal sealed class DefaultConstructorBuilder: IBuilder<CompositionCode, CompositionCode>
 {
-    public DefaultConstructorBuilder()
-    {
-    }
-
     public CompositionCode Build(CompositionCode composition)
     {
         if (composition.Args.Any())
