@@ -36,13 +36,13 @@ partial class Composition
         DI.Setup(nameof(Composition))
             .Bind<IService>().To<Service>()
                 // Creates a private partial root method named "GetRoot"
-                .Root<IService>("GetRoot", default, RootKinds.Private | RootKinds.Partial | RootKinds.Method)
+                .Root<IService>("GetRoot", kind: RootKinds.Private | RootKinds.Partial | RootKinds.Method)
             .Bind<IService>("Other").To<OtherService>()
                 // Creates a public root method named "GetOtherService"
                 .Root<IService>("GetOtherService", "Other", RootKinds.Public | RootKinds.Method)
             .Bind<IDependency>().To<Dependency>()
                 // Creates a internal static root named "Dependency"
-                .Root<IDependency>("Dependency", default, RootKinds.Internal | RootKinds.Static);
+                .Root<IDependency>("Dependency", kind: RootKinds.Internal | RootKinds.Static);
     
     private partial IService GetRoot();
 

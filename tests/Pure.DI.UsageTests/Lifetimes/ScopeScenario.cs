@@ -90,6 +90,6 @@ public class Scenario
         // Checks that the scoped instance is finalized
         dependency2.IsDisposed.ShouldBeTrue();
 // }
-        new Composition().SaveClassDiagram();
+        composition.SaveClassDiagram();
     }
 }
