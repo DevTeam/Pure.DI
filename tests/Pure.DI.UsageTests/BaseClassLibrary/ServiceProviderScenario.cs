@@ -12,6 +12,7 @@ $h=The `// ObjectResolveMethodName = GetService` hint overrides the _object Reso
 // ReSharper disable UnusedMember.Local
 namespace Pure.DI.UsageTests.BCL.ServiceProviderScenario;
 
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 
@@ -30,15 +31,14 @@ class Service(IDependency dependency) : IService
     public IDependency Dependency { get; } = dependency;
 }
 
-partial class ServiceProvider: IServiceProvider
+partial class Composition: IServiceProvider
 {
     private void Setup() =>
-        // The following hint overrides the name of the
-        // "object Resolve(Type type)" method in "GetService",
-        // which implements the "IServiceProvider" interface:
-
-        // ObjectResolveMethodName = GetService
-        DI.Setup(nameof(ServiceProvider))
+        DI.Setup(nameof(Composition))
+            // The following hint overrides the name of the
+            // "object Resolve(Type type)" method in "GetService",
+            // which implements the "IServiceProvider" interface
+            .Hint(Hint.ObjectResolveMethodName, "GetService")
             .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
             .Bind<IService>().To<Service>()
             .Root<IDependency>()
@@ -52,12 +52,11 @@ public class Scenario
     public void Run()
     {
 // {            
-        var serviceProvider = new ServiceProvider();
-        var service = (IService)serviceProvider.GetService(typeof(IService));
-        var dependency = serviceProvider.GetService(typeof(IDependency));
+        var serviceProvider = new Composition();
+        var service = serviceProvider.GetRequiredService<IService>();
+        var dependency = serviceProvider.GetRequiredService<IDependency>();
         service.Dependency.ShouldBe(dependency);
 // }            
-        service.ShouldBeOfType<Service>();
         serviceProvider.SaveClassDiagram();
     }
 }

@@ -29,7 +29,7 @@ interface IService
     IDependency Dependency { get; }
 }
 
-class Service(IDependency dependency) : IService
+class Service([Tag("Dependency Key")] IDependency dependency) : IService
 {
     public IDependency Dependency { get; } = dependency;
 }
@@ -42,9 +42,9 @@ partial class Composition: ServiceProviderFactory<Composition>
     private void Setup() =>
         DI.Setup(nameof(Composition))
             .DependsOn(Base)
-            .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+            .Bind<IDependency>("Dependency Key").As(Lifetime.Singleton).To<Dependency>()
             .Bind<IService>().To<Service>()
-            .Root<IDependency>()
+            .Root<IDependency>("", "Dependency Key")
             .Root<IService>();
 }
 // }
@@ -58,8 +58,8 @@ public class Scenario
         var composition = new Composition();
         var serviceCollection = composition.ServiceCollection;
         var serviceProvider = serviceCollection.BuildServiceProvider();
-        var service = (IService)serviceProvider.GetService(typeof(IService))!;
-        var dependency = serviceProvider.GetService(typeof(IDependency));
+        var service = serviceProvider.GetRequiredService<IService>();
+        var dependency = serviceProvider.GetRequiredKeyedService<IDependency>("Dependency Key");
         service.Dependency.ShouldBe(dependency);
 // }            
         composition.SaveClassDiagram();
