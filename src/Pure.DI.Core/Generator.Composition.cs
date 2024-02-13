@@ -45,6 +45,7 @@ public partial class Generator
         
         // PerBlock
             .DefaultLifetime(PerBlock)
+            .Bind<IArguments>().To<Arguments>()
             .Bind<IComments>().To<Comments>()
             .Bind<IBuilder<IEnumerable<string>, Uri>>().To<MermaidUrlBuilder>()
             .Bind<IBuildTools>().To<BuildTools>()

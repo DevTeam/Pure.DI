@@ -3,6 +3,7 @@
 namespace Pure.DI.Core.Code;
 
 internal sealed class FactoryRewriter(
+    IArguments arguments,
     DpFactory factory,
     Variable variable,
     string finishLabel,
@@ -162,7 +163,14 @@ internal sealed class FactoryRewriter(
         InvocationExpressionSyntax invocation,
         [NotNullWhen(true)] out SyntaxNode? visitInvocationExpression)
     {
-        switch (invocation.ArgumentList.Arguments.Last().Expression)
+        var value = invocation.ArgumentList.Arguments.Count switch
+        {
+            1 => invocation.ArgumentList.Arguments[0].Expression,
+            2 => arguments.GetArgs(invocation.ArgumentList, "tag", "value").Last()?.Expression,
+            _ => default
+        };
+
+        switch (value)
         {
             case IdentifierNameSyntax identifierName:
                 injections.Add(new Injection(identifierName.Identifier.Text, false));

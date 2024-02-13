@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.Operations;
 
 internal class ApiInvocationProcessor(
     IComments comments,
+    IArguments arguments,
     CancellationToken cancellationToken)
     : IApiInvocationProcessor
 {
@@ -79,7 +80,8 @@ internal class ApiInvocationProcessor(
                         break;
                     
                     case nameof(IConfiguration.Hint):
-                        if (invocation.ArgumentList.Arguments is [{ Expression: { } hintNameExpression }, { Expression: { } hintValueExpression }])
+                        var hintArgs = arguments.GetArgs(invocation.ArgumentList, "hint", "value");
+                        if (hintArgs is [{ Expression: { } hintNameExpression }, { Expression: { } hintValueExpression }])
                         {
                             _hints[semanticModel.GetConstantValue<Hint>(hintNameExpression)] = semanticModel.GetRequiredConstantValue<string>(hintValueExpression);
                         }
@@ -95,49 +97,25 @@ internal class ApiInvocationProcessor(
                         break;
 
                     case nameof(DI.Setup):
-                        switch (invocation.ArgumentList.Arguments)
-                        {
-                            case [{ Expression: { } publicCompositionType }]:
-                                metadataVisitor.VisitSetup(
-                                    new MdSetup(
-                                        invocation.ArgumentList,
-                                        CreateCompositionName(semanticModel.GetRequiredConstantValue<string>(publicCompositionType), @namespace, invocation.ArgumentList),
-                                        ImmutableArray<MdUsingDirectives>.Empty,
-                                        CompositionKind.Public,
-                                        ApplyHints(invocationComments),
-                                        ImmutableArray<MdBinding>.Empty,
-                                        ImmutableArray<MdRoot>.Empty,
-                                        ImmutableArray<MdDependsOn>.Empty,
-                                        ImmutableArray<MdTypeAttribute>.Empty,
-                                        ImmutableArray<MdTagAttribute>.Empty,
-                                        ImmutableArray<MdOrdinalAttribute>.Empty,
-                                        comments.FilterHints(invocationComments).ToList()));
-                                break;
-
-                            case [{ Expression: { } publicCompositionType }, { Expression: { } kindExpression }]:
-                                metadataVisitor.VisitSetup(
-                                    new MdSetup(
-                                        invocation.ArgumentList,
-                                        CreateCompositionName(semanticModel.GetRequiredConstantValue<string>(publicCompositionType), @namespace, invocation.ArgumentList),
-                                        ImmutableArray<MdUsingDirectives>.Empty,
-                                        semanticModel.GetRequiredConstantValue<CompositionKind>(kindExpression),
-                                        ApplyHints(invocationComments),
-                                        ImmutableArray<MdBinding>.Empty,
-                                        ImmutableArray<MdRoot>.Empty,
-                                        ImmutableArray<MdDependsOn>.Empty,
-                                        ImmutableArray<MdTypeAttribute>.Empty,
-                                        ImmutableArray<MdTagAttribute>.Empty,
-                                        ImmutableArray<MdOrdinalAttribute>.Empty,
-                                        comments.FilterHints(invocationComments).ToList()));
-                                break;
-
-                            default:
-                                NotSupported(invocation);
-                                break;
-                        }
-
+                        var setupArgs = arguments.GetArgs(invocation.ArgumentList, "compositionTypeName", "kind");
+                        var setupCompositionTypeName = setupArgs[0] is {} compositionTypeNameArg ? semanticModel.GetRequiredConstantValue<string>(compositionTypeNameArg.Expression) : "";
+                        var setupKind = setupArgs[1] is {} setupKindArg ? semanticModel.GetRequiredConstantValue<CompositionKind>(setupKindArg.Expression) : CompositionKind.Public;
+                        metadataVisitor.VisitSetup(
+                            new MdSetup(
+                                invocation.ArgumentList,
+                                CreateCompositionName(setupCompositionTypeName, @namespace, invocation.ArgumentList),
+                                ImmutableArray<MdUsingDirectives>.Empty,
+                                setupKind,
+                                ApplyHints(invocationComments),
+                                ImmutableArray<MdBinding>.Empty,
+                                ImmutableArray<MdRoot>.Empty,
+                                ImmutableArray<MdDependsOn>.Empty,
+                                ImmutableArray<MdTypeAttribute>.Empty,
+                                ImmutableArray<MdTagAttribute>.Empty,
+                                ImmutableArray<MdOrdinalAttribute>.Empty,
+                                comments.FilterHints(invocationComments).ToList()));
                         break;
-
+                        
                     case nameof(IConfiguration.DefaultLifetime):
                         if (invocation.ArgumentList.Arguments is [{ Expression: { } defaultLifetimeSyntax }])
                         {
@@ -215,27 +193,12 @@ internal class ApiInvocationProcessor(
                     case nameof(IConfiguration.Root):
                         if (genericName.TypeArgumentList.Arguments is [{ } rootType])
                         {
-                            var rootArgs = invocation.ArgumentList.Arguments;
                             var rootSymbol = semanticModel.GetTypeSymbol<INamedTypeSymbol>(rootType, cancellationToken);
-                            var name = "";
-                            if (rootArgs.Count >= 1)
-                            {
-                                name = semanticModel.GetRequiredConstantValue<string>(rootArgs[0].Expression);
-                            }
-
-                            MdTag? tag = default;
-                            if (rootArgs.Count >= 2)
-                            {
-                                tag = new MdTag(0, semanticModel.GetConstantValue<object>(rootArgs[1].Expression));
-                            }
-
-                            var rootKind = RootKinds.Public;
-                            if (rootArgs.Count >= 3)
-                            {
-                                rootKind = semanticModel.GetConstantValue<RootKinds>(rootArgs[2].Expression);
-                            }
-
-                            metadataVisitor.VisitRoot(new MdRoot(rootType, semanticModel, rootSymbol, name, tag, rootKind, invocationComments));
+                            var rootArgs = arguments.GetArgs(invocation.ArgumentList, "name", "tag", "kind");
+                            var name = rootArgs[0] is {} nameArg ? semanticModel.GetConstantValue<string>(nameArg.Expression) ?? "" : "";
+                            var tag = rootArgs[1] is {} tagArg ? semanticModel.GetConstantValue<object>(tagArg.Expression) : null;
+                            var kind = rootArgs[2] is {} kindArg ? semanticModel.GetConstantValue<RootKinds>(kindArg.Expression) : RootKinds.Default;
+                            metadataVisitor.VisitRoot(new MdRoot(rootType, semanticModel, rootSymbol, name, new MdTag(0, tag), kind, invocationComments));
                         }
 
                         break;
@@ -295,7 +258,7 @@ internal class ApiInvocationProcessor(
         }
     }
 
-    private static void VisitFactory(
+    private void VisitFactory(
         IMetadataVisitor metadataVisitor,
         SemanticModel semanticModel,
         ITypeSymbol resultType,
@@ -323,13 +286,12 @@ internal class ApiInvocationProcessor(
         var hasContextTag = false;
         var resolvers = resolversWalker.Select(invocation =>
         {
-            // ReSharper disable once InvertIf
-            if (invocation.ArgumentList.Arguments is { Count: > 0 } arguments)
+            if (invocation.ArgumentList.Arguments is { Count: > 0 } invArguments)
             {
-                switch (arguments)
+                switch (invArguments)
                 {
                     case [{ RefOrOutKeyword.IsMissing: false } targetValue]:
-                        if (semanticModel.GetOperation(arguments[0]) is IArgumentOperation argumentOperation)
+                        if (semanticModel.GetOperation(invArguments[0]) is IArgumentOperation argumentOperation)
                         {
                             return new MdResolver(
                                 semanticModel,
@@ -342,24 +304,35 @@ internal class ApiInvocationProcessor(
 
                         break;
 
-                    case [{ RefOrOutKeyword.IsMissing: false } tag, { RefOrOutKeyword.IsMissing: false } targetValue]:
-                        hasContextTag = 
-                            tag.Expression is MemberAccessExpressionSyntax memberAccessExpression
+                    default:
+                        var args = arguments.GetArgs(invocation.ArgumentList, "tag", "value");
+                        var tag = args[0]?.Expression;
+                        
+                        hasContextTag =
+                            tag is MemberAccessExpressionSyntax memberAccessExpression
                             && memberAccessExpression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
                             && memberAccessExpression.Name.Identifier.Text == nameof(IContext.Tag)
-                            && memberAccessExpression.Expression is IdentifierNameSyntax identifierName 
+                            && memberAccessExpression.Expression is IdentifierNameSyntax identifierName
                             && identifierName.Identifier.Text == contextParameter.Identifier.Text;
                         
-                        var resolverTag = new MdTag(0, hasContextTag ? MdTag.ContextTag : semanticModel.GetConstantValue<object>(tag.Expression));
-                        if (arguments.Count > 0 && semanticModel.GetOperation(arguments[1]) is IArgumentOperation argumentOperation2)
+                        var resolverTag = new MdTag(
+                            0, 
+                            hasContextTag
+                                ? MdTag.ContextTag
+                                : tag is null 
+                                    ? default
+                                    : semanticModel.GetConstantValue<object>(tag));
+                        
+                        if (args[1] is {} valueArg
+                            && semanticModel.GetOperation(valueArg) is IArgumentOperation { Value.Type: {} valueType })
                         {
                             return new MdResolver(
                                 semanticModel,
                                 invocation,
                                 position++,
-                                argumentOperation2.Value.Type!,
+                                valueType,
                                 resolverTag,
-                                targetValue.Expression);
+                                valueArg.Expression);
                         }
 
                         break;

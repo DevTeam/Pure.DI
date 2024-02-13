@@ -1367,4 +1367,98 @@ namespace Sample
             result.Logs.ShouldBeEmpty();
         }
     }
+    
+    [Fact]
+    public async Task ShouldSupportRootWhenNamedTagParam()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+
+    internal interface IService { }
+
+    internal class Service: IService { }
+    
+    internal partial class Composition
+    {                   
+        private static void Setup() => 
+            DI.Setup("Composition")
+            .Bind<IService>("Abc").To<Service>()
+            .Root<IService>(tag: "Abc"); 
+    }               
+
+    public class Program
+    {
+       public static void Main()
+       {
+           var composition = new Composition();
+           Console.WriteLine(composition.Resolve<IService>("Abc"));
+       }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Service"), result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportInjectWhenNamedParams()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+
+    internal interface IService { }
+
+    internal class Service: IService { }
+    
+    internal class Consumer
+    {
+        public Consumer(IService service)
+        {
+        }
+    }
+    
+    internal partial class Composition
+    {                   
+        private static void Setup() => 
+            DI.Setup("Composition")
+            .Bind<IService>("Abc").To<Service>()
+            .Bind<Consumer>().To(ctx => 
+            {
+                ctx.Inject(value: out IService service, tag: "Abc");
+                return new Consumer(service);
+            })
+            .Root<Consumer>("Root"); 
+    }               
+
+    public class Program
+    {
+       public static void Main()
+       {
+           var composition = new Composition();
+           Console.WriteLine(composition.Root);
+       }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Consumer"), result);
+    }
 }

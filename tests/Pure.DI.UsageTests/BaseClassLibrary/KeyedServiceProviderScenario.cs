@@ -44,8 +44,8 @@ partial class Composition: IKeyedServiceProvider
             .Hint(Hint.ObjectResolveByTagMethodName, "GetRequiredKeyedService")
             .Bind<IDependency>("Dependency Key").As(Lifetime.Singleton).To<Dependency>()
             .Bind<IService>("Service Key").To<Service>()
-            .Root<IDependency>("", "Dependency Key")
-            .Root<IService>("", "Service Key");
+            .Root<IDependency>(tag: "Dependency Key")
+            .Root<IService>(tag: "Service Key");
 
     public object GetKeyedService(Type serviceType, object? serviceKey) => 
         GetRequiredKeyedService(serviceType, serviceKey);

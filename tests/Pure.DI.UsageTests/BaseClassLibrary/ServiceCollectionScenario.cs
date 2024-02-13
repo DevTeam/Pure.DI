@@ -44,7 +44,7 @@ partial class Composition: ServiceProviderFactory<Composition>
             .DependsOn(Base)
             .Bind<IDependency>("Dependency Key").As(Lifetime.Singleton).To<Dependency>()
             .Bind<IService>().To<Service>()
-            .Root<IDependency>("", "Dependency Key")
+            .Root<IDependency>(tag: "Dependency Key")
             .Root<IService>();
 }
 // }

@@ -2,7 +2,10 @@
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 namespace Pure.DI.Core.Code;
 
-internal class FactoryCodeBuilder(IIdGenerator idGenerator) : ICodeBuilder<DpFactory>
+internal class FactoryCodeBuilder(
+    IIdGenerator idGenerator,
+    IArguments arguments)
+    : ICodeBuilder<DpFactory>
 {
     private static readonly string InjectionStatement = $"{Names.InjectionMarker};";
 
@@ -23,7 +26,7 @@ internal class FactoryCodeBuilder(IIdGenerator idGenerator) : ICodeBuilder<DpFac
         var injections = new List<FactoryRewriter.Injection>();
         var localVariableRenamingRewriter = new LocalVariableRenamingRewriter(idGenerator, factory.Source.SemanticModel);
         var factoryExpression = localVariableRenamingRewriter.Rewrite(factory.Source.Factory);
-        var factoryRewriter = new FactoryRewriter(factory, variable, finishLabel, injections);
+        var factoryRewriter = new FactoryRewriter(arguments, factory, variable, finishLabel, injections);
         var lambda = factoryRewriter.Rewrite(factoryExpression);
         new FactoryValidator(factory).Validate(lambda); 
         SyntaxNode syntaxNode = lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);

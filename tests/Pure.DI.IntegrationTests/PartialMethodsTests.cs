@@ -62,6 +62,65 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldSupportPartialApiMethodsWhenNamedParams()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    internal interface IDependency { }
+
+    internal class Dependency : IDependency { }
+
+    internal interface IService { }
+
+    internal class Service : IService
+    {
+        public Service(IDependency dependency) { }        
+    }
+
+    internal abstract partial class CompositionBase
+    {
+        internal abstract T Resolve<T>();        
+    }
+
+    internal partial class Composition: CompositionBase
+    {                 
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup(nameof(Composition))
+                .Hint(value: "internal override", hint: Hint.ResolveMethodModifiers)
+                .Bind<IDependency>().To<Dependency>()
+                .Bind<IService>().To<Service>()
+                .Root<IService>("Root");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service = composition.Root;            
+        }
+    }                
+}
+""".RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+    
+    [Fact]
     public async Task ShouldTrackInstanceCreation()
     {
         // Given
