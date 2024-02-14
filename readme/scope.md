@@ -53,6 +53,10 @@ var program = composition.ProgramRoot;
 // Creates session #1
 var session1 = program.CreateSession();
 var dependency1 = session1.SessionRoot.Dependency;
+var dependency12 = session1.SessionRoot.Dependency;
+        
+// Checks the identity of scoped instances in the same session
+dependency1.ShouldBe(dependency12);
         
 // Creates session #2
 var session2 = program.CreateSession();
