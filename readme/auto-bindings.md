@@ -9,14 +9,14 @@ class Dependency;
 
 class Service(Dependency dependency);
 
-// Specifies to create a partial class "Composition":
+// Specifies to create a partial class "Composition"
 DI.Setup("Composition")
-    // Specifies to create a property "MyService":
+    // Specifies to create a property "MyService"
     .Root<Service>("MyService");
         
 var composition = new Composition();
 
-// service = new Service(new Dependency());
+// service = new Service(new Dependency())
 var service = composition.MyService;
 ```
 
@@ -48,21 +48,63 @@ classDiagram
 <summary>Pure.DI-generated partial class Composition</summary><blockquote>
 
 ```c#
+/// <para>
+/// Specifies to create a partial class "Composition"
+/// </para>
+/// <para>
+/// Composition roots:<br/>
+/// <list type="table">
+/// <listheader>
+/// <term>Root</term>
+/// <description>Description</description>
+/// </listheader>
+/// <item>
+/// <term>
+/// <see cref="Pure.DI.UsageTests.Basics.AutoBindingsScenario.Service"/> MyService
+/// </term>
+/// <description>
+/// Specifies to create a property "MyService"
+/// </description>
+/// </item>
+/// </list>
+/// </para>
+/// <example>
+/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.AutoBindingsScenario.Service"/> using the composition root <see cref="MyService"/>:
+/// <code>
+/// var composition = new Composition();
+/// var instance = composition.MyService;
+/// </code>
+/// </example>
+/// <a href="https://mermaid.live/view#pako:eNp1UMsOgjAQ_JVmzx4IHFBuYDl68tpL02600bakRRNC-HehSHiIl8nuTmZ2Mi0IKxEyEE_uPVX85rhmjpmwk7PVlfWqVtYQ9oqitBi4YYqLK7q3EkguzXeaqJTOBhQrNBKNaH70MxX2Y8DTnsn06U-CUb74JNfOG8-lW5wHpCOSbdwkX1wG7baPuJwxKVdBe-1uQ3AAjU5zJfvWWwb1HTUyyBhI7h4MOug-cCKKWQ">Class diagram</a><br/>
+/// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
+/// </summary>
+/// <seealso cref="Pure.DI.DI.Setup"/>
+[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM02D07di;
+  private readonly Composition _rootM02D14di;
   
+  /// <summary>
+  /// This constructor creates a new instance of <see cref="Composition"/>.
+  /// </summary>
   public Composition()
   {
-    _disposableSingletonsM02D07di = new global::System.IDisposable[0];
+    _rootM02D14di = this;
   }
   
-  internal Composition(Composition parent)
+  /// <summary>
+  /// This constructor creates a new instance of <see cref="Composition"/> scope based on <paramref name="baseComposition"/>. This allows the <see cref="Lifetime.Scoped"/> life time to be applied.
+  /// </summary>
+  /// <param name="baseComposition">Base composition.</param>
+  internal Composition(Composition baseComposition)
   {
-    _disposableSingletonsM02D07di = new global::System.IDisposable[0];
+    _rootM02D14di = baseComposition._rootM02D14di;
   }
   
   #region Composition Roots
+  /// <summary>
+  /// Specifies to create a property "MyService"
+  /// </summary>
   public Pure.DI.UsageTests.Basics.AutoBindingsScenario.Service MyService
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -75,7 +117,9 @@ partial class Composition
   }
   #endregion
   
-  
+  /// <summary>
+  /// This method provides a class diagram in mermaid format. To see this diagram, simply call the method and copy the text to this site https://mermaid.live/.
+  /// </summary>
   public override string ToString()
   {
     return

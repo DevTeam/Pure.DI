@@ -203,7 +203,6 @@ dotnet run
 - [Root arguments](readme/root-arguments.md)
 - [Composition root kinds](readme/composition-root-kinds.md)
 - [Tags](readme/tags.md)
-- [Child composition](readme/child-composition.md)
 - [Multi-contract bindings](readme/multi-contract-bindings.md)
 - [Field injection](readme/field-injection.md)
 - [Method injection](readme/method-injection.md)
@@ -219,10 +218,11 @@ dotnet run
 ### Lifetimes
 - [Singleton](readme/singleton.md)
 - [PerResolve](readme/perresolve.md)
+- [Scope](readme/scope.md)
 - [PerBlock](readme/perblock.md)
 - [Transient](readme/transient.md)
 - [Disposable singleton](readme/disposable-singleton.md)
-- [Scope](readme/scope.md)
+- [Auto scoped](readme/auto-scoped.md)
 - [Default lifetime](readme/default-lifetime.md)
 ### Attributes
 - [Constructor ordinal attribute](readme/constructor-ordinal-attribute.md)
@@ -245,7 +245,9 @@ dotnet run
 - [Async Enumerable](readme/async-enumerable.md)
 - [Service collection](readme/service-collection.md)
 - [Func with arguments](readme/func-with-arguments.md)
+- [Keyed service provider](readme/keyed-service-provider.md)
 - [Service provider](readme/service-provider.md)
+- [Service provider with scope](readme/service-provider-with-scope.md)
 - [Overriding the BCL binding](readme/overriding-the-bcl-binding.md)
 ### Interception
 - [Decorator](readme/decorator.md)
@@ -296,10 +298,13 @@ DI.Setup("Composition")
 ```c#
 partial class Composition
 {
+    // Default constructor
     public Composition() { }
 
-    internal Composition(Composition parent) { }
+    // Scope constructor
+    internal Composition(Composition baseComposition) { }
 
+    // Composition root
     public IService Root
     {
         get
@@ -368,7 +373,7 @@ No composition class will be created when this value is specified, but this setu
 
 It's quite trivial, this constructor simply initializes the internal state.
 
-### Argument constructor
+### Parameterized constructor
 
 It replaces the default constructor and is only created if at least one argument is specified. For example:
 
@@ -387,16 +392,9 @@ public Composition(string name, int id) { ... }
 
 and there is no default constructor. It is important to remember that only those arguments that are used in the object graph will appear in the constructor. Arguments that are not involved cannot be defined, as they are omitted from the constructor parameters to save resources.
 
-### Child constructor
+### Scope constructor
 
-This constructor is always available and is used to create a child composition based on the parent composition:
-
-```c#
-var parentComposition = new Composition();
-var childComposition = new Composition(parentComposition); 
-```
-
-The child composition inherits the state of the parent composition in the form of arguments and singleton objects. The states are copied, and the compositions are completely independent. All singleton objects previously created in the parent composition are also made available in the child composition.
+This constructor creates a composition instance for the new scope. This allows ``Lifetime.Scoped`` to be applied. See [this](readme/scope.md) example for details.
 
 </details>
 
@@ -515,36 +513,41 @@ DI.Setup("Composition")
 
 Both approaches can be used in combination with each other.
 
-| Hint                                                                                                                               | Values                                     | Default   | C# version |
-|------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|-----------|------------|
-| [Resolve](#resolve-hint)                                                                                                           | _On_ or _Off_                              | _On_      |            |
-| [OnNewInstance](#onnewinstance-hint)                                                                                               | _On_ or _Off_                              | _Off_     | 9.0        |
-| [OnNewInstanceImplementationTypeNameRegularExpression](#onnewinstanceimplementationtypenameregularexpression-hint)                 | Regular expression                         | .+        |            |
-| [OnNewInstanceTagRegularExpression](#onnewinstancetagregularexpression-hint)                                                       | Regular expression                         | .+        |            |
-| [OnNewInstanceLifetimeRegularExpression](#onnewinstancelifetimeregularexpression-hint)                                             | Regular expression                         | .+        |            |
-| [OnDependencyInjection](#ondependencyinjection-hint)                                                                               | _On_ or _Off_                              | _Off_     | 9.0        | 
-| [OnDependencyInjectionImplementationTypeNameRegularExpression](#OnDependencyInjectionImplementationTypeNameRegularExpression-Hint) | Regular expression                         | .+        |            |
-| [OnDependencyInjectionContractTypeNameRegularExpression](#ondependencyinjectioncontracttypenameregularexpression-hint)             | Regular expression                         | .+        |            |
-| [OnDependencyInjectionTagRegularExpression](#ondependencyinjectiontagregularexpression-hint)                                       | Regular expression                         | .+        |            |
-| [OnDependencyInjectionLifetimeRegularExpression](#ondependencyinjectionlifetimeregularexpression-hint)                             | Regular expression                         | .+        |            |
-| [OnCannotResolve](#oncannotresolve-hint)                                                                                           | _On_ or _Off_                              | _Off_     | 9.0        |
-| [OnCannotResolveContractTypeNameRegularExpression](#oncannotresolvecontracttypenameregularexpression-hint)                         | Regular expression                         | .+        |            |
-| [OnCannotResolveTagRegularExpression](#oncannotresolvetagregularexpression-hint)                                                   | Regular expression                         | .+        |            |
-| [OnCannotResolveLifetimeRegularExpression](#oncannotresolvelifetimeregularexpression-hint)                                         | Regular expression                         | .+        |            |
-| [OnNewRoot](#onnewroot-hint)                                                                                                       | _On_ or _Off_                              | _Off_     |            |
-| [ToString](#tostring-hint)                                                                                                         | _On_ or _Off_                              | _Off_     |            |
-| [ThreadSafe](#threadsafe-hint)                                                                                                     | _On_ or _Off_                              | _On_      |            |
-| [ResolveMethodModifiers](#resolvemethodmodifiers-hint)                                                                             | Method modifier                            | _public_  |            |
-| [ResolveMethodName](#resolvemethodname-hint)                                                                                       | Method name                                | _Resolve_ |            |
-| [ResolveByTagMethodModifiers](#resolvebytagmethodmodifiers-hint)                                                                   | Method modifier                            | _public_  |            |
-| [ResolveByTagMethodName](#resolvebytagmethodname-hint)                                                                             | Method name                                | _Resolve_ |            |
-| [ObjectResolveMethodModifiers](#objectresolvemethodmodifiers-hint)                                                                 | Method modifier                            | _public_  |            |
-| [ObjectResolveMethodName](#objectresolvemethodname-hint)                                                                           | Method name                                | _Resolve_ |            |
-| [ObjectResolveByTagMethodModifiers](#objectresolvebytagmethodmodifiers-hint)                                                       | Method modifier                            | _public_  |            |
-| [ObjectResolveByTagMethodName](#objectresolvebytagmethodname-hint)                                                                 | Method name                                | _Resolve_ |            |
-| [DisposeMethodModifiers](#disposemethodmodifiers-hint)                                                                             | Method modifier                            | _public_  |            |
-| [FormatCode](#formatcode-hint)                                                                                                     | _On_ or _Off_                              | _Off_     |            |
-| [SeverityOfNotImplementedContract Hint](#severityofnotimplementedcontract-hint)                                                    | _Error_ or _Warning_ or _Info_ or _Hidden_ | _Error_   |            |
+| Hint                                                                                                                               | Values                                     | C# version | Default   |
+|------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------|------------|-----------|
+| [Resolve](#resolve-hint)                                                                                                           | _On_ or _Off_                              |            | _On_      |
+| [OnNewInstance](#onnewinstance-hint)                                                                                               | _On_ or _Off_                              | 9.0        | _Off_     |
+| [OnNewInstancePartial](#onnewinstance-hint)                                                                                        | _On_ or _Off_                              |         | _On_      |
+| [OnNewInstanceImplementationTypeNameRegularExpression](#onnewinstanceimplementationtypenameregularexpression-hint)                 | Regular expression                         |            | .+        |
+| [OnNewInstanceTagRegularExpression](#onnewinstancetagregularexpression-hint)                                                       | Regular expression                         |            | .+        |
+| [OnNewInstanceLifetimeRegularExpression](#onnewinstancelifetimeregularexpression-hint)                                             | Regular expression                         |            | .+        |
+| [OnDependencyInjection](#ondependencyinjection-hint)                                                                               | _On_ or _Off_                              | 9.0        | _Off_     | 
+| [OnDependencyInjectionPartial](#ondependencyinjectionpartial-hint)                                                                 | _On_ or _Off_                              |         | _On_      |
+| [OnDependencyInjectionImplementationTypeNameRegularExpression](#OnDependencyInjectionImplementationTypeNameRegularExpression-Hint) | Regular expression                         |            | .+        |
+| [OnDependencyInjectionContractTypeNameRegularExpression](#ondependencyinjectioncontracttypenameregularexpression-hint)             | Regular expression                         |            | .+        |
+| [OnDependencyInjectionTagRegularExpression](#ondependencyinjectiontagregularexpression-hint)                                       | Regular expression                         |            | .+        |
+| [OnDependencyInjectionLifetimeRegularExpression](#ondependencyinjectionlifetimeregularexpression-hint)                             | Regular expression                         |            | .+        |
+| [OnCannotResolve](#oncannotresolve-hint)                                                                                           | _On_ or _Off_                              | 9.0        | _Off_     |
+| [OnCannotResolvePartial](#oncannotresolvepartial-hint)                                                                             | _On_ or _Off_                              |         | _On_      |
+| [OnCannotResolveContractTypeNameRegularExpression](#oncannotresolvecontracttypenameregularexpression-hint)                         | Regular expression                         |            | .+        |
+| [OnCannotResolveTagRegularExpression](#oncannotresolvetagregularexpression-hint)                                                   | Regular expression                         |            | .+        |
+| [OnCannotResolveLifetimeRegularExpression](#oncannotresolvelifetimeregularexpression-hint)                                         | Regular expression                         |            | .+        |
+| [OnNewRoot](#onnewroot-hint)                                                                                                       | _On_ or _Off_                              |            | _Off_     |
+| [OnNewRootPartial](#onnewrootpartial-hint)                                                                                         | _On_ or _Off_                              |            | _On_      |
+| [ToString](#tostring-hint)                                                                                                         | _On_ or _Off_                              |            | _Off_     |
+| [ThreadSafe](#threadsafe-hint)                                                                                                     | _On_ or _Off_                              |            | _On_      |
+| [ResolveMethodModifiers](#resolvemethodmodifiers-hint)                                                                             | Method modifier                            |            | _public_  |
+| [ResolveMethodName](#resolvemethodname-hint)                                                                                       | Method name                                |            | _Resolve_ |
+| [ResolveByTagMethodModifiers](#resolvebytagmethodmodifiers-hint)                                                                   | Method modifier                            |            | _public_  |
+| [ResolveByTagMethodName](#resolvebytagmethodname-hint)                                                                             | Method name                                |            | _Resolve_ |
+| [ObjectResolveMethodModifiers](#objectresolvemethodmodifiers-hint)                                                                 | Method modifier                            |            | _public_  |
+| [ObjectResolveMethodName](#objectresolvemethodname-hint)                                                                           | Method name                                |            | _Resolve_ |
+| [ObjectResolveByTagMethodModifiers](#objectresolvebytagmethodmodifiers-hint)                                                       | Method modifier                            |            | _public_  |
+| [ObjectResolveByTagMethodName](#objectresolvebytagmethodname-hint)                                                                 | Method name                                |            | _Resolve_ |
+| [DisposeMethodModifiers](#disposemethodmodifiers-hint)                                                                             | Method modifier                            |            | _public_  |
+| [FormatCode](#formatcode-hint)                                                                                                     | _On_ or _Off_                              |            | _Off_     |
+| [SeverityOfNotImplementedContract](#severityofnotimplementedcontract-hint)                                                         | _Error_ or _Warning_ or _Info_ or _Hidden_ |            | _Error_   |
+| [Comments](#comments-hint)                                                                                                         | _On_ or _Off_                              |            | _On_     |
 
 The list of hints will be gradually expanded to meet the needs and desires for fine-tuning code generation. Please feel free to add your ideas.
 
@@ -554,7 +557,7 @@ Determines whether to generate [_Resolve_ methods](#resolve). By default, a set 
 
 ### OnNewInstance Hint
 
-Determines whether to generate the _OnNewInstance_ partial method. By default, this partial method is not generated. This can be useful, for example, for logging purposes:
+Determines whether to use the _OnNewInstance_ partial method. By default, this partial method is not generated. This can be useful, for example, for logging purposes:
 
 ```c#
 internal partial class Composition
@@ -567,6 +570,10 @@ internal partial class Composition
 ```
 
 You can also replace the created instance with a `T` type, where `T` is the actual type of the created instance. To minimize performance loss when calling _OnNewInstance_, use the three hints below.
+
+### OnNewInstancePartial Hint
+
+Determines whether to generate the _OnNewInstance_ partial method. By default, this partial method is generated when the _OnNewInstance_ hint is ```On```.
 
 ### OnNewInstanceImplementationTypeNameRegularExpression Hint
 
@@ -581,6 +588,19 @@ This is a regular expression for filtering by _tag_. This hint is also useful wh
 This is a regular expression for filtering by _lifetime_. This hint is also useful when _OnNewInstance_ is in _On_ state and it is necessary to restrict the set of _life_ times for which the _OnNewInstance_ method will be called.
 
 ### OnDependencyInjection Hint
+
+Determines whether to use the _OnDependencyInjection_ partial method when the _OnDependencyInjection_ hint is ```On``` to control dependency injection. By default it is ```On```.
+
+```c#
+// OnDependencyInjection = On
+// OnDependencyInjectionPartial = Off
+// OnDependencyInjectionContractTypeNameRegularExpression = ICalculator[\d]{1}
+// OnDependencyInjectionTagRegularExpression = Abc
+DI.Setup("Composition")
+    ...
+```
+
+### OnDependencyInjectionPartial Hint
 
 Determines whether to generate the _OnDependencyInjection_ partial method to control dependency injection. By default, this partial method is not generated. It cannot have an empty body because of the return value. It must be overridden when it is generated. This may be useful, for example, for [Interception Scenario](readme/interception.md).
 
@@ -612,7 +632,7 @@ This is a regular expression for filtering by _lifetime_. This hint is also usef
 
 ### OnCannotResolve Hint
 
-Determines whether to generate the `OnCannotResolve<T>(...)` partial method to handle a scenario in which an instance cannot be resolved. By default, this partial method is not generated. Because of the return value, it cannot have an empty body and must be overridden at creation.
+Determines whether to use the `OnCannotResolve<T>(...)` partial method to handle a scenario in which an instance cannot be resolved. By default, this partial method is not generated. Because of the return value, it cannot have an empty body and must be overridden at creation.
 
 ```c#
 // OnCannotResolve = On
@@ -624,9 +644,24 @@ DI.Setup("Composition")
 
 To avoid missing failed bindings by mistake, use the two relevant hints below.
 
+### OnCannotResolvePartial Hint
+
+Determines whether to generate the `OnCannotResolve<T>(...)` partial method when the _OnCannotResolve_ hint is <c>On</c> to handle a scenario in which an instance cannot be resolved. By default it is ```On```.
+
+```c#
+// OnCannotResolve = On
+// OnCannotResolvePartial = Off
+// OnCannotResolveContractTypeNameRegularExpression = string|DateTime
+// OnDependencyInjectionTagRegularExpression = null
+DI.Setup("Composition")
+    ...
+```
+
+To avoid missing failed bindings by mistake, use the two relevant hints below.
+
 ### OnNewRoot Hint
 
-Determines whether to generate a static partial method `OnNewRoot<TContract, T>(...)` to handle the new composition root registration event.
+Determines whether to use a static partial method `OnNewRoot<TContract, T>(...)` to handle the new composition root registration event.
 
 ```c#
 // OnNewRoot = On
@@ -635,6 +670,16 @@ DI.Setup("Composition")
 ```
 
 Be careful, this hint disables checks for the ability to resolve dependencies!
+
+### OnNewRootPartial Hint
+
+Determines whether to generate a static partial method `OnNewRoot<TContract, T>(...)` when the _OnNewRoot_ hint is ```On``` to handle the new composition root registration event.
+
+```c#
+// OnNewRootPartial = Off
+DI.Setup("Composition")
+    ...
+```
 
 ### OnCannotResolveContractTypeNameRegularExpression Hint
 
@@ -650,7 +695,7 @@ This is a regular expression for filtering by _lifetime_. This hint is also usef
 
 ### ToString Hint
 
-Determines whether to generate the _ToString()_ method. This method provides a textual class diagram in [mermaid](https://mermaid.js.org/) format. To see this diagram, just call the ToString method and copy the text to [this site](https://mermaid.live/).
+Determines whether to generate the _ToString()_ method. This method provides a class diagram in [mermaid](https://mermaid.js.org/) format. To see this diagram, just call the ToString method and copy the text to [this site](https://mermaid.live/).
 
 ```c#
 // ToString = On
@@ -721,6 +766,26 @@ Indicates the severity level of the situation when, in the binding, an implement
 - _"Warning"_ - something suspicious but allowed.
 - _"Info"_ - information that does not indicate a problem.
 - _"Hidden"_ - what's not a problem.
+
+### Comments Hint
+
+Specifies whether the generated code should be commented.
+
+```c#
+// Represents the composition class
+DI.Setup(nameof(Composition))
+    .Bind<IService>().To<Service>()
+    // Provides a composition root of my service
+    .Root<IService>("MyService");
+```
+
+Appropriate comments will be added to the generated ```Composition``` class and the documentation for the class, depending on the IDE used, will look something like this:
+
+![ReadmeDocumentation1.png](readme/ReadmeDocumentation1.png)
+
+Then documentation for the composition root:
+
+![ReadmeDocumentation2.png](readme/ReadmeDocumentation2.png)
 
 </details>
 

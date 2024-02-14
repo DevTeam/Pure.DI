@@ -107,18 +107,60 @@ classDiagram
 <summary>Pure.DI-generated partial class Composition</summary><blockquote>
 
 ```c#
+/// <para>
+/// Composition roots:<br/>
+/// <list type="table">
+/// <listheader>
+/// <term>Root</term>
+/// <description>Description</description>
+/// </listheader>
+/// <item>
+/// <term>
+/// <see cref="Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service<int>"/> IntRoot
+/// </term>
+/// <description>
+/// </description>
+/// </item>
+/// <item>
+/// <term>
+/// <see cref="Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service<string>"/> StringRoot
+/// </term>
+/// <description>
+/// </description>
+/// </item>
+/// </list>
+/// </para>
+/// <example>
+/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service<int>"/> using the composition root <see cref="IntRoot"/>:
+/// <code>
+/// var composition = new Composition();
+/// var instance = composition.IntRoot;
+/// </code>
+/// </example>
+/// <a href="https://mermaid.live/view#pako:eNqtVr1uwjAQfhXLcweUDLRskFApWwUMHbI4iUXTJjFyDBJFvAPv0qWvw5vUcUJxIP6BsFiGfHf33Xfn0-1gTBIMRzDOUFn6KVpSlIc0LMRv4JF8RcqUpaQA4XowGE6qb9XNmQRzTDdpjI-H36BgrnM8_AB-mRHCOkFzRtNiWaHqWxsIFmCGS5JtKuiCo8Tfz-J8McJI9IljVt3dV8DQ8sqsBpxsa6PFdoUB48cdaA_oQw79s4jBtFjnmKIoE1r5eIWLBBfxVhalSsXK4qR1YzCO4m6Hol6Ofz6HniA7BYHGwB2DMw29b7kXWsiuytV6vG-_H00Wcp8hlEjrY8ikW0g16UsV_pvdknMLr9W3hXyAvL2ZGsVVMrbUtmOEqLkqwC1JFRiZWgOpSVm-NJCcPqS41Cdi09MqtCIVdQtb5yLPGWMyzRCyekZunZSHopJR1AzEaXMavSqKdLNTY9l7eOyfuXVhRDHGct8AwxDmHaPw1zuwfpBK4-FeBvL7ssn88tV3e-sbVTvi1FnL4S-3Jkd0RX3y56-eY4aVytrvdY-Y17CO0KStTAjfMJ1kJP7i6d8icUXAfqPponovk6smN1C5XMfgE-TQHKUJX5F3IWQfOMchHIUwQZQH38P9H_T_ZNI">Class diagram</a><br/>
+/// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
+/// </summary>
+/// <seealso cref="Pure.DI.DI.Setup"/>
+[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM02D07di;
+  private readonly Composition _rootM02D14di;
   
+  /// <summary>
+  /// This constructor creates a new instance of <see cref="Composition"/>.
+  /// </summary>
   public Composition()
   {
-    _disposableSingletonsM02D07di = new global::System.IDisposable[0];
+    _rootM02D14di = this;
   }
   
-  internal Composition(Composition parent)
+  /// <summary>
+  /// This constructor creates a new instance of <see cref="Composition"/> scope based on <paramref name="baseComposition"/>. This allows the <see cref="Lifetime.Scoped"/> life time to be applied.
+  /// </summary>
+  /// <param name="baseComposition">Base composition.</param>
+  internal Composition(Composition baseComposition)
   {
-    _disposableSingletonsM02D07di = new global::System.IDisposable[0];
+    _rootM02D14di = baseComposition._rootM02D14di;
   }
   
   #region Composition Roots
@@ -130,13 +172,13 @@ partial class Composition
     get
     {
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x200)]
-      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IDependency<int>> LocalperBlockM02D07di1_IEnumerable()
+      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IDependency<int>> LocalperBlockM02D14di1_IEnumerable()
       {
           yield return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.AbcDependency<int>();
           yield return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.XyzDependency<int>();
       }
-      var perBlockM02D07di1_IEnumerable = LocalperBlockM02D07di1_IEnumerable();
-      return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service<int>(perBlockM02D07di1_IEnumerable);
+      var perBlockM02D14di1_IEnumerable = LocalperBlockM02D14di1_IEnumerable();
+      return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service<int>(perBlockM02D14di1_IEnumerable);
     }
   }
   
@@ -148,43 +190,59 @@ partial class Composition
     get
     {
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x200)]
-      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IDependency<string>> LocalperBlockM02D07di1_IEnumerable()
+      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IDependency<string>> LocalperBlockM02D14di1_IEnumerable()
       {
           yield return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.AbcDependency<string>();
           yield return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.XyzDependency<string>();
       }
-      var perBlockM02D07di1_IEnumerable = LocalperBlockM02D07di1_IEnumerable();
-      return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service<string>(perBlockM02D07di1_IEnumerable);
+      var perBlockM02D14di1_IEnumerable = LocalperBlockM02D14di1_IEnumerable();
+      return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service<string>(perBlockM02D14di1_IEnumerable);
     }
   }
   #endregion
   
   #region API
+  /// <summary>
+  /// Resolves the composition root.
+  /// </summary>
+  /// <typeparam name="T">The type of the composition root.</typeparam>
+  /// <returns>A composition root.</returns>
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
   [global::System.Diagnostics.Contracts.Pure]
   #endif
   public T Resolve<T>()
   {
-    return ResolverM02D07di<T>.Value.Resolve(this);
+    return ResolverM02D14di<T>.Value.Resolve(this);
   }
   
+  /// <summary>
+  /// Resolves the composition root by tag.
+  /// </summary>
+  /// <typeparam name="T">The type of the composition root.</typeparam>
+  /// <param name="tag">The tag of a composition root.</param>
+  /// <returns>A composition root.</returns>
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
   [global::System.Diagnostics.Contracts.Pure]
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM02D07di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM02D14di<T>.Value.ResolveByTag(this, tag);
   }
   
+  /// <summary>
+  /// Resolves the composition root.
+  /// </summary>
+  /// <param name="type">The type of the composition root.</param>
+  /// <returns>A composition root.</returns>
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
   [global::System.Diagnostics.Contracts.Pure]
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM02D07di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    var finish = index + _bucketSizeM02D07di;
+    var index = (int)(_bucketSizeM02D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var finish = index + _bucketSizeM02D14di;
     do {
-      ref var pair = ref _bucketsM02D07di[index];
+      ref var pair = ref _bucketsM02D14di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -194,15 +252,21 @@ partial class Composition
     throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
   
+  /// <summary>
+  /// Resolves the composition root by tag.
+  /// </summary>
+  /// <param name="type">The type of the composition root.</param>
+  /// <param name="tag">The tag of a composition root.</param>
+  /// <returns>A composition root.</returns>
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
   [global::System.Diagnostics.Contracts.Pure]
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM02D07di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    var finish = index + _bucketSizeM02D07di;
+    var index = (int)(_bucketSizeM02D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var finish = index + _bucketSizeM02D14di;
     do {
-      ref var pair = ref _bucketsM02D07di[index];
+      ref var pair = ref _bucketsM02D14di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -213,6 +277,9 @@ partial class Composition
   }
   #endregion
   
+  /// <summary>
+  /// This method provides a class diagram in mermaid format. To see this diagram, simply call the method and copy the text to this site https://mermaid.live/.
+  /// </summary>
   public override string ToString()
   {
     return
@@ -273,29 +340,29 @@ partial class Composition
         "  ServiceᐸStringᐳ o--  \"PerBlock\" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ";
   }
   
-  private readonly static int _bucketSizeM02D07di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM02D07di;
+  private readonly static int _bucketSizeM02D14di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM02D14di;
   
   static Composition()
   {
-    var valResolverM02D07di_0000 = new ResolverM02D07di_0000();
-    ResolverM02D07di<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int>>.Value = valResolverM02D07di_0000;
-    var valResolverM02D07di_0001 = new ResolverM02D07di_0001();
-    ResolverM02D07di<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string>>.Value = valResolverM02D07di_0001;
-    _bucketsM02D07di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM02D14di_0000 = new ResolverM02D14di_0000();
+    ResolverM02D14di<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int>>.Value = valResolverM02D14di_0000;
+    var valResolverM02D14di_0001 = new ResolverM02D14di_0001();
+    ResolverM02D14di<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string>>.Value = valResolverM02D14di_0001;
+    _bucketsM02D14di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       4,
-      out _bucketSizeM02D07di,
+      out _bucketSizeM02D14di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[2]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int>), valResolverM02D07di_0000)
-        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string>), valResolverM02D07di_0001)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int>), valResolverM02D14di_0000)
+        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string>), valResolverM02D14di_0001)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM02D07di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM02D14di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM02D07di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM02D14di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -308,7 +375,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM02D07di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int>>
+  private sealed class ResolverM02D14di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int>>
   {
     public Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int> Resolve(Composition composition)
     {
@@ -326,7 +393,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM02D07di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string>>
+  private sealed class ResolverM02D14di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string>>
   {
     public Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string> Resolve(Composition composition)
     {

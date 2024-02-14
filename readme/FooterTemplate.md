@@ -132,7 +132,7 @@ and there is no default constructor. It is important to remember that only those
 
 ### Scope constructor
 
-This constructor creates a composition instance for the new scope. This allows ``Lifetime.Scoped`` to be applied. Pleas see [this](readme/scope.md) example for details.
+This constructor creates a composition instance for the new scope. This allows ``Lifetime.Scoped`` to be applied. See [this](readme/scope.md) example for details.
 
 </details>
 
@@ -505,8 +505,6 @@ Indicates the severity level of the situation when, in the binding, an implement
 - _"Info"_ - information that does not indicate a problem.
 - _"Hidden"_ - what's not a problem.
 
-</details>
-
 ### Comments Hint
 
 Specifies whether the generated code should be commented.
@@ -526,6 +524,8 @@ Appropriate comments will be added to the generated ```Composition``` class and 
 Then documentation for the composition root:
 
 ![ReadmeDocumentation2.png](readme/ReadmeDocumentation2.png)
+
+</details>
 
 ## NuGet packages
 

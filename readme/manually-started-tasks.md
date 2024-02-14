@@ -107,18 +107,56 @@ classDiagram
 <summary>Pure.DI-generated partial class Composition</summary><blockquote>
 
 ```c#
+/// <para>
+/// Composition roots:<br/>
+/// <list type="table">
+/// <listheader>
+/// <term>Root</term>
+/// <description>Description</description>
+/// </listheader>
+/// <item>
+/// <term>
+/// <see cref="Pure.DI.UsageTests.BCL.ManualTaskScenario.Service"/> GetRoot
+/// </term>
+/// <description>
+/// </description>
+/// </item>
+/// </list>
+/// </para>
+/// <example>
+/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.BCL.ManualTaskScenario.Service"/> using the composition root <see cref="GetRoot"/>:
+/// <code>
+/// var composition = new Composition(cancellationToken);
+/// var instance = composition.GetRoot(cancellationToken);
+/// </code>
+/// </example>
+/// <a href="https://mermaid.live/view#pako:eNqlVEFuwjAQ_Irlcw8IDrTcIEDFqRVw9MV1VhCR2Mh2kBDiD_yll36HnzR2CHHsBKH2srJ37Nnd8cgnzEQMeIRZSpWaJnQjaUYk4XaPIpHthUp0Ijgiea83nBjMrPqTxQrkIWGA3kEvhdA2-7o6Kg2ZXc_WWwk0Tvim3EaUM0hTatjWYgccMT9jD75VNYbTupM1Vbs5ZVrIo9NecL-AprAHHgNnR9tyf1rHYWTiYIYW3qHBGNWsHubOXEPltG39VrJ0F3dPNCq7gFv2li9rGiWulx9nhOvlG8X3ncEf6xjcruF5ztkD2NetbnJQThfRL6Vl8U7lrLfY0kdDhL_QOIZAwtU6dEUl9Fhu8gy4RgSHzsM-qWUbN5itelFhanPtY2-iqshboKcZBdcJzztZQ_hZ5hXbQpynIF2-ezJwawtD6DSHqdUp_p_Rt89XxsL9nvmDX-Q2WVi3-cjFG36CXIIS6QEIbjduVaTT1c9U-oedupvypQ7_I-eSocIvOAOZ0SQuPusTwXoLWTH3iOCYyh3BZ3z-BbE7FlQ">Class diagram</a><br/>
+/// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
+/// </summary>
+/// <seealso cref="Pure.DI.DI.Setup"/>
+[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM02D07di;
+  private readonly Composition _rootM02D14di;
+  private readonly object _lockM02D14di;
   
+  /// <summary>
+  /// This parameterized constructor creates a new instance of <see cref="Composition"/> with arguments.
+  /// </summary>
   public Composition()
   {
-    _disposableSingletonsM02D07di = new global::System.IDisposable[0];
+    _rootM02D14di = this;
+    _lockM02D14di = new object();
   }
   
-  internal Composition(Composition parent)
+  /// <summary>
+  /// This constructor creates a new instance of <see cref="Composition"/> scope based on <paramref name="baseComposition"/>. This allows the <see cref="Lifetime.Scoped"/> life time to be applied.
+  /// </summary>
+  /// <param name="baseComposition">Base composition.</param>
+  internal Composition(Composition baseComposition)
   {
-    _disposableSingletonsM02D07di = new global::System.IDisposable[0];
+    _rootM02D14di = baseComposition._rootM02D14di;
+    _lockM02D14di = _rootM02D14di._lockM02D14di;
   }
   
   #region Composition Roots
@@ -127,25 +165,27 @@ partial class Composition
   #endif
   public Pure.DI.UsageTests.BCL.ManualTaskScenario.IService GetRoot(System.Threading.CancellationToken cancellationToken)
   {
-    var perResolveM02D07di39_Func = default(System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>);
-    perResolveM02D07di39_Func = new global::System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(
+    var perResolveM02D14di39_Func = default(System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>);
+    perResolveM02D14di39_Func = new global::System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
     () =>
     {
-        var factory_M02D07di1 = new Pure.DI.UsageTests.BCL.ManualTaskScenario.Dependency();
-        return factory_M02D07di1;
+        var factory_M02D14di1 = new Pure.DI.UsageTests.BCL.ManualTaskScenario.Dependency();
+        return factory_M02D14di1;
     });
-    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency> transientM02D07di1_Task;
+    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency> transientM02D14di1_Task;
     {
-        var factory_M02D07di2 = perResolveM02D07di39_Func;
-        var cancellationToken_M02D07di3 = cancellationToken;
-        transientM02D07di1_Task = new Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(factory_M02D07di2, cancellationToken_M02D07di3);
+        var factory_M02D14di2 = perResolveM02D14di39_Func;
+        var cancellationToken_M02D14di3 = cancellationToken;
+        transientM02D14di1_Task = new Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(factory_M02D14di2, cancellationToken_M02D14di3);
     }
-    return new Pure.DI.UsageTests.BCL.ManualTaskScenario.Service(transientM02D07di1_Task);
+    return new Pure.DI.UsageTests.BCL.ManualTaskScenario.Service(transientM02D14di1_Task);
   }
   #endregion
   
-  
+  /// <summary>
+  /// This method provides a class diagram in mermaid format. To see this diagram, simply call the method and copy the text to this site https://mermaid.live/.
+  /// </summary>
   public override string ToString()
   {
     return

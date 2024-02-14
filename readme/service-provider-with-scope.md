@@ -1,75 +1,70 @@
-#### Scope
+#### Service provider with scope
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/ScopeScenario.cs)
-
-The _Scoped_ lifetime ensures that there will be a single instance of the dependency for each scope.
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/ServiceProviderWithScopeScenario.cs)
 
 ```c#
-interface IDependency
-{
-    bool IsDisposed { get; }
-}
+interface IDependency;
 
-class Dependency : IDependency, IDisposable
-{
-    public bool IsDisposed { get; private set; }
+class Dependency : IDependency;
 
-    public void Dispose() => IsDisposed = true;
-}
-
-interface IService
+interface IService: IDisposable
 {
     IDependency Dependency { get; }
 }
 
 class Service(IDependency dependency) : IService
 {
-    public IDependency Dependency => dependency;
-}
+    public IDependency Dependency { get; } = dependency;
 
-// Implements a session
-class Session(Composition composition) : Composition(composition);
-
-class Program(Func<Session> sessionFactory)
-{
-    public Session CreateSession() => sessionFactory();
+    public void Dispose() { }
 }
 
 partial class Composition
+    : IServiceProvider, IKeyedServiceProvider, IServiceScopeFactory, IServiceScope
 {
-    private static void Setup() =>
+    private void Setup() =>
+        // The following hint overrides the name of the
+        // "object Resolve(Type type)" method in "GetService",
+        // which implements the "IServiceProvider" interface:
+
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>().As(Scoped).To<Dependency>()
-            .Bind<IService>().To<Service>()
-            // Session composition root
-            .Root<IService>("SessionRoot")
-            // Program composition root
-            .Root<Program>("ProgramRoot");
+            // The following hint overrides the name of the
+            // "object Resolve(Type type)" method in "GetService",
+            // which implements the "IServiceProvider" interface
+            .Hint(Hint.ObjectResolveMethodName, "GetService")
+            // The following hint overrides the name of the
+            // "object Resolve(Type type, object tag)" method in "GetRequiredKeyedService",
+            // which implements the "IKeyedServiceProvider" interface
+            .Hint(Hint.ObjectResolveByTagMethodName, "GetRequiredKeyedService")
+            .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+            .Bind<IService>().As(Lifetime.Scoped).To<Service>()
+            .Root<IDependency>()
+            .Root<IService>();
+
+    public IServiceProvider ServiceProvider => this;
+
+    public IServiceScope CreateScope() => new Composition(this);
+
+    public object GetKeyedService(Type serviceType, object? serviceKey) =>
+        GetRequiredKeyedService(serviceType, serviceKey);
 }
 
-var composition = new Composition();
-var program = composition.ProgramRoot;
+using var composition = new Composition();
         
-// Creates session #1
-var session1 = program.CreateSession();
-var dependency1 = session1.SessionRoot.Dependency;
+using var scope1 = composition.CreateScope();
+var service1 = scope1.ServiceProvider.GetRequiredService<IService>();
+var dependency1 = composition.GetRequiredService<IDependency>();
+service1.Dependency.ShouldBe(dependency1);
+service1.ShouldBe(scope1.ServiceProvider.GetRequiredService<IService>());
         
-// Creates session #2
-var session2 = program.CreateSession();
-var dependency2 = session2.SessionRoot.Dependency;
+using var scope2 = composition.CreateScope();
+var service2 = scope2.ServiceProvider.GetRequiredService<IService>();
+var dependency2 = composition.GetRequiredService<IDependency>();
+service2.Dependency.ShouldBe(dependency2);
+service2.ShouldBe(scope2.ServiceProvider.GetRequiredService<IService>());
         
-// Checks that the scoped instances are not identical in different sessions
-dependency1.ShouldNotBe(dependency2);
-        
-// Disposes of session #1
-session1.Dispose();
-// Checks that the scoped instance is finalized
-dependency1.IsDisposed.ShouldBeTrue();
-        
-// Disposes of session #2
-session2.Dispose();
-// Checks that the scoped instance is finalized
-dependency2.IsDisposed.ShouldBeTrue();
+service1.ShouldNotBe(service2);
+dependency1.ShouldBe(dependency2);
 ```
 
 <details open>
@@ -78,21 +73,14 @@ dependency2.IsDisposed.ShouldBeTrue();
 ```mermaid
 classDiagram
   class Composition {
-    +Program ProgramRoot
-    +IService SessionRoot
+    -IDependency RootM02D14di0001
+    -IService RootM02D14di0002
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
-    + object Resolve(Type type)
-    + object Resolve(Type type, object? tag)
+    + object GetService(Type type)
+    + object GetRequiredKeyedService(Type type, object? tag)
   }
   Composition --|> IDisposable
-  class Composition
-  class Session {
-    +Session(Composition composition)
-  }
-  class Program {
-    +Program(FuncᐸSessionᐳ sessionFactory)
-  }
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
@@ -101,19 +89,15 @@ classDiagram
   class Service {
     +Service(IDependency dependency)
   }
-  class FuncᐸSessionᐳ
   class IDependency {
     <<abstract>>
   }
   class IService {
     <<abstract>>
   }
-  Session *--  Composition : Composition
-  Program o--  "PerResolve" FuncᐸSessionᐳ : FuncᐸSessionᐳ
-  Service o--  "Scoped" Dependency : IDependency
-  Composition ..> Service : IService SessionRoot
-  Composition ..> Program : Program ProgramRoot
-  FuncᐸSessionᐳ *--  Session : Session
+  Service o--  "Singleton" Dependency : IDependency
+  Composition ..> Dependency : IDependency RootM02D14di0001
+  Composition ..> Service : IService RootM02D14di0002
 ```
 
 </details>
@@ -123,6 +107,11 @@ classDiagram
 
 ```c#
 /// <para>
+/// The following hint overrides the name of the<br/>
+/// "object Resolve(Type type)" method in "GetService",<br/>
+/// which implements the "IServiceProvider" interface:
+/// </para>
+/// <para>
 /// Composition roots:<br/>
 /// <list type="table">
 /// <listheader>
@@ -131,30 +120,21 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program"/> ProgramRoot
+/// <see cref="Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.Dependency"/> is a private composition root that can be resolved by methods like <see cref="Resolve{T}()"/>.
 /// </term>
 /// <description>
-/// Program composition root
 /// </description>
 /// </item>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service"/> SessionRoot
+/// <see cref="Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.Service"/> is a private composition root that can be resolved by methods like <see cref="Resolve{T}()"/>.
 /// </term>
 /// <description>
-/// Session composition root
 /// </description>
 /// </item>
 /// </list>
 /// </para>
-/// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program"/> using the composition root <see cref="ProgramRoot"/>:
-/// <code>
-/// using var composition = new Composition();
-/// var instance = composition.ProgramRoot;
-/// </code>
-/// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdVL1uwjAQfhXLcwcEAy0bJEViQ4TRi3FONC2JI9sgIcQ78C5d-jq8SZ04lp3EAYnl4tzPd3ef73zBjKeAZ5gdqJRxRveC5kSQov5HEc9LLjOV8QKR42g0XVS26jRerAWvnFHz3XCunHGVgDhlDFACUurothVt0QYkP5zgfvvb3m-_tfq9lh9P3fjuG5iqzpMlUnTfCzMONtYEbc8lIKXFC94RepxyGlenLlfj2MlpVMd-olWcSe1FdwcIsuyUDXE92hu9qdPPyTyUQHkG1V7awGUa1OWxYJrxJpPmHUlzXFKmuDiH4GMooUihYOdHzbedJnPkKuvY_OKcKTQnJr-dt-Hkvkcrs29oM13rTU6_9rRdT5DoHofO1KXB5ZyYYiO6k0pork3pjQwkafX0Cow_ZOO5zx3q7b7mrDOodph4O5DgNQi7TrjPhEULUmQ76mEmjJeQarz-EHmEBhexbt1IPQidORh6qZ6g-IukUQYew3DvXab9W9BYdsN1PH7DOYicZql-oi8Eqy_INaczglMqfgi-4us_EDwD3A">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqNVEtugzAQvcrI6y5IUok2uwbSKqq6ISy9cfCIugVMjRMJRblD7tJNr5OblE9SjEtJNyPjeW_m-Q32nkSSI5mTKGFF4QsWK5ZSRbPmGzyZ5rIQWsgM6NZx3EWdq1dTf-VjjhnHLCohkFK_VHuTWy4cx5kYqDWqnYjQhkx_IAsIIcBCJjs8Hb_C0_Gz2b5r4v1VmNy8YaTr9ewRNIt_0VoAPKE-S2l5YZkj6CqMEAL82AqF_BlL5CNsD8ZVuH69ss2c-l10vYa7hJUvigrFNgnWHMPjEUofNHuAboJWzhjgoksNGd5qvkzv7-YmotfZTJhtez6a2nlfj6WkLWqftSs8axV5bFNoxc6zWJ7jUKVhff8vc-FL0xsAStYiixPUMqPEtr8yyDjB4E_R9GpjZe8of_DaXSlojWv0epIbkqJKmeDVA7GnRL9iipTMKeFMvVNyIIdvhhZsQA">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// </summary>
 /// <seealso cref="Pure.DI.DI.Setup"/>
@@ -165,7 +145,8 @@ partial class Composition: global::System.IDisposable
   private readonly object _lockM02D14di;
   private readonly global::System.IDisposable[] _disposablesM02D14di;
   private int _disposeIndexM02D14di;
-  private Pure.DI.UsageTests.Lifetimes.ScopeScenario.Dependency _scopedM02D14di34_Dependency;
+  private Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.Dependency _singletonM02D14di34_Dependency;
+  private Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.Service _scopedM02D14di35_Service;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Composition"/>.
@@ -189,51 +170,52 @@ partial class Composition: global::System.IDisposable
   }
   
   #region Composition Roots
-  /// <summary>
-  /// Session composition root
-  /// </summary>
-  public Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService SessionRoot
+  public Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency RootM02D14di0001
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
     #endif
     get
     {
-      if (ReferenceEquals(_scopedM02D14di34_Dependency, null))
+      if (ReferenceEquals(_rootM02D14di._singletonM02D14di34_Dependency, null))
       {
           lock (_lockM02D14di)
           {
-              if (ReferenceEquals(_scopedM02D14di34_Dependency, null))
+              if (ReferenceEquals(_rootM02D14di._singletonM02D14di34_Dependency, null))
               {
-                  _scopedM02D14di34_Dependency = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Dependency();
-                  _disposablesM02D14di[_disposeIndexM02D14di++] = _scopedM02D14di34_Dependency;
+                  _singletonM02D14di34_Dependency = new Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.Dependency();
+                  _rootM02D14di._singletonM02D14di34_Dependency = _singletonM02D14di34_Dependency;
               }
           }
       }
-      return new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service(_scopedM02D14di34_Dependency);
+      return _rootM02D14di._singletonM02D14di34_Dependency;
     }
   }
   
-  /// <summary>
-  /// Program composition root
-  /// </summary>
-  public Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program ProgramRoot
+  public Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService RootM02D14di0002
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
     #endif
     get
     {
-      var perResolveM02D14di40_Func = default(System.Func<Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session>);
-      perResolveM02D14di40_Func = new global::System.Func<Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session>(
-      [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
-      () =>
+      if (ReferenceEquals(_scopedM02D14di35_Service, null))
       {
-          var transientM02D14di2_Composition = this;
-          var factory_M02D14di1 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session(transientM02D14di2_Composition);
-          return factory_M02D14di1;
-      });
-      return new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program(perResolveM02D14di40_Func);
+          lock (_lockM02D14di)
+          {
+              if (ReferenceEquals(_scopedM02D14di35_Service, null))
+              {
+                  if (ReferenceEquals(_rootM02D14di._singletonM02D14di34_Dependency, null))
+                  {
+                      _singletonM02D14di34_Dependency = new Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.Dependency();
+                      _rootM02D14di._singletonM02D14di34_Dependency = _singletonM02D14di34_Dependency;
+                  }
+                  _scopedM02D14di35_Service = new Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.Service(_rootM02D14di._singletonM02D14di34_Dependency);
+                  _disposablesM02D14di[_disposeIndexM02D14di++] = _scopedM02D14di35_Service;
+              }
+          }
+      }
+      return _scopedM02D14di35_Service;
     }
   }
   #endregion
@@ -274,7 +256,7 @@ partial class Composition: global::System.IDisposable
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
   [global::System.Diagnostics.Contracts.Pure]
   #endif
-  public object Resolve(global::System.Type type)
+  public object GetService(global::System.Type type)
   {
     var index = (int)(_bucketSizeM02D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
     var finish = index + _bucketSizeM02D14di;
@@ -298,7 +280,7 @@ partial class Composition: global::System.IDisposable
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
   [global::System.Diagnostics.Contracts.Pure]
   #endif
-  public object Resolve(global::System.Type type, object? tag)
+  public object GetRequiredKeyedService(global::System.Type type, object? tag)
   {
     var index = (int)(_bucketSizeM02D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
     var finish = index + _bucketSizeM02D14di;
@@ -335,7 +317,8 @@ partial class Composition: global::System.IDisposable
         }
       }
       
-      _scopedM02D14di34_Dependency = null;
+      _singletonM02D14di34_Dependency = null;
+      _scopedM02D14di35_Service = null;
     }
   }
   
@@ -349,21 +332,14 @@ partial class Composition: global::System.IDisposable
     return
       "classDiagram\n" +
         "  class Composition {\n" +
-          "    +Program ProgramRoot\n" +
-          "    +IService SessionRoot\n" +
+          "    -IDependency RootM02D14di0001\n" +
+          "    -IService RootM02D14di0002\n" +
           "    + T ResolveᐸTᐳ()\n" +
           "    + T ResolveᐸTᐳ(object? tag)\n" +
-          "    + object Resolve(Type type)\n" +
-          "    + object Resolve(Type type, object? tag)\n" +
+          "    + object GetService(Type type)\n" +
+          "    + object GetRequiredKeyedService(Type type, object? tag)\n" +
         "  }\n" +
         "  Composition --|> IDisposable\n" +
-        "  class Composition\n" +
-        "  class Session {\n" +
-          "    +Session(Composition composition)\n" +
-        "  }\n" +
-        "  class Program {\n" +
-          "    +Program(FuncᐸSessionᐳ sessionFactory)\n" +
-        "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
@@ -372,19 +348,15 @@ partial class Composition: global::System.IDisposable
         "  class Service {\n" +
           "    +Service(IDependency dependency)\n" +
         "  }\n" +
-        "  class FuncᐸSessionᐳ\n" +
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  Session *--  Composition : Composition\n" +
-        "  Program o--  \"PerResolve\" FuncᐸSessionᐳ : FuncᐸSessionᐳ\n" +
-        "  Service o--  \"Scoped\" Dependency : IDependency\n" +
-        "  Composition ..> Service : IService SessionRoot\n" +
-        "  Composition ..> Program : Program ProgramRoot\n" +
-        "  FuncᐸSessionᐳ *--  Session : Session";
+        "  Service o--  \"Singleton\" Dependency : IDependency\n" +
+        "  Composition ..> Dependency : IDependency RootM02D14di0001\n" +
+        "  Composition ..> Service : IService RootM02D14di0002";
   }
   
   private readonly static int _bucketSizeM02D14di;
@@ -393,16 +365,16 @@ partial class Composition: global::System.IDisposable
   static Composition()
   {
     var valResolverM02D14di_0000 = new ResolverM02D14di_0000();
-    ResolverM02D14di<Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService>.Value = valResolverM02D14di_0000;
+    ResolverM02D14di<Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency>.Value = valResolverM02D14di_0000;
     var valResolverM02D14di_0001 = new ResolverM02D14di_0001();
-    ResolverM02D14di<Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program>.Value = valResolverM02D14di_0001;
+    ResolverM02D14di<Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService>.Value = valResolverM02D14di_0001;
     _bucketsM02D14di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       4,
       out _bucketSizeM02D14di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[2]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService), valResolverM02D14di_0000)
-        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program), valResolverM02D14di_0001)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency), valResolverM02D14di_0000)
+        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService), valResolverM02D14di_0001)
       });
   }
   
@@ -422,39 +394,39 @@ partial class Composition: global::System.IDisposable
     }
   }
   
-  private sealed class ResolverM02D14di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService>
+  private sealed class ResolverM02D14di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency>
   {
-    public Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency Resolve(Composition composition)
     {
-      return composition.SessionRoot;
+      return composition.RootM02D14di0001;
     }
     
-    public Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
-          return composition.SessionRoot;
+          return composition.RootM02D14di0001;
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency.");
     }
   }
   
-  private sealed class ResolverM02D14di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program>
+  private sealed class ResolverM02D14di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService>
   {
-    public Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program Resolve(Composition composition)
+    public Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService Resolve(Composition composition)
     {
-      return composition.ProgramRoot;
+      return composition.RootM02D14di0002;
     }
     
-    public Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
-          return composition.ProgramRoot;
+          return composition.RootM02D14di0002;
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService.");
     }
   }
   #endregion

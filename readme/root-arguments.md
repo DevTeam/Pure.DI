@@ -96,18 +96,53 @@ classDiagram
 <summary>Pure.DI-generated partial class Composition</summary><blockquote>
 
 ```c#
+/// <para>
+/// Composition roots:<br/>
+/// <list type="table">
+/// <listheader>
+/// <term>Root</term>
+/// <description>Description</description>
+/// </listheader>
+/// <item>
+/// <term>
+/// <see cref="Pure.DI.UsageTests.Basics.RootArgumentsScenario.Service"/> CreateService
+/// </term>
+/// <description>
+/// </description>
+/// </item>
+/// </list>
+/// </para>
+/// <example>
+/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.RootArgumentsScenario.Service"/> using the composition root <see cref="CreateService"/>:
+/// <code>
+/// var composition = new Composition(id, dependencyName, serviceName);
+/// var instance = composition.CreateService(id, dependencyName, serviceName);
+/// </code>
+/// </example>
+/// <a href="https://mermaid.live/view#pako:eNqNU7FuwyAQ_RV0c4fIHtJmc-wOXrJ4ZaH21UUtEGFSqYry78VgB0xjq8uJ0-Me794dV2hVh3CA9osNQ8VZr5mgmkqXk1KJsxq44UoSetnt9scRG0_ZsW5Qf_MWSamRGZwyhz1zaQjv3Lkkg9Fc9qTDM8oOZftzYgKX2OCL78DL_My-CmJqafIspI0rHfPqzuxEZlWI-3KM-Supk0t5QQJVgsVdBsh35kSE3prV3pIWZrPWBcY3FupiIJa2cHwSIoO1ccdB34a9qy7kXmPJ3uy4WGu84ik-Ynqs-P80kRIVG-ZXYHao0P1FoN00CnYesFk42fO3MpmcY5nlb1FQeFd6ngCQmDJe5gWfIyoWpOnqWeZoDmNx-gUz55iPdm2SrVn5lJYHnkCgFox39rdfKZgPHPUdrAVMf1K4we0XFANdaw">Class diagram</a><br/>
+/// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
+/// </summary>
+/// <seealso cref="Pure.DI.DI.Setup"/>
+[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly global::System.IDisposable[] _disposableSingletonsM02D07di;
+  private readonly Composition _rootM02D14di;
   
+  /// <summary>
+  /// This parameterized constructor creates a new instance of <see cref="Composition"/> with arguments.
+  /// </summary>
   public Composition()
   {
-    _disposableSingletonsM02D07di = new global::System.IDisposable[0];
+    _rootM02D14di = this;
   }
   
-  internal Composition(Composition parent)
+  /// <summary>
+  /// This constructor creates a new instance of <see cref="Composition"/> scope based on <paramref name="baseComposition"/>. This allows the <see cref="Lifetime.Scoped"/> life time to be applied.
+  /// </summary>
+  /// <param name="baseComposition">Base composition.</param>
+  internal Composition(Composition baseComposition)
   {
-    _disposableSingletonsM02D07di = new global::System.IDisposable[0];
+    _rootM02D14di = baseComposition._rootM02D14di;
   }
   
   #region Composition Roots
@@ -120,7 +155,9 @@ partial class Composition
   }
   #endregion
   
-  
+  /// <summary>
+  /// This method provides a class diagram in mermaid format. To see this diagram, simply call the method and copy the text to this site https://mermaid.live/.
+  /// </summary>
   public override string ToString()
   {
     return
