@@ -11,7 +11,7 @@ internal class Settings(
     IProperties properties,
     IVersions versions)
 {
-    public static readonly VersionRange VersionRange = VersionRange.Parse("2.0.*");
+    public static readonly VersionRange VersionRange = VersionRange.Parse("2.1.*");
     
     private readonly Lazy<NuGetVersion> _version = new(() => GetVersion(properties, versions));
     
@@ -30,12 +30,12 @@ internal class Settings(
 
     private static NuGetVersion GetVersion(IProperties properties, IVersions versions)
     {
-        WriteLine(
-            NuGetVersion.TryParse(properties["version"], out var version) 
-                ? $"The version has been overridden by {version}."
-                : "The next version has been used.",
-            Color.Details);
+        if (!NuGetVersion.TryParse(properties["version"], out var version))
+        {
+            return versions.GetNext(new NuGetRestoreSettings("Pure.DI"), VersionRange);
+        }
 
-        return versions.GetNext(new NuGetRestoreSettings("Pure.DI"),  VersionRange);
+        WriteLine($"The version has been overridden by {version}.", Color.Details);
+        return version;
     }
 }
