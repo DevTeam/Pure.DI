@@ -287,7 +287,7 @@ internal sealed class DependencyGraphBuilder(
                 unresolvedInjection,
                 unresolvedInjection.Type,
                 unresolvedInjection.Tag,
-                ownerNode.Lifetime,
+                Lifetime.Transient,
                 ++maxId,
                 MdConstructKind.OnCannotResolve,
                 false,
