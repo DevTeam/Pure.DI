@@ -109,7 +109,7 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
     /// <returns>Resolved dependency instance.</returns>
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     protected T OnCannotResolve<T>(object? tag, Lifetime lifetime) => 
-        (T)_serviceProvider(typeof(T), tag);
+        (T)(_serviceProvider ?? throw new InvalidOperationException("Not ready yet."))(typeof(T), tag);
 
     /// <summary>
     /// Registers a composition resolver for use in a service collection <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/>.
