@@ -14,9 +14,9 @@ internal class CompatibilityCheckTarget(
     ICommands commands,
     IPaths paths,
     INuGet nuGet,
-    [Tag(typeof(GeneratorTarget))] ITarget<string> generatorTarget,
+    [Tag(typeof(GeneratorTarget))] ITarget<Package> generatorTarget,
     [Tag(typeof(LibrariesTarget))] ITarget<IReadOnlyCollection<Library>> librariesTarget)
-    : IInitializable, ITarget<IReadOnlyCollection<string>>
+    : IInitializable, ITarget<IReadOnlyCollection<Package>>
 {
     public Task InitializeAsync() => commands.Register(
         this,
@@ -25,13 +25,13 @@ internal class CompatibilityCheckTarget(
         "c");
 
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
-    public async Task<IReadOnlyCollection<string>> RunAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<Package>> RunAsync(CancellationToken cancellationToken)
     {
         Info("Compatibility checks");
         var generatorPackage = await generatorTarget.RunAsync(cancellationToken);
         var libraries = await librariesTarget.RunAsync(cancellationToken);
 
-        DeleteNuGetPackageFromCache("Pure.DI", settings.Version, Path.GetDirectoryName(generatorPackage)!);
+        DeleteNuGetPackageFromCache("Pure.DI", settings.Version, Path.GetDirectoryName(generatorPackage.Path)!);
 
         var exitCode = await new DotNetCustom("new", "-i", "Pure.DI.Templates").RunAsync(cancellationToken: cancellationToken);
         if (exitCode != 0)
@@ -66,16 +66,16 @@ internal class CompatibilityCheckTarget(
 
         foreach (var framework in frameworks)
         {
-            await CompatibilityCheckAsync(generatorPackage, framework, cancellationToken);
+            await CompatibilityCheckAsync(generatorPackage.Path, framework, cancellationToken);
         }
         
-        var packages = new List<string> { generatorPackage };
+        var packages = new List<Package> { generatorPackage };
 
         // Libraries
         foreach (var library in libraries)
         {
-            await CompatibilityCheckAsync(generatorPackage, library, cancellationToken);
-            packages.Add(library.PackagePath);
+            await CompatibilityCheckAsync(generatorPackage.Path, library, cancellationToken);
+            packages.Add(library.Package);
         }
 
         return packages;
@@ -203,7 +203,7 @@ internal class CompatibilityCheckTarget(
                     throw new InvalidOperationException("Cannot add the NuGet package reference.");
                 }
 
-                var libraryPackageDir = Path.GetDirectoryName(library.PackagePath)!;
+                var libraryPackageDir = Path.GetDirectoryName(library.Package.Path)!;
                 DeleteNuGetPackageFromCache(library.Name, settings.Version, libraryPackageDir);
 
                 exitCode = await new DotNetCustom(

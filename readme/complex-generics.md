@@ -136,14 +136,14 @@ classDiagram
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM02D14di;
+  private readonly Composition _rootM02D16di;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Composition"/>.
   /// </summary>
   public Composition()
   {
-    _rootM02D14di = this;
+    _rootM02D16di = this;
   }
   
   /// <summary>
@@ -152,7 +152,7 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM02D14di = baseComposition._rootM02D14di;
+    _rootM02D16di = baseComposition._rootM02D16di;
   }
   
   #region Composition Roots
@@ -179,7 +179,7 @@ partial class Composition
   #endif
   public T Resolve<T>()
   {
-    return ResolverM02D14di<T>.Value.Resolve(this);
+    return ResolverM02D16di<T>.Value.Resolve(this);
   }
   
   /// <summary>
@@ -193,7 +193,7 @@ partial class Composition
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM02D14di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM02D16di<T>.Value.ResolveByTag(this, tag);
   }
   
   /// <summary>
@@ -206,10 +206,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM02D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM02D14di;
+    var index = (int)(_bucketSizeM02D16di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM02D16di;
     do {
-      ref var pair = ref _bucketsM02D14di[index];
+      ref var pair = ref _bucketsM02D16di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -230,10 +230,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM02D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM02D14di;
+    var index = (int)(_bucketSizeM02D16di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM02D16di;
     do {
-      ref var pair = ref _bucketsM02D14di[index];
+      ref var pair = ref _bucketsM02D16di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -288,26 +288,26 @@ partial class Composition
         "  ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *--  DependencyStructᐸInt32ᐳ : \"value type\"  IDependencyᐸInt32ᐳ";
   }
   
-  private readonly static int _bucketSizeM02D14di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM02D14di;
+  private readonly static int _bucketSizeM02D16di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM02D16di;
   
   static Composition()
   {
-    var valResolverM02D14di_0000 = new ResolverM02D14di_0000();
-    ResolverM02D14di<Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>>.Value = valResolverM02D14di_0000;
-    _bucketsM02D14di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM02D16di_0000 = new ResolverM02D16di_0000();
+    ResolverM02D16di<Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>>.Value = valResolverM02D16di_0000;
+    _bucketsM02D16di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM02D14di,
+      out _bucketSizeM02D16di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>), valResolverM02D14di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>), valResolverM02D16di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM02D14di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM02D16di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM02D14di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM02D16di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -320,7 +320,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM02D14di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>>
+  private sealed class ResolverM02D16di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string>>
   {
     public Pure.DI.UsageTests.Basics.ComplexGenericsScenario.Program<string> Resolve(Composition composition)
     {

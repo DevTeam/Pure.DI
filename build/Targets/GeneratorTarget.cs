@@ -12,7 +12,7 @@ using NuGet.Versioning;
 internal class GeneratorTarget(
     Settings settings,
     ICommands commands)
-    : IInitializable, ITarget<string>
+    : IInitializable, ITarget<Package>
 {
     public Task InitializeAsync() => commands.Register(
         this,
@@ -21,7 +21,7 @@ internal class GeneratorTarget(
         "g");
     
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
-    public Task<string> RunAsync(CancellationToken cancellationToken)
+    public Task<Package> RunAsync(CancellationToken cancellationToken)
     {
         Info("Building generator");
         // Generator package
@@ -29,7 +29,7 @@ internal class GeneratorTarget(
         var generatorPackages = settings.CodeAnalysis
             .Select(codeAnalysis => CreateGeneratorPackage(settings.Version, codeAnalysis, generatorProjectDirectory));
 
-        return Task.FromResult(Path.GetFullPath(MergeGeneratorPackages(settings.Version, generatorPackages, generatorProjectDirectory)));
+        return Task.FromResult(new Package(Path.GetFullPath(MergeGeneratorPackages(settings.Version, generatorPackages, generatorProjectDirectory)), true));
     }
     
     private string CreateGeneratorPackage(NuGetVersion packageVersion, CodeAnalysis codeAnalysis, string projectDirectory)

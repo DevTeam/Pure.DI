@@ -10,8 +10,8 @@ namespace Build.Targets;
 internal class PackTarget(
     ICommands commands,
     ITeamCityArtifactsWriter artifactsWriter,
-    [Tag(typeof(CompatibilityCheckTarget))] ITarget<IReadOnlyCollection<string>> compatibilityCheckTarget)
-    : IInitializable, ITarget<IReadOnlyCollection<string>>
+    [Tag(typeof(CompatibilityCheckTarget))] ITarget<IReadOnlyCollection<Package>> compatibilityCheckTarget)
+    : IInitializable, ITarget<IReadOnlyCollection<Package>>
 {
     public Task InitializeAsync() => commands.Register(
         this,
@@ -20,12 +20,13 @@ internal class PackTarget(
         "p");
 
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
-    public async Task<IReadOnlyCollection<string>> RunAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<Package>> RunAsync(CancellationToken cancellationToken)
     {
         Info("Packing");
         var packages = await compatibilityCheckTarget.RunAsync(cancellationToken);
         foreach (var package in packages)
         {
+            WriteLine(package.Path, Color.Details);
             artifactsWriter.PublishArtifact($"{package} => .");
         }
 

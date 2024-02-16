@@ -2,6 +2,6 @@
 
 internal record Library(
     string Name,
-    string PackagePath,
+    Package Package,
     string[] Frameworks,
     string[] TemplateNames);

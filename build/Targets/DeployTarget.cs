@@ -4,7 +4,7 @@ namespace Build.Targets;
 internal class DeployTarget(
     Settings settings,
     ICommands commands,
-    [Tag(typeof(PackTarget))] ITarget<IReadOnlyCollection<string>> packTarget)
+    [Tag(typeof(PackTarget))] ITarget<IReadOnlyCollection<Package>> packTarget)
     : IInitializable, ITarget<int>
 {
     public Task InitializeAsync() => commands.Register(
@@ -19,10 +19,10 @@ internal class DeployTarget(
         if (!string.IsNullOrWhiteSpace(settings.NuGetKey))
         {
             var packages = await packTarget.RunAsync(cancellationToken);
-            foreach (var package in packages)
+            foreach (var package in packages.Where(i => i.Deploy))
             {
                 var push = new DotNetNuGetPush()
-                    .WithPackage(package)
+                    .WithPackage(package.Path)
                     .WithSources("https://api.nuget.org/v3/index.json")
                     .WithApiKey(settings.NuGetKey);
 

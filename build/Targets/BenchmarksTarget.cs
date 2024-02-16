@@ -21,7 +21,7 @@ internal class BenchmarksTarget(
         this,
         "Runs benchmarks",
         "benchmarks",
-        "mb");
+        "bm");
 
     public Task<int> RunAsync(CancellationToken cancellationToken)
     {

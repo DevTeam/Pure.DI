@@ -16,7 +16,7 @@ internal class LibrariesTarget(
 {
     public Task InitializeAsync() => commands.Register(
         this,
-        "Builds and tests generator",
+        "Builds and tests libraries",
         "libs",
         "l");
     
@@ -30,7 +30,7 @@ internal class LibrariesTarget(
         [
             new Library(
                 "Pure.DI.MS",
-                GetPackagePath("Pure.DI.MS", settings.Version),
+                new Package(GetPackagePath("Pure.DI.MS", settings.Version), false),
                 sdk.Versions
                     .Where(i => i.Version.Major >= 7)
                     .Select(v => $"net{v.Version.Major}.{v.Version.Minor}")

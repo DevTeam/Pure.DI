@@ -12,7 +12,7 @@ internal class TemplateTarget(
         this,
         "Creates and deploys templates",
         "template",
-        "dt");
+        "t");
     
     public Task<string> RunAsync(CancellationToken cancellationToken)
     {
