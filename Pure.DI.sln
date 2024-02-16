@@ -71,6 +71,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "readme", "readme", "{24E449
 		readme\BlazorServerAppPageTemplate.md = readme\BlazorServerAppPageTemplate.md
 		readme\BlazorWebAssemblyAppPageTemplate.md = readme\BlazorWebAssemblyAppPageTemplate.md
 		readme\MauiPageTemplate.md = readme\MauiPageTemplate.md
+		readme\MinimalWebAPIPageTemplate.md = readme\MinimalWebAPIPageTemplate.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pure.DI.Templates", "src\Pure.DI.Templates\Pure.DI.Templates.csproj", "{5A925B99-3FF8-4ED0-81C2-7F0D3AD52642}"
@@ -94,6 +95,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorWebAssemblyApp", "samples\BlazorWebAssemblyApp\BlazorWebAssemblyApp.csproj", "{D1C043C4-ED8F-45C5-8077-EF10AA71B951}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeatherForecast", "samples\WeatherForecast\WeatherForecast.csproj", "{9A3E2271-3090-4BCE-BB48-6C0724CFBE44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalWebAPI", "samples\MinimalWebAPI\MinimalWebAPI.csproj", "{60F18CFA-957B-488F-8292-467D92C17267}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -193,6 +196,10 @@ Global
 		{9A3E2271-3090-4BCE-BB48-6C0724CFBE44}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A3E2271-3090-4BCE-BB48-6C0724CFBE44}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A3E2271-3090-4BCE-BB48-6C0724CFBE44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60F18CFA-957B-488F-8292-467D92C17267}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60F18CFA-957B-488F-8292-467D92C17267}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60F18CFA-957B-488F-8292-467D92C17267}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60F18CFA-957B-488F-8292-467D92C17267}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7C9E056B-CBA9-4548-9CDB-C5CE03C491B0} = {8163CDD7-7018-4301-A984-803C3807A6A6}
@@ -217,5 +224,6 @@ Global
 		{6C95BC87-DA77-4CE7-8CAB-9BEC254CEF51} = {FA80D231-C641-4A49-99C6-0C065D818B07}
 		{D1C043C4-ED8F-45C5-8077-EF10AA71B951} = {FA80D231-C641-4A49-99C6-0C065D818B07}
 		{9A3E2271-3090-4BCE-BB48-6C0724CFBE44} = {FA80D231-C641-4A49-99C6-0C065D818B07}
+		{60F18CFA-957B-488F-8292-467D92C17267} = {FA80D231-C641-4A49-99C6-0C065D818B07}
 	EndGlobalSection
 EndGlobal

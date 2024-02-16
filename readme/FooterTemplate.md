@@ -11,7 +11,8 @@
   - [Win Forms](readme/WinFormsApp.md)
 - Web
   - [Web](readme/WebApp.md)
-  - [Web API service](readme/WebAPI.md)
+  - [Minimal Web API](readme/MinimalWebAPI.md)
+  - [Web API](readme/WebAPI.md)
   - [gRPC service](readme/GrpcService.md)
   - [Blazor Server](readme/BlazorServerApp.md)
   - [Blazor WebAssembly](readme/BlazorWebAssemblyApp.md)
