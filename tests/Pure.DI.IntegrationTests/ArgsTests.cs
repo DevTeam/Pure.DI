@@ -105,6 +105,146 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(ImmutableArray.Create("Some Name"), result);
     }
+    
+    [Fact]
+    public async Task ShouldSupportArgWhenFewDeps()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency {}
+
+    interface IService
+    {
+        IDependency Dep { get; }
+
+        string Name { get; }
+    }
+
+    class Service: IService 
+    {
+        public Service(IDependency dep, string name, string name2)
+        { 
+            Dep = dep;
+            Name = name;
+        }
+
+        public IDependency Dep { get; }
+
+        public string Name { get; private set; }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+                .Bind<IService>().To<Service>()    
+                .Arg<string>("serviceName")           
+                .Root<IService>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition("Some Name");
+            Console.WriteLine(composition.Service.Name);                               
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Some Name"), result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportArgWhenFewConsumers()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency {}
+
+    interface IService
+    {
+        IDependency Dep { get; }
+
+        string Name { get; }
+    }
+
+    class Service: IService 
+    {
+        public Service(IDependency dep, string name)
+        { 
+            Dep = dep;
+            Name = name;
+        }
+
+        public IDependency Dep { get; }
+
+        public string Name { get; private set; }
+    }
+    
+    class Service2 
+    {
+        public Service2(string name)
+        { 
+            Name = name;
+        }
+
+        public string Name { get; private set; }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
+                .Bind<IService>().To<Service>()    
+                .Arg<string>("serviceName")           
+                .Root<IService>("Service")
+                .Root<Service2>("Service2");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition("Some Name");
+            Console.WriteLine(composition.Service.Name);                               
+            Console.WriteLine(composition.Service2.Name);
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Some Name", "Some Name"), result);
+    }
 
     [Fact]
     public async Task ShouldSupportSeveralArgs()

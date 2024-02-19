@@ -45,16 +45,11 @@ internal class CompositionBuilder(
             ctx.Code.AppendLine($"return {buildTools.OnInjected(ctx, rootBlock.Current)};");
             ctx.Code.AppendLines(ctx.LocalFunctionsCode.Lines);
             
-            var args = map.Values
-                .Where(i => i.Node.Arg is not null)
-                .OrderBy(i => i.Node.Binding.Id)
-                .ToImmutableArray();
-            
-            var rootArgs = args.GetArgsOfKind(ArgKind.Root).ToImmutableArray();
+            var args = GetRootArgs(map.Values).ToImmutableArray();
             var processedRoot = root with
             {
                 Lines = ctx.Code.Lines.ToImmutableArray(),
-                Args = rootArgs
+                Args = args.GetArgsOfKind(ArgKind.Root).ToImmutableArray()
             };
 
             foreach (var rootArg in args)
@@ -79,7 +74,7 @@ internal class CompositionBuilder(
             graph,
             new LinesBuilder(),
             singletons,
-            allArgs.OrderBy(i => i.Node.Binding.Id).ToImmutableArray(),
+            GetRootArgs(allArgs).ToImmutableArray(),
             publicRoots,
             disposableSingletons.Length,
             disposableSingletons.Count(i => i.Node.Lifetime == Lifetime.Scoped),
@@ -94,4 +89,11 @@ internal class CompositionBuilder(
 
         return composition;
     }
+    
+    private IEnumerable<Variable> GetRootArgs(IEnumerable<Variable> argVars) => 
+        argVars
+            .Where(arg => arg.Node.Arg is not null)
+            .GroupBy(i => i.Node.Binding.Id)
+            .Select(i => i.First())
+            .OrderBy(i => i.Node.Binding.Id);
 }
