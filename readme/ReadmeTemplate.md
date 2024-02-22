@@ -1,3 +1,5 @@
+![](di.gif)
+
 ## Schrödinger's cat will demonstrate how it all works [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](samples/ShroedingersCat)
 
 ### The reality is
