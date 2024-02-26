@@ -20,25 +20,23 @@ class Dependency : IDependency;
 class Service
 {
     public Service(
-        IDependency dependency1,
-        IDependency dependency2,
-        Func<(IDependency dependency3, IDependency dependency4)> dependenciesFactory)
+        IDependency dep1,
+        IDependency dep2,
+        Lazy<(IDependency dep3, IDependency dep4)> deps)
     {
-        Dependency1 = dependency1;
-        Dependency2 = dependency2;
-
-        var dependencies = dependenciesFactory();
-        Dependency3 = dependencies.dependency3;
-        Dependency4 = dependencies.dependency4;
+        Dep1 = dep1;
+        Dep2 = dep2;
+        Dep3 = deps.Value.dep3;
+        Dep4 = deps.Value.dep4;
     }
 
-    public IDependency Dependency1 { get; }
+    public IDependency Dep1 { get; }
 
-    public IDependency Dependency2 { get; }
+    public IDependency Dep2 { get; }
 
-    public IDependency Dependency3 { get; }
+    public IDependency Dep3 { get; }
     
-    public IDependency Dependency4 { get; }
+    public IDependency Dep4 { get; }
 }
 // }
 
@@ -53,12 +51,14 @@ public class Scenario
             .Root<Service>("Root");
 
         var composition = new Composition();
+
         var service1 = composition.Root;
+        service1.Dep1.ShouldBe(service1.Dep2);
+        service1.Dep3.ShouldBe(service1.Dep4);
+        service1.Dep1.ShouldNotBe(service1.Dep3);
+        
         var service2 = composition.Root;
-        service1.Dependency1.ShouldBe(service1.Dependency2);
-        service1.Dependency1.ShouldNotBe(service1.Dependency3);
-        service1.Dependency3.ShouldBe(service1.Dependency4);
-        service2.Dependency1.ShouldNotBe(service1.Dependency1);
+        service2.Dep1.ShouldNotBe(service1.Dep1);
 // }
         composition.SaveClassDiagram();
     }

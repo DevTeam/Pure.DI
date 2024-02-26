@@ -9,32 +9,41 @@ interface IDependency;
 
 class Dependency : IDependency;
 
-interface IService
+class Service
 {
-    public IDependency Dependency1 { get; }
+    public Service(
+        IDependency dep1,
+        IDependency dep2,
+        Lazy<(IDependency dep3, IDependency dep4)> deps)
+    {
+        Dep1 = dep1;
+        Dep2 = dep2;
+        Dep3 = deps.Value.dep3;
+        Dep4 = deps.Value.dep4;
+    }
 
-    public IDependency Dependency2 { get; }
-}
+    public IDependency Dep1 { get; }
 
-class Service(
-    IDependency dependency1,
-    IDependency dependency2)
-    : IService
-{
-    public IDependency Dependency1 { get; } = dependency1;
+    public IDependency Dep2 { get; }
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public IDependency Dep3 { get; }
+
+    public IDependency Dep4 { get; }
 }
 
 DI.Setup(nameof(Composition))
     .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>()
-    .Bind<IService>().To<Service>().Root<IService>("Root");
+    .Root<Service>("Root");
 
 var composition = new Composition();
+
 var service1 = composition.Root;
+service1.Dep1.ShouldBe(service1.Dep2);
+service1.Dep3.ShouldBe(service1.Dep4);
+service1.Dep1.ShouldBe(service1.Dep3);
+        
 var service2 = composition.Root;
-service1.Dependency1.ShouldBe(service1.Dependency2);
-service2.Dependency1.ShouldNotBe(service1.Dependency1);
+service2.Dep1.ShouldNotBe(service1.Dep1);
 ```
 
 <details open>
@@ -43,29 +52,35 @@ service2.Dependency1.ShouldNotBe(service1.Dependency1);
 ```mermaid
 classDiagram
   class Composition {
-    +IService Root
+    +Service Root
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
+  class ValueTupleᐸIDependencyˏIDependencyᐳ {
+    +ValueTuple(IDependency item1, IDependency item2)
+  }
+  class Service {
+    +Service(IDependency dep1, IDependency dep2, LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ deps)
+  }
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
   }
-  Service --|> IService : 
-  class Service {
-    +Service(IDependency dependency1, IDependency dependency2)
-  }
+  class LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ
+  class FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ
   class IDependency {
     <<abstract>>
   }
-  class IService {
-    <<abstract>>
-  }
+  ValueTupleᐸIDependencyˏIDependencyᐳ o--  "PerResolve" Dependency : IDependency
+  ValueTupleᐸIDependencyˏIDependencyᐳ o--  "PerResolve" Dependency : IDependency
   Service o--  "PerResolve" Dependency : IDependency
   Service o--  "PerResolve" Dependency : IDependency
-  Composition ..> Service : IService Root
+  Service *--  LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ : LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ
+  Composition ..> Service : Service Root
+  LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ o--  "PerResolve" FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ : FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ
+  FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ *--  ValueTupleᐸIDependencyˏIDependencyᐳ : ValueTupleᐸIDependencyˏIDependencyᐳ
 ```
 
 </details>
@@ -97,23 +112,23 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqtU81ugzAMfhXL5x06OLD1tkIn9TZ1HHNJg9XRFYJCVqmq-g59l132On2TQQIjS9mPpl0sY_vz53zGBxQyI5yi2PK6TnK-VrxgipXmG2JZVLLOdS5LYC-TSTRrc60XzBaPpHa5IFhKqYcwpLCkWm53dD69pefTqwnfGHv7Y5lcbUjo1g_vQfP1BcwW9FgLSvcVgW7MH6pj-J4ySlovoYrKjEqxNzIEyWCj2EDnsPCKwjsYhPRyro5Dakwpy99L_TW5W_GJ2U24tF3ccrqzZx_udafQeDYYG9Ry-lIMvKEdOOarWiveyT7v7Fin8fF_36bHS1c6AIYPpPrfAv31NAI6T_jHNv49BWZma5steku8uDC8woJUwfOsudgDQ_1ERcM7ZZhx9czwiMd3g2tKKw">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNrNVUFuwjAQ_Irlcw8UDrTcIAEJqYeKRj35YpIVpE3iyHGQKOIN5S-98Ie-gp_UcRLZJEDBh6qXVbLe8cxO1s4G-ywAPMB-RLPMDemC05hwkqh35LA4ZVkoQpYgknc6_VGxVjx1Ry_AV6EPaMaY0FnkoRlkLFrBYbf3DrsvlX5Q8fHXMjZ_A18Uz70JEnTRgpUFNbYEeesUkJDBotpBlyn7rjbjlUY5eHkaFZqnLqSQBJD46-9P40W20nJKA0sJRjkKBcT3lZRmvnteS23-mY_S5gkgPUUj0yWLg57oh1S_v7bLolGJzk5pNAjUsqtj31FWj49UqNQQ6fYaa2aHeunUZJke3d6Qxk7yxLfFTs-q75XNO3SeCU6rqRtX8aiDq2eNmQYjRPAz8HreMWp7bMD_kqee1_-1jcIPj_eyOAYVid28Na_YrpqHMspjYkqVHM1L10LtZe9uH_xamt2RseRrfrWb7mYp9tr6QiK-wzHwmIaB_E9uCBZLiKVVA4IDyt8J3uLtD3K7yIk">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// </summary>
 /// <seealso cref="Pure.DI.DI.Setup"/>
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM02D22di;
-  private readonly object _lockM02D22di;
+  private readonly Composition _rootM02D26di;
+  private readonly object _lockM02D26di;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Composition"/>.
   /// </summary>
   public Composition()
   {
-    _rootM02D22di = this;
-    _lockM02D22di = new object();
+    _rootM02D26di = this;
+    _lockM02D26di = new object();
   }
   
   /// <summary>
@@ -122,30 +137,53 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM02D22di = baseComposition._rootM02D22di;
-    _lockM02D22di = _rootM02D22di._lockM02D22di;
+    _rootM02D26di = baseComposition._rootM02D26di;
+    _lockM02D26di = _rootM02D26di._lockM02D26di;
   }
   
   #region Composition Roots
-  public Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IService Root
+  public Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service Root
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
     #endif
     get
     {
-      var perResolveM02D22di34_Dependency = default(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency);
-      if (ReferenceEquals(perResolveM02D22di34_Dependency, null))
+      var perResolveM02D26di34_Dependency = default(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency);
+      var perResolveM02D26di40_Func = default(System.Func<(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep4)>);
+      perResolveM02D26di40_Func = new global::System.Func<(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep4)>(
+      [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
+      () =>
       {
-          lock (_lockM02D22di)
+          if (ReferenceEquals(perResolveM02D26di34_Dependency, null))
           {
-              if (ReferenceEquals(perResolveM02D22di34_Dependency, null))
+              lock (_lockM02D26di)
               {
-                  perResolveM02D22di34_Dependency = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency();
+                  if (ReferenceEquals(perResolveM02D26di34_Dependency, null))
+                  {
+                      perResolveM02D26di34_Dependency = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency();
+                  }
+              }
+          }
+          var factory_M02D26di1 = (perResolveM02D26di34_Dependency, perResolveM02D26di34_Dependency);
+          return factory_M02D26di1;
+      });
+      System.Lazy<(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep4)> transientM02D26di1_Lazy;
+      {
+          var factory_M02D26di2 = perResolveM02D26di40_Func;
+          transientM02D26di1_Lazy = new global::System.Lazy<(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep4)>(factory_M02D26di2, true);
+      }
+      if (ReferenceEquals(perResolveM02D26di34_Dependency, null))
+      {
+          lock (_lockM02D26di)
+          {
+              if (ReferenceEquals(perResolveM02D26di34_Dependency, null))
+              {
+                  perResolveM02D26di34_Dependency = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency();
               }
           }
       }
-      return new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service(perResolveM02D22di34_Dependency, perResolveM02D22di34_Dependency);
+      return new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service(perResolveM02D26di34_Dependency, perResolveM02D26di34_Dependency, transientM02D26di1_Lazy);
     }
   }
   #endregion
@@ -161,7 +199,7 @@ partial class Composition
   #endif
   public T Resolve<T>()
   {
-    return ResolverM02D22di<T>.Value.Resolve(this);
+    return ResolverM02D26di<T>.Value.Resolve(this);
   }
   
   /// <summary>
@@ -175,7 +213,7 @@ partial class Composition
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM02D22di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM02D26di<T>.Value.ResolveByTag(this, tag);
   }
   
   /// <summary>
@@ -188,10 +226,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM02D22di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM02D22di;
+    var index = (int)(_bucketSizeM02D26di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM02D26di;
     do {
-      ref var pair = ref _bucketsM02D22di[index];
+      ref var pair = ref _bucketsM02D26di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -212,10 +250,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM02D22di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM02D22di;
+    var index = (int)(_bucketSizeM02D26di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM02D26di;
     do {
-      ref var pair = ref _bucketsM02D22di[index];
+      ref var pair = ref _bucketsM02D26di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -234,51 +272,57 @@ partial class Composition
     return
       "classDiagram\n" +
         "  class Composition {\n" +
-          "    +IService Root\n" +
+          "    +Service Root\n" +
           "    + T ResolveᐸTᐳ()\n" +
           "    + T ResolveᐸTᐳ(object? tag)\n" +
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
+        "  class ValueTupleᐸIDependencyˏIDependencyᐳ {\n" +
+          "    +ValueTuple(IDependency item1, IDependency item2)\n" +
+        "  }\n" +
+        "  class Service {\n" +
+          "    +Service(IDependency dep1, IDependency dep2, LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ deps)\n" +
+        "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(IDependency dependency1, IDependency dependency2)\n" +
-        "  }\n" +
+        "  class LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ\n" +
+        "  class FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ\n" +
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
+        "  ValueTupleᐸIDependencyˏIDependencyᐳ o--  \"PerResolve\" Dependency : IDependency\n" +
+        "  ValueTupleᐸIDependencyˏIDependencyᐳ o--  \"PerResolve\" Dependency : IDependency\n" +
         "  Service o--  \"PerResolve\" Dependency : IDependency\n" +
         "  Service o--  \"PerResolve\" Dependency : IDependency\n" +
-        "  Composition ..> Service : IService Root";
+        "  Service *--  LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ : LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ\n" +
+        "  Composition ..> Service : Service Root\n" +
+        "  LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ o--  \"PerResolve\" FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ : FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ\n" +
+        "  FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ *--  ValueTupleᐸIDependencyˏIDependencyᐳ : ValueTupleᐸIDependencyˏIDependencyᐳ";
   }
   
-  private readonly static int _bucketSizeM02D22di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM02D22di;
+  private readonly static int _bucketSizeM02D26di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM02D26di;
   
   static Composition()
   {
-    var valResolverM02D22di_0000 = new ResolverM02D22di_0000();
-    ResolverM02D22di<Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IService>.Value = valResolverM02D22di_0000;
-    _bucketsM02D22di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM02D26di_0000 = new ResolverM02D26di_0000();
+    ResolverM02D26di<Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service>.Value = valResolverM02D26di_0000;
+    _bucketsM02D26di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM02D22di,
+      out _bucketSizeM02D26di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IService), valResolverM02D22di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service), valResolverM02D26di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM02D22di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM02D26di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM02D22di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM02D26di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -291,21 +335,21 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM02D22di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IService>
+  private sealed class ResolverM02D26di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service>
   {
-    public Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service Resolve(Composition composition)
     {
       return composition.Root;
     }
     
-    public Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Root;
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service.");
     }
   }
   #endregion

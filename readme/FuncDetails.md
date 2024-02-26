@@ -95,14 +95,14 @@ classDiagram
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Func
 {
-  private readonly Func _rootM02D22di;
+  private readonly Func _rootM02D26di;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Func"/>.
   /// </summary>
   public Func()
   {
-    _rootM02D22di = this;
+    _rootM02D26di = this;
   }
   
   /// <summary>
@@ -111,7 +111,7 @@ partial class Func
   /// <param name="baseComposition">Base composition.</param>
   internal Func(Func baseComposition)
   {
-    _rootM02D22di = baseComposition._rootM02D22di;
+    _rootM02D26di = baseComposition._rootM02D26di;
   }
   
   #region Composition Roots
@@ -120,14 +120,14 @@ partial class Func
   #endif
   public partial Pure.DI.Benchmarks.Model.CompositionRoot PureDIByCR()
   {
-    System.Func<Pure.DI.Benchmarks.Model.IService3> perBlockM02D22di10_Func = new Func<Pure.DI.Benchmarks.Model.IService3>(
+    System.Func<Pure.DI.Benchmarks.Model.IService3> perBlockM02D26di10_Func = new Func<Pure.DI.Benchmarks.Model.IService3>(
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
     () =>
     {
-        var value_M02D22di1 = new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
-        return value_M02D22di1;
+        var value_M02D26di1 = new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
+        return value_M02D26di1;
     });
-    return new Pure.DI.Benchmarks.Model.CompositionRoot(new Pure.DI.Benchmarks.Model.Service1(new Pure.DI.Benchmarks.Model.Service2Func(perBlockM02D22di10_Func)), new Pure.DI.Benchmarks.Model.Service2Func(perBlockM02D22di10_Func), new Pure.DI.Benchmarks.Model.Service2Func(perBlockM02D22di10_Func), new Pure.DI.Benchmarks.Model.Service2Func(perBlockM02D22di10_Func), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
+    return new Pure.DI.Benchmarks.Model.CompositionRoot(new Pure.DI.Benchmarks.Model.Service1(new Pure.DI.Benchmarks.Model.Service2Func(perBlockM02D26di10_Func)), new Pure.DI.Benchmarks.Model.Service2Func(perBlockM02D26di10_Func), new Pure.DI.Benchmarks.Model.Service2Func(perBlockM02D26di10_Func), new Pure.DI.Benchmarks.Model.Service2Func(perBlockM02D26di10_Func), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
   }
   #endregion
   
@@ -142,7 +142,7 @@ partial class Func
   #endif
   public T Resolve<T>()
   {
-    return ResolverM02D22di<T>.Value.Resolve(this);
+    return ResolverM02D26di<T>.Value.Resolve(this);
   }
   
   /// <summary>
@@ -156,7 +156,7 @@ partial class Func
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM02D22di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM02D26di<T>.Value.ResolveByTag(this, tag);
   }
   
   /// <summary>
@@ -169,10 +169,10 @@ partial class Func
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM02D22di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM02D22di;
+    var index = (int)(_bucketSizeM02D26di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM02D26di;
     do {
-      ref var pair = ref _bucketsM02D22di[index];
+      ref var pair = ref _bucketsM02D26di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -193,10 +193,10 @@ partial class Func
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM02D22di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM02D22di;
+    var index = (int)(_bucketSizeM02D26di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM02D26di;
     do {
-      ref var pair = ref _bucketsM02D22di[index];
+      ref var pair = ref _bucketsM02D26di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -268,26 +268,26 @@ partial class Func
         "  FuncᐸIService3ᐳ *--  Service3 : IService3";
   }
   
-  private readonly static int _bucketSizeM02D22di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Func, object>>[] _bucketsM02D22di;
+  private readonly static int _bucketSizeM02D26di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Func, object>>[] _bucketsM02D26di;
   
   static Func()
   {
-    var valResolverM02D22di_0000 = new ResolverM02D22di_0000();
-    ResolverM02D22di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM02D22di_0000;
-    _bucketsM02D22di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Func, object>>.Create(
+    var valResolverM02D26di_0000 = new ResolverM02D26di_0000();
+    ResolverM02D26di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM02D26di_0000;
+    _bucketsM02D26di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Func, object>>.Create(
       1,
-      out _bucketSizeM02D22di,
+      out _bucketSizeM02D26di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Func, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Func, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM02D22di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Func, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM02D26di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM02D22di<T>: global::Pure.DI.IResolver<Func, T>
+  private sealed class ResolverM02D26di<T>: global::Pure.DI.IResolver<Func, T>
   {
-    public static global::Pure.DI.IResolver<Func, T> Value = new ResolverM02D22di<T>();
+    public static global::Pure.DI.IResolver<Func, T> Value = new ResolverM02D26di<T>();
     
     public T Resolve(Func composite)
     {
@@ -300,7 +300,7 @@ partial class Func
     }
   }
   
-  private sealed class ResolverM02D22di_0000: global::Pure.DI.IResolver<Func, Pure.DI.Benchmarks.Model.CompositionRoot>
+  private sealed class ResolverM02D26di_0000: global::Pure.DI.IResolver<Func, Pure.DI.Benchmarks.Model.CompositionRoot>
   {
     public Pure.DI.Benchmarks.Model.CompositionRoot Resolve(Func composition)
     {

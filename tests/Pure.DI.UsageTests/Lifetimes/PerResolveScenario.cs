@@ -17,21 +17,26 @@ interface IDependency;
 
 class Dependency : IDependency;
 
-interface IService
+class Service
 {
-    public IDependency Dependency1 { get; }
-            
-    public IDependency Dependency2 { get; }
-}
+    public Service(
+        IDependency dep1,
+        IDependency dep2,
+        Lazy<(IDependency dep3, IDependency dep4)> deps)
+    {
+        Dep1 = dep1;
+        Dep2 = dep2;
+        Dep3 = deps.Value.dep3;
+        Dep4 = deps.Value.dep4;
+    }
 
-class Service(
-    IDependency dependency1,
-    IDependency dependency2)
-    : IService
-{
-    public IDependency Dependency1 { get; } = dependency1;
+    public IDependency Dep1 { get; }
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public IDependency Dep2 { get; }
+
+    public IDependency Dep3 { get; }
+    
+    public IDependency Dep4 { get; }
 }
 // }
 
@@ -43,13 +48,17 @@ public class Scenario
 // {            
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().As(Lifetime.PerResolve).To<Dependency>()
-            .Bind<IService>().To<Service>().Root<IService>("Root");
+            .Root<Service>("Root");
 
         var composition = new Composition();
+
         var service1 = composition.Root;
+        service1.Dep1.ShouldBe(service1.Dep2);
+        service1.Dep3.ShouldBe(service1.Dep4);
+        service1.Dep1.ShouldBe(service1.Dep3);
+        
         var service2 = composition.Root;
-        service1.Dependency1.ShouldBe(service1.Dependency2);
-        service2.Dependency1.ShouldNotBe(service1.Dependency1);
+        service2.Dep1.ShouldNotBe(service1.Dep1);
 // }
         composition.SaveClassDiagram();
     }

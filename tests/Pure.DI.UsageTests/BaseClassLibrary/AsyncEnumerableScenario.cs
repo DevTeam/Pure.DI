@@ -29,13 +29,13 @@ class Service(IAsyncEnumerable<IDependency> dependencies) : IService
 {
     public async Task<IReadOnlyList<IDependency>> GetDependenciesAsync()
     {
-        var dependencies1 = new List<IDependency>();
+        var deps = new List<IDependency>();
         await foreach (var dependency in dependencies)
         {
-            dependencies1.Add(dependency);
+            deps.Add(dependency);
         }
 
-        return dependencies1;
+        return deps;
     }
 }
 // }
