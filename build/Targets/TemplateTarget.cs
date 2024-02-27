@@ -5,9 +5,12 @@ namespace Build.Targets;
 internal class TemplateTarget(
     Settings settings,
     ICommands commands,
+    IVersions versions,
     ITeamCityArtifactsWriter artifactsWriter)
     : IInitializable, ITarget<string>
 {
+    private const string ProjectName = "Pure.DI.Templates";
+    
     public Task InitializeAsync() => commands.Register(
         this,
         "Creates and deploys templates",
@@ -17,20 +20,21 @@ internal class TemplateTarget(
     public Task<string> RunAsync(CancellationToken cancellationToken)
     {
         Info("Creating templates");
+        var packageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), Settings.VersionRange, 0).ToString();
         var props = new[]
         {
             ("configuration", settings.Configuration),
-            ("version", settings.Version.ToString()!)
+            ("version", packageVersion)
         };
 
-        var projectDirectory = Path.Combine("src", "Pure.DI.Templates");
+        var projectDirectory = Path.Combine("src", ProjectName);
         var pack = new DotNetPack()
-            .WithProject(Path.Combine(projectDirectory, "Pure.DI.Templates.csproj"))
+            .WithProject(Path.Combine(projectDirectory, $"{ProjectName}.csproj"))
             .WithProps(props);
 
         pack.Build().Succeed();
         
-        var targetPackage = Path.Combine(projectDirectory, "bin", $"Pure.DI.Templates.{settings.Version}.nupkg");
+        var targetPackage = Path.Combine(projectDirectory, "bin", $"{ProjectName}.{packageVersion}.nupkg");
         artifactsWriter.PublishArtifact($"{targetPackage} => .");
 
         if (!string.IsNullOrWhiteSpace(settings.NuGetKey))
