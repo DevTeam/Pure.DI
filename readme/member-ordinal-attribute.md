@@ -125,10 +125,10 @@ classDiagram
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class PersonComposition
 {
-  private readonly PersonComposition _rootM02D26di;
-  private readonly int _argM02D26di_personId;
-  private readonly string _argM02D26di_personName;
-  private readonly System.DateTime _argM02D26di_personBirthday;
+  private readonly PersonComposition _rootM02D27di;
+  private readonly int _argM02D27di_personId;
+  private readonly string _argM02D27di_personName;
+  private readonly System.DateTime _argM02D27di_personBirthday;
   
   /// <summary>
   /// This parameterized constructor creates a new instance of <see cref="PersonComposition"/> with arguments.
@@ -138,15 +138,15 @@ partial class PersonComposition
   /// <param name="personBirthday">The composition argument of type <see cref="System.DateTime"/>.</param>
   public PersonComposition(int personId, string personName, System.DateTime personBirthday)
   {
-    _rootM02D26di = this;
+    _rootM02D27di = this;
     if (ReferenceEquals(personName, null))
     {
       throw new global::System.ArgumentNullException("personName");
     }
     
-    _argM02D26di_personId = personId;
-    _argM02D26di_personName = personName;
-    _argM02D26di_personBirthday = personBirthday;
+    _argM02D27di_personId = personId;
+    _argM02D27di_personName = personName;
+    _argM02D27di_personBirthday = personBirthday;
   }
   
   /// <summary>
@@ -155,10 +155,10 @@ partial class PersonComposition
   /// <param name="baseComposition">Base composition.</param>
   internal PersonComposition(PersonComposition baseComposition)
   {
-    _rootM02D26di = baseComposition._rootM02D26di;
-    _argM02D26di_personId = baseComposition._argM02D26di_personId;
-    _argM02D26di_personName = baseComposition._argM02D26di_personName;
-    _argM02D26di_personBirthday = baseComposition._argM02D26di_personBirthday;
+    _rootM02D27di = baseComposition._rootM02D27di;
+    _argM02D27di_personId = baseComposition._argM02D27di_personId;
+    _argM02D27di_personName = baseComposition._argM02D27di_personName;
+    _argM02D27di_personBirthday = baseComposition._argM02D27di_personBirthday;
   }
   
   #region Composition Roots
@@ -169,11 +169,11 @@ partial class PersonComposition
     #endif
     get
     {
-      var transientM02D26di0_Person = new Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person();
-      transientM02D26di0_Person.Id = _argM02D26di_personId;
-      transientM02D26di0_Person.FirstName = _argM02D26di_personName;
-      transientM02D26di0_Person.Birthday = _argM02D26di_personBirthday;
-      return transientM02D26di0_Person;
+      var transientM02D27di0_Person = new Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.Person();
+      transientM02D27di0_Person.Id = _argM02D27di_personId;
+      transientM02D27di0_Person.FirstName = _argM02D27di_personName;
+      transientM02D27di0_Person.Birthday = _argM02D27di_personBirthday;
+      return transientM02D27di0_Person;
     }
   }
   #endregion
@@ -189,7 +189,7 @@ partial class PersonComposition
   #endif
   public T Resolve<T>()
   {
-    return ResolverM02D26di<T>.Value.Resolve(this);
+    return ResolverM02D27di<T>.Value.Resolve(this);
   }
   
   /// <summary>
@@ -203,7 +203,7 @@ partial class PersonComposition
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM02D26di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM02D27di<T>.Value.ResolveByTag(this, tag);
   }
   
   /// <summary>
@@ -216,10 +216,10 @@ partial class PersonComposition
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM02D26di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM02D26di;
+    var index = (int)(_bucketSizeM02D27di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM02D27di;
     do {
-      ref var pair = ref _bucketsM02D26di[index];
+      ref var pair = ref _bucketsM02D27di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -240,10 +240,10 @@ partial class PersonComposition
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM02D26di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM02D26di;
+    var index = (int)(_bucketSizeM02D27di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM02D27di;
     do {
-      ref var pair = ref _bucketsM02D26di[index];
+      ref var pair = ref _bucketsM02D27di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -287,26 +287,26 @@ partial class PersonComposition
         "  PersonComposition ..> Person : IPerson Person";
   }
   
-  private readonly static int _bucketSizeM02D26di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[] _bucketsM02D26di;
+  private readonly static int _bucketSizeM02D27di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[] _bucketsM02D27di;
   
   static PersonComposition()
   {
-    var valResolverM02D26di_0000 = new ResolverM02D26di_0000();
-    ResolverM02D26di<Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson>.Value = valResolverM02D26di_0000;
-    _bucketsM02D26di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>.Create(
+    var valResolverM02D27di_0000 = new ResolverM02D27di_0000();
+    ResolverM02D27di<Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson>.Value = valResolverM02D27di_0000;
+    _bucketsM02D27di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>.Create(
       1,
-      out _bucketSizeM02D26di,
+      out _bucketSizeM02D27di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>(typeof(Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson), valResolverM02D26di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>(typeof(Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson), valResolverM02D27di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM02D26di<T>: global::Pure.DI.IResolver<PersonComposition, T>
+  private sealed class ResolverM02D27di<T>: global::Pure.DI.IResolver<PersonComposition, T>
   {
-    public static global::Pure.DI.IResolver<PersonComposition, T> Value = new ResolverM02D26di<T>();
+    public static global::Pure.DI.IResolver<PersonComposition, T> Value = new ResolverM02D27di<T>();
     
     public T Resolve(PersonComposition composite)
     {
@@ -319,7 +319,7 @@ partial class PersonComposition
     }
   }
   
-  private sealed class ResolverM02D26di_0000: global::Pure.DI.IResolver<PersonComposition, Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson>
+  private sealed class ResolverM02D27di_0000: global::Pure.DI.IResolver<PersonComposition, Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson>
   {
     public Pure.DI.UsageTests.Attributes.MemberOrdinalAttributeScenario.IPerson Resolve(PersonComposition composition)
     {
