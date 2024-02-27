@@ -225,7 +225,8 @@ internal class ReadmeTarget(
 
     private async Task GenerateExamples(IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)> examples, TextWriter readmeWriter, string logsDirectory)
     {
-        var packageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), Settings.VersionRange, 0).ToString();
+        var generatorPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), Settings.VersionRange, 0).ToString();
+        var msPackageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI.MS"), Settings.VersionRange, 0).ToString();
         foreach (var readmeFile in Directory.EnumerateFiles(Path.Combine(ReadmeDir), "*.md"))
         {
             if (readmeFile.EndsWith("Template.md", StringComparison.InvariantCultureIgnoreCase))
@@ -234,7 +235,8 @@ internal class ReadmeTarget(
                 {
                     var content = await File.ReadAllTextAsync(readmeFile);
                     content = content
-                        .Replace("$(version)", packageVersion)
+                        .Replace("$(version)", generatorPackageVersion)
+                        .Replace("$(ms.version)", msPackageVersion)
                         .Replace("$(targetFrameworkVersion)", "net8.0");
                     await File.WriteAllTextAsync(readmeFile.Replace("PageTemplate.md", ".md"), content);
                 }

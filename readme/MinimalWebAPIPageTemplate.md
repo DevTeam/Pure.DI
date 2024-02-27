@@ -66,11 +66,11 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="$(MauiVersion)">
+        <PackageReference Include="Pure.DI" Version="$(version)">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="$(MauiVersion)" />
+        <PackageReference Include="Pure.DI.MS" Version="$(ms.version)" />
     </ItemGroup>
 
 </Project>

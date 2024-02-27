@@ -66,7 +66,7 @@ The [project file](/samples/BlazorWebAssemblyApp/BlazorWebAssemblyApp.csproj) lo
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="$(version)" />
+        <PackageReference Include="Pure.DI.MS" Version="$(ms.version)" />
     </ItemGroup>
 
 </Project>
