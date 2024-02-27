@@ -17,10 +17,19 @@ internal class TemplateTarget(
         "template",
         "t");
     
-    public Task<string> RunAsync(CancellationToken cancellationToken)
+    public async Task<string> RunAsync(CancellationToken cancellationToken)
     {
         Info("Creating templates");
         var packageVersion = versions.GetNext(new NuGetRestoreSettings("Pure.DI"), Settings.VersionRange, 0).ToString();
+        foreach (var jsonFile in new [] {
+                     "src/Pure.DI.Templates/Templates/Pure.DI.Template.ClassLibrary/.template.config/template.json",
+                     "src/Pure.DI.Templates/Templates/Pure.DI.Template.ConsoleApp/.template.config/template.json"})
+        {
+            var content = await File.ReadAllTextAsync(jsonFile, cancellationToken);
+            content = content.Replace("$(version)", packageVersion);
+            await File.WriteAllTextAsync(jsonFile, content, cancellationToken);
+        }
+        
         var props = new[]
         {
             ("configuration", settings.Configuration),
@@ -51,6 +60,6 @@ internal class TemplateTarget(
             Warning($"The NuGet key was not specified, the package {targetPackage} will not be pushed.");
         }
 
-        return Task.FromResult(targetPackage);
+        return targetPackage;
     }
 }
