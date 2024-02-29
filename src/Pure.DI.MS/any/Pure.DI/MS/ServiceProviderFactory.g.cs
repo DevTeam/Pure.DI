@@ -30,7 +30,7 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
     where TComposition: ServiceProviderFactory<TComposition>
 {
     private static readonly Type KeyedServiceProviderType = Type.GetType("Microsoft.Extensions.DependencyInjection.IKeyedServiceProvider, Microsoft.Extensions.DependencyInjection.Abstractions, Culture=neutral, PublicKeyToken=adb9793829ddae60", false);
-    private static readonly MethodInfo GetRequiredKeyedServiceMethod = KeyedServiceProviderType?.GetMethod("GetRequiredKeyedService");
+    private static readonly MethodInfo GetKeyedServiceMethod = KeyedServiceProviderType?.GetMethod("GetKeyedService");
     private static readonly ParameterExpression TypeParameter = Expression.Parameter(typeof(Type));
     private static readonly ParameterExpression TagParameter = Expression.Parameter(typeof(object));
     
@@ -54,7 +54,7 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
     /// <summary>
     /// <see cref="System.IServiceProvider"/> instance for resolving external dependencies.
     /// </summary>
-    private volatile Func<Type, object, object>? _serviceProvider;
+    private volatile Func<Type, object, object?>? _serviceProvider;
     
     /// <summary>
     /// DI setup hints.
@@ -93,10 +93,10 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
         _serviceProvider ??= 
             KeyedServiceProviderType?.IsAssignableFrom(serviceProvider.GetType()) == true
                 ? Expression.Lambda<Func<Type, object, object>>(
-                        Expression.Call(Expression.Constant(serviceProvider), GetRequiredKeyedServiceMethod, TypeParameter, TagParameter),
+                        Expression.Call(Expression.Constant(serviceProvider), GetKeyedServiceMethod, TypeParameter, TagParameter),
                         TypeParameter,
                         TagParameter).Compile()
-                : new Func<Type, object, object>((type, tag) => serviceProvider.GetService(type) ?? throw new InvalidOperationException($"No service for type '{type}' has been registered."));
+                : new Func<Type, object, object>((type, tag) => serviceProvider.GetService(type));
         return serviceProvider;
     }
 
@@ -109,7 +109,7 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
     /// <returns>Resolved dependency instance.</returns>
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     protected T OnCannotResolve<T>(object? tag, Lifetime lifetime) => 
-        (T)(_serviceProvider ?? throw new InvalidOperationException("Not ready yet."))(typeof(T), tag);
+        (T)(_serviceProvider ?? throw new InvalidOperationException("Not ready yet."))(typeof(T), tag) ?? throw new InvalidOperationException($"No service for type '{typeof(T)}' has been registered.");
 
     /// <summary>
     /// Registers a composition resolver for use in a service collection <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/>.
