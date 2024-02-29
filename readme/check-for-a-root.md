@@ -1,8 +1,8 @@
-#### Field injection
+#### Check for a root
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/FieldInjectionScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/CheckForRootScenario.cs)
 
-To use dependency injection for a field, make sure the field is writable and simply add the _Ordinal_ attribute to that field, specifying an ordinal that will be used to determine the injection order:
+Sometimes you need to check if you can get the root of a composition using the _Resolve_ method before calling it, this example will show you how to do it:
 
 ```c#
 interface IDependency;
@@ -11,24 +11,50 @@ class Dependency : IDependency;
 
 interface IService
 {
-    IDependency? Dependency { get; }
+    IDependency Dependency { get;}
 }
 
 class Service : IService
 {
-    [Ordinal(0)]
-    internal IDependency? DependencyVal;
-
-    public IDependency? Dependency => DependencyVal;
+    [Tag("MyDep")]
+    public required IDependency Dependency { get; init; }
 }
 
-DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>().Root<IService>("Root");
+partial class Composition
+{
+    private static readonly HashSet<(Type type, object? tag)> Roots = [];
 
-var composition = new Composition();
-var service = composition.Root;
-service.Dependency.ShouldBeOfType<Dependency>();
+    // Check that the root can be resolved by Resolve methods
+    internal static bool HasRoot(Type type, object? key = default) =>
+        Roots.Contains((type, key));
+
+    private static void Setup() =>
+        DI.Setup(nameof(Composition))
+            // Specifies to use the partial OnNewRoot method
+            // to register each root
+            .Hint(Hint.OnNewRoot, "On")
+
+            .Bind<IDependency>("MyDep").To<Dependency>()
+            .Bind<IService>().To<Service>()
+
+            .Root<IDependency>(tag: "MyDep")
+            .Root<IService>("Root");
+
+    // Adds a new root to the hash set
+    private static partial void OnNewRoot<TContract, T>(
+        IResolver<Composition, TContract> resolver,
+        string name,
+        object? tag,
+        Lifetime lifetime) =>
+        Roots.Add((typeof(TContract), tag));
+}
+
+Composition.HasRoot(typeof(IService)).ShouldBeTrue();
+Composition.HasRoot(typeof(IDependency), "MyDep").ShouldBeTrue();
+        
+Composition.HasRoot(typeof(IDependency)).ShouldBeFalse();
+Composition.HasRoot(typeof(IComparable)).ShouldBeFalse();
+        
 ```
 
 <details open>
@@ -38,19 +64,20 @@ service.Dependency.ShouldBeOfType<Dependency>();
 classDiagram
   class Composition {
     +IService Root
+    -IDependency RootM02D29di0001
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  Dependency --|> IDependency : 
+  Dependency --|> IDependency : "MyDep" 
   class Dependency {
     +Dependency()
   }
   Service --|> IService : 
   class Service {
     +Service()
-    ~IDependency DependencyVal
+    +IDependency Dependency
   }
   class IDependency {
     <<abstract>>
@@ -58,7 +85,8 @@ classDiagram
   class IService {
     <<abstract>>
   }
-  Service *--  Dependency : IDependency
+  Service *--  Dependency : "MyDep"  IDependency
+  Composition ..> Dependency : "MyDep" IDependency RootM02D29di0001
   Composition ..> Service : IService Root
 ```
 
@@ -77,7 +105,14 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Basics.FieldInjectionScenario.Service"/> Root
+/// <see cref="Pure.DI.UsageTests.Basics.CheckForRootScenario.Service"/> Root
+/// </term>
+/// <description>
+/// </description>
+/// </item>
+/// <item>
+/// <term>
+/// <see cref="Pure.DI.UsageTests.Basics.CheckForRootScenario.Dependency"/> is a private composition root that can be resolved by methods like <see cref="Resolve{T}()"/>.
 /// </term>
 /// <description>
 /// </description>
@@ -85,13 +120,13 @@ classDiagram
 /// </list>
 /// </para>
 /// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.FieldInjectionScenario.Service"/> using the composition root <see cref="Root"/>:
+/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.CheckForRootScenario.Service"/> using the composition root <see cref="Root"/>:
 /// <code>
 /// var composition = new Composition();
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdk0tugzAQhq8y8rqLCBa02SVApWxTlJU3DoxSWsDIOJGiKHfIXbrpdXKTYpvIxqEPdTMaz8P_-LN9IjkvkMxJXrGuS0q2E6ymgjZ6DTGvW96VsuQN0P1sFi1VTnnBcvWC4lDmCGvOpQ1DBmvseHXA6-Uzu14-dPhR26dfy_j2DXOp_PAZJNvdtZmCW69pyo4tguzNP6pj-FkySpSXYItNgU1-1BiCxNoo1q0prLyicAEWpJdzOdrUFCmjf0P9vbhbMVJ2E67sEJ_UTN2zWHfDqvFYRsE_uFUJzXgx23ZSsAFyOtipnaaH_fs2I04Llxb4V9BDcgZXzf5jD7SEsT1ij_Dd8ycPpEZRs7Lov9OJEvmKNVIyp6Rg4p2SMzl_ASlHKAA">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqdU71uwjAQfhXr5g5pGFLYIKESAwvN6MUkJ2pK4shxkSLEO_AuXfo6vEljOxATUlJ1Odn389133-kOkIgUYQLJjpVlxNlGsoxKmps_CUVWiJIrLnJCPz0vmOmYfvmzxRvKPU-QrIRQV3e0iLDAPMU8qUxkWfv8cco9z3tui0lMVliK3R7Pp-_4fPoy7hdjx4NpYr3FROn36JUotrkrswmXWlsUVwUSVZt_ZIfkccsg0i9ncqtFa4PQlM6JK49xTQmFZVV7KZBW-E6Wq3sb6tPMMrms5ncabobmcO3sBty2jb9_T-5UDr8bTha-O3_bYmS5hWxdKskareeN7UPqZ_p3mBuRpq5UpKv_zZbcGTRO90h8083aWupHUEPHMgDdWeLdRcITZCgzxtP6wg8U1DtmSGFCIWXyg8IRjj9_x1Ze">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// </summary>
 /// <seealso cref="Pure.DI.DI.Setup"/>
@@ -118,16 +153,28 @@ partial class Composition
   }
   
   #region Composition Roots
-  public Pure.DI.UsageTests.Basics.FieldInjectionScenario.IService Root
+  public Pure.DI.UsageTests.Basics.CheckForRootScenario.IService Root
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
     #endif
     get
     {
-      var transientM02D29di0_Service = new Pure.DI.UsageTests.Basics.FieldInjectionScenario.Service();
-      transientM02D29di0_Service.DependencyVal = new Pure.DI.UsageTests.Basics.FieldInjectionScenario.Dependency();
-      return transientM02D29di0_Service;
+      return new Pure.DI.UsageTests.Basics.CheckForRootScenario.Service()
+      {
+          Dependency = new Pure.DI.UsageTests.Basics.CheckForRootScenario.Dependency()
+      };
+    }
+  }
+  
+  public Pure.DI.UsageTests.Basics.CheckForRootScenario.IDependency RootM02D29di0001
+  {
+    #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
+    [global::System.Diagnostics.Contracts.Pure]
+    #endif
+    get
+    {
+      return new Pure.DI.UsageTests.Basics.CheckForRootScenario.Dependency();
     }
   }
   #endregion
@@ -170,7 +217,7 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM02D29di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var index = (int)(_bucketSizeM02D29di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
     var finish = index + _bucketSizeM02D29di;
     do {
       ref var pair = ref _bucketsM02D29di[index];
@@ -194,7 +241,7 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM02D29di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var index = (int)(_bucketSizeM02D29di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
     var finish = index + _bucketSizeM02D29di;
     do {
       ref var pair = ref _bucketsM02D29di[index];
@@ -217,19 +264,20 @@ partial class Composition
       "classDiagram\n" +
         "  class Composition {\n" +
           "    +IService Root\n" +
+          "    -IDependency RootM02D29di0001\n" +
           "    + T ResolveᐸTᐳ()\n" +
           "    + T ResolveᐸTᐳ(object? tag)\n" +
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  Dependency --|> IDependency : \n" +
+        "  Dependency --|> IDependency : \"MyDep\" \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
           "    +Service()\n" +
-          "    ~IDependency DependencyVal\n" +
+          "    +IDependency Dependency\n" +
         "  }\n" +
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
@@ -237,23 +285,31 @@ partial class Composition
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  Service *--  Dependency : IDependency\n" +
+        "  Service *--  Dependency : \"MyDep\"  IDependency\n" +
+        "  Composition ..> Dependency : \"MyDep\" IDependency RootM02D29di0001\n" +
         "  Composition ..> Service : IService Root";
   }
   
   private readonly static int _bucketSizeM02D29di;
   private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM02D29di;
   
+  private static partial void OnNewRoot<TContract, T>(global::Pure.DI.IResolver<Composition, TContract> resolver, string name, object? tag, global::Pure.DI.Lifetime lifetime);
+  
   static Composition()
   {
     var valResolverM02D29di_0000 = new ResolverM02D29di_0000();
-    ResolverM02D29di<Pure.DI.UsageTests.Basics.FieldInjectionScenario.IService>.Value = valResolverM02D29di_0000;
+    OnNewRoot<Pure.DI.UsageTests.Basics.CheckForRootScenario.IService, Pure.DI.UsageTests.Basics.CheckForRootScenario.Service>(valResolverM02D29di_0000, "Root", null, Pure.DI.Lifetime.Transient);
+    ResolverM02D29di<Pure.DI.UsageTests.Basics.CheckForRootScenario.IService>.Value = valResolverM02D29di_0000;
+    var valResolverM02D29di_0001 = new ResolverM02D29di_0001();
+    OnNewRoot<Pure.DI.UsageTests.Basics.CheckForRootScenario.IDependency, Pure.DI.UsageTests.Basics.CheckForRootScenario.Dependency>(valResolverM02D29di_0001, "RootM02D29di0001", "MyDep", Pure.DI.Lifetime.Transient);
+    ResolverM02D29di<Pure.DI.UsageTests.Basics.CheckForRootScenario.IDependency>.Value = valResolverM02D29di_0001;
     _bucketsM02D29di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
-      1,
+      4,
       out _bucketSizeM02D29di,
-      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
+      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[2]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.FieldInjectionScenario.IService), valResolverM02D29di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.CheckForRootScenario.IService), valResolverM02D29di_0000)
+        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.CheckForRootScenario.IDependency), valResolverM02D29di_0001)
       });
   }
   
@@ -273,21 +329,39 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM02D29di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.FieldInjectionScenario.IService>
+  private sealed class ResolverM02D29di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.CheckForRootScenario.IService>
   {
-    public Pure.DI.UsageTests.Basics.FieldInjectionScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.Basics.CheckForRootScenario.IService Resolve(Composition composition)
     {
       return composition.Root;
     }
     
-    public Pure.DI.UsageTests.Basics.FieldInjectionScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Basics.CheckForRootScenario.IService ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Root;
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.FieldInjectionScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.CheckForRootScenario.IService.");
+    }
+  }
+  
+  private sealed class ResolverM02D29di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.CheckForRootScenario.IDependency>
+  {
+    public Pure.DI.UsageTests.Basics.CheckForRootScenario.IDependency Resolve(Composition composition)
+    {
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root of type Pure.DI.UsageTests.Basics.CheckForRootScenario.IDependency.");
+    }
+    
+    public Pure.DI.UsageTests.Basics.CheckForRootScenario.IDependency ResolveByTag(Composition composition, object tag)
+    {
+      switch (tag)
+      {
+        case "MyDep":
+          return composition.RootM02D29di0001;
+      }
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.CheckForRootScenario.IDependency.");
     }
   }
   #endregion

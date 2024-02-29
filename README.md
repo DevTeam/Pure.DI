@@ -219,6 +219,7 @@ dotnet run
 - [Global compositions](readme/global-compositions.md)
 - [Default values](readme/default-values.md)
 - [Required properties or fields](readme/required-properties-or-fields.md)
+- [Check for a root](readme/check-for-a-root.md)
 ### Lifetimes
 - [Singleton](readme/singleton.md)
 - [PerResolve](readme/perresolve.md)
