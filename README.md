@@ -221,6 +221,7 @@ dotnet run
 - [Default values](readme/default-values.md)
 - [Required properties or fields](readme/required-properties-or-fields.md)
 - [Check for a root](readme/check-for-a-root.md)
+- [Tracking disposable instances](readme/tracking-disposable-instances.md)
 ### Lifetimes
 - [Singleton](readme/singleton.md)
 - [PerResolve](readme/perresolve.md)
