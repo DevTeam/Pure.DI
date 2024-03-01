@@ -137,16 +137,16 @@ classDiagram
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM02D29di;
-  private readonly object _lockM02D29di;
+  private readonly Composition _rootM03D01di;
+  private readonly object _lockM03D01di;
   
   /// <summary>
   /// This parameterized constructor creates a new instance of <see cref="Composition"/> with arguments.
   /// </summary>
   public Composition()
   {
-    _rootM02D29di = this;
-    _lockM02D29di = new object();
+    _rootM03D01di = this;
+    _lockM03D01di = new object();
   }
   
   /// <summary>
@@ -155,8 +155,8 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM02D29di = baseComposition._rootM02D29di;
-    _lockM02D29di = _rootM02D29di._lockM02D29di;
+    _rootM03D01di = baseComposition._rootM03D01di;
+    _lockM03D01di = _rootM03D01di._lockM03D01di;
   }
   
   #region Composition Roots
@@ -165,21 +165,21 @@ partial class Composition
   #endif
   public Pure.DI.UsageTests.BCL.ManualTaskScenario.IService GetRoot(System.Threading.CancellationToken cancellationToken)
   {
-    var perResolveM02D29di39_Func = default(System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>);
-    perResolveM02D29di39_Func = new global::System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(
+    var perResolveM03D01di39_Func = default(System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>);
+    perResolveM03D01di39_Func = new global::System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
     () =>
     {
-        var factory_M02D29di1 = new Pure.DI.UsageTests.BCL.ManualTaskScenario.Dependency();
-        return factory_M02D29di1;
+        var factory_M03D01di1 = new Pure.DI.UsageTests.BCL.ManualTaskScenario.Dependency();
+        return factory_M03D01di1;
     });
-    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency> transientM02D29di1_Task;
+    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency> transientM03D01di1_Task;
     {
-        var factory_M02D29di2 = perResolveM02D29di39_Func;
-        var cancellationToken_M02D29di3 = cancellationToken;
-        transientM02D29di1_Task = new Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(factory_M02D29di2, cancellationToken_M02D29di3);
+        var factory_M03D01di2 = perResolveM03D01di39_Func;
+        var cancellationToken_M03D01di3 = cancellationToken;
+        transientM03D01di1_Task = new Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(factory_M03D01di2, cancellationToken_M03D01di3);
     }
-    return new Pure.DI.UsageTests.BCL.ManualTaskScenario.Service(transientM02D29di1_Task);
+    return new Pure.DI.UsageTests.BCL.ManualTaskScenario.Service(transientM03D01di1_Task);
   }
   #endregion
   

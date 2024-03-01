@@ -135,16 +135,16 @@ classDiagram
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM02D29di;
-  private readonly object _lockM02D29di;
+  private readonly Composition _rootM03D01di;
+  private readonly object _lockM03D01di;
   
   /// <summary>
   /// This parameterized constructor creates a new instance of <see cref="Composition"/> with arguments.
   /// </summary>
   public Composition()
   {
-    _rootM02D29di = this;
-    _lockM02D29di = new object();
+    _rootM03D01di = this;
+    _lockM03D01di = new object();
   }
   
   /// <summary>
@@ -153,8 +153,8 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM02D29di = baseComposition._rootM02D29di;
-    _lockM02D29di = _rootM02D29di._lockM02D29di;
+    _rootM03D01di = baseComposition._rootM03D01di;
+    _lockM03D01di = _rootM03D01di._lockM03D01di;
   }
   
   #region Composition Roots
@@ -163,32 +163,32 @@ partial class Composition
   #endif
   public Pure.DI.UsageTests.BCL.TaskScenario.IService GetRoot(System.Threading.CancellationToken cancellationToken)
   {
-    var perResolveM02D29di39_Func = default(System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>);
-    System.Threading.Tasks.TaskScheduler transientM02D29di5_TaskScheduler = TaskScheduler.Current;
-    System.Threading.Tasks.TaskContinuationOptions transientM02D29di4_TaskContinuationOptions = global::System.Threading.Tasks.TaskContinuationOptions.None;
-    System.Threading.Tasks.TaskCreationOptions transientM02D29di3_TaskCreationOptions = global::System.Threading.Tasks.TaskCreationOptions.None;
-    System.Threading.Tasks.TaskFactory<Pure.DI.UsageTests.BCL.TaskScenario.IDependency> perBlockM02D29di2_TaskFactory;
+    var perResolveM03D01di39_Func = default(System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>);
+    System.Threading.Tasks.TaskScheduler transientM03D01di5_TaskScheduler = TaskScheduler.Current;
+    System.Threading.Tasks.TaskContinuationOptions transientM03D01di4_TaskContinuationOptions = global::System.Threading.Tasks.TaskContinuationOptions.None;
+    System.Threading.Tasks.TaskCreationOptions transientM03D01di3_TaskCreationOptions = global::System.Threading.Tasks.TaskCreationOptions.None;
+    System.Threading.Tasks.TaskFactory<Pure.DI.UsageTests.BCL.TaskScenario.IDependency> perBlockM03D01di2_TaskFactory;
     {
-        var cancellationToken_M02D29di1 = cancellationToken;
-        var taskCreationOptions_M02D29di2 = transientM02D29di3_TaskCreationOptions;
-        var taskContinuationOptions_M02D29di3 = transientM02D29di4_TaskContinuationOptions;
-        var taskScheduler_M02D29di4 = transientM02D29di5_TaskScheduler;
-        perBlockM02D29di2_TaskFactory = new global::System.Threading.Tasks.TaskFactory<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(cancellationToken_M02D29di1, taskCreationOptions_M02D29di2, taskContinuationOptions_M02D29di3, taskScheduler_M02D29di4);
+        var cancellationToken_M03D01di1 = cancellationToken;
+        var taskCreationOptions_M03D01di2 = transientM03D01di3_TaskCreationOptions;
+        var taskContinuationOptions_M03D01di3 = transientM03D01di4_TaskContinuationOptions;
+        var taskScheduler_M03D01di4 = transientM03D01di5_TaskScheduler;
+        perBlockM03D01di2_TaskFactory = new global::System.Threading.Tasks.TaskFactory<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(cancellationToken_M03D01di1, taskCreationOptions_M03D01di2, taskContinuationOptions_M03D01di3, taskScheduler_M03D01di4);
     }
-    perResolveM02D29di39_Func = new global::System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(
+    perResolveM03D01di39_Func = new global::System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
     () =>
     {
-        var factory_M02D29di5 = new Pure.DI.UsageTests.BCL.TaskScenario.Dependency();
-        return factory_M02D29di5;
+        var factory_M03D01di5 = new Pure.DI.UsageTests.BCL.TaskScenario.Dependency();
+        return factory_M03D01di5;
     });
-    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.TaskScenario.IDependency> transientM02D29di1_Task;
+    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.TaskScenario.IDependency> transientM03D01di1_Task;
     {
-        var factory_M02D29di6 = perResolveM02D29di39_Func;
-        var taskFactory_M02D29di7 = perBlockM02D29di2_TaskFactory;
-        transientM02D29di1_Task = taskFactory_M02D29di7.StartNew(factory_M02D29di6);
+        var factory_M03D01di6 = perResolveM03D01di39_Func;
+        var taskFactory_M03D01di7 = perBlockM03D01di2_TaskFactory;
+        transientM03D01di1_Task = taskFactory_M03D01di7.StartNew(factory_M03D01di6);
     }
-    return new Pure.DI.UsageTests.BCL.TaskScenario.Service(transientM02D29di1_Task);
+    return new Pure.DI.UsageTests.BCL.TaskScenario.Service(transientM03D01di1_Task);
   }
   #endregion
   
