@@ -64,7 +64,7 @@ Composition.HasRoot(typeof(IComparable)).ShouldBeFalse();
 classDiagram
   class Composition {
     +IService Root
-    -IDependency RootM02D29di0001
+    -IDependency RootM03D01di0001
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object Resolve(Type type)
@@ -86,7 +86,7 @@ classDiagram
     <<abstract>>
   }
   Service *--  Dependency : "MyDep"  IDependency
-  Composition ..> Dependency : "MyDep" IDependency RootM02D29di0001
+  Composition ..> Dependency : "MyDep" IDependency RootM03D01di0001
   Composition ..> Service : IService Root
 ```
 

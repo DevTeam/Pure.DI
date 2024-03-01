@@ -15,7 +15,9 @@ internal partial class Composition: ServiceProviderFactory<Composition>
             // Specifies not to attempt to resolve types whose fully qualified name
             // begins with Microsoft.Extensions., Microsoft.AspNetCore.
             // since ServiceProvider will be used to retrieve them.
-            .Hint(Hint.OnCannotResolveContractTypeNameRegularExpression, "^Microsoft\\.(Extensions|AspNetCore)\\..+$")
+            .Hint(
+                Hint.OnCannotResolveContractTypeNameRegularExpression,
+                "^Microsoft\\.(Extensions|AspNetCore)\\..+$")
 
             .Bind<IWeatherForecastService>()
                 .As(Singleton)
@@ -44,15 +46,18 @@ var compositionRoot = composition.Root;
 compositionRoot.Run(app);
 
 internal partial class Program(
+    // Dependencies could be injected here
     ILogger<Program> logger,
     IWeatherForecastService weatherForecast)
 {
     private void Run(WebApplication app)
     {
-        app.MapGet("/", async () =>
+        app.MapGet("/", async (
+            // Dependencies can be injected here as well
+            [FromServices] IWeatherForecastService anotherOneWeatherForecast) =>
         {
             logger.LogInformation("Start of request execution");
-            return await weatherForecast.CreateWeatherForecastAsync().ToListAsync();
+            return await anotherOneWeatherForecast.CreateWeatherForecastAsync().ToListAsync();
         });
 
         app.Run();
@@ -72,11 +77,11 @@ The [project file](/samples/WebAPI/WebAPI.csproj) looks like this:
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Pure.DI" Version="2.1.0">
+        <PackageReference Include="Pure.DI" Version="2.1.3">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.0" />
+        <PackageReference Include="Pure.DI.MS" Version="2.1.3" />
     </ItemGroup>
 
 </Project>

@@ -50,8 +50,8 @@ service.Dependency.ShouldBe(dependency);
 ```mermaid
 classDiagram
   class Composition {
-    -IDependency RootM02D29di0001
-    -IService RootM02D29di0002
+    -IDependency RootM03D01di0001
+    -IService RootM03D01di0002
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object GetService(Type type)
@@ -72,8 +72,8 @@ classDiagram
     <<abstract>>
   }
   Service o--  "Singleton" Dependency : "Dependency Key"  IDependency
-  Composition ..> Dependency : "Dependency Key" IDependency RootM02D29di0001
-  Composition ..> Service : "Service Key" IService RootM02D29di0002
+  Composition ..> Dependency : "Dependency Key" IDependency RootM03D01di0001
+  Composition ..> Service : "Service Key" IService RootM03D01di0002
 ```
 
 </details>

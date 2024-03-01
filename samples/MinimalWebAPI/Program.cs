@@ -1,3 +1,5 @@
+#pragma warning disable CS9113 // Parameter is unread.
+using Microsoft.AspNetCore.Mvc;
 using MinimalWebAPI;
 using WeatherForecast;
 
@@ -14,15 +16,18 @@ var compositionRoot = composition.Root;
 compositionRoot.Run(app);
 
 internal partial class Program(
+    // Dependencies could be injected here
     ILogger<Program> logger,
     IWeatherForecastService weatherForecast)
 {
     private void Run(WebApplication app)
     {
-        app.MapGet("/", async () =>
+        app.MapGet("/", async (
+            // Dependencies can be injected here as well
+            [FromServices] IWeatherForecastService anotherOneWeatherForecast) =>
         {
             logger.LogInformation("Start of request execution");
-            return await weatherForecast.CreateWeatherForecastAsync().ToListAsync();
+            return await anotherOneWeatherForecast.CreateWeatherForecastAsync().ToListAsync();
         });
 
         app.Run();

@@ -70,7 +70,7 @@ internal class ServiceCollectionFactory<TComposition>
     /// <summary>
     /// A list of instance resolvers, specifying the type of object that the resolver returns.
     /// </summary>
-    private readonly List<InstanceResolver> _resolvers = new();
+    private readonly List<InstanceResolver> _resolvers = new List<InstanceResolver>();
     
     /// <summary>
     /// Registers the resolver of a composition for use in a collection of services.
@@ -79,8 +79,10 @@ internal class ServiceCollectionFactory<TComposition>
     /// <param name="tag">The resolving tag.</param>
     /// <typeparam name="TContract">The type of object that the resolver returns.</typeparam>
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public void AddResolver<TContract>(IResolver<TComposition, TContract> resolver, object tag = default) => 
+    public void AddResolver<TContract>(IResolver<TComposition, TContract> resolver, object tag = default)
+    {
         _resolvers.Add(new InstanceResolver(typeof(TContract), (IResolver<TComposition, object>)resolver, tag));
+    }
 
     /// <summary>3
     /// Creates a service collection <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/> based on all previously registered resolvers.
@@ -91,8 +93,10 @@ internal class ServiceCollectionFactory<TComposition>
     [global::System.Diagnostics.Contracts.Pure]
 #endif
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public IServiceCollection CreateServiceCollection(TComposition composition) => 
-        new ServiceCollection().Add(CreateDescriptors(composition));
+    public IServiceCollection CreateServiceCollection(TComposition composition)
+    {
+        return new ServiceCollection().Add(CreateDescriptors(composition));
+    }
 
     /// <summary>
     /// Creates an enumeration of service descriptors based on all previously registered resolvers.
@@ -100,8 +104,10 @@ internal class ServiceCollectionFactory<TComposition>
     /// <param name="composition">An instance of composition.</param>
     /// <returns>A enumeration of <see cref="Microsoft.Extensions.DependencyInjection.ServiceDescriptor"/>.</returns>
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    private IEnumerable<ServiceDescriptor> CreateDescriptors(TComposition composition) =>
-        _resolvers.Select(resolver => ServiceDescriptorProvider(composition, resolver));
+    private IEnumerable<ServiceDescriptor> CreateDescriptors(TComposition composition)
+    {
+        return _resolvers.Select(resolver => ServiceDescriptorProvider(composition, resolver));
+    }
 
     private struct InstanceResolver
     {

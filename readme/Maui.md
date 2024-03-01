@@ -14,7 +14,9 @@ internal partial class Composition: ServiceProviderFactory<Composition>
         // Specifies not to attempt to resolve types whose fully qualified name
         // begins with Microsoft.Extensions., Microsoft.Maui.
         // since ServiceProvider will be used to retrieve them.
-        .Hint(Hint.OnCannotResolveContractTypeNameRegularExpression, "^Microsoft\\.(Extensions|Maui)\\..+$")
+        .Hint(
+            Hint.OnCannotResolveContractTypeNameRegularExpression,
+            "^Microsoft\\.(Extensions|Maui)\\..+$")
 
         // Roots
         .Root<AppShell>("AppShell")
@@ -208,11 +210,11 @@ The [project file](/samples/MAUIApp/MAUIApp.csproj) looks like this:
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0"/>
-        <PackageReference Include="Pure.DI" Version="2.1.0">
+        <PackageReference Include="Pure.DI" Version="2.1.3">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Pure.DI.MS" Version="2.1.0" />
+        <PackageReference Include="Pure.DI.MS" Version="2.1.3" />
     </ItemGroup>
 
 </Project>

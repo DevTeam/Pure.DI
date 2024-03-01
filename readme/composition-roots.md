@@ -68,7 +68,7 @@ classDiagram
   class Composition {
     +IService MyRoot
     +IService SomeOtherService
-    -IDependency RootM02D29di0003
+    -IDependency RootM03D01di0003
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object Resolve(Type type)
@@ -95,7 +95,7 @@ classDiagram
   Service *--  Dependency : IDependency
   Composition ..> Service : IService MyRoot
   Composition ..> OtherService : "Other" IService SomeOtherService
-  Composition ..> Dependency : IDependency RootM02D29di0003
+  Composition ..> Dependency : IDependency RootM03D01di0003
 ```
 
 </details>

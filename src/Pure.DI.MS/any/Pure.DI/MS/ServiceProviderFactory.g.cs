@@ -49,7 +49,7 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
     /// <summary>
     /// An instance of <see cref="Pure.DI.MS.ServiceCollectionFactory"/>.
     /// </summary>
-    private static readonly ServiceCollectionFactory<TComposition> ServiceCollectionFactory = new();
+    private static readonly ServiceCollectionFactory<TComposition> ServiceCollectionFactory = new ServiceCollectionFactory<TComposition>();
     
     /// <summary>
     /// <see cref="System.IServiceProvider"/> instance for resolving external dependencies.
@@ -76,14 +76,18 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
     [global::System.Diagnostics.Contracts.Pure]
 #endif
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    protected static IServiceCollection CreateServiceCollection(TComposition composition) =>
-        ServiceCollectionFactory.CreateServiceCollection(composition);
+    protected static IServiceCollection CreateServiceCollection(TComposition composition)
+    {
+        return ServiceCollectionFactory.CreateServiceCollection(composition);
+    }
 
     /// <inheritdoc />
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    public IServiceCollection CreateBuilder(IServiceCollection services) =>
+    public IServiceCollection CreateBuilder(IServiceCollection services)
+    {
         // Registers composition roots as services in the service collection.
-        services.Add(CreateServiceCollection((TComposition)this));
+        return services.Add(CreateServiceCollection((TComposition)this));
+    }
 
     /// <inheritdoc />
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
@@ -108,8 +112,11 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
     /// <typeparam name="T">Dependency resolution type.</typeparam>
     /// <returns>Resolved dependency instance.</returns>
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
-    protected T OnCannotResolve<T>(object? tag, Lifetime lifetime) => 
-        (T)(_serviceProvider ?? throw new InvalidOperationException("Not ready yet."))(typeof(T), tag) ?? throw new InvalidOperationException($"No service for type '{typeof(T)}' has been registered.");
+    protected T OnCannotResolve<T>(object? tag, Lifetime lifetime)
+    {
+        return (T)(_serviceProvider ?? throw new InvalidOperationException("Not ready yet."))(typeof(T), tag)
+               ?? throw new InvalidOperationException($"No composition root or service is registered for type {typeof(T)}{(tag == null ? "" : $"({tag})")}.");
+    }
 
     /// <summary>
     /// Registers a composition resolver for use in a service collection <see cref="Microsoft.Extensions.DependencyInjection.ServiceCollection"/>.
@@ -123,8 +130,10 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
     protected static void OnNewRoot<TContract, T>(
         IResolver<TComposition, TContract> resolver,
-        string name, object tag, Lifetime lifetime) => 
+        string name, object tag, Lifetime lifetime)
+    {
         ServiceCollectionFactory.AddResolver(resolver, tag);
+    }
 }
 
 #pragma warning restore
