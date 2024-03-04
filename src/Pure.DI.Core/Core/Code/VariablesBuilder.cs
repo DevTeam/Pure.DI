@@ -1,7 +1,8 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal class VariablesBuilder : IVariablesBuilder
+internal class VariablesBuilder(CancellationToken cancellationToken)
+    : IVariablesBuilder
 {
     public Block Build(
         IGraph<DependencyNode, Dependency> graph,
@@ -19,6 +20,11 @@ internal class VariablesBuilder : IVariablesBuilder
         blocks.Push(rootBlock);
         while (blocks.TryPop(out var currentBlock))
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
+
             var stack = new Stack<IStatement>(currentBlock.Statements);
             while (stack.TryPop(out var currentStatement))
             {
@@ -36,8 +42,15 @@ internal class VariablesBuilder : IVariablesBuilder
                             continue;
                         }
 
-                        var path = currentStatement.GetPath().ToArray();
-                        var hasLazy = path.Any(i => i.Current.IsLazy);
+                        var pathIds = new HashSet<int>();
+                        var hasLazy = false;
+                        foreach (var pathItem in currentStatement.GetPath())
+                        {
+                            var pathVar = pathItem.Current;
+                            pathIds.Add(pathVar.Node.Binding.Id);
+                            hasLazy |= pathVar.IsLazy;
+                        }
+
                         foreach (var (isDepResolved, depNode, depInjection, _) in dependencies)
                         {
                             if (!isDepResolved)
@@ -45,14 +58,13 @@ internal class VariablesBuilder : IVariablesBuilder
                                 continue;
                             }
 
-                            var cycle = path.FirstOrDefault(i => i.Current.Node.Binding == depNode.Binding);
-                            var hasCycle = cycle is not null;
+                            var hasCycle = pathIds.Contains(depNode.Binding.Id);
                             var isAlreadyCreated = false;
                             if (hasCycle)
                             {
                                 if (!hasLazy)
                                 {
-                                    var pathStr = string.Join(" <-- ", path.Reverse().Select(i => i.Current.Node).Concat(Enumerable.Repeat(depNode, 1)).Select(i => i.Type));
+                                    var pathStr = string.Join(" <-- ", currentStatement.GetPath().Reverse().Select(i => i.Current.Node).Concat(Enumerable.Repeat(depNode, 1)).Select(i => i.Type));
                                     throw new CompileErrorException($"Cyclic dependency has been found: {pathStr}.", depNode.Binding.Source.GetLocation(), LogId.ErrorCyclicDependency);
                                 }
 
@@ -106,7 +118,7 @@ internal class VariablesBuilder : IVariablesBuilder
         Block parentBlock,
         IDictionary<MdBinding, Variable> map,
         IDictionary<(MdBinding, int), Variable> blockMap,
-        in DependencyNode node,
+        DependencyNode node,
         in Injection injection,
         ref int transientId,
         bool hasCycle)

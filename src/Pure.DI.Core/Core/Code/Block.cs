@@ -5,7 +5,5 @@ internal record Block(
     IStatement? Parent,
     LinkedList<IStatement> Statements) : IStatement
 {
-    private readonly Lazy<Variable> _current = new(() => Statements.OfType<Variable>().Last());
-
-    public Variable Current => _current.Value;
+    public Variable Current => (Variable)Statements.Last.Value;
 }
