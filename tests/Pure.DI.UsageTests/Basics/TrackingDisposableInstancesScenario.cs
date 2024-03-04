@@ -18,7 +18,7 @@ interface IDependency
     bool IsDisposed { get; }
 }
 
-class TransientDependency : IDependency, IDisposable
+class Dependency : IDependency, IDisposable
 {
     public bool IsDisposed { get; private set; }
 
@@ -52,7 +52,7 @@ partial class Composition
                 Hint.OnNewInstanceLifetimeRegularExpression,
                 "Transient|PerResolve|PerBlock")
 
-            .Bind<IDependency>().To<TransientDependency>()
+            .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
             .Root<IService>("Root");
 
