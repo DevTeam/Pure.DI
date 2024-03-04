@@ -2,6 +2,8 @@
 namespace Pure.DI.Core;
 
 internal sealed class Generator(
+    IGlobalOptions globalOptions,
+    IProfiler profiler,
     ILogger<Generator> logger,
     IObserversRegistry observersRegistry,
     IObserver<LogEntry> logObserver,
@@ -11,6 +13,11 @@ internal sealed class Generator(
 {
     public Unit Build(IEnumerable<SyntaxUpdate> updates)
     {
+        if (globalOptions.TryGetProfilePath(out var profilePath))
+        {
+            profiler.Profiling(profilePath);
+        }
+        
         using var logObserverToken= observersRegistry.Register(logObserver);
         try
         {

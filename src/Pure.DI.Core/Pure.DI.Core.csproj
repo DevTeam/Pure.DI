@@ -21,6 +21,7 @@
             <DesignTime>True</DesignTime>
             <DependentUpon>GenericTypeArguments.g.tt</DependentUpon>
         </Compile>
+        <Compile Remove="Core\ProcessExtensions.cs" />
     </ItemGroup>
 
 </Project>

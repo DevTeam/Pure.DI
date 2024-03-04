@@ -6,7 +6,7 @@ using System.Collections.Generic;
 internal class LocalVariableRenamingRewriter(
     IIdGenerator idGenerator,
     SemanticModel semanticModel)
-    : CSharpSyntaxRewriter(true)
+    : CSharpSyntaxRewriter
 {
     private readonly Dictionary<string, string> _identifierNames = new();
 

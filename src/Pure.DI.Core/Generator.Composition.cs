@@ -59,6 +59,7 @@ public partial class Generator
             .Bind<IMarker>().To<Marker>()
             .Bind<IVariator<TT>>().To<Variator<TT>>()
             .Bind<Func<string, Regex>>().To(_ => new Func<string, Regex>(value => new Regex(value, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase)))
+            .Bind<IProfiler>().To<Profiler>()
         
             // Commenters
             .Bind<ICommenter<Unit>>(typeof(ClassCommenter)).To<ClassCommenter>()

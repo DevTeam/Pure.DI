@@ -4,6 +4,7 @@ namespace Pure.DI.Core;
 internal sealed class GlobalOptions : IGlobalOptions
 {
     private readonly Lazy<int> _maxIterations;
+    private readonly Lazy<string> _profilePath;
 
     public GlobalOptions(IGeneratorOptions options)
     {
@@ -19,7 +20,15 @@ internal sealed class GlobalOptions : IGlobalOptions
 
             return 1024;
         });
+        
+        _profilePath = new Lazy<string>(() => 
+            options.GlobalOptions.TryGetValue(GlobalSettings.ProfilePath, out var profilePath)
+                ? profilePath
+                : string.Empty);
     }
 
     public int MaxIterations => _maxIterations.Value;
+
+    public bool TryGetProfilePath(out string path) => 
+        !string.IsNullOrWhiteSpace(path = _profilePath.Value);
 }
