@@ -17,11 +17,10 @@ internal sealed class SetupsBuilder(
     private BindingBuilder _bindingBuilder = new();
     private MdSetup? _setup;
 
-
     public IEnumerable<MdSetup> Build(SyntaxUpdate update)
     {
         var checkSum = update.Node.SyntaxTree.GetText().GetChecksum();
-        if (!setupCache.Get(checkSum))
+        if (!setupCache.Get(checkSum, _ => true))
         {
             return Array.Empty<MdSetup>();
         }

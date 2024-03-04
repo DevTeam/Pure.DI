@@ -8,6 +8,9 @@ internal sealed class Filter(
     ICache<string, Regex> regexCache)
     : IFilter
 {
+    public static Regex RegexFactory(string filter) => 
+        new(filter, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Singleline | RegexOptions.IgnoreCase);
+    
     public bool IsMeetRegularExpression(MdSetup setup, params (Hint setting, string value)[] settings) => 
         settings.All(i => IsMeetRegularExpression(setup, i.setting, i.value));
 
@@ -26,7 +29,7 @@ internal sealed class Filter(
 
         try
         {
-            var regex = regexCache.Get(regularExpression.Trim());
+            var regex = regexCache.Get(regularExpression.Trim(), RegexFactory);
             if (!regex.IsMatch(value))
             {
                 return false;
