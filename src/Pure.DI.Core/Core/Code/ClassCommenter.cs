@@ -52,8 +52,8 @@ internal class ClassCommenter(
 
             IReadOnlyCollection<string> CreateTerms(Root root) =>
                 root.IsPublic
-                    ? [$"<see cref=\"{root.Node.Type}\"/> {root.PropertyName}"]
-                    : [$"<see cref=\"{root.Node.Type}\"/> {privateRootAdditionalComment}"];
+                    ? [$"<see cref=\"{Escape(root.Node.Type.ToString())}\"/> {root.PropertyName}"]
+                    : [$"<see cref=\"{Escape(root.Node.Type.ToString()).ToString()}\"/> {privateRootAdditionalComment}"];
 
             IReadOnlyCollection<string> CreateDescriptions(Root root) => root.Source.Comments;
         }
@@ -93,4 +93,6 @@ internal class ClassCommenter(
         code.AppendLine("/// </summary>");
         code.AppendLine("/// <seealso cref=\"Pure.DI.DI.Setup\"/>");
     }
+
+    private static string Escape(string text) => new System.Xml.Linq.XText(text).ToString();
 }

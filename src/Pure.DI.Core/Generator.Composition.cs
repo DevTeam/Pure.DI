@@ -23,7 +23,7 @@ public partial class Generator
         
         .Root<IEnumerable<Source>>("Api")
         .Root<IObserversRegistry>("Observers")
-        .Root<IBuilder<IEnumerable<SyntaxUpdate>, Unit>>("CreateGenerator", default, RootKinds.Private)
+        .Root<IBuilder<IEnumerable<SyntaxUpdate>, Unit>>("CreateGenerator", kind: RootKinds.Private)
         
         // Transient
             .Bind<IApiInvocationProcessor>().To<ApiInvocationProcessor>()
@@ -52,14 +52,13 @@ public partial class Generator
             .Bind<IResources>().To<Resources>()
             .Bind<IInformation>().To<Information>()
             .Bind<IGlobalOptions>().To<GlobalOptions>()
-            .Bind<Func<ImmutableArray<byte>, bool>>().To(_ => new Func<ImmutableArray<byte>, bool>(_ => true))
             .Bind<IValidator<DependencyGraph>>().To<DependencyGraphValidator>()
             .Bind<IValidator<MdSetup>>().To<MetadataValidator>()
             .Bind<IMarker>().To<Marker>()
             .Bind<IVariator<TT>>().To<Variator<TT>>()
             .Bind<IProfiler>().To<Profiler>()
         
-            // Commenters
+            // Comments
             .Bind<ICommenter<Unit>>(typeof(ClassCommenter)).To<ClassCommenter>()
             .Bind<ICommenter<Unit>>(typeof(ParameterizedConstructorCommenter)).To<ParameterizedConstructorCommenter>()
             .Bind<ICommenter<Root>>(typeof(RootMethodsCommenter)).To<RootMethodsCommenter>()
