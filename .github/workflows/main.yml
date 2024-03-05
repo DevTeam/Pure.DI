@@ -1,0 +1,19 @@
+name: Pure.DI check
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+        
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+    
+    - name: Build and check
+      run: dotnet run --project ./build -- check
