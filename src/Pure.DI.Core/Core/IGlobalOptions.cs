@@ -4,5 +4,5 @@ internal interface IGlobalOptions
 {
     int MaxIterations { get; }
 
-    bool TryGetProfilePath([NotNullWhen(true)] out string path);
+    bool TryGetProfilePath(out string path);
 }

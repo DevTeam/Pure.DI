@@ -10,6 +10,7 @@ $h=Sometimes you need to check if you can get the root of a composition using th
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable UnusedMemberInSuper.Global
 namespace Pure.DI.UsageTests.Basics.CheckForRootScenario;
 
 using Shouldly;

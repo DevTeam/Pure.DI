@@ -17,25 +17,24 @@ internal sealed class DependencyGraphValidator(
         }
         
         var isErrorReported = false;
-        foreach (var dependency in graph.Edges.Where(i => !i.IsResolved))
+        foreach (var (_, dependencyNode, unresolvedInjection, target) in graph.Edges.Where(i => !i.IsResolved))
         {
             cancellationToken.ThrowIfCancellationRequested();
             var mdSetup = dependencyGraph.Source;
-            var unresolvedInjection = dependency.Injection;
             if (mdSetup.Hints.IsOnCannotResolveEnabled
                 && filter.IsMeetRegularExpression(
                     mdSetup,
                     (Hint.OnCannotResolveContractTypeNameRegularExpression, unresolvedInjection.Type.ToString()),
                     (Hint.OnCannotResolveTagRegularExpression, unresolvedInjection.Tag.ValueToString()),
-                    (Hint.OnCannotResolveLifetimeRegularExpression, dependency.Source.Lifetime.ValueToString())))
+                    (Hint.OnCannotResolveLifetimeRegularExpression, dependencyNode.Lifetime.ValueToString())))
             {
                 continue;
             }
 
             isResolved = false;
-            var errorMessage = $"Unable to resolve \"{unresolvedInjection}\" in {dependency.Target}.";
-            var locationsWalker = new DependencyGraphLocationsWalker(dependency.Injection);
-            locationsWalker.VisitDependencyNode(Unit.Shared, dependency.Target);
+            var errorMessage = $"Unable to resolve \"{unresolvedInjection}\" in {target}.";
+            var locationsWalker = new DependencyGraphLocationsWalker(unresolvedInjection);
+            locationsWalker.VisitDependencyNode(Unit.Shared, target);
             foreach (var location in locationsWalker.Locations)
             {
                 logger.CompileError(errorMessage, location, LogId.ErrorUnableToResolve);

@@ -286,57 +286,59 @@ internal class ApiInvocationProcessor(
         var hasContextTag = false;
         var resolvers = resolversWalker.Select(invocation =>
         {
-            if (invocation.ArgumentList.Arguments is { Count: > 0 } invArguments)
+            if (invocation.ArgumentList.Arguments is not { Count: > 0 } invArguments)
             {
-                switch (invArguments)
-                {
-                    case [{ RefOrOutKeyword.IsMissing: false } targetValue]:
-                        if (semanticModel.GetOperation(invArguments[0]) is IArgumentOperation argumentOperation)
-                        {
-                            return new MdResolver(
-                                semanticModel,
-                                invocation,
-                                position++,
-                                argumentOperation.Value.Type!,
-                                default,
-                                targetValue.Expression);
-                        }
+                return default;
+            }
 
-                        break;
+            switch (invArguments)
+            {
+                case [{ RefOrOutKeyword.IsMissing: false } targetValue]:
+                    if (semanticModel.GetOperation(invArguments[0]) is IArgumentOperation argumentOperation)
+                    {
+                        return new MdResolver(
+                            semanticModel,
+                            invocation,
+                            position++,
+                            argumentOperation.Value.Type!,
+                            default,
+                            targetValue.Expression);
+                    }
 
-                    default:
-                        var args = arguments.GetArgs(invocation.ArgumentList, "tag", "value");
-                        var tag = args[0]?.Expression;
-                        
-                        hasContextTag =
-                            tag is MemberAccessExpressionSyntax memberAccessExpression
-                            && memberAccessExpression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
-                            && memberAccessExpression.Name.Identifier.Text == nameof(IContext.Tag)
-                            && memberAccessExpression.Expression is IdentifierNameSyntax identifierName
-                            && identifierName.Identifier.Text == contextParameter.Identifier.Text;
-                        
-                        var resolverTag = new MdTag(
-                            0, 
-                            hasContextTag
-                                ? MdTag.ContextTag
-                                : tag is null 
-                                    ? default
-                                    : semanticModel.GetConstantValue<object>(tag));
-                        
-                        if (args[1] is {} valueArg
-                            && semanticModel.GetOperation(valueArg) is IArgumentOperation { Value.Type: {} valueType })
-                        {
-                            return new MdResolver(
-                                semanticModel,
-                                invocation,
-                                position++,
-                                valueType,
-                                resolverTag,
-                                valueArg.Expression);
-                        }
+                    break;
 
-                        break;
-                }
+                default:
+                    var args = arguments.GetArgs(invocation.ArgumentList, "tag", "value");
+                    var tag = args[0]?.Expression;
+                        
+                    hasContextTag =
+                        tag is MemberAccessExpressionSyntax memberAccessExpression
+                        && memberAccessExpression.IsKind(SyntaxKind.SimpleMemberAccessExpression)
+                        && memberAccessExpression.Name.Identifier.Text == nameof(IContext.Tag)
+                        && memberAccessExpression.Expression is IdentifierNameSyntax identifierName
+                        && identifierName.Identifier.Text == contextParameter.Identifier.Text;
+                        
+                    var resolverTag = new MdTag(
+                        0, 
+                        hasContextTag
+                            ? MdTag.ContextTag
+                            : tag is null 
+                                ? default
+                                : semanticModel.GetConstantValue<object>(tag));
+                        
+                    if (args[1] is {} valueArg
+                        && semanticModel.GetOperation(valueArg) is IArgumentOperation { Value.Type: {} valueType })
+                    {
+                        return new MdResolver(
+                            semanticModel,
+                            invocation,
+                            position++,
+                            valueType,
+                            resolverTag,
+                            valueArg.Expression);
+                    }
+
+                    break;
             }
 
             return default;

@@ -33,7 +33,7 @@ class Service(IDependency dependency) : IService
 }
 
 partial class Composition
-    : IServiceProvider, IKeyedServiceProvider, IServiceScopeFactory, IServiceScope
+    : IKeyedServiceProvider, IServiceScopeFactory, IServiceScope
 {
     private void Setup() =>
         // The following hint overrides the name of the

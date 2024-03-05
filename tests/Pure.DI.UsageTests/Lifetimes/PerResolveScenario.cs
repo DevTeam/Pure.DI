@@ -17,26 +17,18 @@ interface IDependency;
 
 class Dependency : IDependency;
 
-class Service
+class Service(
+    IDependency dep1,
+    IDependency dep2,
+    Lazy<(IDependency dep3, IDependency dep4)> deps)
 {
-    public Service(
-        IDependency dep1,
-        IDependency dep2,
-        Lazy<(IDependency dep3, IDependency dep4)> deps)
-    {
-        Dep1 = dep1;
-        Dep2 = dep2;
-        Dep3 = deps.Value.dep3;
-        Dep4 = deps.Value.dep4;
-    }
+    public IDependency Dep1 { get; } = dep1;
 
-    public IDependency Dep1 { get; }
+    public IDependency Dep2 { get; } = dep2;
 
-    public IDependency Dep2 { get; }
+    public IDependency Dep3 { get; } = deps.Value.dep3;
 
-    public IDependency Dep3 { get; }
-    
-    public IDependency Dep4 { get; }
+    public IDependency Dep4 { get; } = deps.Value.dep4;
 }
 // }
 

@@ -90,7 +90,7 @@ internal class CompositionBuilder(
         return composition;
     }
     
-    private IEnumerable<Variable> GetRootArgs(IEnumerable<Variable> argVars) => 
+    private static IEnumerable<Variable> GetRootArgs(IEnumerable<Variable> argVars) => 
         argVars
             .Where(arg => arg.Node.Arg is not null)
             .GroupBy(i => i.Node.Binding.Id)
