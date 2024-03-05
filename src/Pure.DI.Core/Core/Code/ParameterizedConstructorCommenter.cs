@@ -6,7 +6,7 @@ internal class ParameterizedConstructorCommenter(
 {
     public void AddComments(CompositionCode composition, Unit unit)
     {
-        if (composition.Source.Source.Hints.GetHint(Hint.Comments, SettingState.On) != SettingState.On)
+        if (!composition.Source.Source.Hints.IsCommentsEnabled)
         {
             return;
         }

@@ -18,7 +18,7 @@ internal sealed class DisposeMethodBuilder: IBuilder<CompositionCode, Compositio
         }
 
         var hints = composition.Source.Source.Hints;
-        var isCommentsEnabled = hints.GetHint(Hint.Comments, SettingState.On) == SettingState.On;
+        var isCommentsEnabled = hints.IsCommentsEnabled;
         if (isCommentsEnabled)
         {
             code.AppendLine("/// <summary>");
@@ -26,7 +26,7 @@ internal sealed class DisposeMethodBuilder: IBuilder<CompositionCode, Compositio
             code.AppendLine("/// </summary>");
         }
 
-        code.AppendLine($"{composition.Source.Source.Hints.GetValueOrDefault(Hint.DisposeMethodModifiers, Names.DefaultApiMethodModifiers)} void Dispose()");
+        code.AppendLine($"{composition.Source.Source.Hints.DisposeMethodModifiers} void Dispose()");
         code.AppendLine("{");
         using (code.Indent())
         {

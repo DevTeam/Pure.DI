@@ -4,7 +4,7 @@ internal class RootMethodsCommenter(IComments comments): ICommenter<Root>
 {
     public void AddComments(CompositionCode composition, Root root)
     {
-        if (composition.Source.Source.Hints.GetHint(Hint.Comments, SettingState.On) != SettingState.On)
+        if (!composition.Source.Source.Hints.IsCommentsEnabled)
         {
             return;
         }

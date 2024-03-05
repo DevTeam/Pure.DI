@@ -14,7 +14,7 @@ internal sealed class ToStringMethodBuilder
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
         var hints = composition.Source.Source.Hints;
-        var isCommentsEnabled = hints.GetHint(Hint.Comments, SettingState.On) == SettingState.On;
+        var isCommentsEnabled = hints.IsCommentsEnabled;
         if (isCommentsEnabled)
         {
             code.AppendLine("/// <summary>");

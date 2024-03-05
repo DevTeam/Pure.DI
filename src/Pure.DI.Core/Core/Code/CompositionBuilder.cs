@@ -81,7 +81,7 @@ internal class CompositionBuilder(
             isThreadSafe,
             ImmutableArray<Line>.Empty);
         
-        if (graph.Source.Hints.GetHint<SettingState>(Hint.ToString) == SettingState.On)
+        if (graph.Source.Hints.IsToStringEnabled)
         {
             var diagram = classDiagramBuilder.Build(composition);
             composition = composition with { Diagram = diagram.Lines.ToImmutableArray() };

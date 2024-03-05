@@ -15,7 +15,7 @@ internal sealed class ScopeConstructorBuilder: IBuilder<CompositionCode, Composi
         }
 
         var hints = composition.Source.Source.Hints;
-        var isCommentsEnabled = hints.GetHint(Hint.Comments, SettingState.On) == SettingState.On;
+        var isCommentsEnabled = hints.IsCommentsEnabled;
         if (isCommentsEnabled)
         {
             code.AppendLine("/// <summary>");

@@ -21,7 +21,7 @@ internal sealed class RootMethodsBuilder(
             code.AppendLine();
         }
 
-        var generatePrivateRoots = composition.Source.Source.Hints.GetHint(Hint.Resolve, SettingState.On) == SettingState.On;
+        var generatePrivateRoots = composition.Source.Source.Hints.IsResolveEnabled;
         var membersCounter = composition.MembersCount;
         code.AppendLine("#region Composition Roots");
         var isFirst = true;
@@ -102,7 +102,7 @@ internal sealed class RootMethodsBuilder(
 
             try
             {
-                if (composition.Source.Source.Hints.GetHint<SettingState>(Hint.FormatCode) == SettingState.On)
+                if (composition.Source.Source.Hints.IsFormatCodeEnabled)
                 {
                     var codeText = string.Join(Environment.NewLine, root.Lines);
                     var syntaxTree = CSharpSyntaxTree.ParseText(codeText);

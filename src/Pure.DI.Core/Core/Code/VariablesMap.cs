@@ -24,8 +24,8 @@ internal class VariablesMap: Dictionary<MdBinding, Variable>
         .Where(i => i.Key.Lifetime?.Value is Lifetime.Singleton or Lifetime.Scoped)
         .Select(i => i.Value);
     
-    public bool IsThreadSafe(IHints sourceHints) =>
-        sourceHints.GetHint(Hint.ThreadSafe, SettingState.On) == SettingState.On
+    public bool IsThreadSafe(IHints hints) =>
+        hints.IsThreadSafeEnabled
         && this.Any(i => i.Key.Lifetime?.Value is Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve);
     
     public IEnumerable<Variable> GetPerResolves() => this

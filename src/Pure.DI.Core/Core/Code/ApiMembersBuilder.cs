@@ -17,9 +17,9 @@ internal sealed class ApiMembersBuilder(
         }
 
         var hints = composition.Source.Source.Hints;
-        var isCommentsEnabled = hints.GetHint(Hint.Comments, SettingState.On) == SettingState.On;
+        var isCommentsEnabled = hints.IsCommentsEnabled;
         var apiCode = new LinesBuilder();
-        if (hints.GetHint(Hint.Resolve, SettingState.On) == SettingState.On)
+        if (hints.IsResolveEnabled)
         {
             var rootArgs = composition
                 .Args.GetArgsOfKind(ArgKind.Root)
@@ -42,7 +42,7 @@ internal sealed class ApiMembersBuilder(
             }
 
             buildTools.AddPureHeader(apiCode);
-            apiCode.AppendLine($"{hints.GetValueOrDefault(Hint.ResolveMethodModifiers, Names.DefaultApiMethodModifiers)} T {hints.GetValueOrDefault(Hint.ResolveMethodName, Names.ResolveMethodName)}<T>()");
+            apiCode.AppendLine($"{hints.ResolveMethodModifiers} T {hints.ResolveMethodName}<T>()");
             apiCode.AppendLine("{");
             using (apiCode.Indent())
             {
@@ -65,7 +65,7 @@ internal sealed class ApiMembersBuilder(
             }
 
             buildTools.AddPureHeader(apiCode);
-            apiCode.AppendLine($"{hints.GetValueOrDefault(Hint.ResolveByTagMethodModifiers, Names.DefaultApiMethodModifiers)} T {hints.GetValueOrDefault(Hint.ResolveByTagMethodName, Names.ResolveMethodName)}<T>(object? tag)");
+            apiCode.AppendLine($"{hints.ResolveByTagMethodModifiers} T {hints.ResolveByTagMethodName}<T>(object? tag)");
             apiCode.AppendLine("{");
             using (apiCode.Indent())
             {
@@ -88,8 +88,8 @@ internal sealed class ApiMembersBuilder(
             }
 
             CreateObjectResolverMethod(
-                hints.GetValueOrDefault(Hint.ObjectResolveMethodModifiers, Names.DefaultApiMethodModifiers),
-                hints.GetValueOrDefault(Hint.ObjectResolveMethodName, Names.ResolveMethodName),
+                hints.ObjectResolveMethodModifiers,
+                hints.ObjectResolveMethodName,
                 resolvers,
                 $"{Names.SystemNamespace}Type type",
                 Names.ResolveMethodName,
@@ -111,8 +111,8 @@ internal sealed class ApiMembersBuilder(
             }
 
             CreateObjectResolverMethod(
-                hints.GetValueOrDefault(Hint.ObjectResolveByTagMethodModifiers, Names.DefaultApiMethodModifiers),
-                hints.GetValueOrDefault(Hint.ObjectResolveByTagMethodName, Names.ResolveMethodName),
+                hints.ObjectResolveByTagMethodModifiers,
+                hints.ObjectResolveByTagMethodName,
                 resolvers,
                 $"{Names.SystemNamespace}Type type, object? tag",
                 Names.ResolveByTagMethodName,
@@ -123,24 +123,21 @@ internal sealed class ApiMembersBuilder(
             membersCounter++;
         }
 
-        if (composition.Source.Source.Hints.GetHint<SettingState>(Hint.OnNewInstance) == SettingState.On
-            && composition.Source.Source.Hints.GetHint(Hint.OnNewInstancePartial, SettingState.On) == SettingState.On)
+        if (composition.Source.Source.Hints is { IsOnNewInstanceEnabled: true, IsOnNewInstancePartial: true })
         {
             apiCode.AppendLine();
             apiCode.AppendLine($"partial void {Names.OnNewInstanceMethodName}<T>(ref T value, object? tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
 
-        if (composition.Source.Source.Hints.GetHint<SettingState>(Hint.OnDependencyInjection) == SettingState.On
-            && composition.Source.Source.Hints.GetHint(Hint.OnDependencyInjectionPartial, SettingState.On) == SettingState.On)
+        if (composition.Source.Source.Hints is { IsOnDependencyInjectionEnabled: true, IsOnDependencyInjectionPartial: true })
         {
             apiCode.AppendLine();
             apiCode.AppendLine($"private partial T {Names.OnDependencyInjectionMethodName}<T>(in T value, object? tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
         
-        if (composition.Source.Source.Hints.GetHint<SettingState>(Hint.OnCannotResolve) == SettingState.On
-            && composition.Source.Source.Hints.GetHint(Hint.OnCannotResolvePartial, SettingState.On) == SettingState.On)
+        if (composition.Source.Source.Hints is { IsOnCannotResolveEnabled: true, IsOnCannotResolvePartial: true })
         {
             apiCode.AppendLine();
             apiCode.AppendLine($"private partial T {Names.OnCannotResolve}<T>(object? tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");

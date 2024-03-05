@@ -22,7 +22,7 @@ internal sealed class DependencyGraphValidator(
             cancellationToken.ThrowIfCancellationRequested();
             var mdSetup = dependencyGraph.Source;
             var unresolvedInjection = dependency.Injection;
-            if (mdSetup.Hints.GetHint<SettingState>(Hint.OnCannotResolve) == SettingState.On
+            if (mdSetup.Hints.IsOnCannotResolveEnabled
                 && filter.IsMeetRegularExpression(
                     mdSetup,
                     (Hint.OnCannotResolveContractTypeNameRegularExpression, unresolvedInjection.Type.ToString()),

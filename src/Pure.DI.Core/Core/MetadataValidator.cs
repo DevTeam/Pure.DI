@@ -113,7 +113,7 @@ internal sealed class MetadataValidator(
             return false;
         }
 
-        var severityOfNotImplementedContract = setup.Hints.GetHint(Hint.SeverityOfNotImplementedContract, DiagnosticSeverity.Error);
+        var severityOfNotImplementedContract = setup.Hints.SeverityOfNotImplementedContract;
         if (severityOfNotImplementedContract > DiagnosticSeverity.Hidden)
         {
             var supportedContracts = new HashSet<ITypeSymbol>(GetBaseTypes(implementationType), SymbolEqualityComparer.Default) { implementationType };

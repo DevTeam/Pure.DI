@@ -6,7 +6,7 @@ internal sealed class ResolversFieldsBuilder(IBuilder<ImmutableArray<Root>, IEnu
 {
     public CompositionCode Build(CompositionCode composition)
     {
-        if (composition.Source.Source.Hints.GetHint(Hint.Resolve, SettingState.On) != SettingState.On)
+        if (!composition.Source.Source.Hints.IsResolveEnabled)
         {
             return composition;
         }

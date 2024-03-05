@@ -22,7 +22,7 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
         {
             var code = info.Code;
             var level = ctx.Level;
-            var isThreadSafe = ctx.DependencyGraph.Source.Hints.GetHint(Hint.ThreadSafe, SettingState.On) == SettingState.On;
+            var isThreadSafe = ctx.DependencyGraph.Source.Hints.IsThreadSafeEnabled;
             var lockIsRequired = ctx.LockIsRequired ?? isThreadSafe;
             var toCheckExistence =
                 // The "singleton" or "scoped" instance must be created with a check each time

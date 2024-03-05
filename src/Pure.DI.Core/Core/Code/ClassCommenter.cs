@@ -8,12 +8,12 @@ internal class ClassCommenter(
     public void AddComments(CompositionCode composition, Unit unit)
     {
         var hints = composition.Source.Source.Hints;
-        if (hints.GetHint(Hint.Comments, SettingState.On) != SettingState.On)
+        if (!hints.IsCommentsEnabled)
         {
             return;
         }
         
-        var privateRootAdditionalComment = $"is a private composition root that can be resolved by methods like <see cref=\"{hints.GetValueOrDefault(Hint.ResolveMethodName, Names.ResolveMethodName)}{{T}}()\"/>.";
+        var privateRootAdditionalComment = $"is a private composition root that can be resolved by methods like <see cref=\"{hints.ResolveMethodName}{{T}}()\"/>.";
         var classComments = composition.Source.Source.Comments;
         var code = composition.Code;
         if (classComments.Count <= 0 && composition.Roots.Length <= 0)

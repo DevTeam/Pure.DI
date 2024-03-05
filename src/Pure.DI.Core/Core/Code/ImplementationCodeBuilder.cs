@@ -60,7 +60,7 @@ internal class ImplementationCodeBuilder(CancellationToken cancellationToken)
         var hasOnCreatedHandler = ctx.BuildTools.OnCreated(ctx, variable).Any();
         var hasAlternativeInjections = visits.Any();
         var tempVariableInit =
-            ctx.DependencyGraph.Source.Hints.GetHint(Hint.ThreadSafe, SettingState.On) == SettingState.On
+            ctx.DependencyGraph.Source.Hints.IsThreadSafeEnabled
             && ctx.Variable.Node.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock
             && (hasAlternativeInjections || hasOnCreatedHandler);
 
