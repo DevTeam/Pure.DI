@@ -1,4 +1,4 @@
-﻿namespace Build.Targets;
+﻿namespace Build;
 
 internal interface IInitializable
 {

@@ -5,14 +5,14 @@
 // ReSharper disable ReturnTypeCanBeEnumerable.Local
 // ReSharper disable InvertIf
 
-namespace Build.Targets;
+namespace Build;
 
 using NuGet.Versioning;
 
 internal class CompatibilityCheckTarget(
     Settings settings,
-    ICommands commands,
-    IPaths paths,
+    Commands commands,
+    Paths paths,
     INuGet nuGet,
     [Tag(typeof(GeneratorTarget))] ITarget<Package> generatorTarget,
     [Tag(typeof(LibrariesTarget))] ITarget<IReadOnlyCollection<Library>> librariesTarget)
@@ -27,7 +27,6 @@ internal class CompatibilityCheckTarget(
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
     public async Task<IReadOnlyCollection<Package>> RunAsync(CancellationToken cancellationToken)
     {
-        Info("Compatibility checks");
         var generatorPackage = await generatorTarget.RunAsync(cancellationToken);
         var libraries = await librariesTarget.RunAsync(cancellationToken);
 
@@ -68,7 +67,7 @@ internal class CompatibilityCheckTarget(
         {
             await CompatibilityCheckAsync(generatorPackage.Path, framework, cancellationToken);
         }
-        
+
         var packages = new List<Package> { generatorPackage };
 
         // Libraries

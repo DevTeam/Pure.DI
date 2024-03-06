@@ -4,14 +4,15 @@
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ReturnTypeCanBeEnumerable.Local
 // ReSharper disable InvertIf
-namespace Build.Targets;
+
+namespace Build;
 
 using System.IO.Compression;
 using NuGet.Versioning;
 
 internal class GeneratorTarget(
     Settings settings,
-    ICommands commands)
+    Commands commands)
     : IInitializable, ITarget<Package>
 {
     public Task InitializeAsync() => commands.Register(
@@ -19,26 +20,29 @@ internal class GeneratorTarget(
         "Builds and tests generator",
         "generator",
         "g");
-    
+
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
     public Task<Package> RunAsync(CancellationToken cancellationToken)
     {
-        Info("Building generator");
         // Generator package
         var generatorProjectDirectory = Path.Combine("src", "Pure.DI");
         var generatorPackages = settings.CodeAnalysis
             .Select(codeAnalysis => CreateGeneratorPackage(settings.Version, codeAnalysis, generatorProjectDirectory));
 
-        return Task.FromResult(new Package(Path.GetFullPath(MergeGeneratorPackages(settings.Version, generatorPackages, generatorProjectDirectory)), true));
+        return Task.FromResult(
+            new Package(
+                Path.GetFullPath(MergeGeneratorPackages(settings.Version, generatorPackages, generatorProjectDirectory)),
+                true));
     }
-    
+
     private string CreateGeneratorPackage(NuGetVersion packageVersion, CodeAnalysis codeAnalysis, string projectDirectory)
     {
         var analyzerRoslynPackageVersion = codeAnalysis.AnalyzerRoslynPackageVersion;
         var analyzerRoslynVersion = new Version(analyzerRoslynPackageVersion.Major, analyzerRoslynPackageVersion.Minor);
         Info($"Build package for Roslyn {analyzerRoslynVersion}.");
 
-        List<(string, string)> props = [
+        List<(string, string)> props =
+        [
             ("configuration", settings.Configuration),
             ("version", packageVersion.ToString()),
             ("AnalyzerRoslynVersion", analyzerRoslynVersion.ToString()),
@@ -49,39 +53,44 @@ internal class GeneratorTarget(
         {
             props.Add(("CI", "true"));
         }
-        
-        Info($"Building {codeAnalysis.AnalyzerRoslynPackageVersion}");
-        var build = new MSBuild()
+
+        new MSBuild()
+            .WithShortName($"Building {codeAnalysis.AnalyzerRoslynPackageVersion}")
             .WithTarget("clean;rebuild")
             .WithRestore(true)
-            .WithProps(props);
-        
-        var buildResult = build.Build();
-        buildResult.Succeed();
-
-        Info($"Testing {codeAnalysis.AnalyzerRoslynPackageVersion}");
-        var test = new DotNetTest()
             .WithProps(props)
-            .WithConfiguration(settings.Configuration)
-            .WithNoBuild(true)
-            .WithNoLogo(true);
+            .Build()
+            .Succeed();
 
-        var testResult = test.Build();
-        WriteLine(testResult.ToString(), Color.Details);
-        testResult.Succeed();
-
-        Info($"Packing {codeAnalysis.AnalyzerRoslynPackageVersion}");
-        var pack = new DotNetPack()
+        var testResult = new DotNetTest()
+            .WithShortName($"Testing {codeAnalysis.AnalyzerRoslynPackageVersion}")
             .WithProps(props)
             .WithConfiguration(settings.Configuration)
             .WithNoBuild(true)
             .WithNoLogo(true)
-            .WithProject(Path.Combine(projectDirectory, "Pure.DI.csproj"));
-        
-        pack.Build().Succeed();
-        return Path.Combine(projectDirectory, "bin", $"roslyn{analyzerRoslynVersion}", settings.Configuration, $"Pure.DI.{packageVersion.ToString()}.nupkg");
+            .Build();
+
+        WriteLine(testResult.ToString(), Color.Details);
+        testResult.Succeed();
+
+        new DotNetPack()
+            .WithShortName($"Packing {codeAnalysis.AnalyzerRoslynPackageVersion}")
+            .WithProps(props)
+            .WithConfiguration(settings.Configuration)
+            .WithNoBuild(true)
+            .WithNoLogo(true)
+            .WithProject(Path.Combine(projectDirectory, "Pure.DI.csproj"))
+            .Build()
+            .Succeed();
+
+        return Path.Combine(
+            projectDirectory,
+            "bin",
+            $"roslyn{analyzerRoslynVersion}",
+            settings.Configuration,
+            $"Pure.DI.{packageVersion.ToString()}.nupkg");
     }
-    
+
     private string MergeGeneratorPackages(NuGetVersion packageVersion, IEnumerable<string> mergingPackages, string projectDirectory)
     {
         var targetPackage = Path.GetFullPath(Path.Combine(projectDirectory, "bin", settings.Configuration, $"Pure.DI.{packageVersion}.nupkg"));
@@ -126,11 +135,12 @@ internal class GeneratorTarget(
                         newStream.Write(buffer, 0, size);
                     }
                 } while (size > 0);
+
                 newStream.Flush();
                 WriteLine($"{entry.FullName,-100} - merged", Color.Details);
             }
         }
-        
+
         return targetPackage;
     }
 }

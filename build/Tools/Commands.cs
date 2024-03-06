@@ -3,15 +3,21 @@
 namespace Build.Tools;
 
 [SuppressMessage("Reliability", "CA2012:Use ValueTasks correctly")]
-internal class Commands(RootCommand rootCommand) : ICommands
+internal class Commands(RootCommand rootCommand)
 {
-    public Task Register<T>(ITarget<T> target,
+    public Task Register<T>(
+        ITarget<T> target,
         string description,
         string name,
         params string[] aliases)
     {
         var command = new Command(name, description);
-        command.SetHandler(ctx => target.RunAsync(ctx.GetCancellationToken()));
+        command.SetHandler(ctx =>
+        {
+            WriteLine($"---------- {description} ----------", Color.Highlighted);
+            return target.RunAsync(ctx.GetCancellationToken());
+        });
+        
         foreach (var alias in aliases)
         {
             command.AddAlias(alias);   

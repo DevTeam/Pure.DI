@@ -1,14 +1,15 @@
 // ReSharper disable InvertIf
 // ReSharper disable ConvertIfStatementToSwitchStatement
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Build.Targets;
+
+namespace Build;
 
 using Pure.DI.Benchmarks.Benchmarks;
 
 internal class ReadmeTarget(
-    ICommands commands,
-    IPaths paths,
-    IVersions versions,
+    Commands commands,
+    Paths paths,
+    Versions versions,
     [Tag(typeof(BenchmarksTarget))] ITarget<int> benchmarksTarget)
     : IInitializable, ITarget<int>
 {
@@ -43,16 +44,15 @@ internal class ReadmeTarget(
         $"Generates {ReadmeHeaderFile}",
         "readme",
         "r");
-    
+
     public async Task<int> RunAsync(CancellationToken cancellationToken)
     {
-        Info($"Generating {ReadmeFile}");
         var solutionDirectory = paths.SolutionDirectory;
         var logsDirectory = Path.Combine(solutionDirectory, ".logs");
-        
+
         // Run benchmarks
         await benchmarksTarget.RunAsync(cancellationToken);
-        
+
         // Delete generated files
         var generatedFiles = Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator");
         if (Directory.Exists(generatedFiles))
@@ -69,27 +69,30 @@ internal class ReadmeTarget(
 
         foreach (var project in projects)
         {
-            var buildResult = await new MSBuild().WithProject(project).WithTarget("clean;rebuild").BuildAsync(cancellationToken: cancellationToken);
-            buildResult.Succeed();    
+            new MSBuild()
+                .WithProject(project)
+                .WithTarget("clean;rebuild")
+                .Build()
+                .Succeed();
         }
 
         new DotNetTest(usageTestsProjects).Run();
 
         await using var readmeWriter = File.CreateText(ReadmeFile);
-        
+
         await AddContent(ReadmeHeaderFile, readmeWriter, "docs");
-        
+
         await AddContent(ReadmeTemplateFile, readmeWriter);
-        
+
         await readmeWriter.WriteLineAsync("");
-        
+
         var examples = await CreateExamples(cancellationToken);
         await GenerateExamples(examples, readmeWriter, logsDirectory);
 
         await AddContent(FooterTemplateFile, readmeWriter);
-        
+
         await readmeWriter.WriteLineAsync("");
-        
+
         await AddBenchmarks(logsDirectory, readmeWriter);
 
         await readmeWriter.FlushAsync(cancellationToken);
@@ -219,7 +222,7 @@ internal class ReadmeTarget(
             .GroupBy(i => i[TitleKey])
             .OrderBy(i => groups.TryGetValue(i.Key, out var index) ? index : int.MaxValue)
             .Select(i => (GroupName: i.Key, SampleItems: i.OrderBy(j => int.Parse(j[PriorityKey])).ThenBy(j => j[DescriptionKey]).ToArray()));
-        
+
         return examples;
     }
 
@@ -240,10 +243,10 @@ internal class ReadmeTarget(
                         .Replace("$(targetFrameworkVersion)", "net8.0");
                     await File.WriteAllTextAsync(readmeFile.Replace("PageTemplate.md", ".md"), content);
                 }
-                
+
                 continue;
             }
-            
+
             File.Delete(readmeFile);
         }
 
@@ -270,12 +273,12 @@ internal class ReadmeTarget(
                     await examplesWriter.WriteLineAsync("");
                     await examplesWriter.WriteLineAsync(header);
                 }
-                
+
                 await examplesWriter.WriteLineAsync("");
                 await examplesWriter.WriteLineAsync("```c#");
                 await examplesWriter.WriteLineAsync(vars[BodyKey]);
                 await examplesWriter.WriteLineAsync("```");
-                
+
                 var footer = vars[FooterKey];
                 if (!string.IsNullOrWhiteSpace(footer))
                 {
@@ -286,7 +289,7 @@ internal class ReadmeTarget(
                 var exampleName = Path.GetFileNameWithoutExtension(vars[SourceKey]);
                 await AddClassDiagram(logsDirectory, exampleName, examplesWriter);
                 await AddExample(logsDirectory, $"Pure.DI.UsageTests.*.{exampleName}.*.g.cs", examplesWriter);
-                
+
                 await examplesWriter.FlushAsync();
             }
         }
@@ -394,7 +397,7 @@ internal class ReadmeTarget(
                 }
             }
         }
-        
+
         var benchmarks = new (string name, string description, string classDiagram)[]
         {
             (nameof(Transient), "Creating an object graph of 22 transient objects.", new Transient().ToString()),
@@ -404,7 +407,7 @@ internal class ReadmeTarget(
             (nameof(Enum), "Creating an object graph of 12 transient objects, including 1 transient enumerable object.", new Enum().ToString())
         };
 
-        foreach (var (name,description, classDiagram) in benchmarks)
+        foreach (var (name, description, classDiagram) in benchmarks)
         {
             await using var classDiagramWriter = File.CreateText(Path.Combine(ReadmeDir, $"{name}Details.md"));
             await classDiagramWriter.WriteLineAsync($"## {name} details");
@@ -415,7 +418,7 @@ internal class ReadmeTarget(
             await classDiagramWriter.WriteLineAsync("```mermaid");
             await classDiagramWriter.WriteLineAsync(classDiagram);
             await classDiagramWriter.WriteLineAsync("```");
-            
+
             await classDiagramWriter.WriteLineAsync("");
             await classDiagramWriter.WriteLineAsync("### Generated code");
             await classDiagramWriter.WriteLineAsync("");
@@ -442,15 +445,15 @@ internal class ReadmeTarget(
         }
     }
 
-    private static string CreateExampleFileName(string text) => 
+    private static string CreateExampleFileName(string text) =>
         text.Replace(" ", "-")
-        .Replace("_", string.Empty)
-        .Replace("'", string.Empty)
-        .Replace("/", string.Empty)
-        .Replace("`", string.Empty)
-        .Replace("\\", string.Empty)
-        .ToLowerInvariant();
-    
+            .Replace("_", string.Empty)
+            .Replace("'", string.Empty)
+            .Replace("/", string.Empty)
+            .Replace("`", string.Empty)
+            .Replace("\\", string.Empty)
+            .ToLowerInvariant();
+
     private enum Part
     {
         Comment,

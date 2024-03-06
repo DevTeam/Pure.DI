@@ -2,7 +2,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Build.Tools;
 
-internal class Properties : IProperties
+internal class Properties
 {
     public string this[string name]
     {

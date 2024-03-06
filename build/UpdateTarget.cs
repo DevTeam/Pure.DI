@@ -2,14 +2,14 @@
 // ReSharper disable HeapView.DelegateAllocation
 // ReSharper disable HeapView.ClosureAllocation
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Build.Targets;
+namespace Build;
 
 using NuGet.Versioning;
 
 internal class UpdateTarget(
     Settings settings,
-    ICommands commands,
-    IPaths paths)
+    Commands commands,
+    Paths paths)
     : IInitializable, ITarget<NuGetVersion>
 {
     private const string VersionPrefix = "PUREDI_API_V";
@@ -23,7 +23,6 @@ internal class UpdateTarget(
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
     public Task<NuGetVersion> RunAsync(CancellationToken cancellationToken)
     {
-        Info("Updating internal DI version");
         var solutionDirectory = paths.SolutionDirectory;
         var currentVersion = settings.Version;
         var propsFile = Path.Combine(solutionDirectory, "Directory.Build.props");

@@ -1,11 +1,12 @@
 ﻿// ReSharper disable SuggestBaseTypeForParameterInConstructor
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Build.Targets;
+
+namespace Build;
 
 internal class RootTarget(
     RootCommand rootCommand,
     IEnumerable<IInitializable> initializables,
-    IPaths paths)
+    Paths paths)
     : ITarget<int>
 {
     public async Task<int> RunAsync(CancellationToken cancellationToken)
@@ -16,7 +17,7 @@ internal class RootTarget(
         {
             await initializable.InitializeAsync();
         }
-        
+
         return await rootCommand.InvokeAsync(Args.ToArray());
     }
 }

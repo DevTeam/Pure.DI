@@ -5,10 +5,10 @@
 // ReSharper disable ReturnTypeCanBeEnumerable.Local
 // ReSharper disable InvertIf
 
-namespace Build.Targets;
+namespace Build;
 
 internal class PackTarget(
-    ICommands commands,
+    Commands commands,
     ITeamCityArtifactsWriter artifactsWriter,
     [Tag(typeof(CompatibilityCheckTarget))] ITarget<IReadOnlyCollection<Package>> compatibilityCheckTarget)
     : IInitializable, ITarget<IReadOnlyCollection<Package>>
@@ -22,7 +22,6 @@ internal class PackTarget(
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
     public async Task<IReadOnlyCollection<Package>> RunAsync(CancellationToken cancellationToken)
     {
-        Info("Packing");
         var packages = await compatibilityCheckTarget.RunAsync(cancellationToken);
         foreach (var package in packages)
         {

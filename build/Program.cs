@@ -1,21 +1,13 @@
 ﻿using Build;
-using IProperties = Build.Tools.IProperties;
 
 DI.Setup(nameof(Composition))
-    .Root<ITarget<int>>("RootTarget")
+    .Root<RootTarget>("RootTarget")
     .DefaultLifetime(Lifetime.PerBlock)
-    .Bind<Settings>().To<Settings>()
     .Bind<RootCommand>().To<RootCommand>()
+    .Bind<Settings>().To<Settings>()
     .Bind<ITeamCityArtifactsWriter>().To(_ => GetService<ITeamCityWriter>())
     .Bind<INuGet>().To(_ => GetService<INuGet>())
-    // Tools
-    .Bind<ICommands>().To<Commands>()
-    .Bind<IPaths>().To<Paths>()
-    .Bind<IProperties>().To<Properties>()
-    .Bind<ISdk>().To<Sdk>()
-    .Bind<IVersions>().To<Versions>()
     // Targets
-    .Bind<ITarget<int>>().To<RootTarget>()
     .Bind<IInitializable, ITarget<Package>>(typeof(GeneratorTarget)).To<GeneratorTarget>()
     .Bind<IInitializable, ITarget<IReadOnlyCollection<Library>>>(typeof(LibrariesTarget)).To<LibrariesTarget>()
     .Bind<IInitializable, ITarget<IReadOnlyCollection<Package>>>(typeof(CompatibilityCheckTarget)).To<CompatibilityCheckTarget>()

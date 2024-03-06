@@ -5,7 +5,7 @@ namespace Build.Tools;
 using System.Text.RegularExpressions;
 using NuGet.Versioning;
 
-internal partial class Versions(INuGet nuGet) : IVersions
+internal partial class Versions(INuGet nuGet)
 {
     private static readonly Regex ReleaseRegex = CreateReleaseRegex();
 

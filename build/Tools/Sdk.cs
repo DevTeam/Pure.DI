@@ -6,7 +6,7 @@ namespace Build.Tools;
 using NuGet.Versioning;
 
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
-internal class Sdk : ISdk
+internal class Sdk
 {
     private readonly Lazy<IReadOnlyCollection<NuGetVersion>> _versions = new(GetVersions);
 

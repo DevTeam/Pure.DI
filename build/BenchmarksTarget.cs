@@ -1,10 +1,11 @@
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Build.Targets;
+
+namespace Build;
 
 internal class BenchmarksTarget(
     Settings settings,
-    ICommands commands,
-    IPaths paths,
+    Commands commands,
+    Paths paths,
     ITeamCityArtifactsWriter artifactsWriter)
     : IInitializable, ITarget<int>
 {
@@ -25,7 +26,6 @@ internal class BenchmarksTarget(
 
     public Task<int> RunAsync(CancellationToken cancellationToken)
     {
-        Info("Benchmarking");
         var solutionDirectory = paths.SolutionDirectory;
         var logsDirectory = Path.Combine(solutionDirectory, ".logs");
         Directory.CreateDirectory(logsDirectory);
@@ -37,14 +37,13 @@ internal class BenchmarksTarget(
         else
         {
             Directory.CreateDirectory(artifactsDirectory);
-        
-            var benchmark = new DotNetRun()
+            new DotNetRun()
                 .WithProject(Path.Combine("benchmarks", "Pure.DI.Benchmarks", "Pure.DI.Benchmarks.csproj"))
                 .WithConfiguration(settings.Configuration)
                 .WithArgs("--artifacts", artifactsDirectory, "--", "--filter")
-                .AddArgs(Reports.Select(filter => $"*{filter}*").ToArray());
-
-            benchmark.Run().Succeed("Benchmarking");
+                .AddArgs(Reports.Select(filter => $"*{filter}*").ToArray())
+                .Run()
+                .Succeed("Benchmarking");
         }
 
         var index = 0;

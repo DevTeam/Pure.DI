@@ -4,7 +4,7 @@
 namespace Build.Tools;
 
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
-internal class Paths : IPaths
+internal class Paths
 {
     public string SolutionDirectory =>
         Path.GetDirectoryName(TryFindFile(Environment.CurrentDirectory, "Pure.DI.sln"))
