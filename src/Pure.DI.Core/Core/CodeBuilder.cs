@@ -6,8 +6,8 @@ internal class CodeBuilder(
     IBuilder<MdSetup, DependencyGraph?> dependencyGraphBuilder,
     IValidator<DependencyGraph> dependencyGraphValidator,
     IBuilder<DependencyGraph, IReadOnlyDictionary<Injection, Root>> rootsBuilder,
-    [Tag(WellknownTag.CompositionBuilder)] IBuilder<DependencyGraph, CompositionCode> compositionBuilder,
-    [Tag(WellknownTag.ClassBuilder)] IBuilder<CompositionCode, CompositionCode> classBuilder,
+    IBuilder<DependencyGraph, CompositionCode> compositionBuilder,
+    IBuilder<CompositionCode, CompositionCode> classBuilder,
     IValidator<MdSetup> metadataValidator,
     IGeneratorSources sources,
     CancellationToken cancellationToken)
