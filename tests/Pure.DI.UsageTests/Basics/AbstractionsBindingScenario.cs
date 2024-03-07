@@ -39,6 +39,10 @@ public class Scenario
         DI.Setup("Composition")
             // Begins the definition of the binding for all abstract types
             // that are directly implemented and the implementation type itself.
+            // So that's the equivalent of the following:
+            // .Bind<IDependency, IOtherDependency, Dependency>()
+            //  .As(Lifetime.PerBlock)
+            //  .To<Dependency>()
             .Bind().As(Lifetime.PerBlock).To<Dependency>()
             // Specifies to create a property "MyService"
             .Root<Service>("MyService");

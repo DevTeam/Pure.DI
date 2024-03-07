@@ -11,6 +11,6 @@ internal partial class $(CompositionName)
     [Conditional("DI")]
     private static void Setup() => 
         DI.Setup(nameof($(CompositionName)))
-            .Bind<IInput, IOutput>().As(Singleton).To<ConsoleAdapter>()
+            .Bind().As(Singleton).To<ConsoleAdapter>()
             .Root<Program>("Root");
 }

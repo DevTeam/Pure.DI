@@ -12,5 +12,5 @@ internal class $(CompositionName)
     [Conditional("DI")]
     private static void Setup() => 
         DI.Setup(nameof($(CompositionName)), CompositionKind.Global)
-            .Bind<IInput, IOutput>().As(Singleton).To<ConsoleAdapter>();
+            .Bind().As(Singleton).To<ConsoleAdapter>();
 }
