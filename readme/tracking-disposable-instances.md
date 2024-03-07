@@ -8,7 +8,7 @@ interface IDependency
     bool IsDisposed { get; }
 }
 
-class TransientDependency : IDependency, IDisposable
+class Dependency : IDependency, IDisposable
 {
     public bool IsDisposed { get; private set; }
 
@@ -42,7 +42,7 @@ partial class Composition
                 Hint.OnNewInstanceLifetimeRegularExpression,
                 "Transient|PerResolve|PerBlock")
 
-            .Bind<IDependency>().To<TransientDependency>()
+            .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
             .Root<IService>("Root");
 
@@ -92,9 +92,9 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  TransientDependency --|> IDependency : 
-  class TransientDependency {
-    +TransientDependency()
+  Dependency --|> IDependency : 
+  class Dependency {
+    +Dependency()
   }
   Service --|> IService : 
   class Service {
@@ -106,7 +106,7 @@ classDiagram
   class IService {
     <<abstract>>
   }
-  Service *--  TransientDependency : IDependency
+  Service *--  Dependency : IDependency
   Composition ..> Service : IService Root
 ```
 
@@ -139,21 +139,21 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdU0FuwjAQ_MrK5x5QckjLDRIqcaU5-mKSFXVL7Mh2kRDiD_yll36HnzS2g-KEpK16Wa3Xs7OzY_lEClkimZNiz7TOONspVlFFhTtDKqtaam64FEA_ZrNkae9sFi3XL6gOvEDYSGm6MuSwQS33B7xevvLr5dOVH118-hUmt29YGJvHz2DY7q7NA269vik_1gimCf9Ap_DzyCSzWa6Y0ByFybBGUaIojs6PKOtikjqOFawHoHgBnaNTTKGzI5gxE7202ytMywkRPS3hRTi_rfuZ4TZlX89AiScdbt8Rx15RyrbaKNZavmrjGNO4vr_T9KxZhAbB5Ds0BgUbWJbhH4jcLB8bewfu3v0K8kAqVBXjZfPLTpSYV6yQkjklJVPvlJzJ-RtSlDKY">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqdkz9uwjAUxq_y5LkDSoYUNkioxEozejHJE02L48gxSAhxB-7SpdfhJo3tIDsmbVGXJ-f9-z7_5JxIIUokM1LsWNtmFdtKxqmktfmGVPBGtJWqRA10P5kkC13Tp2ixekV5qAqEtRDKpSGHNbZid8Dr5Su_Xj5N-tnE6Z9tYvOOhdLn-AUU296N2YbbrB3Kjw2C6sI_ulP4XTLJ9CnDBusS6-JoMESZi0lqRpewCpriOTiQQc3n6EpjpKz-DfXP4n7HQNkv-LJ93mr63suhn8CJXRre1S2OraOUbVolWc912cexTeP-Hl8zQDP3AUFIvePiGdfD4fuOjISNHdUA6t2LJ0-Eo-SsKrs_6ESJekOOlMwoKZn8oORMzt9eESO4">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// </summary>
 /// <seealso cref="Pure.DI.DI.Setup"/>
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM03D01di;
+  private readonly Composition _rootM03D07di;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Composition"/>.
   /// </summary>
   public Composition()
   {
-    _rootM03D01di = this;
+    _rootM03D07di = this;
   }
   
   /// <summary>
@@ -162,7 +162,7 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM03D01di = baseComposition._rootM03D01di;
+    _rootM03D07di = baseComposition._rootM03D07di;
   }
   
   #region Composition Roots
@@ -173,11 +173,11 @@ partial class Composition
     #endif
     get
     {
-      var transientM03D01di1_TransientDependency = new Pure.DI.UsageTests.Basics.TrackingDisposableInstancesScenario.TransientDependency();
-      OnNewInstance<Pure.DI.UsageTests.Basics.TrackingDisposableInstancesScenario.TransientDependency>(ref transientM03D01di1_TransientDependency, null, Pure.DI.Lifetime.Transient);
-      var transientM03D01di0_Service = new Pure.DI.UsageTests.Basics.TrackingDisposableInstancesScenario.Service(transientM03D01di1_TransientDependency);
-      OnNewInstance<Pure.DI.UsageTests.Basics.TrackingDisposableInstancesScenario.Service>(ref transientM03D01di0_Service, null, Pure.DI.Lifetime.Transient);
-      return transientM03D01di0_Service;
+      var transientM03D07di1_Dependency = new Pure.DI.UsageTests.Basics.TrackingDisposableInstancesScenario.Dependency();
+      OnNewInstance<Pure.DI.UsageTests.Basics.TrackingDisposableInstancesScenario.Dependency>(ref transientM03D07di1_Dependency, null, Pure.DI.Lifetime.Transient);
+      var transientM03D07di0_Service = new Pure.DI.UsageTests.Basics.TrackingDisposableInstancesScenario.Service(transientM03D07di1_Dependency);
+      OnNewInstance<Pure.DI.UsageTests.Basics.TrackingDisposableInstancesScenario.Service>(ref transientM03D07di0_Service, null, Pure.DI.Lifetime.Transient);
+      return transientM03D07di0_Service;
     }
   }
   #endregion
@@ -193,7 +193,7 @@ partial class Composition
   #endif
   public T Resolve<T>()
   {
-    return ResolverM03D01di<T>.Value.Resolve(this);
+    return ResolverM03D07di<T>.Value.Resolve(this);
   }
   
   /// <summary>
@@ -207,7 +207,7 @@ partial class Composition
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D01di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D07di<T>.Value.ResolveByTag(this, tag);
   }
   
   /// <summary>
@@ -220,10 +220,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D01di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D01di;
+    var index = (int)(_bucketSizeM03D07di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D07di;
     do {
-      ref var pair = ref _bucketsM03D01di[index];
+      ref var pair = ref _bucketsM03D07di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -244,10 +244,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D01di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D01di;
+    var index = (int)(_bucketSizeM03D07di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D07di;
     do {
-      ref var pair = ref _bucketsM03D01di[index];
+      ref var pair = ref _bucketsM03D07di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -274,9 +274,9 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  TransientDependency --|> IDependency : \n" +
-        "  class TransientDependency {\n" +
-          "    +TransientDependency()\n" +
+        "  Dependency --|> IDependency : \n" +
+        "  class Dependency {\n" +
+          "    +Dependency()\n" +
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
@@ -288,30 +288,30 @@ partial class Composition
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  Service *--  TransientDependency : IDependency\n" +
+        "  Service *--  Dependency : IDependency\n" +
         "  Composition ..> Service : IService Root";
   }
   
-  private readonly static int _bucketSizeM03D01di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D01di;
+  private readonly static int _bucketSizeM03D07di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D07di;
   
   static Composition()
   {
-    var valResolverM03D01di_0000 = new ResolverM03D01di_0000();
-    ResolverM03D01di<Pure.DI.UsageTests.Basics.TrackingDisposableInstancesScenario.IService>.Value = valResolverM03D01di_0000;
-    _bucketsM03D01di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM03D07di_0000 = new ResolverM03D07di_0000();
+    ResolverM03D07di<Pure.DI.UsageTests.Basics.TrackingDisposableInstancesScenario.IService>.Value = valResolverM03D07di_0000;
+    _bucketsM03D07di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM03D01di,
+      out _bucketSizeM03D07di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.TrackingDisposableInstancesScenario.IService), valResolverM03D01di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.TrackingDisposableInstancesScenario.IService), valResolverM03D07di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM03D01di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM03D07di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D01di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D07di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -324,7 +324,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D01di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.TrackingDisposableInstancesScenario.IService>
+  private sealed class ResolverM03D07di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.TrackingDisposableInstancesScenario.IService>
   {
     public Pure.DI.UsageTests.Basics.TrackingDisposableInstancesScenario.IService Resolve(Composition composition)
     {

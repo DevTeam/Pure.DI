@@ -95,16 +95,16 @@ partial class Composition
   private static void Setup() => 
     DI.Setup(nameof(Composition))
         // Models a random subatomic event that may or may not occur
-        .Bind<Random>().As(Singleton).To<Random>()
+        .Bind().As(Singleton).To<Random>()
         // Represents a quantum superposition of 2 states: Alive or Dead
-        .Bind<State>().To(ctx =>
+        .Bind().To(ctx =>
         {
           ctx.Inject<Random>(out var random);
           return (State)random.Next(2);
         })
-        .Bind<ICat>().To<ShroedingersCat>()
+        .Bind().To<ShroedingersCat>()
         // Represents a cardboard box with any contents
-        .Bind<IBox<TT>>().To<CardboardBox<TT>>()
+        .Bind().To<CardboardBox<TT>>()
         // Composition Root
         .Root<Program>("Root");
 }
@@ -199,6 +199,7 @@ dotnet run
 ### Basics
 - [Auto-bindings](readme/auto-bindings.md)
 - [Injections of abstractions](readme/injections-of-abstractions.md)
+- [Abstractions binding](readme/abstractions-binding.md)
 - [Composition roots](readme/composition-roots.md)
 - [Resolve methods](readme/resolve-methods.md)
 - [Factory](readme/factory.md)
@@ -207,6 +208,8 @@ dotnet run
 - [Arguments](readme/arguments.md)
 - [Root arguments](readme/root-arguments.md)
 - [Composition root kinds](readme/composition-root-kinds.md)
+- [Tag Type](readme/tag-type.md)
+- [Tag Unique](readme/tag-unique.md)
 - [Tags](readme/tags.md)
 - [Multi-contract bindings](readme/multi-contract-bindings.md)
 - [Field injection](readme/field-injection.md)

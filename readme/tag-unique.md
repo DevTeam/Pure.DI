@@ -1,31 +1,37 @@
-#### ThreadSafe hint
+#### Tag Unique
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/ThreadSafeHintScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/TagUniqueScenario.cs)
 
-Hints are used to fine-tune code generation. The _ThreadSafe_ hint determines whether object composition will be created in a thread-safe manner. This hint is _On_ by default. It is good practice not to use threads when creating an object graph, in which case this hint can be turned off, which will lead to a slight increase in performance.
-In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// ThreadSafe = Off`.
+`Tag.Unique` is useful to register a binding with a unique tag. It will not be available through the composition root or `Resolve` methods directly, but can be embedded in compositions as some kind of enumeration.
 
 ```c#
-using static Hint;
+interface IDependency<T>;
 
-interface IDependency;
+class AbcDependency<T> : IDependency<T>;
 
-class Dependency : IDependency;
+class XyzDependency<T> : IDependency<T>;
 
-interface IService;
+interface IService<T>
+{
+    ImmutableArray<IDependency<T>> Dependencies { get; }
+}
 
-class Service(IDependency dependency) : IService;
+class Service<T>(IEnumerable<IDependency<T>> dependencies) : IService<T>
+{
+    public ImmutableArray<IDependency<T>> Dependencies { get; }
+        = dependencies.ToImmutableArray();
+}
 
 DI.Setup(nameof(Composition))
-    .Hint(ThreadSafe, "Off")
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>().Root<IService>("Root");
+    .Bind<IDependency<TT>>(Tag.Unique).To<AbcDependency<TT>>()
+    .Bind<IDependency<TT>>(Tag.Unique).To<XyzDependency<TT>>()
+    .Bind<IService<TT>>().To<Service<TT>>()
+        .Root<IService<string>>("Root");
 
 var composition = new Composition();
-var service = composition.Root;
+var stringService = composition.Root;
+stringService.Dependencies.Length.ShouldBe(2);
 ```
-
-For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/README.md#setup-hints) page.
 
 <details open>
 <summary>Class Diagram</summary>
@@ -33,28 +39,35 @@ For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/README
 ```mermaid
 classDiagram
   class Composition {
-    +IService Root
+    +IServiceᐸStringᐳ Root
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  Dependency --|> IDependency : 
-  class Dependency {
-    +Dependency()
+  class IEnumerableᐸIDependencyᐸStringᐳᐳ
+  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : b9c36885-bb57-40f8-9c31-580f793138c7 
+  class AbcDependencyᐸStringᐳ {
+    +AbcDependency()
   }
-  Service --|> IService : 
-  class Service {
-    +Service(IDependency dependency)
+  XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : d31892ea-0b7d-4f0e-aaeb-882780de8da0 
+  class XyzDependencyᐸStringᐳ {
+    +XyzDependency()
   }
-  class IDependency {
+  ServiceᐸStringᐳ --|> IServiceᐸStringᐳ : 
+  class ServiceᐸStringᐳ {
+    +Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
+  }
+  class IDependencyᐸStringᐳ {
     <<abstract>>
   }
-  class IService {
+  class IServiceᐸStringᐳ {
     <<abstract>>
   }
-  Service *--  Dependency : IDependency
-  Composition ..> Service : IService Root
+  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : b9c36885-bb57-40f8-9c31-580f793138c7  IDependencyᐸStringᐳ
+  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : d31892ea-0b7d-4f0e-aaeb-882780de8da0  IDependencyᐸStringᐳ
+  Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root
+  ServiceᐸStringᐳ o--  "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
 ```
 
 </details>
@@ -72,7 +85,7 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Service"/> Root
+/// <see cref="Pure.DI.UsageTests.Basics.TagUniqueScenario.Service&lt;string&gt;"/> Root
 /// </term>
 /// <description>
 /// </description>
@@ -80,13 +93,13 @@ classDiagram
 /// </list>
 /// </para>
 /// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Service"/> using the composition root <see cref="Root"/>:
+/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.TagUniqueScenario.Service<string>"/> using the composition root <see cref="Root"/>:
 /// <code>
 /// var composition = new Composition();
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdkz9uwjAUxq_y5LkDSoYUNkioxEozejHJE02L48gxSAhxB-7SpdfhJo3tIDsmbVGXJ-f9-z7_5JxIIUokM1LsWNtmFdtKxqmktfmGVPBGtJWqRA10P5kkC13Tp2ixekV5qAqEtRDKpSGHNbZid8Dr5Su_Xj5N-tnE6Z9tYvOOhdLn-AUU296N2YbbrB3Kjw2C6sI_ulP4XTLJ9CnDBusS6-JoMESZi0lqRpewCpriOTiQQc3n6EpjpKz-DfXP4n7HQNkv-LJ93mr63suhn8CJXRre1S2OraOUbVolWc912cexTeP-Hl8zQDP3AUFIvePiGdfD4fuOjISNHdUA6t2LJ0-Eo-SsKrs_6ESJekOOlMwoKZn8oORMzt9eESO4">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqtVc1ygjAQfpVMzj0g1BK9KdgZbx310AOX_KyWVogD6Ix1fAffpZe-jm_SQGzBFiKtvews7LfJ9-1ukh3mUgDuY76kaeqHdJHQKEiCuPhGnoxWMg2zUMYoWFuWO8xjuWcPx1NINiGH4-F9miVhvDge3tBEyqyEoBmaQCqXmxw0U_HiNyls7yJMsmfgWe479yijix9pGvCZq5Nm2xWgTJk_oD1k3tL1y8qMR_E6goSyZU567MMKYgEx31bLkUtRGQPG6-NFTW2_tK5X7D1CY0OCM0Csx507Qro6k7Guq71ba66r6ytAR3tdYs3dntNxCHdRKcBMqtroM2RdB3VdHrev_6xSOB3Ss4HqTIu54qRybumG-ZQC0x4htkssAURQq6LSTKqq8gzZrLJu6Jv1NaGVuJJjE6jK7oTRvNrOHhKfkRBSwyi3qpCjRXmUpVlCT4dkdLJ1q16W1X7J1ooLlYNqQ9CFSb_mNDWV7mrK5rG95miYKH-_7e2iF9qqaTYMs_EtqIvJc70BfoBkuJT8JcCtr9avzX9xFeMbrKARDYV683YBzp4gggD3Ayxoojbf4_0H5kyogQ">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// </summary>
 /// <seealso cref="Pure.DI.DI.Setup"/>
@@ -113,14 +126,21 @@ partial class Composition
   }
   
   #region Composition Roots
-  public Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.IService Root
+  public Pure.DI.UsageTests.Basics.TagUniqueScenario.IService<string> Root
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
     #endif
     get
     {
-      return new Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Service(new Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.Dependency());
+      [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x200)]
+      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.Basics.TagUniqueScenario.IDependency<string>> LocalperBlockM03D07di1_IEnumerable()
+      {
+          yield return new Pure.DI.UsageTests.Basics.TagUniqueScenario.AbcDependency<string>();
+          yield return new Pure.DI.UsageTests.Basics.TagUniqueScenario.XyzDependency<string>();
+      }
+      var perBlockM03D07di1_IEnumerable = LocalperBlockM03D07di1_IEnumerable();
+      return new Pure.DI.UsageTests.Basics.TagUniqueScenario.Service<string>(perBlockM03D07di1_IEnumerable);
     }
   }
   #endregion
@@ -209,28 +229,35 @@ partial class Composition
     return
       "classDiagram\n" +
         "  class Composition {\n" +
-          "    +IService Root\n" +
+          "    +IServiceᐸStringᐳ Root\n" +
           "    + T ResolveᐸTᐳ()\n" +
           "    + T ResolveᐸTᐳ(object? tag)\n" +
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  Dependency --|> IDependency : \n" +
-        "  class Dependency {\n" +
-          "    +Dependency()\n" +
+        "  class IEnumerableᐸIDependencyᐸStringᐳᐳ\n" +
+        "  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : b9c36885-bb57-40f8-9c31-580f793138c7 \n" +
+        "  class AbcDependencyᐸStringᐳ {\n" +
+          "    +AbcDependency()\n" +
         "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(IDependency dependency)\n" +
+        "  XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : d31892ea-0b7d-4f0e-aaeb-882780de8da0 \n" +
+        "  class XyzDependencyᐸStringᐳ {\n" +
+          "    +XyzDependency()\n" +
         "  }\n" +
-        "  class IDependency {\n" +
+        "  ServiceᐸStringᐳ --|> IServiceᐸStringᐳ : \n" +
+        "  class ServiceᐸStringᐳ {\n" +
+          "    +Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)\n" +
+        "  }\n" +
+        "  class IDependencyᐸStringᐳ {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  class IService {\n" +
+        "  class IServiceᐸStringᐳ {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  Service *--  Dependency : IDependency\n" +
-        "  Composition ..> Service : IService Root";
+        "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : b9c36885-bb57-40f8-9c31-580f793138c7  IDependencyᐸStringᐳ\n" +
+        "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : d31892ea-0b7d-4f0e-aaeb-882780de8da0  IDependencyᐸStringᐳ\n" +
+        "  Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root\n" +
+        "  ServiceᐸStringᐳ o--  \"PerBlock\" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ";
   }
   
   private readonly static int _bucketSizeM03D07di;
@@ -239,13 +266,13 @@ partial class Composition
   static Composition()
   {
     var valResolverM03D07di_0000 = new ResolverM03D07di_0000();
-    ResolverM03D07di<Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.IService>.Value = valResolverM03D07di_0000;
+    ResolverM03D07di<Pure.DI.UsageTests.Basics.TagUniqueScenario.IService<string>>.Value = valResolverM03D07di_0000;
     _bucketsM03D07di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
       out _bucketSizeM03D07di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.IService), valResolverM03D07di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.TagUniqueScenario.IService<string>), valResolverM03D07di_0000)
       });
   }
   
@@ -265,21 +292,21 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D07di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.IService>
+  private sealed class ResolverM03D07di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.TagUniqueScenario.IService<string>>
   {
-    public Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.Basics.TagUniqueScenario.IService<string> Resolve(Composition composition)
     {
       return composition.Root;
     }
     
-    public Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Basics.TagUniqueScenario.IService<string> ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Root;
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Hints.ThreadSafeHintScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.TagUniqueScenario.IService<string>.");
     }
   }
   #endregion

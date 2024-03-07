@@ -1,8 +1,8 @@
-#### Tags
+#### Tag Type
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/TagsScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/TagTypeScenario.cs)
 
-Sometimes it's important to take control of building a dependency graph. For example, when there are multiple implementations of the same contract. In this case, _tags_ will help:
+`Tag.Type` in bindings replaces the expression `typeof(T)`, where `T` is the type of the implementation in a binding.
 
 ```c#
 interface IDependency;
@@ -23,8 +23,8 @@ interface IService
 }
 
 class Service(
-    [Tag("Abc")] IDependency dependency1,
-    [Tag("Xyz")] IDependency dependency2,
+    [Tag(typeof(AbcDependency))] IDependency dependency1,
+    [Tag(typeof(XyzDependency))] IDependency dependency2,
     IDependency dependency3)
     : IService
 {
@@ -36,13 +36,13 @@ class Service(
 }
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>("Abc", default).To<AbcDependency>()
-    .Bind<IDependency>("Xyz")
-        .As(Lifetime.Singleton)
-        .To<XyzDependency>()
-        // "XyzRoot" is root name, "Xyz" is tag
-        .Root<IDependency>("XyzRoot", "Xyz")
-    .Bind<IService>().To<Service>().Root<IService>("Root");
+    // Tag.Type here is the same as typeof(AbcDependency)
+    .Bind<IDependency>(Tag.Type, default).To<AbcDependency>()
+    // Tag.Type here is the same as typeof(XyzDependency)
+    .Bind<IDependency>(Tag.Type).As(Lifetime.Singleton).To<XyzDependency>()
+    .Bind<IService>().To<Service>().Root<IService>("Root")
+    // "XyzRoot" is root name, typeof(XyzDependency) is tag
+    .Root<IDependency>("XyzRoot", typeof(XyzDependency));
 
 var composition = new Composition();
 var service = composition.Root;
@@ -51,8 +51,6 @@ service.Dependency2.ShouldBeOfType<XyzDependency>();
 service.Dependency2.ShouldBe(composition.XyzRoot);
 service.Dependency3.ShouldBeOfType<AbcDependency>();
 ```
-
-The tag can be a constant, a type, or a value of an enumerated type. The _default_ and _null_ tags are also supported.
 
 <details open>
 <summary>Class Diagram</summary>
@@ -67,12 +65,12 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  AbcDependency --|> IDependency : "Abc" 
+  AbcDependency --|> IDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.AbcDependency) 
   AbcDependency --|> IDependency : 
   class AbcDependency {
     +AbcDependency()
   }
-  XyzDependency --|> IDependency : "Xyz" 
+  XyzDependency --|> IDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency) 
   class XyzDependency {
     +XyzDependency()
   }
@@ -86,11 +84,11 @@ classDiagram
   class IService {
     <<abstract>>
   }
-  Service *--  AbcDependency : "Abc"  IDependency
-  Service o--  "Singleton" XyzDependency : "Xyz"  IDependency
+  Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.AbcDependency)  IDependency
+  Service o--  "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency)  IDependency
   Service *--  AbcDependency : IDependency
-  Composition ..> XyzDependency : "Xyz" IDependency XyzRoot
   Composition ..> Service : IService Root
+  Composition ..> XyzDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency) IDependency XyzRoot
 ```
 
 </details>
@@ -108,29 +106,29 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Basics.TagsScenario.Service"/> Root
+/// <see cref="Pure.DI.UsageTests.Basics.TagTypeScenario.Service"/> Root
 /// </term>
 /// <description>
 /// </description>
 /// </item>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency"/> XyzRoot
+/// <see cref="Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency"/> XyzRoot
 /// </term>
 /// <description>
-/// "XyzRoot" is root name, "Xyz" is tag
+/// "XyzRoot" is root name, typeof(XyzDependency) is tag
 /// </description>
 /// </item>
 /// </list>
 /// </para>
 /// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.TagsScenario.Service"/> using the composition root <see cref="Root"/>:
+/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.TagTypeScenario.Service"/> using the composition root <see cref="Root"/>:
 /// <code>
 /// var composition = new Composition();
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqlVEtuwjAQvcpo1l1QWNCyg4RK3QKLLrwxyYimJTFKXCSKuAN36abX4SZ17ACTHyC6GY3n8zxv_OQtBiokHGCwlFnmR3KRylikIrFn8FS8UlmkI5WA-Op0-qM8l3vd0euU0nUUEEyU0izs04qSkJJgA2-b73ISZjChTC3XdNj_zg77Hxt-svb5apmaf1Cgc7_3Alouam2u4NjrmmabFYE25o5qDy5f2fdzbzgPGGdb4Z9t37PdY-CLsaEhCDS9AuGfKKfnqmPwBytlmxbv6JhHu5uO6S3ouIHqWHygUrZ9oKPO2kfhFaWF8AS_uYi7OzmT8OQ-FgpoznYvZntNNNxE1bWdp-o5Op6cZzqVhejGhW1CaiZ3O0xpr0O-XWhQEpMrJ8GBVBlD4DRKFkvSKjFNdSkwxbQh3jxapb_6b3XtApw1grk4S8sHdgWyIsHa54gPGFMayyg0n-1WoH6nmAQOBIYy_RS4w90febrccg">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNrNVUtuwjAQvYrldRcUFlB2QKjEroJU6sIb40xTtyRGtkGiiDtwl256HW7SxA7FScxHrUS7mYzn43nzMtasMRMR4C5mM6pUwGksaUIkSc0ZDUQyF4prLlJEFo1Gu5_7cq3ZH01ALjkDNBZCO-YA5pBGkLIVelq9l50oRGNQYraE3fYz3G0_jLlj5N3ZMDF9BaZzvXWPNI1raTZgn2uTwtUckM7ED6IH6HTJdpBrvSlzejYRwUG2ByZ7iFxijKlnColnW_lhIW3RYTCy30dFYwhBaWXPfao4K_SQxjnUCYOUSi6ssQTEIkW_A3iYhPod7izUK3d8TGXz8D-YKgFxmLK91mG6vdZzvb3uX8fxLt2IEteuw61c2G1Nl6ToW70t5tbvbZ70tnxtWETVP3JA1bLtDOhUaUmLpzIspO8mf3OXX1PiteeyizxDep1H5vLjYhRleARPeBrPQIuUYM-UXWfOj4G9mNBKfnVHNM1vszIb88qU17bGmfS_YunIGsM3OAGZUB5lO3NNsH6BBAjuEhxR-UbwBm--ABBPelY">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// </summary>
 /// <seealso cref="Pure.DI.DI.Setup"/>
@@ -139,7 +137,7 @@ partial class Composition
 {
   private readonly Composition _rootM03D07di;
   private readonly object _lockM03D07di;
-  private Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency _singletonM03D07di35_XyzDependency;
+  private Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency _singletonM03D07di35_XyzDependency;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Composition"/>.
@@ -162,9 +160,9 @@ partial class Composition
   
   #region Composition Roots
   /// <summary>
-  /// "XyzRoot" is root name, "Xyz" is tag
+  /// "XyzRoot" is root name, typeof(XyzDependency) is tag
   /// </summary>
-  public Pure.DI.UsageTests.Basics.TagsScenario.IDependency XyzRoot
+  public Pure.DI.UsageTests.Basics.TagTypeScenario.IDependency XyzRoot
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
@@ -177,7 +175,7 @@ partial class Composition
           {
               if (ReferenceEquals(_rootM03D07di._singletonM03D07di35_XyzDependency, null))
               {
-                  _singletonM03D07di35_XyzDependency = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
+                  _singletonM03D07di35_XyzDependency = new Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency();
                   _rootM03D07di._singletonM03D07di35_XyzDependency = _singletonM03D07di35_XyzDependency;
               }
           }
@@ -186,7 +184,7 @@ partial class Composition
     }
   }
   
-  public Pure.DI.UsageTests.Basics.TagsScenario.IService Root
+  public Pure.DI.UsageTests.Basics.TagTypeScenario.IService Root
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
@@ -199,12 +197,12 @@ partial class Composition
           {
               if (ReferenceEquals(_rootM03D07di._singletonM03D07di35_XyzDependency, null))
               {
-                  _singletonM03D07di35_XyzDependency = new Pure.DI.UsageTests.Basics.TagsScenario.XyzDependency();
+                  _singletonM03D07di35_XyzDependency = new Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency();
                   _rootM03D07di._singletonM03D07di35_XyzDependency = _singletonM03D07di35_XyzDependency;
               }
           }
       }
-      return new Pure.DI.UsageTests.Basics.TagsScenario.Service(new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency(), _rootM03D07di._singletonM03D07di35_XyzDependency, new Pure.DI.UsageTests.Basics.TagsScenario.AbcDependency());
+      return new Pure.DI.UsageTests.Basics.TagTypeScenario.Service(new Pure.DI.UsageTests.Basics.TagTypeScenario.AbcDependency(), _rootM03D07di._singletonM03D07di35_XyzDependency, new Pure.DI.UsageTests.Basics.TagTypeScenario.AbcDependency());
     }
   }
   #endregion
@@ -300,12 +298,12 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  AbcDependency --|> IDependency : \"Abc\" \n" +
+        "  AbcDependency --|> IDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.AbcDependency) \n" +
         "  AbcDependency --|> IDependency : \n" +
         "  class AbcDependency {\n" +
           "    +AbcDependency()\n" +
         "  }\n" +
-        "  XyzDependency --|> IDependency : \"Xyz\" \n" +
+        "  XyzDependency --|> IDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency) \n" +
         "  class XyzDependency {\n" +
           "    +XyzDependency()\n" +
         "  }\n" +
@@ -319,11 +317,11 @@ partial class Composition
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  Service *--  AbcDependency : \"Abc\"  IDependency\n" +
-        "  Service o--  \"Singleton\" XyzDependency : \"Xyz\"  IDependency\n" +
+        "  Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.AbcDependency)  IDependency\n" +
+        "  Service o--  \"Singleton\" XyzDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency)  IDependency\n" +
         "  Service *--  AbcDependency : IDependency\n" +
-        "  Composition ..> XyzDependency : \"Xyz\" IDependency XyzRoot\n" +
-        "  Composition ..> Service : IService Root";
+        "  Composition ..> Service : IService Root\n" +
+        "  Composition ..> XyzDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency) IDependency XyzRoot";
   }
   
   private readonly static int _bucketSizeM03D07di;
@@ -332,16 +330,16 @@ partial class Composition
   static Composition()
   {
     var valResolverM03D07di_0000 = new ResolverM03D07di_0000();
-    ResolverM03D07di<Pure.DI.UsageTests.Basics.TagsScenario.IDependency>.Value = valResolverM03D07di_0000;
+    ResolverM03D07di<Pure.DI.UsageTests.Basics.TagTypeScenario.IDependency>.Value = valResolverM03D07di_0000;
     var valResolverM03D07di_0001 = new ResolverM03D07di_0001();
-    ResolverM03D07di<Pure.DI.UsageTests.Basics.TagsScenario.IService>.Value = valResolverM03D07di_0001;
+    ResolverM03D07di<Pure.DI.UsageTests.Basics.TagTypeScenario.IService>.Value = valResolverM03D07di_0001;
     _bucketsM03D07di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       4,
       out _bucketSizeM03D07di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[2]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.TagsScenario.IDependency), valResolverM03D07di_0000)
-        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.TagsScenario.IService), valResolverM03D07di_0001)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.IDependency), valResolverM03D07di_0000)
+        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.IService), valResolverM03D07di_0001)
       });
   }
   
@@ -361,39 +359,38 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D07di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.TagsScenario.IDependency>
+  private sealed class ResolverM03D07di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.TagTypeScenario.IDependency>
   {
-    public Pure.DI.UsageTests.Basics.TagsScenario.IDependency Resolve(Composition composition)
+    public Pure.DI.UsageTests.Basics.TagTypeScenario.IDependency Resolve(Composition composition)
     {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root of type Pure.DI.UsageTests.Basics.TagsScenario.IDependency.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root of type Pure.DI.UsageTests.Basics.TagTypeScenario.IDependency.");
     }
     
-    public Pure.DI.UsageTests.Basics.TagsScenario.IDependency ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Basics.TagTypeScenario.IDependency ResolveByTag(Composition composition, object tag)
     {
+      if (Equals(tag, typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency))) return composition.XyzRoot;
       switch (tag)
       {
-        case "Xyz":
-          return composition.XyzRoot;
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.TagsScenario.IDependency.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.TagTypeScenario.IDependency.");
     }
   }
   
-  private sealed class ResolverM03D07di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.TagsScenario.IService>
+  private sealed class ResolverM03D07di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.TagTypeScenario.IService>
   {
-    public Pure.DI.UsageTests.Basics.TagsScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.Basics.TagTypeScenario.IService Resolve(Composition composition)
     {
       return composition.Root;
     }
     
-    public Pure.DI.UsageTests.Basics.TagsScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Basics.TagTypeScenario.IService ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Root;
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.TagsScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.TagTypeScenario.IService.");
     }
   }
   #endregion
