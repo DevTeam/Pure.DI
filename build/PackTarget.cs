@@ -26,7 +26,7 @@ internal class PackTarget(
         foreach (var package in packages)
         {
             WriteLine(package.Path, Color.Details);
-            artifactsWriter.PublishArtifact($"{package} => .");
+            artifactsWriter.PublishArtifact($"{package.Path} => .");
         }
 
         return packages;
