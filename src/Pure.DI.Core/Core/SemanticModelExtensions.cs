@@ -17,7 +17,7 @@ internal static class SemanticModelExtensions
         return default;
     }
     
-    public static T GetTypeSymbol<T>(this SemanticModel semanticModel,SyntaxNode node, CancellationToken cancellationToken)
+    public static T GetTypeSymbol<T>(this SemanticModel semanticModel, SyntaxNode node, CancellationToken cancellationToken)
         where T : ITypeSymbol
     {
         var result = TryGetTypeSymbol<T>(semanticModel, node, cancellationToken);
@@ -51,35 +51,46 @@ internal static class SemanticModelExtensions
                 {
                     return default;
                 }
-                
+
                 return (T?)literalExpression.Token.Value;
             }
-            
-            case MemberAccessExpressionSyntax memberAccessExpressionSyntax 
-                when memberAccessExpressionSyntax.IsKind(SyntaxKind.SimpleMemberAccessExpression):
-                {
-                    var type = memberAccessExpressionSyntax.Expression.ToString();
-                    var enumValueStr = memberAccessExpressionSyntax.Name.Identifier.Text;
-                    if (type.EndsWith(nameof(CompositionKind)))
-                    {
-                        if (Enum.TryParse<CompositionKind>(enumValueStr, out var enumValue))
-                        {
-                            return (T)(object)enumValue;
-                        }
-                    }
-                    else
-                    {
-                        if (type.EndsWith(nameof(Lifetime)))
-                        {
-                            if (Enum.TryParse<Lifetime>(enumValueStr, out var enumValue))
-                            {
-                                return (T)(object)enumValue;
-                            }
-                        }
-                    }
 
-                    break;
+            case MemberAccessExpressionSyntax memberAccessExpressionSyntax
+                when memberAccessExpressionSyntax.IsKind(SyntaxKind.SimpleMemberAccessExpression):
+            {
+                if (memberAccessExpressionSyntax.Expression is IdentifierNameSyntax classIdentifierName)
+                {
+                    var enumValueStr = memberAccessExpressionSyntax.Name.Identifier.Text;
+                    switch (classIdentifierName.Identifier.Text)
+                    {
+                        case nameof(CompositionKind):
+                            if (Enum.TryParse<CompositionKind>(enumValueStr, out var compositionKindValue))
+                            {
+                                return (T)(object)compositionKindValue;
+                            }
+
+                            break;
+
+                        case nameof(Lifetime):
+                            if (Enum.TryParse<Lifetime>(enumValueStr, out var lifetimeValue))
+                            {
+                                return (T)(object)lifetimeValue;
+                            }
+
+                            break;
+
+                        case nameof(Tag):
+                            if (Enum.TryParse<Tag>(enumValueStr, out var tagValue))
+                            {
+                                return (T)(object)tagValue;
+                            }
+
+                            break;
+                    }
                 }
+                
+                break;
+            }
         }
         
         var optionalValue = semanticModel.GetConstantValue(node);

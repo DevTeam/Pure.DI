@@ -5,7 +5,7 @@ namespace Pure.DI.Core.Models;
 internal readonly record struct MdContract(
     SemanticModel SemanticModel,
     SyntaxNode Source,
-    ITypeSymbol ContractType,
+    ITypeSymbol? ContractType,
     in ImmutableArray<MdTag> Tags)
 {
     public override string ToString()

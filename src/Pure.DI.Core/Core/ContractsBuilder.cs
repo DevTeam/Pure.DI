@@ -16,6 +16,11 @@ internal sealed class ContractsBuilder: IBuilder<ContractsBuildContext, ISet<Inj
         var bindingTags = new HashSet<object?>(binding.Tags.Select(i => i.Value));
         foreach (var (_, _, contractType, immutableArray) in binding.Contracts)
         {
+            if (contractType is null)
+            {
+                continue;
+            }
+
             var contractTags = new HashSet<object?>(bindingTags);
             foreach (var tag in immutableArray)
             {

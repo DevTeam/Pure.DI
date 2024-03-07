@@ -57,6 +57,7 @@ public partial class Generator
             .Bind<IMarker>().To<Marker>()
             .Bind<IVariator<TT>>().To<Variator<TT>>()
             .Bind<IProfiler>().To<Profiler>()
+            .Bind<IBaseSymbolsProvider>().To<BaseSymbolsProvider>()
         
             // Comments
             .Bind<ICommenter<Unit>>(typeof(ClassCommenter)).To<ClassCommenter>()

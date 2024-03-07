@@ -1064,23 +1064,70 @@ namespace Pure.DI
     }
     
     /// <summary>
+    /// Represents well known tags
+    /// </summary>
+    internal enum Tag
+    {
+        /// <summary>
+        /// Unique tag.
+        /// Begins the definition of the binding.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Unique).To&lt;Service1&gt;()
+        ///     .Bind&lt;IService&gt;(Tag.Unique).To&lt;Service1&gt;()
+        ///     .Root&lt;IEnumerable&lt;IService&gt;&gt;("Root");
+        /// </code>
+        /// </example>>
+        /// </summary>
+        Unique,
+        
+        /// <summary>
+        /// Tag of target implementation type.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IService&gt;(Tag.Type).To&lt;Service&gt;()
+        ///     .Root&lt;IService&gt;("Root", typeof(Service));
+        /// </code>
+        /// </example>>
+        /// </summary>
+        Type
+    }
+    
+    /// <summary>
     /// An API for a Dependency Injection setup.
     /// </summary>
     /// <seealso cref="DI.Setup"/>
     internal interface IConfiguration
     {
         /// <summary>
+        /// Begins the definition of the binding for all abstract types that are directly implemented and the implementation type itself.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind().To&lt;Service&gt;();
+        /// </code>
+        /// </example>>
+        /// </summary>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="IBinding.As"/>
+        /// <seealso cref="IBinding.To{T}()"/>
+        IBinding Bind(params object[] tags);
+        
+        /// <summary>
         /// Begins the definition of the binding.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
-        ///     Bind&lt;IService&gt;().To&lt;Service&gt;();
+        ///     .Bind&lt;IService&gt;().To&lt;Service&gt;();
         /// </code>
         /// </example>>
         /// </summary>
         /// <typeparam name="T">The type of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.As"/>
         /// <seealso cref="IBinding.To{T}()"/>
         IBinding Bind<T>(params object[] tags);
@@ -1091,7 +1138,7 @@ namespace Pure.DI
         /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
         /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.As"/>
         /// <seealso cref="IBinding.To{T}()"/>
         IBinding Bind<T1, T2>(params object[] tags);
@@ -1103,7 +1150,7 @@ namespace Pure.DI
         /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
         /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.As"/>
         /// <seealso cref="IBinding.To{T}()"/>
         IBinding Bind<T1, T2, T3>(params object[] tags);
@@ -1116,7 +1163,7 @@ namespace Pure.DI
         /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
         /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.As"/>
         /// <seealso cref="IBinding.To{T}()"/>
         IBinding Bind<T1, T2, T3, T4>(params object[] tags);
@@ -1130,7 +1177,7 @@ namespace Pure.DI
         /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
         /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.As"/>
         /// <seealso cref="IBinding.To{T}()"/>
         IBinding Bind<T1, T2, T3, T4, T5>(params object[] tags);
@@ -1145,7 +1192,7 @@ namespace Pure.DI
         /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
         /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam> 
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.As"/>
         /// <seealso cref="IBinding.To{T}()"/>
         IBinding Bind<T1, T2, T3, T4, T5, T6>(params object[] tags);
@@ -1161,7 +1208,7 @@ namespace Pure.DI
         /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam>
         /// <typeparam name="T7">The type 7 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.As"/>
         /// <seealso cref="IBinding.To{T}()"/>
         IBinding Bind<T1, T2, T3, T4, T5, T6, T7>(params object[] tags);
@@ -1178,22 +1225,22 @@ namespace Pure.DI
         /// <typeparam name="T7">The type 7 of dependency to be bound.</typeparam>
         /// <typeparam name="T8">The type 8 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.As"/>
         /// <seealso cref="IBinding.To{T}()"/>
         IBinding Bind<T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags);
-
+        
         /// <summary>
         /// Indicates the use of some single or multiple setups as base setups by name.
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
-        ///     DependsOn(nameof(CompositionBase));
+        ///     .DependsOn(nameof(CompositionBase));
         /// </code>
         /// </example>
         /// </summary>
         /// <param name="setupNames">A set of names for the basic setups on which this one depends.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="DI.Setup"/>
         IConfiguration DependsOn(params string[] setupNames);
 
@@ -1203,12 +1250,12 @@ namespace Pure.DI
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
-        ///     TypeAttribute&lt;MyTypeAttribute&gt;();
+        ///     .TypeAttribute&lt;MyTypeAttribute&gt;();
         /// </code>
         /// </example>
         /// <param name="typeArgumentPosition">The optional parameter that specifies the position of the type parameter in the attribute constructor. 0 by default. See predefined attribute <see cref="TypeAttribute{T}"/>.</param>
         /// <typeparam name="T">The attribute type.</typeparam>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="Pure.DI.TypeAttribute"/>
         IConfiguration TypeAttribute<T>(int typeArgumentPosition = 0) where T : global::System.Attribute;
 
@@ -1218,12 +1265,12 @@ namespace Pure.DI
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
-        ///     TagAttribute&lt;MyTagAttribute&gt;();
+        ///     .TagAttribute&lt;MyTagAttribute&gt;();
         /// </code>
         /// </example>
         /// <param name="tagArgumentPosition">The optional parameter that specifies the position of the tag parameter in the attribute constructor. 0 by default. See the predefined <see cref="TagAttribute{T}"/> attribute.</param>
         /// <typeparam name="T">The attribute type.</typeparam>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="Pure.DI.TagAttribute"/>
         IConfiguration TagAttribute<T>(int tagArgumentPosition = 0) where T : global::System.Attribute;
 
@@ -1233,12 +1280,12 @@ namespace Pure.DI
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
-        ///     OrdinalAttribute&lt;MyOrdinalAttribute&gt;();
+        ///     .OrdinalAttribute&lt;MyOrdinalAttribute&gt;();
         /// </code>
         /// </example>
         /// <param name="ordinalArgumentPosition">The optional parameter that specifies the position of the ordinal parameter in the attribute constructor. 0 by default. See the predefined <see cref="OrdinalAttribute{T}"/> attribute.</param>
         /// <typeparam name="T">The attribute type.</typeparam>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="Pure.DI.OrdinalAttribute"/>
         IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition = 0) where T : global::System.Attribute;
 
@@ -1248,11 +1295,11 @@ namespace Pure.DI
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
-        ///     DefaultLifetime(Lifetime.Singleton);
+        ///     .DefaultLifetime(Lifetime.Singleton);
         /// </code>
         /// </example>
         /// <param name="lifetime">The default lifetime.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="Pure.DI.Lifetime"/>
         /// <seealso cref="IBinding.As"/> 
         IConfiguration DefaultLifetime(Pure.DI.Lifetime lifetime);
@@ -1263,13 +1310,13 @@ namespace Pure.DI
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
-        ///     Arg&lt;int&gt;("id");
+        ///     .Arg&lt;int&gt;("id");
         /// </code>
         /// </example>
         /// <param name="name">The argument name.</param>
         /// <param name="tags">The optional argument that specifies the tags for the argument.</param>
         /// <typeparam name="T">The argument type.</typeparam>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         IConfiguration Arg<T>(string name, params object[] tags);
         
         /// <summary>
@@ -1278,13 +1325,13 @@ namespace Pure.DI
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
-        ///     RootArg&lt;int&gt;("id");
+        ///     .RootArg&lt;int&gt;("id");
         /// </code>
         /// </example>
         /// <param name="name">The argument name.</param>
         /// <param name="tags">The optional argument that specifies the tags for the argument.</param>
         /// <typeparam name="T">The argument type.</typeparam>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         IConfiguration RootArg<T>(string name, params object[] tags);
         
         /// <summary>
@@ -1293,13 +1340,13 @@ namespace Pure.DI
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
-        ///     Root&lt;Service&gt;("MyService");
+        ///     .Root&lt;Service&gt;("MyService");
         /// </code>
         /// </example>
         /// <param name="name">Specifies the unique name of the root of the composition. If the value is empty, a private root will be created, which can be used when calling <c>Resolve</c> methods.</param>
         /// <param name="tag">Optional argument specifying the tag for the root of the Composition.</param>
         /// <typeparam name="T">The Composition root type.</typeparam>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         IConfiguration Root<T>(string name = "", object tag = null, RootKinds kind = RootKinds.Default);
 
         /// <summary>
@@ -1308,12 +1355,12 @@ namespace Pure.DI
         /// <example>
         /// <code>
         /// DI.Setup("Composition")
-        ///     Hint(Resolve, "Off");
+        ///     .Hint(Resolve, "Off");
         /// </code>
         /// </example>
         /// <param name="hint">The hint type.</param>
         /// <param name="value">The hint value.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="Pure.DI.Hint"/>
         IConfiguration Hint(Hint hint, string value);
     }
@@ -1323,6 +1370,21 @@ namespace Pure.DI
     /// </summary>
     internal interface IBinding
     {
+        /// <summary>
+        /// Begins the definition of the binding for all abstract types that are directly implemented and the implementation type itself.
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Bind().To&lt;Service&gt;();
+        /// </code>
+        /// </example>>
+        /// </summary>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
+        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="IBinding.As"/>
+        /// <seealso cref="IBinding.To{T}()"/>
+        IBinding Bind(params object[] tags);
+        
         /// <summary>
         /// Begins the definition of the binding.
         /// </summary>
@@ -1334,7 +1396,7 @@ namespace Pure.DI
         /// </example>>
         /// <typeparam name="T">The type of dependency to be bound. Common type markers such as <see cref="TT"/>, <see cref="TTList{T}"/> and others are also supported.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.As"/>
         /// <seealso cref="IBinding.To{T}()"/>
         IBinding Bind<T>(params object[] tags);
@@ -1345,7 +1407,7 @@ namespace Pure.DI
         /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
         /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.As"/>
         /// <seealso cref="IBinding.To{T}()"/>
         IBinding Bind<T1, T2>(params object[] tags);
@@ -1357,7 +1419,7 @@ namespace Pure.DI
         /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
         /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.As"/>
         /// <seealso cref="IBinding.To{T}()"/>
         IBinding Bind<T1, T2, T3>(params object[] tags);
@@ -1370,7 +1432,7 @@ namespace Pure.DI
         /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
         /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.As"/>
         /// <seealso cref="IBinding.To{T}()"/>
         IBinding Bind<T1, T2, T3, T4>(params object[] tags);
@@ -1384,7 +1446,7 @@ namespace Pure.DI
         /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
         /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.As"/>
         /// <seealso cref="IBinding.To{T}()"/>
         IBinding Bind<T1, T2, T3, T4, T5>(params object[] tags);
@@ -1399,7 +1461,7 @@ namespace Pure.DI
         /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
         /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam> 
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.As"/>
         /// <seealso cref="IBinding.To{T}()"/>
         IBinding Bind<T1, T2, T3, T4, T5, T6>(params object[] tags);
@@ -1415,7 +1477,7 @@ namespace Pure.DI
         /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam>
         /// <typeparam name="T7">The type 7 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.As"/>
         /// <seealso cref="IBinding.To{T}()"/>
         IBinding Bind<T1, T2, T3, T4, T5, T6, T7>(params object[] tags);
@@ -1432,7 +1494,7 @@ namespace Pure.DI
         /// <typeparam name="T7">The type 7 of dependency to be bound.</typeparam>
         /// <typeparam name="T8">The type 8 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.As"/>
         /// <seealso cref="IBinding.To{T}()"/>
         IBinding Bind<T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags);
@@ -1448,7 +1510,7 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         /// <param name="lifetime">The <see cref="Lifetime"/> of a binding</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="Pure.DI.Lifetime"/>
         /// <seealso cref="IConfiguration.DefaultLifetime"/>
         IBinding As(Pure.DI.Lifetime lifetime);
@@ -1504,7 +1566,7 @@ namespace Pure.DI
         /// </example>
         /// </summary>
         /// <param name="tags">The binding tags.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         IBinding Tags(params object[] tags);
 
@@ -1518,7 +1580,7 @@ namespace Pure.DI
         /// </code>
         /// </example>
         /// <typeparam name="T">The implementation type. Also supports generic type markers such as <see cref="TT"/>, <see cref="TTList{T}"/>, and others.</typeparam>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         IConfiguration To<T>();
 
@@ -1564,7 +1626,7 @@ namespace Pure.DI
         /// </summary>
         /// <param name="factory">Lambda expression to manually create an instance.</param>
         /// <typeparam name="T">The implementation type.</typeparam>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         IConfiguration To<T>(global::System.Func<IContext, T> factory);
         
@@ -1587,7 +1649,7 @@ namespace Pure.DI
         /// </summary>
         /// <param name="sourceCodeStatement">Source code statement</param>
         /// <typeparam name="T">The implementation type.</typeparam>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IConfiguration.Bind{T}"/>
         IConfiguration To<T>(string sourceCodeStatement);
     }
@@ -1704,7 +1766,7 @@ namespace Pure.DI
         /// </example>
         /// <param name="compositionTypeName">This argument specifying the partial class name to generate.</param>
         /// <param name="kind">An optional argument specifying the kind of setup. Please <see cref="Pure.DI.CompositionKind"/> for details. It defaults to <c>Public</c>.</param>
-        /// <returns>API reference to the installation continuation chain.</returns>
+        /// <returns>Reference to the setup continuation chain.</returns>
         [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
         internal static IConfiguration Setup(string compositionTypeName, CompositionKind kind = CompositionKind.Public)
         {
@@ -1716,6 +1778,13 @@ namespace Pure.DI
             public static readonly IConfiguration Shared = new Configuration();
 
             private Configuration() { }
+            
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
+            public IBinding Bind(params object[] tags)
+            {
+                return Binding.Shared;
+            }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
@@ -1842,6 +1911,13 @@ namespace Pure.DI
             public static readonly IBinding Shared = new Binding();
 
             private Binding() { }
+            
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
+            public IBinding Bind(params object[] tags)
+            {
+                return Shared;
+            }
 
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]

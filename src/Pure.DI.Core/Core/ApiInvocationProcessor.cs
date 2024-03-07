@@ -44,6 +44,15 @@ internal class ApiInvocationProcessor(
             case IdentifierNameSyntax identifierName:
                 switch (identifierName.Identifier.Text)
                 {
+                    case nameof(IConfiguration.Bind):
+                        metadataVisitor.VisitContract(
+                            new MdContract(
+                                semanticModel,
+                                invocation.ArgumentList,
+                                default,
+                                BuildTags(semanticModel, invocation.ArgumentList.Arguments).ToImmutable()));
+                        break;
+                    
                     case nameof(IBinding.To):
                         switch (invocation.ArgumentList.Arguments)
                         {
@@ -153,25 +162,25 @@ internal class ApiInvocationProcessor(
                         }
 
                         break;
-
+                    
                     case nameof(IBinding.To):
-                        if (genericName.TypeArgumentList.Arguments is [{ } implementationTypeName])
+                        if (genericName.TypeArgumentList.Arguments is [{ } implementationTypeSyntax])
                         {
                             switch (invocation.ArgumentList.Arguments)
                             {
                                 case [{ Expression: LambdaExpressionSyntax lambdaExpression }]:
-                                    VisitFactory(metadataVisitor, semanticModel, semanticModel.GetTypeSymbol<ITypeSymbol>(implementationTypeName, cancellationToken), lambdaExpression);
+                                    VisitFactory(metadataVisitor, semanticModel, semanticModel.GetTypeSymbol<ITypeSymbol>(implementationTypeSyntax, cancellationToken), lambdaExpression);
                                     break;
                                 
                                 case [{ Expression: LiteralExpressionSyntax { Token.Value: string sourceCodeStatement } }]:
                                     var lambda = SyntaxFactory
                                         .SimpleLambdaExpression(SyntaxFactory.Parameter(SyntaxFactory.Identifier("_")))
                                         .WithExpressionBody(SyntaxFactory.IdentifierName(sourceCodeStatement));
-                                    VisitFactory(metadataVisitor, semanticModel, semanticModel.GetTypeSymbol<ITypeSymbol>(implementationTypeName, cancellationToken), lambda, true);
+                                    VisitFactory(metadataVisitor, semanticModel, semanticModel.GetTypeSymbol<ITypeSymbol>(implementationTypeSyntax, cancellationToken), lambda, true);
                                     break;
 
                                 case []:
-                                    metadataVisitor.VisitImplementation(new MdImplementation(semanticModel, implementationTypeName, semanticModel.GetTypeSymbol<INamedTypeSymbol>(implementationTypeName, cancellationToken)));
+                                    metadataVisitor.VisitImplementation(new MdImplementation(semanticModel, implementationTypeSyntax, semanticModel.GetTypeSymbol<INamedTypeSymbol>(implementationTypeSyntax, cancellationToken)));
                                     break;
 
                                 default:
@@ -410,7 +419,8 @@ internal class ApiInvocationProcessor(
         for (var index = 0; index < arguments.Count; index++)
         {
             var argument = arguments[index];
-            builder.Add(new MdTag(index, semanticModel.GetConstantValue<object>(argument.Expression)));
+            var tag = semanticModel.GetConstantValue<object>(argument.Expression);
+            builder.Add(new MdTag(index, tag));
         }
 
         return builder;

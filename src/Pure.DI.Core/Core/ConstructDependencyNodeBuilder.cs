@@ -15,6 +15,11 @@ internal sealed class ConstructDependencyNodeBuilder : IBuilder<MdSetup, IEnumer
             var injections = new List<Injection>();
             foreach (var contract in construct.Dependencies)
             {
+                if (contract.ContractType is null)
+                {
+                    continue;
+                }
+                
                 var tag = contract.Tags.Select(i => i.Value).FirstOrDefault();
                 injections.Add(new Injection(contract.ContractType.WithNullableAnnotation(NullableAnnotation.NotAnnotated), tag));
             }

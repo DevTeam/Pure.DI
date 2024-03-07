@@ -4,7 +4,8 @@
 namespace Pure.DI.Core;
 
 internal sealed class MetadataValidator(
-    ILogger<MetadataValidator> logger)
+    ILogger<MetadataValidator> logger,
+    IBaseSymbolsProvider baseSymbolsProvider)
     : IValidator<MdSetup>
 {
     public bool Validate(MdSetup setup)
@@ -116,10 +117,14 @@ internal sealed class MetadataValidator(
         var severityOfNotImplementedContract = setup.Hints.SeverityOfNotImplementedContract;
         if (severityOfNotImplementedContract > DiagnosticSeverity.Hidden)
         {
-            var supportedContracts = new HashSet<ITypeSymbol>(GetBaseTypes(implementationType), SymbolEqualityComparer.Default) { implementationType };
+            var supportedContracts = new HashSet<ITypeSymbol>(baseSymbolsProvider.GetBaseSymbols(implementationType), SymbolEqualityComparer.Default)
+            {
+                implementationType
+            };
+            
             var notSupportedContracts = binding.Contracts
-                .Where(contract => !supportedContracts.Contains(contract.ContractType))
-                .Select(i => i.ContractType)
+                .Where(contract => contract.ContractType != null && !supportedContracts.Contains(contract.ContractType))
+                .Select(i => i.ContractType!)
                 .ToArray();
 
             // ReSharper disable once InvertIf
@@ -146,25 +151,5 @@ internal sealed class MetadataValidator(
         }
 
         return isValid;
-    }
-    
-    private static IEnumerable<ITypeSymbol> GetBaseTypes(ITypeSymbol symbol)
-    {
-        while (true)
-        {
-            yield return symbol;
-            foreach (var type in symbol.AllInterfaces.SelectMany(GetBaseTypes))
-            {
-                yield return type;
-            }
-
-            if (symbol.BaseType != default)
-            {
-                symbol = symbol.BaseType;
-                continue;
-            }
-
-            break;
-        }
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace Pure.DI.Core;
+﻿// ReSharper disable InvertIf
+namespace Pure.DI.Core;
 
-internal class BindingBuilder
+internal class BindingBuilder(
+    IBaseSymbolsProvider baseSymbolsProvider)
 {
     private MdDefaultLifetime? _defaultLifetime;
     private SemanticModel? _semanticModel;
@@ -60,18 +62,57 @@ internal class BindingBuilder
 
     public MdBinding Build(MdSetup setup)
     {
+        var type = _implementation?.Type ?? _factory?.Type ??_arg?.Type;
+        var contractsSource = _implementation?.Source ?? _factory?.Source;
         try
         {
             if (_semanticModel is { } semanticModel
                 && _source is { } source)
             {
+                var autoContracts = _contracts.Where(i => i.ContractType == null).ToList();
+                if (autoContracts.Count > 0)
+                {
+                    foreach (var contract in autoContracts)
+                    {
+                        _contracts.Remove(contract);
+                    }
+                    
+                    if (type is not null && contractsSource is not null)
+                    {
+                        var baseSymbols = baseSymbolsProvider
+                            .GetBaseSymbols(type, 1)
+                            .Where(i => i.IsAbstract && i.SpecialType != SpecialType.System_IDisposable);
+
+                        var contracts = new HashSet<ITypeSymbol>(baseSymbols, SymbolEqualityComparer.Default)
+                        {
+                            type
+                        };
+
+                        var tags = autoContracts
+                            .SelectMany(i => i.Tags)
+                            .GroupBy(i => i.Value)
+                            .Select(i => i.First())
+                            .ToImmutableArray();
+
+                        foreach (var contract in contracts)
+                        {
+                            _contracts.Add(
+                                new MdContract(
+                                    semanticModel,
+                                    contractsSource,
+                                    contract,
+                                    tags));
+                        }
+                    }
+                }
+
                 return new MdBinding(
                     0,
                     source,
                     setup,
                     semanticModel,
-                    _contracts.ToImmutableArray(),
-                    _tags.ToImmutableArray(),
+                    _contracts.Select(i => i with { Tags = i.Tags.Select(tag => BuildTag(tag, type)).ToImmutableArray()}).ToImmutableArray(),
+                    _tags.Select(tag => BuildTag(tag, type)).ToImmutableArray(),
                     _lifetime ?? _defaultLifetime?.Lifetime,
                     _implementation,
                     _factory,
@@ -91,5 +132,28 @@ internal class BindingBuilder
             _factory = default;
             _arg = default;
         }
+    }
+
+    private static MdTag BuildTag(MdTag tag, ITypeSymbol? type)
+    {
+        if (type is null || tag.Value is null)
+        {
+            return tag;
+        }
+
+        if (tag.Value is Tag tagVal)
+        {
+            // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+            switch (tagVal)
+            {
+                case Tag.Type:
+                    return tag with { Value = type };
+                
+                case Tag.Unique:
+                    return tag with { Value = Guid.NewGuid() };
+            }
+        }
+
+        return tag;
     }
 }

@@ -448,12 +448,12 @@ internal sealed class DependencyGraphBuilder(
         foreach (var contract in nestedBinding.Contracts)
         {
             var contractType = contract.ContractType;
-            if (marker.IsMarkerBased(contract.ContractType))
+            if (contractType is not null && marker.IsMarkerBased(contractType))
             {
                 var typeConstructor = typeConstructorFactory();
-                if (typeConstructor.TryBind(contract.ContractType, elementType))
+                if (typeConstructor.TryBind(contractType, elementType))
                 {
-                    contractType = typeConstructor.Construct(compilation, contract.ContractType);
+                    contractType = typeConstructor.Construct(compilation, contractType);
                 }
             }
             
