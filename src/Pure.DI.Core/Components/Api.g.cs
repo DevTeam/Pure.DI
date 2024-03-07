@@ -1095,7 +1095,25 @@ namespace Pure.DI
     internal interface IConfiguration
     {
         /// <summary>
-        /// Begins the definition of the binding for all abstract types that are directly implemented and the implementation type itself.
+        /// Begins the binding definition for the implementation type itself, and if the implementation is a class or structure, for all abstract but NOT special types that are directly implemented.
+        /// Special types include:
+        /// <list type="bullet">
+        /// <item>System.Object</item>
+        /// <item>System.Enum</item>
+        /// <item>System.MulticastDelegate</item>
+        /// <item>System.Delegate</item>
+        /// <item>System.Collections.IEnumerable</item>
+        /// <item>System.Collections.Generic.IEnumerable&lt;T&gt;</item>
+        /// <item>System.Collections.Generic.IList&lt;T&gt;</item>
+        /// <item>System.Collections.Generic.ICollection&lt;T&gt;</item>
+        /// <item>System.Collections.IEnumerator</item>
+        /// <item>System.Collections.Generic.IEnumerator&lt;T&gt;</item>
+        /// <item>System.Collections.Generic.IIReadOnlyList&lt;T&gt;</item>
+        /// <item>System.Collections.Generic.IReadOnlyCollection&lt;T&gt;</item>
+        /// <item>System.IDisposable</item>
+        /// <item>System.IAsyncResult</item>
+        /// <item>System.AsyncCallback</item>
+        /// </list>
         /// </summary>
         /// <example>
         /// <code>
@@ -1364,7 +1382,25 @@ namespace Pure.DI
     internal interface IBinding
     {
         /// <summary>
-        /// Begins the definition of the binding for all abstract types that are directly implemented and the implementation type itself.
+        /// Begins the binding definition for the implementation type itself, and if the implementation is a class or structure, for all abstract but NOT special types that are directly implemented.
+        /// Special types include:
+        /// <list type="bullet">
+        /// <item>System.Object</item>
+        /// <item>System.Enum</item>
+        /// <item>System.MulticastDelegate</item>
+        /// <item>System.Delegate</item>
+        /// <item>System.Collections.IEnumerable</item>
+        /// <item>System.Collections.Generic.IEnumerable&lt;T&gt;</item>
+        /// <item>System.Collections.Generic.IList&lt;T&gt;</item>
+        /// <item>System.Collections.Generic.ICollection&lt;T&gt;</item>
+        /// <item>System.Collections.IEnumerator</item>
+        /// <item>System.Collections.Generic.IEnumerator&lt;T&gt;</item>
+        /// <item>System.Collections.Generic.IIReadOnlyList&lt;T&gt;</item>
+        /// <item>System.Collections.Generic.IReadOnlyCollection&lt;T&gt;</item>
+        /// <item>System.IDisposable</item>
+        /// <item>System.IAsyncResult</item>
+        /// <item>System.AsyncCallback</item>
+        /// </list>
         /// </summary>
         /// <example>
         /// <code>

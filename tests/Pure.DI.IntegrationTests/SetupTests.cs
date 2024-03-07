@@ -1506,6 +1506,103 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldSupportBindWhenHasNoTypeParamsAndEnums()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+
+    internal enum MyEnum1
+    {
+        Abc, Xyz
+    }
+    
+    internal enum MyEnum2
+    {
+        Asd, Fgh
+    }
+    
+    internal partial class Composition
+    {                   
+        private static void Setup() => 
+            DI.Setup("Composition")
+                .Bind().To<MyEnum1>()
+                .Bind().To<MyEnum2>()
+                .Root<MyEnum1>("Root1")
+                .Root<MyEnum2>("Root2"); 
+    }               
+
+    public class Program
+    {
+       public static void Main()
+       {
+           var composition = new Composition();
+           Console.WriteLine(composition.Root1);
+           Console.WriteLine(composition.Root2);
+       }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Abc", "Asd"), result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportBindWhenHasNoTypeParamsAndDisposables()
+    {
+        // Given
+
+        // When
+        var result = await """
+namespace Sample
+{
+    using System;
+    using Pure.DI;
+    using Sample;
+
+    internal class Dep1: IDisposable
+    {
+        public void Dispose() { }
+    }
+    
+    internal class Dep2: IDisposable
+    {
+        public void Dispose() { }
+    }
+    
+    internal partial class Composition
+    {                   
+        private static void Setup() => 
+            DI.Setup("Composition")
+                .Bind().To<Dep1>()
+                .Bind().To<Dep2>()
+                .Root<Dep1>("Root1")
+                .Root<Dep2>("Root2"); 
+    }               
+
+    public class Program
+    {
+       public static void Main()
+       {
+           var composition = new Composition();
+       }
+    }
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+    
+    [Fact]
     public async Task ShouldSupportTagUnique()
     {
         // Given

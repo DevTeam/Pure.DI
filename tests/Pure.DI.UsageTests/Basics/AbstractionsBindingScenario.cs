@@ -2,7 +2,24 @@
 $v=true
 $p=1
 $d=Abstractions binding
-$h=You can use the `Bind(...)` method without type parameters. In this case binding will be performed for all abstract types implemented directly and for the implementation type itself. 
+$h=You can use the `Bind(...)` method without type parameters. In this case binding will be performed for the implementation type itself, and if the implementation is a class or structure, for all abstract but NOT special types that are directly implemented.
+$h=Special types include:
+$h=
+$h=- `System.Object`
+$h=- `System.Enum`
+$h=- `System.MulticastDelegate`
+$h=- `System.Delegate`
+$h=- `System.Collections.IEnumerable`
+$h=- `System.Collections.Generic.IEnumerable&lt;T&gt;`
+$h=- `System.Collections.Generic.IList&lt;T&gt;`
+$h=- `System.Collections.Generic.ICollection&lt;T&gt;`
+$h=- `System.Collections.IEnumerator`
+$h=- `System.Collections.Generic.IEnumerator&lt;T&gt;`
+$h=- `System.Collections.Generic.IIReadOnlyList&lt;T&gt;`
+$h=- `System.Collections.Generic.IReadOnlyCollection&lt;T&gt;`
+$h=- `System.IDisposable`
+$h=- `System.IAsyncResult`
+$h=- `System.AsyncCallback` 
 */
 
 // ReSharper disable CheckNamespace
@@ -37,8 +54,9 @@ public class Scenario
 // {        
         // Specifies to create a partial class "Composition"
         DI.Setup("Composition")
-            // Begins the definition of the binding for all abstract types
-            // that are directly implemented and the implementation type itself.
+            // Begins the binding definition for the implementation type itself,
+            // and if the implementation is a class or structure,
+            // for all abstract but NOT special types that are directly implemented.
             // So that's the equivalent of the following:
             // .Bind<IDependency, IOtherDependency, Dependency>()
             //  .As(Lifetime.PerBlock)

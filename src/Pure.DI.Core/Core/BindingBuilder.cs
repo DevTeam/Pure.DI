@@ -79,15 +79,19 @@ internal class BindingBuilder(
                     
                     if (type is not null && contractsSource is not null)
                     {
-                        var baseSymbols = baseSymbolsProvider
-                            .GetBaseSymbols(type, 1)
-                            .Where(i => i.IsAbstract && i.SpecialType != SpecialType.System_IDisposable);
-
+                        var baseSymbols = Enumerable.Empty<ITypeSymbol>();
+                        if (type is { SpecialType: SpecialType.None, TypeKind: TypeKind.Class or TypeKind.Struct })
+                        {
+                            baseSymbols = baseSymbolsProvider
+                                .GetBaseSymbols(type, 1)
+                                .Where(i => i.IsAbstract && i.SpecialType == SpecialType.None);
+                        }
+                        
                         var contracts = new HashSet<ITypeSymbol>(baseSymbols, SymbolEqualityComparer.Default)
                         {
                             type
                         };
-
+                        
                         var tags = autoContracts
                             .SelectMany(i => i.Tags)
                             .GroupBy(i => i.Value)
