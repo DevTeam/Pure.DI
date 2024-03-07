@@ -2,7 +2,24 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/AbstractionsBindingScenario.cs)
 
-You can use the `Bind(...)` method without type parameters. In this case binding will be performed for all abstract types implemented directly and for the implementation type itself.
+You can use the `Bind(...)` method without type parameters. In this case binding will be performed for the implementation type itself, and if the implementation is a class or structure, for all abstract but NOT special types that are directly implemented.
+Special types include:
+
+- `System.Object`
+- `System.Enum`
+- `System.MulticastDelegate`
+- `System.Delegate`
+- `System.Collections.IEnumerable`
+- `System.Collections.Generic.IEnumerable&lt;T&gt;`
+- `System.Collections.Generic.IList&lt;T&gt;`
+- `System.Collections.Generic.ICollection&lt;T&gt;`
+- `System.Collections.IEnumerator`
+- `System.Collections.Generic.IEnumerator&lt;T&gt;`
+- `System.Collections.Generic.IIReadOnlyList&lt;T&gt;`
+- `System.Collections.Generic.IReadOnlyCollection&lt;T&gt;`
+- `System.IDisposable`
+- `System.IAsyncResult`
+- `System.AsyncCallback`
 
 ```c#
 interface IDependency;
@@ -18,8 +35,9 @@ class Service(
 
 // Specifies to create a partial class "Composition"
 DI.Setup("Composition")
-    // Begins the definition of the binding for all abstract types
-    // that are directly implemented and the implementation type itself.
+    // Begins the binding definition for the implementation type itself,
+    // and if the implementation is a class or structure,
+    // for all abstract but NOT special types that are directly implemented.
     // So that's the equivalent of the following:
     // .Bind<IDependency, IOtherDependency, Dependency>()
     //  .As(Lifetime.PerBlock)
