@@ -1057,7 +1057,7 @@ namespace Pure.DI
     }
     
     /// <summary>
-    /// Represents well known tags
+    /// Represents well known tags.
     /// </summary>
     internal enum Tag
     {

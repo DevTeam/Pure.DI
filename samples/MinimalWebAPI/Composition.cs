@@ -19,8 +19,7 @@ internal partial class Composition: ServiceProviderFactory<Composition>
                 Hint.OnCannotResolveContractTypeNameRegularExpression,
                 @"^Microsoft\.(Extensions|AspNetCore)\..+$")
             
-            .Bind<IWeatherForecastService>().As(Singleton)
-                .To<WeatherForecastService>()
+            .Bind().As(Singleton).To<WeatherForecastService>()
                 .Root<IWeatherForecastService>()
             
             // Application composition root

@@ -16,17 +16,17 @@ internal partial class Composition
         .Root<FormMain>("FormMain")
 
         // Forms
-        .Bind<FormMain>().As(Singleton).To<FormMain>()
+        .Bind().As(Singleton).To<FormMain>()
         
         // View Models
-        .Bind<IClockViewModel>().As(Singleton).To<ClockViewModel>()
+        .Bind().As(Singleton).To<ClockViewModel>()
 
         // Models
-        .Bind<ILog<TT>>().To<Log<TT>>()
-        .Bind<TimeSpan>().To(_ => TimeSpan.FromSeconds(1))
-        .Bind<ITimer>().As(Singleton).To<Clock.Models.Timer>()
-        .Bind<IClock>().As(PerBlock).To<SystemClock>()
+        .Bind().To<Log<TT>>()
+        .Bind().To(_ => TimeSpan.FromSeconds(1))
+        .Bind().As(Singleton).To<Clock.Models.Timer>()
+        .Bind().As(PerBlock).To<SystemClock>()
     
         // Infrastructure
-        .Bind<IDispatcher>().To<Dispatcher>();
+        .Bind().To<Dispatcher>();
 }

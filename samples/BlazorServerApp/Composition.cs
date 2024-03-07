@@ -23,31 +23,25 @@ internal partial class Composition: ServiceProviderFactory<Composition>
                 @"^Microsoft\.(Extensions|AspNetCore)\..+$")
             
             // View Models
-            .Bind<IClockViewModel>()
-                .To<ClockViewModel>()
+            .Bind().To<ClockViewModel>()
                 // Provides the composition root for Clock view model
                 .Root<IClockViewModel>("ClockViewModel")
-            .Bind<IErrorViewModel>()
-                .To<ErrorViewModel>()
+            .Bind().To<ErrorViewModel>()
                 // Provides the composition root for Error view model
                 .Root<IErrorViewModel>()
 
             // Services
-            .Bind<ILog<TT>>().To<Log<TT>>()
-            .Bind<TimeSpan>().To(_ => TimeSpan.FromSeconds(1))
-            .Bind<ITimer>().As(Singleton).To<Timer>()
-            .Bind<IClock>().As(PerBlock).To<SystemClock>()
-            .Bind<IWeatherForecastService>()
-                .As(Singleton)
-                .To<WeatherForecastService>()
+            .Bind().To<Log<TT>>()
+            .Bind().To(_ => TimeSpan.FromSeconds(1))
+            .Bind().As(Singleton).To<Timer>()
+            .Bind().As(PerBlock).To<SystemClock>()
+            .Bind().As(Singleton).To<WeatherForecastService>()
                 // Provides the composition root for Weather Forecast service
                 .Root<IWeatherForecastService>()
-            .Bind<ICounterService>()
-                .As(Singleton)
-                .To<CounterService>()
+            .Bind().As(Singleton).To<CounterService>()
                 // Provides the composition root for Counter service
                 .Root<ICounterService>()
             
             // Infrastructure
-            .Bind<IDispatcher>().To<Dispatcher>();
+            .Bind().To<Dispatcher>();
 }

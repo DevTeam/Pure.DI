@@ -20,9 +20,7 @@ internal partial class Composition: ServiceProviderFactory<Composition>
                 Hint.OnCannotResolveContractTypeNameRegularExpression,
                 @"^Microsoft\.(Extensions|AspNetCore)\..+$")
 
-            .Bind<IWeatherForecastService>()
-                .As(Singleton)
-                .To<WeatherForecastService>()
+            .Bind().As(Singleton).To<WeatherForecastService>()
             // Provides the composition root for Home controller
             .Root<HomeController>();
 }

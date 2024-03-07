@@ -24,14 +24,14 @@ internal partial class Composition: ServiceProviderFactory<Composition>
         .Root<IClockViewModel>("ClockViewModel")
         
         // View Models
-        .Bind<IClockViewModel>().As(Singleton).To<ClockViewModel>()
+        .Bind().As(Singleton).To<ClockViewModel>()
 
         // Models
-        .Bind<ILog<TT>>().To<Log<TT>>()
-        .Bind<TimeSpan>().To(_ => TimeSpan.FromSeconds(1))
-        .Bind<ITimer>().As(Singleton).To<Timer>()
-        .Bind<IClock>().As(PerBlock).To<SystemClock>()
+        .Bind().To<Log<TT>>()
+        .Bind().To(_ => TimeSpan.FromSeconds(1))
+        .Bind().As(Singleton).To<Timer>()
+        .Bind().As(PerBlock).To<SystemClock>()
     
         // Infrastructure
-        .Bind<IDispatcher>().To<Dispatcher>();
+        .Bind().To<Dispatcher>();
 }
