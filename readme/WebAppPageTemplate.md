@@ -17,12 +17,11 @@ internal partial class Composition: ServiceProviderFactory<Composition>
             // since ServiceProvider will be used to retrieve them.
             .Hint(
                 Hint.OnCannotResolveContractTypeNameRegularExpression,
-                "^Microsoft\\.(Extensions|AspNetCore)\\..+$")
+                @"^Microsoft\.(Extensions|AspNetCore)\..+$")
 
-            .Bind<IWeatherForecastService>()
-                .As(Singleton)
-                .To<WeatherForecastService>()
-            .Root<WeatherForecastController>();
+            .Bind().As(Singleton).To<WeatherForecastService>()
+            // Provides the composition root for Home controller
+            .Root<HomeController>();
 }
 ```
 

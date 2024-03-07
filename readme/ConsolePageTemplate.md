@@ -52,17 +52,17 @@ internal partial class Composition
     private static void Setup() =>
         DI.Setup(nameof(Composition))
             // Models a random subatomic event that may or may not occur
-            .Bind<Random>().As(Singleton).To<Random>()
+            .Bind().As(Singleton).To<Random>()
             // Represents a quantum superposition of 2 states: Alive or Dead
-            .Bind<State>().To(ctx =>
+            .Bind().To(ctx =>
             {
                 ctx.Inject<Random>(out var random);
                 return (State)random.Next(2);
             })
             // Represents schrodinger's cat
-            .Bind<ICat>().To<ShroedingersCat>()
+            .Bind().To<ShroedingersCat>()
             // Represents a cardboard box with any content
-            .Bind<IBox<TT>>().To<CardboardBox<TT>>()
+            .Bind().To<CardboardBox<TT>>()
             // Composition Root
             .Root<Program>("Root");
 }

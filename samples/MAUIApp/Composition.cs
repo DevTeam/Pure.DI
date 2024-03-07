@@ -6,8 +6,6 @@ namespace MAUIApp;
 using Pure.DI;
 using Pure.DI.MS;
 using static Pure.DI.Lifetime;
-using IDispatcher = Clock.ViewModels.IDispatcher;
-using ITimer = Clock.Models.ITimer;
 using Timer = Clock.Models.Timer;
 
 internal partial class Composition: ServiceProviderFactory<Composition>

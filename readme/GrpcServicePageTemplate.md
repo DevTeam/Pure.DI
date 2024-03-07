@@ -17,8 +17,9 @@ internal partial class Composition: ServiceProviderFactory<Composition>
             // since ServiceProvider will be used to retrieve them.
             .Hint(
                 Hint.OnCannotResolveContractTypeNameRegularExpression,
-                "^Microsoft\\.(Extensions|AspNetCore)\\..+$")
-
+                @"^Microsoft\.(Extensions|AspNetCore)\..+$")
+            
+            // Provides the composition root for Greeter service
             .Root<GreeterService>();
 }
 ```
