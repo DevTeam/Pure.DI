@@ -1095,7 +1095,7 @@ namespace Pure.DI
     internal interface IConfiguration
     {
         /// <summary>
-        /// Begins the binding definition for the implementation type itself, and if the implementation is a class or structure, for all abstract but NOT special types that are directly implemented.
+        /// Begins the binding definition for the implementation type itself, and if the implementation is not an abstract class or structure, for all abstract but NOT special types that are directly implemented.
         /// Special types include:
         /// <list type="bullet">
         /// <item>System.Object</item>
@@ -1382,7 +1382,7 @@ namespace Pure.DI
     internal interface IBinding
     {
         /// <summary>
-        /// Begins the binding definition for the implementation type itself, and if the implementation is a class or structure, for all abstract but NOT special types that are directly implemented.
+        /// Begins the binding definition for the implementation type itself, and if the implementation is not an abstract class or structure, for all abstract but NOT special types that are directly implemented.
         /// Special types include:
         /// <list type="bullet">
         /// <item>System.Object</item>

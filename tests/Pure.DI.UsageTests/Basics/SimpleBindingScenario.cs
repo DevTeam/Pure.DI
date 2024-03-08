@@ -2,7 +2,7 @@
 $v=true
 $p=1
 $d=Abstractions binding
-$h=You can use the `Bind(...)` method without type parameters. In this case binding will be performed for the implementation type itself, and if the implementation is a class or structure, for all abstract but NOT special types that are directly implemented.
+$h=You can use the `Bind(...)` method without type parameters. In this case binding will be performed for the implementation type itself, and if the implementation is not an abstract class or structure, for all abstract but NOT special types that are directly implemented.
 $h=Special types include:
 $h=
 $h=- `System.Object`
@@ -28,7 +28,7 @@ $h=- `System.AsyncCallback`
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ArrangeTypeMemberModifiers
 #pragma warning disable CS9113 // Parameter is unread.
-namespace Pure.DI.UsageTests.Basics.AbstractionsBindingScenario;
+namespace Pure.DI.UsageTests.Basics.SimpleBindingScenario;
 
 using Xunit;
 
@@ -55,7 +55,7 @@ public class Scenario
         // Specifies to create a partial class "Composition"
         DI.Setup("Composition")
             // Begins the binding definition for the implementation type itself,
-            // and if the implementation is a class or structure,
+            // and if the implementation is not an abstract class or structure,
             // for all abstract but NOT special types that are directly implemented.
             // So that's the equivalent of the following:
             // .Bind<IDependency, IOtherDependency, Dependency>()

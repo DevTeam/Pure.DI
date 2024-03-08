@@ -80,7 +80,7 @@ internal class BindingBuilder(
                     if (type is not null && contractsSource is not null)
                     {
                         var baseSymbols = Enumerable.Empty<ITypeSymbol>();
-                        if (type is { SpecialType: SpecialType.None, TypeKind: TypeKind.Class or TypeKind.Struct })
+                        if (type is { SpecialType: SpecialType.None, TypeKind: TypeKind.Class or TypeKind.Struct, IsAbstract: false })
                         {
                             baseSymbols = baseSymbolsProvider
                                 .GetBaseSymbols(type, 1)
