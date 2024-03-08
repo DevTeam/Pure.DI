@@ -1,8 +1,8 @@
 #### Abstractions binding
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/AbstractionsBindingScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/SimpleBindingScenario.cs)
 
-You can use the `Bind(...)` method without type parameters. In this case binding will be performed for the implementation type itself, and if the implementation is a class or structure, for all abstract but NOT special types that are directly implemented.
+You can use the `Bind(...)` method without type parameters. In this case binding will be performed for the implementation type itself, and if the implementation is not an abstract class or structure, for all abstract but NOT special types that are directly implemented.
 Special types include:
 
 - `System.Object`
@@ -36,7 +36,7 @@ class Service(
 // Specifies to create a partial class "Composition"
 DI.Setup("Composition")
     // Begins the binding definition for the implementation type itself,
-    // and if the implementation is a class or structure,
+    // and if the implementation is not an abstract class or structure,
     // for all abstract but NOT special types that are directly implemented.
     // So that's the equivalent of the following:
     // .Bind<IDependency, IOtherDependency, Dependency>()
@@ -96,7 +96,7 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Basics.AbstractionsBindingScenario.Service"/> MyService
+/// <see cref="Pure.DI.UsageTests.Basics.SimpleBindingScenario.Service"/> MyService
 /// </term>
 /// <description>
 /// Specifies to create a property "MyService"
@@ -105,7 +105,7 @@ classDiagram
 /// </list>
 /// </para>
 /// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.AbstractionsBindingScenario.Service"/> using the composition root <see cref="MyService"/>:
+/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.SimpleBindingScenario.Service"/> using the composition root <see cref="MyService"/>:
 /// <code>
 /// var composition = new Composition();
 /// var instance = composition.MyService;
@@ -118,14 +118,14 @@ classDiagram
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM03D07di;
+  private readonly Composition _rootM03D08di;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Composition"/>.
   /// </summary>
   public Composition()
   {
-    _rootM03D07di = this;
+    _rootM03D08di = this;
   }
   
   /// <summary>
@@ -134,22 +134,22 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM03D07di = baseComposition._rootM03D07di;
+    _rootM03D08di = baseComposition._rootM03D08di;
   }
   
   #region Composition Roots
   /// <summary>
   /// Specifies to create a property "MyService"
   /// </summary>
-  public Pure.DI.UsageTests.Basics.AbstractionsBindingScenario.Service MyService
+  public Pure.DI.UsageTests.Basics.SimpleBindingScenario.Service MyService
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
     #endif
     get
     {
-      var perBlockM03D07di1_Dependency = new Pure.DI.UsageTests.Basics.AbstractionsBindingScenario.Dependency();
-      return new Pure.DI.UsageTests.Basics.AbstractionsBindingScenario.Service(perBlockM03D07di1_Dependency, perBlockM03D07di1_Dependency, perBlockM03D07di1_Dependency);
+      var perBlockM03D08di1_Dependency = new Pure.DI.UsageTests.Basics.SimpleBindingScenario.Dependency();
+      return new Pure.DI.UsageTests.Basics.SimpleBindingScenario.Service(perBlockM03D08di1_Dependency, perBlockM03D08di1_Dependency, perBlockM03D08di1_Dependency);
     }
   }
   #endregion
