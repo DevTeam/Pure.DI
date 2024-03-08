@@ -46,11 +46,11 @@ classDiagram
     + object Resolve(Type type, object? tag)
   }
   class IEnumerableᐸIDependencyᐸStringᐳᐳ
-  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 7d2ddd11-ab70-439c-9a3e-37e44b47b2f4 
+  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 820fcc63-557a-4a1b-a335-2175256bc47f 
   class AbcDependencyᐸStringᐳ {
     +AbcDependency()
   }
-  XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 8d646619-d717-4e36-8f7b-2cda82e59a61 
+  XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : bf97da8a-06b1-450b-b9a4-c783f29eecfa 
   class XyzDependencyᐸStringᐳ {
     +XyzDependency()
   }
@@ -64,8 +64,8 @@ classDiagram
   class IServiceᐸStringᐳ {
     <<abstract>>
   }
-  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : 7d2ddd11-ab70-439c-9a3e-37e44b47b2f4  IDependencyᐸStringᐳ
-  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : 8d646619-d717-4e36-8f7b-2cda82e59a61  IDependencyᐸStringᐳ
+  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : 820fcc63-557a-4a1b-a335-2175256bc47f  IDependencyᐸStringᐳ
+  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : bf97da8a-06b1-450b-b9a4-c783f29eecfa  IDependencyᐸStringᐳ
   Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root
   ServiceᐸStringᐳ o--  "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
 ```
@@ -99,7 +99,7 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqtVc1ygjAQfpVMzj3ITwl4U7Ez3jrqoQcuIVktLRAH0Bnr-A6-Sy99Hd-kQLRgC5HWXnYW9tvs9202yQ4zwQH3MQtpmroBXSY08hIvLr_RSEQrkQZZIGLkrXs9MixihacPJzNINgGD4-FjliVBvDwe3tFUiKyCoDmaQirCTQGa5_Hyt11a5ypM-C_AssI3HlBGlz_SJOCcK5Pm2xWgLDd_QI-QuiRxq85MxvE6goT6YUF64sIKYg4x29bbUUjJMwY-a46XPdXdypJRWXuMJooEY4AI1znnmiYzqU960jMNh0nPoYYU5RoETNM3ia8vTFQJUJOqb_QFsmkHZV-etm__rNLmlmlZmiMzOdHISSUYlvTsBfGlpzNObR3uHWppNZVqUnWVF8h2lU1D366vDZ2Lqzi2gersThjJq-vsIX6OBJAqRrlThwwpakT9NEvo6ZCMT7Zp1euyui_ZWXGpclDfEHRl0m85TW2tu5myemxvORoqyt9ve73cC2nzaVYMs_ItaIqJS70efoRkGAr26uHOV-tX8V9cxfgO59CIBjx_83Yezp4hAg_3Pcxpkhff4_0nC9aoeQ">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqtVcFygjAQ_ZVMzj0giEFvCnaGW0c99MAlCcHSAnEAnbGO_-C_9NLf8U8aCC3YQqS1l52FfZt9b7NJDpByn8EJpBHOMifE6xTHXuol5TewebzhWZiHPAHeVtPQrIgVnj5zlyzdhZSdT-_LPA2T9fn0Bhac5zUErMCCZTzaFaCViJe_rdKOr8I4eWY0L3zjHuR4_SNNAj5zZdJqv2EgF-YPaBuoSyKn7ow7T7YxSzGJCtKuwzYs8VlC9812FFJExpTQ9njZU92pLbLL2nPgKhKMKbB0LaB0ZMhM00RYekM8INLDhmFKTx8gUzdHhA5RAGoBalLNjb5Atu2g7Mvj_vWfVZJgjHxsVdq0ERlUKk2tUknGeCg9iiwj0MeM0QA3VKpJNVVeILtVtg19t74utBBXc-wCNdlVGMmr7-wB_zMSskwxyr06ZEhRNiZZnuLqkMwr27bqdVn9l-ytuFQ5bW4IuDLpt5ymrtbdTFk9trccDRXl77e9Xu6FtGKaFcOsfAvaYvxSrwcfWDqLOH3xYO-r9av4L65ieAcFNMahL968gwfzJxYzD0486ONUFD_C4wfCkqlp">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// </summary>
 /// <seealso cref="Pure.DI.DI.Setup"/>
@@ -236,11 +236,11 @@ partial class Composition
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  class IEnumerableᐸIDependencyᐸStringᐳᐳ\n" +
-        "  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 7d2ddd11-ab70-439c-9a3e-37e44b47b2f4 \n" +
+        "  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 820fcc63-557a-4a1b-a335-2175256bc47f \n" +
         "  class AbcDependencyᐸStringᐳ {\n" +
           "    +AbcDependency()\n" +
         "  }\n" +
-        "  XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 8d646619-d717-4e36-8f7b-2cda82e59a61 \n" +
+        "  XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : bf97da8a-06b1-450b-b9a4-c783f29eecfa \n" +
         "  class XyzDependencyᐸStringᐳ {\n" +
           "    +XyzDependency()\n" +
         "  }\n" +
@@ -254,8 +254,8 @@ partial class Composition
         "  class IServiceᐸStringᐳ {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : 7d2ddd11-ab70-439c-9a3e-37e44b47b2f4  IDependencyᐸStringᐳ\n" +
-        "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : 8d646619-d717-4e36-8f7b-2cda82e59a61  IDependencyᐸStringᐳ\n" +
+        "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : 820fcc63-557a-4a1b-a335-2175256bc47f  IDependencyᐸStringᐳ\n" +
+        "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : bf97da8a-06b1-450b-b9a4-c783f29eecfa  IDependencyᐸStringᐳ\n" +
         "  Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root\n" +
         "  ServiceᐸStringᐳ o--  \"PerBlock\" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ";
   }
