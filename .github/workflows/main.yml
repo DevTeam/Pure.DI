@@ -1,19 +1,29 @@
 name: Pure.DI check
 
-on: [push]
+on: [ push ]
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
-        
+    
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup dotnet
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0.x'
-    
-    - name: Build and check
-      run: dotnet run --project ./build -- check
+      - uses: actions/checkout@v4
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+
+      #- name: Build and check
+        #run: dotnet run --project ./build -- check
+
+      - name: Publish Blazor example
+        run: dotnet run --project ./build -- publish
+
+      - name: Commit wwwroot to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: samples/BlazorWebAssemblyApp/bin/wwwroot

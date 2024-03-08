@@ -5,7 +5,7 @@ using WeatherForecast;
 public class IndexViewModel(
     IWeatherForecastService weatherForecastService,
     string title = "Welcome",
-    string aboutUrl = "https://github.com/DevTeam/Pure.DI")
+    string aboutUrl = "https://github.com/DevTeam/Pure.DI/blob/master/readme/WebApp.md")
 {
     public string Title { get; } = title;
     
