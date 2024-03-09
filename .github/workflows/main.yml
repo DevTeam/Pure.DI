@@ -15,8 +15,8 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      #- name: Build and check
-        #run: dotnet run --project ./build -- check
+      - name: Build and check
+        run: dotnet run --project ./build -- check
 
       - name: Publish Blazor example
         run: dotnet run --project ./build -- publish

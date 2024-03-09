@@ -111,16 +111,16 @@ classDiagram
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM03D08di;
-  private readonly object _lockM03D08di;
+  private readonly Composition _rootM03D09di;
+  private readonly object _lockM03D09di;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Composition"/>.
   /// </summary>
   public Composition()
   {
-    _rootM03D08di = this;
-    _lockM03D08di = new object();
+    _rootM03D09di = this;
+    _lockM03D09di = new object();
   }
   
   /// <summary>
@@ -129,8 +129,8 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM03D08di = baseComposition._rootM03D08di;
-    _lockM03D08di = _rootM03D08di._lockM03D08di;
+    _rootM03D09di = baseComposition._rootM03D09di;
+    _lockM03D09di = _rootM03D09di._lockM03D09di;
   }
   
   #region Composition Roots
@@ -141,22 +141,22 @@ partial class Composition
     #endif
     get
     {
-      var perResolveM03D08di40_Func = default(System.Func<(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep4)>);
-      perResolveM03D08di40_Func = new global::System.Func<(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep4)>(
+      var perResolveM03D09di40_Func = default(System.Func<(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep4)>);
+      perResolveM03D09di40_Func = new global::System.Func<(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep4)>(
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
       () =>
       {
-          var perBlockM03D08di4_Dependency = new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency();
-          var factory_M03D08di1 = (perBlockM03D08di4_Dependency, perBlockM03D08di4_Dependency);
-          return factory_M03D08di1;
+          var perBlockM03D09di4_Dependency = new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency();
+          var factory_M03D09di1 = (perBlockM03D09di4_Dependency, perBlockM03D09di4_Dependency);
+          return factory_M03D09di1;
       });
-      System.Lazy<(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep4)> transientM03D08di2_Lazy;
+      System.Lazy<(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep4)> transientM03D09di2_Lazy;
       {
-          var factory_M03D08di2 = perResolveM03D08di40_Func;
-          transientM03D08di2_Lazy = new global::System.Lazy<(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep4)>(factory_M03D08di2, true);
+          var factory_M03D09di2 = perResolveM03D09di40_Func;
+          transientM03D09di2_Lazy = new global::System.Lazy<(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep4)>(factory_M03D09di2, true);
       }
-      var perBlockM03D08di1_Dependency = new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency();
-      return new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service(perBlockM03D08di1_Dependency, perBlockM03D08di1_Dependency, transientM03D08di2_Lazy);
+      var perBlockM03D09di1_Dependency = new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency();
+      return new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service(perBlockM03D09di1_Dependency, perBlockM03D09di1_Dependency, transientM03D09di2_Lazy);
     }
   }
   #endregion
@@ -172,7 +172,7 @@ partial class Composition
   #endif
   public T Resolve<T>()
   {
-    return ResolverM03D08di<T>.Value.Resolve(this);
+    return ResolverM03D09di<T>.Value.Resolve(this);
   }
   
   /// <summary>
@@ -186,7 +186,7 @@ partial class Composition
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D08di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D09di<T>.Value.ResolveByTag(this, tag);
   }
   
   /// <summary>
@@ -199,10 +199,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D08di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D08di;
+    var index = (int)(_bucketSizeM03D09di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D09di;
     do {
-      ref var pair = ref _bucketsM03D08di[index];
+      ref var pair = ref _bucketsM03D09di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -223,10 +223,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D08di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D08di;
+    var index = (int)(_bucketSizeM03D09di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D09di;
     do {
-      ref var pair = ref _bucketsM03D08di[index];
+      ref var pair = ref _bucketsM03D09di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -276,26 +276,26 @@ partial class Composition
         "  FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ *--  ValueTupleᐸIDependencyˏIDependencyᐳ : ValueTupleᐸIDependencyˏIDependencyᐳ";
   }
   
-  private readonly static int _bucketSizeM03D08di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D08di;
+  private readonly static int _bucketSizeM03D09di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D09di;
   
   static Composition()
   {
-    var valResolverM03D08di_0000 = new ResolverM03D08di_0000();
-    ResolverM03D08di<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service>.Value = valResolverM03D08di_0000;
-    _bucketsM03D08di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM03D09di_0000 = new ResolverM03D09di_0000();
+    ResolverM03D09di<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service>.Value = valResolverM03D09di_0000;
+    _bucketsM03D09di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM03D08di,
+      out _bucketSizeM03D09di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service), valResolverM03D08di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service), valResolverM03D09di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM03D08di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM03D09di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D08di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D09di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -308,7 +308,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D08di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service>
+  private sealed class ResolverM03D09di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service>
   {
     public Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service Resolve(Composition composition)
     {
