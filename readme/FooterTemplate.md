@@ -16,6 +16,7 @@
   - [gRPC service](readme/GrpcService.md)
   - [Blazor Server](readme/BlazorServerApp.md)
   - [Blazor WebAssembly](readme/BlazorWebAssemblyApp.md)
+    - [https://devteam.github.io/Pure.DI/](https://devteam.github.io/Pure.DI/)
 - Git repo with examples
   - [Schrödinger's cat](https://github.com/DevTeam/Pure.DI.Example) 
   - [How to use Pure.DI to create libraries](https://github.com/DevTeam/Pure.DI.Solution)
