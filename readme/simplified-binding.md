@@ -1,25 +1,8 @@
-#### Abstractions binding
+#### Simplified binding
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/SimpleBindingScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/SimplifiedBindingScenario.cs)
 
-You can use the `Bind(...)` method without type parameters. In this case binding will be performed for the implementation type itself, and if the implementation is not an abstract class or structure, for all abstract but NOT special types that are directly implemented.
-Special types include:
-
-- `System.Object`
-- `System.Enum`
-- `System.MulticastDelegate`
-- `System.Delegate`
-- `System.Collections.IEnumerable`
-- `System.Collections.Generic.IEnumerable&lt;T&gt;`
-- `System.Collections.Generic.IList&lt;T&gt;`
-- `System.Collections.Generic.ICollection&lt;T&gt;`
-- `System.Collections.IEnumerator`
-- `System.Collections.Generic.IEnumerator&lt;T&gt;`
-- `System.Collections.Generic.IIReadOnlyList&lt;T&gt;`
-- `System.Collections.Generic.IReadOnlyCollection&lt;T&gt;`
-- `System.IDisposable`
-- `System.IAsyncResult`
-- `System.AsyncCallback`
+You can use the `Bind(...)` method without type parameters. In this case binding will be performed for the implementation type itself, and if the implementation is not an abstract type or structure, for all abstract but NOT special types that are directly implemented.
 
 ```c#
 interface IDependency;
@@ -49,6 +32,24 @@ DI.Setup("Composition")
 var composition = new Composition();
 var service = composition.MyService;
 ```
+
+Special types from the list above will not be added to bindings:
+
+- `System.Object`
+- `System.Enum`
+- `System.MulticastDelegate`
+- `System.Delegate`
+- `System.Collections.IEnumerable`
+- `System.Collections.Generic.IEnumerable<T>`
+- `System.Collections.Generic.IList<T>`
+- `System.Collections.Generic.ICollection<T>`
+- `System.Collections.IEnumerator`
+- `System.Collections.Generic.IEnumerator<T>`
+- `System.Collections.Generic.IIReadOnlyList<T>`
+- `System.Collections.Generic.IReadOnlyCollection<T>`
+- `System.IDisposable`
+- `System.IAsyncResult`
+- `System.AsyncCallback`
 
 <details open>
 <summary>Class Diagram</summary>
@@ -96,7 +97,7 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Basics.SimpleBindingScenario.Service"/> MyService
+/// <see cref="Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service"/> MyService
 /// </term>
 /// <description>
 /// Specifies to create a property "MyService"
@@ -105,7 +106,7 @@ classDiagram
 /// </list>
 /// </para>
 /// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.SimpleBindingScenario.Service"/> using the composition root <see cref="MyService"/>:
+/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service"/> using the composition root <see cref="MyService"/>:
 /// <code>
 /// var composition = new Composition();
 /// var instance = composition.MyService;
@@ -118,14 +119,14 @@ classDiagram
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM03D09di;
+  private readonly Composition _rootM03D11di;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Composition"/>.
   /// </summary>
   public Composition()
   {
-    _rootM03D09di = this;
+    _rootM03D11di = this;
   }
   
   /// <summary>
@@ -134,22 +135,22 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM03D09di = baseComposition._rootM03D09di;
+    _rootM03D11di = baseComposition._rootM03D11di;
   }
   
   #region Composition Roots
   /// <summary>
   /// Specifies to create a property "MyService"
   /// </summary>
-  public Pure.DI.UsageTests.Basics.SimpleBindingScenario.Service MyService
+  public Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service MyService
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
     #endif
     get
     {
-      var perBlockM03D09di1_Dependency = new Pure.DI.UsageTests.Basics.SimpleBindingScenario.Dependency();
-      return new Pure.DI.UsageTests.Basics.SimpleBindingScenario.Service(perBlockM03D09di1_Dependency, perBlockM03D09di1_Dependency, perBlockM03D09di1_Dependency);
+      var perBlockM03D11di1_Dependency = new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Dependency();
+      return new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service(perBlockM03D11di1_Dependency, perBlockM03D11di1_Dependency, perBlockM03D11di1_Dependency);
     }
   }
   #endregion

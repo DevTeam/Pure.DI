@@ -199,9 +199,9 @@ dotnet run
 ### Basics
 - [Auto-bindings](readme/auto-bindings.md)
 - [Injections of abstractions](readme/injections-of-abstractions.md)
-- [Abstractions binding](readme/abstractions-binding.md)
 - [Composition roots](readme/composition-roots.md)
 - [Resolve methods](readme/resolve-methods.md)
+- [Simplified binding](readme/simplified-binding.md)
 - [Factory](readme/factory.md)
 - [Injection](readme/injection.md)
 - [Generics](readme/generics.md)

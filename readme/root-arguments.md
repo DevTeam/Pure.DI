@@ -126,14 +126,14 @@ classDiagram
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM03D09di;
+  private readonly Composition _rootM03D11di;
   
   /// <summary>
   /// This parameterized constructor creates a new instance of <see cref="Composition"/> with arguments.
   /// </summary>
   public Composition()
   {
-    _rootM03D09di = this;
+    _rootM03D11di = this;
   }
   
   /// <summary>
@@ -142,7 +142,7 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM03D09di = baseComposition._rootM03D09di;
+    _rootM03D11di = baseComposition._rootM03D11di;
   }
   
   #region Composition Roots
