@@ -19,9 +19,11 @@ jobs:
         run: dotnet run --project ./build -- check
 
       - name: Publish Blazor example
-        run: dotnet run --project ./build -- publish
+        if: ${{ github.ref == 'refs/heads/master' }}
+        run: dotnet run --project ./build -- publish        
 
       - name: Commit wwwroot to GitHub Pages
+        if: ${{ github.ref == 'refs/heads/master' }}
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
