@@ -204,6 +204,7 @@ dotnet run
 - [Simplified binding](readme/simplified-binding.md)
 - [Factory](readme/factory.md)
 - [Injection](readme/injection.md)
+- [Generic composition roots](readme/generic-composition-roots.md)
 - [Generics](readme/generics.md)
 - [Arguments](readme/arguments.md)
 - [Root arguments](readme/root-arguments.md)

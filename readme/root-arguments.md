@@ -105,9 +105,10 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Basics.RootArgumentsScenario.Service"/> CreateService
+/// <see cref="Pure.DI.UsageTests.Basics.RootArgumentsScenario.IService"/> CreateService
 /// </term>
 /// <description>
+/// Provides a composition root of type <see cref="Pure.DI.UsageTests.Basics.RootArgumentsScenario.Service"/>.
 /// </description>
 /// </item>
 /// </list>
@@ -126,14 +127,14 @@ classDiagram
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM03D11di;
+  private readonly Composition _rootM03D12di;
   
   /// <summary>
   /// This parameterized constructor creates a new instance of <see cref="Composition"/> with arguments.
   /// </summary>
   public Composition()
   {
-    _rootM03D11di = this;
+    _rootM03D12di = this;
   }
   
   /// <summary>
@@ -142,7 +143,7 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM03D11di = baseComposition._rootM03D11di;
+    _rootM03D12di = baseComposition._rootM03D12di;
   }
   
   #region Composition Roots

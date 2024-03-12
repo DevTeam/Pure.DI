@@ -116,9 +116,10 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.BCL.ManualTaskScenario.Service"/> GetRoot
+/// <see cref="Pure.DI.UsageTests.BCL.ManualTaskScenario.IService"/> GetRoot
 /// </term>
 /// <description>
+/// Provides a composition root of type <see cref="Pure.DI.UsageTests.BCL.ManualTaskScenario.Service"/>.
 /// </description>
 /// </item>
 /// </list>
@@ -137,16 +138,16 @@ classDiagram
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM03D11di;
-  private readonly object _lockM03D11di;
+  private readonly Composition _rootM03D12di;
+  private readonly object _lockM03D12di;
   
   /// <summary>
   /// This parameterized constructor creates a new instance of <see cref="Composition"/> with arguments.
   /// </summary>
   public Composition()
   {
-    _rootM03D11di = this;
-    _lockM03D11di = new object();
+    _rootM03D12di = this;
+    _lockM03D12di = new object();
   }
   
   /// <summary>
@@ -155,8 +156,8 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM03D11di = baseComposition._rootM03D11di;
-    _lockM03D11di = _rootM03D11di._lockM03D11di;
+    _rootM03D12di = baseComposition._rootM03D12di;
+    _lockM03D12di = _rootM03D12di._lockM03D12di;
   }
   
   #region Composition Roots
@@ -165,21 +166,21 @@ partial class Composition
   #endif
   public Pure.DI.UsageTests.BCL.ManualTaskScenario.IService GetRoot(System.Threading.CancellationToken cancellationToken)
   {
-    var perResolveM03D11di39_Func = default(System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>);
-    perResolveM03D11di39_Func = new global::System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(
+    var perResolveM03D12di39_Func = default(System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>);
+    perResolveM03D12di39_Func = new global::System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
     () =>
     {
-        var factory_M03D11di1 = new Pure.DI.UsageTests.BCL.ManualTaskScenario.Dependency();
-        return factory_M03D11di1;
+        var factory_M03D12di1 = new Pure.DI.UsageTests.BCL.ManualTaskScenario.Dependency();
+        return factory_M03D12di1;
     });
-    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency> transientM03D11di1_Task;
+    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency> transientM03D12di1_Task;
     {
-        var factory_M03D11di2 = perResolveM03D11di39_Func;
-        var cancellationToken_M03D11di3 = cancellationToken;
-        transientM03D11di1_Task = new Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(factory_M03D11di2, cancellationToken_M03D11di3);
+        var factory_M03D12di2 = perResolveM03D12di39_Func;
+        var cancellationToken_M03D12di3 = cancellationToken;
+        transientM03D12di1_Task = new Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(factory_M03D12di2, cancellationToken_M03D12di3);
     }
-    return new Pure.DI.UsageTests.BCL.ManualTaskScenario.Service(transientM03D11di1_Task);
+    return new Pure.DI.UsageTests.BCL.ManualTaskScenario.Service(transientM03D12di1_Task);
   }
   #endregion
   

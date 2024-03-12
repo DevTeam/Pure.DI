@@ -55,17 +55,12 @@ public class Scenario
 // {            
         DI.Setup(nameof(Composition))
             .Bind<IDependency<TT>>().To<Dependency<TT>>()
-            .Bind<IService>().To<Service>().Root<IService>("Root")
-            // It is possible to define a generic composition root as well
-            .Root<IDependency<TT>>("GetMyGenericRoot");
+            .Bind<IService>().To<Service>().Root<IService>("Root");
 
         var composition = new Composition();
         var service = composition.Root;
         service.IntDependency.ShouldBeOfType<Dependency<int>>();
         service.StringDependency.ShouldBeOfType<Dependency<string>>();
-
-        // Get a generic composition root
-        var dependencyInt = composition.GetMyGenericRoot<int>();
 // }
         composition.SaveClassDiagram();
     }
