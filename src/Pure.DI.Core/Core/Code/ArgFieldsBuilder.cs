@@ -1,7 +1,8 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal sealed class ArgFieldsBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class ArgFieldsBuilder(ITypeResolver typeResolver)
+    : IBuilder<CompositionCode, CompositionCode>
 {
     public CompositionCode Build(CompositionCode composition)
     {
@@ -15,7 +16,7 @@ internal sealed class ArgFieldsBuilder: IBuilder<CompositionCode, CompositionCod
         var membersCounter = composition.MembersCount;
         foreach (var arg in classArgs)
         {
-            code.AppendLine($"private readonly {arg.InstanceType} {arg.VariableName};");
+            code.AppendLine($"private readonly {typeResolver.Resolve(arg.InstanceType)} {arg.VariableName};");
             membersCounter++;
         }
 

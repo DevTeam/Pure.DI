@@ -3,6 +3,7 @@ namespace Pure.DI.Core;
 
 internal sealed class DependencyGraphValidator(
     ILogger<DependencyGraphValidator> logger,
+    ITypeResolver typeResolver,
     IFilter filter,
     CancellationToken cancellationToken)
     : IValidator<DependencyGraph>
@@ -24,7 +25,7 @@ internal sealed class DependencyGraphValidator(
             if (mdSetup.Hints.IsOnCannotResolveEnabled
                 && filter.IsMeetRegularExpression(
                     mdSetup,
-                    (Hint.OnCannotResolveContractTypeNameRegularExpression, unresolvedInjection.Type.ToString()),
+                    (Hint.OnCannotResolveContractTypeNameRegularExpression, typeResolver.Resolve(unresolvedInjection.Type).Name),
                     (Hint.OnCannotResolveTagRegularExpression, unresolvedInjection.Tag.ValueToString()),
                     (Hint.OnCannotResolveLifetimeRegularExpression, dependencyNode.Lifetime.ValueToString())))
             {

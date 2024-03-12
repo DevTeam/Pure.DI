@@ -2,6 +2,7 @@
 namespace Pure.DI.Core.Code;
 
 internal sealed class ParameterizedConstructorBuilder(
+    ITypeResolver typeResolver,
     [Tag(typeof(ParameterizedConstructorCommenter))] ICommenter<Unit> constructorCommenter)
     : IBuilder<CompositionCode, CompositionCode>
 {
@@ -27,7 +28,7 @@ internal sealed class ParameterizedConstructorBuilder(
         constructorCommenter.AddComments(composition, Unit.Shared);
         
         var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToArray();
-        code.AppendLine($"public {composition.Source.Source.Name.ClassName}({string.Join(", ", classArgs.Select(arg => $"{arg.InstanceType} {arg.Node.Arg?.Source.ArgName}"))})");
+        code.AppendLine($"public {composition.Source.Source.Name.ClassName}({string.Join(", ", classArgs.Select(arg => $"{typeResolver.Resolve(arg.InstanceType)} {arg.Node.Arg?.Source.ArgName}"))})");
         code.AppendLine("{");
         using (code.Indent())
         {

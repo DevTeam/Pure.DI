@@ -111,6 +111,7 @@ public partial class Generator
         
         // PerResolve
             .DefaultLifetime(PerResolve)
+            .Bind().To<TypeResolver>()
             .Bind().To<LogObserver>()
             .Bind().To<Filter>()
             .Bind().To<IdGenerator>();

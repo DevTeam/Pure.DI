@@ -3,6 +3,7 @@ namespace Pure.DI.Core.Code;
 
 internal sealed class RootMethodsBuilder(
     IBuildTools buildTools,
+    ITypeResolver typeResolver,
     [Tag(typeof(RootMethodsCommenter))] ICommenter<Root> rootCommenter)
     : IBuilder<CompositionCode, CompositionCode>
 {
@@ -46,12 +47,13 @@ internal sealed class RootMethodsBuilder(
     private void BuildRoot(CompositionCode composition, ITypeSymbol type, Root root)
     {
         var code = composition.Code;
-        var isMethod = !root.Args.IsEmpty || (root.Kind & RootKinds.Method) == RootKinds.Method;
+        var typeDescription = typeResolver.Resolve(type);
+        var isMethod = !root.Args.IsEmpty || (root.Kind & RootKinds.Method) == RootKinds.Method || typeDescription.TypeArgs.Count > 0;
         var rootArgsStr = "";
         if (isMethod)
         {
             isMethod = true;
-            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{arg.InstanceType} {arg.VariableName}"))})";
+            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(arg.InstanceType)} {arg.VariableName}"))})";
         }
 
         if (isMethod)
@@ -78,10 +80,17 @@ internal sealed class RootMethodsBuilder(
         }
         
         name.Append(' ');
-        name.Append(type);
+        name.Append(typeDescription.Name);
         
         name.Append(' ');
         name.Append(root.PropertyName);
+
+        if (typeDescription.TypeArgs.Count > 0)
+        {
+            name.Append('<');
+            name.Append(string.Join(", ", typeDescription.TypeArgs));
+            name.Append('>');
+        }
         
         name.Append(rootArgsStr);
 

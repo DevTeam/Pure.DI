@@ -38,14 +38,15 @@ internal sealed class DependencyGraphBuilder(
                 {
                     map[contract] = node;
                 }
+                
+                if (!processingNode.IsMarkerBased)
+                {
+                    queue.Enqueue(processingNode);
+                }
             }
             else
             {
                 roots.Add(node);
-            }
-
-            if (!processingNode.IsMarkerBased)
-            {
                 queue.Enqueue(processingNode);
             }
         }
@@ -62,7 +63,10 @@ internal sealed class DependencyGraphBuilder(
                 cancellationToken.ThrowIfCancellationRequested();
                 if (map.TryGetValue(injection, out var sourceNode))
                 {
-                    continue;
+                    if (!marker.IsMarkerBased(sourceNode.Type))
+                    {
+                        continue;
+                    }
                 }
 
                 switch (injection.Type)

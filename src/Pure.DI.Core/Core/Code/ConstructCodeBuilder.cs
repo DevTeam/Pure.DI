@@ -1,7 +1,8 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
+internal class ConstructCodeBuilder(ITypeResolver typeResolver)
+    : ICodeBuilder<DpConstruct>
 {
     public void Build(BuildContext ctx, in DpConstruct construct)
     {
@@ -40,7 +41,7 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
         }
     }
 
-    private static void BuildEnumerable(BuildContext ctx, in DpConstruct enumerable, string methodPrefix = "")
+    private void BuildEnumerable(BuildContext ctx, in DpConstruct enumerable, string methodPrefix = "")
     {
         var variable = ctx.Variable;
         var code = ctx.Code;
@@ -51,7 +52,7 @@ internal class ConstructCodeBuilder : ICodeBuilder<DpConstruct>
             code.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x200)]");
         }
 
-        code.AppendLine($"{methodPrefix}{variable.InstanceType} {localFuncName}()");
+        code.AppendLine($"{methodPrefix}{typeResolver.Resolve(variable.InstanceType)} {localFuncName}()");
         code.AppendLine("{");
         using (code.Indent())
         {

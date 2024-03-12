@@ -1,6 +1,7 @@
 ﻿namespace Pure.DI.Core.Code;
 
 internal class ClassCommenter(
+    ITypeResolver typeResolver,
     IComments comments,
     IBuilder<IEnumerable<string>, Uri> mermaidUrlBuilder)
     : ICommenter<Unit>
@@ -25,7 +26,7 @@ internal class ClassCommenter(
         if (classComments.Count > 0)
         {
             code.AppendLine("/// <para>");
-            foreach (var comment in comments.Format(classComments))
+            foreach (var comment in comments.Format(classComments, true))
             {
                 code.AppendLine(comment);
             }
@@ -43,7 +44,8 @@ internal class ClassCommenter(
         {
             var rootComments = comments.FormatList(
                 "Composition roots:",
-                orderedRoots.Select(root => (CreateTerms(root), CreateDescriptions(root))));
+                orderedRoots.Select(root => (CreateTerms(root), CreateDescriptions(root))),
+                false);
 
             foreach (var rootComment in rootComments)
             {
@@ -52,10 +54,13 @@ internal class ClassCommenter(
 
             IReadOnlyCollection<string> CreateTerms(Root root) =>
                 root.IsPublic
-                    ? [$"<see cref=\"{Escape(root.Node.Type.ToString())}\"/> {root.PropertyName}"]
-                    : [$"<see cref=\"{Escape(root.Node.Type.ToString()).ToString()}\"/> {privateRootAdditionalComment}"];
+                    ? [$"<see cref=\"{ResolveType(root.Injection.Type)}\"/> {root.PropertyName}"]
+                    : [$"<see cref=\"{ResolveType(root.Injection.Type)}\"/> {privateRootAdditionalComment}"];
 
-            IReadOnlyCollection<string> CreateDescriptions(Root root) => root.Source.Comments;
+            IReadOnlyCollection<string> CreateDescriptions(Root root) => 
+                root.Source.Comments.Count > 0 
+                    ? root.Source.Comments.Select(comments.Escape).ToList() 
+                    : [ $"Provides a composition root of type <see cref=\"{ResolveType(root.Node.Type)}\"/>." ];
         }
 
         var root = orderedRoots.FirstOrDefault(i => i.IsPublic);
@@ -75,7 +80,7 @@ internal class ClassCommenter(
 
             var name = composition.Source.Source.Name;
             code.AppendLine("/// <example>");
-            code.AppendLine($"/// This shows how to get an instance of type <see cref=\"{root.Node.Type}\"/> using the composition root <see cref=\"{root.PropertyName}\"/>:");
+            code.AppendLine($"/// This shows how to get an instance of type <see cref=\"{ResolveType(root.Node.Type)}\"/> using the composition root <see cref=\"{root.PropertyName}\"/>:");
             code.AppendLine("/// <code>");
             code.AppendLine($"/// {(composition.DisposablesCount == 0 ? "" : "using ")}var composition = new {name.ClassName}{classArgsStr};");
             code.AppendLine($"/// var instance = composition.{root.PropertyName}{rootArgsStr};");
@@ -94,5 +99,9 @@ internal class ClassCommenter(
         code.AppendLine("/// <seealso cref=\"Pure.DI.DI.Setup\"/>");
     }
 
-    private static string Escape(string text) => new System.Xml.Linq.XText(text).ToString();
+    private string ResolveType(ITypeSymbol type) =>
+        comments.Escape(
+        typeResolver.Resolve(type).Name
+            .Replace('<', '{')
+            .Replace('>', '}'));
 }

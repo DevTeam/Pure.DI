@@ -2,7 +2,9 @@
 // ReSharper disable InvertIf
 namespace Pure.DI.Core.Code;
 
-internal class ImplementationCodeBuilder(CancellationToken cancellationToken)
+internal class ImplementationCodeBuilder(
+    ITypeResolver typeResolver,
+    CancellationToken cancellationToken)
     : ICodeBuilder<DpImplementation>
 {
     public void Build(BuildContext ctx, in DpImplementation implementation)
@@ -67,7 +69,7 @@ internal class ImplementationCodeBuilder(CancellationToken cancellationToken)
         if (tempVariableInit)
         {
             ctx = ctx with { Variable = variable with { NameOverride = variable.VariableName + "Temp" } };
-            ctx.Code.AppendLine($"{ctx.Variable.InstanceType} {ctx.Variable.VariableName};");
+            ctx.Code.AppendLine($"{typeResolver.Resolve(ctx.Variable.InstanceType)} {ctx.Variable.VariableName};");
             if (onCreatedStatements.Any())
             {
                 onCreatedStatements = ctx.BuildTools.OnCreated(ctx, ctx.Variable).ToArray();
@@ -103,7 +105,7 @@ internal class ImplementationCodeBuilder(CancellationToken cancellationToken)
         }
     }
     
-    private static string CreateInstantiation(
+    private string CreateInstantiation(
         BuildContext ctx,
         ImmutableArray<Variable> constructorArgs,
         ImmutableArray<(Variable RequiredVariable,DpField RequiredField)>.Builder requiredFields,
@@ -116,7 +118,7 @@ internal class ImplementationCodeBuilder(CancellationToken cancellationToken)
             .ToArray();
 
         var args = string.Join(", ", constructorArgs.Select(i => ctx.BuildTools.OnInjected(ctx, i)));
-        code.Append(variable.InstanceType.IsTupleType ? $"({args})" : $"new {variable.InstanceType}({args})");
+        code.Append(variable.InstanceType.IsTupleType ? $"({args})" : $"new {typeResolver.Resolve(variable.InstanceType)}({args})");
         if (required.Any())
         {
             code.Append(" { ");

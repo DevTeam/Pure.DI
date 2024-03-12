@@ -4,6 +4,7 @@ namespace Pure.DI.Core.Code;
 
 internal class CompositionBuilder(
     IBuildTools buildTools,
+    ITypeResolver typeResolver,
     IVariablesBuilder variablesBuilder,
     ICodeBuilder<Block> blockBuilder,
     ICodeBuilder<IStatement> statementBuilder,
@@ -34,7 +35,7 @@ internal class CompositionBuilder(
 
             foreach (var perResolveVar in map.GetPerResolves())
             {
-                ctx.Code.AppendLine($"var {perResolveVar.VariableName} = default({perResolveVar.InstanceType});");
+                ctx.Code.AppendLine($"var {perResolveVar.VariableName} = default({typeResolver.Resolve(perResolveVar.InstanceType)});");
                 if (perResolveVar.Info.RefCount > 1 && perResolveVar.InstanceType.IsValueType)
                 {
                     ctx.Code.AppendLine($"var {perResolveVar.VariableName}Created = false;");

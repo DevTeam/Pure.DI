@@ -17,7 +17,7 @@ internal class RootMethodsCommenter(IComments comments): ICommenter<Root>
 
         var code = composition.Code;
         code.AppendLine("/// <summary>");
-        foreach (var comment in comments.Format(rootComments))
+        foreach (var comment in comments.Format(rootComments, true))
         {
             code.AppendLine(comment);
         }

@@ -1,7 +1,8 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal sealed class FieldsBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class FieldsBuilder(ITypeResolver typeResolver)
+    : IBuilder<CompositionCode, CompositionCode>
 {
     public CompositionCode Build(CompositionCode composition)
     {
@@ -35,7 +36,7 @@ internal sealed class FieldsBuilder: IBuilder<CompositionCode, CompositionCode>
         {
             if (singletonField.InstanceType.IsValueType)
             {
-                code.AppendLine($"private {singletonField.InstanceType} {singletonField.VariableName};");
+                code.AppendLine($"private {typeResolver.Resolve(singletonField.InstanceType)} {singletonField.VariableName};");
                 membersCounter++;
 
                 code.AppendLine($"private bool {singletonField.VariableName}Created;");
@@ -43,7 +44,7 @@ internal sealed class FieldsBuilder: IBuilder<CompositionCode, CompositionCode>
             }
             else
             {
-                code.AppendLine($"private {singletonField.InstanceType} {singletonField.VariableName};");
+                code.AppendLine($"private {typeResolver.Resolve(singletonField.InstanceType)} {singletonField.VariableName};");
                 membersCounter++;
             }
         }

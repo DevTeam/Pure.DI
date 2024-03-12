@@ -45,13 +45,18 @@ internal class Comments : IComments
         return result;
     }
     
-    public IEnumerable<string> Format(IEnumerable<string> comments)
+    public IEnumerable<string> Format(IEnumerable<string> comments, bool escape)
     {
         var allComments = comments.ToArray();
         var count = allComments.Length;
         for (var i = 0; i < count; i++)
         {
             var comment = allComments[i];
+            if (escape)
+            {
+                comment = Escape(comment);
+            }
+
             if (i < count - 1)
             {
                 yield return $"/// {comment}<br/>";
@@ -62,10 +67,13 @@ internal class Comments : IComments
             }
         }
     }
+    
+    public string Escape(string text) => new System.Xml.Linq.XText(text).ToString();
 
     public IEnumerable<string> FormatList(
         string title,
-        IEnumerable<(IReadOnlyCollection<string> terms, IReadOnlyCollection<string> decriptions)> items)
+        IEnumerable<(IReadOnlyCollection<string> terms, IReadOnlyCollection<string> decriptions)> items,
+        bool escape)
     {
         yield return "/// <para>";
         yield return $"/// {title}<br/>";
@@ -79,14 +87,14 @@ internal class Comments : IComments
             yield return "/// <item>";
             
             yield return "/// <term>";
-            foreach (var term in Format(terms))
+            foreach (var term in Format(terms, escape))
             {
                 yield return term;
             }
             yield return "/// </term>";
             
             yield return "/// <description>";
-            foreach (var description in Format(descriptions))
+            foreach (var description in Format(descriptions, escape))
             {
                 yield return description;
             }

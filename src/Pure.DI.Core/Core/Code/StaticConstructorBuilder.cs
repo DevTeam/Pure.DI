@@ -1,7 +1,10 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal sealed class StaticConstructorBuilder(IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
+internal sealed class StaticConstructorBuilder(
+    ITypeResolver typeResolver,
+    IBuilder<ImmutableArray<Root>,
+    IEnumerable<ResolverInfo>> resolversBuilder)
     : IBuilder<CompositionCode, CompositionCode>
 {
     public CompositionCode Build(CompositionCode composition)
@@ -45,11 +48,11 @@ internal sealed class StaticConstructorBuilder(IBuilder<ImmutableArray<Root>, IE
                 {
                     foreach (var root in resolver.Roots)
                     {
-                        code.AppendLine($"{Names.OnNewRootMethodName}<{root.Injection.Type}, {root.Node.Type}>(val{className}, \"{root.PropertyName}\", {root.Injection.Tag.ValueToString()}, {root.Node.Lifetime.ValueToString()});");
+                        code.AppendLine($"{Names.OnNewRootMethodName}<{typeResolver.Resolve(root.Injection.Type)}, {typeResolver.Resolve(root.Node.Type)}>(val{className}, \"{root.PropertyName}\", {root.Injection.Tag.ValueToString()}, {root.Node.Lifetime.ValueToString()});");
                     }
                 }
                 
-                code.AppendLine($"{Names.ResolverClassName}<{resolver.Type}>.{Names.ResolverPropertyName} = val{className};");
+                code.AppendLine($"{Names.ResolverClassName}<{typeResolver.Resolve(resolver.Type)}>.{Names.ResolverPropertyName} = val{className};");
             }
             
             var divisor = Buckets<object, object>.GetDivisor((uint)resolvers.Length);

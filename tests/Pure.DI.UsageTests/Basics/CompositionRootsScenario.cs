@@ -55,18 +55,21 @@ public class Scenario
 // {            
         DI.Setup(nameof(Composition))
             .Bind<IService>().To<Service>()
-                // Specifies to create a regular public composition root
-                // of type "IService" with the name "MyRoot"
-                .Root<IService>("MyRoot")
             .Bind<IService>("Other").To<OtherService>()
-                // Specifies to create a regular public composition root
-                // of type "IService" with the name "SomeOtherService"
-                // using the "Other" tag
-                .Root<IService>("SomeOtherService", "Other")
             .Bind<IDependency>().To<Dependency>()
-                // Specifies to create a private composition root
-                // that is only accessible from "Resolve()" methods
-                .Root<IDependency>();
+            
+            // Specifies to create a regular public composition root
+            // of type "IService" with the name "SomeOtherService"
+            // using the "Other" tag
+            .Root<IService>("SomeOtherService", "Other")
+            
+            // Specifies to create a regular public composition root
+            // of type "IService" with the name "MyRoot"
+            .Root<IService>("MyRoot")
+            
+            // Specifies to create a private composition root
+            // that is only accessible from "Resolve()" methods
+            .Root<IDependency>();
 
         var composition = new Composition();
         

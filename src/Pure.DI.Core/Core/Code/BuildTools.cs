@@ -2,7 +2,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal class BuildTools(IFilter filter) : IBuildTools
+internal class BuildTools(IFilter filter, ITypeResolver typeResolver) : IBuildTools
 {
     public void AddPureHeader(LinesBuilder code)
     {
@@ -12,7 +12,7 @@ internal class BuildTools(IFilter filter) : IBuildTools
     }
 
     public string GetDeclaration(Variable variable, bool typeIsRequired = false) =>
-        variable.IsDeclared ? "" : typeIsRequired ? $"{variable.InstanceType} " : "var ";
+        variable.IsDeclared ? "" : typeIsRequired ? $"{typeResolver.Resolve(variable.InstanceType)} " : "var ";
     
     public string OnInjected(BuildContext ctx, Variable variable)
     {
@@ -23,7 +23,7 @@ internal class BuildTools(IFilter filter) : IBuildTools
 
         if (!filter.IsMeetRegularExpression(
                 ctx.DependencyGraph.Source,
-                (Hint.OnDependencyInjectionImplementationTypeNameRegularExpression, variable.InstanceType.ToString()),
+                (Hint.OnDependencyInjectionImplementationTypeNameRegularExpression, typeResolver.Resolve(variable.InstanceType).Name),
                 (Hint.OnDependencyInjectionContractTypeNameRegularExpression, variable.ContractType.ToString()),
                 (Hint.OnDependencyInjectionTagRegularExpression, variable.Injection.Tag.ValueToString()),
                 (Hint.OnDependencyInjectionLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
@@ -57,7 +57,7 @@ internal class BuildTools(IFilter filter) : IBuildTools
         }
 
         var tag = GetTag(ctx, variable);
-        return [new Line(0, $"{Names.OnNewInstanceMethodName}<{variable.InstanceType}>(ref {variable.VariableName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})" + ";")];
+        return [new Line(0, $"{Names.OnNewInstanceMethodName}<{typeResolver.Resolve(variable.InstanceType)}>(ref {variable.VariableName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})" + ";")];
     }
 
     private static object? GetTag(BuildContext ctx, Variable variable)

@@ -25,7 +25,7 @@ internal class ParameterizedConstructorCommenter(
             if (mdArg.Comments.Count > 0)
             {
                 code.AppendLine($"/// <param name=\"{mdArg.ArgName}\">");
-                foreach (var comment in comments.Format(mdArg.Comments))
+                foreach (var comment in comments.Format(mdArg.Comments, true))
                 {
                     code.AppendLine(comment);
                 }

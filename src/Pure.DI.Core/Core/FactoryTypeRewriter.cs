@@ -1,7 +1,9 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
-internal sealed class FactoryTypeRewriter(IMarker marker)
+internal sealed class FactoryTypeRewriter(
+    IMarker marker,
+    ITypeResolver typeResolver)
     : CSharpSyntaxRewriter, IBuilder<RewriterContext<MdFactory>, MdFactory>
 {
     private RewriterContext<MdFactory> _context;
@@ -56,9 +58,10 @@ internal sealed class FactoryTypeRewriter(IMarker marker)
         }
         
         var newType = _context.TypeConstructor.Construct(semanticModel.Compilation, type);
+        var newTypeName = typeResolver.Resolve(newType).Name;
         return node.WithIdentifier(
-            SyntaxFactory.Identifier(newType.ToString())
+            SyntaxFactory.Identifier(newTypeName))
                 .WithLeadingTrivia(node.Identifier.LeadingTrivia)
-                .WithTrailingTrivia(node.Identifier.TrailingTrivia));
+                .WithTrailingTrivia(node.Identifier.TrailingTrivia);
     }
 }
