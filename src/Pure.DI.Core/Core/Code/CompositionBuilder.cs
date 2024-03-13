@@ -58,6 +58,17 @@ internal class CompositionBuilder(
                 allArgs.Add(rootArg);
             }
             
+            var typeDescription = typeResolver.Resolve(processedRoot.Injection.Type);
+            var isMethod = (processedRoot.Kind & RootKinds.Method) == RootKinds.Method 
+                           || processedRoot.Args.Length > 0
+                           || typeDescription.TypeArgs.Count > 0;
+
+            processedRoot = processedRoot with
+            {
+                TypeDescription = typeDescription,
+                IsMethod = isMethod
+            };
+            
             roots.Add(processedRoot);
             isThreadSafe |= map.IsThreadSafe(graph.Source.Hints);
             map.Reset();

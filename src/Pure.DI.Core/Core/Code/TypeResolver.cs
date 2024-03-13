@@ -20,11 +20,11 @@ internal class TypeResolver(IMarker marker)
                 {
                     var typeName = _markerCounter == 0 ? "T" : $"T{_markerCounter}";
                     _markerCounter++;
-                    description = new TypeDescription(typeName, ImmutableArray.Create(typeName));
+                    description = new TypeDescription(typeName, ImmutableArray.Create(new TypeDescription(typeName, ImmutableArray<TypeDescription>.Empty)));
                 }
                 else
                 {
-                    description = new TypeDescription(type.ToString(), ImmutableArray<string>.Empty);
+                    description = new TypeDescription(type.ToString(), ImmutableArray<TypeDescription>.Empty);
                 }
                 
                 break;
@@ -32,7 +32,7 @@ internal class TypeResolver(IMarker marker)
             case INamedTypeSymbol { IsTupleType: true } tupleTypeSymbol:
                 {
                     var elements = new List<string>();
-                    var args = new List<string>();
+                    var args = new List<TypeDescription>();
                     foreach (var tupleElement in tupleTypeSymbol.TupleElements)
                     {
                         var tupleElementDescription = Resolve(tupleElement.Type);
@@ -47,7 +47,7 @@ internal class TypeResolver(IMarker marker)
             case INamedTypeSymbol namedTypeSymbol:
                 {
                     var types = new List<string>();
-                    var args = new List<string>();
+                    var args = new List<TypeDescription>();
                     foreach (var typeArgDescription in namedTypeSymbol.TypeArguments.Select(Resolve))
                     {
                         args.AddRange(typeArgDescription.TypeArgs);
@@ -65,7 +65,7 @@ internal class TypeResolver(IMarker marker)
                 break;
             
             default:
-                description = new TypeDescription(type.ToString(), ImmutableArray<string>.Empty);
+                description = new TypeDescription(type.ToString(), ImmutableArray<TypeDescription>.Empty);
                 break;
         }
         

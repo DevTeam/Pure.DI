@@ -2,7 +2,7 @@
 
 public readonly record struct TypeDescription(
     string Name,
-    IReadOnlyCollection<string> TypeArgs)
+    IReadOnlyCollection<TypeDescription> TypeArgs)
 {
     public override string ToString() => Name;
 };

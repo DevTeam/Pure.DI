@@ -37,30 +37,23 @@ internal sealed class RootMethodsBuilder(
                 code.AppendLine();
             }
 
-            BuildRoot(composition, root.Injection.Type, root);
+            BuildRoot(composition, root);
             membersCounter++;
         }
         code.AppendLine("#endregion");
         return composition with { MembersCount = membersCounter };
     }
     
-    private void BuildRoot(CompositionCode composition, ITypeSymbol type, Root root)
+    private void BuildRoot(CompositionCode composition, Root root)
     {
         var code = composition.Code;
-        var typeDescription = typeResolver.Resolve(type);
-        var isMethod = !root.Args.IsEmpty || (root.Kind & RootKinds.Method) == RootKinds.Method || typeDescription.TypeArgs.Count > 0;
         var rootArgsStr = "";
-        if (isMethod)
+        if (root.IsMethod)
         {
-            isMethod = true;
             rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(arg.InstanceType)} {arg.VariableName}"))})";
-        }
-
-        if (isMethod)
-        {
             buildTools.AddPureHeader(code);
         }
-
+        
         var modifier = (root.Kind & RootKinds.Private) == RootKinds.Private 
             ? "private"
             : (root.Kind & RootKinds.Internal) == RootKinds.Internal
@@ -80,15 +73,16 @@ internal sealed class RootMethodsBuilder(
         }
         
         name.Append(' ');
-        name.Append(typeDescription.Name);
+        name.Append(root.TypeDescription.Name);
         
         name.Append(' ');
         name.Append(root.PropertyName);
 
-        if (typeDescription.TypeArgs.Count > 0)
+        var typeArgs = root.TypeDescription.TypeArgs;
+        if (typeArgs.Count > 0)
         {
             name.Append('<');
-            name.Append(string.Join(", ", typeDescription.TypeArgs));
+            name.Append(string.Join(", ", typeArgs));
             name.Append('>');
         }
         
@@ -101,7 +95,7 @@ internal sealed class RootMethodsBuilder(
         using (code.Indent())
         {
             var indentToken = Disposables.Empty;
-            if (!isMethod)
+            if (!root.IsMethod)
             {
                 buildTools.AddPureHeader(code);
                 code.AppendLine("get");
@@ -132,7 +126,7 @@ internal sealed class RootMethodsBuilder(
                 indentToken.Dispose();
             }
 
-            if (!isMethod)
+            if (!root.IsMethod)
             {
                 code.AppendLine("}");
             }

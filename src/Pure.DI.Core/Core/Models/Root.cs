@@ -8,7 +8,9 @@ internal record Root(
     string Name,
     in ImmutableArray<Line> Lines,
     in ImmutableArray<Variable> Args,
-    RootKinds Kind)
+    RootKinds Kind,
+    TypeDescription TypeDescription = default,
+    bool IsMethod = false)
 {
     public bool IsPublic => !string.IsNullOrWhiteSpace(Name);
 
