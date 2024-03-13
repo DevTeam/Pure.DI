@@ -36,9 +36,9 @@ public class Scenario
 // {    
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>()
-                // Specifies to create a regular public composition root
-                // of type "IDependency" with the name "DependencySingleton"
-                .Root<IDependency>("DependencySingleton")
+                // Specifies to create a private composition root
+                // of type "IDependency" with the name "Dependency"
+                .Root<IDependency>()
             .Bind<IService>().To<Service>()
                 // Specifies to create a private root
                 // that is only accessible from _Resolve_ methods

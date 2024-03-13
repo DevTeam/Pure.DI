@@ -60,8 +60,8 @@ public class ClockViewModelTest
         viewModel.PropertyChanged += (_, args) => { propertyNames.Add(args.PropertyName); };
 
         // When
-        observer?.OnNext(Tick.Shared);
-        observer?.OnNext(Tick.Shared);
+        observer?.OnNext(default);
+        observer?.OnNext(default);
 
         // Then
         propertyNames.Count(i => i == nameof(IClockViewModel.Date)).ShouldBe(2);

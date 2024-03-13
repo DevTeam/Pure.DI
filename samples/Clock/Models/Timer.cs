@@ -25,16 +25,7 @@ internal class Timer : ITimer, IDisposable
         }
 
         _log.Info("Subscribed");
-        
-        return new Token(() =>
-        {
-            lock (observer)
-            {
-                _observers.Remove(observer);
-            }
-            
-            _log.Info("Unsubscribed");
-        });
+        return new Token(this, observer);
     }
 
     public void Dispose()
@@ -53,14 +44,20 @@ internal class Timer : ITimer, IDisposable
 
         foreach (var observer in observers)
         {
-            observer.OnNext(Models.Tick.Shared);
+            observer.OnNext(default);
         }
     }
 
-    private class Token(Action action) : IDisposable
+    private class Token(Timer timer, IObserver<Tick> observer) : IDisposable
     {
-        private readonly Action _action = action ?? throw new ArgumentNullException(nameof(action));
-
-        public void Dispose() => _action();
+        public void Dispose()
+        {
+            lock (observer)
+            {
+                timer._observers.Remove(observer);
+            }
+            
+            timer._log.Info("Unsubscribed");
+        }
     }
 }

@@ -8,6 +8,7 @@ internal class ClockViewModel : ViewModel, IClockViewModel, IDisposable, IObserv
     private readonly ILog<ClockViewModel> _log;
     private readonly IClock _clock;
     private readonly IDisposable _timerToken;
+    private DateTimeOffset _now;
 
     public ClockViewModel(
         ILog<ClockViewModel> log,
@@ -16,16 +17,18 @@ internal class ClockViewModel : ViewModel, IClockViewModel, IDisposable, IObserv
     {
         _log = log;
         _clock = clock;
+        _now = _clock.Now;
         _timerToken = timer.Subscribe(this);
         log.Info("Created");
     }
 
-    public string Time => _clock.Now.ToString("T");
+    public string Time => _now.ToString("T");
 
-    public string Date => _clock.Now.ToString("d");
+    public string Date => _now.ToString("d");
 
     void IObserver<Tick>.OnNext(Tick value)
     {
+        _now = _clock.Now;
         _log.Info("Tick");
         OnPropertyChanged(nameof(Time));
         OnPropertyChanged(nameof(Date));

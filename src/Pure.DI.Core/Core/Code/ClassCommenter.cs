@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core.Code;
+﻿// ReSharper disable ConvertIfStatementToConditionalTernaryExpression
+namespace Pure.DI.Core.Code;
 
 internal class ClassCommenter(
     IFormatter formatter,
@@ -15,7 +16,6 @@ internal class ClassCommenter(
             return;
         }
         
-        var privateRootAdditionalComment = $"is a private composition root that can be resolved by methods like <see cref=\"{hints.ResolveMethodName}{{T}}()\"/>.";
         var classComments = composition.Source.Source.Comments;
         var code = composition.Code;
         if (classComments.Count <= 0 && composition.Roots.Length <= 0)
@@ -56,19 +56,49 @@ internal class ClassCommenter(
             IReadOnlyCollection<string> CreateRootTerms(Root root)
             {
                 var term = new StringBuilder();
-                term.Append(formatter.FormatRef(root.Injection.Type));
-                term.Append(' ');
-                term.Append(root.IsPublic ? formatter.FormatRef(root) : privateRootAdditionalComment);
-
+                if (root.IsPublic)
+                {
+                    term.Append(formatter.FormatRef(root.Injection.Type));
+                    term.Append(' ');
+                    term.Append(formatter.FormatRef(root));
+                }
+                else
+                {
+                    term.Append("Private composition root of type ");
+                    term.Append(formatter.FormatRef(root.Injection.Type));
+                    term.Append('.');
+                }
+                
                 var resolvers = resolversBuilder.Build(ImmutableArray.Create(root));
                 if (!resolvers.Any())
                 {
                     return [term.ToString()];
                 }
+
+                if (root.IsPublic)
+                {
+                    term.Append("<br/>or using ");
+                }
+                else
+                {
+                    term.Append(" It can be resolved by ");
+                }
+
+                if (root.Injection.Tag is null)
+                {
+                    term.Append(formatter.FormatRef($"{hints.ResolveMethodName}{{T}}()"));
+                    term.Append(" method: <c>");
+                    term.Append(hints.ResolveMethodName);
+                    term.Append("&lt;");
+                }
+                else
+                {
+                    term.Append(formatter.FormatRef($"{hints.ResolveByTagMethodName}{{T}}(object)"));
+                    term.Append(" method: <c>");
+                    term.Append(hints.ResolveByTagMethodName);
+                    term.Append("&lt;");
+                }
                 
-                term.Append("<br/>or using ");
-                term.Append(formatter.FormatRef($"Resolve{{T}}({(root.Injection.Tag != null ? "object" : "")})"));
-                term.Append(" method: <c>Resolve&lt;");
                 term.Append(comments.Escape(root.TypeDescription.Name));
                 term.Append("&gt;(");
                 term.Append(root.Injection.Tag != null ? root.Injection.Tag.ValueToString() : "");
