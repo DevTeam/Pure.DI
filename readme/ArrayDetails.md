@@ -6,7 +6,7 @@ Creating an object graph of 27 transient objects, including 4 transient array ob
 ```mermaid
 classDiagram
   class Array {
-    +CompositionRoot PureDIByCR
+    +CompositionRoot PureDIByCR()
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object Resolve(Type type)
@@ -77,7 +77,7 @@ classDiagram
   Service3v3 *--  Service4 : IService4
   Service3v4 *--  Service4 : IService4
   Service3v4 *--  Service4 : IService4
-  Array ..> CompositionRoot : CompositionRoot PureDIByCR
+  Array ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>CompositionRoot
 ```
 
 ### Generated code
@@ -87,7 +87,7 @@ classDiagram
 
 ```c#
 /// <para>
-/// Composition roots:<br/>
+/// <b>Composition roots</b><br/>
 /// <list type="table">
 /// <listheader>
 /// <term>Root</term>
@@ -95,7 +95,7 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/> PureDIByCR
+/// <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/> <see cref="PureDIByCR()"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.Benchmarks.Model.CompositionRoot&gt;()</c>
 /// </term>
 /// <description>
 /// Provides a composition root of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/>.
@@ -103,28 +103,30 @@ classDiagram
 /// </item>
 /// </list>
 /// </para>
+/// </summary>
 /// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/> using the composition root <see cref="PureDIByCR"/>:
+/// This shows how to get an instance of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/> using the composition root <see cref="PureDIByCR()"/>:
 /// <code>
 /// var composition = new Array();
 /// var instance = composition.PureDIByCR();
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNrVV0tuwjAQvYrldRfUtkTLDhIqsasoy2xMsGhaQpATIiHEHbhLN70ON2l-dj61Q50gpG4sJ8_z5nlmMnaO0A1WDI6gu6FhaHt0zanvcGebPYMx5_QAnP1gMJykb9MZmliBvwtCL_KC7TwIIvC658yeTQ7WvFwDFmDOwmATs8v5e3E5f2Wvn7Lx-eqyYPnB3Cid4xcQ0fUvs3yBsM2NFocdA1EydFhtgXaXQ7sMSnP7V8KTu5u9MR57LnsEYTEp_AoACQDpEaRFcAPBAmkCRACk6aZEkH7vWUEkqZJ-0pQlqNxdZmqX49DKQjqVbvIleAxK0hpSjaQA6iEsd63SKRaVpdsqB2nlVBgUmnI0F6YKitAYtmjE1-VhrTysU4br0eqccEEXIwOZSCG0IFBJjdGtxZrEFKvE6uMa3zyyxEAsUYklerHktmL_IJVoa1UrsxCp7zf1rlEy4Ny5RZdhxGnRt6fF2MLTLMWuPM0q6cpDOvOoTiE0riYJ1BtrkhgZTUOCSiussKB_zCI_K5lQQwJZ7DKTNyFQHiXG-zBmKVp01sD7UlXaa18qGSPSoKpfN4wLRXFHaHBotSZUV-5A2Dzr_S3FIX132z6a-9gW59G9bCuVknXjfEwOP9UXnxi3_yLBB-gz7lNvlfx5HR0YvTOfOXDkwBXlnw48wdMPwQiFnQ">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNrVV91OwyAUfhXCtYkTSKbebd1MvDNzl71hG9GqHQutTZZl77B38cbX8U1sodAfYZN2MfGGsH2c73ycc3qAHVzyFYO3cPlGk2QS0SdB41CEa_kbjISgWxC-DwbDcfFvMUPjgMcbnkRpxNczzlPw8C7Y5H68DWYSv5bjTbUezMGMJfwtY1-Hz_nX4cNrGV-8sGVazPEdSOnTDzO1QNsqo_l2w0CaDx1WB-C4y-GkClA7FCdCpdzdPzKRRUt2BZJyUvrVANIAciPIieAWgjXSBogGSNtNhSD33mVx5KkyfoqU5ajZnTSdVOMwkCGdGjdqCR6BirSB1COpgWYIq13bdOpFVRkflYOccmoMFk0KVcJsQdEakyMa8Wl52CkPu5ThZrQ6J1zTZchDJrIILQlsUjN0brE-McU2se64ZmePLPEQS2xiiVssOa_YX0glzlp1yixFuvtNs2tUDFg5D-giSQUt-_a0HI_wtEuxK0-7SrrykM48tlMIjepJAs3GmifGRNOToNYKayzoH7OYz8ok1JPAFLvJ5FkIrEeJ9z68WcoWLRt4X6pae-1LZWJEWlTN64Z3oVjuCC0Op9ac6sQdCPtnvb-lPqT_3LaP5j625Xn0V7a1SpHdWI354Wf74nPjXz6XZK9fiPBSsW0Ez6IV-_HEKBTACxgzEdNolb_cdiFMn1nMQngbwhUVryHcw_03bjyafg">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// </summary>
 /// <seealso cref="Pure.DI.DI.Setup"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Array
 {
-  private readonly Array _rootM03D12di;
+  private readonly Array _rootM03D13di;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Array"/>.
   /// </summary>
   public Array()
   {
-    _rootM03D12di = this;
+    _rootM03D13di = this;
   }
   
   /// <summary>
@@ -133,10 +135,20 @@ partial class Array
   /// <param name="baseComposition">Base composition.</param>
   internal Array(Array baseComposition)
   {
-    _rootM03D12di = baseComposition._rootM03D12di;
+    _rootM03D13di = baseComposition._rootM03D13di;
   }
   
   #region Composition Roots
+  /// <summary>
+  /// Provides a composition root of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/>.
+  /// </summary>
+  /// <example>
+  /// This shows how to get an instance of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/>:
+  /// <code>
+  /// var composition = new Array();
+  /// var instance = composition.PureDIByCR();
+  /// </code>
+  /// </example>
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
   [global::System.Diagnostics.Contracts.Pure]
   #endif
@@ -157,7 +169,7 @@ partial class Array
   #endif
   public T Resolve<T>()
   {
-    return ResolverM03D12di<T>.Value.Resolve(this);
+    return ResolverM03D13di<T>.Value.Resolve(this);
   }
   
   /// <summary>
@@ -171,7 +183,7 @@ partial class Array
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D12di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D13di<T>.Value.ResolveByTag(this, tag);
   }
   
   /// <summary>
@@ -184,10 +196,10 @@ partial class Array
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D12di;
+    var index = (int)(_bucketSizeM03D13di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D13di;
     do {
-      ref var pair = ref _bucketsM03D12di[index];
+      ref var pair = ref _bucketsM03D13di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -208,10 +220,10 @@ partial class Array
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D12di;
+    var index = (int)(_bucketSizeM03D13di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D13di;
     do {
-      ref var pair = ref _bucketsM03D12di[index];
+      ref var pair = ref _bucketsM03D13di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -230,7 +242,7 @@ partial class Array
     return
       "classDiagram\n" +
         "  class Array {\n" +
-          "    +CompositionRoot PureDIByCR\n" +
+          "    +CompositionRoot PureDIByCR()\n" +
           "    + T ResolveᐸTᐳ()\n" +
           "    + T ResolveᐸTᐳ(object? tag)\n" +
           "    + object Resolve(Type type)\n" +
@@ -301,29 +313,29 @@ partial class Array
         "  Service3v3 *--  Service4 : IService4\n" +
         "  Service3v4 *--  Service4 : IService4\n" +
         "  Service3v4 *--  Service4 : IService4\n" +
-        "  Array ..> CompositionRoot : CompositionRoot PureDIByCR";
+        "  Array ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>provides CompositionRoot";
   }
   
-  private readonly static int _bucketSizeM03D12di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>[] _bucketsM03D12di;
+  private readonly static int _bucketSizeM03D13di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>[] _bucketsM03D13di;
   
   static Array()
   {
-    var valResolverM03D12di_0000 = new ResolverM03D12di_0000();
-    ResolverM03D12di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM03D12di_0000;
-    _bucketsM03D12di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Array, object>>.Create(
+    var valResolverM03D13di_0000 = new ResolverM03D13di_0000();
+    ResolverM03D13di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM03D13di_0000;
+    _bucketsM03D13di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Array, object>>.Create(
       1,
-      out _bucketSizeM03D12di,
+      out _bucketSizeM03D13di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM03D12di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM03D13di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM03D12di<T>: global::Pure.DI.IResolver<Array, T>
+  private sealed class ResolverM03D13di<T>: global::Pure.DI.IResolver<Array, T>
   {
-    public static global::Pure.DI.IResolver<Array, T> Value = new ResolverM03D12di<T>();
+    public static global::Pure.DI.IResolver<Array, T> Value = new ResolverM03D13di<T>();
     
     public T Resolve(Array composite)
     {
@@ -336,7 +348,7 @@ partial class Array
     }
   }
   
-  private sealed class ResolverM03D12di_0000: global::Pure.DI.IResolver<Array, Pure.DI.Benchmarks.Model.CompositionRoot>
+  private sealed class ResolverM03D13di_0000: global::Pure.DI.IResolver<Array, Pure.DI.Benchmarks.Model.CompositionRoot>
   {
     public Pure.DI.Benchmarks.Model.CompositionRoot Resolve(Array composition)
     {

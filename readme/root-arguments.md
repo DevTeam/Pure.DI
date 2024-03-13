@@ -87,7 +87,7 @@ classDiagram
   Dependency o-- String : Argument "dependencyName"
   Service o-- String : "forService"  Argument "serviceName"
   Service *--  Dependency : IDependency
-  Composition ..> Service : IService CreateService
+  Composition ..> Service : IService CreateService(int id, string dependencyName, string serviceName)<br/>provides IService
 ```
 
 </details>
@@ -97,7 +97,7 @@ classDiagram
 
 ```c#
 /// <para>
-/// Composition roots:<br/>
+/// <b>Composition roots</b><br/>
 /// <list type="table">
 /// <listheader>
 /// <term>Root</term>
@@ -105,7 +105,7 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Basics.RootArgumentsScenario.IService"/> CreateService
+/// <see cref="Pure.DI.UsageTests.Basics.RootArgumentsScenario.IService"/> <see cref="CreateService(int, string, string)"/>
 /// </term>
 /// <description>
 /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Basics.RootArgumentsScenario.Service"/>.
@@ -113,28 +113,30 @@ classDiagram
 /// </item>
 /// </list>
 /// </para>
+/// </summary>
 /// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.RootArgumentsScenario.Service"/> using the composition root <see cref="CreateService"/>:
+/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.RootArgumentsScenario.Service"/> using the composition root <see cref="CreateService(int, string, string)"/>:
 /// <code>
-/// var composition = new Composition(id, dependencyName, serviceName);
+/// var composition = new Composition();
 /// var instance = composition.CreateService(id, dependencyName, serviceName);
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqNU7FuwyAQ_RV0c4fIHtJmc-wOXrJ4ZaH21UUtEGFSqYry78VgB0xjq8uJ0-Me794dV2hVh3CA9osNQ8VZr5mgmkqXk1KJsxq44UoSetnt9scRG0_ZsW5Qf_MWSamRGZwyhz1zaQjv3Lkkg9Fc9qTDM8oOZftzYgKX2OCL78DL_My-CmJqafIspI0rHfPqzuxEZlWI-3KM-Supk0t5QQJVgsVdBsh35kSE3prV3pIWZrPWBcY3FupiIJa2cHwSIoO1ccdB34a9qy7kXmPJ3uy4WGu84ik-Ynqs-P80kRIVG-ZXYHao0P1FoN00CnYesFk42fO3MpmcY5nlb1FQeFd6ngCQmDJe5gWfIyoWpOnqWeZoDmNx-gUz55iPdm2SrVn5lJYHnkCgFox39rdfKZgPHPUdrAVMf1K4we0XFANdaw">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNq1VD1vgzAQ_SuW50qNYKDNRiADSxdWLw5cqdViI-NEqqL89_oDYuMG1KXLyafne3737uCKG9EC3uPmi45jyWgnaU8k4TZHhegHMTLFBEfkvNtlB4OZU3KoapAX1gAqJFAFU2axF8YVYq09F2hUkvEOtTAAb4E332-0hyU2uuI78Do_k5VeTMVVmvi0tqUmL-_MVmRS-pgVJqZHVEWX0hx5qggLu_SQ68yK8L3Vq71FLcxmrQsMbyzUhUAobeH4JIR7a8OOvb4Ne1ddSJ3Ggp70uGijnOIpPmJ6rPjvNIESERrmVmB2KJfduQe9aQTreeDNwsme35XR5CzLLH-LguB3IecJYBRShsu84LNE-YI0Xj3NHMzBFMefYGIdc1GvTbQ1__tR2vGdJHl2jw9SXFgLfuBGL37CPcieslb_Va4Eqw8wPuy11VR-EnzDtx-GgYE7">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// </summary>
 /// <seealso cref="Pure.DI.DI.Setup"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM03D12di;
+  private readonly Composition _rootM03D13di;
   
   /// <summary>
   /// This parameterized constructor creates a new instance of <see cref="Composition"/> with arguments.
   /// </summary>
   public Composition()
   {
-    _rootM03D12di = this;
+    _rootM03D13di = this;
   }
   
   /// <summary>
@@ -143,10 +145,20 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM03D12di = baseComposition._rootM03D12di;
+    _rootM03D13di = baseComposition._rootM03D13di;
   }
   
   #region Composition Roots
+  /// <summary>
+  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Basics.RootArgumentsScenario.Service"/>.
+  /// </summary>
+  /// <example>
+  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.RootArgumentsScenario.Service"/>:
+  /// <code>
+  /// var composition = new Composition();
+  /// var instance = composition.CreateService(id, dependencyName, serviceName);
+  /// </code>
+  /// </example>
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
   [global::System.Diagnostics.Contracts.Pure]
   #endif
@@ -186,7 +198,7 @@ partial class Composition
         "  Dependency o-- String : Argument \"dependencyName\"\n" +
         "  Service o-- String : \"forService\"  Argument \"serviceName\"\n" +
         "  Service *--  Dependency : IDependency\n" +
-        "  Composition ..> Service : IService CreateService";
+        "  Composition ..> Service : IService CreateService(int id, string dependencyName, string serviceName)<br/>provides IService";
   }
 }
 ```

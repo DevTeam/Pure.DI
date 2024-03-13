@@ -76,7 +76,7 @@ classDiagram
   }
   Person *--  String : "NikName"  String
   Person o-- Int32 : Argument "personId"
-  PersonComposition ..> Person : IPerson Person
+  PersonComposition ..> Person : IPerson Person<br/>provides IPerson
 ```
 
 </details>
@@ -86,7 +86,7 @@ classDiagram
 
 ```c#
 /// <para>
-/// Composition roots:<br/>
+/// <b>Composition roots</b><br/>
 /// <list type="table">
 /// <listheader>
 /// <term>Root</term>
@@ -94,7 +94,7 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson"/> Person
+/// <see cref="Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson"/> <see cref="Person"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson&gt;()</c>
 /// </term>
 /// <description>
 /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person"/>.
@@ -102,22 +102,24 @@ classDiagram
 /// </item>
 /// </list>
 /// </para>
+/// </summary>
 /// <example>
 /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person"/> using the composition root <see cref="Person"/>:
 /// <code>
-/// var composition = new PersonComposition(personId);
+/// var composition = new PersonComposition(_argM03D13di_personId);
 /// var instance = composition.Person;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdUktuwyAUvAp66y4ie-E2O8dOJW_SqvWSDbGRSxLAAlKpinKH3KWbXic3qQ24_kWt1M0TD2YeM6N3gkKWFJZQHIjWKSOVIhwrLGyPnqnSUiSS11Izw6RA-LhYRKsW0Z6CVeYgHtnfoxy9UC0P7_R6-cqvl097fW_rw58wud3RwrTn8BEZUs1oDtBxHSn_qCkyTfkHOkG_fxmlfSivRjFR9X0mTBi0rY_CMtO-RomdukZdVraN0TTmWbY-UyvXfYoE4RN70frJucvKW2Kzm7NDJykhW20U8bbXvo6mDD3FQ2fI5_DjBjZsv2nlQfc04MsR1SbWEWNVHTkVpplQW3BjBHrqdPkCK9PVJtNxpPNthDvgVHHCymbJTxjMG20lLjGURO0xnOH8DdB7BeU">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqdU0tugzAUvIrldaVGsKDNjgCV2KRVy9IbAxZ1E9vIdiJVUe6Qu3TT6-QmxR_CJ1ErdfPkZ2bemxmZA6xETeASVlusVEpxIzFDEnHbgxcileCJYK1QVFPBAdotFtHKIMwpWOUO4pHDPSjAK1Fiuyfn03dxPn3Z6wdbH_-EifKDVNqcwyegcXNFc4Ce60jFZ0uA7so_0An4fWWUDqG8aUl5M_Q512FgWh-FZaZDjRI7NQN9VraNwTzmq2x9plauWwo4ZjN7Ufbs3OX1LbH5zdmhk5TgUmmJve3M18mUsad47Az4HC5u4Jpu1kYe7D-N-GJCtYn1xFg2O0a47ia0FtwZgQN1_vgCK9PVLtNppLPXaD2WEt07cCvFntbkEopZAu8gI5JhWnc_wQFB_U6MhSWCNZYbBI_w-ANHmRDg">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// </summary>
 /// <seealso cref="Pure.DI.DI.Setup"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class PersonComposition
 {
-  private readonly PersonComposition _rootM03D12di;
-  private readonly int _argM03D12di_personId;
+  private readonly PersonComposition _rootM03D13di;
+  private readonly int _argM03D13di_personId;
   
   /// <summary>
   /// This parameterized constructor creates a new instance of <see cref="PersonComposition"/> with arguments.
@@ -125,8 +127,8 @@ partial class PersonComposition
   /// <param name="personId">The composition argument of type <see cref="int"/>.</param>
   public PersonComposition(int personId)
   {
-    _rootM03D12di = this;
-    _argM03D12di_personId = personId;
+    _rootM03D13di = this;
+    _argM03D13di_personId = personId;
   }
   
   /// <summary>
@@ -135,11 +137,21 @@ partial class PersonComposition
   /// <param name="baseComposition">Base composition.</param>
   internal PersonComposition(PersonComposition baseComposition)
   {
-    _rootM03D12di = baseComposition._rootM03D12di;
-    _argM03D12di_personId = baseComposition._argM03D12di_personId;
+    _rootM03D13di = baseComposition._rootM03D13di;
+    _argM03D13di_personId = baseComposition._argM03D13di_personId;
   }
   
   #region Composition Roots
+  /// <summary>
+  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person"/>.
+  /// </summary>
+  /// <example>
+  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person"/>:
+  /// <code>
+  /// var composition = new PersonComposition(_argM03D13di_personId);
+  /// var instance = composition.Person;
+  /// </code>
+  /// </example>
   public Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson Person
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -147,10 +159,10 @@ partial class PersonComposition
     #endif
     get
     {
-      string transientM03D12di1_String = "Nik";
-      var transientM03D12di0_Person = new Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person(transientM03D12di1_String);
-      transientM03D12di0_Person.Id = _argM03D12di_personId;
-      return transientM03D12di0_Person;
+      string transientM03D13di1_String = "Nik";
+      var transientM03D13di0_Person = new Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person(transientM03D13di1_String);
+      transientM03D13di0_Person.Id = _argM03D13di_personId;
+      return transientM03D13di0_Person;
     }
   }
   #endregion
@@ -166,7 +178,7 @@ partial class PersonComposition
   #endif
   public T Resolve<T>()
   {
-    return ResolverM03D12di<T>.Value.Resolve(this);
+    return ResolverM03D13di<T>.Value.Resolve(this);
   }
   
   /// <summary>
@@ -180,7 +192,7 @@ partial class PersonComposition
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D12di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D13di<T>.Value.ResolveByTag(this, tag);
   }
   
   /// <summary>
@@ -193,10 +205,10 @@ partial class PersonComposition
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D12di;
+    var index = (int)(_bucketSizeM03D13di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D13di;
     do {
-      ref var pair = ref _bucketsM03D12di[index];
+      ref var pair = ref _bucketsM03D13di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -217,10 +229,10 @@ partial class PersonComposition
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D12di;
+    var index = (int)(_bucketSizeM03D13di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D13di;
     do {
-      ref var pair = ref _bucketsM03D12di[index];
+      ref var pair = ref _bucketsM03D13di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -257,29 +269,29 @@ partial class PersonComposition
         "  }\n" +
         "  Person *--  String : \"NikName\"  String\n" +
         "  Person o-- Int32 : Argument \"personId\"\n" +
-        "  PersonComposition ..> Person : IPerson Person";
+        "  PersonComposition ..> Person : IPerson Person<br/>provides IPerson";
   }
   
-  private readonly static int _bucketSizeM03D12di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[] _bucketsM03D12di;
+  private readonly static int _bucketSizeM03D13di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[] _bucketsM03D13di;
   
   static PersonComposition()
   {
-    var valResolverM03D12di_0000 = new ResolverM03D12di_0000();
-    ResolverM03D12di<Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson>.Value = valResolverM03D12di_0000;
-    _bucketsM03D12di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>.Create(
+    var valResolverM03D13di_0000 = new ResolverM03D13di_0000();
+    ResolverM03D13di<Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson>.Value = valResolverM03D13di_0000;
+    _bucketsM03D13di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>.Create(
       1,
-      out _bucketSizeM03D12di,
+      out _bucketSizeM03D13di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>(typeof(Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson), valResolverM03D12di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>(typeof(Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson), valResolverM03D13di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM03D12di<T>: global::Pure.DI.IResolver<PersonComposition, T>
+  private sealed class ResolverM03D13di<T>: global::Pure.DI.IResolver<PersonComposition, T>
   {
-    public static global::Pure.DI.IResolver<PersonComposition, T> Value = new ResolverM03D12di<T>();
+    public static global::Pure.DI.IResolver<PersonComposition, T> Value = new ResolverM03D13di<T>();
     
     public T Resolve(PersonComposition composite)
     {
@@ -292,7 +304,7 @@ partial class PersonComposition
     }
   }
   
-  private sealed class ResolverM03D12di_0000: global::Pure.DI.IResolver<PersonComposition, Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson>
+  private sealed class ResolverM03D13di_0000: global::Pure.DI.IResolver<PersonComposition, Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson>
   {
     public Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson Resolve(PersonComposition composition)
     {

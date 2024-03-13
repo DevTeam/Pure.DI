@@ -39,7 +39,7 @@ classDiagram
     +Service(Dependency dependency)
   }
   Service *--  Dependency : Dependency
-  Composition ..> Service : Service MyService
+  Composition ..> Service : Service MyService<br/>provides Service
 ```
 
 </details>
@@ -52,7 +52,7 @@ classDiagram
 /// Specifies to create a partial class "Composition"
 /// </para>
 /// <para>
-/// Composition roots:<br/>
+/// <b>Composition roots</b><br/>
 /// <list type="table">
 /// <listheader>
 /// <term>Root</term>
@@ -60,7 +60,7 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Basics.AutoBindingsScenario.Service"/> MyService
+/// <see cref="Pure.DI.UsageTests.Basics.AutoBindingsScenario.Service"/> <see cref="MyService"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Basics.AutoBindingsScenario.Service&gt;()</c>
 /// </term>
 /// <description>
 /// Specifies to create a property "MyService"
@@ -68,6 +68,7 @@ classDiagram
 /// </item>
 /// </list>
 /// </para>
+/// </summary>
 /// <example>
 /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.AutoBindingsScenario.Service"/> using the composition root <see cref="MyService"/>:
 /// <code>
@@ -75,21 +76,22 @@ classDiagram
 /// var instance = composition.MyService;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNp1UMsOgjAQ_JVmzx4IHFBuYDl68tpL02600bakRRNC-HehSHiIl8nuTmZ2Mi0IKxEyEE_uPVX85rhmjpmwk7PVlfWqVtYQ9oqitBi4YYqLK7q3EkguzXeaqJTOBhQrNBKNaH70MxX2Y8DTnsn06U-CUb74JNfOG8-lW5wHpCOSbdwkX1wG7baPuJwxKVdBe-1uQ3AAjU5zJfvWWwb1HTUyyBhI7h4MOug-cCKKWQ">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNp1UbsOgjAU_RVyZxMJDCgbWEYn1y61vdFG25KCJITw71IQeelych85j942wI1AiIE_WVEQyW6WKWqp7nvvZFRuCllKoz368v0odTtXBekFbSU5euf6U42riEwCBHPUAjWvN_xp1feHHo-_REanPwkG-sxJLJVXmnO1IOmRDOit44bJbOK463sE2YRhtgjacbcXcvPT1dL9QMitqaTA7wudBexAoVVMiu5XGgrlHRVSiCkIZh8UWmjfeh2VZQ">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// </summary>
 /// <seealso cref="Pure.DI.DI.Setup"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM03D12di;
+  private readonly Composition _rootM03D13di;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Composition"/>.
   /// </summary>
   public Composition()
   {
-    _rootM03D12di = this;
+    _rootM03D13di = this;
   }
   
   /// <summary>
@@ -98,13 +100,20 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM03D12di = baseComposition._rootM03D12di;
+    _rootM03D13di = baseComposition._rootM03D13di;
   }
   
   #region Composition Roots
   /// <summary>
   /// Specifies to create a property "MyService"
   /// </summary>
+  /// <example>
+  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.AutoBindingsScenario.Service"/>:
+  /// <code>
+  /// var composition = new Composition();
+  /// var instance = composition.MyService;
+  /// </code>
+  /// </example>
   public Pure.DI.UsageTests.Basics.AutoBindingsScenario.Service MyService
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -134,7 +143,7 @@ partial class Composition
           "    +Service(Dependency dependency)\n" +
         "  }\n" +
         "  Service *--  Dependency : Dependency\n" +
-        "  Composition ..> Service : Service MyService";
+        "  Composition ..> Service : Service MyService<br/>provides Service";
   }
 }
 ```

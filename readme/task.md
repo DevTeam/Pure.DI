@@ -89,7 +89,7 @@ classDiagram
   TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
   TaskFactory *--  TaskScheduler : TaskScheduler
   Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
-  Composition ..> Service : IService GetRoot
+  Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)<br/>provides IService
   TaskᐸIDependencyᐳ o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
   TaskᐸIDependencyᐳ o--  "PerBlock" TaskFactoryᐸIDependencyᐳ : TaskFactoryᐸIDependencyᐳ
   FuncᐸIDependencyᐳ *--  Dependency : IDependency
@@ -106,7 +106,7 @@ classDiagram
 
 ```c#
 /// <para>
-/// Composition roots:<br/>
+/// <b>Composition roots</b><br/>
 /// <list type="table">
 /// <listheader>
 /// <term>Root</term>
@@ -114,7 +114,7 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.BCL.TaskScenario.IService"/> GetRoot
+/// <see cref="Pure.DI.UsageTests.BCL.TaskScenario.IService"/> <see cref="GetRoot(System.Threading.CancellationToken)"/>
 /// </term>
 /// <description>
 /// Provides a composition root of type <see cref="Pure.DI.UsageTests.BCL.TaskScenario.Service"/>.
@@ -122,30 +122,32 @@ classDiagram
 /// </item>
 /// </list>
 /// </para>
+/// </summary>
 /// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.BCL.TaskScenario.Service"/> using the composition root <see cref="GetRoot"/>:
+/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.BCL.TaskScenario.Service"/> using the composition root <see cref="GetRoot(System.Threading.CancellationToken)"/>:
 /// <code>
-/// var composition = new Composition(cancellationToken);
+/// var composition = new Composition();
 /// var instance = composition.GetRoot(cancellationToken);
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqtVUtuwjAQvYrldRcIFrTsIJSKVStgmY3rjCAisZHjICHEHbhLN70ON6mTEOJPEtLSjZV4Ju-N38xzjpjyAPAI04gkyTQka0FiX_gsf0cej3c8CWXIGfLTXm84yWLZU38yX4LYhxTQG8gF5zLffV4eEglx_vy62gggQcjWxatHGIUoIhnaim-BIWrv5IkvJcdwWlWyIsnWU3BZ6vsuWxMryJkMWdqcMCNUcnEwN5d0A0EagdDO7BSlQlPYAQuA0UOuQ39arUMvWwevaG4lDcaoQrViupBVqJCwToRS62ZyPcNg1gM67XW_4My0uJy_tSNczl8ouL1l8fbmOF9X4VnKaEtYa05Llq1udZRBoYFHPhMpFE6hyHWtqdaQ6i8wWsGI6x1xZ6dsx1is0xiYRD52hx7boDna2ECuM0AJ3uCNToiuawzUelN1Qb45S8cz7GbMdA2CO48aUu2k2NdVP29fsSqPWBZxLrDryVxes8mqhx8gFpDwaA8-rh_vkqRx9rszTSJOt4qnzSe6NG1eaq7V7oB7mWkfWUNw7xz_Y4tudT_kk19QPGqc7lT3nYSfcAwiJmGg_uRHH8sNxGoyRz4OiFCjc8KnH6s36eE">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNq1VktuwjAQvYrldaUiWNCygwQqVq2AZTbGGUFEYkeOg4QQd-Au3fQ63KROQojjfEhLu7Fsz-TN7z0rR0y5C3iEqU-iyPbIRpDAEQ5Lz8jiQcgjT3qcISfu9YaTxJbs-pP5EsTeo4DeQC44l-nty_IQSQjS_XS1FUBcj22yo0UYBd8nCdqK74Ahat6kjq95jKFdZLIi0c5ScInre5iskWHkTHosbnaYESq5OJQvl3QLbuyD0GquJKVMNoTAXGD0kPahbxfr0ErWwRTNDafBGBWohk1vZGHKWljXhLzXzcF1j1Jk3aCHvd5nMZNeXM5fWgmX8ydyb6fE3j6cyteFeRYz2mLWhtPiZXa3KGWQ9cAi60gKhZN15LrWZFtq1W9gtIQR1ydS5U4-jrHYxAEwiRxcJT02QVO0cQm5TgA5eIM2OiFWVVNCrRdVF-SbsnS8ktxKnK5BqPJRQ6plivlc9dPxZavSiCGRf3zAUiKthfOcRQ4F33suFNTLm1gtscwnRZcPEAuIuL8HB9crKa-nUWbdI018TncqTpsk9Sm0ybY5V3PY1XdT-8jg2706_kaB3fJ-SJI_CPGoRruHui9a_IQDEAHxXPXTcHSw3EKgmDlysEuEos4Jn74BrLkPww">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// </summary>
 /// <seealso cref="Pure.DI.DI.Setup"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM03D12di;
-  private readonly object _lockM03D12di;
+  private readonly Composition _rootM03D13di;
+  private readonly object _lockM03D13di;
   
   /// <summary>
   /// This parameterized constructor creates a new instance of <see cref="Composition"/> with arguments.
   /// </summary>
   public Composition()
   {
-    _rootM03D12di = this;
-    _lockM03D12di = new object();
+    _rootM03D13di = this;
+    _lockM03D13di = new object();
   }
   
   /// <summary>
@@ -154,42 +156,52 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM03D12di = baseComposition._rootM03D12di;
-    _lockM03D12di = _rootM03D12di._lockM03D12di;
+    _rootM03D13di = baseComposition._rootM03D13di;
+    _lockM03D13di = _rootM03D13di._lockM03D13di;
   }
   
   #region Composition Roots
+  /// <summary>
+  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.BCL.TaskScenario.Service"/>.
+  /// </summary>
+  /// <example>
+  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.BCL.TaskScenario.Service"/>:
+  /// <code>
+  /// var composition = new Composition();
+  /// var instance = composition.GetRoot(cancellationToken);
+  /// </code>
+  /// </example>
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
   [global::System.Diagnostics.Contracts.Pure]
   #endif
   public Pure.DI.UsageTests.BCL.TaskScenario.IService GetRoot(System.Threading.CancellationToken cancellationToken)
   {
-    var perResolveM03D12di39_Func = default(System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>);
-    System.Threading.Tasks.TaskScheduler transientM03D12di5_TaskScheduler = TaskScheduler.Current;
-    System.Threading.Tasks.TaskContinuationOptions transientM03D12di4_TaskContinuationOptions = global::System.Threading.Tasks.TaskContinuationOptions.None;
-    System.Threading.Tasks.TaskCreationOptions transientM03D12di3_TaskCreationOptions = global::System.Threading.Tasks.TaskCreationOptions.None;
-    System.Threading.Tasks.TaskFactory<Pure.DI.UsageTests.BCL.TaskScenario.IDependency> perBlockM03D12di2_TaskFactory;
+    var perResolveM03D13di39_Func = default(System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>);
+    System.Threading.Tasks.TaskScheduler transientM03D13di5_TaskScheduler = TaskScheduler.Current;
+    System.Threading.Tasks.TaskContinuationOptions transientM03D13di4_TaskContinuationOptions = global::System.Threading.Tasks.TaskContinuationOptions.None;
+    System.Threading.Tasks.TaskCreationOptions transientM03D13di3_TaskCreationOptions = global::System.Threading.Tasks.TaskCreationOptions.None;
+    System.Threading.Tasks.TaskFactory<Pure.DI.UsageTests.BCL.TaskScenario.IDependency> perBlockM03D13di2_TaskFactory;
     {
-        var cancellationToken_M03D12di1 = cancellationToken;
-        var taskCreationOptions_M03D12di2 = transientM03D12di3_TaskCreationOptions;
-        var taskContinuationOptions_M03D12di3 = transientM03D12di4_TaskContinuationOptions;
-        var taskScheduler_M03D12di4 = transientM03D12di5_TaskScheduler;
-        perBlockM03D12di2_TaskFactory = new global::System.Threading.Tasks.TaskFactory<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(cancellationToken_M03D12di1, taskCreationOptions_M03D12di2, taskContinuationOptions_M03D12di3, taskScheduler_M03D12di4);
+        var cancellationToken_M03D13di1 = cancellationToken;
+        var taskCreationOptions_M03D13di2 = transientM03D13di3_TaskCreationOptions;
+        var taskContinuationOptions_M03D13di3 = transientM03D13di4_TaskContinuationOptions;
+        var taskScheduler_M03D13di4 = transientM03D13di5_TaskScheduler;
+        perBlockM03D13di2_TaskFactory = new global::System.Threading.Tasks.TaskFactory<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(cancellationToken_M03D13di1, taskCreationOptions_M03D13di2, taskContinuationOptions_M03D13di3, taskScheduler_M03D13di4);
     }
-    perResolveM03D12di39_Func = new global::System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(
+    perResolveM03D13di39_Func = new global::System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>(
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
     () =>
     {
-        var factory_M03D12di5 = new Pure.DI.UsageTests.BCL.TaskScenario.Dependency();
-        return factory_M03D12di5;
+        var factory_M03D13di5 = new Pure.DI.UsageTests.BCL.TaskScenario.Dependency();
+        return factory_M03D13di5;
     });
-    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.TaskScenario.IDependency> transientM03D12di1_Task;
+    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.TaskScenario.IDependency> transientM03D13di1_Task;
     {
-        var factory_M03D12di6 = perResolveM03D12di39_Func;
-        var taskFactory_M03D12di7 = perBlockM03D12di2_TaskFactory;
-        transientM03D12di1_Task = taskFactory_M03D12di7.StartNew(factory_M03D12di6);
+        var factory_M03D13di6 = perResolveM03D13di39_Func;
+        var taskFactory_M03D13di7 = perBlockM03D13di2_TaskFactory;
+        transientM03D13di1_Task = taskFactory_M03D13di7.StartNew(factory_M03D13di6);
     }
-    return new Pure.DI.UsageTests.BCL.TaskScenario.Service(transientM03D12di1_Task);
+    return new Pure.DI.UsageTests.BCL.TaskScenario.Service(transientM03D13di1_Task);
   }
   #endregion
   
@@ -230,7 +242,7 @@ partial class Composition
         "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
         "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ\n" +
-        "  Composition ..> Service : IService GetRoot\n" +
+        "  Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)<br/>provides IService\n" +
         "  TaskᐸIDependencyᐳ o--  \"PerResolve\" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ\n" +
         "  TaskᐸIDependencyᐳ o--  \"PerBlock\" TaskFactoryᐸIDependencyᐳ : TaskFactoryᐸIDependencyᐳ\n" +
         "  FuncᐸIDependencyᐳ *--  Dependency : IDependency\n" +

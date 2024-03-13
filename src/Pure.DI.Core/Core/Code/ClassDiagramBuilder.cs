@@ -27,20 +27,7 @@ internal sealed class ClassDiagramBuilder(
                 {
                     foreach (var root in composition.Roots.OrderByDescending(i => i.IsPublic).ThenBy(i => i.Name))
                     {
-                        var typeArgsStr = "";
-                        var typeArgs = root.TypeDescription.TypeArgs;
-                        if (typeArgs.Count > 0)
-                        {
-                            typeArgsStr = $"{DefaultFormatOptions.StartGenericArgsSymbol}{string.Join(DefaultFormatOptions.TypeArgsSeparator, typeArgs.Select(arg => $"{arg}"))}{DefaultFormatOptions.FinishGenericArgsSymbol}";
-                        }
-                        
-                        var rootArgsStr = "";
-                        if (root.IsMethod)
-                        {
-                            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(arg.InstanceType)} {arg.VariableName}"))})";
-                        }
-
-                        lines.AppendLine($"{(root.IsPublic ? "+" : "-")}{FormatType(root.Injection.Type, DefaultFormatOptions)} {root.DisplayName}{typeArgsStr}{rootArgsStr}");
+                        lines.AppendLine($"{(root.IsPublic ? "+" : "-")}{FormatRoot(root)}");
                     }
                     
                     if (hasResolveMethods)
@@ -132,7 +119,7 @@ internal sealed class ClassDiagramBuilder(
                 cancellationToken.ThrowIfCancellationRequested();
                 if (dependency.Target.Root is not null && rootProperties.TryGetValue(dependency.Injection, out var root))
                 {
-                    lines.AppendLine($"{composition.Source.Source.Name.ClassName} ..> {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatInjection(root.Injection, DefaultFormatOptions)} {root.DisplayName}");
+                    lines.AppendLine($"{composition.Source.Source.Name.ClassName} ..> {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatRoot(root)}<br/>provides {FormatInjection(root.Injection, DefaultFormatOptions)}");
                 }
                 else
                 {
@@ -158,7 +145,25 @@ internal sealed class ClassDiagramBuilder(
         return lines;
     }
 
-    private string FormatCardinality(Lifetime lifetime) =>
+    private string FormatRoot(Root root)
+    {
+        var typeArgsStr = "";
+        var typeArgs = root.TypeDescription.TypeArgs;
+        if (typeArgs.Count > 0)
+        {
+            typeArgsStr = $"{DefaultFormatOptions.StartGenericArgsSymbol}{string.Join(DefaultFormatOptions.TypeArgsSeparator, typeArgs.Select(arg => $"{arg}"))}{DefaultFormatOptions.FinishGenericArgsSymbol}";
+        }
+                        
+        var rootArgsStr = "";
+        if (root.IsMethod)
+        {
+            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(arg.InstanceType)} {arg.VariableName}"))})";
+        }
+
+        return $"{FormatType(root.Injection.Type, DefaultFormatOptions)} {root.DisplayName}{typeArgsStr}{rootArgsStr}";
+    }
+
+    private static string FormatCardinality(Lifetime lifetime) =>
         lifetime switch
         {
             Lifetime.Transient => "",

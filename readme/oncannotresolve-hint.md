@@ -85,7 +85,7 @@ classDiagram
   }
   Dependency *--  String : String
   Service *--  Dependency : IDependency
-  Composition ..> Service : IService Root
+  Composition ..> Service : IService Root<br/>provides IService
 ```
 
 </details>
@@ -95,7 +95,7 @@ classDiagram
 
 ```c#
 /// <para>
-/// Composition roots:<br/>
+/// <b>Composition roots</b><br/>
 /// <list type="table">
 /// <listheader>
 /// <term>Root</term>
@@ -103,7 +103,7 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.IService"/> Root
+/// <see cref="Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.IService"/> <see cref="Root"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.IService&gt;()</c>
 /// </term>
 /// <description>
 /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service"/>.
@@ -111,6 +111,7 @@ classDiagram
 /// </item>
 /// </list>
 /// </para>
+/// </summary>
 /// <example>
 /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service"/> using the composition root <see cref="Root"/>:
 /// <code>
@@ -118,21 +119,22 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdU0tugzAQvcrI6y4iWNBml0AqZZuw9MaBEaUNNjJupCjKHXKXbnqd3KRgg2wM_aibkT3fN-9pLiQTOZIlyY6saZKSFZJVVFKu_xCLqhZNqUrBgb4vFtG6i3WvYL3dozyVGcJOCGXdkMIOG3E84f32md5vH9r9qO3Tr2ni8IqZ6t7hMyhWTMpMwlBritJzjaBa84_sGH4eGSWWjb2SJS-6f4I18hx5dta0BIm1UaxbbWDrJYUrsK28mMurDRm8ZipwVuEctEGF73G4GSMQbsBF0PvNeHeNfAxtliR_bds4NIhidmiUZD3lm97OdZrH9_c2vkorlyPo5RxoseKOGPVqppo6-3bF_sUEGpmxrRieFpMbIg-kQlmxMm9v8kKJesFWdrKkJGfyjZIruX4Boy4_8Q">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqdU0tugzAQvYrldaVGsKDNLoFUyjZh6Y2BEXUTbGRcpCjKHXKXbnqd3KRgg2wc-lE3I3u-b96zzzgXBeAlzo-0aRJGS0krIgnXdxSLqhYNU0xwRN4Xi2jdx_pTsN7uQbYsB7QTQlk3StEOGnFs4Xb9TG_XD-1-0vb51zSRvUGu-nP4ghQt78pMwlhritJTDUh15h_ZMfp5ZJRYNvZKMl729wRq4AXw_KRpCRJro1i32qCtlxSukG3lxVxebcjgNVMRpxXMQRtV-B6HmzEB4QZcBIPfjHfXKKbQZkny17aNQ4MoplmjJB0o3wx2rtM8vr-38VVauRyhQc6RFivuhFGv5l5TZ9--2P8xgUZmbCeGp8X0D-m1MkkeTXItRcsKsET0_fEDrkBWlBXdpz0TrF6hexd4SXBB5YHgC758AahSS0Y">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// </summary>
 /// <seealso cref="Pure.DI.DI.Setup"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM03D12di;
+  private readonly Composition _rootM03D13di;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Composition"/>.
   /// </summary>
   public Composition()
   {
-    _rootM03D12di = this;
+    _rootM03D13di = this;
   }
   
   /// <summary>
@@ -141,10 +143,20 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM03D12di = baseComposition._rootM03D12di;
+    _rootM03D13di = baseComposition._rootM03D13di;
   }
   
   #region Composition Roots
+  /// <summary>
+  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service"/>.
+  /// </summary>
+  /// <example>
+  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service"/>:
+  /// <code>
+  /// var composition = new Composition();
+  /// var instance = composition.Root;
+  /// </code>
+  /// </example>
   public Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.IService Root
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -152,8 +164,8 @@ partial class Composition
     #endif
     get
     {
-      var transientM03D12di2_String = OnCannotResolve<string>(null, Pure.DI.Lifetime.Transient);
-      return new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service(new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency(transientM03D12di2_String));
+      var transientM03D13di2_String = OnCannotResolve<string>(null, Pure.DI.Lifetime.Transient);
+      return new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Service(new Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.Dependency(transientM03D13di2_String));
     }
   }
   #endregion
@@ -169,7 +181,7 @@ partial class Composition
   #endif
   public T Resolve<T>()
   {
-    return ResolverM03D12di<T>.Value.Resolve(this);
+    return ResolverM03D13di<T>.Value.Resolve(this);
   }
   
   /// <summary>
@@ -183,7 +195,7 @@ partial class Composition
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D12di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D13di<T>.Value.ResolveByTag(this, tag);
   }
   
   /// <summary>
@@ -196,10 +208,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D12di;
+    var index = (int)(_bucketSizeM03D13di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D13di;
     do {
-      ref var pair = ref _bucketsM03D12di[index];
+      ref var pair = ref _bucketsM03D13di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -220,10 +232,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D12di;
+    var index = (int)(_bucketSizeM03D13di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D13di;
     do {
-      ref var pair = ref _bucketsM03D12di[index];
+      ref var pair = ref _bucketsM03D13di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -267,29 +279,29 @@ partial class Composition
         "  }\n" +
         "  Dependency *--  String : String\n" +
         "  Service *--  Dependency : IDependency\n" +
-        "  Composition ..> Service : IService Root";
+        "  Composition ..> Service : IService Root<br/>provides IService";
   }
   
-  private readonly static int _bucketSizeM03D12di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D12di;
+  private readonly static int _bucketSizeM03D13di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D13di;
   
   static Composition()
   {
-    var valResolverM03D12di_0000 = new ResolverM03D12di_0000();
-    ResolverM03D12di<Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.IService>.Value = valResolverM03D12di_0000;
-    _bucketsM03D12di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM03D13di_0000 = new ResolverM03D13di_0000();
+    ResolverM03D13di<Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.IService>.Value = valResolverM03D13di_0000;
+    _bucketsM03D13di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM03D12di,
+      out _bucketSizeM03D13di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.IService), valResolverM03D12di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.IService), valResolverM03D13di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM03D12di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM03D13di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D12di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D13di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -302,7 +314,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D12di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.IService>
+  private sealed class ResolverM03D13di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.IService>
   {
     public Pure.DI.UsageTests.Hints.OnCannotResolveHintScenario.IService Resolve(Composition composition)
     {

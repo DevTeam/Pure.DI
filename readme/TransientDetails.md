@@ -6,7 +6,7 @@ Creating an object graph of 22 transient objects.
 ```mermaid
 classDiagram
   class Transient {
-    +CompositionRoot PureDIByCR
+    +CompositionRoot PureDIByCR()
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object Resolve(Type type)
@@ -58,7 +58,7 @@ classDiagram
   Service2 *--  Service3 : IService3
   Service3 *--  Service4 : IService4
   Service3 *--  Service4 : IService4
-  Transient ..> CompositionRoot : CompositionRoot PureDIByCR
+  Transient ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>CompositionRoot
 ```
 
 ### Generated code
@@ -68,7 +68,7 @@ classDiagram
 
 ```c#
 /// <para>
-/// Composition roots:<br/>
+/// <b>Composition roots</b><br/>
 /// <list type="table">
 /// <listheader>
 /// <term>Root</term>
@@ -76,7 +76,7 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/> PureDIByCR
+/// <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/> <see cref="PureDIByCR()"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.Benchmarks.Model.CompositionRoot&gt;()</c>
 /// </term>
 /// <description>
 /// Provides a composition root of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/>.
@@ -84,28 +84,30 @@ classDiagram
 /// </item>
 /// </list>
 /// </para>
+/// </summary>
 /// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/> using the composition root <see cref="PureDIByCR"/>:
+/// This shows how to get an instance of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/> using the composition root <see cref="PureDIByCR()"/>:
 /// <code>
 /// var composition = new Transient();
 /// var instance = composition.PureDIByCR();
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNrlVktuwjAQvYrldRfUdkXLDhIqsatoltkYsNq0JEaOQUKIO3CXbnodbtKQj43dOFHSbqpuLCdv_GbmjWfkA1zyFYMjuFzTNPUj-iJoHIowyb9BIGiSRiyRINwOBsPJBbns0MTj8YankYx4MudcgqetYP5ssvfm2gYEYM5Svt6x8-kzOJ8-8t_3-frQasYXb2wpL3v8CCR9-XasMKjOFoeC_YYBmS09rD3Q7HLoa2Hs9FvkKdzNnpnYRUt2C9JyU_qtAFQByI0gJ4ItBFeIDZAKILYbjaC63FX8Oejrdejlok0VUWGCx0BLZiDXWlWAKZLOqyES1B4JckaCXJEgMxKtoy2XRuyqaMRdFeJE7hpSxu0pY2fK2JUyNlP-6Q0h7UESZ5DEFSSpmx_XXWnePs2AC-ceXaRS0LLDp-XawGPfkL48tux9eUhvnrp5hcbXRQJmg2aFUWp2JFAdp2T8cwSqg1QFOxKo261K9ysE5gDukrw5MLtk_c9OlvO1R1V6nDTfVyhv3WLNJmXdbckIml9e8AbGTMQ0WmWPukMI5SuLWQhHIVxR8R7CIzx-AQNVRRo">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNrlVktuwjAQvYrldaVSOxUtO0ioxK6iWWZjgkXTkhg5Bgkh7sBduul1uEnztXGIkybtpurGSvTGb2befOQD9NmSwhH01ySOnYCsOAk97kXZP3A5ieKARgJ428FgOEmR9AtNbBZuWByIgEVzxgR43nLqzCZ7e57hD9n5qOyBC-Y0ZusdPZ8-3fPpo5MZW7xRX6Tf-AkIsrq6lhuUd_NL7n5DgUiOHtY2aHY5dJRIVSlapMrdzV4o3wU-vQNx8VH4LQFUAsiMICOCKwgukSpglYBVdaMQVJe7jD8DHXUO7Uy0qSTKTfAYKMk05FKrEtBFUnk1RILaI0HGSJApEqRHonSsyqWQalUUYq6KZUTuG1LG7SljY8rYlDLWU_5ph1jtQVrGIC1TkFbd_ricSr37FAPOndtkEQtOigmfFmcDT7VD-vJUZe_LY_XmqdtXaHxZJKAPaFIYqWZHAjlxUsY_RyAnSFawI4Hsblm6XyHQF3CX5PWF2SXrf3YT965Kj5v6Wwtlo5ufyaas65aE4JuvsGwxLLh3m7NtONsFS3r1ckmjgDcwpDwkwTJ5FB48KF5pSD048uCS8HcPHuHxC-TEWfs">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// </summary>
 /// <seealso cref="Pure.DI.DI.Setup"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Transient
 {
-  private readonly Transient _rootM03D12di;
+  private readonly Transient _rootM03D13di;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Transient"/>.
   /// </summary>
   public Transient()
   {
-    _rootM03D12di = this;
+    _rootM03D13di = this;
   }
   
   /// <summary>
@@ -114,10 +116,20 @@ partial class Transient
   /// <param name="baseComposition">Base composition.</param>
   internal Transient(Transient baseComposition)
   {
-    _rootM03D12di = baseComposition._rootM03D12di;
+    _rootM03D13di = baseComposition._rootM03D13di;
   }
   
   #region Composition Roots
+  /// <summary>
+  /// Provides a composition root of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/>.
+  /// </summary>
+  /// <example>
+  /// This shows how to get an instance of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/>:
+  /// <code>
+  /// var composition = new Transient();
+  /// var instance = composition.PureDIByCR();
+  /// </code>
+  /// </example>
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
   [global::System.Diagnostics.Contracts.Pure]
   #endif
@@ -138,7 +150,7 @@ partial class Transient
   #endif
   public T Resolve<T>()
   {
-    return ResolverM03D12di<T>.Value.Resolve(this);
+    return ResolverM03D13di<T>.Value.Resolve(this);
   }
   
   /// <summary>
@@ -152,7 +164,7 @@ partial class Transient
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D12di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D13di<T>.Value.ResolveByTag(this, tag);
   }
   
   /// <summary>
@@ -165,10 +177,10 @@ partial class Transient
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D12di;
+    var index = (int)(_bucketSizeM03D13di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D13di;
     do {
-      ref var pair = ref _bucketsM03D12di[index];
+      ref var pair = ref _bucketsM03D13di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -189,10 +201,10 @@ partial class Transient
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D12di;
+    var index = (int)(_bucketSizeM03D13di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D13di;
     do {
-      ref var pair = ref _bucketsM03D12di[index];
+      ref var pair = ref _bucketsM03D13di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -211,7 +223,7 @@ partial class Transient
     return
       "classDiagram\n" +
         "  class Transient {\n" +
-          "    +CompositionRoot PureDIByCR\n" +
+          "    +CompositionRoot PureDIByCR()\n" +
           "    + T ResolveᐸTᐳ()\n" +
           "    + T ResolveᐸTᐳ(object? tag)\n" +
           "    + object Resolve(Type type)\n" +
@@ -263,29 +275,29 @@ partial class Transient
         "  Service2 *--  Service3 : IService3\n" +
         "  Service3 *--  Service4 : IService4\n" +
         "  Service3 *--  Service4 : IService4\n" +
-        "  Transient ..> CompositionRoot : CompositionRoot PureDIByCR";
+        "  Transient ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>provides CompositionRoot";
   }
   
-  private readonly static int _bucketSizeM03D12di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>[] _bucketsM03D12di;
+  private readonly static int _bucketSizeM03D13di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>[] _bucketsM03D13di;
   
   static Transient()
   {
-    var valResolverM03D12di_0000 = new ResolverM03D12di_0000();
-    ResolverM03D12di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM03D12di_0000;
-    _bucketsM03D12di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Transient, object>>.Create(
+    var valResolverM03D13di_0000 = new ResolverM03D13di_0000();
+    ResolverM03D13di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM03D13di_0000;
+    _bucketsM03D13di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Transient, object>>.Create(
       1,
-      out _bucketSizeM03D12di,
+      out _bucketSizeM03D13di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM03D12di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM03D13di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM03D12di<T>: global::Pure.DI.IResolver<Transient, T>
+  private sealed class ResolverM03D13di<T>: global::Pure.DI.IResolver<Transient, T>
   {
-    public static global::Pure.DI.IResolver<Transient, T> Value = new ResolverM03D12di<T>();
+    public static global::Pure.DI.IResolver<Transient, T> Value = new ResolverM03D13di<T>();
     
     public T Resolve(Transient composite)
     {
@@ -298,7 +310,7 @@ partial class Transient
     }
   }
   
-  private sealed class ResolverM03D12di_0000: global::Pure.DI.IResolver<Transient, Pure.DI.Benchmarks.Model.CompositionRoot>
+  private sealed class ResolverM03D13di_0000: global::Pure.DI.IResolver<Transient, Pure.DI.Benchmarks.Model.CompositionRoot>
   {
     public Pure.DI.Benchmarks.Model.CompositionRoot Resolve(Transient composition)
     {

@@ -72,7 +72,7 @@ classDiagram
     <<abstract>>
   }
   Service o--  "Singleton" Dependency : IDependency
-  Composition ..> Service : IService Root
+  Composition ..> Service : IService Root<br/>provides IService
 ```
 
 </details>
@@ -82,7 +82,7 @@ classDiagram
 
 ```c#
 /// <para>
-/// Composition roots:<br/>
+/// <b>Composition roots</b><br/>
 /// <list type="table">
 /// <listheader>
 /// <term>Root</term>
@@ -90,7 +90,7 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService"/> Root
+/// <see cref="Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService"/> <see cref="Root"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService&gt;()</c>
 /// </term>
 /// <description>
 /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service"/>.
@@ -98,6 +98,7 @@ classDiagram
 /// </item>
 /// </list>
 /// </para>
+/// </summary>
 /// <example>
 /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service"/> using the composition root <see cref="Root"/>:
 /// <code>
@@ -105,27 +106,28 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdU0FugzAQ_Iq15x6icKDNrYFUyjXh6IuBFXULNrLdSFGUP-QvvfQ7-UkBgzAOTateVsvuzs54jE-QyRxhBVnJtI45KxSrqKKi-yaRrGqpueFSEPqxWITrttdmy_V2j-rAMyQ7Kc1YJgnZoZblAa-Xr-R6-ezKj118-nVMpm-YmTYPXohhxQ3MDgxYC0qONRLThH9MR-Q-ZRi3me_DMh5jGHXYDdnGXDdTLC2xxcRYo8hRZMd7kOlQ8ExG872e6_3YmnPXah6u52dyd2LC7DZc2r5uOV3t-VSPp8Qu9c86Lg6sooil2ijW38Wmj3Ob5vX9fc2Al643hFDYc1GUaKSg4NvfGOScYPan6LhsbOz13L15LvAAFaqK8bx5ficK5hUrpLCikDP1TuEM528g2jiv">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqdU0FugzAQ_MrK50qNkgNtbg2kUq4JR18MrKhbsJHtIkVR_pC_9NLv5CcFG4ShNK16WZndmd3ZMT6RVGZI1iQtmNYRZ7liJVVU2G8IZVlJzQ2XAuj7YhFs2lp7Wm52B1Q1TxH2UpohDTHsUcuixuvlM75ePmz6wcbHX2EyecXUtOfVMxiWf6M5QM91pPhYIZgm_AMdwu2RQdSepj4soyEGoeVuYRdx3aBYUmDLibBCkaFIj7coY9DqCQbzJzXf-6E0567T3F_Pz8N9xGiyX_DHdnk309eejfVMlLim012HxiunKGSJNop1d7Ht4lyneX1_b9Pzpe8NACUHLvICjRSUTO1vDPI2mP0p7CwXG3sn7o6fixWaKHrvwJWSNc9wWK3tT-5IiapkPGve54kS84IlUrKmJGPqjZIzOX8BNm1EBA">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// </summary>
 /// <seealso cref="Pure.DI.DI.Setup"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition: global::System.IDisposable
 {
-  private readonly Composition _rootM03D12di;
-  private readonly object _lockM03D12di;
-  private readonly global::System.IDisposable[] _disposablesM03D12di;
-  private int _disposeIndexM03D12di;
-  private Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Dependency _singletonM03D12di34_Dependency;
+  private readonly Composition _rootM03D13di;
+  private readonly object _lockM03D13di;
+  private readonly global::System.IDisposable[] _disposablesM03D13di;
+  private int _disposeIndexM03D13di;
+  private Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Dependency _singletonM03D13di34_Dependency;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Composition"/>.
   /// </summary>
   public Composition()
   {
-    _rootM03D12di = this;
-    _lockM03D12di = new object();
-    _disposablesM03D12di = new global::System.IDisposable[1];
+    _rootM03D13di = this;
+    _lockM03D13di = new object();
+    _disposablesM03D13di = new global::System.IDisposable[1];
   }
   
   /// <summary>
@@ -134,11 +136,21 @@ partial class Composition: global::System.IDisposable
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM03D12di = baseComposition._rootM03D12di;
-    _lockM03D12di = _rootM03D12di._lockM03D12di;
+    _rootM03D13di = baseComposition._rootM03D13di;
+    _lockM03D13di = _rootM03D13di._lockM03D13di;
   }
   
   #region Composition Roots
+  /// <summary>
+  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service"/>.
+  /// </summary>
+  /// <example>
+  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service"/>:
+  /// <code>
+  /// using var composition = new Composition();
+  /// var instance = composition.Root;
+  /// </code>
+  /// </example>
   public Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService Root
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -146,19 +158,19 @@ partial class Composition: global::System.IDisposable
     #endif
     get
     {
-      if (ReferenceEquals(_rootM03D12di._singletonM03D12di34_Dependency, null))
+      if (ReferenceEquals(_rootM03D13di._singletonM03D13di34_Dependency, null))
       {
-          lock (_lockM03D12di)
+          lock (_lockM03D13di)
           {
-              if (ReferenceEquals(_rootM03D12di._singletonM03D12di34_Dependency, null))
+              if (ReferenceEquals(_rootM03D13di._singletonM03D13di34_Dependency, null))
               {
-                  _singletonM03D12di34_Dependency = new Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Dependency();
-                  _rootM03D12di._singletonM03D12di34_Dependency = _singletonM03D12di34_Dependency;
-                  _rootM03D12di._disposablesM03D12di[_rootM03D12di._disposeIndexM03D12di++] = _singletonM03D12di34_Dependency;
+                  _singletonM03D13di34_Dependency = new Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Dependency();
+                  _rootM03D13di._singletonM03D13di34_Dependency = _singletonM03D13di34_Dependency;
+                  _rootM03D13di._disposablesM03D13di[_rootM03D13di._disposeIndexM03D13di++] = _singletonM03D13di34_Dependency;
               }
           }
       }
-      return new Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service(_rootM03D12di._singletonM03D12di34_Dependency);
+      return new Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service(_rootM03D13di._singletonM03D13di34_Dependency);
     }
   }
   #endregion
@@ -174,7 +186,7 @@ partial class Composition: global::System.IDisposable
   #endif
   public T Resolve<T>()
   {
-    return ResolverM03D12di<T>.Value.Resolve(this);
+    return ResolverM03D13di<T>.Value.Resolve(this);
   }
   
   /// <summary>
@@ -188,7 +200,7 @@ partial class Composition: global::System.IDisposable
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D12di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D13di<T>.Value.ResolveByTag(this, tag);
   }
   
   /// <summary>
@@ -201,10 +213,10 @@ partial class Composition: global::System.IDisposable
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D12di;
+    var index = (int)(_bucketSizeM03D13di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D13di;
     do {
-      ref var pair = ref _bucketsM03D12di[index];
+      ref var pair = ref _bucketsM03D13di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -225,10 +237,10 @@ partial class Composition: global::System.IDisposable
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D12di;
+    var index = (int)(_bucketSizeM03D13di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D13di;
     do {
-      ref var pair = ref _bucketsM03D12di[index];
+      ref var pair = ref _bucketsM03D13di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -245,11 +257,11 @@ partial class Composition: global::System.IDisposable
   /// </summary>
   public void Dispose()
   {
-    lock (_lockM03D12di)
+    lock (_lockM03D13di)
     {
-      while (_disposeIndexM03D12di > 0)
+      while (_disposeIndexM03D13di > 0)
       {
-        var disposableInstance = _disposablesM03D12di[--_disposeIndexM03D12di];
+        var disposableInstance = _disposablesM03D13di[--_disposeIndexM03D13di];
         try
         {
           disposableInstance.Dispose();
@@ -260,7 +272,7 @@ partial class Composition: global::System.IDisposable
         }
       }
       
-      _singletonM03D12di34_Dependency = null;
+      _singletonM03D13di34_Dependency = null;
     }
   }
   
@@ -296,29 +308,29 @@ partial class Composition: global::System.IDisposable
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service o--  \"Singleton\" Dependency : IDependency\n" +
-        "  Composition ..> Service : IService Root";
+        "  Composition ..> Service : IService Root<br/>provides IService";
   }
   
-  private readonly static int _bucketSizeM03D12di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D12di;
+  private readonly static int _bucketSizeM03D13di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D13di;
   
   static Composition()
   {
-    var valResolverM03D12di_0000 = new ResolverM03D12di_0000();
-    ResolverM03D12di<Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService>.Value = valResolverM03D12di_0000;
-    _bucketsM03D12di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM03D13di_0000 = new ResolverM03D13di_0000();
+    ResolverM03D13di<Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService>.Value = valResolverM03D13di_0000;
+    _bucketsM03D13di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM03D12di,
+      out _bucketSizeM03D13di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService), valResolverM03D12di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService), valResolverM03D13di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM03D12di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM03D13di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D12di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D13di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -331,7 +343,7 @@ partial class Composition: global::System.IDisposable
     }
   }
   
-  private sealed class ResolverM03D12di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService>
+  private sealed class ResolverM03D13di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService>
   {
     public Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService Resolve(Composition composition)
     {

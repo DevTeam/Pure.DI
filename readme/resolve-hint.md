@@ -52,8 +52,8 @@ classDiagram
     <<abstract>>
   }
   Service *--  Dependency : IDependency
-  Composition ..> Dependency : IDependency DependencyRoot
-  Composition ..> Service : IService Root
+  Composition ..> Dependency : IDependency DependencyRoot<br/>provides IDependency
+  Composition ..> Service : IService Root<br/>provides IService
 ```
 
 </details>
@@ -63,7 +63,7 @@ classDiagram
 
 ```c#
 /// <para>
-/// Composition roots:<br/>
+/// <b>Composition roots</b><br/>
 /// <list type="table">
 /// <listheader>
 /// <term>Root</term>
@@ -71,7 +71,7 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.IDependency"/> DependencyRoot
+/// <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.IDependency"/> <see cref="DependencyRoot"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Hints.ResolveHintScenario.IDependency&gt;()</c>
 /// </term>
 /// <description>
 /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency"/>.
@@ -79,7 +79,7 @@ classDiagram
 /// </item>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.IService"/> Root
+/// <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.IService"/> <see cref="Root"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Hints.ResolveHintScenario.IService&gt;()</c>
 /// </term>
 /// <description>
 /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.Service"/>.
@@ -87,6 +87,7 @@ classDiagram
 /// </item>
 /// </list>
 /// </para>
+/// </summary>
 /// <example>
 /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency"/> using the composition root <see cref="DependencyRoot"/>:
 /// <code>
@@ -94,21 +95,22 @@ classDiagram
 /// var instance = composition.DependencyRoot;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqNUj1vwjAQ_SvWzQwIhlA2SBhYYfXi2iewimPkGKQK8d8b2yBfTNqynM738d7Ly91AWoWwBHkSXddocXDCcMfb-Ga1NWfbaa9ty_hlOq3WoRey2Xrb4Blbha38ZjndWevJzB7dVUtktFw1ISPbcbbJsapDnG8YpYilFcvaih6VllvxvYjxY8j_VPY7OZ0YMNMGpX3UEyfVroZ6CiUJtPzWDDxPimrx2XknpE_6HnEMaVzf-zADa1bUIFa63vtChIfl8mRmkSLF3tU_90fu6B-44h-93BtMwKAzQqv-xm8c_BENclhyUMJ9cbjD_QcffwNk">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqNU01vAiEQ_Stkzk00elj1prs99FqvXBAmLWlZNiw1Mcb_7gIaBqKNl8kwX-_xGM4grULYgPwV49hp8eWE4Y738cxaawY7aq9tz_jffN7sQi54i91HhwP2Cnt5Ytn9tNaTmj26o5bIaLjpgke6Y22XbdMGu3xnFCKGtixzq3KUWk7F8yradYl_Z_YcnFYUyDRBYW_xhEm5q5JPxSQNre-aBy8To1YcRu-E9InfzT6a9Jjf62MKabZUIFarPulCiIfmemUWESLZSdV_--s9inwPjs9S8-DsUSsstHoBsnrHciefQtwfc5oPb2DQGaHV9FHOHPw3GuSw4aCE--FwgcsVf8obPA">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// </summary>
 /// <seealso cref="Pure.DI.DI.Setup"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM03D12di;
+  private readonly Composition _rootM03D13di;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Composition"/>.
   /// </summary>
   public Composition()
   {
-    _rootM03D12di = this;
+    _rootM03D13di = this;
   }
   
   /// <summary>
@@ -117,10 +119,20 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM03D12di = baseComposition._rootM03D12di;
+    _rootM03D13di = baseComposition._rootM03D13di;
   }
   
   #region Composition Roots
+  /// <summary>
+  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency"/>.
+  /// </summary>
+  /// <example>
+  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency"/>:
+  /// <code>
+  /// var composition = new Composition();
+  /// var instance = composition.DependencyRoot;
+  /// </code>
+  /// </example>
   public Pure.DI.UsageTests.Hints.ResolveHintScenario.IDependency DependencyRoot
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -132,6 +144,16 @@ partial class Composition
     }
   }
   
+  /// <summary>
+  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.Service"/>.
+  /// </summary>
+  /// <example>
+  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.Service"/>:
+  /// <code>
+  /// var composition = new Composition();
+  /// var instance = composition.Root;
+  /// </code>
+  /// </example>
   public Pure.DI.UsageTests.Hints.ResolveHintScenario.IService Root
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -170,8 +192,8 @@ partial class Composition
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service *--  Dependency : IDependency\n" +
-        "  Composition ..> Dependency : IDependency DependencyRoot\n" +
-        "  Composition ..> Service : IService Root";
+        "  Composition ..> Dependency : IDependency DependencyRoot<br/>provides IDependency\n" +
+        "  Composition ..> Service : IService Root<br/>provides IService";
   }
 }
 ```

@@ -76,7 +76,7 @@ classDiagram
   Service o--  "PerBlock" Dependency : Dependency
   Service o--  "PerBlock" Dependency : IDependency
   Service o--  "PerBlock" Dependency : IOtherDependency
-  Composition ..> Service : Service MyService
+  Composition ..> Service : Service MyService<br/>provides Service
 ```
 
 </details>
@@ -89,7 +89,7 @@ classDiagram
 /// Specifies to create a partial class "Composition"
 /// </para>
 /// <para>
-/// Composition roots:<br/>
+/// <b>Composition roots</b><br/>
 /// <list type="table">
 /// <listheader>
 /// <term>Root</term>
@@ -97,7 +97,7 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service"/> MyService
+/// <see cref="Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service"/> <see cref="MyService"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service&gt;()</c>
 /// </term>
 /// <description>
 /// Specifies to create a property "MyService"
@@ -105,6 +105,7 @@ classDiagram
 /// </item>
 /// </list>
 /// </para>
+/// </summary>
 /// <example>
 /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service"/> using the composition root <see cref="MyService"/>:
 /// <code>
@@ -112,21 +113,22 @@ classDiagram
 /// var instance = composition.MyService;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqlU8GOwiAQ_RUyZw9GD3W9bVsPPRg38cqFhclKLKWh3U2M8d-lYFdKMDF6mQx9M483j84ZuBYIa-A167pSsh_DFDW0cWdSaNXqTvZSN4T-zudZPmBDtsj3aP4kR7I93bIRyso7wVj0oNkdViW22Ahs-ImI_7RSbe3gglTJghHc9Qc0QYWenl3Zx1RbUO3g8h6zYojLzeRS9-mTPN0aSwr6vS0RFjoTKV-l9HuS6iHL0isp2HfXG8Z7r-sWU0wpwa_Qjc-tQ28IofCFJq81P1KIZ7e-BCO_zBGY8QZJ5MPAFK_Awg3uo33r8Ae3DMmlgBkoNIpJYRftTMFeopDCmoJgxiq5wOUKLcMyAw">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqlU8FqwzAM_RWj82ClPaTrbUl2yGFssKsvri02szgOSlYopf8-x25ax01hdBch5UnPz8_RAaRVCBuQtei6UotPEoYTb3zNCmta2-le24bxn8UiywdsyJb5B9JOS2Sv-1M2Qll5IRibbgz7Yl1ii43CRu6ZOqeVaWsPF6yabRjBt_4LKeqw09q3PU21Rd0eLi8xK4a4epkc6j89sz-PppKi-WBLgsXOJMrXc_oDSXWTZRWUFGLb9SRkH3Sd4hzTnOB76MbntrE3jHF4R8prK785sGtfoivfzRGZ8Q-SxIeBKV2Bpb94iO6t4x_cMVwvhXduS_wxDLRkd1rheTOGI-ABDJIRWrlFPHBwIgxy2HBQgpzSIxx_ASxZPQ8">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// </summary>
 /// <seealso cref="Pure.DI.DI.Setup"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM03D12di;
+  private readonly Composition _rootM03D13di;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Composition"/>.
   /// </summary>
   public Composition()
   {
-    _rootM03D12di = this;
+    _rootM03D13di = this;
   }
   
   /// <summary>
@@ -135,13 +137,20 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM03D12di = baseComposition._rootM03D12di;
+    _rootM03D13di = baseComposition._rootM03D13di;
   }
   
   #region Composition Roots
   /// <summary>
   /// Specifies to create a property "MyService"
   /// </summary>
+  /// <example>
+  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service"/>:
+  /// <code>
+  /// var composition = new Composition();
+  /// var instance = composition.MyService;
+  /// </code>
+  /// </example>
   public Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service MyService
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -149,8 +158,8 @@ partial class Composition
     #endif
     get
     {
-      var perBlockM03D12di1_Dependency = new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Dependency();
-      return new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service(perBlockM03D12di1_Dependency, perBlockM03D12di1_Dependency, perBlockM03D12di1_Dependency);
+      var perBlockM03D13di1_Dependency = new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Dependency();
+      return new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service(perBlockM03D13di1_Dependency, perBlockM03D13di1_Dependency, perBlockM03D13di1_Dependency);
     }
   }
   #endregion
@@ -182,7 +191,7 @@ partial class Composition
         "  Service o--  \"PerBlock\" Dependency : Dependency\n" +
         "  Service o--  \"PerBlock\" Dependency : IDependency\n" +
         "  Service o--  \"PerBlock\" Dependency : IOtherDependency\n" +
-        "  Composition ..> Service : Service MyService";
+        "  Composition ..> Service : Service MyService<br/>provides Service";
   }
 }
 ```

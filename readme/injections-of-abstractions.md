@@ -67,7 +67,7 @@ classDiagram
   }
   Program *--  Service : IService
   Service *--  Dependency : IDependency
-  Composition ..> Program : Program Root
+  Composition ..> Program : Program Root<br/>provides Program
 ```
 
 </details>
@@ -77,7 +77,7 @@ classDiagram
 
 ```c#
 /// <para>
-/// Composition roots:<br/>
+/// <b>Composition roots</b><br/>
 /// <list type="table">
 /// <listheader>
 /// <term>Root</term>
@@ -85,7 +85,7 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Basics.InjectionsOfAbstractionsScenario.Program"/> Root
+/// <see cref="Pure.DI.UsageTests.Basics.InjectionsOfAbstractionsScenario.Program"/> <see cref="Root"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Basics.InjectionsOfAbstractionsScenario.Program&gt;()</c>
 /// </term>
 /// <description>
 /// Specifies to create a composition root (a property)<br/>
@@ -94,6 +94,7 @@ classDiagram
 /// </item>
 /// </list>
 /// </para>
+/// </summary>
 /// <example>
 /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.InjectionsOfAbstractionsScenario.Program"/> using the composition root <see cref="Root"/>:
 /// <code>
@@ -101,21 +102,22 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqNkjtvwyAQgP8KurlDZA9OsyV2h2xRurIQOKWoxURAIlVR_nsN2AITR-pyNvf87nEHrgXCBvgPs7aT7GyYoob24U1arS7aSid1T-h1tWp23ub_qt3BaO9Mjlq7Sdt0KXayv4gLj_X-E81NciQ2foP2fZ6uwwv2Anv-G3JVXZJN62X9QfaFU70liaSw5TDJFHmW6k-Ir4vnHrPKuSEvO-rHGWR8Ys5TkMSkZa8pcR2JWnayzjDuIt8olzIt8_0_Tb7japsPiMx6H4Yy1XqaaBH2vMisXx9c3mQVyKIclpEjDcHllcIbKDSKSTEc_Z2C-0KFFDYUBDPfFB7w-APO5QcI">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqNk01vwyAMhv8K8nnSquSQrbc26aG3abtyoWBtaCNEhFWaqv73BUjGR1NpFydg-_VjAxfgWiBsgX-xcewkezdMUUN7vyatVoMepZW6J_R7s2n2zuf-qv2L0S6YvGptl92mi7mL_06eXzwd39CcJUcyhq_ffc7lOhywF9jzH69VddE2rbP1gRyLoHpHIknhS2GiK_Cs1V8Q7xdPI7LKqSMtO-_PM0j4RM5TkATRstcoXAeilp1Gaxi3gW-2a0rrfP-XSc-42qUDIlnv01CWWjcTLdJuDzLp1yWXd7LyZMFOh5EiTcnZLfVdnQx9DLGD0Wcp8O-qOnV4AIVGMSmmR3GhYD9QIYUtBcHMJ4UrXH8Bbu4SGw">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// </summary>
 /// <seealso cref="Pure.DI.DI.Setup"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
+/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM03D12di;
+  private readonly Composition _rootM03D13di;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Composition"/>.
   /// </summary>
   public Composition()
   {
-    _rootM03D12di = this;
+    _rootM03D13di = this;
   }
   
   /// <summary>
@@ -124,7 +126,7 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM03D12di = baseComposition._rootM03D12di;
+    _rootM03D13di = baseComposition._rootM03D13di;
   }
   
   #region Composition Roots
@@ -132,6 +134,13 @@ partial class Composition
   /// Specifies to create a composition root (a property)<br/>
   /// of type "Program" with the name "Root":
   /// </summary>
+  /// <example>
+  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.InjectionsOfAbstractionsScenario.Program"/>:
+  /// <code>
+  /// var composition = new Composition();
+  /// var instance = composition.Root;
+  /// </code>
+  /// </example>
   public Pure.DI.UsageTests.Basics.InjectionsOfAbstractionsScenario.Program Root
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
@@ -173,7 +182,7 @@ partial class Composition
         "  }\n" +
         "  Program *--  Service : IService\n" +
         "  Service *--  Dependency : IDependency\n" +
-        "  Composition ..> Program : Program Root";
+        "  Composition ..> Program : Program Root<br/>provides Program";
   }
 }
 ```
