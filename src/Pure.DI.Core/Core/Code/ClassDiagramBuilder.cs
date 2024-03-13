@@ -3,8 +3,6 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-using ITypeSymbol = Microsoft.CodeAnalysis.ITypeSymbol;
-
 internal sealed class ClassDiagramBuilder(
     IBuilder<ContractsBuildContext, ISet<Injection>> injectionsBuilder,
     IMarker marker,
@@ -29,13 +27,20 @@ internal sealed class ClassDiagramBuilder(
                 {
                     foreach (var root in composition.Roots.OrderByDescending(i => i.IsPublic).ThenBy(i => i.Name))
                     {
-                        var rootArgsStr = "";
-                        if (!root.Args.IsEmpty)
+                        var typeArgsStr = "";
+                        var typeArgs = root.TypeDescription.TypeArgs;
+                        if (typeArgs.Count > 0)
                         {
-                            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{arg.InstanceType} {arg.VariableName}"))})";
+                            typeArgsStr = $"{DefaultFormatOptions.StartGenericArgsSymbol}{string.Join(DefaultFormatOptions.TypeArgsSeparator, typeArgs.Select(arg => $"{arg}"))}{DefaultFormatOptions.FinishGenericArgsSymbol}";
+                        }
+                        
+                        var rootArgsStr = "";
+                        if (root.IsMethod)
+                        {
+                            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(arg.InstanceType)} {arg.VariableName}"))})";
                         }
 
-                        lines.AppendLine($"{(root.IsPublic ? "+" : "-")}{FormatType(root.Injection.Type, DefaultFormatOptions)} {root.DisplayName}{rootArgsStr}");
+                        lines.AppendLine($"{(root.IsPublic ? "+" : "-")}{FormatType(root.Injection.Type, DefaultFormatOptions)} {root.DisplayName}{typeArgsStr}{rootArgsStr}");
                     }
                     
                     if (hasResolveMethods)
