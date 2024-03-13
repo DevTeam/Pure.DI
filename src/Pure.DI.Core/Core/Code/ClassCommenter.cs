@@ -1,9 +1,10 @@
 ﻿namespace Pure.DI.Core.Code;
 
 internal class ClassCommenter(
-    ITypeResolver typeResolver,
+    IFormatter formatter,
     IComments comments,
-    IBuilder<IEnumerable<string>, Uri> mermaidUrlBuilder)
+    IBuilder<IEnumerable<string>, Uri> mermaidUrlBuilder,
+    IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
     : ICommenter<Unit>
 {
     public void AddComments(CompositionCode composition, Unit unit)
@@ -36,15 +37,15 @@ internal class ClassCommenter(
                 
         var orderedRoots = composition.Roots
             .OrderByDescending(root => root.IsPublic)
-            .ThenBy(root => root.PropertyName)
+            .ThenBy(root => root.DisplayName)
             .ThenBy(root => root.Node.Binding)
             .ToArray();
 
-        if (composition.Roots.Length > 0)
+        if (orderedRoots.Length > 0)
         {
             var rootComments = comments.FormatList(
-                "Composition roots:",
-                orderedRoots.Select(root => (CreateTerms(root), CreateDescriptions(root))),
+                "<b>Composition roots</b>",
+                orderedRoots.Select(root => (CreateRootTerms(root), CreateRootDescriptions(root))),
                 false);
 
             foreach (var rootComment in rootComments)
@@ -52,38 +53,45 @@ internal class ClassCommenter(
                 code.AppendLine(rootComment);
             }
 
-            IReadOnlyCollection<string> CreateTerms(Root root) =>
-                root.IsPublic
-                    ? [$"<see cref=\"{ResolveType(root.Injection.Type)}\"/> {root.PropertyName}"]
-                    : [$"<see cref=\"{ResolveType(root.Injection.Type)}\"/> {privateRootAdditionalComment}"];
+            IReadOnlyCollection<string> CreateRootTerms(Root root)
+            {
+                var term = new StringBuilder();
+                term.Append(formatter.FormatRef(root.Injection.Type));
+                term.Append(' ');
+                term.Append(root.IsPublic ? formatter.FormatRef(root) : privateRootAdditionalComment);
 
-            IReadOnlyCollection<string> CreateDescriptions(Root root) => 
+                var resolvers = resolversBuilder.Build(ImmutableArray.Create(root));
+                if (!resolvers.Any())
+                {
+                    return [term.ToString()];
+                }
+                
+                term.Append("<br/>or using ");
+                term.Append(formatter.FormatRef($"Resolve{{T}}({(root.Injection.Tag != null ? "object" : "")})"));
+                term.Append(" method: <c>Resolve&lt;");
+                term.Append(comments.Escape(root.TypeDescription.Name));
+                term.Append("&gt;(");
+                term.Append(root.Injection.Tag != null ? root.Injection.Tag.ValueToString() : "");
+                term.Append(")</c>");
+                return [term.ToString()];
+            }
+
+            IReadOnlyCollection<string> CreateRootDescriptions(Root root) => 
                 root.Source.Comments.Count > 0 
                     ? root.Source.Comments.Select(comments.Escape).ToList() 
-                    : [ $"Provides a composition root of type <see cref=\"{ResolveType(root.Node.Type)}\"/>." ];
+                    : [ $"Provides a composition root of type {formatter.FormatRef(root.Node.Type)}." ];
         }
+        
+        code.AppendLine("/// </summary>");
 
         var root = orderedRoots.FirstOrDefault(i => i.IsPublic);
         if (root is not null)
         {
-            var classArgsStr = "()";
-            if (!composition.Args.IsEmpty)
-            {
-                classArgsStr = $"({string.Join(", ", composition.Args.Select(arg => $"{arg.Node.Arg?.Source.ArgName ?? "..."}"))})";
-            }
-
-            var rootArgsStr = "";
-            if (!root.Args.IsEmpty || (root.Kind & RootKinds.Method) == RootKinds.Method)
-            {
-                rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{arg.Node.Arg?.Source.ArgName ?? "..."}"))})";
-            }
-
-            var name = composition.Source.Source.Name;
             code.AppendLine("/// <example>");
-            code.AppendLine($"/// This shows how to get an instance of type <see cref=\"{ResolveType(root.Node.Type)}\"/> using the composition root <see cref=\"{root.PropertyName}\"/>:");
+            code.AppendLine($"/// This shows how to get an instance of type {formatter.FormatRef(root.Node.Type)} using the composition root {formatter.FormatRef(root)}:");
             code.AppendLine("/// <code>");
-            code.AppendLine($"/// {(composition.DisposablesCount == 0 ? "" : "using ")}var composition = new {name.ClassName}{classArgsStr};");
-            code.AppendLine($"/// var instance = composition.{root.PropertyName}{rootArgsStr};");
+            code.AppendLine($"/// {(composition.DisposablesCount == 0 ? "" : "using ")}var composition = new {composition.Source.Source.Name.ClassName}({string.Join(", ", composition.Args.Where(i => i.Node.Arg?.Source.Kind == ArgKind.Class).Select(arg => arg.VariableName))});");
+            code.AppendLine($"/// var instance = composition.{formatter.Format(root)};");
             code.AppendLine("/// </code>");
             code.AppendLine("/// </example>");
         }
@@ -95,13 +103,8 @@ internal class ClassCommenter(
         }
         
         code.AppendLine("/// This class was created by <a href=\"https://github.com/DevTeam/Pure.DI\">Pure.DI</a> source code generator.");
-        code.AppendLine("/// </summary>");
         code.AppendLine("/// <seealso cref=\"Pure.DI.DI.Setup\"/>");
+        code.AppendLine("/// <seealso cref=\"Pure.DI.IConfiguration.Bind(object[])\"/>");
+        code.AppendLine("/// <seealso cref=\"Pure.DI.IConfiguration.Bind{T}(object[])\"/>");
     }
-
-    private string ResolveType(ITypeSymbol type) =>
-        comments.Escape(
-        typeResolver.Resolve(type).Name
-            .Replace('<', '{')
-            .Replace('>', '}'));
 }

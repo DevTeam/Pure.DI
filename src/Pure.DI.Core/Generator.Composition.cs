@@ -58,6 +58,7 @@ public partial class Generator
             .Bind().To<Variator<TT>>()
             .Bind().To<Profiler>()
             .Bind().To<BaseSymbolsProvider>()
+            .Bind().To<Formatter>()
         
             // Comments
             .Bind(Tag.Type).To<ClassCommenter>()

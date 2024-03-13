@@ -79,7 +79,7 @@ internal class CompositionBuilder(
         var publicRoots = roots
             .OrderByDescending(i => i.IsPublic)
             .ThenBy(i => i.Node.Binding.Id)
-            .ThenBy(i => i.PropertyName)
+            .ThenBy(i => i.DisplayName)
             .ToImmutableArray();
         
         var composition = new CompositionCode(

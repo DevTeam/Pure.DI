@@ -14,5 +14,5 @@ internal record Root(
 {
     public bool IsPublic => !string.IsNullOrWhiteSpace(Name);
 
-    public string PropertyName => this.GetPropertyName();
+    public string DisplayName => this.GetPropertyName();
 }

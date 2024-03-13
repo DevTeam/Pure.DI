@@ -109,7 +109,7 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
             {
                 var isStatic = (defaultRoot.Kind & RootKinds.Static) == RootKinds.Static;
                 var isMethod = !defaultRoot.Args.IsEmpty || (defaultRoot.Kind & RootKinds.Method) == RootKinds.Method;
-                code.AppendLine($"return {(isStatic ? composition.Source.Source.Name.ClassName : "composition")}.{defaultRoot.PropertyName}{(isMethod ? "()": "")};");
+                code.AppendLine($"return {(isStatic ? composition.Source.Source.Name.ClassName : "composition")}.{defaultRoot.DisplayName}{(isMethod ? "()": "")};");
             }
             else
             {
@@ -182,6 +182,6 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
     {
         var target = (root.Kind & RootKinds.Static) == RootKinds.Static ? composition.Source.Source.Name.ClassName : "composition";
         var isMethod = !root.Args.IsEmpty || (root.Kind & RootKinds.Method) == RootKinds.Method;
-        return $"{target}.{root.PropertyName}{(isMethod ? "()": "")}";
+        return $"{target}.{root.DisplayName}{(isMethod ? "()": "")}";
     }
 }

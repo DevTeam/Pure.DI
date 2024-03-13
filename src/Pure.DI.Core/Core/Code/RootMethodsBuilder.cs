@@ -46,6 +46,7 @@ internal sealed class RootMethodsBuilder(
     
     private void BuildRoot(CompositionCode composition, Root root)
     {
+        rootCommenter.AddComments(composition, root);
         var code = composition.Code;
         var rootArgsStr = "";
         if (root.IsMethod)
@@ -76,7 +77,7 @@ internal sealed class RootMethodsBuilder(
         name.Append(root.TypeDescription.Name);
         
         name.Append(' ');
-        name.Append(root.PropertyName);
+        name.Append(root.DisplayName);
 
         var typeArgs = root.TypeDescription.TypeArgs;
         if (typeArgs.Count > 0)
@@ -87,8 +88,6 @@ internal sealed class RootMethodsBuilder(
         }
         
         name.Append(rootArgsStr);
-
-        rootCommenter.AddComments(composition, root);
         
         code.AppendLine(name.ToString());
         code.AppendLine("{");

@@ -35,7 +35,7 @@ internal sealed class ClassDiagramBuilder(
                             rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{arg.InstanceType} {arg.VariableName}"))})";
                         }
 
-                        lines.AppendLine($"{(root.IsPublic ? "+" : "-")}{FormatType(root.Injection.Type, DefaultFormatOptions)} {root.PropertyName}{rootArgsStr}");
+                        lines.AppendLine($"{(root.IsPublic ? "+" : "-")}{FormatType(root.Injection.Type, DefaultFormatOptions)} {root.DisplayName}{rootArgsStr}");
                     }
                     
                     if (hasResolveMethods)
@@ -127,7 +127,7 @@ internal sealed class ClassDiagramBuilder(
                 cancellationToken.ThrowIfCancellationRequested();
                 if (dependency.Target.Root is not null && rootProperties.TryGetValue(dependency.Injection, out var root))
                 {
-                    lines.AppendLine($"{composition.Source.Source.Name.ClassName} ..> {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatInjection(root.Injection, DefaultFormatOptions)} {root.PropertyName}");
+                    lines.AppendLine($"{composition.Source.Source.Name.ClassName} ..> {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatInjection(root.Injection, DefaultFormatOptions)} {root.DisplayName}");
                 }
                 else
                 {

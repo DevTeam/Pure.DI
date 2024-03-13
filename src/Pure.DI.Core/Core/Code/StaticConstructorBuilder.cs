@@ -48,7 +48,7 @@ internal sealed class StaticConstructorBuilder(
                 {
                     foreach (var root in resolver.Roots)
                     {
-                        code.AppendLine($"{Names.OnNewRootMethodName}<{typeResolver.Resolve(root.Injection.Type)}, {typeResolver.Resolve(root.Node.Type)}>(val{className}, \"{root.PropertyName}\", {root.Injection.Tag.ValueToString()}, {root.Node.Lifetime.ValueToString()});");
+                        code.AppendLine($"{Names.OnNewRootMethodName}<{typeResolver.Resolve(root.Injection.Type)}, {typeResolver.Resolve(root.Node.Type)}>(val{className}, \"{root.DisplayName}\", {root.Injection.Tag.ValueToString()}, {root.Node.Lifetime.ValueToString()});");
                     }
                 }
                 
