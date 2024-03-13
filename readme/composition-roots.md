@@ -135,7 +135,7 @@ classDiagram
 /// </item>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Basics.CompositionRootsScenario.IDependency"/> is a private composition root that can be resolved by methods like <see cref="Resolve{T}()"/>.<br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Basics.CompositionRootsScenario.IDependency&gt;()</c>
+/// Private composition root of type <see cref="Pure.DI.UsageTests.Basics.CompositionRootsScenario.IDependency"/>. It can be resolved by <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Basics.CompositionRootsScenario.IDependency&gt;()</c>
 /// </term>
 /// <description>
 /// Specifies to create a private composition root<br/>

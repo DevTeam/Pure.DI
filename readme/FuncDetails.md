@@ -55,7 +55,7 @@ classDiagram
   Service2Func o--  "PerBlock" FuncᐸIService3ᐳ : FuncᐸIService3ᐳ
   Service3 *--  Service4 : IService4
   Service3 *--  Service4 : IService4
-  Func ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>CompositionRoot
+  Func ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>provides CompositionRoot
   FuncᐸIService3ᐳ *--  Service3 : IService3
 ```
 

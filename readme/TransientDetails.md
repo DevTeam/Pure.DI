@@ -58,7 +58,7 @@ classDiagram
   Service2 *--  Service3 : IService3
   Service3 *--  Service4 : IService4
   Service3 *--  Service4 : IService4
-  Transient ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>CompositionRoot
+  Transient ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>provides CompositionRoot
 ```
 
 ### Generated code

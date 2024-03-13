@@ -86,7 +86,7 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency"/> is a private composition root that can be resolved by methods like <see cref="Resolve{T}()"/>.<br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency&gt;()</c>
+/// Private composition root of type <see cref="Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency"/>. It can be resolved by <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.BCL.ServiceProviderScenario.IDependency&gt;()</c>
 /// </term>
 /// <description>
 /// Provides a composition root of type <see cref="Pure.DI.UsageTests.BCL.ServiceProviderScenario.Dependency"/>.
@@ -94,7 +94,7 @@ classDiagram
 /// </item>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService"/> is a private composition root that can be resolved by methods like <see cref="Resolve{T}()"/>.<br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService&gt;()</c>
+/// Private composition root of type <see cref="Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService"/>. It can be resolved by <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.BCL.ServiceProviderScenario.IService&gt;()</c>
 /// </term>
 /// <description>
 /// Provides a composition root of type <see cref="Pure.DI.UsageTests.BCL.ServiceProviderScenario.Service"/>.

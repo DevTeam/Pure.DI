@@ -77,7 +77,7 @@ classDiagram
   Service3v3 *--  Service4 : IService4
   Service3v4 *--  Service4 : IService4
   Service3v4 *--  Service4 : IService4
-  Enum ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>CompositionRoot
+  Enum ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>provides CompositionRoot
 ```
 
 ### Generated code

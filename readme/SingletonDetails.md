@@ -58,7 +58,7 @@ classDiagram
   Service2 *--  Service3 : IService3
   Service3 o--  "Scoped" Service4 : IService4
   Service3 o--  "Scoped" Service4 : IService4
-  Singleton ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>CompositionRoot
+  Singleton ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>provides CompositionRoot
 ```
 
 ### Generated code

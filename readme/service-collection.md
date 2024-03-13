@@ -88,7 +88,7 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IDependency"/> is a private composition root that can be resolved by methods like <see cref="Resolve{T}()"/>.<br/>or using <see cref="Resolve{T}(object)"/> method: <c>Resolve&lt;Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IDependency&gt;("Dependency Key")</c>
+/// Private composition root of type <see cref="Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IDependency"/>. It can be resolved by <see cref="Resolve{T}(object)"/> method: <c>Resolve&lt;Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IDependency&gt;("Dependency Key")</c>
 /// </term>
 /// <description>
 /// Provides a composition root of type <see cref="Pure.DI.UsageTests.BCL.ServiceCollectionScenario.Dependency"/>.
@@ -96,7 +96,7 @@ classDiagram
 /// </item>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService"/> is a private composition root that can be resolved by methods like <see cref="Resolve{T}()"/>.<br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService&gt;()</c>
+/// Private composition root of type <see cref="Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService"/>. It can be resolved by <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService&gt;()</c>
 /// </term>
 /// <description>
 /// Provides a composition root of type <see cref="Pure.DI.UsageTests.BCL.ServiceCollectionScenario.Service"/>.

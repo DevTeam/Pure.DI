@@ -120,7 +120,7 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency"/> is a private composition root that can be resolved by methods like <see cref="Resolve{T}()"/>.<br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency&gt;()</c>
+/// Private composition root of type <see cref="Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency"/>. It can be resolved by <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency&gt;()</c>
 /// </term>
 /// <description>
 /// Provides a composition root of type <see cref="Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.Dependency"/>.
@@ -128,7 +128,7 @@ classDiagram
 /// </item>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService"/> is a private composition root that can be resolved by methods like <see cref="Resolve{T}()"/>.<br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService&gt;()</c>
+/// Private composition root of type <see cref="Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService"/>. It can be resolved by <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService&gt;()</c>
 /// </term>
 /// <description>
 /// Provides a composition root of type <see cref="Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.Service"/>.
