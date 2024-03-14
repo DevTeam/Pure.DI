@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
 $p=4
-$d=Generic with constraints composition roots
+$d=Generic composition roots with constraints
 */
 
 // ReSharper disable ClassNeverInstantiated.Local
@@ -12,7 +12,7 @@ $d=Generic with constraints composition roots
 // ReSharper disable UnusedVariable
 // ReSharper disable UnusedTypeParameter
 #pragma warning disable CS9113 // Parameter is unread.
-namespace Pure.DI.UsageTests.Basics.GenericsWithConstraintsCompositionRootsScenario;
+namespace Pure.DI.UsageTests.Basics.GenericCompositionRootsWithConstraintsScenario;
 
 using Shouldly;
 using Xunit;
