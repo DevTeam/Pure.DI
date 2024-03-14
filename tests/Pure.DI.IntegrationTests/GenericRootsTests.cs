@@ -15,10 +15,16 @@ using static Pure.DI.Lifetime;
 
 namespace Sample
 {
+    class Dep<T> { }
+
     interface IBox<T> { T? Content { get; set; } }
 
     class CardboardBox<T> : IBox<T>
     {
+        public CardboardBox(Dep<T> dep)
+        {
+        }
+        
         public T? Content { get; set; }
     }
 
@@ -175,5 +181,148 @@ namespace Sample
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Consumer`1[System.Int32]"), result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportGenericRootWhenTypeConstraint()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
+namespace Sample
+{
+    class Disposable: IDisposable
+    {
+        public void Dispose()
+        {
+        }
+    }
+    
+    class Dep<T>
+        where T: IDisposable
+    {
+    }
+
+    interface IBox<T, TStruct>
+        where T: IDisposable
+        where TStruct: struct 
+    { 
+        T? Content { get; set; } 
+    }
+
+    class CardboardBox<T, TStruct> : IBox<T, TStruct>
+        where T: IDisposable
+        where TStruct: struct
+    {
+        public CardboardBox(Dep<T> dep)
+        {
+        }
+        
+        public T? Content { get; set; }
+    }
+
+    internal partial class Composition
+    {
+        private static void Setup()
+        {
+            DI.Setup(nameof(Composition))
+                .Bind<IBox<TTDisposable, TTS>>().To<CardboardBox<TTDisposable, TTS>>()                
+                // Composition Root
+                .Root<IBox<TTDisposable, TTS>>("GetRoot");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();            
+            var root = composition.GetRoot<Disposable, int>();
+            Console.WriteLine(root);
+        }
+    }                
+}
+""".RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.CardboardBox`2[Sample.Disposable,System.Int32]"), result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportGenericRootWhenStructConstraint()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
+namespace Sample
+{
+    interface IDependency<T> { }
+
+    class Dependency<T> : IDependency<T> { }
+
+    interface IService<T, TStruct>
+        where TStruct: struct
+    {
+    }
+
+    class Service<T, TStruct>: IService<T, TStruct>
+        where TStruct: struct
+    {
+        public Service(IDependency<T> dependency)
+        {
+        }
+    }
+
+    class OtherService<T, TStruct>: IService<T, TStruct>
+        where TStruct: struct
+    {
+        public OtherService(IDependency<T> dependency)
+        {
+        }
+    }
+    
+    internal partial class Composition
+    {
+        private static void Setup()
+        {
+            DI.Setup(nameof(Composition))
+                .Bind().To<Dependency<TT>>()
+            .Bind().To<Service<TT, TTS>>()
+            .Bind("Other").To(ctx =>
+            {
+                ctx.Inject(out IDependency<TT> dependency);
+                return new OtherService<TT, TTS>(dependency);
+            })
+            .Root<IService<TT, TTS>>("GetMyRoot")
+            .Root<IService<TT, TTS>>("GetOtherService", "Other");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var service = composition.GetMyRoot<int, double>();
+            Console.WriteLine(service);
+        }
+    }                
+}
+""".RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Service`2[System.Int32,System.Double]"), result);
     }
 }

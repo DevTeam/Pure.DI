@@ -3,28 +3,31 @@
 internal class TypeResolver(IMarker marker)
     : ITypeResolver
 {
-    private readonly Dictionary<ITypeSymbol, TypeDescription> _typeParameters = new(SymbolEqualityComparer.Default);
+    private readonly Dictionary<ITypeSymbol, string> _names = new(SymbolEqualityComparer.Default);
     private int _markerCounter;
 
-    public TypeDescription Resolve(ITypeSymbol type)
+    public TypeDescription Resolve(ITypeSymbol type) => Resolve(type, default);
+
+    private TypeDescription Resolve(ITypeSymbol type, ITypeParameterSymbol? typeParam)
     {
-        if (_typeParameters.TryGetValue(type, out var description))
-        {
-            return description;
-        }
-        
+        TypeDescription description;
         switch (type)
         {
             case INamedTypeSymbol { IsGenericType: false }:
                 if (marker.IsMarker(type))
                 {
-                    var typeName = _markerCounter == 0 ? "T" : $"T{_markerCounter}";
+                    if (!_names.TryGetValue(type, out var typeName))
+                    {
+                        typeName = _markerCounter == 0 ? "T" : $"T{_markerCounter}";
+                        _names.Add(type, typeName);
+                    }
+                    
                     _markerCounter++;
-                    description = new TypeDescription(typeName, ImmutableArray.Create(new TypeDescription(typeName, ImmutableArray<TypeDescription>.Empty)));
+                    description = new TypeDescription(typeName, ImmutableArray.Create(new TypeDescription(typeName, ImmutableArray<TypeDescription>.Empty, typeParam)), typeParam);
                 }
                 else
                 {
-                    description = new TypeDescription(type.ToString(), ImmutableArray<TypeDescription>.Empty);
+                    description = new TypeDescription(type.ToString(), ImmutableArray<TypeDescription>.Empty, typeParam);
                 }
                 
                 break;
@@ -33,14 +36,13 @@ internal class TypeResolver(IMarker marker)
                 {
                     var elements = new List<string>();
                     var args = new List<TypeDescription>();
-                    foreach (var tupleElement in tupleTypeSymbol.TupleElements)
+                    foreach (var item in tupleTypeSymbol.TupleElements.Zip(tupleTypeSymbol.TypeParameters, (element, parameter) => (description: Resolve(element.Type, parameter), element)))
                     {
-                        var tupleElementDescription = Resolve(tupleElement.Type);
-                        elements.Add($"{tupleElementDescription} {tupleElement.Name}");
-                        args.AddRange(tupleElementDescription.TypeArgs);
+                        elements.Add($"{item.description} {item.element.Name}");
+                        args.AddRange(item.description.TypeArgs);
                     }
                     
-                    description = new TypeDescription($"({string.Join(", ", elements)})", args.Distinct().ToImmutableArray());
+                    description = new TypeDescription($"({string.Join(", ", elements)})", args.Distinct().ToImmutableArray(), typeParam);
                 }
                 break;
 
@@ -48,14 +50,14 @@ internal class TypeResolver(IMarker marker)
                 {
                     var types = new List<string>();
                     var args = new List<TypeDescription>();
-                    foreach (var typeArgDescription in namedTypeSymbol.TypeArguments.Select(Resolve))
+                    foreach (var typeArgDescription in namedTypeSymbol.TypeArguments.Zip(namedTypeSymbol.TypeParameters, Resolve))
                     {
                         args.AddRange(typeArgDescription.TypeArgs);
                         types.Add(typeArgDescription.Name);
                     }
 
                     var name = string.Join("", namedTypeSymbol.ToDisplayParts().TakeWhile(i => i.ToString() != "<"));
-                    description = new TypeDescription($"{name}<{string.Join(", ", types)}>", args.Distinct().ToImmutableArray());
+                    description = new TypeDescription($"{name}<{string.Join(", ", types)}>", args.Distinct().ToImmutableArray(), typeParam);
                 }
                 break;
 
@@ -65,11 +67,10 @@ internal class TypeResolver(IMarker marker)
                 break;
             
             default:
-                description = new TypeDescription(type.ToString(), ImmutableArray<TypeDescription>.Empty);
+                description = new TypeDescription(type.ToString(), ImmutableArray<TypeDescription>.Empty, typeParam);
                 break;
         }
         
-        _typeParameters.Add(type, description);
         return description;
     }
 }

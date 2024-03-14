@@ -80,6 +80,7 @@ internal sealed class RootMethodsBuilder(
         name.Append(root.DisplayName);
 
         var typeArgs = root.TypeDescription.TypeArgs;
+        var constraints = new List<string>();
         if (typeArgs.Count > 0)
         {
             name.Append('<');
@@ -88,8 +89,55 @@ internal sealed class RootMethodsBuilder(
         }
         
         name.Append(rootArgsStr);
-        
         code.AppendLine(name.ToString());
+
+        if (typeArgs.Count > 0)
+        {
+            using (code.Indent())
+            {
+                foreach (var typeArg in typeArgs)
+                {
+                    if (typeArg.TypeParam is not { } typeParam)
+                    {
+                        continue;
+                    }
+
+                    var constrains = typeParam.ConstraintTypes.Select(i => typeResolver.Resolve(i).Name).ToList();
+                    if (typeParam.HasReferenceTypeConstraint)
+                    {
+                        constrains.Add("class");
+                    }
+
+                    if (typeParam.HasUnmanagedTypeConstraint)
+                    {
+                        constrains.Add("unmanaged");
+                    }
+
+                    if (typeParam.HasNotNullConstraint)
+                    {
+                        constrains.Add("notnull");
+                    }
+
+                    if (typeParam.HasValueTypeConstraint)
+                    {
+                        constrains.Add("struct");
+                    }
+
+                    if (typeParam.HasConstructorConstraint)
+                    {
+                        constrains.Add("new()");
+                    }
+
+                    if (constrains.Count == 0)
+                    {
+                        continue;
+                    }
+
+                    code.AppendLine($"where {typeArg.Name}: {string.Join(", ", constrains)}");
+                }
+            }
+        }
+
         code.AppendLine("{");
         using (code.Indent())
         {
