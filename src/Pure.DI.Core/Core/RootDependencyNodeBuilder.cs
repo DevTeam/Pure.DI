@@ -1,3 +1,4 @@
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
 internal sealed class RootDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<DependencyNode>>

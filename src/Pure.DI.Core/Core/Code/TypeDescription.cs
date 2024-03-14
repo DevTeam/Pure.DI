@@ -6,4 +6,4 @@ public readonly record struct TypeDescription(
     ITypeParameterSymbol? TypeParam)
 {
     public override string ToString() => Name;
-};
+}

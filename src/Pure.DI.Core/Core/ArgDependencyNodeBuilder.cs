@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+namespace Pure.DI.Core;
 
 internal sealed class ArgDependencyNodeBuilder : IBuilder<MdSetup, IEnumerable<DependencyNode>>
 {

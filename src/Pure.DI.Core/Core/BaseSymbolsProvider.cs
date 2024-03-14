@@ -1,13 +1,20 @@
-﻿namespace Pure.DI.Core;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+namespace Pure.DI.Core;
 
 internal class BaseSymbolsProvider : IBaseSymbolsProvider
 {
     public IEnumerable<ITypeSymbol> GetBaseSymbols(ITypeSymbol symbol, int deep = int.MaxValue)
     {
+        if (deep < 0)
+        {
+            yield break;
+        }
+
+        deep--;
         while (true)
         {
             yield return symbol;
-            foreach (var type in symbol.AllInterfaces.SelectMany(i => GetBaseSymbols(i, --deep)))
+            foreach (var type in symbol.AllInterfaces.SelectMany(i => GetBaseSymbols(i, deep)))
             {
                 yield return type;
             }

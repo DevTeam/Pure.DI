@@ -176,10 +176,10 @@ internal sealed class ClassDiagramBuilder(
     private string FormatDependency(Dependency dependency, FormatOptions options) => 
         $"{(dependency.Injection.Tag == default ? "" : FormatTag(dependency.Injection.Tag) + " ")}{FormatSymbol(dependency.Injection.Type, options)}";
 
-    private string FormatTag(object? tag) =>
+    private static string FormatTag(object? tag) =>
         tag != default ? $"{tag.ValueToString("").Replace("\"", "\\\"")} " : "";
     
-    private string FormatTags(IEnumerable<object?> tags) =>
+    private static string FormatTags(IEnumerable<object?> tags) =>
         string.Join(", ", tags.Distinct().Select(FormatTag).OrderBy(i => i));
 
     private string FormatSymbol(ISymbol? symbol, FormatOptions options) =>
@@ -238,7 +238,7 @@ internal sealed class ClassDiagramBuilder(
         string FormatSymbolLocal(ITypeSymbol i) => FormatSymbol(i, options);
     }
 
-    private string Format(Accessibility accessibility) =>
+    private static string Format(Accessibility accessibility) =>
         accessibility switch
         {
             Accessibility.NotApplicable => "",

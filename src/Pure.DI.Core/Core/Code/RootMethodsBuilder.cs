@@ -80,7 +80,6 @@ internal sealed class RootMethodsBuilder(
         name.Append(root.DisplayName);
 
         var typeArgs = root.TypeDescription.TypeArgs;
-        var constraints = new List<string>();
         if (typeArgs.Count > 0)
         {
             name.Append('<');

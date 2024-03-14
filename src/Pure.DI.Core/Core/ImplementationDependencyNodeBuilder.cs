@@ -1,6 +1,7 @@
 ﻿// ReSharper disable ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable ConvertToAutoPropertyWhenPossible
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core;
 
 internal sealed class ImplementationDependencyNodeBuilder(

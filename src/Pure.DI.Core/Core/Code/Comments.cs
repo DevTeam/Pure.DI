@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core.Code;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+namespace Pure.DI.Core.Code;
 
 using System.Text.RegularExpressions;
 
