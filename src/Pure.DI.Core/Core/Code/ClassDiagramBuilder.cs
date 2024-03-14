@@ -119,7 +119,7 @@ internal sealed class ClassDiagramBuilder(
                 cancellationToken.ThrowIfCancellationRequested();
                 if (dependency.Target.Root is not null && rootProperties.TryGetValue(dependency.Injection, out var root))
                 {
-                    lines.AppendLine($"{composition.Source.Source.Name.ClassName} ..> {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatRoot(root)}<br/>provides {FormatInjection(root.Injection, DefaultFormatOptions)}");
+                    lines.AppendLine($"{composition.Source.Source.Name.ClassName} ..> {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatRoot(root)}");
                 }
                 else
                 {
@@ -169,10 +169,7 @@ internal sealed class ClassDiagramBuilder(
             Lifetime.Transient => "",
             _ => $" \\\"{lifetime}\\\""
         };
-
-    private string FormatInjection(Injection injection, FormatOptions options) => 
-        $"{FormatTag(injection.Tag)}{FormatSymbol(injection.Type, options)}";
-
+    
     private string FormatDependency(Dependency dependency, FormatOptions options) => 
         $"{(dependency.Injection.Tag == default ? "" : FormatTag(dependency.Injection.Tag) + " ")}{FormatSymbol(dependency.Injection.Type, options)}";
 
