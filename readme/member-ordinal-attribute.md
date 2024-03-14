@@ -86,7 +86,7 @@ classDiagram
   Person o-- Int32 : Argument "personId"
   Person o-- String : Argument "personName"
   Person o-- DateTime : Argument "personBirthday"
-  PersonComposition ..> Person : IPerson Person<br/>provides IPerson
+  PersonComposition ..> Person : IPerson Person
 ```
 
 </details>
@@ -120,7 +120,7 @@ classDiagram
 /// var instance = composition.Person;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdU0FugzAQ_MrK50qNyIE2twCJxKWqWo6-GLCI22Aj24kURflD_tJLv5OfFGwDCYFW6mXlXWbsmTE-okzkFC1QtiVKRYwUkpRYYm56eKVSCR6KshKKaSY44N1s5gcNoll5QWwhDtnPIYE3qsR2Ty_n7-Ry_jLjJ1Of_4SJ9INmulnP16BJcUezgJZrScmhoqDr8g90CL8f6Ud9KDHXc69v37VkvOj7iGiasJI2ExeO2Svqqx-ac1bQpmfaJQyDv0vbpTwapZEFcd5PrDJYM6n0C7GK7JdWIwRM6k1ODqM-R0XMrfaQpEpL4hJbuXqzi6OLa_c2vNbvUha7knINGFUGXKtHk1RnZ4prHE6zO8tT_C6Kqz2Gf75njNpaX9_t7Q2egkkplfjRgisp9iynXazNIegBlVSWhOX1CzxipDe08bDAKCfyE6MTOv0A-bc9qQ">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqdU0FugzAQ_MrK5x4iONDmFiCRuFRVy9EXByziNraR7VSKovwhf-ml38lPCrYJSYBW6mXlXWbsmTE-oEKWFM1RsSVap4xUinCssLA9vFClpUgkr6VmhkkBeDebRXGLaFdBnDmIR_ZzyOGVarn9pOfTd34-fdnxo61Pf8Lk-p0Wpl2HKzCkGtAcoOM6Ur6vKZim_AOdwO9HRmkfSiZMGPTtm1FMVH2fEkNzxmk78eHYvdK-Rok9ZwlderZdwH3wg7R9yqNRWlmQlf3EKYMVU9o8E6fIfek0QsyU2ZRkP-pzVETotCdkrY0iPrGlrze7eLq8du_C6_wuVLXjVBjAqLbgRj2apHo7U1zrcJp9sTzFv0Rxtcf9nx9Yo64213d7e8OngB4Qp4oTVjYv7ICR2dBW4xyjkqgPjI7o-APpLjKu">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -297,7 +297,7 @@ partial class PersonComposition
         "  Person o-- Int32 : Argument \"personId\"\n" +
         "  Person o-- String : Argument \"personName\"\n" +
         "  Person o-- DateTime : Argument \"personBirthday\"\n" +
-        "  PersonComposition ..> Person : IPerson Person<br/>provides IPerson";
+        "  PersonComposition ..> Person : IPerson Person";
   }
   
   private readonly static int _bucketSizeM03D14di;

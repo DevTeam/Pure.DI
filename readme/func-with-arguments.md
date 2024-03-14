@@ -96,7 +96,7 @@ classDiagram
   Dependency *--  Int32 : Int32
   FuncᐸInt32ˏIDependencyᐳ *--  Dependency : Dependency
   Service *--  FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ
-  Composition ..> Service : IService Root<br/>provides IService
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -130,7 +130,7 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdVEFuwjAQ_Irlc6UiOKTlBkmRcgWOvhhnRV0SO3IMEkK8ofyll_6hr-AndeyEmBBC1cvKXu_O7M6ufMBMJoDHmKW0KCJO14pmRBFh7yiUWS4LrrkUiGwHg2BavpWn4TRegNpxBmgupW7caInmUMh0B-fT9_J8-rLuF2tfH4bJ1QcwXZ5HM6Tp-ibNBdS5Lmm5zwFpY_4RHaJ-yiBq1IggB5GAYPsbMZonRxKHqWQbxEpb8cRCj4aIJ_fxbURznW0FM-JY789n3FCUapkoR2HhosYGoW3lDVUl2NsEeTO9uP0GrLdrVK7Aetb32fyIKz7_wWes_I6zr1eUXG4zyrRU-x4Ju7obuSJDuiq0Mgiu5Mp2gXSX_HcYb1GkrxhCBC-4WKegpSDYG4VRzJXeSrd5k2sMt0h1Vr0zvQp2wbRYDJa3xO2Rt3Ifkhm0h-vb-luGVkpnzUK19un6t7FzWCny7IJzJXc8gWZyJT5-whmojPLEfG8HgvU7ZEDwmOCEqg3BR3z8BSsnupA">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqdVMFuwjAM_RUr5x0QHNi4QTukXoFjLiG1WEeboDQgIcQ3jH_ZZf-wr-BPliYtDaUUtIuVOPZ79rOVA-EyRjIiPGV5HiZspVhGFRX2DoHMNjJPdCIF0G2vN5wUb8WpP4nmqHYJR5hJqWs3LGCGuUx3eD79LM6nb-t-tfbtYZhcfiLXxXkwBc1WN2kuoMp1SYv9BkEb84_oALoph2GtRogbFDEKvr8Ro35yJFGQSr4GXtiSJxJ60Ickvo9vI-rrdCu4Ecd6f7-imqJQy0Q5CgsX1nYY2FbeoSzB3sbgzfTi9huw3rZRuQKrWd9n8yOu-PwHn7H0O86uXiG-3KaMa6n2HRK2dTdwRQZsmWtlEFzJpW0DaS_5eRhvUaSvGAAl80SsUtRSUOKNwijmSm-k27zxNYZbpCqr2plOBdtgGiwGy1vi5sgbuQ_JDNrD9W38LX0rpbNmoRr7dPPbkBeSocpYEpvf60CJ_sAMKRlREjO1puRIjn_MmK87">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -314,7 +314,7 @@ partial class Composition
         "  Dependency *--  Int32 : Int32\n" +
         "  FuncᐸInt32ˏIDependencyᐳ *--  Dependency : Dependency\n" +
         "  Service *--  FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ\n" +
-        "  Composition ..> Service : IService Root<br/>provides IService";
+        "  Composition ..> Service : IService Root";
   }
   
   private readonly static int _bucketSizeM03D14di;

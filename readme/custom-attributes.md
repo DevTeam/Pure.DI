@@ -76,7 +76,7 @@ classDiagram
   }
   Person *--  String : "NikName"  String
   Person o-- Int32 : Argument "personId"
-  PersonComposition ..> Person : IPerson Person<br/>provides IPerson
+  PersonComposition ..> Person : IPerson Person
 ```
 
 </details>
@@ -110,7 +110,7 @@ classDiagram
 /// var instance = composition.Person;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdU0tugzAUvIrldaVGsKDNjgCV2KRVy9IbAxZ1E9vIdiJVUe6Qu3TT6-QmxR_CJ1ErdfPkZ2bemxmZA6xETeASVlusVEpxIzFDEnHbgxcileCJYK1QVFPBAdotFtHKIMwpWOUO4pHDPSjAK1Fiuyfn03dxPn3Z6wdbH_-EifKDVNqcwyegcXNFc4Ce60jFZ0uA7so_0An4fWWUDqG8aUl5M_Q512FgWh-FZaZDjRI7NQN9VraNwTzmq2x9plauWwo4ZjN7Ufbs3OX1LbH5zdmhk5TgUmmJve3M18mUsad47Az4HC5u4Jpu1kYe7D-N-GJCtYn1xFg2O0a47ia0FtwZgQN1_vgCK9PVLtNppLPXaD2WEt07cCvFntbkEopZAu8gI5JhWnc_wQFB_U6MhSWCNZYbBI_w-ANHmRDg">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqdUktuwyAUvAp66y4ie-E2O8dOJW_SqvWSDbGRSxLAAlKpinKH3KWbXic3qQ24_kWt1M0TD2YeM6N3gkKWFJZQHIjWKSOVIhwrLGyPnqnSUiSS11Izw6RA-LhYRKsW0Z6CVeYgHtnfoxy9UC0P7_R6-cqvl097fW_rw58wud3RwrTn8BEZUs1oDtBxHSn_qCkyTfkHOkG_fxmlfSivRjFR9X0mTBi0rY_CMtO-RomdukZdVraN0TTmWbY-UyvXfYoE4RN70frJucvKW2Kzm7NDJykhW20U8bbXvo6mDD3FQ2fI5_DjBjZsv2nlQfc04MsR1SbWEWNVHTkVpplQW3BjBHrqdPkCK9PVJtNxpPNthDvgVHHCymbJTxjMG20lLjGURO0xnOH8DdB7BeU">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -269,7 +269,7 @@ partial class PersonComposition
         "  }\n" +
         "  Person *--  String : \"NikName\"  String\n" +
         "  Person o-- Int32 : Argument \"personId\"\n" +
-        "  PersonComposition ..> Person : IPerson Person<br/>provides IPerson";
+        "  PersonComposition ..> Person : IPerson Person";
   }
   
   private readonly static int _bucketSizeM03D14di;

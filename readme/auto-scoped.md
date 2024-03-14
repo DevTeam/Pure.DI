@@ -92,8 +92,8 @@ classDiagram
   Program o--  "PerResolve" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
   Service o--  "Scoped" Dependency : IDependency
   IService *--  Composition : Composition
-  Composition ..> Service : Service SessionRoot<br/>provides Service
-  Composition ..> Program : Program ProgramRoot<br/>provides Program
+  Composition ..> Service : Service SessionRoot
+  Composition ..> Program : Program ProgramRoot
   FuncᐸIServiceᐳ *--  IService : IService
 ```
 
@@ -136,7 +136,7 @@ classDiagram
 /// var instance = composition.ProgramRoot;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdVEtuwjAQvcrI60pFdEHLDpIisUPA0hvjjGhaEke2QUKIO3CXbnodblLHjokTkrbqZjDzefPmjZ0T4SJBMiZ8x5SKU7aVLKOS5vY_RCIrhEp1KnKg-8FgNC1j5Wk4XUhRJkP1uxRC18EVykPKEVaolCluBmENS1Rid8Dr5Wt9vXxa97O1L7-mic07cl2en2ag2fauzCX4Wle0PhYI2ph_ZEfwc8tRXAvmRekRy8HP9jk3I80rkcxkoNxxxrgW8tiP73Vt41d-hz-PscA8wZwfIbkd-0GDLddOz670BHgWJa7tKLKyvELY1LomUIO1YiHzOtR1C0Ka97IFbHs7PDmCEdsoLY28jm5lG1387kQ4IwAlC5T-epAOFn7cbn5-Y3eoKy4KTAzivXDBNCWER3TiT5pA7Sdqylv7bGcM7fTOmsWF4Ka46-VaATeSPrqSQopDmuDtNv6hSfguTJOub0dfE_90TJMe7duSNPQq5Qx4kgeSocxYmpiP3okS_YaZWeuYkoTJD0rO5PwNQUbKNg">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqdVEtuwjAQvcrI6y4QLGjZQVIkdghYZmOcEU0hcWQbJIS4A3fpptfhJvUnbpyEFKmbiTOfNzNvxr4QxlMkE8IOVMo4oztB80Qkhf2HiOcll5nKeAHJcTAYz4zNnIazpeDGGarvinNVG9coThlDWKOUOrhphA2sUPLDCe-378399mXVr1a-PXXj209kypxHc1B01wlzDj7WBW3OJYLS4h_eEfydchzXhHlSeshy8PNjwXRLi4ok3RlId5xTprg49-N7Xtv4ld7hL2IssUixYGdIf4_9oMGUa6WvzmgCPIsS13IcWVreIUxqVVOowVq2sPLa9GgLwjK7tAXV9mYYuQIjupVKaHpduZVsZPGz42GPAAlZovDrQR5U4dt9XJ-fWAd1zXiJqUbsEhd0YyA8oiN_2gRqX1Ed3ppn22Nou3dSDy4E18E9N_cJSLj3GqTnbejhrt1So19DR7CK5IXkKHKapfrRuiREfWCuxzJJSErFPiFXcv0BhmW0Fw">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -347,8 +347,8 @@ partial class Composition
         "  Program o--  \"PerResolve\" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ\n" +
         "  Service o--  \"Scoped\" Dependency : IDependency\n" +
         "  IService *--  Composition : Composition\n" +
-        "  Composition ..> Service : Service SessionRoot<br/>provides Service\n" +
-        "  Composition ..> Program : Program ProgramRoot<br/>provides Program\n" +
+        "  Composition ..> Service : Service SessionRoot\n" +
+        "  Composition ..> Program : Program ProgramRoot\n" +
         "  FuncᐸIServiceᐳ *--  IService : IService";
   }
   

@@ -89,8 +89,8 @@ classDiagram
   Service *--  AbcDependency : "Abc"  IDependency
   Service o--  "Singleton" XyzDependency : "Xyz"  IDependency
   Service *--  AbcDependency : IDependency
-  Composition ..> XyzDependency : IDependency XyzRoot<br/>provides "Xyz" IDependency
-  Composition ..> Service : IService Root<br/>provides IService
+  Composition ..> XyzDependency : IDependency XyzRoot
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -132,7 +132,7 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqlVEFuwjAQ_Irlc6VSONByg4RKvQKHHnxxkhVNS-LIcZEo4g_8pZd-h5_UsQNdJw6l9LJyvDuzM5uVtzQWCdARjVe8LMOULyXPmGS5-SaByApRpioVOWHvvd5wUuWqU3_yNAe5TmMgMyEUug6hgDyBPN6Q582HmyQLMoNSrNZw2H8tDvtPc31v4sOvZSJ6hVhV58EjUXzZgtmCI9aCFpsCiNLhiuqAnG85DKvTOIqRZ1MR_sRhYNBTggdjrsaEUY1llPyT5fS72hz4hzlZ3-CtHf3TrrajsbUdK6jNhQU52W5Bxz3rloIrnIHgBO5c39ue2ElyOt7VG-DP9s9mBz4bVlFzbD-qBtZOwKNSSV4v3bSOPia_uctpnLmO8XSJZ5PQumITmEi4HIzO03y5AiVyDWqvAtqYLsaLpTXwzXerbwZgo14Yrxbfw2UmGUl2a4GFFOs0gfKk-29tG2vqPqBdrY5VFT-9oRnIjKeJfrG3jKoXyIDREaMJl2-M7ujuG3Ec9Eo">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqlVL1uwjAQfhXr5g4UBlo2SKjUFRg6eDHJiaZNYpS4SCniHXiXLn0d3qSOHeCSOIDocjrfz-f7zp-8hUCGCCMIYpHnfiRWmUh4xlNzZp5M1jKPVCRTxr96veGkzJVef_I6x2wTBchmUioS9nGNaYhpULC34rueZAs2w1zGGzzsfxeH_Y8JPxn7fLVMLj8wUKU_eGFKrFpttuDYa5sWxRqZ0uaOao9dvnLol954GRDOpsI_26FnuqeMLsaExoyD7uXA_olyeq42Bn2wWta1eEtHP9rddHRvRccO1MaiA9Wy3QMdddY9Cq2oLYQm6M1V3N5JmYQn97FSgDvbv5gduGjYiZprO081sHQ8scxVJirRTSvrQnKTux2mttcx3S5zKInIlZKgQLKOwWEepasYlUx1U1sKRDFdiDeP1uhv_lt9swBrtWCcs3R8XFegGtJrfYrwAAlmiYhC_cluOah3TJDDiEMosk8OO9j9AcRH2gs">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -342,8 +342,8 @@ partial class Composition
         "  Service *--  AbcDependency : \"Abc\"  IDependency\n" +
         "  Service o--  \"Singleton\" XyzDependency : \"Xyz\"  IDependency\n" +
         "  Service *--  AbcDependency : IDependency\n" +
-        "  Composition ..> XyzDependency : IDependency XyzRoot<br/>provides \"Xyz\" IDependency\n" +
-        "  Composition ..> Service : IService Root<br/>provides IService";
+        "  Composition ..> XyzDependency : IDependency XyzRoot\n" +
+        "  Composition ..> Service : IService Root";
   }
   
   private readonly static int _bucketSizeM03D14di;

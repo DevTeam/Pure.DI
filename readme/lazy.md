@@ -55,7 +55,7 @@ classDiagram
     <<abstract>>
   }
   Service *--  LazyᐸIDependencyᐳ : LazyᐸIDependencyᐳ
-  Composition ..> Service : IService Root<br/>provides IService
+  Composition ..> Service : IService Root
   LazyᐸIDependencyᐳ o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
   FuncᐸIDependencyᐳ *--  Dependency : IDependency
 ```
@@ -91,7 +91,7 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdVEFugzAQ_Irlc6VGcKDNLYFEitRDlXL0xcAqJQ0YGQeJRvlD_tJLv5OfFGyQjQOplMvK8e7szM7GnHDMEsBzHB9oWQYp3XGaEU5y-Rv5LCtYmYqU5YgcZzNv2ebak7PcfACv0hjQljGhr1GItlCyQwXXy294vfzI6xcZX_8tY9EeYtGe3TUSdHcDUwU9VoHCugAkmvBAtY_uU3pBewqggDyBPK6lDU6go-dL6AptrCJ3gbSRVs70UafGnFL8vdXT5GbFgNlMmLTdveJ8o991swdjhGYjKBkqszSp9qNInV4f8_hO2vZMC3TVZD6NSsFpt59VF0d0DAx4pM3A4oVpNBofsrd60gH78TiSV8VmZdbGhs9Jio44eVbFBWdVmoAes-0_rooNpRP8Drz__-PxffQSJpc1jbKdun0DBqhthZ9wBjyjadJ8dE4Ei0_IGmFzghPKvwg-4_MfvJ2jeg">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqdVLFugzAQ_RXLc4cIBtpsCSRSpA5VyujFMaeUNmBknEg0yj_kX7r0d_InBQyyMSaVspyOu3t-d-9szpjxBPAcswMtyyile0EzIkjefqOQZwUvU5nyHJHjbBYsm1zjecvNO4hTygBtOZc6jGK0hZIfTnC7_sa3608bfm7ty79lfPcJTDa-v0aS7kcwVdBjFSiuCkCyNg9Uh-g-ZRA1XgQF5AnkrGpl8CJtg7CFrtDGKvIXSAtp5UwddcqllOLvpZ4mNysGzGbCpO3iivOVflf1HowR6o2gZNiZ1ZM63onU6fUxZ3fStma6QV9NFtJdKQXt9rPqrKOPgQCPHDOQeGEKjdxD9lJPKmA_Hq_lVbZembWx0XNyk_JhZwS_geivN3bL3TNM7mIaZQsxvuIGqDkKP-EMREbTpP6nnAmWH5DVjc0JTqj4IviCL39o4Zgl">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -264,7 +264,7 @@ partial class Composition
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service *--  LazyᐸIDependencyᐳ : LazyᐸIDependencyᐳ\n" +
-        "  Composition ..> Service : IService Root<br/>provides IService\n" +
+        "  Composition ..> Service : IService Root\n" +
         "  LazyᐸIDependencyᐳ o--  \"PerResolve\" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ\n" +
         "  FuncᐸIDependencyᐳ *--  Dependency : IDependency";
   }

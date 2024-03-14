@@ -95,7 +95,7 @@ classDiagram
     <<abstract>>
   }
   ProgramᐸStringᐳ *--  ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ : IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ
-  Composition ..> ProgramᐸStringᐳ : ProgramᐸStringᐳ Root<br/>provides ProgramᐸStringᐳ
+  Composition ..> ProgramᐸStringᐳ : ProgramᐸStringᐳ Root
   ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ
   ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *--  DependencyStructᐸInt32ᐳ : "value type"  IDependencyᐸInt32ᐳ
 ```
@@ -131,7 +131,7 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNq9VktuwjAQvYrldaXSsKBlBwmVkLqogKU3JrGoWxJHjomEEGeAu3TTO3AKblJ_QhOCnaI27WYU4jdv3nw8YQNDFhHYh-ESZ1lA8YLjGHGU6N_AZ3HKMiooSwBadTq9oTpTT97wmTMFPu4_poLTZHHcv4MJY6JEgBmYkIwtcyJBM3muX99r-_AtjM1fSSjUc_cRCLy4cDOAk69xmq1TAoQ0P0D7oDlkLygLY0veUSATajwlPKch-fI47MaJ6HqH3RPNRJXnsAtoqCqO-bqOlscqUma4bPLaDKP5g9L2fF2aEWg1Gc05AGVt2yav9qTgLnoSkJQkEUnC0l05RV-v74rBOEeeAlSAnq0XDnp3WRsczirUgKsmW8JsF6-uUfKsQlFN70qhZ3ilE-Z4uSouFrTKtseyazdYdwaGu_WRLMV0Tdo-nmeC42I_jAprk3JVe37H6qjb9aSuBeYNql0HrV9GOR9ttkqlUv9IeTphY-WwujKVSpyfMF3EOUe3hiPlLKcRsa79P1m6tSY07wXHvP2vMPuNvtwGjjlWYuENjAmPMY3k_5ENguKFxNKlj2CE-RuCW7j9BCk1iIM">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNq9VktuwjAQvYrldRc0LGjZQUIlpC4qYJmNcSxqSmJkGySEOAPcpZvegVNwk_oTSAh2itqom1GI37x583PYQswSArsQL5AQEUUzjtKYx5n5DUKWLpmgkrIMxKtWq9PXZ_op6L9xpsGnw9dYcprNTodPMGJMFggwASMi2GJNFGiizs3rJ2Off4Sx6ZxgqZ_bL0Ci2Y2bBZx9rdNksyRAKvMLdAjqQ3aiojCu5D0FsqGGY8LXFJOLx3E_zGQ7OO5fqZBlnuM-olhXHPFNFa2OdSRhuVzymgxj-KPCdkJTmgFoNBnD2QNFbZsmL_ck5857EpElyRKS4cJdOyWX14_5YFwjzwFKwMDVCw-9v6w1DlcVqsGVky1grsWralQ8KyzL6d0p9AqvdcI1WqzyxYJO2e5Ybu0W68_Acjc-koWYtk07RFMhOcrvh0FuXVLuas_fWD11u5_Ud4EFvXLXQePLqOajyVbpVKofqcAkbK0aVl-mSkndJ6zxi7RS2Ppd98zQ_wpzb-nthntmU4uFDzAlPEU0Uf8xtjGU7yRVLt0YJoh_xHAHd9-PJnas">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -296,7 +296,7 @@ partial class Composition
           "    <<abstract>>\n" +
         "  }\n" +
         "  ProgramᐸStringᐳ *--  ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ : IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ\n" +
-        "  Composition ..> ProgramᐸStringᐳ : ProgramᐸStringᐳ Root<br/>provides ProgramᐸStringᐳ\n" +
+        "  Composition ..> ProgramᐸStringᐳ : ProgramᐸStringᐳ Root\n" +
         "  ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ\n" +
         "  ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *--  DependencyStructᐸInt32ᐳ : \"value type\"  IDependencyᐸInt32ᐳ";
   }

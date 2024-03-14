@@ -55,7 +55,7 @@ classDiagram
   Service2Func o--  "PerBlock" FuncᐸIService3ᐳ : FuncᐸIService3ᐳ
   Service3 *--  Service4 : IService4
   Service3 *--  Service4 : IService4
-  Func ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>provides CompositionRoot
+  Func ..> CompositionRoot : CompositionRoot PureDIByCR()
   FuncᐸIService3ᐳ *--  Service3 : IService3
 ```
 
@@ -90,7 +90,7 @@ classDiagram
 /// var instance = composition.PureDIByCR();
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNrVVkFuwjAQ_Irlc6VSOxItN0iKxA1Rjr6ExKJpCUZOQEKIP_CXXvodflInJnYcnNCEXnqxDLM7nszuOjnAgIUUDmCw8pPEi_wl92PCyTr_DcbbdQDIttfrj7I_sx0auSzesCRKI7aeMZaC6ZZTbzLau7Mcf87XFx0P5mBGE7ba0fPpe34-fbUKY4sPGqTZHo9B6i-v0mRAkSuT5vsNBalYOkS7oPnIvqf9qVpxwyp53OSN8l0U0CeQXDaXcwsAFQCqR1AtgisILpAq4BSAUz1GI8j27Ep_Dnp67bu5aa-KSIbgIdCWGUjZqwIwTdLP1aAEqT5tVINq1WgCi6IclKqynehOZa3oUuXu2A9SxvcNMvFtibhWIq6Th03D7q2qc1ukUyvSqRPp2Ga-PEkWZzVotpOmx1KZ6y-SlAv7pc7LajnEbIT7eao16crjdOaxXUBoWK4gMCdOVE252ZJAD0mJBP1bEjVqqpotCdQYqDL-CYF5u7Y1wAhgZjKBU8pHKxZ8EmgbuIKwZhbNW6zDI3XI1Bd73v5yFVeRzWWR-8tPk3y4Fpw8SrYNZ7sopFev80KAzaZWTQUfYEx57Eeh-NI6EJi-05gSOCAw9LkoxhEefwBrnzP7">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNrVVkFuwjAQ_Irlcw_UjkTLjSRF4oYoR19CsGhagpETkBDiD_yll36Hn9SJiY1TOzShl14sw-yOx7O7Vg4wZgsKBzBeRVkWJtGSRynhZF3-BqPtOgZk2-v1_eLPYof8gKUbliV5wtZTxnIw2XIajv19MC3xp3J91vFgBqY0Y6sdPZ--ZufTZ6swNn-ncV7s8Qjk0fJHmgyocmXSbL-hIBdLh-gANB_ZD7U_dStuWCWPG79Svkti-giyy-ZybgWgCkBuBDkRXENwhdQBrwK8-jEaQba7K_0lGOq1H5SmvSgiGYKHQFtmINdeVYBpkr5XgxKk-rRRDXKq0QQWRSUoVRU70Z3KWtGlyt1RFOeM7xtk4tsSsVMidsnDpmH3VtW7LdJzivRcIj3bzF9PksVZDZrtpOmxVBZE8yznwn6p87JaDjEb4X6eek268nideWwPEBpeVxCYEyeqptxsSaCH5IoE_VsSNWqqmi0J1BioMv4Jgfm6tjXACGBmMoETyv0Viz8ItA1cReiYRfMV63ClDpn6YS_bX67iKbK5LHJ__2niun6rZoEPMKU8jZKF-II6EJi_0ZQSOCBwEXFh8hEevwEw4iWI">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -277,7 +277,7 @@ partial class Func
         "  Service2Func o--  \"PerBlock\" FuncᐸIService3ᐳ : FuncᐸIService3ᐳ\n" +
         "  Service3 *--  Service4 : IService4\n" +
         "  Service3 *--  Service4 : IService4\n" +
-        "  Func ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>provides CompositionRoot\n" +
+        "  Func ..> CompositionRoot : CompositionRoot PureDIByCR()\n" +
         "  FuncᐸIService3ᐳ *--  Service3 : IService3";
   }
   

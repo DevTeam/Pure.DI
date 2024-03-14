@@ -82,7 +82,7 @@ classDiagram
   }
   Service *--  DependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
   Service *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ
-  Composition ..> Service : IService Root<br/>provides IService
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -116,7 +116,7 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqlVEtuwjAQvYrldaUiWEDZQUIltpClNyYZUbfEjhw3EkLcgbt00-twk_oT6jgQPu1mNLHfPL8343iHU5EBHuN0Q8syZnQtaU4k4fYbRSIvRMkUExyRz15vODV7JutP50uQFUsBLYRQfhklaAGl2FRwPHwnx8OXXR7Z-HITJlbvkCqTD16RouuzMgc41bqiZFsAUjr8AR2h60cOY5OdrNq92MdhZOtm6LcZ9nuCfAubG8321etO0zyGAngGPN3qdsy5GvR1SxDjym_UckPoUknG1wZb2qwFb9m4fEq3qW58YLEb1jTckja6KdB7u1NhWNAtMcQ9qtERBgP3FAOnLKIrPQ9aX6tZHS_R3NO7_5F2ub2fNbj9k-Yw0JXZ6_5fdvcQ5dlMO8wZ0vZr1bduXNSXpfWLhu-XbcVKkmcHLqSoWAZ-zoYfP-EcZE5Zph_MHcHqDXIgeExwRuUHwXu8_wGy5uvu">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqlVEtuwjAQvYrldRcoWYSygwQktpClNyYZpW6JHSUuEkLcgbt00-twkzp2aOJ8ILSb0djzZvzejO0TjkQMeIajPS2KgNEkpynJCddr5Is0EwWTTHBEPicTb1HGSs9ZrLeQH1gEaCOErLdRiDZQiP0Brpfv8Hr50ttTbV8fwsTuHSJZ-u4KSZp00gzglmuSwmMGSCrzB7SP7h_pBaV3k6pjQW09X-ct0W8z9HqO6hY2A832VfuG0zqADHgMPDqqdqy5dB3VEsS4rAMVXRu6lTnjSYkttNeCt2T0nzIsahhvSRyGNQW3qE0fEqy1jWRoJwxTtHHPcjQFrYHXJVzDzKc7NQ9aXatlZfvKjOnd_4oOqR1f1br98-Yw0J3Zq_73q3uqZGemA-LKou3fytFqjFWXpfVEO_8XfsEp5CllsfoPTwTLN0iB4BnBMc0_CD7j8w_23-CZ">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -279,7 +279,7 @@ partial class Composition
         "  }\n" +
         "  Service *--  DependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ\n" +
         "  Service *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ\n" +
-        "  Composition ..> Service : IService Root<br/>provides IService";
+        "  Composition ..> Service : IService Root";
   }
   
   private readonly static int _bucketSizeM03D14di;

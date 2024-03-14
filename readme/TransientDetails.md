@@ -58,7 +58,7 @@ classDiagram
   Service2 *--  Service3 : IService3
   Service3 *--  Service4 : IService4
   Service3 *--  Service4 : IService4
-  Transient ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>provides CompositionRoot
+  Transient ..> CompositionRoot : CompositionRoot PureDIByCR()
 ```
 
 ### Generated code
@@ -92,7 +92,7 @@ classDiagram
 /// var instance = composition.PureDIByCR();
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNrlVktuwjAQvYrldaVSOxUtO0ioxK6iWWZjgkXTkhg5Bgkh7sBduul1uEnztXGIkybtpurGSvTGb2befOQD9NmSwhH01ySOnYCsOAk97kXZP3A5ieKARgJ428FgOEmR9AtNbBZuWByIgEVzxgR43nLqzCZ7e57hD9n5qOyBC-Y0ZusdPZ8-3fPpo5MZW7xRX6Tf-AkIsrq6lhuUd_NL7n5DgUiOHtY2aHY5dJRIVSlapMrdzV4o3wU-vQNx8VH4LQFUAsiMICOCKwgukSpglYBVdaMQVJe7jD8DHXUO7Uy0qSTKTfAYKMk05FKrEtBFUnk1RILaI0HGSJApEqRHonSsyqWQalUUYq6KZUTuG1LG7SljY8rYlDLWU_5ph1jtQVrGIC1TkFbd_ricSr37FAPOndtkEQtOigmfFmcDT7VD-vJUZe_LY_XmqdtXaHxZJKAPaFIYqWZHAjlxUsY_RyAnSFawI4Hsblm6XyHQF3CX5PWF2SXrf3YT965Kj5v6Wwtlo5ufyaas65aE4JuvsGwxLLh3m7NtONsFS3r1ckmjgDcwpDwkwTJ5FB48KF5pSD048uCS8HcPHuHxC-TEWfs">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNrlVktuwjAQvYrldRfUdkXLDhIqsatoltmYYNG0JEZOQEKIO3CXbnodbtKQj43dOGnSbqpurERv_GbmzUc-wIAvGRzBYE2TxA3pStDIF36c_wNP0DgJWZwCfzsYDCcX5PKFJg6PNjwJ05DHc85T8LQVzJ1N9s48x-_z80HZAw_MWcLXO3Y-fXjn03snM754ZUF6-caPIKWrL9cKg-puccnbbxhIs6OHtQOaXQ5dJZIpRYtUhbvZMxO7MGC3ICk_Sr8VgCoA2RFkRbCB4AoxAVIBxHSjEFSXu4w_B111Dp1ctKkkKkzwGCjJNORaqwrQRVJ5NUSC2iNB1kiQLRKkR6J0NOVSiFkVhdirQqzIXUPKuD1lbE0Z21LGeso_7RDSHiSxBklsQZK6_XE9lXr3KQZcOHfoIkkFLSd8Wp4NPGaH9OUxZe_LQ3rz1O0rNL4uEtAHNCuMVLMjgZw4KeOfI5ATJCvYkUB2tyzdrxDoC7hL8vrC7JL1P7tZ7tceVelxU39roXx0izPblHXdkhF8_xUGb2DERETDZfbYO_gwfWER8-HIh0sq3nx4hMdP07xLiA">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -275,7 +275,7 @@ partial class Transient
         "  Service2 *--  Service3 : IService3\n" +
         "  Service3 *--  Service4 : IService4\n" +
         "  Service3 *--  Service4 : IService4\n" +
-        "  Transient ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>provides CompositionRoot";
+        "  Transient ..> CompositionRoot : CompositionRoot PureDIByCR()";
   }
   
   private readonly static int _bucketSizeM03D14di;

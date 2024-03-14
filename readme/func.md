@@ -62,7 +62,7 @@ classDiagram
     <<abstract>>
   }
   Service o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
-  Composition ..> Service : IService Root<br/>provides IService
+  Composition ..> Service : IService Root
   FuncᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 
@@ -97,7 +97,7 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdU0tuwjAQvcrI60pFyYKWHSSNxK6iLL0xzoimJXHkmEgR4g7cpZteh5vUsUnthNBKbEb2_N68N_aBcJEimRG-Y1UVZ2wrWU4lLcwdIpGXospUJgqg-8lkumhj7SlYLN9Q1hlHWAmhnBvWsMJK7Go8n77X59OXcT8Z-_xvmth8IFftOUxAse1VmU3oam3RuikRlDZ3ZEfwN-Q0bk8xllikWPDGyBDEzk4jU_oCy0FSOAcn5CDm6-hCY0pZ_E7q2-B-Rg_ZD_iwF7_FTPYF13vwKOiNQPp7SxhXQjZjo1mU0QYuPNTGDRJaBhHbVEpqFMvnYkeAekTvadPVC19LAEpeUXbvhIzz6cS9SXb4XQIzgbV6SYMd9T-QGX8j6aNNLqWosxQd4bb_7amCeZ_O9Vv0itpW5IHkKHOWpfrzHyhR75hr4jNKUiY_KTmS4w9PY3DN">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqdU81uwjAMfhUr5x1Qe2DjBu0qcZtYj7mE1GIdtKnSgFQh3oF32WWvw5ssbeiS_m0SF8uJ7Xz-PsdnwkWCZEH4gZVlmLKdZBmVNG_OEIisEGWqUpEDPc5m81Udqz1vtX5HeUo5wkYIZa8hhg2W4nDC2_U7vl2_muvnxr78mya2n8hV7fsRKLYblJmEttYUxVWBoLR5IDuAvyHnYe2FWGCeYM6rRgYvtHYeNKWvsO4l-UuwQvZiro42NKaUwW-lngZ3MzrIbsCFvd8bzOiYcz0Hh4KeCCS_p4hxJWQ11ppBGX3Ahvva2EZ8wyBg21JJjWL43O0IUIfoI8-09cLVEoCSN5TtPyHjfFpxJ8n218VrOjBWD6k3o8ECTYN6y263w6_mFNVPkSeSocxYmujdPlOiPjDTvBaUJEzuKbmQyw-jvWV4">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -264,7 +264,7 @@ partial class Composition
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service o--  \"PerResolve\" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ\n" +
-        "  Composition ..> Service : IService Root<br/>provides IService\n" +
+        "  Composition ..> Service : IService Root\n" +
         "  FuncᐸIDependencyᐳ *--  Dependency : IDependency";
   }
   

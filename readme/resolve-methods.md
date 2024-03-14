@@ -72,9 +72,9 @@ classDiagram
     <<abstract>>
   }
   Service *--  Dependency : IDependency
-  Composition ..> Dependency : IDependency RootM03D14di0001<br/>provides IDependency
-  Composition ..> Service : IService RootM03D14di0002<br/>provides IService
-  Composition ..> OtherService : IService OtherService<br/>provides "Other" IService
+  Composition ..> Dependency : IDependency RootM03D14di0001
+  Composition ..> Service : IService RootM03D14di0002
+  Composition ..> OtherService : IService OtherService
 ```
 
 </details>
@@ -127,7 +127,7 @@ classDiagram
 /// var instance = composition.OtherService;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdVEFuwjAQ_Irlc6UGqETLDRIqcagqUY6-mHgFaUkcOS4SQvyBv_TS7_CTJjZpNk4CpZeV7d3ZGY3X3tNQCqAjGm54lgURXykeM8USsye-jFOZRTqSCWGfnjecFLli1Z_M3kBtoxDIq16DOm9-08EsgBQSAUm4I3Mp9Ys3CHoPIvI8r4eqyiZOSb_iIQsyh0xutnA6fi9Oxy9z_Gji09UyuXyHUBfrwTPRfNWA2YISa0GLXQpE5-Ef1T65TDkMihUyxxpRxaFvoFOCHTRHY1LdjJPDF1Ol2pyy_KXt3eS4osaME5i2nADDibWLuh5HCZ6eG-RQg2MUCWt0wupqQ9ppi23kGl_1GVg9Pl9mWvHzJU_Psa1Tu5y_t6kZM8b2EHcEcleQ8ALsvt6-obAx9_QivvlmjeKlYvcWniq5jQRkN5I699j9_jvp0E9zhasxEJjQHYhWsmrMMC29ozGomEci_zj3jOYlMTA6YlRw9cHogR5-AMNpyhc">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqdVEFuwjAQ_Irlcw8hVKLlBgmVOFSVaI6-mGQFaUkcOS4SQvyBv_TS7_CTJnbSbExI2l5Wtnd3ZjRr-0hDEQGd0nDH89yP-UbyhEmW6j3xRJKJPFaxSAn7cJzJvMyVK3e-fAW5j0MgL2oLstr8pP2lDxmkEaThgayEUM_O2B_dR7HjOCNUVYNYJW7DQwKyglzs9nA5fwWX86c-ftDxcbBMrN8gVOV6_EQU31y1mYK61zQFhwyIKsI_qj3STznxyxUyxxjRxImnWxcEO6iPZqSZjJXDg2lSXU4Z_tr22-S4osWME5i2vgGaE2uP2nosJfj2_EEO1X2MImFXSFhd65LetMUA2cY3OGOjx-PrXEleDXlRxS6kbjm_h2kZM8P2EPsKFK4g4WWz_XpdTWFi4Wlvf-ebHQC0ZtT7tgegrmaJ8ewPh97RBGTC46j4yI6MFukEGJ0yGnH5zuiJnr4BLS-jzA">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -319,9 +319,9 @@ partial class Composition
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service *--  Dependency : IDependency\n" +
-        "  Composition ..> Dependency : IDependency RootM03D14di0001<br/>provides IDependency\n" +
-        "  Composition ..> Service : IService RootM03D14di0002<br/>provides IService\n" +
-        "  Composition ..> OtherService : IService OtherService<br/>provides \"Other\" IService";
+        "  Composition ..> Dependency : IDependency RootM03D14di0001\n" +
+        "  Composition ..> Service : IService RootM03D14di0002\n" +
+        "  Composition ..> OtherService : IService OtherService";
   }
   
   private readonly static int _bucketSizeM03D14di;

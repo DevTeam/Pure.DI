@@ -70,7 +70,7 @@ classDiagram
   Service o--  "PerResolve" Dependency : IDependency
   Service o--  "PerResolve" Dependency : IDependency
   Service *--  LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ : LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ
-  Composition ..> Service : Service Root<br/>provides Service
+  Composition ..> Service : Service Root
   LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ o--  "PerResolve" FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ : FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ
   FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ *--  ValueTupleᐸIDependencyˏIDependencyᐳ : ValueTupleᐸIDependencyˏIDependencyᐳ
 ```
@@ -106,7 +106,7 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNrNVUFuwjAQ_Irlc6VSONBygwQkpB4qGvXki0lWNG0SR46DRBFvKH_phT_0Ffykjp0QJwEKOVS9rJL1jndmsnbW2GUe4AF2A5oktk8XnIaEk0i9I4uFMUt84bMIkbTT6Y-yteypO3oGvvRdQDPGRJlFDppBwoIl7Lc7Z7_9Uul7FR9-LWPzN3BF9tybIEEXDZguKLAa5KxiQEKGFtUWOt-yb5dmvNAgBSeNg4zz1IYYIg8id_X9abxIKQ2nSqCmYJQjX0B4l1Op57unuRTmn_gozT4exMfayLTuYqFH-iHZ7y5VmQmV6OQYR6OBWrbL2LeU1eMKC5UaolJebc1UWC4dmyzTo-sFldhJGrltsdOT7HtavEXnieA0n7pxHisKLp41ZhqMEMFPwIt5x6jpsQH_yz7FvP6vbRR-WN2rxTHIm7Sbt_oV21XzoKM8JiZV2aNy6apZmnNyq2tjzpa-B4fLIdu9hZrz3l5_MArq7Y5Uy371r3rV3S3JXlqfUcQ3OAQeUt-T_9E1weIVQmnVgGCP8neCN3jzA1Ci05U">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNrNVUFuwjAQ_Irlcw8UDrTcIAEJqYeKRj35YpIVpE3iyHGQKOIN5S-98Ie-gp_UcRLZJEDBh6qXVbLe8cxO1s4G-ywAPMB-RLPMDemC05hwkqh35LA4ZVkoQpYgknc6_VGxVjx1Ry_AV6EPaMaY0FnkoRlkLFrBYbf3DrsvlX5Q8fHXMjZ_A18Uz70JEnTRgpUFNbYEeesUkJDBotpBlyn7rjbjlUY5eHkaFZqnLqSQBJD46-9P40W20nJKA0sJRjkKBcT3lZRmvnteS23-mY_S5gkgPUUj0yWLg57oh1S_v7bLolGJzk5pNAjUsqtj31FWj49UqNQQ6fYaa2aHeunUZJke3d6Qxk7yxLfFTs-q75XNO3SeCU6rqRtX8aiDq2eNmQYjRPAz8HreMWp7bMD_kqee1_-1jcIPj_eyOAYVid28Na_YrpqHMspjYkqVHM1L10LtZe9uH_xamt2RseRrfrWb7mYp9tr6QiK-wzHwmIaB_E9uCBZLiKVVA4IDyt8J3uLtD3K7yIk">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -303,7 +303,7 @@ partial class Composition
         "  Service o--  \"PerResolve\" Dependency : IDependency\n" +
         "  Service o--  \"PerResolve\" Dependency : IDependency\n" +
         "  Service *--  LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ : LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ\n" +
-        "  Composition ..> Service : Service Root<br/>provides Service\n" +
+        "  Composition ..> Service : Service Root\n" +
         "  LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ o--  \"PerResolve\" FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ : FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ\n" +
         "  FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ *--  ValueTupleᐸIDependencyˏIDependencyᐳ : ValueTupleᐸIDependencyˏIDependencyᐳ";
   }

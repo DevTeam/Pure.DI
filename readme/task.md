@@ -89,7 +89,7 @@ classDiagram
   TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
   TaskFactory *--  TaskScheduler : TaskScheduler
   Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
-  Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)<br/>provides IService
+  Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)
   TaskᐸIDependencyᐳ o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
   TaskᐸIDependencyᐳ o--  "PerBlock" TaskFactoryᐸIDependencyᐳ : TaskFactoryᐸIDependencyᐳ
   FuncᐸIDependencyᐳ *--  Dependency : IDependency
@@ -130,7 +130,7 @@ classDiagram
 /// var instance = composition.GetRoot(cancellationToken);
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNq1VktuwjAQvYrldaUiWNCygwQqVq2AZTbGGUFEYkeOg4QQd-Au3fQ63KROQojjfEhLu7Fsz-TN7z0rR0y5C3iEqU-iyPbIRpDAEQ5Lz8jiQcgjT3qcISfu9YaTxJbs-pP5EsTeo4DeQC44l-nty_IQSQjS_XS1FUBcj22yo0UYBd8nCdqK74Ahat6kjq95jKFdZLIi0c5ScInre5iskWHkTHosbnaYESq5OJQvl3QLbuyD0GquJKVMNoTAXGD0kPahbxfr0ErWwRTNDafBGBWohk1vZGHKWljXhLzXzcF1j1Jk3aCHvd5nMZNeXM5fWgmX8ydyb6fE3j6cyteFeRYz2mLWhtPiZXa3KGWQ9cAi60gKhZN15LrWZFtq1W9gtIQR1ydS5U4-jrHYxAEwiRxcJT02QVO0cQm5TgA5eIM2OiFWVVNCrRdVF-SbsnS8ktxKnK5BqPJRQ6plivlc9dPxZavSiCGRf3zAUiKthfOcRQ4F33suFNTLm1gtscwnRZcPEAuIuL8HB9crKa-nUWbdI018TncqTpsk9Sm0ybY5V3PY1XdT-8jg2706_kaB3fJ-SJI_CPGoRruHui9a_IQDEAHxXPXTcHSw3EKgmDlysEuEos4Jn74BrLkPww">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNq1VktuwjAQvYrldRcIFrTsIIGKVStgmY3rjCAisZHjICHEHbhLN70ON6mTEGI7H9LSbizbM3kz82aelSOm3Ac8wjQkcewGZC1I5AmPZWfk8GjH40AGnCEv6fWGk9SW7vqT-RLEPqCAXkEuOJfZ7fPyEEuIsv10tRFA_ICt86NDGIUwJCnaim-BIWrfZI4vRYyhW2ayIvHWUXCp69suXWPLyJkMWNLsMCNUcnEwL5d0A34SgtBqriSlTC7sgPnA6CHjoe-W69BJ18EUzS2nwRiVqJZNJ7I05RTWkVBw3Rxc9zAi6wY97PU-j5lycTl_aSVczp_Iv51Se3tzKl-X5lnCaItZa06Ll81uWcog58AhH7EUCidn5LrWZGtQ9RsYLWHE9Y5UZ6dox1iskwiYRB6uDj22QTO0sYFcJ4ACvEEbnRCrqjFQ60XVBfmmLB3PkJsx0zUI1XnUkGonxX6u-ln78lVpxJLI_z5g9RWY46Km4R3EAmIe7sHD9UIp0m1UUfdIk5DTrYrTpjid5DZVNudq97L6LGofWeN0r46_EVi3vB9S3A9CPCrB7qHuaxI_4QhERAJf_RMcPSw3EKnJHHnYJ0KNzgmfvgEIzgRu">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -242,7 +242,7 @@ partial class Composition
         "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
         "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ\n" +
-        "  Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)<br/>provides IService\n" +
+        "  Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)\n" +
         "  TaskᐸIDependencyᐳ o--  \"PerResolve\" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ\n" +
         "  TaskᐸIDependencyᐳ o--  \"PerBlock\" TaskFactoryᐸIDependencyᐳ : TaskFactoryᐸIDependencyᐳ\n" +
         "  FuncᐸIDependencyᐳ *--  Dependency : IDependency\n" +

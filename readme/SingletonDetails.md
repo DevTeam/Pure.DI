@@ -58,7 +58,7 @@ classDiagram
   Service2 *--  Service3 : IService3
   Service3 o--  "Scoped" Service4 : IService4
   Service3 o--  "Scoped" Service4 : IService4
-  Singleton ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>provides CompositionRoot
+  Singleton ..> CompositionRoot : CompositionRoot PureDIByCR()
 ```
 
 ### Generated code
@@ -92,7 +92,7 @@ classDiagram
 /// var instance = composition.PureDIByCR();
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNrlVktuwjAQvYrldaVSOxUtO0ioxK4Clt6ExKJpSRw5AQkh7sBduul1uEnzd2zipIRuqm6sRM_zZubNRz5Ah7kUjqCzsaPI8uw1t33CSZD9g4UXrDc0ZgEg28FgOEmR9AtNTOaHLPJijwVzxmLwuuXUmk325jzDn7LzWdwHSzCnEdvs6Pn0tTyfPq-6xlbv1InTb_wCYnt9YZZfKG1zo-U-pCBOjh63TdDucmgJkVQpOqTK3c0WlO88hz6AqPgo_JYAKgGkR5AWwQqCS0QFjBIwVDcCQU25V_FnoCXOoZmJNq2I8it4DGp9VUfqWpWALJLIqyUS1B0J0kaCdJEgORKhoyqXQNSqCERfFUOLPLakjLtTxtqUsS5lLKd8a4cY3UEa2iANXZBG0_6oT6XcfYIB585NexXF3C4mfFqcLTxqh_TlUWXvy2P05lH3FavXBwACFw4LqUugPKZJeSpNm2gy-7HMpc5dJeafI6jmqKpjLymrTq_K-Is08kq-Rgh5hV6jwD-zxDfWpr-99BJD2WDnZ7JHm_o4IfjhGy1bGytO7nO2kLOd59KLd00aBbyDPuW-7bnJk_FAYPxGfUrgiEDX5h8EHuHxG6YZZUo">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNrlVktuwjAQvYrldRfUdkXLDhIqsauApTcmWDQtiVFikBDiDtylm16HmzTk59iNkxK6qboZJXqe55k3H_kAPbHkcAC9NYtj12eriAU0omH6D2Z-uFpzKUJAt71ef3RBLl9o5IhgI2Jf-iKcCiHByzbi7mS0d6Yp_pjaJ3UezMGUx2K94-fT5_x8-rjqmFi8cU9evvEzkGz1zS07UPhmTvP9hgOZmA6nHdB8Zd9VIplStEiVXTeZ8Wjne_wexPlHfm8BoAJAdgRZEWwguEBMgBQAMa9RCKrLvYw_BV1l-04q2rgkyo7gIaj0VRWpalUAukgqr4ZIUHskyBoJskWC9EiUjqZcCjGrohB7VYgVeWhIGbenjK0pY1vKWE_51g4h7UESa5DEFiSp2x_VqdS7TzHg7HKHLWIZsXzCx7lt4DE7pCuPKXtXHtKZx9xXolofACiceWLDlxTqY5qUp9S0jib1H-pc5tyVYv45gnKOyjp2krLs9LKMv0ijr-RrhNBX6DUK_DNPfGNtuvtrLzGUDnZmkz1a18cJwc_faPAOBjwKmL9MnoIHCuUrDziFAwqXLHqn8AiPX9CbVtc">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -285,7 +285,7 @@ partial class Singleton
         "  Service2 *--  Service3 : IService3\n" +
         "  Service3 o--  \"Scoped\" Service4 : IService4\n" +
         "  Service3 o--  \"Scoped\" Service4 : IService4\n" +
-        "  Singleton ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>provides CompositionRoot";
+        "  Singleton ..> CompositionRoot : CompositionRoot PureDIByCR()";
   }
   
   private readonly static int _bucketSizeM03D14di;

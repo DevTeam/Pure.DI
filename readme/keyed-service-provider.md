@@ -72,8 +72,8 @@ classDiagram
     <<abstract>>
   }
   Service o--  "Singleton" Dependency : "Dependency Key"  IDependency
-  Composition ..> Dependency : IDependency RootM03D14di0001<br/>provides "Dependency Key" IDependency
-  Composition ..> Service : IService RootM03D14di0002<br/>provides "Service Key" IService
+  Composition ..> Dependency : IDependency RootM03D14di0001
+  Composition ..> Service : IService RootM03D14di0002
 ```
 
 </details>
@@ -108,7 +108,7 @@ classDiagram
 /// </list>
 /// </para>
 /// </summary>
-/// <a href="https://mermaid.live/view#pako:eNqVlNFOwjAUhl-l6bWJA0xQ7tyGxhhvkMvelPUEq2ydXSEhhHfgXbzxdXgT13ZzXRkTb0669j-nX__TbocTwQBPcLKiRRFzupQ0JZJk5htFIs1FwRUXGSLrIBiHek2PhvFTDDlkDLJki2ZCqJdgFA9uGA-CYOCoXkFueAK-ZPgrCdEczaAQqw0cD9_z4-HLTN-aePenTCzeIVF6PHpAii5P0qwAPYKqUGzefJsDUmXoSZjB55pLYM-wBdaTHaF-inGsR45f1psmjiOTOkWuqWbqHhHszJUkBKOmQZ7c6U_YLHX5aZHq5pzncRUGpp7wSVyhi9GyzT0ea_N5ZLaob0dTeGQJI7oolKSV9dMqdlXq5ru8TJ0vXK-QNoRnyxUokZV2XNQ991S6sv_IhmZ_G8sWnNbsfXnmOAtJrm16LsWGMyi6QP7H4d2E8w_7PEH77tQV9N74CqcgU8pZ-S_aEazeIAWCJwQzKj8I3uP9D0VgkHc">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqNVEFuwjAQ_MrK5x4CVKLl1iS0qqpeUo6-mHiVuiUxdQxShPgDf-ml3-EnTWxojKEJl9VmPTsez2qzIankSCYkXbCyjAXLFMupooX5hkjmS1kKLWQBdBUE47A5a7Jh_BzjEguORVpBIqV-DUbx4JaLIAgGDuoN1Vqk6EOGf5AQZpBgKRdr3O9-ZvvdtynfmXjfC5PzD0x1k48eQbPsrM0C4An1QYrtm1VLBF2HjoYEv1ZCIX_BCnlHdwTdKsZxkzl-WW_aOI5M6xRcU03pAShxarUSSqAdkAd35hO2R5f8tJKOw_lfj4swYo4FX4kLdGWc2OY-j5_q85RZUt-OlnhkFUZsXmrFDtZPD_ES02V919Mc-6XrFTSGiCJboJZFbcdV03Nf1TD7SzY099tYj-Ccs2_zegi9kXZuKLkhOaqcCV7_IzaU6HfMkZIJJZypT0q2ZPsLN3ptBQ">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -297,8 +297,8 @@ partial class Composition
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service o--  \"Singleton\" Dependency : \"Dependency Key\"  IDependency\n" +
-        "  Composition ..> Dependency : IDependency RootM03D14di0001<br/>provides \"Dependency Key\" IDependency\n" +
-        "  Composition ..> Service : IService RootM03D14di0002<br/>provides \"Service Key\" IService";
+        "  Composition ..> Dependency : IDependency RootM03D14di0001\n" +
+        "  Composition ..> Service : IService RootM03D14di0002";
   }
   
   private readonly static int _bucketSizeM03D14di;

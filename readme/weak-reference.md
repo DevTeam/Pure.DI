@@ -56,7 +56,7 @@ classDiagram
   }
   WeakReferenceᐸIDependencyᐳ *--  Dependency : IDependency
   Service *--  WeakReferenceᐸIDependencyᐳ : WeakReferenceᐸIDependencyᐳ
-  Composition ..> Service : IService Root<br/>provides IService
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -90,7 +90,7 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdVEtugzAQvYrldaVGZJE2uwRSKVuK1I03BqbUTcDIuEhRlDvkLt30OrlJjU1k82mCuhnZM2_mzczDHHHCU8BLnOxpVQWMZoLmRJBC35HP85JXTDJeIPI1my3WTaw5eevtK4iaJYBCzqV1owiFUPF9DZfzT3Q5f2v3k7bPd2E8_oRENuf5C5I0G6QZwDXXJEWHEpBU5h9oH92mXAR2G29AdyG8g4AiadreBlBCkarbQQ0wWFAHbridDEUlMpBjbA5IhwNrF75udIPcStq1QrbRXsxtyobGdDH8V2H_JncRHWY34NK2fsN5Z49pt8VRKfrjW665adKncSUFbYXdtHas0njL08tM-Cq8lbtK1NdHbdBJGijQS57ApwreRjUc_bft6emMVRr3JO6-dr2aWJBHAy4Fr1kKdplNffyAcxA5Zan6vRwJlh-QA8FLglMqdgSf8OkXbwqTRg">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqdVMGOgjAQ_ZWm5z0YPLB6U3ATryzJXnqpMMuiQknpmhjjP_gve9nf8U-2tJiWgkr2Mmln3sybmUc54YSlgOc42dO6DnOacVoQTkp1RwErKlbnImclIt-Tib9sYs3JW67fgR_yBFDEmDBuFKMIarY_wPXyG18vP8r9quzsKYxttpCI5jx9Q4JmvTQNuOXqpPhYARLS_AMdoMeUfmi28QF0F8EncCiTpu11CBWUqbwd5QC9BXXgmtvKkFQ8AzHEZoFUODTWD1SjK2RXUq4FMo06MbspExrSRfPfhL1PbiM6zHbApm39mvPJHtNui4NSuOMbrqluMqCbWnDaCrtq7VCl4ZbHlxnxVXgLe5XI1Udu0ErqKeAkj-CTBR-jGg73bXtqOm2lxo7EvdeOX3ABvKB5Kv8eJ4LFFxRA8JzglPIdwWd8_gMhX4fx">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -249,7 +249,7 @@ partial class Composition
         "  }\n" +
         "  WeakReferenceᐸIDependencyᐳ *--  Dependency : IDependency\n" +
         "  Service *--  WeakReferenceᐸIDependencyᐳ : WeakReferenceᐸIDependencyᐳ\n" +
-        "  Composition ..> Service : IService Root<br/>provides IService";
+        "  Composition ..> Service : IService Root";
   }
   
   private readonly static int _bucketSizeM03D14di;

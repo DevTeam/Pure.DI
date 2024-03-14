@@ -87,8 +87,8 @@ classDiagram
   Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.AbcDependency)  IDependency
   Service o--  "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency)  IDependency
   Service *--  AbcDependency : IDependency
-  Composition ..> Service : IService Root<br/>provides IService
-  Composition ..> XyzDependency : IDependency XyzRoot<br/>provides typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency) IDependency
+  Composition ..> Service : IService Root
+  Composition ..> XyzDependency : IDependency XyzRoot
 ```
 
 </details>
@@ -130,7 +130,7 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNrNVUtuwjAQvYrldaVSWEDZAaESuwpSqQtvnGSauiVxZBskirgDd-mm1-EmTey0cRJDUSuhbibOfDxvnp_lLQ55BHiIwyWV0mM0FjQhgqT6H014knHJFOMpIqtOpz8uYsWqO54tQKxZCGjOubLcHmSQRpCGG_S4easHkY_mIPlyDYf9h3_Yv2v3QNvbH9N48AKhKta9O6Ro3CozCV-1psjfZIBUbn6RPUGnW_a9YjUKQmtmneFVtj_R1VNkE6NdI92IP5nO9ythmk69mfk-SBqDD1JJ8z-mkoXl2qdxAXURQkoF48ZZA2KQor8BrJTQ3sPWQrvzwMVUrof_wVQNiMWUmbUN0561Xeuc9et2HJ_SzqhxbQfszqXf9LRJir6XN6Vu3dHuyWjPNYZB1DyRClXPjDOhgVSClldlWlrXTu7hzt-mxuvIZhc5RHqZS2bzY2PkdXgEL1gaL0HxlGCHyi6j82Ngzya0Ud98I7r62IzNZd5Qef3V0GceCHJtkjPB1yyCSiVn7O-k0fUIHet1AcobjOErnIBIKIvyh3dLsHqGBAgeEhxR8UrwDu8-AYXlki4">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNrNVUtuwjAQvYrldRcUFlB2kFCJXQWp1IU3xpmmbkmMbINEEXfgLt30OtykiZ0WJzEftRLqZjKej-fNy1izwUzEgPuYzalSIaeJpCmRJDNnFIh0IRTXXGSILFut7rDwFVp7OJ6CXHEGaCKEdswhLCCLIWNr9LR-rzpRhCagxHwF-91ntN99GHPPyLuzYWL2CkwXeuceaZo00mzAd65NitYLQDoXv4gO0OmS3bDQBjPm9GwiwoPsBiZ7hFxijGlgColnW_lhKW3RUTi230dFE4hAaWXPQ6o4K_WIJgXUKYOMSi6ssQLEIkV_A3iYhOYd7iw0K_d8TOXz8D-YqgBxmLK9NmG6vTZzvb1-v47jXboRFa5dh1u5tNuaLknxj3pbzq3f2z7p7fjasIjqf-SAqmPbCehMaUnLpzIqpe8mf3OXX1PhdeCyizxDep1H5vLjYhRVeARPeZbMQYuMYM-UXWfOj4G9mNBafn1HtM1vszIf89qUN7bGmXQvS0d2DL7BKciU8jhfaBuC9QukQHCf4JjKN4K3ePsFYAlYXg">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -340,8 +340,8 @@ partial class Composition
         "  Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.AbcDependency)  IDependency\n" +
         "  Service o--  \"Singleton\" XyzDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency)  IDependency\n" +
         "  Service *--  AbcDependency : IDependency\n" +
-        "  Composition ..> Service : IService Root<br/>provides IService\n" +
-        "  Composition ..> XyzDependency : IDependency XyzRoot<br/>provides typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency) IDependency";
+        "  Composition ..> Service : IService Root\n" +
+        "  Composition ..> XyzDependency : IDependency XyzRoot";
   }
   
   private readonly static int _bucketSizeM03D14di;

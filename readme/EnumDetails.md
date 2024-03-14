@@ -77,7 +77,7 @@ classDiagram
   Service3v3 *--  Service4 : IService4
   Service3v4 *--  Service4 : IService4
   Service3v4 *--  Service4 : IService4
-  Enum ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>provides CompositionRoot
+  Enum ..> CompositionRoot : CompositionRoot PureDIByCR()
 ```
 
 ### Generated code
@@ -111,7 +111,7 @@ classDiagram
 /// var instance = composition.PureDIByCR();
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNrVV81uozAQfhXL55XatS2l21tDUim3Ks3RF4dYLd0QR4YgVVXfoe-yl32dvsmC8U8gmMYEVdqLRfhmvvk8MxmbNxiLDYe3MN6yLJsl7EmylEq6U7_BfHdIAT1cX0-m1cvqCU0jke5FluSJ2C2FyMHDQfLZYvoaLRV-o9Zfzh6swJJnYlvwz4-_q8-PP0FmYv3C47x6xvcgZ08nbrWB8a2dVq97DvJyGWAdgf6Qk5nLTzsVX6SqDrd45LJIYv4TZPpBxzUAMgDyI8iL4BaCDdIGiAFIO4xDkH_vi6o5uGTrbVUwG60qXGlj96gIZm6dRCqxcxusNsF3wFE3kON8GqCZSLf3LrXGyPZyrxrkVeMIOhQpUKvy5sXIzHpk4q8lYq9E7JOHmwkbXHlDV6AAmahDqCboklqgscWG5BR3ifXntRg9syRALOkSS_xiybhiz5BKvL3qlalF9gwez3jAdfCIrbNcMj3A53rt4Wm34lCedpcM5SGDebqOI3R3XCTQnK1lYWw2AwncODwiQf8tif1P2WoGEthOt2UchaDnNAnezUAuPavVJB-H8GjajkNoc0dahM1rSGj_NAxE05nCBy6nWxH_prDnLmR5z7kt4fD-uNzTnOXf7nuJ5kt89bH1Xb7u3qlmdr2WR2TXaCh9z_y6UifCWtKrmm0vRZFs-MkXSSUA_oBl56Us2ZTfeW8U5s885RTeUrhhsuzed_j-D0zJq6M">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNrVV0tOwzAQvYrlNQuwLRW6I0mRuqtKl9m4qQWBpK6SNBJC3IG7sOE6vQn5-NOEOK3TCImNlebNvHmemY6ddxjwDYNTGEQ0Tb2QPiU09hN_W_0Gs-0-Bv7--nrilC_LJ-S4PN7xNMxCvl1ynoHFPmHe3HlzlxV-W6132h6swJKlPMrZ4fN7dfj8sjLj6xcWZOUzfgAZffrlVhtI39pp9bZjICuWAdYu6A858XR-2qk4kao63PyRJXkYsBuQigcRVwJIAsiMICOCWwiWSBsgEiDtMBpB5r3Py-ZgCV1HZcFUtLJwhY3aY0Xg6XXiVomdqWC1Cb4HmrqBHOdTAs1E6r13qZVGqpd71SCjGk3QoagChSpjXqTMtEcmPi0RGyVikzzcTNjgyku6HFnIRB1CBUGX1ByNLdYmp7hLrDmv-eiZJRZiSZdYYhZLxhV7hlRi7FWjTCGyZ_AYxgOug7t0nWYJFQN8JtYennYrDuVpd8lQHjKYp-s4QvfHRQLN2VoURmXTkkCPwyMS9G9J1H9KVdOSQHW6KuMoBD2nifVuBnKJWV1N8nEIj6btOIQqd6RF2LyG2PZPw4A3nX24YIkT8eDVhz13IcV7zm0J2_fH5Z7yLP9z30s0X-Irjq2_8tX3zmpm12txRHaNhsL3_K8reAWLjoppuCm-3959mD2zmPlw6sMNTYqu_IAfP3i-nTA">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -322,7 +322,7 @@ partial class Enum
         "  Service3v3 *--  Service4 : IService4\n" +
         "  Service3v4 *--  Service4 : IService4\n" +
         "  Service3v4 *--  Service4 : IService4\n" +
-        "  Enum ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>provides CompositionRoot";
+        "  Enum ..> CompositionRoot : CompositionRoot PureDIByCR()";
   }
   
   private readonly static int _bucketSizeM03D14di;

@@ -67,7 +67,7 @@ classDiagram
   ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'b'  Dependency
   ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'c'  Dependency
   Service *--  ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ
-  Composition ..> Service : IService Root<br/>provides IService
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -101,7 +101,7 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNq1VEtuwjAQvYrldaUiWKRlBwmVWFWCLL1x4hE1TezIcZEQ4g7cpZteh5s0thMcQhqkqt1MPB-_N34e54BTyQBPcZrRsow43SiaE0WE9VEo80KWXHMpEPkYjYK5yZnVeL5cg9rxFNBKSu3DKEYrKGW2g_PpKz6fPm34ydrnu2Uy2UKqzXrygjTd3GxzBc1etyneF4B0ZX5RHaJhyiDyaqyAsleR7dcFFVXXERQgGIh0b9q_VPnwjWQ-1SeKo2pUtbnI2yC0LS7QRXfrz5BnbifatHXccQ4dArHG41D-rMOyn2jiOgxpUmpFa0kXtb2CGezB8s7ax0ddTc2pTSag7tMu-FP85J_x0378qxnoQN3lrsDvDWr3WY_tLTlbTVhnwK4fur3iRJFHV1woueMM_FAYfPyAc1A55az6sxwI1m-QA8FTghlV7wQf8fEblSeUiw">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNq1VL1ugzAQfhXLc4coGWizJZBKmSoRRi_GnFJasJHtRkJR3iHv0qWvkzcp2BATSEGq2uXw_X53H2cfMRMJ4CVmGVUqSOle0pxIwo2OfJEXQqU6FRyRj9nMW9e--jRfb3cgDykDFAqhnRlFKAQlsgNczl_R5fxpzI9GPk2GifgNmK7Pi2ek6X6QZgPaXJsUlQUgXYlfRPtoHNILHBsh0OSFZ-WuoLzqOoACeAKclXX71yhnHlDmXPdIsVAtq8YXOOn5psUNuvJu9BVyyF1HF7axW8yxIVDSaimon3nY3gda2A59GistaUPpppE3ZUZ7MLir7vioz2k9de3xqP10A_60fvzP9dn9-jc70Cs1iV0Vn1rU_rWem79kZbVhvQUbXHT8gHOQOU2T6uE4EqxfIQeClwQnVL4TfMKnbx2XiTY">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -262,7 +262,7 @@ partial class Composition
         "  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'b'  Dependency\n" +
         "  ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'c'  Dependency\n" +
         "  Service *--  ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ\n" +
-        "  Composition ..> Service : IService Root<br/>provides IService";
+        "  Composition ..> Service : IService Root";
   }
   
   private readonly static int _bucketSizeM03D14di;

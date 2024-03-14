@@ -81,8 +81,8 @@ classDiagram
   class IDependencyᐸTᐳ {
     <<abstract>>
   }
-  Composition ..> ServiceᐸTˏT2ᐳ : IServiceᐸTˏT2ᐳ GetMyRootᐸTˏT2ᐳ()<br/>provides IServiceᐸTˏT2ᐳ
-  Composition ..> OtherServiceᐸTˏT2ᐳ : IServiceᐸTˏT2ᐳ GetOtherServiceᐸTˏT2ᐳ()<br/>provides "Other" IServiceᐸTˏT2ᐳ
+  Composition ..> ServiceᐸTˏT2ᐳ : IServiceᐸTˏT2ᐳ GetMyRootᐸTˏT2ᐳ()
+  Composition ..> OtherServiceᐸTˏT2ᐳ : IServiceᐸTˏT2ᐳ GetOtherServiceᐸTˏT2ᐳ()
   ServiceᐸTˏT2ᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ
   OtherServiceᐸTˏT2ᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ
 ```
@@ -131,7 +131,7 @@ classDiagram
 /// var instance = composition.GetMyRoot&lt;T, T2&gt;();
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqlVEFOwzAQ_IrlMxJVegj01iYF9YCQSo6-OMmqGJo4ckykqOob6F-48Ade0Z-Q2IEEYjclXFaOd3Y82R17hyMeA57haEvz3Gd0I2hCBEnVN_J4kvGcScZTRF4mE3dR5-qVs1g9gChYBMfDe_DxGjjHwxu6BXlXrjmXnU2FvlLxerD6Xj6C6KfMHChAa8j5tlDQv8J4-ASRrNfTGyTpplemAV-1uigoM0CyCiPQHjp9pOvXK0NfFMxvo-spiiUyNVGl5qidoQXTHWUD0aJXPmSQxpBGZdMvFH_vmBRbZjZONlZsBHd-wOaJCtCXaj_UjP3RKjOk26kWYfKa7ofmsv1kyzbV0jwa5lLQxhfLJpoYh-SdT_j7XjsKpWPVK_t8Rl16JSoU5FLTZ4IXLAZji84Qd8pudoXnPCw2na0pLYpt5p933Ygs9qo19zKD9-p_1PgCJyASyuLq6d8RXJ2UAMEzgmMqngne4_0nnqRcHQ">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqlVEFOwzAQ_Iq1Zw5Vegj01iYF9YCQSo6-uMmqBJo4ckylqOob6F-48Ade0Z-Q2IGkxG5KuKxs7-zsenfsHYQ8QphAuGF57sdsLVhCBU3Vnng8yXgey5inhL6ORu6s8lUrZ7Z4RLGNQzwePoLPt8A5Ht7JHcr7Ysm5bB0q9LWyN73RD_IJRddl5iABWWLON1sF_SuMr54xlNV6fEskW3fCNOA7VgcFRYZElmYA2iPnU7p-tTL0RcH8xrqeopgTUxOVa0qaGVow7VHWEF30wscM0wjTsKj7RaKfE1PFlpkNKxsUG4XWBWyaKAHdUu1JzdiTVpkh7U41CJPWdD80l-2SDdtYl-axVS4Fq3Uxr62Jsa-8ywl_v2tHobQte2Wfz9BH35PwnITsWS_8LGzSnLa1QizDr7J3PL2q_x81XEGCImFxVH7MOwplpgQpTChETLxQ2MP-C1eSNVM">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -297,8 +297,8 @@ partial class Composition
         "  class IDependencyᐸTᐳ {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  Composition ..> ServiceᐸTˏT2ᐳ : IServiceᐸTˏT2ᐳ GetMyRootᐸTˏT2ᐳ()<br/>provides IServiceᐸTˏT2ᐳ\n" +
-        "  Composition ..> OtherServiceᐸTˏT2ᐳ : IServiceᐸTˏT2ᐳ GetOtherServiceᐸTˏT2ᐳ()<br/>provides \"Other\" IServiceᐸTˏT2ᐳ\n" +
+        "  Composition ..> ServiceᐸTˏT2ᐳ : IServiceᐸTˏT2ᐳ GetMyRootᐸTˏT2ᐳ()\n" +
+        "  Composition ..> OtherServiceᐸTˏT2ᐳ : IServiceᐸTˏT2ᐳ GetOtherServiceᐸTˏT2ᐳ()\n" +
         "  ServiceᐸTˏT2ᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ\n" +
         "  OtherServiceᐸTˏT2ᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ";
   }

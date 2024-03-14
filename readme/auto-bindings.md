@@ -39,7 +39,7 @@ classDiagram
     +Service(Dependency dependency)
   }
   Service *--  Dependency : Dependency
-  Composition ..> Service : Service MyService<br/>provides Service
+  Composition ..> Service : Service MyService
 ```
 
 </details>
@@ -76,7 +76,7 @@ classDiagram
 /// var instance = composition.MyService;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNp1UbsOgjAU_RVyZxMJDCgbWEYn1y61vdFG25KCJITw71IQeelych85j942wI1AiIE_WVEQyW6WKWqp7nvvZFRuCllKoz368v0odTtXBekFbSU5euf6U42riEwCBHPUAjWvN_xp1feHHo-_REanPwkG-sxJLJVXmnO1IOmRDOit44bJbOK463sE2YRhtgjacbcXcvPT1dL9QMitqaTA7wudBexAoVVMiu5XGgrlHRVSiCkIZh8UWmjfeh2VZQ">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNp1UMsOgjAQ_JVmzx4IHFBuYDl68tpL02600bakRRNC-HehSHiIl8nuTmZ2Mi0IKxEyEE_uPVX85rhmjpmwk7PVlfWqVtYQ9oqitBi4YYqLK7q3EkguzXeaqJTOBhQrNBKNaH70MxX2Y8DTnsn06U-CUb74JNfOG8-lW5wHpCOSbdwkX1wG7baPuJwxKVdBe-1uQ3AAjU5zJfvWWwb1HTUyyBhI7h4MOug-cCKKWQ">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -143,7 +143,7 @@ partial class Composition
           "    +Service(Dependency dependency)\n" +
         "  }\n" +
         "  Service *--  Dependency : Dependency\n" +
-        "  Composition ..> Service : Service MyService<br/>provides Service";
+        "  Composition ..> Service : Service MyService";
   }
 }
 ```

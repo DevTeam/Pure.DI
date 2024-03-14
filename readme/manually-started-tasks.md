@@ -95,7 +95,7 @@ classDiagram
   TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
   TaskFactory *--  TaskScheduler : TaskScheduler
   Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
-  Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)<br/>provides IService
+  Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)
   TaskᐸIDependencyᐳ o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
   TaskᐸIDependencyᐳ o-- CancellationToken : Argument "cancellationToken"
   FuncᐸIDependencyᐳ *--  Dependency : IDependency
@@ -132,7 +132,7 @@ classDiagram
 /// var instance = composition.GetRoot(cancellationToken);
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNq1VUFuwjAQ_Irlc6UiONBygwAVp1bA0RdjryAisSPHQUKIP_CXXvodftLYIY0TJwi16mVle-zZ3fHEOWEmOeARZhFN02lIt4rGRBFh5yiQcSLTUIdSIJL1esOJwcyoP1msQB1CBugN9FJKbVdfVsdUQ2zHs_VOAeWh2BbTgAoGUUQN21ruQSDWXLEbX8scw2lVyZqm-zllWqqjU553PoemkIDgINjRltyfVnEYmDiYoUVj02CMKtYG5vZcQUW3bfWWsnQnd3fUMruAm_a2XuQ0SlwvX04L18sn4j8zg9_X0TtdwfNMsDtwU7eqyEHRXUA3qVb5PRW93mJLHTURfkPjGAJJV2vfFaXQY7XNYhAaEew7DzdJLdu4xmzVC3JTm2PviYlpSd4CPcwohQ5F1snqw48yr9gOeBaBcvl-Fj23tjD4TnOYWp3SfDP69vqKmLu_Yf5_fEWskTaKPBeZEyUPIYfKeqWIfot1P-V2-QC1hFRGByC4_Rsp--n8gB7J9AfndhfVvFX_6XMOGSr8hGNQMQ15_l84Eax3EOd9jwjmVO0JPuPzN8XSPCc">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNq1VEtuwjAQvYrldRcIFrTsIJSKVStg6Y3rjCAisZHtICHEHbhLN70ON2nsEOLYCUKtuhnZ8-w3Hz_PETMRAx5hllKlpgldS5oRSbjdo0hkO6ESnQiOSN7rDScGM6v-ZL4EuU8YoDfQCyG09T4vD0pDZtevq40EGid8XW4jyhmkKTVsK7EFjpjvsQdfqhjDaZ3JiqrtjDIt5MFJL7hfQFPYAY-Bs4NNuT-t7TAydvCK5t6hwRjVrB7m1lxDZbVt-VZt6Q7unmhEdgE37NVfxjSduJy_nRIu5y8U33YGv9_H4HYNz3LO7sB-3-okB2V1Ef1UWhbvVNZ6tS15NJrwGxpHEEi4vQ5VUTV6LNd5BlwjgkPlYZ_Uso0bzLZ7USFqc-19Z6yqyFughxkF1wnPO1lD-FHmJdtAnKcgXb6bM1BrC0OoNIepVSn-zOjb5yttoX5P_P87RdoraMqlUMMHyAUoke6B4PYvUKXb-T8eifQHYXYn5T9aONmcS4YKP-EMZEaTuBj7R4L1BrKi7hHBMZVbgk_49AMpwDDS">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -229,7 +229,7 @@ partial class Composition
         "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
         "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ\n" +
-        "  Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)<br/>provides IService\n" +
+        "  Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)\n" +
         "  TaskᐸIDependencyᐳ o--  \"PerResolve\" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ\n" +
         "  TaskᐸIDependencyᐳ o-- CancellationToken : Argument \"cancellationToken\"\n" +
         "  FuncᐸIDependencyᐳ *--  Dependency : IDependency";

@@ -84,7 +84,7 @@ classDiagram
     <<abstract>>
   }
   Service o--  "Singleton" Dependency : IDependency
-  Composition ..> Service : IService Root<br/>provides IService
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -118,7 +118,7 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdU0tugzAQvYrldaVGsKDNroFUyjZh6Y2BEXUDNjIuUhTlDrlLN71OblJsgzAu_aib0TCf9948mTPORQF4jfOKtm3CaClpTSTh5hvFom5EyxQTHJG31Sra6J7Ogs3uALJjOaC9EGoqoxTtoRVVB7frR3q7vpvyg4mPv46J7BVypfPwGSlaflmzA-OuXUpPDSDVh39Mx-hnyijRWQIN8AJ4fjI2BMkUo9isbtHOGwqf0GSk13N9nFpLTln-0ervyd2JGbPbcGmHuuV0tRdzPZ4SC-rfOgGHVlFMs1ZJOvi6HeIS0rK-v8OM-8L1BiGCD4yXFSjBCfbt7w1yLtAo_kMPDJeNvb2eu_Onb4Rmktzb4UaKjhUwnabx8R2uQdaUFf2_diZYvUANBK8JLqg8EnzBl0_bFzKn">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqdk71ugzAQx1_ldHOHCIa02RpIpawJoxcHTpQWbGTcSFGUd8i7dOnr5E0KNgjHoW3U5XS-r__5J_uIqcwIF5iWvGnigueKV0wxYc4QyaqWTaELKYB9zGbzZZfrvGC53pLaFynBRko9hiGBDTWy3NPl_JVczp8m_Gjs059lcvdGqe788AU0z2_abMHQa5uSQ02gW_OP6gh-l5zHnRdTTSIjkR4MhiAe7TwyrStYe0XhM4wgvZzLcUxNkbL6A-qfxd2KK2U34cr2cavp7p5d7-NtYof6dx0Hh3ajiO8arXjPddXbqUnT-90_ZuiXLhsAhttC5CVpKRj6-FtAzg26Kf5DD4yWtS1ej-7N08cHrEhVvMjar3RkqF-pIoYLhhlX7wxPePoGAq4nUg">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -296,7 +296,7 @@ partial class Composition
           "    <<abstract>>\n" +
         "  }\n" +
         "  Service o--  \"Singleton\" Dependency : IDependency\n" +
-        "  Composition ..> Service : IService Root<br/>provides IService";
+        "  Composition ..> Service : IService Root";
   }
   
   private readonly static int _bucketSizeM03D14di;

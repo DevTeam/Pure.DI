@@ -77,7 +77,7 @@ classDiagram
   Service3v3 *--  Service4 : IService4
   Service3v4 *--  Service4 : IService4
   Service3v4 *--  Service4 : IService4
-  Array ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>provides CompositionRoot
+  Array ..> CompositionRoot : CompositionRoot PureDIByCR()
 ```
 
 ### Generated code
@@ -111,7 +111,7 @@ classDiagram
 /// var instance = composition.PureDIByCR();
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNrVV91OwyAUfhXCtYkTSKbebd1MvDNzl71hG9GqHQutTZZl77B38cbX8U1sodAfYZN2MfGGsH2c73ycc3qAHVzyFYO3cPlGk2QS0SdB41CEa_kbjISgWxC-DwbDcfFvMUPjgMcbnkRpxNczzlPw8C7Y5H68DWYSv5bjTbUezMGMJfwtY1-Hz_nX4cNrGV-8sGVazPEdSOnTDzO1QNsqo_l2w0CaDx1WB-C4y-GkClA7FCdCpdzdPzKRRUt2BZJyUvrVANIAciPIieAWgjXSBogGSNtNhSD33mVx5KkyfoqU5ajZnTSdVOMwkCGdGjdqCR6BirSB1COpgWYIq13bdOpFVRkflYOccmoMFk0KVcJsQdEakyMa8Wl52CkPu5ThZrQ6J1zTZchDJrIILQlsUjN0brE-McU2se64ZmePLPEQS2xiiVssOa_YX0glzlp1yixFuvtNs2tUDFg5D-giSQUt-_a0HI_wtEuxK0-7SrrykM48tlMIjepJAs3GmifGRNOToNYKayzoH7OYz8ok1JPAFLvJ5FkIrEeJ9z68WcoWLRt4X6pae-1LZWJEWlTN64Z3oVjuCC0Op9ac6sQdCPtnvb-lPqT_3LaP5j625Xn0V7a1SpHdWI354Wf74nPjXz6XZK9fiPBSsW0Ez6IV-_HEKBTACxgzEdNolb_cdiFMn1nMQngbwhUVryHcw_03bjyafg">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNrVV0tuwjAQvYrldRfUtkTLDhIqsasoy2wMWG1aQpATIiHEHbhLN70ON2l-dj61A04ipG6swJt58zwzGTtHuPLXDI7gakODwHbpO6eew51t-huMOacH4OwHg-Ek-Td5QhPL93Z-4Iauv537fghe95zZs8nBmqf4U7o-F_ZgAeYs8DcRu5x_Fpfzt5GZv_xkqzB5xi8gpO9_3DID4Zs5LQ47BsJ4aWFtgeaQQ7tIUD0VV1KVhZu9MR65K_YIgvwhjysAJACkR5AWwTUEC6QOEAGQepgCQfq9p80Rl0rGSUoWo3J3qatdrEMrTelUhslM8BgUpBWknEkBVFNY7FqlUxgVbdwoB2nllBgUmjI0E6ZKitAYNGjE1-VhrTysU4ar2WpdcEEXIQOZSCE0J1BJjVDfYk1yilVi9XmNes8sMRBLVGKJXizpV-wNUom2V7Uyc5H6eVOdGgUDzoJbdBmEnOZze5qvDTz1VmzLU--StjykNY_qFELjcpFAdbDGhZHZNCQojcISC_rHLPK1kgU1JJDNLivZC4HyKDHehzFLPqLTAd6VqjReu1LJHJEaVfW6YdwoijtCjUOrNaa6cgfC5lXv7ikO6bv7dtHcxTc_j-7lW-qUdBpna3z4qd742Pn2zyX4AD3GPequ4y-yowPDD-YxB44cuKb8y4EnePoFSCaMCw">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -313,7 +313,7 @@ partial class Array
         "  Service3v3 *--  Service4 : IService4\n" +
         "  Service3v4 *--  Service4 : IService4\n" +
         "  Service3v4 *--  Service4 : IService4\n" +
-        "  Array ..> CompositionRoot : CompositionRoot PureDIByCR()<br/>provides CompositionRoot";
+        "  Array ..> CompositionRoot : CompositionRoot PureDIByCR()";
   }
   
   private readonly static int _bucketSizeM03D14di;

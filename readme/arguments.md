@@ -81,7 +81,7 @@ classDiagram
   Dependency o-- Int32 : Argument "id"
   Service o-- String : "name"  Argument "serviceName"
   Service *--  Dependency : IDependency
-  Composition ..> Service : IService Root<br/>provides IService
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -115,7 +115,7 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdlL1uwjAQx1_l5LlSUTLQskFCpSwdgNGLia3ULbEjxyAhxDvwLl36OrxJYzuRnRDaqsvJ9n34f7-Lc0K5pAzNUL4jdZ1yUihSYoWF3UMiy0rWXHMpAO8nk-nC-MwqWmRrpg48Z7CSUvtj2MCK1XJ3YNfL1-Z6-bTHT9Y-_xomt-8s12Ydv4AmxU2aC-hyXdLmWDHQjflHdAI_XzlNPY1M6Djy27VWXBRmn7KKCcpEfrSUotTbaWIrLyEbBMVz8KUGvhCzdzn5VgRwOiazm8h9EWFET0HoCK9vz93drmMQpOzghV3RvtJxhHc7jZ3GhGxrrUg7kGVrxyqNK_57mUCJDIG5MXeE5qrYl0xowKhhjkLK_ayWTQcWWUgIwgK1S3y1npt5zXvlhp9EUzNgZ5KHbzOyXTrbjHow6f5rtYi2Cj-64ErJA6fMQzX10QMqmSoJp83v4YSRfmNG9wwjStQHRmd0_gY0p23Q">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqdU8FuwjAM_RXL5x1Qe2DjBi2TuOwAHHMJrdVl0ASlAQkh_oF_2WW_w5-sTVo1LWWbdrHi2H55fo7PmKiUcILJjhdFLHimec40k9aHSOV7VQgjlAR2GI3GsypWnYLZYkX6KBKCpVKmvYY1LKlQuyPdrl_r2_XTXj9b-_Jrmtp8UGKqc_gKhmd3ZS6hqXVF69OewJTmH9kR_PzkOG7VWEgTBq27MlrIrPJj2pNMSSYnq1IQt3YcWeQ5LHpJ4RRaqF7Ml7kNOfqWBIh0iGYzkcck_IwOAz_gP1_fu7ddxyB53ojnd5V2mQ5L-LDT0HGM-KYwmtcDmdd2CGmY8d9hPCbKF8yNuVFoqrNDTtIAw1Jz9FXuVtXaNMKiFQnBByhc4ZuN3M1r2oHrf4kS09OuKu7vZmC7dLYcdW_Sd9uKT5iTzrlIy-0_MzTvVNGaMEy53jK84OUbu25iew">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -292,7 +292,7 @@ partial class Composition
         "  Dependency o-- Int32 : Argument \"id\"\n" +
         "  Service o-- String : \"name\"  Argument \"serviceName\"\n" +
         "  Service *--  Dependency : IDependency\n" +
-        "  Composition ..> Service : IService Root<br/>provides IService";
+        "  Composition ..> Service : IService Root";
   }
   
   private readonly static int _bucketSizeM03D14di;

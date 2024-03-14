@@ -68,7 +68,7 @@ classDiagram
   IEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency
   IEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
   Service o--  "PerBlock" IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ
-  Composition ..> Service : IService Root<br/>provides IService
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -102,7 +102,7 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdVEtuwjAQvYrldaWisKBlBwmVsqsoiy68cZwRNU3iyDFIFHEH7tJNr8NN6tikcT6Eis3Inu-bN2MfMBMx4ClmCS2KgNO1pCmRJDN35Is0FwVXXGSIbEejyby0lSdvHr6B3HEGaCmEqtVohZZQiGQH59PP6nz6NuonI59vuoloA0yV5_ELUnTdCbMOVawNWu1zQEqLO7x9NFxyEtRshItsm4KkUVKCDgPIIYshY_sSvvaaRazWGb68oJYT39RYoLDlNJ6hukY3h8t5w9pHrIX7vv-6E4jnQOlmcaE0rNehVEtyHYTr0aDCNbiVL3pbc2gmKK5uHIqBsV7tcmxB-jQqlKSXJVlcZF-mfsj_TzPYjelg5hKJetZFU-jE3ZW0O3izGe28VbOiGU3wK8h5ItgnwYNP5g_ujWfV_oQ8Q52VeoFa-9P8lgzvkSSP1jmXYsdjqCdV5scPWJdPKY_1P3ggWH1ACgRPCY6p1E0c8fEXEK_NaQ">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqdVL1ugzAQfhXLc4eIDGmzEaASW5Vm6ODFmFNKCzgyTiQa5R3yLl36OnmTGgPF_KZiOdn3-93n850x4yHgNWYxzTI3ontBEyJIqu_I4cmBZ5GMeIrIcbFYbQpbcbI2_iuIU8QAbTmXjRrt0BYyHp_gdv3Z3a7fWv2o5dNdNx58AJPFefmMJN33wkqHOrYM2uUHQFKJGd4Omi65chs2fC89JiBoEBegfRcOkIaQsryAr7zsgDU6zZflNnLl6Boe8jtOSxs1Nfo5TM5b1iFiS7hv-ddMIJYBpZ_FhNKyjkOph2QchOnRosI0mJUrfVlz6k1QWN8iyCaedbTLZQnSoUEmBa2GxKvkUKZhyP9PM9mN7sA2iUQD46IoNOJmJe0_vJ6Mbt66Wd6OJvgFxCbm7JPgyS_zB_fOt-ouIUtTV0o1QJ356a0l_IBV9oRGoVpzZ4LlOyRA8JrgkAqF8YIvv0QJwhQ">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -271,7 +271,7 @@ partial class Composition
         "  IEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency\n" +
         "  IEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency\n" +
         "  Service o--  \"PerBlock\" IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ\n" +
-        "  Composition ..> Service : IService Root<br/>provides IService";
+        "  Composition ..> Service : IService Root";
   }
   
   private readonly static int _bucketSizeM03D14di;

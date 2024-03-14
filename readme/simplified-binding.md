@@ -76,7 +76,7 @@ classDiagram
   Service o--  "PerBlock" Dependency : Dependency
   Service o--  "PerBlock" Dependency : IDependency
   Service o--  "PerBlock" Dependency : IOtherDependency
-  Composition ..> Service : Service MyService<br/>provides Service
+  Composition ..> Service : Service MyService
 ```
 
 </details>
@@ -113,7 +113,7 @@ classDiagram
 /// var instance = composition.MyService;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqlU8FqwzAM_RWj82ClPaTrbUl2yGFssKsvri02szgOSlYopf8-x25ax01hdBch5UnPz8_RAaRVCBuQtei6UotPEoYTb3zNCmta2-le24bxn8UiywdsyJb5B9JOS2Sv-1M2Qll5IRibbgz7Yl1ii43CRu6ZOqeVaWsPF6yabRjBt_4LKeqw09q3PU21Rd0eLi8xK4a4epkc6j89sz-PppKi-WBLgsXOJMrXc_oDSXWTZRWUFGLb9SRkH3Sd4hzTnOB76MbntrE3jHF4R8prK785sGtfoivfzRGZ8Q-SxIeBKV2Bpb94iO6t4x_cMVwvhXduS_wxDLRkd1rheTOGI-ABDJIRWrlFPHBwIgxy2HBQgpzSIxx_ASxZPQ8">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqlU8GOwiAQ_RUyZw9GD3W9bVsPPRg38cqFhclKLKWh3U2M8d-lYFdKMDF6mQx9M483j84ZuBYIa-A167pSsh_DFDW0cWdSaNXqTvZSN4T-zudZPmBDtsj3aP4kR7I93bIRyso7wVj0oNkdViW22Ahs-ImI_7RSbe3gglTJghHc9Qc0QYWenl3Zx1RbUO3g8h6zYojLzeRS9-mTPN0aSwr6vS0RFjoTKV-l9HuS6iHL0isp2HfXG8Z7r-sWU0wpwa_Qjc-tQ28IofCFJq81P1KIZ7e-BCO_zBGY8QZJ5MPAFK_Awg3uo33r8Ae3DMmlgBkoNIpJYRftTMFeopDCmoJgxiq5wOUKLcMyAw">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -191,7 +191,7 @@ partial class Composition
         "  Service o--  \"PerBlock\" Dependency : Dependency\n" +
         "  Service o--  \"PerBlock\" Dependency : IDependency\n" +
         "  Service o--  \"PerBlock\" Dependency : IOtherDependency\n" +
-        "  Composition ..> Service : Service MyService<br/>provides Service";
+        "  Composition ..> Service : Service MyService";
   }
 }
 ```

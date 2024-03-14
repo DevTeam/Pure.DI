@@ -76,7 +76,7 @@ classDiagram
   IAsyncEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency
   IAsyncEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
   Service *--  IAsyncEnumerableᐸIDependencyᐳ : IAsyncEnumerableᐸIDependencyᐳ
-  Composition ..> Service : IService Root<br/>provides IService
+  Composition ..> Service : IService Root
 ```
 
 </details>
@@ -110,7 +110,7 @@ classDiagram
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdVEtuwjAQvYrldaWisKBlFxIqZUtZdOGN44yoWxJHtkFKEXfgLt30OtyksQ2K8-EjNiNnZvzmzZuJd5iJDPAUszVVKuZ0JWlOJCnsN4pEXgrFNRcFIpvRaDIzMXMKZsk7yC1ngBZC6MaNlmgBSqy3cDz8LY-HX-t-sfb1ZppIv4Bpcx6_IU1XvWsu4XzXXVpWJSBdmweyI3S95CRu1EhCVRVsXmxykDRdG-ZJDCUUGRSsMj3UqWHKGp8VLYgbO4lsoTlKOknjEDWF-hi-8K3okLqO80f18yCRwKPSR_GptKKXqZw35TIJP6MlhR_wK5_8rubNwaDs_MVBXRnwxVbHjmlEU6UlPa3L_GSHkIZ53w9zuyXbRuhLigYWpxbTu_c4cn8P7KJ0wVuT7kDcV9gQvuc_6z5NgZXR2XqjOgvVfqzsDFJJnl1yKcWWZ9BMzeDjJ1yXzynP6tdxR7D-hBwInhKcUflN8B7v_wFad9Zk">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqdVEtugzAQvYrldRcRLNJmRyCV2KYsuvDGmFFKEzDCTiQa5Q65Sze9Tm5SYyfC_BKUzcjM582b58FHzHgCeIHZjgoRpHRT0oyUJNffyOdZwUUqU54jsp_N5ss6Vp-cZfgB5SFlgNacy8aNIrQGwXcHuJz_osv5V7tftX17mMbjb2CyPrvvSNJNr8wk3GpNUVQVgKQyT2T76H7LedCoEXqiytkq32dQ0nhXMw8DKCBPIGdVPYNK9WLW-LRoTtDYua8brVDYSXI91DTqY9jCt6JD6hrOn9XPk0Qci0ofxabSio5TuW3KOAk7oyWFHbA7X_2m58OLQcntKwVx54JHR3UNU5_GQpb0ui6rqx1CGuY9HebxSHoMz5YUDSyOEtOqex65vwd6UbrgrZvuQExrXBOe8p91nyZHy2is2qjOQvUeK_yCFXpG00Q9fkeC5RdkQPCC4ISWW4JP-PQPZWfLDw">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -279,7 +279,7 @@ partial class Composition
         "  IAsyncEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency\n" +
         "  IAsyncEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency\n" +
         "  Service *--  IAsyncEnumerableᐸIDependencyᐳ : IAsyncEnumerableᐸIDependencyᐳ\n" +
-        "  Composition ..> Service : IService Root<br/>provides IService";
+        "  Composition ..> Service : IService Root";
   }
   
   private readonly static int _bucketSizeM03D14di;

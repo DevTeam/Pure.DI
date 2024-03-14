@@ -95,8 +95,8 @@ classDiagram
   IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : "Xyz"  IDependencyᐸStringᐳ
   IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  AbcDependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
   IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  XyzDependencyᐸInt32ᐳ : "Xyz"  IDependencyᐸInt32ᐳ
-  Composition ..> ServiceᐸInt32ᐳ : IServiceᐸInt32ᐳ IntRoot<br/>provides IServiceᐸInt32ᐳ
-  Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ StringRoot<br/>provides IServiceᐸStringᐳ
+  Composition ..> ServiceᐸInt32ᐳ : IServiceᐸInt32ᐳ IntRoot
+  Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ StringRoot
   ServiceᐸInt32ᐳ o--  "PerBlock" IEnumerableᐸIDependencyᐸInt32ᐳᐳ : IEnumerableᐸIDependencyᐸInt32ᐳᐳ
   ServiceᐸStringᐳ o--  "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
 ```
@@ -140,7 +140,7 @@ classDiagram
 /// var instance = composition.IntRoot;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqtVktuwjAQvYrldaUiWNCy41cpuwpYdOGNk1g0bRJHjkGiiDtwl256nd6kjhOKE-IPhI1lyPPMmzcfzR4GNCRwBIMY5_kswmuGE8RQKn-DKU0ymkc8oilAm15vOCm-Fbf-xFsSto0C8nv88VI-6P8ev4G4LCjlraAlZ1G6LlDlrQ4EK7AgOY23BXQlUPLvJ3k-W2HU_yABL-6DF8Dx-uJZCTi9LR-tdhkBXBw3oKfA7HI4O4vozdNNQhj2Y6nVjGQkDUka7FRRilCcXpy0rh6M_aDdoMxXf3Y-h1NJdg48w4PBGJxpmG2rtVBDtmWu1ONt93VvslDYRFAhbfahkq4h9aSbKvwXuyPnGt6obw15B3k7M7WKq2XsqG3LCNFz1YBrkmowKrUKUpJy7DQQnj5EJDcH4lLTOrQmFH0JO8eizhlrMNUQcmqjQRnUFPs5Z7gaiPPqtFrVJOlqo9a0d7DYPXLnxMhkjNW6AZYhLCpGY6-zY_MgVcbDrQzU_nKJvNn17da6ejWOOH3Uqvvm1tSXVVGeov31c8y0Usla8xl6LK1kjG6jkLTW_lUcLuvJsrI5EKmVQEtMtC45gq-ETWIafApdr8ldwdZ9VWqL61YmF91jodLc8-ADFNAER6HYvfcI8neSEARHCIaYCecHePgDjeKIHQ">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqtVr1uwjAQfhXLcweUDLRskFApWwUMHbI4iUXTJjFyDBJFvAPv0qWvw5vUcUJxIP6BsFiGfHf33Xfn0-1gTBIMRzDOUFn6KVpSlIc0LMRv4JF8RcqUpaQA4XowGE6qb9XNmQRzTDdpjI-H36BgrnM8_AB-mRHCOkFzRtNiWaHqWxsIFmCGS5JtKuiCo8Tfz-J8McJI9IljVt3dV8DQ8sqsBpxsa6PFdoUB48cdaA_oQw79s4jBtFjnmKIoE1r5eIWLBBfxVhalSsXK4qR1YzCO4m6Hol6Ofz6HniA7BYHGwB2DMw29b7kXWsiuytV6vG-_H00Wcp8hlEjrY8ikW0g16UsV_pvdknMLr9W3hXyAvL2ZGsVVMrbUtmOEqLkqwC1JFRiZWgOpSVm-NJCcPqS41Cdi09MqtCIVdQtb5yLPGWMyzRCyekZunZSHopJR1AzEaXMavSqKdLNTY9l7eOyfuXVhRDHGct8AwxDmHaPw1zuwfpBK4-FeBvL7ssn88tV3e-sbVTvi1FnL4S-3Jkd0RX3y56-eY4aVytrvdY-Y17CO0KStTAjfMJ1kJP7i6d8icUXAfqPponovk6smN1C5XMfgE-TQHKUJX5F3IWQfOMchHIUwQZQH38P9H_T_ZNI">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -358,8 +358,8 @@ partial class Composition
         "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : \"Xyz\"  IDependencyᐸStringᐳ\n" +
         "  IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  AbcDependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ\n" +
         "  IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  XyzDependencyᐸInt32ᐳ : \"Xyz\"  IDependencyᐸInt32ᐳ\n" +
-        "  Composition ..> ServiceᐸInt32ᐳ : IServiceᐸInt32ᐳ IntRoot<br/>provides IServiceᐸInt32ᐳ\n" +
-        "  Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ StringRoot<br/>provides IServiceᐸStringᐳ\n" +
+        "  Composition ..> ServiceᐸInt32ᐳ : IServiceᐸInt32ᐳ IntRoot\n" +
+        "  Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ StringRoot\n" +
         "  ServiceᐸInt32ᐳ o--  \"PerBlock\" IEnumerableᐸIDependencyᐸInt32ᐳᐳ : IEnumerableᐸIDependencyᐸInt32ᐳᐳ\n" +
         "  ServiceᐸStringᐳ o--  \"PerBlock\" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ";
   }

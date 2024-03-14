@@ -115,8 +115,8 @@ classDiagram
   Session *--  Composition : Composition
   Program o--  "PerResolve" FuncᐸSessionᐳ : FuncᐸSessionᐳ
   Service o--  "Scoped" Dependency : IDependency
-  Composition ..> Service : IService SessionRoot<br/>provides IService
-  Composition ..> Program : Program ProgramRoot<br/>provides Program
+  Composition ..> Service : IService SessionRoot
+  Composition ..> Program : Program ProgramRoot
   FuncᐸSessionᐳ *--  Session : Session
 ```
 
@@ -159,7 +159,7 @@ classDiagram
 /// var instance = composition.ProgramRoot;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdVEtuwjAQvYrldaUiWNCyg6RI7BCw9MZxRjSUxJFtkBDiDtylm16Hm9SJY9lJDK3YTBzP543ffM6Y8RTwBLM9lTLO6FbQnAhS1P8o4nnJZaYyXiByGAzGs0pXnYazpeCVMWq-K86VUy7WII4ZA7QGKbV3W4s2aAWS749wu_5sbtfv-vqtlu9_mvFkB0xV59EcKbrtuRkD62ucNqcSkNLiCesIPYYcx9Wpy9UwdnIc1b4faBFnUlvRZA9Blt1lQ1yP9ube5OljMi9KID0T1RbtTjFN1PmhYJrxBknzjqQ5zilTXJxC4WMooUihYKdHj28bjabIZdbR-ck5VahPDL7tt_vgvkUL2Ve0ma7vDaafe9rOJ0h0j0On6tLgMEcm2YgmUgnNtUm9kQGQ1pueCeM32XDqc4d6s6856zSqbSbediR4CcKOE-4zYaMFKbIv6sVcM15CquP1m8gjNDiI9dON1I3Q6YPgpqrpSwR5NT6l4McsBUf4P2D8SdMwoW15D8UOowYJk9ctlV9GjWVXhPbHLzgHkdMs1Tv-TLD6hFwXZUJwSsUXwRd8-QWsmxpE">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqdVL1uwjAQfhXLcwcEAy0bJEViQ4TRi3FONC2JI9sgIcQ78C5d-jq8SZ04lp3EAYnl4tzPd3ef73zBjKeAZ5gdqJRxRveC5kSQov5HEc9LLjOV8QKR42g0XVS26jRerAWvnFHz3XCunHGVgDhlDFACUurothVt0QYkP5zgfvvb3m-_tfq9lh9P3fjuG5iqzpMlUnTfCzMONtYEbc8lIKXFC94RepxyGlenLlfj2MlpVMd-olWcSe1FdwcIsuyUDXE92hu9qdPPyTyUQHkG1V7awGUa1OWxYJrxJpPmHUlzXFKmuDiH4GMooUihYOdHzbedJnPkKuvY_OKcKTQnJr-dt-Hkvkcrs29oM13rTU6_9rRdT5DoHofO1KXB5ZyYYiO6k0pork3pjQwkafX0Cow_ZOO5zx3q7b7mrDOodph4O5DgNQi7TrjPhEULUmQ76mEmjJeQarz-EHmEBhexbt1IPQidORh6qZ6g-IukUQYew3DvXab9W9BYdsN1PH7DOYicZql-oi8Eqy_INaczglMqfgi-4us_EDwD3A">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -402,8 +402,8 @@ partial class Composition: global::System.IDisposable
         "  Session *--  Composition : Composition\n" +
         "  Program o--  \"PerResolve\" FuncᐸSessionᐳ : FuncᐸSessionᐳ\n" +
         "  Service o--  \"Scoped\" Dependency : IDependency\n" +
-        "  Composition ..> Service : IService SessionRoot<br/>provides IService\n" +
-        "  Composition ..> Program : Program ProgramRoot<br/>provides Program\n" +
+        "  Composition ..> Service : IService SessionRoot\n" +
+        "  Composition ..> Program : Program ProgramRoot\n" +
         "  FuncᐸSessionᐳ *--  Session : Session";
   }
   
