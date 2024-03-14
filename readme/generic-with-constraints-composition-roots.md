@@ -1,52 +1,56 @@
-#### Generic composition roots
+#### Generic with constraints composition roots
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/GenericsCompositionRootsScenario.cs)
-
-A generic composition root is represented by a method.
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/GenericsWithConstraintsCompositionRootsScenario.cs)
 
 ```c#
-interface IDependency<T>;
+interface IDependency<T>
+    where T: IDisposable;
 
-class Dependency<T> : IDependency<T>;
+class Dependency<T> : IDependency<T>
+    where T: IDisposable;
 
-interface IService<T>;
+interface IService<T, TStruct>
+    where T: IDisposable
+    where TStruct: struct;
 
-class Service<T>(IDependency<T> dependency) : IService<T>;
+class Service<T, TStruct>(IDependency<T> dependency) : IService<T, TStruct>
+    where T: IDisposable
+    where TStruct: struct;
 
-class OtherService<T>(IDependency<T> dependency) : IService<T>;
+class OtherService<T, TStruct>(IDependency<T> dependency) : IService<T, TStruct>
+    where T: IDisposable
+    where TStruct: struct;
 
 DI.Setup(nameof(Composition))
-    .Bind().To<Dependency<TT>>()
-    .Bind().To<Service<TT>>()
+    .Bind().To<Dependency<TTDisposable>>()
+    .Bind().To<Service<TTDisposable, TTS>>()
     // Creates OtherService manually,
     // just for the sake of example
     .Bind("Other").To(ctx =>
     {
-        ctx.Inject(out IDependency<TT> dependency);
-        return new OtherService<TT>(dependency);
+        ctx.Inject(out IDependency<TTDisposable> dependency);
+        return new OtherService<TTDisposable, TTS>(dependency);
     })
 
     // Specifies to create a regular public method
     // to get a composition root of type Service<T>
     // with the name "GetMyRoot"
-    .Root<IService<TT>>("GetMyRoot")
+    .Root<IService<TTDisposable, TTS>>("GetMyRoot")
 
     // Specifies to create a regular public method
     // to get a composition root of type OtherService<T>
     // with the name "GetOtherService"
     // using the "Other" tag
-    .Root<IService<TT>>("GetOtherService", "Other");
+    .Root<IService<TTDisposable, TTS>>("GetOtherService", "Other");
 
 var composition = new Composition();
         
 // service = new Service<int>(new Dependency<int>());
-var service = composition.GetMyRoot<int>();
+var service = composition.GetMyRoot<Stream, double>();
         
 // someOtherService = new OtherService<int>(new Dependency<int>());
-var someOtherService = composition.GetOtherService<string>();
+var someOtherService = composition.GetOtherService<Stream, DateTime>();
 ```
-
-When a generic composition root is used, `Resolve` methods cannot be used to resolve them.
 
 <details open>
 <summary>Class Diagram</summary>
@@ -54,33 +58,33 @@ When a generic composition root is used, `Resolve` methods cannot be used to res
 ```mermaid
 classDiagram
   class Composition {
-    +IServiceᐸTᐳ GetMyRootᐸTᐳ()
-    +IServiceᐸTᐳ GetOtherServiceᐸTᐳ()
+    +IServiceᐸT49ˏT51ᐳ GetMyRootᐸT49ˏT51ᐳ()
+    +IServiceᐸT49ˏT51ᐳ GetOtherServiceᐸT49ˏT51ᐳ()
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  ServiceᐸTᐳ --|> IServiceᐸTᐳ : 
-  class ServiceᐸTᐳ {
-    +Service(IDependencyᐸTᐳ dependency)
+  ServiceᐸT49ˏT51ᐳ --|> IServiceᐸT49ˏT51ᐳ : 
+  class ServiceᐸT49ˏT51ᐳ {
+    +Service(IDependencyᐸT49ᐳ dependency)
   }
-  OtherServiceᐸTᐳ --|> IServiceᐸTᐳ : "Other" 
-  class OtherServiceᐸTᐳ
-  DependencyᐸTᐳ --|> IDependencyᐸTᐳ : 
-  class DependencyᐸTᐳ {
+  OtherServiceᐸT49ˏT51ᐳ --|> IServiceᐸT49ˏT51ᐳ : "Other" 
+  class OtherServiceᐸT49ˏT51ᐳ
+  DependencyᐸT49ᐳ --|> IDependencyᐸT49ᐳ : 
+  class DependencyᐸT49ᐳ {
     +Dependency()
   }
-  class IServiceᐸTᐳ {
+  class IServiceᐸT49ˏT51ᐳ {
     <<abstract>>
   }
-  class IDependencyᐸTᐳ {
+  class IDependencyᐸT49ᐳ {
     <<abstract>>
   }
-  Composition ..> ServiceᐸTᐳ : IServiceᐸTᐳ GetMyRootᐸTᐳ()<br/>provides IServiceᐸTᐳ
-  Composition ..> OtherServiceᐸTᐳ : IServiceᐸTᐳ GetOtherServiceᐸTᐳ()<br/>provides "Other" IServiceᐸTᐳ
-  ServiceᐸTᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ
-  OtherServiceᐸTᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ
+  Composition ..> ServiceᐸT49ˏT51ᐳ : IServiceᐸT49ˏT51ᐳ GetMyRootᐸT49ˏT51ᐳ()<br/>provides IServiceᐸT49ˏT51ᐳ
+  Composition ..> OtherServiceᐸT49ˏT51ᐳ : IServiceᐸT49ˏT51ᐳ GetOtherServiceᐸT49ˏT51ᐳ()<br/>provides "Other" IServiceᐸT49ˏT51ᐳ
+  ServiceᐸT49ˏT51ᐳ *--  DependencyᐸT49ᐳ : IDependencyᐸT49ᐳ
+  OtherServiceᐸT49ˏT51ᐳ *--  DependencyᐸT49ᐳ : IDependencyᐸT49ᐳ
 ```
 
 </details>
@@ -98,7 +102,7 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Basics.GenericsCompositionRootsScenario.IService{T}"/> <see cref="GetMyRoot{T}()"/>
+/// <see cref="Pure.DI.UsageTests.Basics.GenericsWithConstraintsCompositionRootsScenario.IService{T49, T51}"/> <see cref="GetMyRoot{T49, T51}()"/>
 /// </term>
 /// <description>
 /// Specifies to create a regular public method<br/>
@@ -108,7 +112,7 @@ classDiagram
 /// </item>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Basics.GenericsCompositionRootsScenario.IService{T}"/> <see cref="GetOtherService{T}()"/>
+/// <see cref="Pure.DI.UsageTests.Basics.GenericsWithConstraintsCompositionRootsScenario.IService{T49, T51}"/> <see cref="GetOtherService{T49, T51}()"/>
 /// </term>
 /// <description>
 /// Specifies to create a regular public method<br/>
@@ -121,13 +125,13 @@ classDiagram
 /// </para>
 /// </summary>
 /// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.GenericsCompositionRootsScenario.Service{T}"/> using the composition root <see cref="GetMyRoot{T}()"/>:
+/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.GenericsWithConstraintsCompositionRootsScenario.Service{T49, T51}"/> using the composition root <see cref="GetMyRoot{T49, T51}()"/>:
 /// <code>
 /// var composition = new Composition();
-/// var instance = composition.GetMyRoot&lt;T&gt;();
+/// var instance = composition.GetMyRoot&lt;T49, T51&gt;();
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNqlVM1ugzAMfpUo50mr2gNbby10Uw_TpI5jLgGsjq0QFDIkVPUd-i677HX6JoOEDgqG_uxiBfvz5w_byZb6IgA6pf6Gp6kT8rXkEZMs1t_EFlEi0lCFIibsazSy5mWsPI3nyzeQWejDYf_jHvbf5BnUS74SQlUOjXrQ9nEw61W9gzx147nEJStIxSa7CSa8D_BVeZ48EcXXnTQDOOaaJDdPgKjC3IC2yXBJyylPrX5oiFNby9bpC9JunHbPSD0rJN4cVxU2QpcOJBAHEPv5ER_8eTCVyIyul0o1C6MN0djsi2BXXn8xHHvSGhzS7E6NwHbK9MBwYT9XM02MLJt7qZK8mv2ishjbOWmXE7bv6lijjC36hM_kqkushXiS3RvKRIosDKDTkgvE9K0TrujcA9Gnq144RCG2zLPmlpGetSk1diKDd-R_tPSORiAjHgbFM71ltKgSAaNTRgMuPxnd0d0vXPg0vQ">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNqlVUFOwzAQ_IrlMxKlBYX21iYF9YCQSo6-OMmqBJo4ckykqOob6F-48Ade0Z-Q2C1JwXZDe1k53tnZ2fXaWeGQRYBHOFzSPPdiuuA0IZyk8hu5LMlYHouYpYi89XrOpPbVq_5k9gS8iEPYbj796-HXu39ztd18oHsQD-WcMXG4L2NupR124XgUz8C1Xj0T8tEccrYsJPq_MBa8QCjq9eAOCbr4E6YA-1gV5JcZIFGZE9Ausqd0vHql745Eeo11XMkyRYZuSu8YNadqhrXPd4dS6mceZJBGkIalCqsjop89nXjzCZ5cAZacBLdqscxJhdGpNic3oQ-aZwK1W9dgdFOo2qPYLAU3hAOl0KVBLjjdDc10Z3WkxzV2p_z9BPQlStmqadYDO-OJkOoCTi5VnoyzIo7A1LAOQo-Mo1Vtx8fIpLmZW7N6y0UZtycWGQewrkDj63IVz8-AL3ACPKFxVP1LVgRXCRMgeERwRPkrwWu8_gayG20n">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -161,18 +165,20 @@ partial class Composition
   /// with the name "GetMyRoot"
   /// </summary>
   /// <example>
-  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.GenericsCompositionRootsScenario.Service{T}"/>:
+  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.GenericsWithConstraintsCompositionRootsScenario.Service{T49, T51}"/>:
   /// <code>
   /// var composition = new Composition();
-  /// var instance = composition.GetMyRoot&lt;T&gt;();
+  /// var instance = composition.GetMyRoot&lt;T49, T51&gt;();
   /// </code>
   /// </example>
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
   [global::System.Diagnostics.Contracts.Pure]
   #endif
-  public Pure.DI.UsageTests.Basics.GenericsCompositionRootsScenario.IService<T> GetMyRoot<T>()
+  public Pure.DI.UsageTests.Basics.GenericsWithConstraintsCompositionRootsScenario.IService<T49, T51> GetMyRoot<T49, T51>()
+    where T49: System.IDisposable
+    where T51: struct
   {
-    return new Pure.DI.UsageTests.Basics.GenericsCompositionRootsScenario.Service<T>(new Pure.DI.UsageTests.Basics.GenericsCompositionRootsScenario.Dependency<T>());
+    return new Pure.DI.UsageTests.Basics.GenericsWithConstraintsCompositionRootsScenario.Service<T49, T51>(new Pure.DI.UsageTests.Basics.GenericsWithConstraintsCompositionRootsScenario.Dependency<T49>());
   }
   
   /// <summary>
@@ -182,21 +188,23 @@ partial class Composition
   /// using the "Other" tag
   /// </summary>
   /// <example>
-  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.GenericsCompositionRootsScenario.OtherService{T}"/>:
+  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.GenericsWithConstraintsCompositionRootsScenario.OtherService{T49, T51}"/>:
   /// <code>
   /// var composition = new Composition();
-  /// var instance = composition.GetOtherService&lt;T&gt;();
+  /// var instance = composition.GetOtherService&lt;T49, T51&gt;();
   /// </code>
   /// </example>
   #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
   [global::System.Diagnostics.Contracts.Pure]
   #endif
-  public Pure.DI.UsageTests.Basics.GenericsCompositionRootsScenario.IService<T> GetOtherService<T>()
+  public Pure.DI.UsageTests.Basics.GenericsWithConstraintsCompositionRootsScenario.IService<T49, T51> GetOtherService<T49, T51>()
+    where T49: System.IDisposable
+    where T51: struct
   {
-    Pure.DI.UsageTests.Basics.GenericsCompositionRootsScenario.OtherService<T> transientM03D14di0_OtherService;
+    Pure.DI.UsageTests.Basics.GenericsWithConstraintsCompositionRootsScenario.OtherService<T49, T51> transientM03D14di0_OtherService;
     {
-        var dependency_M03D14di1 = new Pure.DI.UsageTests.Basics.GenericsCompositionRootsScenario.Dependency<T>();
-        transientM03D14di0_OtherService = new OtherService<T>(dependency_M03D14di1);
+        var dependency_M03D14di1 = new Pure.DI.UsageTests.Basics.GenericsWithConstraintsCompositionRootsScenario.Dependency<T49>();
+        transientM03D14di0_OtherService = new OtherService<T49, T51>(dependency_M03D14di1);
     }
     return transientM03D14di0_OtherService;
   }
@@ -266,33 +274,33 @@ partial class Composition
     return
       "classDiagram\n" +
         "  class Composition {\n" +
-          "    +IServiceᐸTᐳ GetMyRootᐸTᐳ()\n" +
-          "    +IServiceᐸTᐳ GetOtherServiceᐸTᐳ()\n" +
+          "    +IServiceᐸT49ˏT51ᐳ GetMyRootᐸT49ˏT51ᐳ()\n" +
+          "    +IServiceᐸT49ˏT51ᐳ GetOtherServiceᐸT49ˏT51ᐳ()\n" +
           "    + T ResolveᐸTᐳ()\n" +
           "    + T ResolveᐸTᐳ(object? tag)\n" +
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  ServiceᐸTᐳ --|> IServiceᐸTᐳ : \n" +
-        "  class ServiceᐸTᐳ {\n" +
-          "    +Service(IDependencyᐸTᐳ dependency)\n" +
+        "  ServiceᐸT49ˏT51ᐳ --|> IServiceᐸT49ˏT51ᐳ : \n" +
+        "  class ServiceᐸT49ˏT51ᐳ {\n" +
+          "    +Service(IDependencyᐸT49ᐳ dependency)\n" +
         "  }\n" +
-        "  OtherServiceᐸTᐳ --|> IServiceᐸTᐳ : \"Other\" \n" +
-        "  class OtherServiceᐸTᐳ\n" +
-        "  DependencyᐸTᐳ --|> IDependencyᐸTᐳ : \n" +
-        "  class DependencyᐸTᐳ {\n" +
+        "  OtherServiceᐸT49ˏT51ᐳ --|> IServiceᐸT49ˏT51ᐳ : \"Other\" \n" +
+        "  class OtherServiceᐸT49ˏT51ᐳ\n" +
+        "  DependencyᐸT49ᐳ --|> IDependencyᐸT49ᐳ : \n" +
+        "  class DependencyᐸT49ᐳ {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class IServiceᐸTᐳ {\n" +
+        "  class IServiceᐸT49ˏT51ᐳ {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  class IDependencyᐸTᐳ {\n" +
+        "  class IDependencyᐸT49ᐳ {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  Composition ..> ServiceᐸTᐳ : IServiceᐸTᐳ GetMyRootᐸTᐳ()<br/>provides IServiceᐸTᐳ\n" +
-        "  Composition ..> OtherServiceᐸTᐳ : IServiceᐸTᐳ GetOtherServiceᐸTᐳ()<br/>provides \"Other\" IServiceᐸTᐳ\n" +
-        "  ServiceᐸTᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ\n" +
-        "  OtherServiceᐸTᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ";
+        "  Composition ..> ServiceᐸT49ˏT51ᐳ : IServiceᐸT49ˏT51ᐳ GetMyRootᐸT49ˏT51ᐳ()<br/>provides IServiceᐸT49ˏT51ᐳ\n" +
+        "  Composition ..> OtherServiceᐸT49ˏT51ᐳ : IServiceᐸT49ˏT51ᐳ GetOtherServiceᐸT49ˏT51ᐳ()<br/>provides \"Other\" IServiceᐸT49ˏT51ᐳ\n" +
+        "  ServiceᐸT49ˏT51ᐳ *--  DependencyᐸT49ᐳ : IDependencyᐸT49ᐳ\n" +
+        "  OtherServiceᐸT49ˏT51ᐳ *--  DependencyᐸT49ᐳ : IDependencyᐸT49ᐳ";
   }
   
   

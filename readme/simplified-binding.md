@@ -121,14 +121,14 @@ classDiagram
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM03D13di;
+  private readonly Composition _rootM03D14di;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Composition"/>.
   /// </summary>
   public Composition()
   {
-    _rootM03D13di = this;
+    _rootM03D14di = this;
   }
   
   /// <summary>
@@ -137,7 +137,7 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM03D13di = baseComposition._rootM03D13di;
+    _rootM03D14di = baseComposition._rootM03D14di;
   }
   
   #region Composition Roots
@@ -158,8 +158,8 @@ partial class Composition
     #endif
     get
     {
-      var perBlockM03D13di1_Dependency = new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Dependency();
-      return new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service(perBlockM03D13di1_Dependency, perBlockM03D13di1_Dependency, perBlockM03D13di1_Dependency);
+      var perBlockM03D14di1_Dependency = new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Dependency();
+      return new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service(perBlockM03D14di1_Dependency, perBlockM03D14di1_Dependency, perBlockM03D14di1_Dependency);
     }
   }
   #endregion
