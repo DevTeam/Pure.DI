@@ -336,6 +336,17 @@ internal class ReadmeTarget(
                     .SkipWhile(i => i != "}")
                     .Skip(1)
                     .Reverse()
+                    .Where(i =>
+                    {
+                        var line = i.TrimStart();
+                        return !(
+                            line.StartsWith("///")
+                            || line.StartsWith("#if ")
+                            || line.StartsWith("[global::System.Diagnostics.")
+                            || line.StartsWith("#endif")
+                            || line.StartsWith("#region")
+                            || line.StartsWith("#endregion"));
+                    })
                     .Select(i => i.Length > 2 ? i[2..] : i));
             await examplesWriter.WriteLineAsync(generatedCode);
             await examplesWriter.WriteLineAsync("```");

@@ -67,74 +67,22 @@ classDiagram
 <summary>Pure.DI-generated partial class Singleton</summary><blockquote>
 
 ```c#
-/// <para>
-/// <b>Composition roots</b><br/>
-/// <list type="table">
-/// <listheader>
-/// <term>Root</term>
-/// <description>Description</description>
-/// </listheader>
-/// <item>
-/// <term>
-/// <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/> <see cref="PureDIByCR()"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.Benchmarks.Model.CompositionRoot&gt;()</c>
-/// </term>
-/// <description>
-/// Provides a composition root of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/>.
-/// </description>
-/// </item>
-/// </list>
-/// </para>
-/// </summary>
-/// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/> using the composition root <see cref="PureDIByCR()"/>:
-/// <code>
-/// var composition = new Singleton();
-/// var instance = composition.PureDIByCR();
-/// </code>
-/// </example>
-/// <a href="https://mermaid.live/view#pako:eNrlVktuwjAQvYrldRfUdkXLDhIqsauApTcmWDQtiVFikBDiDtylm16HmzTk59iNkxK6qboZJXqe55k3H_kAPbHkcAC9NYtj12eriAU0omH6D2Z-uFpzKUJAt71ef3RBLl9o5IhgI2Jf-iKcCiHByzbi7mS0d6Yp_pjaJ3UezMGUx2K94-fT5_x8-rjqmFi8cU9evvEzkGz1zS07UPhmTvP9hgOZmA6nHdB8Zd9VIplStEiVXTeZ8Wjne_wexPlHfm8BoAJAdgRZEWwguEBMgBQAMa9RCKrLvYw_BV1l-04q2rgkyo7gIaj0VRWpalUAukgqr4ZIUHskyBoJskWC9EiUjqZcCjGrohB7VYgVeWhIGbenjK0pY1vKWE_51g4h7UESa5DEFiSp2x_VqdS7TzHg7HKHLWIZsXzCx7lt4DE7pCuPKXtXHtKZx9xXolofACiceWLDlxTqY5qUp9S0jib1H-pc5tyVYv45gnKOyjp2krLs9LKMv0ijr-RrhNBX6DUK_DNPfGNtuvtrLzGUDnZmkz1a18cJwc_faPAOBjwKmL9MnoIHCuUrDziFAwqXLHqn8AiPX9CbVtc">Class diagram</a><br/>
-/// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// <seealso cref="Pure.DI.DI.Setup"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
-[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Singleton
 {
   private readonly Singleton _rootM03D15di;
   private Pure.DI.Benchmarks.Model.Service1 _scopedM03D15di35_Service1;
   private Pure.DI.Benchmarks.Model.Service4 _scopedM03D15di38_Service4;
   
-  /// <summary>
-  /// This constructor creates a new instance of <see cref="Singleton"/>.
-  /// </summary>
   public Singleton()
   {
     _rootM03D15di = this;
   }
   
-  /// <summary>
-  /// This constructor creates a new instance of <see cref="Singleton"/> scope based on <paramref name="baseComposition"/>. This allows the <see cref="Lifetime.Scoped"/> life time to be applied.
-  /// </summary>
-  /// <param name="baseComposition">Base composition.</param>
   internal Singleton(Singleton baseComposition)
   {
     _rootM03D15di = baseComposition._rootM03D15di;
   }
   
-  #region Composition Roots
-  /// <summary>
-  /// Provides a composition root of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/>.
-  /// </summary>
-  /// <example>
-  /// This shows how to get an instance of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/>:
-  /// <code>
-  /// var composition = new Singleton();
-  /// var instance = composition.PureDIByCR();
-  /// </code>
-  /// </example>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public partial Pure.DI.Benchmarks.Model.CompositionRoot PureDIByCR()
   {
     if (ReferenceEquals(_scopedM03D15di38_Service4, null))
@@ -147,44 +95,17 @@ partial class Singleton
     }
     return new Pure.DI.Benchmarks.Model.CompositionRoot(_scopedM03D15di35_Service1, new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_scopedM03D15di38_Service4, _scopedM03D15di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D15di38_Service4, _scopedM03D15di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D15di38_Service4, _scopedM03D15di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D15di38_Service4, _scopedM03D15di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D15di38_Service4, _scopedM03D15di38_Service4)), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_scopedM03D15di38_Service4, _scopedM03D15di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D15di38_Service4, _scopedM03D15di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D15di38_Service4, _scopedM03D15di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D15di38_Service4, _scopedM03D15di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D15di38_Service4, _scopedM03D15di38_Service4)), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_scopedM03D15di38_Service4, _scopedM03D15di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D15di38_Service4, _scopedM03D15di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D15di38_Service4, _scopedM03D15di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D15di38_Service4, _scopedM03D15di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D15di38_Service4, _scopedM03D15di38_Service4)), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D15di38_Service4, _scopedM03D15di38_Service4), _scopedM03D15di38_Service4, _scopedM03D15di38_Service4);
   }
-  #endregion
   
-  #region API
-  /// <summary>
-  /// Resolves the composition root.
-  /// </summary>
-  /// <typeparam name="T">The type of the composition root.</typeparam>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public T Resolve<T>()
   {
     return ResolverM03D15di<T>.Value.Resolve(this);
   }
   
-  /// <summary>
-  /// Resolves the composition root by tag.
-  /// </summary>
-  /// <typeparam name="T">The type of the composition root.</typeparam>
-  /// <param name="tag">The tag of a composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public T Resolve<T>(object? tag)
   {
     return ResolverM03D15di<T>.Value.ResolveByTag(this, tag);
   }
   
-  /// <summary>
-  /// Resolves the composition root.
-  /// </summary>
-  /// <param name="type">The type of the composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public object Resolve(global::System.Type type)
   {
     var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
@@ -200,15 +121,6 @@ partial class Singleton
     throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
   
-  /// <summary>
-  /// Resolves the composition root by tag.
-  /// </summary>
-  /// <param name="type">The type of the composition root.</param>
-  /// <param name="tag">The tag of a composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public object Resolve(global::System.Type type, object? tag)
   {
     var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
@@ -223,11 +135,7 @@ partial class Singleton
     
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
-  #endregion
   
-  /// <summary>
-  /// This method provides a class diagram in mermaid format. To see this diagram, simply call the method and copy the text to this site https://mermaid.live/.
-  /// </summary>
   public override string ToString()
   {
     return
@@ -304,7 +212,6 @@ partial class Singleton
       });
   }
   
-  #region Resolvers
   private sealed class ResolverM03D15di<T>: global::Pure.DI.IResolver<Singleton, T>
   {
     public static global::Pure.DI.IResolver<Singleton, T> Value = new ResolverM03D15di<T>();
@@ -337,7 +244,6 @@ partial class Singleton
       throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.Benchmarks.Model.CompositionRoot.");
     }
   }
-  #endregion
 }
 ```
 

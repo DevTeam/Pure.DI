@@ -81,37 +81,6 @@ classDiagram
 <summary>Pure.DI-generated partial class Composition</summary><blockquote>
 
 ```c#
-/// <para>
-/// <b>Composition roots</b><br/>
-/// <list type="table">
-/// <listheader>
-/// <term>Root</term>
-/// <description>Description</description>
-/// </listheader>
-/// <item>
-/// <term>
-/// <see cref="Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService"/> <see cref="Root"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService&gt;()</c>
-/// </term>
-/// <description>
-/// Provides a composition root of type <see cref="Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service"/>.
-/// </description>
-/// </item>
-/// </list>
-/// </para>
-/// </summary>
-/// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service"/> using the composition root <see cref="Root"/>:
-/// <code>
-/// using var composition = new Composition();
-/// var instance = composition.Root;
-/// </code>
-/// </example>
-/// <a href="https://mermaid.live/view#pako:eNqdU0FugzAQ_Iq15x6icKDNrYFUyjXh6IuBFXULNrLdSFGUP-QvvfQ7-UkBgzAOTateVsvuzs54jE-QyRxhBVnJtI45KxSrqKKi-yaRrGqpueFSEPqxWITrttdmy_V2j-rAMyQ7Kc1YJgnZoZblAa-Xr-R6-ezKj118-nVMpm-YmTYPXohhxQ3MDgxYC0qONRLThH9MR-Q-ZRi3me_DMh5jGHXYDdnGXDdTLC2xxcRYo8hRZMd7kOlQ8ExG872e6_3YmnPXah6u52dyd2LC7DZc2r5uOV3t-VSPp8Qu9c86Lg6sooil2ijW38Wmj3Ob5vX9fc2Al643hFDYc1GUaKSg4NvfGOScYPan6LhsbOz13L15LvAAFaqK8bx5ficK5hUrpLCikDP1TuEM528g2jiv">Class diagram</a><br/>
-/// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// <seealso cref="Pure.DI.DI.Setup"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
-[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition: global::System.IDisposable
 {
   private readonly Composition _rootM03D15di;
@@ -120,9 +89,6 @@ partial class Composition: global::System.IDisposable
   private int _disposeIndexM03D15di;
   private Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Dependency _singletonM03D15di34_Dependency;
   
-  /// <summary>
-  /// This constructor creates a new instance of <see cref="Composition"/>.
-  /// </summary>
   public Composition()
   {
     _rootM03D15di = this;
@@ -130,32 +96,14 @@ partial class Composition: global::System.IDisposable
     _disposablesM03D15di = new global::System.IDisposable[1];
   }
   
-  /// <summary>
-  /// This constructor creates a new instance of <see cref="Composition"/> scope based on <paramref name="baseComposition"/>. This allows the <see cref="Lifetime.Scoped"/> life time to be applied.
-  /// </summary>
-  /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
     _rootM03D15di = baseComposition._rootM03D15di;
     _lockM03D15di = _rootM03D15di._lockM03D15di;
   }
   
-  #region Composition Roots
-  /// <summary>
-  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service"/>.
-  /// </summary>
-  /// <example>
-  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service"/>:
-  /// <code>
-  /// using var composition = new Composition();
-  /// var instance = composition.Root;
-  /// </code>
-  /// </example>
   public Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService Root
   {
-    #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-    [global::System.Diagnostics.Contracts.Pure]
-    #endif
     get
     {
       if (ReferenceEquals(_rootM03D15di._singletonM03D15di34_Dependency, null))
@@ -173,44 +121,17 @@ partial class Composition: global::System.IDisposable
       return new Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.Service(_rootM03D15di._singletonM03D15di34_Dependency);
     }
   }
-  #endregion
   
-  #region API
-  /// <summary>
-  /// Resolves the composition root.
-  /// </summary>
-  /// <typeparam name="T">The type of the composition root.</typeparam>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public T Resolve<T>()
   {
     return ResolverM03D15di<T>.Value.Resolve(this);
   }
   
-  /// <summary>
-  /// Resolves the composition root by tag.
-  /// </summary>
-  /// <typeparam name="T">The type of the composition root.</typeparam>
-  /// <param name="tag">The tag of a composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public T Resolve<T>(object? tag)
   {
     return ResolverM03D15di<T>.Value.ResolveByTag(this, tag);
   }
   
-  /// <summary>
-  /// Resolves the composition root.
-  /// </summary>
-  /// <param name="type">The type of the composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public object Resolve(global::System.Type type)
   {
     var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
@@ -226,15 +147,6 @@ partial class Composition: global::System.IDisposable
     throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
   
-  /// <summary>
-  /// Resolves the composition root by tag.
-  /// </summary>
-  /// <param name="type">The type of the composition root.</param>
-  /// <param name="tag">The tag of a composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public object Resolve(global::System.Type type, object? tag)
   {
     var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
@@ -249,12 +161,8 @@ partial class Composition: global::System.IDisposable
     
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
-  #endregion
   
   
-  /// <summary>
-  /// <inheritdoc/>
-  /// </summary>
   public void Dispose()
   {
     lock (_lockM03D15di)
@@ -278,9 +186,6 @@ partial class Composition: global::System.IDisposable
   
   partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : global::System.IDisposable;
   
-  /// <summary>
-  /// This method provides a class diagram in mermaid format. To see this diagram, simply call the method and copy the text to this site https://mermaid.live/.
-  /// </summary>
   public override string ToString()
   {
     return
@@ -327,7 +232,6 @@ partial class Composition: global::System.IDisposable
       });
   }
   
-  #region Resolvers
   private sealed class ResolverM03D15di<T>: global::Pure.DI.IResolver<Composition, T>
   {
     public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D15di<T>();
@@ -360,7 +264,6 @@ partial class Composition: global::System.IDisposable
       throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.DisposableSingletonScenario.IService.");
     }
   }
-  #endregion
 }
 ```
 

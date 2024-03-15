@@ -79,72 +79,26 @@ classDiagram
 <summary>Pure.DI-generated partial class Composition</summary><blockquote>
 
 ```c#
-/// <para>
-/// <b>Composition roots</b><br/>
-/// <list type="table">
-/// <listheader>
-/// <term>Root</term>
-/// <description>Description</description>
-/// </listheader>
-/// <item>
-/// <term>
-/// Private composition root of type <see cref="Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IDependency"/>. It can be resolved by <see cref="Resolve{T}(object)"/> method: <c>Resolve&lt;Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IDependency&gt;("Dependency Key")</c>
-/// </term>
-/// <description>
-/// Provides a composition root of type <see cref="Pure.DI.UsageTests.BCL.ServiceCollectionScenario.Dependency"/>.
-/// </description>
-/// </item>
-/// <item>
-/// <term>
-/// Private composition root of type <see cref="Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService"/>. It can be resolved by <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService&gt;()</c>
-/// </term>
-/// <description>
-/// Provides a composition root of type <see cref="Pure.DI.UsageTests.BCL.ServiceCollectionScenario.Service"/>.
-/// </description>
-/// </item>
-/// </list>
-/// </para>
-/// </summary>
-/// <a href="https://mermaid.live/view#pako:eNqdVEFugzAQ_Irlcw8OqKLNrUAqVVUvCUdfHFgRt2AjcCOhKH_IX3rpd_KTAobgOjSJelmZ9ezs7KzMDscyATzHccaqKuQsLVlOSyq6bxTIvJAVV1wKRD8J8fz2rj054UsIBYgERFyjpZTqjbjh7D7hhJCZgVpBueUx2BDnBPFRhJZQyWwLx8N3dDx8demHLj5ehcn1O8SqPbvPSLH0rEwDhlpdFNUFINWEf6ADdLmlF7YnwxxtxBi9oCtdINPBLvWEKDZyr1BTjMZtWHBjGf54NWWeljRs4m89JqIVc-psXpht-7zuaY6T_NZjKdGk9vgjsasVBWxdqZL1Vi_6OMU0re92mqFemt6gZhsrLtIMlBTNIm7aljlVy2y_IKfrr2Nj-TnntWd1hdBa4cXnh-9wDmXOeNL8AHYUqw3kQPGc4oSVHxTv8f4HCjJgfg">Class diagram</a><br/>
-/// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// <seealso cref="Pure.DI.DI.Setup"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
-[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
   private readonly Composition _rootM03D15di;
   private readonly object _lockM03D15di;
   private Pure.DI.UsageTests.BCL.ServiceCollectionScenario.Dependency _singletonM03D15di34_Dependency;
   
-  /// <summary>
-  /// This constructor creates a new instance of <see cref="Composition"/>.
-  /// </summary>
   public Composition()
   {
     _rootM03D15di = this;
     _lockM03D15di = new object();
   }
   
-  /// <summary>
-  /// This constructor creates a new instance of <see cref="Composition"/> scope based on <paramref name="baseComposition"/>. This allows the <see cref="Lifetime.Scoped"/> life time to be applied.
-  /// </summary>
-  /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
     _rootM03D15di = baseComposition._rootM03D15di;
     _lockM03D15di = _rootM03D15di._lockM03D15di;
   }
   
-  #region Composition Roots
-  /// <summary>
-  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.BCL.ServiceCollectionScenario.Dependency"/>.
-  /// </summary>
   public Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IDependency RootM03D15di0001
   {
-    #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-    [global::System.Diagnostics.Contracts.Pure]
-    #endif
     get
     {
       if (ReferenceEquals(_rootM03D15di._singletonM03D15di34_Dependency, null))
@@ -162,14 +116,8 @@ partial class Composition
     }
   }
   
-  /// <summary>
-  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.BCL.ServiceCollectionScenario.Service"/>.
-  /// </summary>
   public Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService RootM03D15di0002
   {
-    #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-    [global::System.Diagnostics.Contracts.Pure]
-    #endif
     get
     {
       if (ReferenceEquals(_rootM03D15di._singletonM03D15di34_Dependency, null))
@@ -186,44 +134,17 @@ partial class Composition
       return new Pure.DI.UsageTests.BCL.ServiceCollectionScenario.Service(_rootM03D15di._singletonM03D15di34_Dependency);
     }
   }
-  #endregion
   
-  #region API
-  /// <summary>
-  /// Resolves the composition root.
-  /// </summary>
-  /// <typeparam name="T">The type of the composition root.</typeparam>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public T Resolve<T>()
   {
     return ResolverM03D15di<T>.Value.Resolve(this);
   }
   
-  /// <summary>
-  /// Resolves the composition root by tag.
-  /// </summary>
-  /// <typeparam name="T">The type of the composition root.</typeparam>
-  /// <param name="tag">The tag of a composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public T Resolve<T>(object? tag)
   {
     return ResolverM03D15di<T>.Value.ResolveByTag(this, tag);
   }
   
-  /// <summary>
-  /// Resolves the composition root.
-  /// </summary>
-  /// <param name="type">The type of the composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public object Resolve(global::System.Type type)
   {
     var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
@@ -239,15 +160,6 @@ partial class Composition
     throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
   
-  /// <summary>
-  /// Resolves the composition root by tag.
-  /// </summary>
-  /// <param name="type">The type of the composition root.</param>
-  /// <param name="tag">The tag of a composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public object Resolve(global::System.Type type, object? tag)
   {
     var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
@@ -262,11 +174,7 @@ partial class Composition
     
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
-  #endregion
   
-  /// <summary>
-  /// This method provides a class diagram in mermaid format. To see this diagram, simply call the method and copy the text to this site https://mermaid.live/.
-  /// </summary>
   public override string ToString()
   {
     return
@@ -319,7 +227,6 @@ partial class Composition
       });
   }
   
-  #region Resolvers
   private sealed class ResolverM03D15di<T>: global::Pure.DI.IResolver<Composition, T>
   {
     public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D15di<T>();
@@ -370,7 +277,6 @@ partial class Composition
       throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService.");
     }
   }
-  #endregion
 }
 ```
 

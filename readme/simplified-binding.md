@@ -85,88 +85,29 @@ classDiagram
 <summary>Pure.DI-generated partial class Composition</summary><blockquote>
 
 ```c#
-/// <para>
-/// Specifies to create a partial class "Composition"
-/// </para>
-/// <para>
-/// <b>Composition roots</b><br/>
-/// <list type="table">
-/// <listheader>
-/// <term>Root</term>
-/// <description>Description</description>
-/// </listheader>
-/// <item>
-/// <term>
-/// <see cref="Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service"/> <see cref="MyService"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service&gt;()</c>
-/// </term>
-/// <description>
-/// Specifies to create a property "MyService"
-/// </description>
-/// </item>
-/// </list>
-/// </para>
-/// </summary>
-/// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service"/> using the composition root <see cref="MyService"/>:
-/// <code>
-/// var composition = new Composition();
-/// var instance = composition.MyService;
-/// </code>
-/// </example>
-/// <a href="https://mermaid.live/view#pako:eNqlU8GOwiAQ_RUyZw9GD3W9bVsPPRg38cqFhclKLKWh3U2M8d-lYFdKMDF6mQx9M483j84ZuBYIa-A167pSsh_DFDW0cWdSaNXqTvZSN4T-zudZPmBDtsj3aP4kR7I93bIRyso7wVj0oNkdViW22Ahs-ImI_7RSbe3gglTJghHc9Qc0QYWenl3Zx1RbUO3g8h6zYojLzeRS9-mTPN0aSwr6vS0RFjoTKV-l9HuS6iHL0isp2HfXG8Z7r-sWU0wpwa_Qjc-tQ28IofCFJq81P1KIZ7e-BCO_zBGY8QZJ5MPAFK_Awg3uo33r8Ae3DMmlgBkoNIpJYRftTMFeopDCmoJgxiq5wOUKLcMyAw">Class diagram</a><br/>
-/// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// <seealso cref="Pure.DI.DI.Setup"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
-[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
   private readonly Composition _rootM03D15di;
   
-  /// <summary>
-  /// This constructor creates a new instance of <see cref="Composition"/>.
-  /// </summary>
   public Composition()
   {
     _rootM03D15di = this;
   }
   
-  /// <summary>
-  /// This constructor creates a new instance of <see cref="Composition"/> scope based on <paramref name="baseComposition"/>. This allows the <see cref="Lifetime.Scoped"/> life time to be applied.
-  /// </summary>
-  /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
     _rootM03D15di = baseComposition._rootM03D15di;
   }
   
-  #region Composition Roots
-  /// <summary>
-  /// Specifies to create a property "MyService"
-  /// </summary>
-  /// <example>
-  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service"/>:
-  /// <code>
-  /// var composition = new Composition();
-  /// var instance = composition.MyService;
-  /// </code>
-  /// </example>
   public Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service MyService
   {
-    #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-    [global::System.Diagnostics.Contracts.Pure]
-    #endif
     get
     {
       var perBlockM03D15di1_Dependency = new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Dependency();
       return new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service(perBlockM03D15di1_Dependency, perBlockM03D15di1_Dependency, perBlockM03D15di1_Dependency);
     }
   }
-  #endregion
   
-  /// <summary>
-  /// This method provides a class diagram in mermaid format. To see this diagram, simply call the method and copy the text to this site https://mermaid.live/.
-  /// </summary>
   public override string ToString()
   {
     return

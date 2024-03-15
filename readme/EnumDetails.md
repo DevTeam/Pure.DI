@@ -86,72 +86,20 @@ classDiagram
 <summary>Pure.DI-generated partial class Enum</summary><blockquote>
 
 ```c#
-/// <para>
-/// <b>Composition roots</b><br/>
-/// <list type="table">
-/// <listheader>
-/// <term>Root</term>
-/// <description>Description</description>
-/// </listheader>
-/// <item>
-/// <term>
-/// <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/> <see cref="PureDIByCR()"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.Benchmarks.Model.CompositionRoot&gt;()</c>
-/// </term>
-/// <description>
-/// Provides a composition root of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/>.
-/// </description>
-/// </item>
-/// </list>
-/// </para>
-/// </summary>
-/// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/> using the composition root <see cref="PureDIByCR()"/>:
-/// <code>
-/// var composition = new Enum();
-/// var instance = composition.PureDIByCR();
-/// </code>
-/// </example>
-/// <a href="https://mermaid.live/view#pako:eNrVV0tOwzAQvYrlNQuwLRW6I0mRuqtKl9m4qQWBpK6SNBJC3IG7sOE6vQn5-NOEOK3TCImNlebNvHmemY6ddxjwDYNTGEQ0Tb2QPiU09hN_W_0Gs-0-Bv7--nrilC_LJ-S4PN7xNMxCvl1ynoHFPmHe3HlzlxV-W6132h6swJKlPMrZ4fN7dfj8sjLj6xcWZOUzfgAZffrlVhtI39pp9bZjICuWAdYu6A858XR-2qk4kao63PyRJXkYsBuQigcRVwJIAsiMICOCWwiWSBsgEiDtMBpB5r3Py-ZgCV1HZcFUtLJwhY3aY0Xg6XXiVomdqWC1Cb4HmrqBHOdTAs1E6r13qZVGqpd71SCjGk3QoagChSpjXqTMtEcmPi0RGyVikzzcTNjgyku6HFnIRB1CBUGX1ByNLdYmp7hLrDmv-eiZJRZiSZdYYhZLxhV7hlRi7FWjTCGyZ_AYxgOug7t0nWYJFQN8JtYennYrDuVpd8lQHjKYp-s4QvfHRQLN2VoURmXTkkCPwyMS9G9J1H9KVdOSQHW6KuMoBD2nifVuBnKJWV1N8nEIj6btOIQqd6RF2LyG2PZPw4A3nX24YIkT8eDVhz13IcV7zm0J2_fH5Z7yLP9z30s0X-Irjq2_8tX3zmpm12txRHaNhsL3_K8reAWLjoppuCm-3959mD2zmPlw6sMNTYqu_IAfP3i-nTA">Class diagram</a><br/>
-/// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// <seealso cref="Pure.DI.DI.Setup"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
-[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Enum
 {
   private readonly Enum _rootM03D15di;
   
-  /// <summary>
-  /// This constructor creates a new instance of <see cref="Enum"/>.
-  /// </summary>
   public Enum()
   {
     _rootM03D15di = this;
   }
   
-  /// <summary>
-  /// This constructor creates a new instance of <see cref="Enum"/> scope based on <paramref name="baseComposition"/>. This allows the <see cref="Lifetime.Scoped"/> life time to be applied.
-  /// </summary>
-  /// <param name="baseComposition">Base composition.</param>
   internal Enum(Enum baseComposition)
   {
     _rootM03D15di = baseComposition._rootM03D15di;
   }
   
-  #region Composition Roots
-  /// <summary>
-  /// Provides a composition root of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/>.
-  /// </summary>
-  /// <example>
-  /// This shows how to get an instance of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/>:
-  /// <code>
-  /// var composition = new Enum();
-  /// var instance = composition.PureDIByCR();
-  /// </code>
-  /// </example>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public partial Pure.DI.Benchmarks.Model.CompositionRoot PureDIByCR()
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x200)]
@@ -165,44 +113,17 @@ partial class Enum
     var perBlockM03D15di10_IEnumerable = LocalperBlockM03D15di10_IEnumerable();
     return new Pure.DI.Benchmarks.Model.CompositionRoot(new Pure.DI.Benchmarks.Model.Service1(new Pure.DI.Benchmarks.Model.Service2Enum(perBlockM03D15di10_IEnumerable)), new Pure.DI.Benchmarks.Model.Service2Enum(perBlockM03D15di10_IEnumerable), new Pure.DI.Benchmarks.Model.Service2Enum(perBlockM03D15di10_IEnumerable), new Pure.DI.Benchmarks.Model.Service2Enum(perBlockM03D15di10_IEnumerable), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
   }
-  #endregion
   
-  #region API
-  /// <summary>
-  /// Resolves the composition root.
-  /// </summary>
-  /// <typeparam name="T">The type of the composition root.</typeparam>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public T Resolve<T>()
   {
     return ResolverM03D15di<T>.Value.Resolve(this);
   }
   
-  /// <summary>
-  /// Resolves the composition root by tag.
-  /// </summary>
-  /// <typeparam name="T">The type of the composition root.</typeparam>
-  /// <param name="tag">The tag of a composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public T Resolve<T>(object? tag)
   {
     return ResolverM03D15di<T>.Value.ResolveByTag(this, tag);
   }
   
-  /// <summary>
-  /// Resolves the composition root.
-  /// </summary>
-  /// <param name="type">The type of the composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public object Resolve(global::System.Type type)
   {
     var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
@@ -218,15 +139,6 @@ partial class Enum
     throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
   
-  /// <summary>
-  /// Resolves the composition root by tag.
-  /// </summary>
-  /// <param name="type">The type of the composition root.</param>
-  /// <param name="tag">The tag of a composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public object Resolve(global::System.Type type, object? tag)
   {
     var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
@@ -241,11 +153,7 @@ partial class Enum
     
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
-  #endregion
   
-  /// <summary>
-  /// This method provides a class diagram in mermaid format. To see this diagram, simply call the method and copy the text to this site https://mermaid.live/.
-  /// </summary>
   public override string ToString()
   {
     return
@@ -341,7 +249,6 @@ partial class Enum
       });
   }
   
-  #region Resolvers
   private sealed class ResolverM03D15di<T>: global::Pure.DI.IResolver<Enum, T>
   {
     public static global::Pure.DI.IResolver<Enum, T> Value = new ResolverM03D15di<T>();
@@ -374,7 +281,6 @@ partial class Enum
       throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.Benchmarks.Model.CompositionRoot.");
     }
   }
-  #endregion
 }
 ```
 

@@ -97,86 +97,26 @@ classDiagram
 <summary>Pure.DI-generated partial class Composition</summary><blockquote>
 
 ```c#
-/// <para>
-/// <b>Composition roots</b><br/>
-/// <list type="table">
-/// <listheader>
-/// <term>Root</term>
-/// <description>Description</description>
-/// </listheader>
-/// <item>
-/// <term>
-/// <see cref="Pure.DI.UsageTests.Advanced.TagTypeScenario.IService"/> <see cref="Root"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Advanced.TagTypeScenario.IService&gt;()</c>
-/// </term>
-/// <description>
-/// Provides a composition root of type <see cref="Pure.DI.UsageTests.Advanced.TagTypeScenario.Service"/>.
-/// </description>
-/// </item>
-/// <item>
-/// <term>
-/// <see cref="Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency"/> <see cref="XyzRoot"/><br/>or using <see cref="Resolve{T}(object)"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency&gt;(typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency))</c>
-/// </term>
-/// <description>
-/// "XyzRoot" is root name, typeof(XyzDependency) is tag
-/// </description>
-/// </item>
-/// </list>
-/// </para>
-/// </summary>
-/// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Advanced.TagTypeScenario.Service"/> using the composition root <see cref="Root"/>:
-/// <code>
-/// var composition = new Composition();
-/// var instance = composition.Root;
-/// </code>
-/// </example>
-/// <a href="https://mermaid.live/view#pako:eNrNVUtuwjAQvYrldRcUFlB2gVCJXQWp1IU3xpmmaYmNbINEEXfgLt30OtykiZ0WJzEftRLqZmLPx_Pm5VneYCZiwH3M5lSpMKWJpBmRhJs9GopsIVSqU8ERWbZa3UERK1btwXgKcpUyQBMhtOMOYQE8Bs7W6Gn9Xg2iCE1AifkK9rvPaL_7MO6esXdn08TsFZgu1p17pGnSKLMJ37W2KFovAOnc_CJ7iE637IbFKpgxZ2aTER5sd2iqR8glxrgC00g8284PS2mbjsKx_T4qmkAESiu7D-IV5Qxiu4toUoCdMuBUpqJMcaFYrOhvEA9aaJ7hqqHZuefjKlfEf-GqAsXhyk7bBOpO26z1Tvt9Q47P6WZU2HYDbufSb3u6NMU_y9tSu_5o-2S04xvDIqr_kwOqjh1nSGdKS1pel1FpfSf5h7v8mAqvgcsu8sj0WhfNZchFKaoACZ6mPJmDFpxgj86upfVjcC8mtVZffyva5tdZm0u9pvTG63Gm3MvTkbcG3-AMZEbTOH_YNgTrF8iA4D7BMZVvBG_x9gsvllti">Class diagram</a><br/>
-/// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// <seealso cref="Pure.DI.DI.Setup"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
-[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
   private readonly Composition _rootM03D15di;
   private readonly object _lockM03D15di;
   private Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency _singletonM03D15di35_XyzDependency;
   
-  /// <summary>
-  /// This constructor creates a new instance of <see cref="Composition"/>.
-  /// </summary>
   public Composition()
   {
     _rootM03D15di = this;
     _lockM03D15di = new object();
   }
   
-  /// <summary>
-  /// This constructor creates a new instance of <see cref="Composition"/> scope based on <paramref name="baseComposition"/>. This allows the <see cref="Lifetime.Scoped"/> life time to be applied.
-  /// </summary>
-  /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
     _rootM03D15di = baseComposition._rootM03D15di;
     _lockM03D15di = _rootM03D15di._lockM03D15di;
   }
   
-  #region Composition Roots
-  /// <summary>
-  /// "XyzRoot" is root name, typeof(XyzDependency) is tag
-  /// </summary>
-  /// <example>
-  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency"/>:
-  /// <code>
-  /// var composition = new Composition();
-  /// var instance = composition.XyzRoot;
-  /// </code>
-  /// </example>
   public Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency XyzRoot
   {
-    #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-    [global::System.Diagnostics.Contracts.Pure]
-    #endif
     get
     {
       if (ReferenceEquals(_rootM03D15di._singletonM03D15di35_XyzDependency, null))
@@ -194,21 +134,8 @@ partial class Composition
     }
   }
   
-  /// <summary>
-  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Advanced.TagTypeScenario.Service"/>.
-  /// </summary>
-  /// <example>
-  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Advanced.TagTypeScenario.Service"/>:
-  /// <code>
-  /// var composition = new Composition();
-  /// var instance = composition.Root;
-  /// </code>
-  /// </example>
   public Pure.DI.UsageTests.Advanced.TagTypeScenario.IService Root
   {
-    #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-    [global::System.Diagnostics.Contracts.Pure]
-    #endif
     get
     {
       if (ReferenceEquals(_rootM03D15di._singletonM03D15di35_XyzDependency, null))
@@ -225,44 +152,17 @@ partial class Composition
       return new Pure.DI.UsageTests.Advanced.TagTypeScenario.Service(new Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency(), _rootM03D15di._singletonM03D15di35_XyzDependency, new Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency());
     }
   }
-  #endregion
   
-  #region API
-  /// <summary>
-  /// Resolves the composition root.
-  /// </summary>
-  /// <typeparam name="T">The type of the composition root.</typeparam>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public T Resolve<T>()
   {
     return ResolverM03D15di<T>.Value.Resolve(this);
   }
   
-  /// <summary>
-  /// Resolves the composition root by tag.
-  /// </summary>
-  /// <typeparam name="T">The type of the composition root.</typeparam>
-  /// <param name="tag">The tag of a composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public T Resolve<T>(object? tag)
   {
     return ResolverM03D15di<T>.Value.ResolveByTag(this, tag);
   }
   
-  /// <summary>
-  /// Resolves the composition root.
-  /// </summary>
-  /// <param name="type">The type of the composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public object Resolve(global::System.Type type)
   {
     var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
@@ -278,15 +178,6 @@ partial class Composition
     throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
   
-  /// <summary>
-  /// Resolves the composition root by tag.
-  /// </summary>
-  /// <param name="type">The type of the composition root.</param>
-  /// <param name="tag">The tag of a composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public object Resolve(global::System.Type type, object? tag)
   {
     var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
@@ -301,11 +192,7 @@ partial class Composition
     
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
-  #endregion
   
-  /// <summary>
-  /// This method provides a class diagram in mermaid format. To see this diagram, simply call the method and copy the text to this site https://mermaid.live/.
-  /// </summary>
   public override string ToString()
   {
     return
@@ -363,7 +250,6 @@ partial class Composition
       });
   }
   
-  #region Resolvers
   private sealed class ResolverM03D15di<T>: global::Pure.DI.IResolver<Composition, T>
   {
     public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D15di<T>();
@@ -413,7 +299,6 @@ partial class Composition
       throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Advanced.TagTypeScenario.IService.");
     }
   }
-  #endregion
 }
 ```
 

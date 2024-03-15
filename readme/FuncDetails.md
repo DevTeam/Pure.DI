@@ -65,72 +65,20 @@ classDiagram
 <summary>Pure.DI-generated partial class Func</summary><blockquote>
 
 ```c#
-/// <para>
-/// <b>Composition roots</b><br/>
-/// <list type="table">
-/// <listheader>
-/// <term>Root</term>
-/// <description>Description</description>
-/// </listheader>
-/// <item>
-/// <term>
-/// <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/> <see cref="PureDIByCR()"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.Benchmarks.Model.CompositionRoot&gt;()</c>
-/// </term>
-/// <description>
-/// Provides a composition root of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/>.
-/// </description>
-/// </item>
-/// </list>
-/// </para>
-/// </summary>
-/// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/> using the composition root <see cref="PureDIByCR()"/>:
-/// <code>
-/// var composition = new Func();
-/// var instance = composition.PureDIByCR();
-/// </code>
-/// </example>
-/// <a href="https://mermaid.live/view#pako:eNrVVkFuwjAQ_Irlcw_UjkTLjSRF4oYoR19CsGhagpETkBDiD_yll36Hn9SJiY1TOzShl14sw-yOx7O7Vg4wZgsKBzBeRVkWJtGSRynhZF3-BqPtOgZk2-v1_eLPYof8gKUbliV5wtZTxnIw2XIajv19MC3xp3J91vFgBqY0Y6sdPZ--ZufTZ6swNn-ncV7s8Qjk0fJHmgyocmXSbL-hIBdLh-gANB_ZD7U_dStuWCWPG79Svkti-giyy-ZybgWgCkBuBDkRXENwhdQBrwK8-jEaQba7K_0lGOq1H5SmvSgiGYKHQFtmINdeVYBpkr5XgxKk-rRRDXKq0QQWRSUoVRU70Z3KWtGlyt1RFOeM7xtk4tsSsVMidsnDpmH3VtW7LdJzivRcIj3bzF9PksVZDZrtpOmxVBZE8yznwn6p87JaDjEb4X6eek268nideWwPEBpeVxCYEyeqptxsSaCH5IoE_VsSNWqqmi0J1BioMv4Jgfm6tjXACGBmMoETyv0Viz8ItA1cReiYRfMV63ClDpn6YS_bX67iKbK5LHJ__2niun6rZoEPMKU8jZKF-II6EJi_0ZQSOCBwEXFh8hEevwEw4iWI">Class diagram</a><br/>
-/// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// <seealso cref="Pure.DI.DI.Setup"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
-[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Func
 {
   private readonly Func _rootM03D15di;
   
-  /// <summary>
-  /// This constructor creates a new instance of <see cref="Func"/>.
-  /// </summary>
   public Func()
   {
     _rootM03D15di = this;
   }
   
-  /// <summary>
-  /// This constructor creates a new instance of <see cref="Func"/> scope based on <paramref name="baseComposition"/>. This allows the <see cref="Lifetime.Scoped"/> life time to be applied.
-  /// </summary>
-  /// <param name="baseComposition">Base composition.</param>
   internal Func(Func baseComposition)
   {
     _rootM03D15di = baseComposition._rootM03D15di;
   }
   
-  #region Composition Roots
-  /// <summary>
-  /// Provides a composition root of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/>.
-  /// </summary>
-  /// <example>
-  /// This shows how to get an instance of type <see cref="Pure.DI.Benchmarks.Model.CompositionRoot"/>:
-  /// <code>
-  /// var composition = new Func();
-  /// var instance = composition.PureDIByCR();
-  /// </code>
-  /// </example>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public partial Pure.DI.Benchmarks.Model.CompositionRoot PureDIByCR()
   {
     System.Func<Pure.DI.Benchmarks.Model.IService3> perBlockM03D15di10_Func = new Func<Pure.DI.Benchmarks.Model.IService3>(
@@ -142,44 +90,17 @@ partial class Func
     });
     return new Pure.DI.Benchmarks.Model.CompositionRoot(new Pure.DI.Benchmarks.Model.Service1(new Pure.DI.Benchmarks.Model.Service2Func(perBlockM03D15di10_Func)), new Pure.DI.Benchmarks.Model.Service2Func(perBlockM03D15di10_Func), new Pure.DI.Benchmarks.Model.Service2Func(perBlockM03D15di10_Func), new Pure.DI.Benchmarks.Model.Service2Func(perBlockM03D15di10_Func), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
   }
-  #endregion
   
-  #region API
-  /// <summary>
-  /// Resolves the composition root.
-  /// </summary>
-  /// <typeparam name="T">The type of the composition root.</typeparam>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public T Resolve<T>()
   {
     return ResolverM03D15di<T>.Value.Resolve(this);
   }
   
-  /// <summary>
-  /// Resolves the composition root by tag.
-  /// </summary>
-  /// <typeparam name="T">The type of the composition root.</typeparam>
-  /// <param name="tag">The tag of a composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public T Resolve<T>(object? tag)
   {
     return ResolverM03D15di<T>.Value.ResolveByTag(this, tag);
   }
   
-  /// <summary>
-  /// Resolves the composition root.
-  /// </summary>
-  /// <param name="type">The type of the composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public object Resolve(global::System.Type type)
   {
     var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
@@ -195,15 +116,6 @@ partial class Func
     throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
   
-  /// <summary>
-  /// Resolves the composition root by tag.
-  /// </summary>
-  /// <param name="type">The type of the composition root.</param>
-  /// <param name="tag">The tag of a composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public object Resolve(global::System.Type type, object? tag)
   {
     var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
@@ -218,11 +130,7 @@ partial class Func
     
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
-  #endregion
   
-  /// <summary>
-  /// This method provides a class diagram in mermaid format. To see this diagram, simply call the method and copy the text to this site https://mermaid.live/.
-  /// </summary>
   public override string ToString()
   {
     return
@@ -297,7 +205,6 @@ partial class Func
       });
   }
   
-  #region Resolvers
   private sealed class ResolverM03D15di<T>: global::Pure.DI.IResolver<Func, T>
   {
     public static global::Pure.DI.IResolver<Func, T> Value = new ResolverM03D15di<T>();
@@ -330,7 +237,6 @@ partial class Func
       throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.Benchmarks.Model.CompositionRoot.");
     }
   }
-  #endregion
 }
 ```
 

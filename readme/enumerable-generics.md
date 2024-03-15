@@ -107,82 +107,22 @@ classDiagram
 <summary>Pure.DI-generated partial class Composition</summary><blockquote>
 
 ```c#
-/// <para>
-/// <b>Composition roots</b><br/>
-/// <list type="table">
-/// <listheader>
-/// <term>Root</term>
-/// <description>Description</description>
-/// </listheader>
-/// <item>
-/// <term>
-/// <see cref="Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService{int}"/> <see cref="IntRoot"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService&lt;int&gt;&gt;()</c>
-/// </term>
-/// <description>
-/// Provides a composition root of type <see cref="Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service{int}"/>.
-/// </description>
-/// </item>
-/// <item>
-/// <term>
-/// <see cref="Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService{string}"/> <see cref="StringRoot"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService&lt;string&gt;&gt;()</c>
-/// </term>
-/// <description>
-/// Provides a composition root of type <see cref="Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service{string}"/>.
-/// </description>
-/// </item>
-/// </list>
-/// </para>
-/// </summary>
-/// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service{int}"/> using the composition root <see cref="IntRoot"/>:
-/// <code>
-/// var composition = new Composition();
-/// var instance = composition.IntRoot;
-/// </code>
-/// </example>
-/// <a href="https://mermaid.live/view#pako:eNqtVr1uwjAQfhXLcweUDLRskFApWwUMHbI4iUXTJjFyDBJFvAPv0qWvw5vUcUJxIP6BsFiGfHf33Xfn0-1gTBIMRzDOUFn6KVpSlIc0LMRv4JF8RcqUpaQA4XowGE6qb9XNmQRzTDdpjI-H36BgrnM8_AB-mRHCOkFzRtNiWaHqWxsIFmCGS5JtKuiCo8Tfz-J8McJI9IljVt3dV8DQ8sqsBpxsa6PFdoUB48cdaA_oQw79s4jBtFjnmKIoE1r5eIWLBBfxVhalSsXK4qR1YzCO4m6Hol6Ofz6HniA7BYHGwB2DMw29b7kXWsiuytV6vG-_H00Wcp8hlEjrY8ikW0g16UsV_pvdknMLr9W3hXyAvL2ZGsVVMrbUtmOEqLkqwC1JFRiZWgOpSVm-NJCcPqS41Cdi09MqtCIVdQtb5yLPGWMyzRCyekZunZSHopJR1AzEaXMavSqKdLNTY9l7eOyfuXVhRDHGct8AwxDmHaPw1zuwfpBK4-FeBvL7ssn88tV3e-sbVTvi1FnL4S-3Jkd0RX3y56-eY4aVytrvdY-Y17CO0KStTAjfMJ1kJP7i6d8icUXAfqPponovk6smN1C5XMfgE-TQHKUJX5F3IWQfOMchHIUwQZQH38P9H_T_ZNI">Class diagram</a><br/>
-/// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// <seealso cref="Pure.DI.DI.Setup"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
-[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
   private readonly Composition _rootM03D15di;
   
-  /// <summary>
-  /// This constructor creates a new instance of <see cref="Composition"/>.
-  /// </summary>
   public Composition()
   {
     _rootM03D15di = this;
   }
   
-  /// <summary>
-  /// This constructor creates a new instance of <see cref="Composition"/> scope based on <paramref name="baseComposition"/>. This allows the <see cref="Lifetime.Scoped"/> life time to be applied.
-  /// </summary>
-  /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
     _rootM03D15di = baseComposition._rootM03D15di;
   }
   
-  #region Composition Roots
-  /// <summary>
-  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service{int}"/>.
-  /// </summary>
-  /// <example>
-  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service{int}"/>:
-  /// <code>
-  /// var composition = new Composition();
-  /// var instance = composition.IntRoot;
-  /// </code>
-  /// </example>
   public Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int> IntRoot
   {
-    #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-    [global::System.Diagnostics.Contracts.Pure]
-    #endif
     get
     {
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x200)]
@@ -196,21 +136,8 @@ partial class Composition
     }
   }
   
-  /// <summary>
-  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service{string}"/>.
-  /// </summary>
-  /// <example>
-  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service{string}"/>:
-  /// <code>
-  /// var composition = new Composition();
-  /// var instance = composition.StringRoot;
-  /// </code>
-  /// </example>
   public Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string> StringRoot
   {
-    #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-    [global::System.Diagnostics.Contracts.Pure]
-    #endif
     get
     {
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x200)]
@@ -223,44 +150,17 @@ partial class Composition
       return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service<string>(perBlockM03D15di1_IEnumerable);
     }
   }
-  #endregion
   
-  #region API
-  /// <summary>
-  /// Resolves the composition root.
-  /// </summary>
-  /// <typeparam name="T">The type of the composition root.</typeparam>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public T Resolve<T>()
   {
     return ResolverM03D15di<T>.Value.Resolve(this);
   }
   
-  /// <summary>
-  /// Resolves the composition root by tag.
-  /// </summary>
-  /// <typeparam name="T">The type of the composition root.</typeparam>
-  /// <param name="tag">The tag of a composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public T Resolve<T>(object? tag)
   {
     return ResolverM03D15di<T>.Value.ResolveByTag(this, tag);
   }
   
-  /// <summary>
-  /// Resolves the composition root.
-  /// </summary>
-  /// <param name="type">The type of the composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public object Resolve(global::System.Type type)
   {
     var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
@@ -276,15 +176,6 @@ partial class Composition
     throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
   
-  /// <summary>
-  /// Resolves the composition root by tag.
-  /// </summary>
-  /// <param name="type">The type of the composition root.</param>
-  /// <param name="tag">The tag of a composition root.</param>
-  /// <returns>A composition root.</returns>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public object Resolve(global::System.Type type, object? tag)
   {
     var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
@@ -299,11 +190,7 @@ partial class Composition
     
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
-  #endregion
   
-  /// <summary>
-  /// This method provides a class diagram in mermaid format. To see this diagram, simply call the method and copy the text to this site https://mermaid.live/.
-  /// </summary>
   public override string ToString()
   {
     return
@@ -383,7 +270,6 @@ partial class Composition
       });
   }
   
-  #region Resolvers
   private sealed class ResolverM03D15di<T>: global::Pure.DI.IResolver<Composition, T>
   {
     public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D15di<T>();
@@ -434,7 +320,6 @@ partial class Composition
       throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string>.");
     }
   }
-  #endregion
 }
 ```
 

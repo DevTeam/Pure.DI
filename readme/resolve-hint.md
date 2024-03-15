@@ -62,113 +62,36 @@ classDiagram
 <summary>Pure.DI-generated partial class Composition</summary><blockquote>
 
 ```c#
-/// <para>
-/// <b>Composition roots</b><br/>
-/// <list type="table">
-/// <listheader>
-/// <term>Root</term>
-/// <description>Description</description>
-/// </listheader>
-/// <item>
-/// <term>
-/// <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.IDependency"/> <see cref="DependencyRoot"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Hints.ResolveHintScenario.IDependency&gt;()</c>
-/// </term>
-/// <description>
-/// Provides a composition root of type <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency"/>.
-/// </description>
-/// </item>
-/// <item>
-/// <term>
-/// <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.IService"/> <see cref="Root"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Hints.ResolveHintScenario.IService&gt;()</c>
-/// </term>
-/// <description>
-/// Provides a composition root of type <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.Service"/>.
-/// </description>
-/// </item>
-/// </list>
-/// </para>
-/// </summary>
-/// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency"/> using the composition root <see cref="DependencyRoot"/>:
-/// <code>
-/// var composition = new Composition();
-/// var instance = composition.DependencyRoot;
-/// </code>
-/// </example>
-/// <a href="https://mermaid.live/view#pako:eNqNUj1vwjAQ_SvWzQwIhlA2SBhYYfXi2iewimPkGKQK8d8b2yBfTNqynM738d7Ly91AWoWwBHkSXddocXDCcMfb-Ga1NWfbaa9ty_hlOq3WoRey2Xrb4Blbha38ZjndWevJzB7dVUtktFw1ISPbcbbJsapDnG8YpYilFcvaih6VllvxvYjxY8j_VPY7OZ0YMNMGpX3UEyfVroZ6CiUJtPzWDDxPimrx2XknpE_6HnEMaVzf-zADa1bUIFa63vtChIfl8mRmkSLF3tU_90fu6B-44h-93BtMwKAzQqv-xm8c_BENclhyUMJ9cbjD_QcffwNk">Class diagram</a><br/>
-/// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// <seealso cref="Pure.DI.DI.Setup"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
-[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
   private readonly Composition _rootM03D15di;
   
-  /// <summary>
-  /// This constructor creates a new instance of <see cref="Composition"/>.
-  /// </summary>
   public Composition()
   {
     _rootM03D15di = this;
   }
   
-  /// <summary>
-  /// This constructor creates a new instance of <see cref="Composition"/> scope based on <paramref name="baseComposition"/>. This allows the <see cref="Lifetime.Scoped"/> life time to be applied.
-  /// </summary>
-  /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
     _rootM03D15di = baseComposition._rootM03D15di;
   }
   
-  #region Composition Roots
-  /// <summary>
-  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency"/>.
-  /// </summary>
-  /// <example>
-  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency"/>:
-  /// <code>
-  /// var composition = new Composition();
-  /// var instance = composition.DependencyRoot;
-  /// </code>
-  /// </example>
   public Pure.DI.UsageTests.Hints.ResolveHintScenario.IDependency DependencyRoot
   {
-    #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-    [global::System.Diagnostics.Contracts.Pure]
-    #endif
     get
     {
       return new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
     }
   }
   
-  /// <summary>
-  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.Service"/>.
-  /// </summary>
-  /// <example>
-  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Hints.ResolveHintScenario.Service"/>:
-  /// <code>
-  /// var composition = new Composition();
-  /// var instance = composition.Root;
-  /// </code>
-  /// </example>
   public Pure.DI.UsageTests.Hints.ResolveHintScenario.IService Root
   {
-    #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-    [global::System.Diagnostics.Contracts.Pure]
-    #endif
     get
     {
       return new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency());
     }
   }
-  #endregion
   
-  /// <summary>
-  /// This method provides a class diagram in mermaid format. To see this diagram, simply call the method and copy the text to this site https://mermaid.live/.
-  /// </summary>
   public override string ToString()
   {
     return

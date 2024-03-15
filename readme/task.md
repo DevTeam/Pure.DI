@@ -105,75 +105,23 @@ classDiagram
 <summary>Pure.DI-generated partial class Composition</summary><blockquote>
 
 ```c#
-/// <para>
-/// <b>Composition roots</b><br/>
-/// <list type="table">
-/// <listheader>
-/// <term>Root</term>
-/// <description>Description</description>
-/// </listheader>
-/// <item>
-/// <term>
-/// <see cref="Pure.DI.UsageTests.BCL.TaskScenario.IService"/> <see cref="GetRoot(System.Threading.CancellationToken)"/>
-/// </term>
-/// <description>
-/// Provides a composition root of type <see cref="Pure.DI.UsageTests.BCL.TaskScenario.Service"/>.
-/// </description>
-/// </item>
-/// </list>
-/// </para>
-/// </summary>
-/// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.BCL.TaskScenario.Service"/> using the composition root <see cref="GetRoot(System.Threading.CancellationToken)"/>:
-/// <code>
-/// var composition = new Composition();
-/// var instance = composition.GetRoot(cancellationToken);
-/// </code>
-/// </example>
-/// <a href="https://mermaid.live/view#pako:eNq1VktuwjAQvYrldRcIFrTsIIGKVStgmY3rjCAisZHjICHEHbhLN70ON6mTEGI7H9LSbizbM3kz82aelSOm3Ac8wjQkcewGZC1I5AmPZWfk8GjH40AGnCEv6fWGk9SW7vqT-RLEPqCAXkEuOJfZ7fPyEEuIsv10tRFA_ICt86NDGIUwJCnaim-BIWrfZI4vRYyhW2ayIvHWUXCp69suXWPLyJkMWNLsMCNUcnEwL5d0A34SgtBqriSlTC7sgPnA6CHjoe-W69BJ18EUzS2nwRiVqJZNJ7I05RTWkVBw3Rxc9zAi6wY97PU-j5lycTl_aSVczp_Iv51Se3tzKl-X5lnCaItZa06Ll81uWcog58AhH7EUCidn5LrWZGtQ9RsYLWHE9Y5UZ6dox1iskwiYRB6uDj22QTO0sYFcJ4ACvEEbnRCrqjFQ60XVBfmmLB3PkJsx0zUI1XnUkGonxX6u-ln78lVpxJLI_z5g9RWY46Km4R3EAmIe7sHD9UIp0m1UUfdIk5DTrYrTpjid5DZVNudq97L6LGofWeN0r46_EVi3vB9S3A9CPCrB7qHuaxI_4QhERAJf_RMcPSw3EKnJHHnYJ0KNzgmfvgEIzgRu">Class diagram</a><br/>
-/// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
-/// <seealso cref="Pure.DI.DI.Setup"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
-/// <seealso cref="Pure.DI.IConfiguration.Bind{T}(object[])"/>
-[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
   private readonly Composition _rootM03D15di;
   private readonly object _lockM03D15di;
   
-  /// <summary>
-  /// This parameterized constructor creates a new instance of <see cref="Composition"/> with arguments.
-  /// </summary>
   public Composition()
   {
     _rootM03D15di = this;
     _lockM03D15di = new object();
   }
   
-  /// <summary>
-  /// This constructor creates a new instance of <see cref="Composition"/> scope based on <paramref name="baseComposition"/>. This allows the <see cref="Lifetime.Scoped"/> life time to be applied.
-  /// </summary>
-  /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
     _rootM03D15di = baseComposition._rootM03D15di;
     _lockM03D15di = _rootM03D15di._lockM03D15di;
   }
   
-  #region Composition Roots
-  /// <summary>
-  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.BCL.TaskScenario.Service"/>.
-  /// </summary>
-  /// <example>
-  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.BCL.TaskScenario.Service"/>:
-  /// <code>
-  /// var composition = new Composition();
-  /// var instance = composition.GetRoot(cancellationToken);
-  /// </code>
-  /// </example>
-  #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
-  [global::System.Diagnostics.Contracts.Pure]
-  #endif
   public Pure.DI.UsageTests.BCL.TaskScenario.IService GetRoot(System.Threading.CancellationToken cancellationToken)
   {
     var perResolveM03D15di39_Func = default(System.Func<Pure.DI.UsageTests.BCL.TaskScenario.IDependency>);
@@ -203,11 +151,7 @@ partial class Composition
     }
     return new Pure.DI.UsageTests.BCL.TaskScenario.Service(transientM03D15di1_Task);
   }
-  #endregion
   
-  /// <summary>
-  /// This method provides a class diagram in mermaid format. To see this diagram, simply call the method and copy the text to this site https://mermaid.live/.
-  /// </summary>
   public override string ToString()
   {
     return
