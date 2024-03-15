@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=17
+$p=6
 $d=Tracking disposable instances
 */
 
@@ -8,7 +8,7 @@ $d=Tracking disposable instances
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable ArrangeTypeModifiers
-namespace Pure.DI.UsageTests.Basics.TrackingDisposableInstancesScenario;
+namespace Pure.DI.UsageTests.Hints.TrackingDisposableInstancesScenario;
 
 using Xunit;
 

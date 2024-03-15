@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=6
+$p=4
 $d=Tag Unique
 $h=`Tag.Unique` is useful to register a binding with a unique tag. It will not be available through the composition root or `Resolve` methods directly, but can be embedded in compositions as some kind of enumeration.
 */
@@ -10,7 +10,7 @@ $h=`Tag.Unique` is useful to register a binding with a unique tag. It will not b
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedTypeParameter
-namespace Pure.DI.UsageTests.Basics.TagUniqueScenario;
+namespace Pure.DI.UsageTests.Advanced.TagUniqueScenario;
 
 using System.Collections.Immutable;
 using Shouldly;

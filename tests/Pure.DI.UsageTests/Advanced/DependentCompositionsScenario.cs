@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=14
+$p=7
 $d=Dependent compositions
 $h=The _Setup_ method has an additional argument _kind_, which defines the type of composition:
 $h=- _CompositionKind.Public_ - will create a normal composition class, this is the default setting and can be omitted, it can also use the _DependsOn_ method to use it as a dependency in other compositions
@@ -14,7 +14,7 @@ $h=- _CompositionKind.Global_ - the composition class will also not be created, 
 // ReSharper disable RedundantAssignment
 // ReSharper disable ArrangeTypeModifiers
 #pragma warning disable CS9113 // Parameter is unread.
-namespace Pure.DI.UsageTests.Basics.DependentCompositionsScenario;
+namespace Pure.DI.UsageTests.Advanced.DependentCompositionsScenario;
 
 using Pure.DI;
 using UsageTests;

@@ -1,6 +1,6 @@
 #### Tag Type
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/TagTypeScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/TagTypeScenario.cs)
 
 `Tag.Type` in bindings replaces the expression `typeof(T)`, where `T` is the type of the implementation in a binding.
 
@@ -65,12 +65,12 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  AbcDependency --|> IDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.AbcDependency) 
+  AbcDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency) 
   AbcDependency --|> IDependency : 
   class AbcDependency {
     +AbcDependency()
   }
-  XyzDependency --|> IDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency) 
+  XyzDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency) 
   class XyzDependency {
     +XyzDependency()
   }
@@ -84,8 +84,8 @@ classDiagram
   class IService {
     <<abstract>>
   }
-  Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.AbcDependency)  IDependency
-  Service o--  "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency)  IDependency
+  Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency)  IDependency
+  Service o--  "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency)  IDependency
   Service *--  AbcDependency : IDependency
   Composition ..> Service : IService Root
   Composition ..> XyzDependency : IDependency XyzRoot
@@ -106,15 +106,15 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Basics.TagTypeScenario.IService"/> <see cref="Root"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Basics.TagTypeScenario.IService&gt;()</c>
+/// <see cref="Pure.DI.UsageTests.Advanced.TagTypeScenario.IService"/> <see cref="Root"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Advanced.TagTypeScenario.IService&gt;()</c>
 /// </term>
 /// <description>
-/// Provides a composition root of type <see cref="Pure.DI.UsageTests.Basics.TagTypeScenario.Service"/>.
+/// Provides a composition root of type <see cref="Pure.DI.UsageTests.Advanced.TagTypeScenario.Service"/>.
 /// </description>
 /// </item>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Basics.TagTypeScenario.IDependency"/> <see cref="XyzRoot"/><br/>or using <see cref="Resolve{T}(object)"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Basics.TagTypeScenario.IDependency&gt;(typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency))</c>
+/// <see cref="Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency"/> <see cref="XyzRoot"/><br/>or using <see cref="Resolve{T}(object)"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency&gt;(typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency))</c>
 /// </term>
 /// <description>
 /// "XyzRoot" is root name, typeof(XyzDependency) is tag
@@ -124,13 +124,13 @@ classDiagram
 /// </para>
 /// </summary>
 /// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.TagTypeScenario.Service"/> using the composition root <see cref="Root"/>:
+/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Advanced.TagTypeScenario.Service"/> using the composition root <see cref="Root"/>:
 /// <code>
 /// var composition = new Composition();
 /// var instance = composition.Root;
 /// </code>
 /// </example>
-/// <a href="https://mermaid.live/view#pako:eNrNVUtuwjAQvYrldRcUFlB2kFCJXQWp1IU3xpmmbkmMbINEEXfgLt30OtykiZ0WJzEftRLqZjKej-fNy1izwUzEgPuYzalSIaeJpCmRJDNnFIh0IRTXXGSILFut7rDwFVp7OJ6CXHEGaCKEdswhLCCLIWNr9LR-rzpRhCagxHwF-91ntN99GHPPyLuzYWL2CkwXeuceaZo00mzAd65NitYLQDoXv4gO0OmS3bDQBjPm9GwiwoPsBiZ7hFxijGlgColnW_lhKW3RUTi230dFE4hAaWXPQ6o4K_WIJgXUKYOMSi6ssQLEIkV_A3iYhOYd7iw0K_d8TOXz8D-YqgBxmLK9NmG6vTZzvb1-v47jXboRFa5dh1u5tNuaLknxj3pbzq3f2z7p7fjasIjqf-SAqmPbCehMaUnLpzIqpe8mf3OXX1PhdeCyizxDep1H5vLjYhRVeARPeZbMQYuMYM-UXWfOj4G9mNBafn1HtM1vszIf89qUN7bGmXQvS0d2DL7BKciU8jhfaBuC9QukQHCf4JjKN4K3ePsFYAlYXg">Class diagram</a><br/>
+/// <a href="https://mermaid.live/view#pako:eNrNVUtuwjAQvYrldRcUFlB2gVCJXQWp1IU3xpmmaYmNbINEEXfgLt30OtykiZ0WJzEftRLqZmLPx_Pm5VneYCZiwH3M5lSpMKWJpBmRhJs9GopsIVSqU8ERWbZa3UERK1btwXgKcpUyQBMhtOMOYQE8Bs7W6Gn9Xg2iCE1AifkK9rvPaL_7MO6esXdn08TsFZgu1p17pGnSKLMJ37W2KFovAOnc_CJ7iE637IbFKpgxZ2aTER5sd2iqR8glxrgC00g8284PS2mbjsKx_T4qmkAESiu7D-IV5Qxiu4toUoCdMuBUpqJMcaFYrOhvEA9aaJ7hqqHZuefjKlfEf-GqAsXhyk7bBOpO26z1Tvt9Q47P6WZU2HYDbufSb3u6NMU_y9tSu_5o-2S04xvDIqr_kwOqjh1nSGdKS1pel1FpfSf5h7v8mAqvgcsu8sj0WhfNZchFKaoACZ6mPJmDFpxgj86upfVjcC8mtVZffyva5tdZm0u9pvTG63Gm3MvTkbcG3-AMZEbTOH_YNgTrF8iA4D7BMZVvBG_x9gsvllti">Class diagram</a><br/>
 /// This class was created by <a href="https://github.com/DevTeam/Pure.DI">Pure.DI</a> source code generator.
 /// <seealso cref="Pure.DI.DI.Setup"/>
 /// <seealso cref="Pure.DI.IConfiguration.Bind(object[])"/>
@@ -138,17 +138,17 @@ classDiagram
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM03D14di;
-  private readonly object _lockM03D14di;
-  private Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency _singletonM03D14di35_XyzDependency;
+  private readonly Composition _rootM03D15di;
+  private readonly object _lockM03D15di;
+  private Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency _singletonM03D15di35_XyzDependency;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Composition"/>.
   /// </summary>
   public Composition()
   {
-    _rootM03D14di = this;
-    _lockM03D14di = new object();
+    _rootM03D15di = this;
+    _lockM03D15di = new object();
   }
   
   /// <summary>
@@ -157,8 +157,8 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM03D14di = baseComposition._rootM03D14di;
-    _lockM03D14di = _rootM03D14di._lockM03D14di;
+    _rootM03D15di = baseComposition._rootM03D15di;
+    _lockM03D15di = _rootM03D15di._lockM03D15di;
   }
   
   #region Composition Roots
@@ -166,63 +166,63 @@ partial class Composition
   /// "XyzRoot" is root name, typeof(XyzDependency) is tag
   /// </summary>
   /// <example>
-  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency"/>:
+  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency"/>:
   /// <code>
   /// var composition = new Composition();
   /// var instance = composition.XyzRoot;
   /// </code>
   /// </example>
-  public Pure.DI.UsageTests.Basics.TagTypeScenario.IDependency XyzRoot
+  public Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency XyzRoot
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
     #endif
     get
     {
-      if (ReferenceEquals(_rootM03D14di._singletonM03D14di35_XyzDependency, null))
+      if (ReferenceEquals(_rootM03D15di._singletonM03D15di35_XyzDependency, null))
       {
-          lock (_lockM03D14di)
+          lock (_lockM03D15di)
           {
-              if (ReferenceEquals(_rootM03D14di._singletonM03D14di35_XyzDependency, null))
+              if (ReferenceEquals(_rootM03D15di._singletonM03D15di35_XyzDependency, null))
               {
-                  _singletonM03D14di35_XyzDependency = new Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency();
-                  _rootM03D14di._singletonM03D14di35_XyzDependency = _singletonM03D14di35_XyzDependency;
+                  _singletonM03D15di35_XyzDependency = new Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency();
+                  _rootM03D15di._singletonM03D15di35_XyzDependency = _singletonM03D15di35_XyzDependency;
               }
           }
       }
-      return _rootM03D14di._singletonM03D14di35_XyzDependency;
+      return _rootM03D15di._singletonM03D15di35_XyzDependency;
     }
   }
   
   /// <summary>
-  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Basics.TagTypeScenario.Service"/>.
+  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Advanced.TagTypeScenario.Service"/>.
   /// </summary>
   /// <example>
-  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.TagTypeScenario.Service"/>:
+  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Advanced.TagTypeScenario.Service"/>:
   /// <code>
   /// var composition = new Composition();
   /// var instance = composition.Root;
   /// </code>
   /// </example>
-  public Pure.DI.UsageTests.Basics.TagTypeScenario.IService Root
+  public Pure.DI.UsageTests.Advanced.TagTypeScenario.IService Root
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
     #endif
     get
     {
-      if (ReferenceEquals(_rootM03D14di._singletonM03D14di35_XyzDependency, null))
+      if (ReferenceEquals(_rootM03D15di._singletonM03D15di35_XyzDependency, null))
       {
-          lock (_lockM03D14di)
+          lock (_lockM03D15di)
           {
-              if (ReferenceEquals(_rootM03D14di._singletonM03D14di35_XyzDependency, null))
+              if (ReferenceEquals(_rootM03D15di._singletonM03D15di35_XyzDependency, null))
               {
-                  _singletonM03D14di35_XyzDependency = new Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency();
-                  _rootM03D14di._singletonM03D14di35_XyzDependency = _singletonM03D14di35_XyzDependency;
+                  _singletonM03D15di35_XyzDependency = new Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency();
+                  _rootM03D15di._singletonM03D15di35_XyzDependency = _singletonM03D15di35_XyzDependency;
               }
           }
       }
-      return new Pure.DI.UsageTests.Basics.TagTypeScenario.Service(new Pure.DI.UsageTests.Basics.TagTypeScenario.AbcDependency(), _rootM03D14di._singletonM03D14di35_XyzDependency, new Pure.DI.UsageTests.Basics.TagTypeScenario.AbcDependency());
+      return new Pure.DI.UsageTests.Advanced.TagTypeScenario.Service(new Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency(), _rootM03D15di._singletonM03D15di35_XyzDependency, new Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency());
     }
   }
   #endregion
@@ -238,7 +238,7 @@ partial class Composition
   #endif
   public T Resolve<T>()
   {
-    return ResolverM03D14di<T>.Value.Resolve(this);
+    return ResolverM03D15di<T>.Value.Resolve(this);
   }
   
   /// <summary>
@@ -252,7 +252,7 @@ partial class Composition
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D14di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D15di<T>.Value.ResolveByTag(this, tag);
   }
   
   /// <summary>
@@ -265,10 +265,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    var finish = index + _bucketSizeM03D14di;
+    var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var finish = index + _bucketSizeM03D15di;
     do {
-      ref var pair = ref _bucketsM03D14di[index];
+      ref var pair = ref _bucketsM03D15di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -289,10 +289,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    var finish = index + _bucketSizeM03D14di;
+    var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var finish = index + _bucketSizeM03D15di;
     do {
-      ref var pair = ref _bucketsM03D14di[index];
+      ref var pair = ref _bucketsM03D15di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -318,12 +318,12 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  AbcDependency --|> IDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.AbcDependency) \n" +
+        "  AbcDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency) \n" +
         "  AbcDependency --|> IDependency : \n" +
         "  class AbcDependency {\n" +
           "    +AbcDependency()\n" +
         "  }\n" +
-        "  XyzDependency --|> IDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency) \n" +
+        "  XyzDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency) \n" +
         "  class XyzDependency {\n" +
           "    +XyzDependency()\n" +
         "  }\n" +
@@ -337,36 +337,36 @@ partial class Composition
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.AbcDependency)  IDependency\n" +
-        "  Service o--  \"Singleton\" XyzDependency : typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency)  IDependency\n" +
+        "  Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency)  IDependency\n" +
+        "  Service o--  \"Singleton\" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency)  IDependency\n" +
         "  Service *--  AbcDependency : IDependency\n" +
         "  Composition ..> Service : IService Root\n" +
         "  Composition ..> XyzDependency : IDependency XyzRoot";
   }
   
-  private readonly static int _bucketSizeM03D14di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D14di;
+  private readonly static int _bucketSizeM03D15di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D15di;
   
   static Composition()
   {
-    var valResolverM03D14di_0000 = new ResolverM03D14di_0000();
-    ResolverM03D14di<Pure.DI.UsageTests.Basics.TagTypeScenario.IDependency>.Value = valResolverM03D14di_0000;
-    var valResolverM03D14di_0001 = new ResolverM03D14di_0001();
-    ResolverM03D14di<Pure.DI.UsageTests.Basics.TagTypeScenario.IService>.Value = valResolverM03D14di_0001;
-    _bucketsM03D14di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM03D15di_0000 = new ResolverM03D15di_0000();
+    ResolverM03D15di<Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency>.Value = valResolverM03D15di_0000;
+    var valResolverM03D15di_0001 = new ResolverM03D15di_0001();
+    ResolverM03D15di<Pure.DI.UsageTests.Advanced.TagTypeScenario.IService>.Value = valResolverM03D15di_0001;
+    _bucketsM03D15di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       4,
-      out _bucketSizeM03D14di,
+      out _bucketSizeM03D15di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[2]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.IDependency), valResolverM03D14di_0000)
-        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.IService), valResolverM03D14di_0001)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency), valResolverM03D15di_0000)
+        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.IService), valResolverM03D15di_0001)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM03D14di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM03D15di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D14di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D15di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -379,38 +379,38 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D14di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.TagTypeScenario.IDependency>
+  private sealed class ResolverM03D15di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency>
   {
-    public Pure.DI.UsageTests.Basics.TagTypeScenario.IDependency Resolve(Composition composition)
+    public Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency Resolve(Composition composition)
     {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root of type Pure.DI.UsageTests.Basics.TagTypeScenario.IDependency.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root of type Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency.");
     }
     
-    public Pure.DI.UsageTests.Basics.TagTypeScenario.IDependency ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency ResolveByTag(Composition composition, object tag)
     {
-      if (Equals(tag, typeof(Pure.DI.UsageTests.Basics.TagTypeScenario.XyzDependency))) return composition.XyzRoot;
+      if (Equals(tag, typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency))) return composition.XyzRoot;
       switch (tag)
       {
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.TagTypeScenario.IDependency.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency.");
     }
   }
   
-  private sealed class ResolverM03D14di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.TagTypeScenario.IService>
+  private sealed class ResolverM03D15di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Advanced.TagTypeScenario.IService>
   {
-    public Pure.DI.UsageTests.Basics.TagTypeScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.Advanced.TagTypeScenario.IService Resolve(Composition composition)
     {
       return composition.Root;
     }
     
-    public Pure.DI.UsageTests.Basics.TagTypeScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Advanced.TagTypeScenario.IService ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Root;
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.TagTypeScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Advanced.TagTypeScenario.IService.");
     }
   }
   #endregion

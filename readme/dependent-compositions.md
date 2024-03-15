@@ -1,6 +1,6 @@
 #### Dependent compositions
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/DependentCompositionsScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/DependentCompositionsScenario.cs)
 
 The _Setup_ method has an additional argument _kind_, which defines the type of composition:
 - _CompositionKind.Public_ - will create a normal composition class, this is the default setting and can be omitted, it can also use the _DependsOn_ method to use it as a dependency in other compositions
@@ -99,17 +99,17 @@ classDiagram
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Basics.DependentCompositionsScenario.IService"/> <see cref="Root"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Basics.DependentCompositionsScenario.IService&gt;()</c>
+/// <see cref="Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.IService"/> <see cref="Root"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.IService&gt;()</c>
 /// </term>
 /// <description>
-/// Provides a composition root of type <see cref="Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service"/>.
+/// Provides a composition root of type <see cref="Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Service"/>.
 /// </description>
 /// </item>
 /// </list>
 /// </para>
 /// </summary>
 /// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service"/> using the composition root <see cref="Root"/>:
+/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Service"/> using the composition root <see cref="Root"/>:
 /// <code>
 /// var composition = new Composition();
 /// var instance = composition.Root;
@@ -123,14 +123,14 @@ classDiagram
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class Composition
 {
-  private readonly Composition _rootM03D14di;
+  private readonly Composition _rootM03D15di;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="Composition"/>.
   /// </summary>
   public Composition()
   {
-    _rootM03D14di = this;
+    _rootM03D15di = this;
   }
   
   /// <summary>
@@ -139,28 +139,28 @@ partial class Composition
   /// <param name="baseComposition">Base composition.</param>
   internal Composition(Composition baseComposition)
   {
-    _rootM03D14di = baseComposition._rootM03D14di;
+    _rootM03D15di = baseComposition._rootM03D15di;
   }
   
   #region Composition Roots
   /// <summary>
-  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service"/>.
+  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Service"/>.
   /// </summary>
   /// <example>
-  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service"/>:
+  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Service"/>:
   /// <code>
   /// var composition = new Composition();
   /// var instance = composition.Root;
   /// </code>
   /// </example>
-  public Pure.DI.UsageTests.Basics.DependentCompositionsScenario.IService Root
+  public Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.IService Root
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
     #endif
     get
     {
-      return new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency());
+      return new Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Service(new Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Dependency());
     }
   }
   #endregion
@@ -176,7 +176,7 @@ partial class Composition
   #endif
   public T Resolve<T>()
   {
-    return ResolverM03D14di<T>.Value.Resolve(this);
+    return ResolverM03D15di<T>.Value.Resolve(this);
   }
   
   /// <summary>
@@ -190,7 +190,7 @@ partial class Composition
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D14di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D15di<T>.Value.ResolveByTag(this, tag);
   }
   
   /// <summary>
@@ -203,10 +203,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D14di;
+    var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D15di;
     do {
-      ref var pair = ref _bucketsM03D14di[index];
+      ref var pair = ref _bucketsM03D15di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -227,10 +227,10 @@ partial class Composition
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D14di;
+    var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D15di;
     do {
-      ref var pair = ref _bucketsM03D14di[index];
+      ref var pair = ref _bucketsM03D15di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -273,26 +273,26 @@ partial class Composition
         "  Composition ..> Service : IService Root";
   }
   
-  private readonly static int _bucketSizeM03D14di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D14di;
+  private readonly static int _bucketSizeM03D15di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D15di;
   
   static Composition()
   {
-    var valResolverM03D14di_0000 = new ResolverM03D14di_0000();
-    ResolverM03D14di<Pure.DI.UsageTests.Basics.DependentCompositionsScenario.IService>.Value = valResolverM03D14di_0000;
-    _bucketsM03D14di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM03D15di_0000 = new ResolverM03D15di_0000();
+    ResolverM03D15di<Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.IService>.Value = valResolverM03D15di_0000;
+    _bucketsM03D15di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM03D14di,
+      out _bucketSizeM03D15di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.DependentCompositionsScenario.IService), valResolverM03D14di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.IService), valResolverM03D15di_0000)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM03D14di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM03D15di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D14di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D15di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -305,21 +305,21 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D14di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.DependentCompositionsScenario.IService>
+  private sealed class ResolverM03D15di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.IService>
   {
-    public Pure.DI.UsageTests.Basics.DependentCompositionsScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.IService Resolve(Composition composition)
     {
       return composition.Root;
     }
     
-    public Pure.DI.UsageTests.Basics.DependentCompositionsScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.IService ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Root;
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.DependentCompositionsScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.IService.");
     }
   }
   #endregion
@@ -345,25 +345,25 @@ partial class Composition
 /// </listheader>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program"/> <see cref="Program"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program&gt;()</c>
+/// <see cref="Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Program"/> <see cref="Program"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Program&gt;()</c>
 /// </term>
 /// <description>
-/// Provides a composition root of type <see cref="Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program"/>.
+/// Provides a composition root of type <see cref="Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Program"/>.
 /// </description>
 /// </item>
 /// <item>
 /// <term>
-/// <see cref="Pure.DI.UsageTests.Basics.DependentCompositionsScenario.IService"/> <see cref="Root"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Basics.DependentCompositionsScenario.IService&gt;()</c>
+/// <see cref="Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.IService"/> <see cref="Root"/><br/>or using <see cref="Resolve{T}()"/> method: <c>Resolve&lt;Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.IService&gt;()</c>
 /// </term>
 /// <description>
-/// Provides a composition root of type <see cref="Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service"/>.
+/// Provides a composition root of type <see cref="Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Service"/>.
 /// </description>
 /// </item>
 /// </list>
 /// </para>
 /// </summary>
 /// <example>
-/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program"/> using the composition root <see cref="Program"/>:
+/// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Program"/> using the composition root <see cref="Program"/>:
 /// <code>
 /// var composition = new OtherComposition();
 /// var instance = composition.Program;
@@ -377,14 +377,14 @@ partial class Composition
 [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
 partial class OtherComposition
 {
-  private readonly OtherComposition _rootM03D14di;
+  private readonly OtherComposition _rootM03D15di;
   
   /// <summary>
   /// This constructor creates a new instance of <see cref="OtherComposition"/>.
   /// </summary>
   public OtherComposition()
   {
-    _rootM03D14di = this;
+    _rootM03D15di = this;
   }
   
   /// <summary>
@@ -393,49 +393,49 @@ partial class OtherComposition
   /// <param name="baseComposition">Base composition.</param>
   internal OtherComposition(OtherComposition baseComposition)
   {
-    _rootM03D14di = baseComposition._rootM03D14di;
+    _rootM03D15di = baseComposition._rootM03D15di;
   }
   
   #region Composition Roots
   /// <summary>
-  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service"/>.
+  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Service"/>.
   /// </summary>
   /// <example>
-  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service"/>:
+  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Service"/>:
   /// <code>
   /// var composition = new OtherComposition();
   /// var instance = composition.Root;
   /// </code>
   /// </example>
-  public Pure.DI.UsageTests.Basics.DependentCompositionsScenario.IService Root
+  public Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.IService Root
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
     #endif
     get
     {
-      return new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency());
+      return new Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Service(new Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Dependency());
     }
   }
   
   /// <summary>
-  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program"/>.
+  /// Provides a composition root of type <see cref="Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Program"/>.
   /// </summary>
   /// <example>
-  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program"/>:
+  /// This shows how to get an instance of type <see cref="Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Program"/>:
   /// <code>
   /// var composition = new OtherComposition();
   /// var instance = composition.Program;
   /// </code>
   /// </example>
-  public Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program Program
+  public Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Program Program
   {
     #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
     #endif
     get
     {
-      return new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program(new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Service(new Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Dependency()));
+      return new Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Program(new Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Service(new Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Dependency()));
     }
   }
   #endregion
@@ -451,7 +451,7 @@ partial class OtherComposition
   #endif
   public T Resolve<T>()
   {
-    return ResolverM03D14di<T>.Value.Resolve(this);
+    return ResolverM03D15di<T>.Value.Resolve(this);
   }
   
   /// <summary>
@@ -465,7 +465,7 @@ partial class OtherComposition
   #endif
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D14di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D15di<T>.Value.ResolveByTag(this, tag);
   }
   
   /// <summary>
@@ -478,10 +478,10 @@ partial class OtherComposition
   #endif
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    var finish = index + _bucketSizeM03D14di;
+    var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var finish = index + _bucketSizeM03D15di;
     do {
-      ref var pair = ref _bucketsM03D14di[index];
+      ref var pair = ref _bucketsM03D15di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -502,10 +502,10 @@ partial class OtherComposition
   #endif
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D14di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    var finish = index + _bucketSizeM03D14di;
+    var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var finish = index + _bucketSizeM03D15di;
     do {
-      ref var pair = ref _bucketsM03D14di[index];
+      ref var pair = ref _bucketsM03D15di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -554,29 +554,29 @@ partial class OtherComposition
         "  OtherComposition ..> Program : Program Program";
   }
   
-  private readonly static int _bucketSizeM03D14di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<OtherComposition, object>>[] _bucketsM03D14di;
+  private readonly static int _bucketSizeM03D15di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<OtherComposition, object>>[] _bucketsM03D15di;
   
   static OtherComposition()
   {
-    var valResolverM03D14di_0000 = new ResolverM03D14di_0000();
-    ResolverM03D14di<Pure.DI.UsageTests.Basics.DependentCompositionsScenario.IService>.Value = valResolverM03D14di_0000;
-    var valResolverM03D14di_0001 = new ResolverM03D14di_0001();
-    ResolverM03D14di<Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program>.Value = valResolverM03D14di_0001;
-    _bucketsM03D14di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<OtherComposition, object>>.Create(
+    var valResolverM03D15di_0000 = new ResolverM03D15di_0000();
+    ResolverM03D15di<Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.IService>.Value = valResolverM03D15di_0000;
+    var valResolverM03D15di_0001 = new ResolverM03D15di_0001();
+    ResolverM03D15di<Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Program>.Value = valResolverM03D15di_0001;
+    _bucketsM03D15di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<OtherComposition, object>>.Create(
       4,
-      out _bucketSizeM03D14di,
+      out _bucketSizeM03D15di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<OtherComposition, object>>[2]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<OtherComposition, object>>(typeof(Pure.DI.UsageTests.Basics.DependentCompositionsScenario.IService), valResolverM03D14di_0000)
-        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<OtherComposition, object>>(typeof(Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program), valResolverM03D14di_0001)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<OtherComposition, object>>(typeof(Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.IService), valResolverM03D15di_0000)
+        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<OtherComposition, object>>(typeof(Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Program), valResolverM03D15di_0001)
       });
   }
   
   #region Resolvers
-  private sealed class ResolverM03D14di<T>: global::Pure.DI.IResolver<OtherComposition, T>
+  private sealed class ResolverM03D15di<T>: global::Pure.DI.IResolver<OtherComposition, T>
   {
-    public static global::Pure.DI.IResolver<OtherComposition, T> Value = new ResolverM03D14di<T>();
+    public static global::Pure.DI.IResolver<OtherComposition, T> Value = new ResolverM03D15di<T>();
     
     public T Resolve(OtherComposition composite)
     {
@@ -589,39 +589,39 @@ partial class OtherComposition
     }
   }
   
-  private sealed class ResolverM03D14di_0000: global::Pure.DI.IResolver<OtherComposition, Pure.DI.UsageTests.Basics.DependentCompositionsScenario.IService>
+  private sealed class ResolverM03D15di_0000: global::Pure.DI.IResolver<OtherComposition, Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.IService>
   {
-    public Pure.DI.UsageTests.Basics.DependentCompositionsScenario.IService Resolve(OtherComposition composition)
+    public Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.IService Resolve(OtherComposition composition)
     {
       return composition.Root;
     }
     
-    public Pure.DI.UsageTests.Basics.DependentCompositionsScenario.IService ResolveByTag(OtherComposition composition, object tag)
+    public Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.IService ResolveByTag(OtherComposition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Root;
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.DependentCompositionsScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.IService.");
     }
   }
   
-  private sealed class ResolverM03D14di_0001: global::Pure.DI.IResolver<OtherComposition, Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program>
+  private sealed class ResolverM03D15di_0001: global::Pure.DI.IResolver<OtherComposition, Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Program>
   {
-    public Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program Resolve(OtherComposition composition)
+    public Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Program Resolve(OtherComposition composition)
     {
       return composition.Program;
     }
     
-    public Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program ResolveByTag(OtherComposition composition, object tag)
+    public Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Program ResolveByTag(OtherComposition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Program;
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.DependentCompositionsScenario.Program.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Advanced.DependentCompositionsScenario.Program.");
     }
   }
   #endregion

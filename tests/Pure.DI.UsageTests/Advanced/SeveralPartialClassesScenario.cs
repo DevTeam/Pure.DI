@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=13
+$p=5
 $d=A few partial classes
 $h=The setting code for one Composition can be located in several methods and/or in several partial classes.
 */
@@ -11,7 +11,7 @@ $h=The setting code for one Composition can be located in several methods and/or
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ArrangeTypeModifiers
 #pragma warning disable CS9113 // Parameter is unread.
-namespace Pure.DI.UsageTests.Basics.SeveralPartialClassesScenario;
+namespace Pure.DI.UsageTests.Advanced.SeveralPartialClassesScenario;
 
 using Shouldly;
 using Xunit;

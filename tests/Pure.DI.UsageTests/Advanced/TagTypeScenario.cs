@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=6
+$p=3
 $d=Tag Type
 $h=`Tag.Type` in bindings replaces the expression `typeof(T)`, where `T` is the type of the implementation in a binding.
 */
@@ -10,7 +10,7 @@ $h=`Tag.Type` in bindings replaces the expression `typeof(T)`, where `T` is the 
 // ReSharper disable UnusedType.Global
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ClassNeverInstantiated.Global
-namespace Pure.DI.UsageTests.Basics.TagTypeScenario;
+namespace Pure.DI.UsageTests.Advanced.TagTypeScenario;
 
 using Shouldly;
 using Xunit;

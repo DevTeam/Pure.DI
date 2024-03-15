@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=4
+$p=1
 $d=Generics
 $h=Generic types are also supported, this is easy to do by binding generic types and specifying generic markers like `TT`, `TT1` etc. as generic type parameters:
 $f=Actually, the property _Root_ looks like:
@@ -19,7 +19,7 @@ $f=```
 // ReSharper disable CheckNamespace
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable ArrangeTypeModifiers
-namespace Pure.DI.UsageTests.Basics.GenericsScenario;
+namespace Pure.DI.UsageTests.Generics.GenericsScenario;
 
 using Shouldly;
 using Xunit;

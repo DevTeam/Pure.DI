@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=10
+$p=2
 $d=Instance Initialization
 $h=This example shows how to build up an instance with all the necessary dependencies and manually prepare it for further use. 
 */
@@ -10,7 +10,7 @@ $h=This example shows how to build up an instance with all the necessary depende
 // ReSharper disable UnusedMemberInSuper.Global
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Global
-namespace Pure.DI.UsageTests.Basics.InstanceInitializationScenario;
+namespace Pure.DI.UsageTests.Advanced.InstanceInitializationScenario;
 
 using Shouldly;
 using Xunit;

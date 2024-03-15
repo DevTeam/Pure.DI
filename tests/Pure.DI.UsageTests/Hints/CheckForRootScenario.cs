@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=16
+$p=7
 $d=Check for a root
 $h=Sometimes you need to check if you can get the root of a composition using the _Resolve_ method before calling it, this example will show you how to do it:
 */
@@ -11,7 +11,7 @@ $h=Sometimes you need to check if you can get the root of a composition using th
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMemberInSuper.Global
-namespace Pure.DI.UsageTests.Basics.CheckForRootScenario;
+namespace Pure.DI.UsageTests.Hints.CheckForRootScenario;
 
 using Shouldly;
 using Xunit;

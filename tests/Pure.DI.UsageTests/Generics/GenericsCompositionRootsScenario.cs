@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=4
+$p=2
 $d=Generic composition roots
 $h=A generic composition root is represented by a method.
 $f=When a generic composition root is used, `Resolve` methods cannot be used to resolve them.
@@ -14,7 +14,7 @@ $f=When a generic composition root is used, `Resolve` methods cannot be used to 
 // ReSharper disable UnusedVariable
 // ReSharper disable UnusedTypeParameter
 #pragma warning disable CS9113 // Parameter is unread.
-namespace Pure.DI.UsageTests.Basics.GenericsCompositionRootsScenario;
+namespace Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario;
 
 using Shouldly;
 using Xunit;

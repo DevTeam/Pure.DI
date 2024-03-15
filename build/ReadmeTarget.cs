@@ -31,10 +31,12 @@ internal class ReadmeTarget(
     [
         "Basics",
         "Lifetimes",
-        "Attributes",
         "BaseClassLibrary",
+        "Generics",
+        "Attributes",
         "Interception",
-        "Hints"
+        "Hints",
+        "Advanced"
     ];
 
     private static readonly char[] Separator = ['='];

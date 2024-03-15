@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=6
+$p=1
 $d=Composition root kinds
 */
 
@@ -11,7 +11,7 @@ $d=Composition root kinds
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedVariable
 // ReSharper disable UnusedMember.Local
-namespace Pure.DI.UsageTests.Basics.CompositionRootKindsScenario;
+namespace Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario;
 
 using Shouldly;
 using Xunit;

@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=12
+$p=6
 $d=Partial class
 $h=A partial class can contain setup code.
 $f=The partial class is also useful for specifying access modifiers to the generated class.
@@ -12,7 +12,7 @@ $f=The partial class is also useful for specifying access modifiers to the gener
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ArrangeTypeModifiers
 #pragma warning disable CS9113 // Parameter is unread.
-namespace Pure.DI.UsageTests.Basics.PartialClassScenario;
+namespace Pure.DI.UsageTests.Advanced.PartialClassScenario;
 
 using System.Diagnostics;
 using Shouldly;
