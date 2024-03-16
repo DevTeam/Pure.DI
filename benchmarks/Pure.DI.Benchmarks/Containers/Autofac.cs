@@ -13,7 +13,11 @@ internal sealed class Autofac : BaseAbstractContainer<IContainer>
 
     public override IContainer CreateContainer() => _container.Value;
 
-    public override void Register(Type contractType, Type implementationType, AbstractLifetime lifetime = AbstractLifetime.Transient, string? name = default)
+    public override IAbstractContainer<IContainer> Bind(
+        Type contractType,
+        Type implementationType,
+        AbstractLifetime lifetime = AbstractLifetime.Transient,
+        string? name = default)
     {
         var registration = _builder.RegisterType(implementationType).As(contractType);
         switch (lifetime)
@@ -33,6 +37,8 @@ internal sealed class Autofac : BaseAbstractContainer<IContainer>
         {
             registration.Keyed<object>(name);
         }
+
+        return this;
     }
 
     public override T Resolve<T>() where T : class => _container.Value.Resolve<T>();

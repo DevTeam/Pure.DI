@@ -9,7 +9,11 @@ internal sealed class DryIoc : BaseAbstractContainer<Container>
 
     public override Container CreateContainer() => _container;
 
-    public override void Register(Type contractType, Type implementationType, AbstractLifetime lifetime = AbstractLifetime.Transient, string? name = default)
+    public override IAbstractContainer<Container> Bind(
+        Type contractType,
+        Type implementationType,
+        AbstractLifetime lifetime = AbstractLifetime.Transient,
+        string? name = default)
     {
         var reuse = lifetime switch
         {
@@ -19,6 +23,7 @@ internal sealed class DryIoc : BaseAbstractContainer<Container>
         };
 
         _container.Register(ReflectionFactory.Of(implementationType, reuse), contractType, name, null, true);
+        return this;
     }
 
     public override T Resolve<T>() where T : class => _container.Resolve<T>();

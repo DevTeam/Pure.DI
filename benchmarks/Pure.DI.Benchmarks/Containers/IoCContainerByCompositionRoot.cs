@@ -10,8 +10,15 @@ internal sealed class IoCContainerByCompositionRoot<TContract> : BaseAbstractCon
 
     public override Func<TContract> CreateContainer() => _container.CreateContainer().Resolve<Func<TContract>>();
 
-    public override void Register(Type contractType, Type implementationType, AbstractLifetime lifetime = AbstractLifetime.Transient, string? name = default) =>
-        _container.Register(contractType, implementationType, lifetime, name);
+    public override IAbstractContainer<Func<TContract>> Bind(
+        Type contractType,
+        Type implementationType,
+        AbstractLifetime lifetime = AbstractLifetime.Transient,
+        string? name = default)
+    {
+        _container.Bind(contractType, implementationType, lifetime, name);
+        return this;
+    }
 
     public override T Resolve<T>() where T : class => _container.Resolve<T>();
 

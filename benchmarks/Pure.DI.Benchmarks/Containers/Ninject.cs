@@ -10,7 +10,11 @@ internal sealed class Ninject : BaseAbstractContainer<StandardKernel>
 
     public override StandardKernel CreateContainer() => _container;
 
-    public override void Register(Type contractType, Type implementationType, AbstractLifetime lifetime = AbstractLifetime.Transient, string? name = default)
+    public override IAbstractContainer<StandardKernel> Bind(
+        Type contractType,
+        Type implementationType,
+        AbstractLifetime lifetime = AbstractLifetime.Transient,
+        string? name = default)
     {
         var bind = _container.Bind(contractType).To(implementationType);
         switch (lifetime)
@@ -30,6 +34,8 @@ internal sealed class Ninject : BaseAbstractContainer<StandardKernel>
         {
             bind.Named(name);
         }
+
+        return this;
     }
 
     public override T Resolve<T>() where T : class => _container.Get<T>();

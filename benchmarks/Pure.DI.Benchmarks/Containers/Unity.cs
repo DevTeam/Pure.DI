@@ -11,7 +11,11 @@ internal sealed class Unity : BaseAbstractContainer<UnityContainer>
 
     public override UnityContainer CreateContainer() => _container;
 
-    public override void Register(Type contractType, Type implementationType, AbstractLifetime lifetime = AbstractLifetime.Transient, string? name = default)
+    public override IAbstractContainer<UnityContainer> Bind(
+        Type contractType,
+        Type implementationType,
+        AbstractLifetime lifetime = AbstractLifetime.Transient,
+        string? name = default)
     {
         ITypeLifetimeManager? lifetimeManager = default;
         switch (lifetime)
@@ -28,6 +32,7 @@ internal sealed class Unity : BaseAbstractContainer<UnityContainer>
         }
 
         ((IUnityContainer)_container).RegisterType(contractType, implementationType, name, lifetimeManager);
+        return this;
     }
 
     public override T Resolve<T>() where T : class => _container.Resolve<T>();

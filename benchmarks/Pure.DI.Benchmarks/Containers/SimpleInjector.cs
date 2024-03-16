@@ -29,7 +29,11 @@ internal sealed class SimpleInjector : BaseAbstractContainer<Container>
 
     public override Container CreateContainer() => _containerProvider.Value;
 
-    public override void Register(Type contractType, Type implementationType, AbstractLifetime lifetime = AbstractLifetime.Transient, string? name = default)
+    public override IAbstractContainer<Container> Bind(
+        Type contractType,
+        Type implementationType,
+        AbstractLifetime lifetime = AbstractLifetime.Transient,
+        string? name = default)
     {
         switch (lifetime)
         {
@@ -58,6 +62,8 @@ internal sealed class SimpleInjector : BaseAbstractContainer<Container>
             default:
                 throw new ArgumentOutOfRangeException(nameof(lifetime), lifetime, null);
         }
+
+        return this;
     }
 
     public override T Resolve<T>() where T : class => _container.GetInstance<T>();

@@ -10,27 +10,26 @@ using BenchmarkDotNet.Order;
 using Model;
 
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
+[MemoryDiagnoser]
 public partial class Transient : BenchmarkBase
 {
     private static void SetupDI() =>
         DI.Setup(nameof(Transient))
-            .Bind<IService1>().To<Service1>()
-            .Bind<IService2>().To<Service2>()
-            .Bind<IService3>().To<Service3>()
-            .Bind<IService4>().To<Service4>()
-            .Root<CompositionRoot>("PureDIByCR", default, RootKinds.Method | RootKinds.Partial);
+            .Bind().To<Service1>()
+            .Bind().To<Service2>()
+            .Bind().To<Service3>()
+            .Bind().To<Service4>()
+            .Root<CompositionRoot>(nameof(PureDIByCR), kind: RootKinds.Method | RootKinds.Partial);
     
     protected override TActualContainer? CreateContainer<TActualContainer, TAbstractContainer>()
-        where TActualContainer : class
-    {
-        var abstractContainer = new TAbstractContainer();
-        abstractContainer.Register(typeof(ICompositionRoot), typeof(CompositionRoot));
-        abstractContainer.Register(typeof(IService1), typeof(Service1));
-        abstractContainer.Register(typeof(IService2), typeof(Service2));
-        abstractContainer.Register(typeof(IService3), typeof(Service3));
-        abstractContainer.Register(typeof(IService4), typeof(Service4));
-        return abstractContainer.TryCreate();
-    }
+        where TActualContainer : class =>
+        new TAbstractContainer()
+            .Bind(typeof(ICompositionRoot), typeof(CompositionRoot))
+            .Bind(typeof(IService1), typeof(Service1))
+            .Bind(typeof(IService2), typeof(Service2))
+            .Bind(typeof(IService3), typeof(Service3))
+            .Bind(typeof(IService4), typeof(Service4))
+            .TryCreate();
 
     [Benchmark(Description = "Pure.DI Resolve<T>()")]
     public CompositionRoot PureDI() => Resolve<CompositionRoot>();

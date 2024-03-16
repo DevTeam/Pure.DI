@@ -11,7 +11,11 @@ internal sealed class CastleWindsor : BaseAbstractContainer<WindsorContainer>
 
     public override WindsorContainer CreateContainer() => _container;
 
-    public override void Register(Type contractType, Type implementationType, AbstractLifetime lifetime = AbstractLifetime.Transient, string? name = default)
+    public override IAbstractContainer<WindsorContainer> Bind(
+        Type contractType,
+        Type implementationType,
+        AbstractLifetime lifetime = AbstractLifetime.Transient,
+        string? name = default)
     {
         var registration = Component.For(contractType).ImplementedBy(implementationType);
         switch (lifetime)
@@ -34,6 +38,7 @@ internal sealed class CastleWindsor : BaseAbstractContainer<WindsorContainer>
         }
 
         _container.Register(registration);
+        return this;
     }
 
     public override T Resolve<T>() where T : class => _container.Resolve<T>();

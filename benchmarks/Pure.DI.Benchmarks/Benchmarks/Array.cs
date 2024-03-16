@@ -11,33 +11,32 @@ using BenchmarkDotNet.Order;
 using Model;
 
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
+[MemoryDiagnoser]
 public partial class Array : BenchmarkBase
 {
     private static void SetupDI() =>
         DI.Setup(nameof(Array))
-            .Bind<IService1>().To<Service1>()
-            .Bind<IService2>().To<Service2Array>()
-            .Bind<IService3>().To<Service3>()
-            .Bind<IService3>().Tags(2).To<Service3v2>()
-            .Bind<IService3>().Tags(3).To<Service3v3>()
-            .Bind<IService3>().Tags(4).To<Service3v4>()
-            .Bind<IService4>().To<Service4>()
-            .Root<CompositionRoot>("PureDIByCR", default, RootKinds.Method | RootKinds.Partial);
+            .Bind().To<Service1>()
+            .Bind().To<Service2Array>()
+            .Bind().To<Service3>()
+            .Bind(2).To<Service3v2>()
+            .Bind(3).To<Service3v3>()
+            .Bind(4).To<Service3v4>()
+            .Bind().To<Service4>()
+            .Root<CompositionRoot>(nameof(PureDIByCR), kind: RootKinds.Method | RootKinds.Partial);
 
     protected override TActualContainer? CreateContainer<TActualContainer, TAbstractContainer>()
-        where TActualContainer : class
-    {
-        var abstractContainer = new TAbstractContainer();
-        abstractContainer.Register(typeof(ICompositionRoot), typeof(CompositionRoot));
-        abstractContainer.Register(typeof(IService1), typeof(Service1));
-        abstractContainer.Register(typeof(IService2), typeof(Service2Array));
-        abstractContainer.Register(typeof(IService3), typeof(Service3));
-        abstractContainer.Register(typeof(IService3), typeof(Service3v2), AbstractLifetime.Transient, "2");
-        abstractContainer.Register(typeof(IService3), typeof(Service3v3), AbstractLifetime.Transient, "3");
-        abstractContainer.Register(typeof(IService3), typeof(Service3v4), AbstractLifetime.Transient, "4");
-        abstractContainer.Register(typeof(IService4), typeof(Service4));
-        return abstractContainer.TryCreate();
-    }
+        where TActualContainer : class =>
+        new TAbstractContainer()
+            .Bind(typeof(ICompositionRoot), typeof(CompositionRoot))
+            .Bind(typeof(IService1), typeof(Service1))
+            .Bind(typeof(IService2), typeof(Service2Array))
+            .Bind(typeof(IService3), typeof(Service3))
+            .Bind(typeof(IService3), typeof(Service3v2), AbstractLifetime.Transient, "2")
+            .Bind(typeof(IService3), typeof(Service3v3), AbstractLifetime.Transient, "3")
+            .Bind(typeof(IService3), typeof(Service3v4), AbstractLifetime.Transient, "4")
+            .Bind(typeof(IService4), typeof(Service4))
+            .TryCreate();
 
     [Benchmark(Description = "Pure.DI Resolve<T>()")]
     public CompositionRoot PureDI() => Resolve<CompositionRoot>();
@@ -55,25 +54,26 @@ public partial class Array : BenchmarkBase
                 new Service2Array(
                 [
                     new Service3(new Service4(), new Service4()),
-                        new Service3v2(new Service4(), new Service4()),
-                        new Service3v3(new Service4(), new Service4()),
-                        new Service3v4(new Service4(), new Service4())
+                    new Service3v2(new Service4(), new Service4()),
+                    new Service3v3(new Service4(), new Service4()),
+                    new Service3v4(new Service4(), new Service4())
                 ])),
             new Service2Array(
             [
                 new Service3(new Service4(), new Service4()),
-                    new Service3v2(new Service4(), new Service4()),
-                    new Service3v3(new Service4(), new Service4()),
-                    new Service3v4(new Service4(), new Service4())
+                new Service3v2(new Service4(), new Service4()),
+                new Service3v3(new Service4(), new Service4()),
+                new Service3v4(new Service4(), new Service4())
             ]),
             new Service2Array(
             [
                 new Service3(new Service4(), new Service4()),
-                    new Service3v2(new Service4(), new Service4()),
-                    new Service3v3(new Service4(), new Service4()),
-                    new Service3v4(new Service4(), new Service4())
+                new Service3v2(new Service4(), new Service4()),
+                new Service3v3(new Service4(), new Service4()),
+                new Service3v4(new Service4(), new Service4())
             ]),
-            new Service2Array([
+            new Service2Array(
+            [
                 new Service3(new Service4(), new Service4()),
                 new Service3v2(new Service4(), new Service4()),
                 new Service3v3(new Service4(), new Service4()),

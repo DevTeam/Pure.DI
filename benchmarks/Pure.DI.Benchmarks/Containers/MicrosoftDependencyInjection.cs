@@ -14,21 +14,27 @@ internal sealed class MicrosoftDependencyInjection : BaseAbstractContainer<Servi
 
     public override ServiceProvider CreateContainer() => _container.Value;
 
-    public override void Register(Type contractType, Type implementationType, AbstractLifetime lifetime = AbstractLifetime.Transient, string? name = default)
+    public override IAbstractContainer<ServiceProvider> Bind(
+        Type contractType,
+        Type implementationType,
+        AbstractLifetime lifetime = AbstractLifetime.Transient,
+        string? name = default)
     {
         switch (lifetime)
         {
             case AbstractLifetime.Transient:
-                _serviceCollection.AddTransient(contractType, implementationType);
+                _serviceCollection.AddKeyedTransient(contractType, name, implementationType);
                 break;
 
             case AbstractLifetime.Singleton:
-                _serviceCollection.AddSingleton(contractType, implementationType);
+                _serviceCollection.AddKeyedSingleton(contractType, name, implementationType);
                 break;
 
             default:
                 throw new ArgumentOutOfRangeException(nameof(lifetime), lifetime, null);
         }
+
+        return this;
     }
 
     public override T Resolve<T>() where T : class => _container.Value.GetService<T>()!;

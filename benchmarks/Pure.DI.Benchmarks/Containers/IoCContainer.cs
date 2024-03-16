@@ -11,7 +11,11 @@ internal sealed class IoCContainer : BaseAbstractContainer<Container>
 
     public override Container CreateContainer() => _container;
 
-    public override void Register(Type contractType, Type implementationType, AbstractLifetime lifetime = AbstractLifetime.Transient, string? name = default)
+    public override IAbstractContainer<Container> Bind(
+        Type contractType,
+        Type implementationType,
+        AbstractLifetime lifetime = AbstractLifetime.Transient,
+        string? name = default)
     {
         var bind = _container.Bind(contractType);
         switch (lifetime)
@@ -33,6 +37,7 @@ internal sealed class IoCContainer : BaseAbstractContainer<Container>
         }
 
         bind.To(implementationType);
+        return this;
     }
 
     public override T Resolve<T>() where T : class => _container.Resolve<T>();

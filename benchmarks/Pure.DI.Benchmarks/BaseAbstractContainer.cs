@@ -18,7 +18,11 @@ internal abstract class BaseAbstractContainer<TActualContainer> : IAbstractConta
 
     public abstract TActualContainer CreateContainer();
 
-    public abstract void Register(Type contractType, Type implementationType, AbstractLifetime lifetime = AbstractLifetime.Transient, string? name = default);
+    public abstract IAbstractContainer<TActualContainer> Bind(
+        Type contractType,
+        Type implementationType,
+        AbstractLifetime lifetime = AbstractLifetime.Transient,
+        string? name = default);
 
     public abstract T Resolve<T>() where T : class;
 

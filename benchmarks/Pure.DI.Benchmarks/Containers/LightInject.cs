@@ -10,7 +10,11 @@ internal sealed class LightInject : BaseAbstractContainer<ServiceContainer>
 
     public override ServiceContainer CreateContainer() => _container;
 
-    public override void Register(Type contractType, Type implementationType, AbstractLifetime lifetime = AbstractLifetime.Transient, string? name = default)
+    public override IAbstractContainer<ServiceContainer> Bind(
+        Type contractType,
+        Type implementationType,
+        AbstractLifetime lifetime = AbstractLifetime.Transient,
+        string? name = default)
     {
         switch (lifetime)
         {
@@ -41,6 +45,8 @@ internal sealed class LightInject : BaseAbstractContainer<ServiceContainer>
             default:
                 throw new ArgumentOutOfRangeException(nameof(lifetime), lifetime, null);
         }
+
+        return this;
     }
 
     public override T Resolve<T>() where T : class => _container.GetInstance<T>();
