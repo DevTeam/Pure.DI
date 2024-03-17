@@ -9,7 +9,7 @@ $d=Tracking disposable instances per a composition root
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable InvertIf
-namespace Pure.DI.UsageTests.Hints.TrackingDisposableInstances2Scenario;
+namespace Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario;
 
 using System.Collections.Concurrent;
 using Xunit;
@@ -49,7 +49,7 @@ internal static class Disposables
         public void Dispose() { }
     }
 
-    private class CombinedDisposable(Stack<IDisposable> disposables)
+    internal class CombinedDisposable(Stack<IDisposable> disposables)
         : IDisposable
     {
         public void Dispose()
@@ -93,7 +93,7 @@ partial class Composition
         object? tag,
         Lifetime lifetime)
     {
-        if (value is IDisposable disposable)
+        if (value is IDisposable disposable && value is not Disposables.CombinedDisposable)
         {
             var disposables = _disposables.GetOrAdd(
                 Environment.CurrentManagedThreadId,
@@ -115,15 +115,15 @@ public class Scenario
         var root1 = composition.Root;
         var root2 = composition.Root;
         
-        root1.combinedDisposables.Dispose();
+        root2.combinedDisposables.Dispose();
         
         // Checks that the disposable instances
         // associated with root1 have been disposed of
-        root1.service.Dependency.IsDisposed.ShouldBeTrue();
+        root2.service.Dependency.IsDisposed.ShouldBeTrue();
         
         // Checks that the disposable instances
         // associated with root2 have not been disposed of
-        root2.service.Dependency.IsDisposed.ShouldBeFalse();
+        root1.service.Dependency.IsDisposed.ShouldBeFalse();
         // }
         new Composition().SaveClassDiagram();
     }

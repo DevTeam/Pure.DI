@@ -1,6 +1,6 @@
 #### Tracking disposable instances per a composition root
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/TrackingDisposableInstances2Scenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/TrackingDisposableInstancesPerRootScenario.cs)
 
 ```c#
 interface IDependency
@@ -37,7 +37,7 @@ internal static class Disposables
         public void Dispose() { }
     }
 
-    private class CombinedDisposable(Stack<IDisposable> disposables)
+    internal class CombinedDisposable(Stack<IDisposable> disposables)
         : IDisposable
     {
         public void Dispose()
@@ -81,7 +81,7 @@ partial class Composition
         object? tag,
         Lifetime lifetime)
     {
-        if (value is IDisposable disposable)
+        if (value is IDisposable disposable && value is not Disposables.CombinedDisposable)
         {
             var disposables = _disposables.GetOrAdd(
                 Environment.CurrentManagedThreadId,
@@ -96,15 +96,15 @@ var composition = new Composition();
 var root1 = composition.Root;
 var root2 = composition.Root;
         
-root1.combinedDisposables.Dispose();
+root2.combinedDisposables.Dispose();
         
 // Checks that the disposable instances
 // associated with root1 have been disposed of
-root1.service.Dependency.IsDisposed.ShouldBeTrue();
+root2.service.Dependency.IsDisposed.ShouldBeTrue();
         
 // Checks that the disposable instances
 // associated with root2 have not been disposed of
-root2.service.Dependency.IsDisposed.ShouldBeFalse();
+root1.service.Dependency.IsDisposed.ShouldBeFalse();
 ```
 
 <details open>
@@ -163,18 +163,18 @@ partial class Composition
     _rootM03D17di = baseComposition._rootM03D17di;
   }
   
-  public (Pure.DI.UsageTests.Hints.TrackingDisposableInstances2Scenario.IService service, System.IDisposable combinedDisposables) Root
+  public (Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService service, System.IDisposable combinedDisposables) Root
   {
     get
     {
-      Pure.DI.UsageTests.Hints.TrackingDisposableInstances2Scenario.Dependency transientM03D17di3_Dependency = new Pure.DI.UsageTests.Hints.TrackingDisposableInstances2Scenario.Dependency();
-      OnNewInstance<Pure.DI.UsageTests.Hints.TrackingDisposableInstances2Scenario.Dependency>(ref transientM03D17di3_Dependency, null, Pure.DI.Lifetime.Transient);
+      Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Dependency transientM03D17di3_Dependency = new Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Dependency();
+      OnNewInstance<Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Dependency>(ref transientM03D17di3_Dependency, null, Pure.DI.Lifetime.Transient);
       System.IDisposable transientM03D17di2_IDisposable = _disposables.TryRemove(Environment.CurrentManagedThreadId, out var disposables_M03D17di1) ? disposables_M03D17di1.Combine() : Disposables.Empty;
       OnNewInstance<System.IDisposable>(ref transientM03D17di2_IDisposable, null, Pure.DI.Lifetime.Transient);
-      Pure.DI.UsageTests.Hints.TrackingDisposableInstances2Scenario.Service transientM03D17di1_Service = new Pure.DI.UsageTests.Hints.TrackingDisposableInstances2Scenario.Service(transientM03D17di3_Dependency);
-      OnNewInstance<Pure.DI.UsageTests.Hints.TrackingDisposableInstances2Scenario.Service>(ref transientM03D17di1_Service, null, Pure.DI.Lifetime.Transient);
-      (Pure.DI.UsageTests.Hints.TrackingDisposableInstances2Scenario.IService service, System.IDisposable combinedDisposables) transientM03D17di0_ValueTuple = (transientM03D17di1_Service, transientM03D17di2_IDisposable);
-      OnNewInstance<(Pure.DI.UsageTests.Hints.TrackingDisposableInstances2Scenario.IService service, System.IDisposable combinedDisposables)>(ref transientM03D17di0_ValueTuple, null, Pure.DI.Lifetime.Transient);
+      Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Service transientM03D17di1_Service = new Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Service(transientM03D17di3_Dependency);
+      OnNewInstance<Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Service>(ref transientM03D17di1_Service, null, Pure.DI.Lifetime.Transient);
+      (Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService service, System.IDisposable combinedDisposables) transientM03D17di0_ValueTuple = (transientM03D17di1_Service, transientM03D17di2_IDisposable);
+      OnNewInstance<(Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService service, System.IDisposable combinedDisposables)>(ref transientM03D17di0_ValueTuple, null, Pure.DI.Lifetime.Transient);
       return transientM03D17di0_ValueTuple;
     }
   }
@@ -262,13 +262,13 @@ partial class Composition
   static Composition()
   {
     var valResolverM03D17di_0000 = new ResolverM03D17di_0000();
-    ResolverM03D17di<(Pure.DI.UsageTests.Hints.TrackingDisposableInstances2Scenario.IService service, System.IDisposable combinedDisposables)>.Value = valResolverM03D17di_0000;
+    ResolverM03D17di<(Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService service, System.IDisposable combinedDisposables)>.Value = valResolverM03D17di_0000;
     _bucketsM03D17di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
       out _bucketSizeM03D17di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof((Pure.DI.UsageTests.Hints.TrackingDisposableInstances2Scenario.IService service, System.IDisposable combinedDisposables)), valResolverM03D17di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof((Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService service, System.IDisposable combinedDisposables)), valResolverM03D17di_0000)
       });
   }
   
@@ -287,21 +287,21 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D17di_0000: global::Pure.DI.IResolver<Composition, (Pure.DI.UsageTests.Hints.TrackingDisposableInstances2Scenario.IService service, System.IDisposable combinedDisposables)>, global::Pure.DI.IResolver<Composition, object>
+  private sealed class ResolverM03D17di_0000: global::Pure.DI.IResolver<Composition, (Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService service, System.IDisposable combinedDisposables)>, global::Pure.DI.IResolver<Composition, object>
   {
-    public (Pure.DI.UsageTests.Hints.TrackingDisposableInstances2Scenario.IService service, System.IDisposable combinedDisposables) Resolve(Composition composition)
+    public (Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService service, System.IDisposable combinedDisposables) Resolve(Composition composition)
     {
       return composition.Root;
     }
     
-    public (Pure.DI.UsageTests.Hints.TrackingDisposableInstances2Scenario.IService service, System.IDisposable combinedDisposables) ResolveByTag(Composition composition, object tag)
+    public (Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService service, System.IDisposable combinedDisposables) ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Root;
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type (Pure.DI.UsageTests.Hints.TrackingDisposableInstances2Scenario.IService service, System.IDisposable combinedDisposables).");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type (Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService service, System.IDisposable combinedDisposables).");
     }
     object global::Pure.DI.IResolver<Composition, object>.Resolve(Composition composition)
     {
