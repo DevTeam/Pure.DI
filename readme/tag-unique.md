@@ -46,11 +46,11 @@ classDiagram
     + object Resolve(Type type, object? tag)
   }
   class IEnumerableᐸIDependencyᐸStringᐳᐳ
-  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 66b0ed2b-88dc-4f2a-a035-673c85f19517 
+  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : b01c14c2-d552-4a8d-8c45-bc9b5f0dfc78 
   class AbcDependencyᐸStringᐳ {
     +AbcDependency()
   }
-  XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 09c3dadf-4b17-451e-9456-1ee7426544ec 
+  XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 2f267827-22b1-4acd-88b8-bd473bb07f4f 
   class XyzDependencyᐸStringᐳ {
     +XyzDependency()
   }
@@ -64,8 +64,8 @@ classDiagram
   class IServiceᐸStringᐳ {
     <<abstract>>
   }
-  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : 66b0ed2b-88dc-4f2a-a035-673c85f19517  IDependencyᐸStringᐳ
-  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : 09c3dadf-4b17-451e-9456-1ee7426544ec  IDependencyᐸStringᐳ
+  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : b01c14c2-d552-4a8d-8c45-bc9b5f0dfc78  IDependencyᐸStringᐳ
+  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : 2f267827-22b1-4acd-88b8-bd473bb07f4f  IDependencyᐸStringᐳ
   Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root
   ServiceᐸStringᐳ o--  "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
 ```
@@ -157,11 +157,11 @@ partial class Composition
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  class IEnumerableᐸIDependencyᐸStringᐳᐳ\n" +
-        "  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 66b0ed2b-88dc-4f2a-a035-673c85f19517 \n" +
+        "  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : b01c14c2-d552-4a8d-8c45-bc9b5f0dfc78 \n" +
         "  class AbcDependencyᐸStringᐳ {\n" +
           "    +AbcDependency()\n" +
         "  }\n" +
-        "  XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 09c3dadf-4b17-451e-9456-1ee7426544ec \n" +
+        "  XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 2f267827-22b1-4acd-88b8-bd473bb07f4f \n" +
         "  class XyzDependencyᐸStringᐳ {\n" +
           "    +XyzDependency()\n" +
         "  }\n" +
@@ -175,8 +175,8 @@ partial class Composition
         "  class IServiceᐸStringᐳ {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : 66b0ed2b-88dc-4f2a-a035-673c85f19517  IDependencyᐸStringᐳ\n" +
-        "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : 09c3dadf-4b17-451e-9456-1ee7426544ec  IDependencyᐸStringᐳ\n" +
+        "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : b01c14c2-d552-4a8d-8c45-bc9b5f0dfc78  IDependencyᐸStringᐳ\n" +
+        "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : 2f267827-22b1-4acd-88b8-bd473bb07f4f  IDependencyᐸStringᐳ\n" +
         "  Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root\n" +
         "  ServiceᐸStringᐳ o--  \"PerBlock\" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ";
   }
