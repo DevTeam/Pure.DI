@@ -12,7 +12,7 @@ internal class BuildTools(IFilter filter, ITypeResolver typeResolver) : IBuildTo
     }
 
     public string GetDeclaration(Variable variable, bool typeIsRequired = false) =>
-        variable.IsDeclared ? "" : typeIsRequired ? $"{typeResolver.Resolve(variable.InstanceType)} " : "var ";
+        variable.IsDeclared ? "" : $"{typeResolver.Resolve(variable.InstanceType)} ";
     
     public string OnInjected(BuildContext ctx, Variable variable)
     {
