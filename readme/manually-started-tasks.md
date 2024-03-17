@@ -109,38 +109,38 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM03D15di;
-  private readonly object _lockM03D15di;
+  private readonly Composition _rootM03D17di;
+  private readonly object _lockM03D17di;
   
   public Composition()
   {
-    _rootM03D15di = this;
-    _lockM03D15di = new object();
+    _rootM03D17di = this;
+    _lockM03D17di = new object();
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D15di = baseComposition._rootM03D15di;
-    _lockM03D15di = _rootM03D15di._lockM03D15di;
+    _rootM03D17di = baseComposition._rootM03D17di;
+    _lockM03D17di = _rootM03D17di._lockM03D17di;
   }
   
   public Pure.DI.UsageTests.BCL.ManualTaskScenario.IService GetRoot(System.Threading.CancellationToken cancellationToken)
   {
-    var perResolveM03D15di39_Func = default(System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>);
-    perResolveM03D15di39_Func = new global::System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(
+    var perResolveM03D17di39_Func = default(System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>);
+    perResolveM03D17di39_Func = new global::System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
     () =>
     {
-        var factory_M03D15di1 = new Pure.DI.UsageTests.BCL.ManualTaskScenario.Dependency();
-        return factory_M03D15di1;
+        var factory_M03D17di1 = new Pure.DI.UsageTests.BCL.ManualTaskScenario.Dependency();
+        return factory_M03D17di1;
     });
-    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency> transientM03D15di1_Task;
+    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency> transientM03D17di1_Task;
     {
-        var factory_M03D15di2 = perResolveM03D15di39_Func;
-        var cancellationToken_M03D15di3 = cancellationToken;
-        transientM03D15di1_Task = new Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(factory_M03D15di2, cancellationToken_M03D15di3);
+        var factory_M03D17di2 = perResolveM03D17di39_Func;
+        var cancellationToken_M03D17di3 = cancellationToken;
+        transientM03D17di1_Task = new Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(factory_M03D17di2, cancellationToken_M03D17di3);
     }
-    return new Pure.DI.UsageTests.BCL.ManualTaskScenario.Service(transientM03D15di1_Task);
+    return new Pure.DI.UsageTests.BCL.ManualTaskScenario.Service(transientM03D17di1_Task);
   }
   
   public override string ToString()

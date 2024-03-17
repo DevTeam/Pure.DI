@@ -264,6 +264,7 @@ dotnet run
 - [OnNewInstance hint](readme/onnewinstance-hint.md)
 - [ToString hint](readme/tostring-hint.md)
 - [Tracking disposable instances](readme/tracking-disposable-instances.md)
+- [Tracking disposable instances per a composition root](readme/tracking-disposable-instances-per-a-composition-root.md)
 - [Check for a root](readme/check-for-a-root.md)
 ### Advanced
 - [Composition root kinds](readme/composition-root-kinds.md)

@@ -46,11 +46,11 @@ classDiagram
     + object Resolve(Type type, object? tag)
   }
   class IEnumerableᐸIDependencyᐸStringᐳᐳ
-  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : c02dd8a7-5139-421c-a8ad-fb133aa6addb 
+  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 16e12d33-c99c-48ed-a87d-df2ef404d031 
   class AbcDependencyᐸStringᐳ {
     +AbcDependency()
   }
-  XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 913734db-e379-4b2a-9790-085181e1d6c5 
+  XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 366091bb-5db5-4259-9637-fd5fb7a97653 
   class XyzDependencyᐸStringᐳ {
     +XyzDependency()
   }
@@ -64,8 +64,8 @@ classDiagram
   class IServiceᐸStringᐳ {
     <<abstract>>
   }
-  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : c02dd8a7-5139-421c-a8ad-fb133aa6addb  IDependencyᐸStringᐳ
-  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : 913734db-e379-4b2a-9790-085181e1d6c5  IDependencyᐸStringᐳ
+  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : 16e12d33-c99c-48ed-a87d-df2ef404d031  IDependencyᐸStringᐳ
+  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : 366091bb-5db5-4259-9637-fd5fb7a97653  IDependencyᐸStringᐳ
   Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root
   ServiceᐸStringᐳ o--  "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
 ```
@@ -78,16 +78,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM03D15di;
+  private readonly Composition _rootM03D17di;
   
   public Composition()
   {
-    _rootM03D15di = this;
+    _rootM03D17di = this;
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D15di = baseComposition._rootM03D15di;
+    _rootM03D17di = baseComposition._rootM03D17di;
   }
   
   public Pure.DI.UsageTests.Advanced.TagUniqueScenario.IService<string> Root
@@ -95,32 +95,32 @@ partial class Composition
     get
     {
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x200)]
-      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.Advanced.TagUniqueScenario.IDependency<string>> LocalperBlockM03D15di1_IEnumerable()
+      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.Advanced.TagUniqueScenario.IDependency<string>> LocalperBlockM03D17di1_IEnumerable()
       {
           yield return new Pure.DI.UsageTests.Advanced.TagUniqueScenario.AbcDependency<string>();
           yield return new Pure.DI.UsageTests.Advanced.TagUniqueScenario.XyzDependency<string>();
       }
-      var perBlockM03D15di1_IEnumerable = LocalperBlockM03D15di1_IEnumerable();
-      return new Pure.DI.UsageTests.Advanced.TagUniqueScenario.Service<string>(perBlockM03D15di1_IEnumerable);
+      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.Advanced.TagUniqueScenario.IDependency<string>> perBlockM03D17di1_IEnumerable = LocalperBlockM03D17di1_IEnumerable();
+      return new Pure.DI.UsageTests.Advanced.TagUniqueScenario.Service<string>(perBlockM03D17di1_IEnumerable);
     }
   }
   
   public T Resolve<T>()
   {
-    return ResolverM03D15di<T>.Value.Resolve(this);
+    return ResolverM03D17di<T>.Value.Resolve(this);
   }
   
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D15di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D17di<T>.Value.ResolveByTag(this, tag);
   }
   
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D15di;
+    var index = (int)(_bucketSizeM03D17di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D17di;
     do {
-      ref var pair = ref _bucketsM03D15di[index];
+      ref var pair = ref _bucketsM03D17di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -132,10 +132,10 @@ partial class Composition
   
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D15di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D15di;
+    var index = (int)(_bucketSizeM03D17di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D17di;
     do {
-      ref var pair = ref _bucketsM03D15di[index];
+      ref var pair = ref _bucketsM03D17di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -157,11 +157,11 @@ partial class Composition
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  class IEnumerableᐸIDependencyᐸStringᐳᐳ\n" +
-        "  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : c02dd8a7-5139-421c-a8ad-fb133aa6addb \n" +
+        "  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 16e12d33-c99c-48ed-a87d-df2ef404d031 \n" +
         "  class AbcDependencyᐸStringᐳ {\n" +
           "    +AbcDependency()\n" +
         "  }\n" +
-        "  XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 913734db-e379-4b2a-9790-085181e1d6c5 \n" +
+        "  XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 366091bb-5db5-4259-9637-fd5fb7a97653 \n" +
         "  class XyzDependencyᐸStringᐳ {\n" +
           "    +XyzDependency()\n" +
         "  }\n" +
@@ -175,31 +175,31 @@ partial class Composition
         "  class IServiceᐸStringᐳ {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : c02dd8a7-5139-421c-a8ad-fb133aa6addb  IDependencyᐸStringᐳ\n" +
-        "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : 913734db-e379-4b2a-9790-085181e1d6c5  IDependencyᐸStringᐳ\n" +
+        "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : 16e12d33-c99c-48ed-a87d-df2ef404d031  IDependencyᐸStringᐳ\n" +
+        "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : 366091bb-5db5-4259-9637-fd5fb7a97653  IDependencyᐸStringᐳ\n" +
         "  Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root\n" +
         "  ServiceᐸStringᐳ o--  \"PerBlock\" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ";
   }
   
-  private readonly static int _bucketSizeM03D15di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D15di;
+  private readonly static int _bucketSizeM03D17di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D17di;
   
   static Composition()
   {
-    var valResolverM03D15di_0000 = new ResolverM03D15di_0000();
-    ResolverM03D15di<Pure.DI.UsageTests.Advanced.TagUniqueScenario.IService<string>>.Value = valResolverM03D15di_0000;
-    _bucketsM03D15di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM03D17di_0000 = new ResolverM03D17di_0000();
+    ResolverM03D17di<Pure.DI.UsageTests.Advanced.TagUniqueScenario.IService<string>>.Value = valResolverM03D17di_0000;
+    _bucketsM03D17di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM03D15di,
+      out _bucketSizeM03D17di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Advanced.TagUniqueScenario.IService<string>), valResolverM03D15di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Advanced.TagUniqueScenario.IService<string>), valResolverM03D17di_0000)
       });
   }
   
-  private sealed class ResolverM03D15di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM03D17di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D15di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D17di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -212,7 +212,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D15di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Advanced.TagUniqueScenario.IService<string>>
+  private sealed class ResolverM03D17di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Advanced.TagUniqueScenario.IService<string>>
   {
     public Pure.DI.UsageTests.Advanced.TagUniqueScenario.IService<string> Resolve(Composition composition)
     {

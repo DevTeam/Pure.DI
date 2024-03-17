@@ -78,16 +78,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM03D15di;
+  private readonly Composition _rootM03D17di;
   
   public Composition()
   {
-    _rootM03D15di = this;
+    _rootM03D17di = this;
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D15di = baseComposition._rootM03D15di;
+    _rootM03D17di = baseComposition._rootM03D17di;
   }
   
   public Pure.DI.UsageTests.Basics.InjectionsOfAbstractionsScenario.Program Root

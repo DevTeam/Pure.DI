@@ -91,16 +91,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM03D15di;
+  private readonly Composition _rootM03D17di;
   
   public Composition()
   {
-    _rootM03D15di = this;
+    _rootM03D17di = this;
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D15di = baseComposition._rootM03D15di;
+    _rootM03D17di = baseComposition._rootM03D17di;
   }
   
   public Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.IService<T66> GetMyRoot<T66>()
@@ -110,22 +110,22 @@ partial class Composition
   
   public Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.IService<T66> GetOtherService<T66>()
   {
-    Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.OtherService<T66> transientM03D15di0_OtherService;
+    Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.OtherService<T66> transientM03D17di0_OtherService;
     {
-        var dependency_M03D15di1 = new Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.Dependency<T66>();
-        transientM03D15di0_OtherService = new OtherService<T66>(dependency_M03D15di1);
+        var dependency_M03D17di1 = new Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.Dependency<T66>();
+        transientM03D17di0_OtherService = new OtherService<T66>(dependency_M03D17di1);
     }
-    return transientM03D15di0_OtherService;
+    return transientM03D17di0_OtherService;
   }
   
   public T Resolve<T>()
   {
-    return ResolverM03D15di<T>.Value.Resolve(this);
+    return ResolverM03D17di<T>.Value.Resolve(this);
   }
   
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D15di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D17di<T>.Value.ResolveByTag(this, tag);
   }
   
   public object Resolve(global::System.Type type)
@@ -173,9 +173,9 @@ partial class Composition
   }
   
   
-  private sealed class ResolverM03D15di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM03D17di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D15di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D17di<T>();
     
     public T Resolve(Composition composite)
     {
