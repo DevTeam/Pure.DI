@@ -193,6 +193,89 @@ namespace Sample
     }
     
     [Fact]
+    public async Task ShouldSupportCtxTag()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency {}
+
+    interface IService
+    {
+        IDependency Dep { get; }
+    }
+
+    class Service: IService 
+    {
+        public Service(IDependency dep)
+        { 
+            Dep = dep;
+            Console.WriteLine("Created");           
+        }
+
+        public IDependency Dep { get; }
+    }
+
+    internal partial class Composition
+    {
+        partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime)            
+        {
+            Console.WriteLine($"{typeof(T)} '{tag}' {lifetime} created");            
+        }
+
+        private partial T OnDependencyInjection<T>(in T value, object? tag, Lifetime lifetime)            
+        {
+            return value;                  
+        }
+        
+        private static partial void OnNewRoot<TContract, T>(global::Pure.DI.IResolver<Composition, TContract> resolver, string name, object? tag, global::Pure.DI.Lifetime lifetime)            
+        {
+            Console.WriteLine($"New composition root \"{name}\" {typeof(TContract)} -> {typeof(T)} '{tag}' {lifetime}");            
+        }
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            // OnDependencyInjection = On
+            DI.Setup("Composition")
+                .Hint(Hint.OnNewInstance, "On")
+                .Hint(Hint.OnNewRoot, "On")
+                .Bind<IDependency>(123).To(ctx => new Dependency())
+                .Bind<IService>(123).To(ctx => {
+                    ctx.Inject<IDependency>(ctx.Tag, out var dependency);
+                    return new Service(dependency);
+                })    
+                .Root<IService>("Service", 123);
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();      
+            var service = composition.Service;                                                 
+        }
+    }                
+}
+""".RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("New composition root \"Service\" Sample.IService -> Sample.Service '123' Transient", "Sample.Dependency '123' Transient created", "Created", "Sample.Service '123' Transient created"), result);
+    }
+    
+    [Fact]
     public async Task ShouldTrackInstanceInjection()
     {
         // Given

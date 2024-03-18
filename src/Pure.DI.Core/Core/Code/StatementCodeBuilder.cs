@@ -10,7 +10,11 @@ internal class StatementCodeBuilder(
 {
     public void Build(BuildContext ctx, in IStatement statement)
     {
-        ctx = ctx with { ContextTag = statement.Current.Injection.Tag };
+        if (statement.Current.Injection.Tag != MdTag.ContextTag)
+        {
+            ctx = ctx with { ContextTag = statement.Current.Injection.Tag };
+        }
+
         switch (statement)
         {
             case Variable variable:

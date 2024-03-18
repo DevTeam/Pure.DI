@@ -25,86 +25,85 @@ class Service(IDependency dependency) : IService
     public IDependency Dependency { get; } = dependency;
 }
 
-internal static class Disposables
+readonly struct Owned<T>(
+    T value,
+    List<IDisposable> disposables)
+    : IDisposable
 {
-    public static readonly IDisposable Empty = new EmptyDisposable();
+    public T Value { get; } = value;
 
-    public static IDisposable Combine(this Stack<IDisposable> disposables) =>
-        new CombinedDisposable(disposables);
-
-    private class EmptyDisposable : IDisposable
+    public void Dispose()
     {
-        public void Dispose() { }
-    }
-
-    internal class CombinedDisposable(Stack<IDisposable> disposables)
-        : IDisposable
-    {
-        public void Dispose()
-        {
-            while (disposables.TryPop(out var disposable))
-            {
-                disposable.Dispose();
-            }
-        }
+        disposables.Reverse();
+        disposables.ForEach(i => i.Dispose());
     }
 }
 
 partial class Composition
 {
-    private readonly ConcurrentDictionary<int, Stack<IDisposable>> _disposables = new();
+    private List<IDisposable> _disposables = [];
 
     private void Setup() =>
         DI.Setup(nameof(Composition))
-            // Specifies to call a partial method
-            // named OnNewInstance when an instance is created
+            // Specifies to call the partial method OnNewInstance
+            // when an instance is created
             .Hint(Hint.OnNewInstance, "On")
 
-            // Specifies to call the partial method
+            // Specifies to call the partial method OnNewInstance
             // only for instances with lifetime
             // Transient, PerResolve and PerBlock
             .Hint(
                 Hint.OnNewInstanceLifetimeRegularExpression,
                 "Transient|PerResolve|PerBlock")
 
+            // Specifies to call the partial method OnNewInstance
+            // for instances other than Composition.Owned<T>
+            .Hint(
+                Hint.OnNewInstanceImplementationTypeNameRegularExpression,
+                "^((?!Owned<).)*$")
+
+            .Bind().To(ctx =>
+            {
+                ctx.Inject(out TT value);
+                var disposables = _disposables;
+                _disposables = [];
+                return new Owned<TT>(value, disposables);
+            })
+
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
-            .Bind().To(_ =>
-                _disposables.TryRemove(Environment.CurrentManagedThreadId, out var disposables)
-                    ? disposables.Combine()
-                    : Disposables.Empty)
-
-            .Root<(IService service, IDisposable combinedDisposables)>("Root");
+            .Root<Owned<IService>>("Root");
 
     partial void OnNewInstance<T>(
         ref T value,
         object? tag,
         Lifetime lifetime)
     {
-        if (value is IDisposable disposable && value is not Disposables.CombinedDisposable)
-        {
-            var disposables = _disposables.GetOrAdd(
-                Environment.CurrentManagedThreadId,
-                _ => new Stack<IDisposable>());
-
-            disposables.Push(disposable);
-        }
+        if (value is not IDisposable disposable) return;
+        _disposables.Add(disposable);
     }
 }
 
 var composition = new Composition();
+
 var root1 = composition.Root;
 var root2 = composition.Root;
         
-root2.combinedDisposables.Dispose();
+root2.Dispose();
         
 // Checks that the disposable instances
 // associated with root1 have been disposed of
-root2.service.Dependency.IsDisposed.ShouldBeTrue();
+root2.Value.Dependency.IsDisposed.ShouldBeTrue();
         
 // Checks that the disposable instances
 // associated with root2 have not been disposed of
-root1.service.Dependency.IsDisposed.ShouldBeFalse();
+root1.Value.Dependency.IsDisposed.ShouldBeFalse();
+        
+root1.Dispose();
+        
+// Checks that the disposable instances
+// associated with root2 have been disposed of
+root1.Value.Dependency.IsDisposed.ShouldBeTrue();
 ```
 
 <details open>
@@ -113,16 +112,12 @@ root1.service.Dependency.IsDisposed.ShouldBeFalse();
 ```mermaid
 classDiagram
   class Composition {
-    +ValueTupleᐸIServiceˏIDisposableᐳ Root
+    +OwnedᐸIServiceᐳ Root
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  class ValueTupleᐸIServiceˏIDisposableᐳ {
-    +ValueTuple(IService item1, IDisposable item2)
-  }
-  class IDisposable
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
@@ -137,10 +132,9 @@ classDiagram
   class IService {
     <<abstract>>
   }
-  ValueTupleᐸIServiceˏIDisposableᐳ *--  Service : IService
-  ValueTupleᐸIServiceˏIDisposableᐳ *--  IDisposable : IDisposable
   Service *--  Dependency : IDependency
-  Composition ..> ValueTupleᐸIServiceˏIDisposableᐳ : ValueTupleᐸIServiceˏIDisposableᐳ Root
+  Composition ..> OwnedᐸIServiceᐳ : OwnedᐸIServiceᐳ Root
+  OwnedᐸIServiceᐳ *--  Service : IService
 ```
 
 </details>
@@ -163,19 +157,22 @@ partial class Composition
     _rootM03D18di = baseComposition._rootM03D18di;
   }
   
-  public (Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService service, System.IDisposable combinedDisposables) Root
+  public Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Owned<Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService> Root
   {
     get
     {
-      Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Dependency transientM03D18di3_Dependency = new Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Dependency();
-      OnNewInstance<Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Dependency>(ref transientM03D18di3_Dependency, null, Pure.DI.Lifetime.Transient);
-      System.IDisposable transientM03D18di2_IDisposable = _disposables.TryRemove(Environment.CurrentManagedThreadId, out var disposables_M03D18di1) ? disposables_M03D18di1.Combine() : Disposables.Empty;
-      OnNewInstance<System.IDisposable>(ref transientM03D18di2_IDisposable, null, Pure.DI.Lifetime.Transient);
-      Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Service transientM03D18di1_Service = new Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Service(transientM03D18di3_Dependency);
+      Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Dependency transientM03D18di2_Dependency = new Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Dependency();
+      OnNewInstance<Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Dependency>(ref transientM03D18di2_Dependency, null, Pure.DI.Lifetime.Transient);
+      Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Service transientM03D18di1_Service = new Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Service(transientM03D18di2_Dependency);
       OnNewInstance<Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Service>(ref transientM03D18di1_Service, null, Pure.DI.Lifetime.Transient);
-      (Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService service, System.IDisposable combinedDisposables) transientM03D18di0_ValueTuple = (transientM03D18di1_Service, transientM03D18di2_IDisposable);
-      OnNewInstance<(Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService service, System.IDisposable combinedDisposables)>(ref transientM03D18di0_ValueTuple, null, Pure.DI.Lifetime.Transient);
-      return transientM03D18di0_ValueTuple;
+      Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Owned<Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService> transientM03D18di0_Owned;
+      {
+          var value_M03D18di1 = transientM03D18di1_Service;
+          var disposables_M03D18di2 = _disposables;
+          _disposables = [];
+          transientM03D18di0_Owned = new Owned<Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService>(value_M03D18di1, disposables_M03D18di2);
+      }
+      return transientM03D18di0_Owned;
     }
   }
   
@@ -226,16 +223,12 @@ partial class Composition
     return
       "classDiagram\n" +
         "  class Composition {\n" +
-          "    +ValueTupleᐸIServiceˏIDisposableᐳ Root\n" +
+          "    +OwnedᐸIServiceᐳ Root\n" +
           "    + T ResolveᐸTᐳ()\n" +
           "    + T ResolveᐸTᐳ(object? tag)\n" +
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  class ValueTupleᐸIServiceˏIDisposableᐳ {\n" +
-          "    +ValueTuple(IService item1, IDisposable item2)\n" +
-        "  }\n" +
-        "  class IDisposable\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
@@ -250,10 +243,9 @@ partial class Composition
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  ValueTupleᐸIServiceˏIDisposableᐳ *--  Service : IService\n" +
-        "  ValueTupleᐸIServiceˏIDisposableᐳ *--  IDisposable : IDisposable\n" +
         "  Service *--  Dependency : IDependency\n" +
-        "  Composition ..> ValueTupleᐸIServiceˏIDisposableᐳ : ValueTupleᐸIServiceˏIDisposableᐳ Root";
+        "  Composition ..> OwnedᐸIServiceᐳ : OwnedᐸIServiceᐳ Root\n" +
+        "  OwnedᐸIServiceᐳ *--  Service : IService";
   }
   
   private readonly static int _bucketSizeM03D18di;
@@ -262,13 +254,13 @@ partial class Composition
   static Composition()
   {
     var valResolverM03D18di_0000 = new ResolverM03D18di_0000();
-    ResolverM03D18di<(Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService service, System.IDisposable combinedDisposables)>.Value = valResolverM03D18di_0000;
+    ResolverM03D18di<Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Owned<Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService>>.Value = valResolverM03D18di_0000;
     _bucketsM03D18di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
       out _bucketSizeM03D18di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof((Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService service, System.IDisposable combinedDisposables)), valResolverM03D18di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Owned<Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService>), valResolverM03D18di_0000)
       });
   }
   
@@ -287,21 +279,21 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D18di_0000: global::Pure.DI.IResolver<Composition, (Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService service, System.IDisposable combinedDisposables)>, global::Pure.DI.IResolver<Composition, object>
+  private sealed class ResolverM03D18di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Owned<Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService>>, global::Pure.DI.IResolver<Composition, object>
   {
-    public (Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService service, System.IDisposable combinedDisposables) Resolve(Composition composition)
+    public Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Owned<Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService> Resolve(Composition composition)
     {
       return composition.Root;
     }
     
-    public (Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService service, System.IDisposable combinedDisposables) ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Owned<Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService> ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Root;
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type (Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService service, System.IDisposable combinedDisposables).");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.Owned<Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario.IService>.");
     }
     object global::Pure.DI.IResolver<Composition, object>.Resolve(Composition composition)
     {

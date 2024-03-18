@@ -30,7 +30,7 @@ internal class CompositionBuilder(
                 rootBlock.Current,
                 new LinesBuilder(),
                 new LinesBuilder(),
-                default,
+                root.Injection.Tag != MdTag.ContextTag ? root.Injection.Tag : default,
                 default);
 
             foreach (var perResolveVar in map.GetPerResolves())
