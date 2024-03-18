@@ -2,7 +2,6 @@
 namespace Pure.DI.Core.Code;
 
 internal sealed class ApiMembersBuilder(
-    ILogger<ApiMembersBuilder> logger,
     IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder,
     IBuildTools buildTools)
     : IBuilder<CompositionCode, CompositionCode>
@@ -21,17 +20,6 @@ internal sealed class ApiMembersBuilder(
         var apiCode = new LinesBuilder();
         if (hints.IsResolveEnabled)
         {
-            var rootArgs = composition
-                .Args.GetArgsOfKind(ArgKind.Root)
-                .GroupBy(i => i.Node.Binding.Id)
-                .Select(i => i.First())
-                .ToArray();
-
-            foreach (var rootArg in rootArgs)
-            {
-                logger.CompileWarning($"The root argument \"{rootArg.Node.Arg}\" of the composition is used. This root cannot be resolved using \"Resolve\" methods, so an exception will be thrown when trying to do so.", rootArg.Node.Arg?.Source.Source.GetLocation() ?? composition.Source.Source.Source.GetLocation(), LogId.WarningRootArgInResolveMethod);
-            }
-
             if (isCommentsEnabled)
             {
                 apiCode.AppendLine("/// <summary>");

@@ -21,6 +21,8 @@ class OtherService<T>(IDependency<T> dependency) : IService<T, bool>
     where T: IDisposable;
 
 DI.Setup(nameof(Composition))
+    // This hint indicates to not generate methods such as Resolve
+    .Hint(Hint.Resolve, "Off")
     .Bind().To<Dependency<TTDisposable>>()
     .Bind().To<Service<TTDisposable, TTS>>()
     // Creates OtherService manually,
@@ -59,10 +61,6 @@ classDiagram
   class Composition {
     +IServiceᐸTˏT4ᐳ GetMyRootᐸTˏT4ᐳ()
     +IServiceᐸTˏBooleanᐳ GetOtherServiceᐸTᐳ()
-    + T ResolveᐸTᐳ()
-    + T ResolveᐸTᐳ(object? tag)
-    + object Resolve(Type type)
-    + object Resolve(Type type, object? tag)
   }
   ServiceᐸTˏT4ᐳ --|> IServiceᐸTˏT4ᐳ : 
   class ServiceᐸTˏT4ᐳ {
@@ -97,16 +95,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM03D17di;
+  private readonly Composition _rootM03D18di;
   
   public Composition()
   {
-    _rootM03D17di = this;
+    _rootM03D18di = this;
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D17di = baseComposition._rootM03D17di;
+    _rootM03D18di = baseComposition._rootM03D18di;
   }
   
   public Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario.IService<T, T4> GetMyRoot<T, T4>()
@@ -119,32 +117,12 @@ partial class Composition
   public Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario.IService<T, bool> GetOtherService<T>()
     where T: System.IDisposable
   {
-    Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario.OtherService<T> transientM03D17di0_OtherService;
+    Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario.OtherService<T> transientM03D18di0_OtherService;
     {
-        var dependency_M03D17di1 = new Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario.Dependency<T>();
-        transientM03D17di0_OtherService = new OtherService<T>(dependency_M03D17di1);
+        var dependency_M03D18di1 = new Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario.Dependency<T>();
+        transientM03D18di0_OtherService = new OtherService<T>(dependency_M03D18di1);
     }
-    return transientM03D17di0_OtherService;
-  }
-  
-  public T Resolve<T>()
-  {
-    return ResolverM03D17di<T>.Value.Resolve(this);
-  }
-  
-  public T Resolve<T>(object? tag)
-  {
-    return ResolverM03D17di<T>.Value.ResolveByTag(this, tag);
-  }
-  
-  public object Resolve(global::System.Type type)
-  {
-    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
-  }
-  
-  public object Resolve(global::System.Type type, object? tag)
-  {
-    throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
+    return transientM03D18di0_OtherService;
   }
   
   public override string ToString()
@@ -154,10 +132,6 @@ partial class Composition
         "  class Composition {\n" +
           "    +IServiceᐸTˏT4ᐳ GetMyRootᐸTˏT4ᐳ()\n" +
           "    +IServiceᐸTˏBooleanᐳ GetOtherServiceᐸTᐳ()\n" +
-          "    + T ResolveᐸTᐳ()\n" +
-          "    + T ResolveᐸTᐳ(object? tag)\n" +
-          "    + object Resolve(Type type)\n" +
-          "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  ServiceᐸTˏT4ᐳ --|> IServiceᐸTˏT4ᐳ : \n" +
         "  class ServiceᐸTˏT4ᐳ {\n" +
@@ -182,22 +156,6 @@ partial class Composition
         "  Composition ..> OtherServiceᐸTᐳ : IServiceᐸTˏBooleanᐳ GetOtherServiceᐸTᐳ()\n" +
         "  ServiceᐸTˏT4ᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ\n" +
         "  OtherServiceᐸTᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ";
-  }
-  
-  
-  private sealed class ResolverM03D17di<T>: global::Pure.DI.IResolver<Composition, T>
-  {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D17di<T>();
-    
-    public T Resolve(Composition composite)
-    {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
-    }
-    
-    public T ResolveByTag(Composition composite, object tag)
-    {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
-    }
   }
 }
 ```

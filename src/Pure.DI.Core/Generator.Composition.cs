@@ -52,13 +52,16 @@ public partial class Generator
             .Bind().To<Resources>()
             .Bind().To<Information>()
             .Bind().To<GlobalOptions>()
-            .Bind().To<DependencyGraphValidator>()
-            .Bind().To<MetadataValidator>()
             .Bind().To<Marker>()
             .Bind().To<Variator<TT>>()
             .Bind().To<Profiler>()
             .Bind().To<BaseSymbolsProvider>()
             .Bind().To<Formatter>()
+        
+            // Validators
+            .Bind(Tag.Type).To<MetadataValidator>()
+            .Bind(Tag.Type).To<DependencyGraphValidator>()
+            .Bind(Tag.Type).To<RootValidator>()
         
             // Comments
             .Bind(Tag.Type).To<ClassCommenter>()

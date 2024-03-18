@@ -16,6 +16,8 @@ class Service<T>(IDependency<T> dependency) : IService<T>;
 class OtherService<T>(IDependency<T> dependency) : IService<T>;
 
 DI.Setup(nameof(Composition))
+    // This hint indicates to not generate methods such as Resolve
+    .Hint(Hint.Resolve, "Off")
     .Bind().To<Dependency<TT>>()
     .Bind().To<Service<TT>>()
     // Creates OtherService manually,
@@ -54,33 +56,29 @@ When a generic composition root is used, `Resolve` methods cannot be used to res
 ```mermaid
 classDiagram
   class Composition {
-    +IServiceᐸT66ᐳ GetMyRootᐸT66ᐳ()
-    +IServiceᐸT66ᐳ GetOtherServiceᐸT66ᐳ()
-    + T ResolveᐸTᐳ()
-    + T ResolveᐸTᐳ(object? tag)
-    + object Resolve(Type type)
-    + object Resolve(Type type, object? tag)
+    +IServiceᐸT54ᐳ GetMyRootᐸT54ᐳ()
+    +IServiceᐸT54ᐳ GetOtherServiceᐸT54ᐳ()
   }
-  ServiceᐸT66ᐳ --|> IServiceᐸT66ᐳ : 
-  class ServiceᐸT66ᐳ {
-    +Service(IDependencyᐸT66ᐳ dependency)
+  ServiceᐸT54ᐳ --|> IServiceᐸT54ᐳ : 
+  class ServiceᐸT54ᐳ {
+    +Service(IDependencyᐸT54ᐳ dependency)
   }
-  OtherServiceᐸT66ᐳ --|> IServiceᐸT66ᐳ : "Other" 
-  class OtherServiceᐸT66ᐳ
-  DependencyᐸT66ᐳ --|> IDependencyᐸT66ᐳ : 
-  class DependencyᐸT66ᐳ {
+  OtherServiceᐸT54ᐳ --|> IServiceᐸT54ᐳ : "Other" 
+  class OtherServiceᐸT54ᐳ
+  DependencyᐸT54ᐳ --|> IDependencyᐸT54ᐳ : 
+  class DependencyᐸT54ᐳ {
     +Dependency()
   }
-  class IServiceᐸT66ᐳ {
+  class IServiceᐸT54ᐳ {
     <<abstract>>
   }
-  class IDependencyᐸT66ᐳ {
+  class IDependencyᐸT54ᐳ {
     <<abstract>>
   }
-  Composition ..> ServiceᐸT66ᐳ : IServiceᐸT66ᐳ GetMyRootᐸT66ᐳ()
-  Composition ..> OtherServiceᐸT66ᐳ : IServiceᐸT66ᐳ GetOtherServiceᐸT66ᐳ()
-  ServiceᐸT66ᐳ *--  DependencyᐸT66ᐳ : IDependencyᐸT66ᐳ
-  OtherServiceᐸT66ᐳ *--  DependencyᐸT66ᐳ : IDependencyᐸT66ᐳ
+  Composition ..> ServiceᐸT54ᐳ : IServiceᐸT54ᐳ GetMyRootᐸT54ᐳ()
+  Composition ..> OtherServiceᐸT54ᐳ : IServiceᐸT54ᐳ GetOtherServiceᐸT54ᐳ()
+  ServiceᐸT54ᐳ *--  DependencyᐸT54ᐳ : IDependencyᐸT54ᐳ
+  OtherServiceᐸT54ᐳ *--  DependencyᐸT54ᐳ : IDependencyᐸT54ᐳ
 ```
 
 </details>
@@ -91,51 +89,31 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM03D17di;
+  private readonly Composition _rootM03D18di;
   
   public Composition()
   {
-    _rootM03D17di = this;
+    _rootM03D18di = this;
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D17di = baseComposition._rootM03D17di;
+    _rootM03D18di = baseComposition._rootM03D18di;
   }
   
-  public Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.IService<T66> GetMyRoot<T66>()
+  public Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.IService<T54> GetMyRoot<T54>()
   {
-    return new Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.Service<T66>(new Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.Dependency<T66>());
+    return new Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.Service<T54>(new Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.Dependency<T54>());
   }
   
-  public Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.IService<T66> GetOtherService<T66>()
+  public Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.IService<T54> GetOtherService<T54>()
   {
-    Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.OtherService<T66> transientM03D17di0_OtherService;
+    Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.OtherService<T54> transientM03D18di0_OtherService;
     {
-        var dependency_M03D17di1 = new Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.Dependency<T66>();
-        transientM03D17di0_OtherService = new OtherService<T66>(dependency_M03D17di1);
+        var dependency_M03D18di1 = new Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.Dependency<T54>();
+        transientM03D18di0_OtherService = new OtherService<T54>(dependency_M03D18di1);
     }
-    return transientM03D17di0_OtherService;
-  }
-  
-  public T Resolve<T>()
-  {
-    return ResolverM03D17di<T>.Value.Resolve(this);
-  }
-  
-  public T Resolve<T>(object? tag)
-  {
-    return ResolverM03D17di<T>.Value.ResolveByTag(this, tag);
-  }
-  
-  public object Resolve(global::System.Type type)
-  {
-    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
-  }
-  
-  public object Resolve(global::System.Type type, object? tag)
-  {
-    throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
+    return transientM03D18di0_OtherService;
   }
   
   public override string ToString()
@@ -143,49 +121,29 @@ partial class Composition
     return
       "classDiagram\n" +
         "  class Composition {\n" +
-          "    +IServiceᐸT66ᐳ GetMyRootᐸT66ᐳ()\n" +
-          "    +IServiceᐸT66ᐳ GetOtherServiceᐸT66ᐳ()\n" +
-          "    + T ResolveᐸTᐳ()\n" +
-          "    + T ResolveᐸTᐳ(object? tag)\n" +
-          "    + object Resolve(Type type)\n" +
-          "    + object Resolve(Type type, object? tag)\n" +
+          "    +IServiceᐸT54ᐳ GetMyRootᐸT54ᐳ()\n" +
+          "    +IServiceᐸT54ᐳ GetOtherServiceᐸT54ᐳ()\n" +
         "  }\n" +
-        "  ServiceᐸT66ᐳ --|> IServiceᐸT66ᐳ : \n" +
-        "  class ServiceᐸT66ᐳ {\n" +
-          "    +Service(IDependencyᐸT66ᐳ dependency)\n" +
+        "  ServiceᐸT54ᐳ --|> IServiceᐸT54ᐳ : \n" +
+        "  class ServiceᐸT54ᐳ {\n" +
+          "    +Service(IDependencyᐸT54ᐳ dependency)\n" +
         "  }\n" +
-        "  OtherServiceᐸT66ᐳ --|> IServiceᐸT66ᐳ : \"Other\" \n" +
-        "  class OtherServiceᐸT66ᐳ\n" +
-        "  DependencyᐸT66ᐳ --|> IDependencyᐸT66ᐳ : \n" +
-        "  class DependencyᐸT66ᐳ {\n" +
+        "  OtherServiceᐸT54ᐳ --|> IServiceᐸT54ᐳ : \"Other\" \n" +
+        "  class OtherServiceᐸT54ᐳ\n" +
+        "  DependencyᐸT54ᐳ --|> IDependencyᐸT54ᐳ : \n" +
+        "  class DependencyᐸT54ᐳ {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class IServiceᐸT66ᐳ {\n" +
+        "  class IServiceᐸT54ᐳ {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  class IDependencyᐸT66ᐳ {\n" +
+        "  class IDependencyᐸT54ᐳ {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  Composition ..> ServiceᐸT66ᐳ : IServiceᐸT66ᐳ GetMyRootᐸT66ᐳ()\n" +
-        "  Composition ..> OtherServiceᐸT66ᐳ : IServiceᐸT66ᐳ GetOtherServiceᐸT66ᐳ()\n" +
-        "  ServiceᐸT66ᐳ *--  DependencyᐸT66ᐳ : IDependencyᐸT66ᐳ\n" +
-        "  OtherServiceᐸT66ᐳ *--  DependencyᐸT66ᐳ : IDependencyᐸT66ᐳ";
-  }
-  
-  
-  private sealed class ResolverM03D17di<T>: global::Pure.DI.IResolver<Composition, T>
-  {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D17di<T>();
-    
-    public T Resolve(Composition composite)
-    {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
-    }
-    
-    public T ResolveByTag(Composition composite, object tag)
-    {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
-    }
+        "  Composition ..> ServiceᐸT54ᐳ : IServiceᐸT54ᐳ GetMyRootᐸT54ᐳ()\n" +
+        "  Composition ..> OtherServiceᐸT54ᐳ : IServiceᐸT54ᐳ GetOtherServiceᐸT54ᐳ()\n" +
+        "  ServiceᐸT54ᐳ *--  DependencyᐸT54ᐳ : IDependencyᐸT54ᐳ\n" +
+        "  OtherServiceᐸT54ᐳ *--  DependencyᐸT54ᐳ : IDependencyᐸT54ᐳ";
   }
 }
 ```

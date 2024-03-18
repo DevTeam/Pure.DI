@@ -43,6 +43,8 @@ public class Scenario
     {
 // {            
         DI.Setup(nameof(Composition))
+            // This hint indicates to not generate methods such as Resolve
+            .Hint(Hint.Resolve, "Off")
             .Bind().To<Dependency<TTDisposable>>()
             .Bind().To<Service<TTDisposable, TTS>>()
             // Creates OtherService manually,

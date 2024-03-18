@@ -99,38 +99,38 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM03D17di;
-  private readonly object _lockM03D17di;
-  private Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency _singletonM03D17di35_XyzDependency;
+  private readonly Composition _rootM03D18di;
+  private readonly object _lockM03D18di;
+  private Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency _singletonM03D18di35_XyzDependency;
   
   public Composition()
   {
-    _rootM03D17di = this;
-    _lockM03D17di = new object();
+    _rootM03D18di = this;
+    _lockM03D18di = new object();
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D17di = baseComposition._rootM03D17di;
-    _lockM03D17di = _rootM03D17di._lockM03D17di;
+    _rootM03D18di = baseComposition._rootM03D18di;
+    _lockM03D18di = _rootM03D18di._lockM03D18di;
   }
   
   public Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency XyzRoot
   {
     get
     {
-      if (ReferenceEquals(_rootM03D17di._singletonM03D17di35_XyzDependency, null))
+      if (ReferenceEquals(_rootM03D18di._singletonM03D18di35_XyzDependency, null))
       {
-          lock (_lockM03D17di)
+          lock (_lockM03D18di)
           {
-              if (ReferenceEquals(_rootM03D17di._singletonM03D17di35_XyzDependency, null))
+              if (ReferenceEquals(_rootM03D18di._singletonM03D18di35_XyzDependency, null))
               {
-                  _singletonM03D17di35_XyzDependency = new Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency();
-                  _rootM03D17di._singletonM03D17di35_XyzDependency = _singletonM03D17di35_XyzDependency;
+                  _singletonM03D18di35_XyzDependency = new Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency();
+                  _rootM03D18di._singletonM03D18di35_XyzDependency = _singletonM03D18di35_XyzDependency;
               }
           }
       }
-      return _rootM03D17di._singletonM03D17di35_XyzDependency;
+      return _rootM03D18di._singletonM03D18di35_XyzDependency;
     }
   }
   
@@ -138,37 +138,37 @@ partial class Composition
   {
     get
     {
-      if (ReferenceEquals(_rootM03D17di._singletonM03D17di35_XyzDependency, null))
+      if (ReferenceEquals(_rootM03D18di._singletonM03D18di35_XyzDependency, null))
       {
-          lock (_lockM03D17di)
+          lock (_lockM03D18di)
           {
-              if (ReferenceEquals(_rootM03D17di._singletonM03D17di35_XyzDependency, null))
+              if (ReferenceEquals(_rootM03D18di._singletonM03D18di35_XyzDependency, null))
               {
-                  _singletonM03D17di35_XyzDependency = new Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency();
-                  _rootM03D17di._singletonM03D17di35_XyzDependency = _singletonM03D17di35_XyzDependency;
+                  _singletonM03D18di35_XyzDependency = new Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency();
+                  _rootM03D18di._singletonM03D18di35_XyzDependency = _singletonM03D18di35_XyzDependency;
               }
           }
       }
-      return new Pure.DI.UsageTests.Advanced.TagTypeScenario.Service(new Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency(), _rootM03D17di._singletonM03D17di35_XyzDependency, new Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency());
+      return new Pure.DI.UsageTests.Advanced.TagTypeScenario.Service(new Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency(), _rootM03D18di._singletonM03D18di35_XyzDependency, new Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency());
     }
   }
   
   public T Resolve<T>()
   {
-    return ResolverM03D17di<T>.Value.Resolve(this);
+    return ResolverM03D18di<T>.Value.Resolve(this);
   }
   
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D17di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D18di<T>.Value.ResolveByTag(this, tag);
   }
   
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D17di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    var finish = index + _bucketSizeM03D17di;
+    var index = (int)(_bucketSizeM03D18di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var finish = index + _bucketSizeM03D18di;
     do {
-      ref var pair = ref _bucketsM03D17di[index];
+      ref var pair = ref _bucketsM03D18di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -180,10 +180,10 @@ partial class Composition
   
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D17di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    var finish = index + _bucketSizeM03D17di;
+    var index = (int)(_bucketSizeM03D18di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var finish = index + _bucketSizeM03D18di;
     do {
-      ref var pair = ref _bucketsM03D17di[index];
+      ref var pair = ref _bucketsM03D18di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -231,28 +231,28 @@ partial class Composition
         "  Composition ..> XyzDependency : IDependency XyzRoot";
   }
   
-  private readonly static int _bucketSizeM03D17di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D17di;
+  private readonly static int _bucketSizeM03D18di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D18di;
   
   static Composition()
   {
-    var valResolverM03D17di_0000 = new ResolverM03D17di_0000();
-    ResolverM03D17di<Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency>.Value = valResolverM03D17di_0000;
-    var valResolverM03D17di_0001 = new ResolverM03D17di_0001();
-    ResolverM03D17di<Pure.DI.UsageTests.Advanced.TagTypeScenario.IService>.Value = valResolverM03D17di_0001;
-    _bucketsM03D17di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM03D18di_0000 = new ResolverM03D18di_0000();
+    ResolverM03D18di<Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency>.Value = valResolverM03D18di_0000;
+    var valResolverM03D18di_0001 = new ResolverM03D18di_0001();
+    ResolverM03D18di<Pure.DI.UsageTests.Advanced.TagTypeScenario.IService>.Value = valResolverM03D18di_0001;
+    _bucketsM03D18di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       4,
-      out _bucketSizeM03D17di,
+      out _bucketSizeM03D18di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[2]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency), valResolverM03D17di_0000)
-        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.IService), valResolverM03D17di_0001)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency), valResolverM03D18di_0000)
+        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.IService), valResolverM03D18di_0001)
       });
   }
   
-  private sealed class ResolverM03D17di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM03D18di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D17di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D18di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -265,7 +265,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D17di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency>
+  private sealed class ResolverM03D18di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency>
   {
     public Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency Resolve(Composition composition)
     {
@@ -282,7 +282,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D17di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Advanced.TagTypeScenario.IService>
+  private sealed class ResolverM03D18di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Advanced.TagTypeScenario.IService>
   {
     public Pure.DI.UsageTests.Advanced.TagTypeScenario.IService Resolve(Composition composition)
     {

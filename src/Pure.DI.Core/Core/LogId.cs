@@ -14,6 +14,7 @@ internal static class LogId
     public const string WarningOverriddenBinding = "DIW000";
     public const string WarningMetadataDefect = "DIW001";
     public const string WarningRootArgInResolveMethod = "DIW002";
+    public const string WarningTypeArgInResolveMethod = "DIW003";
 
     // Info
     public const string InfoGenerationInterrupted = "DII000";

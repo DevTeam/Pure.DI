@@ -37,6 +37,7 @@ class Service(
 }
 
 DI.Setup(nameof(Composition))
+    // This hint indicates to not generate methods such as Resolve
     .Hint(Hint.Resolve, "Off")
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>().Root<IService>("CreateService")
@@ -98,16 +99,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM03D17di;
+  private readonly Composition _rootM03D18di;
   
   public Composition()
   {
-    _rootM03D17di = this;
+    _rootM03D18di = this;
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D17di = baseComposition._rootM03D17di;
+    _rootM03D18di = baseComposition._rootM03D18di;
   }
   
   public Pure.DI.UsageTests.Basics.RootArgumentsScenario.IService CreateService(int id, string dependencyName, string serviceName)

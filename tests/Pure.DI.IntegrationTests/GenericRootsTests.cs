@@ -1,9 +1,66 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
+using Core;
+
 public class GenericRootsTests
 {
     [Fact]
     public async Task ShouldSupportGenericRoot()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
+namespace Sample
+{
+    class Dep<T> { }
+
+    interface IBox<T> { T? Content { get; set; } }
+
+    class CardboardBox<T> : IBox<T>
+    {
+        public CardboardBox(Dep<T> dep)
+        {
+        }
+        
+        public T? Content { get; set; }
+    }
+
+    internal partial class Composition
+    {
+        private static void Setup()
+        {
+            DI.Setup(nameof(Composition))
+                .Hint(Hint.Resolve, "Off")
+                .Bind<IBox<TT>>().To<CardboardBox<TT>>()                
+                // Composition Root
+                .Root<IBox<TT>>("GetRoot");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();            
+            var root = composition.GetRoot<int>();
+            Console.WriteLine(root);
+        }
+    }                
+}
+""".RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.CardboardBox`1[System.Int32]"), result);
+    }
+    
+    [Fact]
+    public async Task ShouldShowWarningsForGenericRootWhenResolveMethods()
     {
         // Given
 
@@ -52,7 +109,10 @@ namespace Sample
 """.RunAsync(new Options(LanguageVersion.CSharp9));
 
         // Then
-        result.Success.ShouldBeTrue(result);
+        result.Success.ShouldBeFalse(result);
+        result.Errors.Count.ShouldBe(0);
+        result.Warnings.Count.ShouldBe(1);
+        result.Warnings.Count(i => i.Id == LogId.WarningTypeArgInResolveMethod).ShouldBe(1);
         result.StdOut.ShouldBe(ImmutableArray.Create("Sample.CardboardBox`1[System.Int32]"), result);
     }
     
@@ -90,6 +150,7 @@ namespace Sample
         private static void Setup()
         {
             DI.Setup(nameof(Composition))
+                .Hint(Hint.Resolve, "Off")
                 .Bind().To<Dependency<TT, TT1>>()
                 .Bind().To<Service<TT, TT1>>()
                 .Root<IService<TT, TT1>>("GetMyRoot")
@@ -156,6 +217,7 @@ namespace Sample
         private static void Setup()
         {
             DI.Setup(nameof(Composition))
+                .Hint(Hint.Resolve, "Off")
                 .Bind<IBox<TT>>().To<CardboardBox<TT>>()
                 .Bind<Consumer<TT>>().To<Consumer<TT>>(ctx => {
                     ctx.Inject<IBox<TT>>(out var box);
@@ -231,6 +293,7 @@ namespace Sample
         private static void Setup()
         {
             DI.Setup(nameof(Composition))
+                .Hint(Hint.Resolve, "Off")
                 .Bind<IBox<TTDisposable, TTS>>().To<CardboardBox<TTDisposable, TTS>>()                
                 // Composition Root
                 .Root<IBox<TTDisposable, TTS>>("GetRoot");
@@ -297,15 +360,16 @@ namespace Sample
         private static void Setup()
         {
             DI.Setup(nameof(Composition))
+                .Hint(Hint.Resolve, "Off")
                 .Bind().To<Dependency<TT>>()
-            .Bind().To<Service<TT, TTS>>()
-            .Bind("Other").To(ctx =>
-            {
-                ctx.Inject(out IDependency<TT> dependency);
-                return new OtherService<TT, TTS>(dependency);
-            })
-            .Root<IService<TT, TTS>>("GetMyRoot")
-            .Root<IService<TT, TTS>>("GetOtherService", "Other");
+                .Bind().To<Service<TT, TTS>>()
+                .Bind("Other").To(ctx =>
+                {
+                    ctx.Inject(out IDependency<TT> dependency);
+                    return new OtherService<TT, TTS>(dependency);
+                })
+                .Root<IService<TT, TTS>>("GetMyRoot")
+                .Root<IService<TT, TTS>>("GetOtherService", "Other");
         }
     }
 
