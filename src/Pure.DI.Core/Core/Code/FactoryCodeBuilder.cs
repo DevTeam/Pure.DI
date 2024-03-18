@@ -32,13 +32,13 @@ internal class FactoryCodeBuilder(
         SyntaxNode syntaxNode = lambda.Block is not null ? lambda.Block : SyntaxFactory.ExpressionStatement((ExpressionSyntax)lambda.Body);
         if (syntaxNode is not BlockSyntax)
         {
-            code.Append($"{ctx.BuildTools.GetDeclaration(variable, true)}{variable.VariableName} = ");
+            code.Append($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = ");
         }
         else
         {
             if (!variable.IsDeclared)
             {
-                code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable, true)}{variable.VariableName};");
+                code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName};");
             }
         }
 

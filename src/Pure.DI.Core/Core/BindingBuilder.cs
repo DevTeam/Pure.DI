@@ -2,7 +2,9 @@
 namespace Pure.DI.Core;
 
 internal class BindingBuilder(
+    [Tag("UniqueTags")] IIdGenerator idGenerator,
     IBaseSymbolsProvider baseSymbolsProvider)
+    : IBindingBuilder
 {
     private MdDefaultLifetime? _defaultLifetime;
     private SemanticModel? _semanticModel;
@@ -138,7 +140,7 @@ internal class BindingBuilder(
         }
     }
 
-    private static MdTag BuildTag(MdTag tag, ITypeSymbol? type)
+    private MdTag BuildTag(MdTag tag, ITypeSymbol? type)
     {
         if (type is null || tag.Value is null)
         {
@@ -154,7 +156,7 @@ internal class BindingBuilder(
                     return tag with { Value = type };
                 
                 case Tag.Unique:
-                    return tag with { Value = Guid.NewGuid() };
+                    return tag with { Value = new UniqueTag(idGenerator.Generate()) };
             }
         }
 

@@ -11,7 +11,7 @@ internal class BuildTools(IFilter filter, ITypeResolver typeResolver) : IBuildTo
         code.AppendLine("#endif");
     }
 
-    public string GetDeclaration(Variable variable, bool typeIsRequired = false) =>
+    public string GetDeclaration(Variable variable) =>
         variable.IsDeclared ? "" : $"{typeResolver.Resolve(variable.InstanceType)} ";
     
     public string OnInjected(BuildContext ctx, Variable variable)

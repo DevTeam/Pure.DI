@@ -102,7 +102,7 @@ internal class ConstructCodeBuilder(ITypeResolver typeResolver)
             && span.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp7_3;
         
         var createInstance = isStackalloc ? $"stackalloc {createArray}" : $"new {Names.SystemNamespace}Span<{span.Source.ElementType}>(new {createArray})";
-        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable, isStackalloc)}{variable.VariableName} = {createInstance};");
+        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = {createInstance};");
         ctx.Code.AppendLines(ctx.BuildTools.OnCreated(ctx, variable));
     }
 

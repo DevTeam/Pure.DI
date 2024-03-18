@@ -32,6 +32,7 @@ public partial class Generator
             .Bind().To<DependencyGraphBuilder>()
             .Bind().To<TypeConstructor>()
             .Bind<IEqualityComparer<string>>().To(_ => StringComparer.InvariantCultureIgnoreCase)
+            .Bind().To<BindingBuilder>()
         
         // Singleton
             .DefaultLifetime(Singleton)
@@ -118,5 +119,6 @@ public partial class Generator
             .Bind().To<TypeResolver>()
             .Bind().To<LogObserver>()
             .Bind().To<Filter>()
+            .Bind("UniqueTags").To<IdGenerator>()
             .Bind().To<IdGenerator>();
 }

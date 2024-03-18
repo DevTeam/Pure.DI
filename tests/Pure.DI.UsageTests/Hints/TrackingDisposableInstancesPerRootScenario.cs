@@ -35,20 +35,6 @@ class Service(IDependency dependency) : IService
     public IDependency Dependency { get; } = dependency;
 }
 
-readonly struct Owned<T>(
-    T value,
-    List<IDisposable> disposables)
-    : IDisposable
-{
-    public T Value { get; } = value;
-
-    public void Dispose()
-    {
-        disposables.Reverse();
-        disposables.ForEach(i => i.Dispose());
-    }
-}
-
 partial class Composition
 {
     private List<IDisposable> _disposables = [];
@@ -59,38 +45,41 @@ partial class Composition
             // when an instance is created
             .Hint(Hint.OnNewInstance, "On")
             
-            // Specifies to call the partial method OnNewInstance
+            // Specifies to call the partial method
             // only for instances with lifetime
             // Transient, PerResolve and PerBlock
-            .Hint(
-                Hint.OnNewInstanceLifetimeRegularExpression,
+            .Hint(Hint.OnNewInstanceLifetimeRegularExpression,
                 "Transient|PerResolve|PerBlock")
             
-            // Specifies to call the partial method OnNewInstance
-            // for instances other than Composition.Owned<T>
-            .Hint(
-                Hint.OnNewInstanceImplementationTypeNameRegularExpression,
-                "^((?!Owned<).)*$")
-            
-            .Bind().To(ctx =>
-            {
-                ctx.Inject(ctx.Tag, out TT value);
-                var disposables = _disposables;
-                _disposables = [];
-                return new Owned<TT>(value, disposables);
-            })
-
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
             .Root<Owned<IService>>("Root");
     
-    partial void OnNewInstance<T>(
-        ref T value,
-        object? tag,
-        Lifetime lifetime)
+    partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime)
     {
-        if (value is not IDisposable disposable) return;
+        if (value is IOwned || value is not IDisposable disposable) return;
         _disposables.Add(disposable);
+    }
+    
+    public interface IOwned;
+    
+    public readonly struct Owned<T>: IDisposable, IOwned
+    {
+        public readonly T Value;
+        private readonly List<IDisposable> _disposable;
+
+        public Owned(T value, Composition composition)
+        {
+            Value = value;
+            _disposable = composition._disposables;
+            composition._disposables = [];
+        }
+
+        public void Dispose()
+        {
+            _disposable.Reverse();
+            _disposable.ForEach(i => i.Dispose());
+        }
     }
 }
 // }

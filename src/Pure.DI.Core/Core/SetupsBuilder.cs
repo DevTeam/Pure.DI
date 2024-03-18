@@ -4,7 +4,7 @@ namespace Pure.DI.Core;
 internal sealed class SetupsBuilder(
     Func<IMetadataSyntaxWalker> metadataSyntaxWalkerFactory,
     ICache<ImmutableArray<byte>, bool> setupCache,
-    IBaseSymbolsProvider baseSymbolsProvider)
+    Func<IBindingBuilder> bindingBuilderFactory)
     : IBuilder<SyntaxUpdate, IEnumerable<MdSetup>>, IMetadataVisitor
 {
     private readonly List<MdSetup> _setups = [];
@@ -15,7 +15,7 @@ internal sealed class SetupsBuilder(
     private readonly List<MdTagAttribute> _tagAttributes = [];
     private readonly List<MdOrdinalAttribute> _ordinalAttributes = [];
     private readonly List<MdUsingDirectives> _usingDirectives = [];
-    private BindingBuilder _bindingBuilder = new(baseSymbolsProvider);
+    private IBindingBuilder _bindingBuilder = bindingBuilderFactory();
     private MdSetup? _setup;
 
     public IEnumerable<MdSetup> Build(SyntaxUpdate update)
@@ -127,6 +127,6 @@ internal sealed class SetupsBuilder(
         _ordinalAttributes.Clear();
         _usingDirectives.Clear();
         _setup = default;
-        _bindingBuilder = new BindingBuilder(baseSymbolsProvider);
+        _bindingBuilder = bindingBuilderFactory();
     }
 }
