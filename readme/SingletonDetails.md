@@ -69,49 +69,49 @@ classDiagram
 ```c#
 partial class Singleton
 {
-  private readonly Singleton _rootM03D18di;
-  private Pure.DI.Benchmarks.Model.Service1 _scopedM03D18di35_Service1;
-  private Pure.DI.Benchmarks.Model.Service4 _scopedM03D18di38_Service4;
+  private readonly Singleton _rootM03D19di;
+  private Pure.DI.Benchmarks.Model.Service1 _scopedM03D19di35_Service1;
+  private Pure.DI.Benchmarks.Model.Service4 _scopedM03D19di38_Service4;
   
   public Singleton()
   {
-    _rootM03D18di = this;
+    _rootM03D19di = this;
   }
   
   internal Singleton(Singleton baseComposition)
   {
-    _rootM03D18di = baseComposition._rootM03D18di;
+    _rootM03D19di = baseComposition._rootM03D19di;
   }
   
   public partial Pure.DI.Benchmarks.Model.CompositionRoot PureDIByCR()
   {
-    if (ReferenceEquals(_scopedM03D18di38_Service4, null))
+    if (ReferenceEquals(_scopedM03D19di38_Service4, null))
     {
-        _scopedM03D18di38_Service4 = new Pure.DI.Benchmarks.Model.Service4();
+        _scopedM03D19di38_Service4 = new Pure.DI.Benchmarks.Model.Service4();
     }
-    if (ReferenceEquals(_scopedM03D18di35_Service1, null))
+    if (ReferenceEquals(_scopedM03D19di35_Service1, null))
     {
-        _scopedM03D18di35_Service1 = new Pure.DI.Benchmarks.Model.Service1(new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4)));
+        _scopedM03D19di35_Service1 = new Pure.DI.Benchmarks.Model.Service1(new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4)));
     }
-    return new Pure.DI.Benchmarks.Model.CompositionRoot(_scopedM03D18di35_Service1, new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4)), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4)), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4)), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D18di38_Service4, _scopedM03D18di38_Service4), _scopedM03D18di38_Service4, _scopedM03D18di38_Service4);
+    return new Pure.DI.Benchmarks.Model.CompositionRoot(_scopedM03D19di35_Service1, new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4)), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4)), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4)), new Pure.DI.Benchmarks.Model.Service3(_scopedM03D19di38_Service4, _scopedM03D19di38_Service4), _scopedM03D19di38_Service4, _scopedM03D19di38_Service4);
   }
   
   public T Resolve<T>()
   {
-    return ResolverM03D18di<T>.Value.Resolve(this);
+    return ResolverM03D19di<T>.Value.Resolve(this);
   }
   
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D18di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D19di<T>.Value.ResolveByTag(this, tag);
   }
   
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D18di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D18di;
+    var index = (int)(_bucketSizeM03D19di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D19di;
     do {
-      ref var pair = ref _bucketsM03D18di[index];
+      ref var pair = ref _bucketsM03D19di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -123,10 +123,10 @@ partial class Singleton
   
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D18di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D18di;
+    var index = (int)(_bucketSizeM03D19di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D19di;
     do {
-      ref var pair = ref _bucketsM03D18di[index];
+      ref var pair = ref _bucketsM03D19di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -196,25 +196,25 @@ partial class Singleton
         "  Singleton ..> CompositionRoot : CompositionRoot PureDIByCR()";
   }
   
-  private readonly static int _bucketSizeM03D18di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Singleton, object>>[] _bucketsM03D18di;
+  private readonly static int _bucketSizeM03D19di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Singleton, object>>[] _bucketsM03D19di;
   
   static Singleton()
   {
-    var valResolverM03D18di_0000 = new ResolverM03D18di_0000();
-    ResolverM03D18di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM03D18di_0000;
-    _bucketsM03D18di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Singleton, object>>.Create(
+    var valResolverM03D19di_0000 = new ResolverM03D19di_0000();
+    ResolverM03D19di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM03D19di_0000;
+    _bucketsM03D19di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Singleton, object>>.Create(
       1,
-      out _bucketSizeM03D18di,
+      out _bucketSizeM03D19di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Singleton, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Singleton, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM03D18di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Singleton, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM03D19di_0000)
       });
   }
   
-  private sealed class ResolverM03D18di<T>: global::Pure.DI.IResolver<Singleton, T>
+  private sealed class ResolverM03D19di<T>: global::Pure.DI.IResolver<Singleton, T>
   {
-    public static global::Pure.DI.IResolver<Singleton, T> Value = new ResolverM03D18di<T>();
+    public static global::Pure.DI.IResolver<Singleton, T> Value = new ResolverM03D19di<T>();
     
     public T Resolve(Singleton composite)
     {
@@ -227,7 +227,7 @@ partial class Singleton
     }
   }
   
-  private sealed class ResolverM03D18di_0000: global::Pure.DI.IResolver<Singleton, Pure.DI.Benchmarks.Model.CompositionRoot>
+  private sealed class ResolverM03D19di_0000: global::Pure.DI.IResolver<Singleton, Pure.DI.Benchmarks.Model.CompositionRoot>
   {
     public Pure.DI.Benchmarks.Model.CompositionRoot Resolve(Singleton composition)
     {

@@ -10,6 +10,7 @@ $d=Tracking disposable instances per a composition root
 // ReSharper disable ArrangeTypeModifiers
 namespace Pure.DI.UsageTests.Hints.TrackingDisposableInstancesPerRootScenario;
 
+using System.Collections.Concurrent;
 using Xunit;
 
 // {
@@ -37,7 +38,7 @@ class Service(IDependency dependency) : IService
 
 partial class Composition
 {
-    private List<IDisposable> _disposables = [];
+    private ConcurrentDictionary<int, List<IDisposable>> _disposables = [];
 
     private void Setup() =>
         DI.Setup(nameof(Composition))
@@ -45,20 +46,20 @@ partial class Composition
             // when an instance is created
             .Hint(Hint.OnNewInstance, "On")
             
-            // Specifies to call the partial method
-            // only for instances with lifetime
-            // Transient, PerResolve and PerBlock
-            .Hint(Hint.OnNewInstanceLifetimeRegularExpression,
-                "Transient|PerResolve|PerBlock")
-            
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
             .Root<Owned<IService>>("Root");
     
     partial void OnNewInstance<T>(ref T value, object? tag, Lifetime lifetime)
     {
-        if (value is IOwned || value is not IDisposable disposable) return;
-        _disposables.Add(disposable);
+        if (value is IOwned || value is not IDisposable disposable
+            || lifetime is Lifetime.Singleton or Lifetime.Scoped)
+        {
+            return;
+        }
+
+        _disposables.GetOrAdd(Environment.CurrentManagedThreadId, _ => [])
+            .Add(disposable);
     }
     
     public interface IOwned;
@@ -71,7 +72,10 @@ partial class Composition
         public Owned(T value, Composition composition)
         {
             Value = value;
-            _disposable = composition._disposables;
+            _disposable = composition._disposables.TryRemove(Environment.CurrentManagedThreadId, out var disposables)
+                ? disposables
+                : [];
+            
             composition._disposables = [];
         }
 
