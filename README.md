@@ -213,6 +213,8 @@ dotnet run
 - [Property injection](readme/property-injection.md)
 - [Default values](readme/default-values.md)
 - [Required properties or fields](readme/required-properties-or-fields.md)
+- [Tracking disposable instances in delegates](readme/tracking-disposable-instances-in-delegates.md)
+- [Tracking disposable instances per a composition root](readme/tracking-disposable-instances-per-a-composition-root.md)
 ### Lifetimes
 - [Singleton](readme/singleton.md)
 - [PerResolve](readme/perresolve.md)
@@ -263,8 +265,6 @@ dotnet run
 - [OnCannotResolve hint](readme/oncannotresolve-hint.md)
 - [OnNewInstance hint](readme/onnewinstance-hint.md)
 - [ToString hint](readme/tostring-hint.md)
-- [Tracking disposable instances](readme/tracking-disposable-instances.md)
-- [Tracking disposable instances per a composition root](readme/tracking-disposable-instances-per-a-composition-root.md)
 - [Check for a root](readme/check-for-a-root.md)
 ### Advanced
 - [Composition root kinds](readme/composition-root-kinds.md)
