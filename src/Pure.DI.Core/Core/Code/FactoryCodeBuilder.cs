@@ -1,5 +1,6 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+// ReSharper disable MergeIntoPattern
 namespace Pure.DI.Core.Code;
 
 internal class FactoryCodeBuilder(
@@ -54,6 +55,17 @@ internal class FactoryCodeBuilder(
         using var resolvers = injections
             .Zip(variable.Args, (injection, argument) => (injection, argument))
             .GetEnumerator();
+
+        var injectionsCtx = ctx;
+        if (variable.IsLazy && variable.Node.Accumulators.Count > 0)
+        {
+            injectionsCtx = injectionsCtx with
+            {
+                Accumulators = injectionsCtx.Accumulators.AddRange(
+                    variable.Node.Accumulators
+                        .Select(accumulator => accumulator with { IsDeclared = false }))
+            };
+        }
         
         var indent = new Indent(0);
         var text = syntaxNode.GetText();
@@ -66,7 +78,7 @@ internal class FactoryCodeBuilder(
                 var (injection, argument) = resolvers.Current;
                 using (code.Indent(indent.Value))
                 {
-                    ctx.StatementBuilder.Build(ctx with { Level = level, Variable = argument.Current, LockIsRequired = lockIsRequired }, argument);
+                    ctx.StatementBuilder.Build(injectionsCtx with { Level = level, Variable = argument.Current, LockIsRequired = lockIsRequired }, argument);
                     code.AppendLine($"{(injection.DeclarationRequired ? "var " : "")}{injection.VariableName} = {ctx.BuildTools.OnInjected(ctx, argument.Current)};");
                 }
             }

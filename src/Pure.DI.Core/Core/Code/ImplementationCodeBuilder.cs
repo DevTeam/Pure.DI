@@ -59,12 +59,12 @@ internal class ImplementationCodeBuilder(
         }
 
         var onCreatedStatements = ctx.BuildTools.OnCreated(ctx, ctx.Variable).ToArray();
-        var hasOnCreatedHandler = ctx.BuildTools.OnCreated(ctx, variable).Any();
+        var hasOnCreatedStatements = ctx.BuildTools.OnCreated(ctx, variable).Any();
         var hasAlternativeInjections = visits.Any();
         var tempVariableInit =
             ctx.DependencyGraph.Source.Hints.IsThreadSafeEnabled
             && ctx.Variable.Node.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock
-            && (hasAlternativeInjections || hasOnCreatedHandler);
+            && (hasAlternativeInjections || hasOnCreatedStatements);
 
         if (tempVariableInit)
         {
@@ -80,7 +80,7 @@ internal class ImplementationCodeBuilder(
         if (variable.Node.Lifetime is not Lifetime.Transient
             || hasAlternativeInjections
             || tempVariableInit
-            || hasOnCreatedHandler)
+            || hasOnCreatedStatements)
         {
             ctx.Code.Append($"{ctx.BuildTools.GetDeclaration(variable)}{ctx.Variable.VariableName} = ");
             ctx.Code.Append(instantiation);

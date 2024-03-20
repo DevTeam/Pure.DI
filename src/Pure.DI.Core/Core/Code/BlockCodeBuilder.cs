@@ -37,6 +37,23 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
                 parent = $"{Names.ParentFieldName}.";
             }
             
+            var accumulators = new List<Accumulator>();
+            var uniqueAccumulators = ctx.Accumulators
+                .Where(accumulator => !accumulator.IsDeclared)
+                .GroupBy(i => i.AccumulatorType, SymbolEqualityComparer.Default)
+                .Select(i => i.First());
+            
+            foreach (var accumulator in uniqueAccumulators)
+            {
+                code.AppendLine($"var {accumulator.Name} = new {accumulator.AccumulatorType}();");
+                accumulators.Add(accumulator with { IsDeclared = true });
+            }
+
+            if (accumulators.Count > 0)
+            {
+                ctx = ctx with { Accumulators = accumulators.ToImmutableArray() };
+            }
+
             if (toCheckExistence)
             {
                 var checkExpression = variable.InstanceType.IsValueType
@@ -62,7 +79,14 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
             
             foreach (var statement in block.Statements)
             {
-                ctx.StatementBuilder.Build(ctx with { Variable = statement.Current, Code = code }, statement);
+                if (block.Current != statement.Current)
+                {
+                    ctx.StatementBuilder.Build(ctx with { Variable = statement.Current, Code = code }, statement);
+                }
+                else
+                {
+                    ctx.StatementBuilder.Build(ctx with { Variable = statement.Current, Code = code }, statement);
+                }
             }
             
             if (variable.Node.Lifetime is Lifetime.Singleton)

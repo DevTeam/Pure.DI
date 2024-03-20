@@ -107,6 +107,7 @@ internal sealed class MetadataBuilder(
         var tagAttributesBuilder = ImmutableArray.CreateBuilder<MdTagAttribute>(2);
         var ordinalAttributesBuilder = ImmutableArray.CreateBuilder<MdOrdinalAttribute>(2);
         var usingDirectives = ImmutableArray.CreateBuilder<MdUsingDirectives>(2);
+        var accumulators = ImmutableArray.CreateBuilder<MdAccumulator>(1);
         var bindingId = 0;
         var comments = new List<string>();
         foreach (var setup in setups)
@@ -133,6 +134,7 @@ internal sealed class MetadataBuilder(
             typeAttributesBuilder.AddRange(setup.TypeAttributes);
             tagAttributesBuilder.AddRange(setup.TagAttributes);
             ordinalAttributesBuilder.AddRange(setup.OrdinalAttributes);
+            accumulators.AddRange(setup.Accumulators);
             foreach (var usingDirective in setup.UsingDirectives)
             {
                 usingDirectives.Add(usingDirective);   
@@ -158,6 +160,7 @@ internal sealed class MetadataBuilder(
             typeAttributesBuilder.ToImmutable(),
             tagAttributesBuilder.ToImmutable(),
             ordinalAttributesBuilder.ToImmutable(),
+            accumulators.ToImmutable(),
             comments);
     }
 }

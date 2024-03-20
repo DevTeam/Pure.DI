@@ -149,6 +149,10 @@ internal class MetadataWalkerBase: IMetadataVisitor
     public virtual void VisitTag(in MdTag tag)
     {
     }
+    
+    public virtual void VisitAccumulator(in MdAccumulator accumulator)
+    {
+    }
 
     public virtual void VisitFinish()
     {

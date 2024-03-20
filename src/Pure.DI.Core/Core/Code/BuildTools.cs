@@ -2,7 +2,11 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal class BuildTools(IFilter filter, ITypeResolver typeResolver) : IBuildTools
+internal class BuildTools(
+    IFilter filter,
+    ITypeResolver typeResolver,
+    IBaseSymbolsProvider baseSymbolsProvider)
+    : IBuildTools
 {
     public void AddPureHeader(LinesBuilder code)
     {
@@ -42,9 +46,19 @@ internal class BuildTools(IFilter filter, ITypeResolver typeResolver) : IBuildTo
             return Array.Empty<Line>();
         }
 
+        var baseTypes = 
+            baseSymbolsProvider.GetBaseSymbols(variable.InstanceType)
+                .Concat(Enumerable.Repeat(variable.InstanceType, 1))
+                .ToImmutableHashSet(SymbolEqualityComparer.Default);
+
+        var lines = ctx.Accumulators
+            .Where(i => baseTypes.Contains(i.Type))
+            .Select(i => new Line(0, $"{i.Name}.Add({variable.VariableName});"))
+            .ToList();
+
         if (!ctx.DependencyGraph.Source.Hints.IsOnNewInstanceEnabled)
         {
-            return Array.Empty<Line>();
+            return lines;
         }
 
         if (!filter.IsMeetRegularExpression(
@@ -53,11 +67,12 @@ internal class BuildTools(IFilter filter, ITypeResolver typeResolver) : IBuildTo
                 (Hint.OnNewInstanceTagRegularExpression, variable.Injection.Tag.ValueToString()),
                 (Hint.OnNewInstanceLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
         {
-            return Array.Empty<Line>();
+            return lines;
         }
 
         var tag = GetTag(ctx, variable);
-        return [new Line(0, $"{Names.OnNewInstanceMethodName}<{typeResolver.Resolve(variable.InstanceType)}>(ref {variable.VariableName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})" + ";")];
+        lines.Insert(0, new Line(0, $"{Names.OnNewInstanceMethodName}<{typeResolver.Resolve(variable.InstanceType)}>(ref {variable.VariableName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()});"));
+        return lines;
     }
 
     private static object? GetTag(BuildContext ctx, Variable variable)

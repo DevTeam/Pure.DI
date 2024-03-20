@@ -15,6 +15,7 @@ internal sealed class SetupsBuilder(
     private readonly List<MdTagAttribute> _tagAttributes = [];
     private readonly List<MdOrdinalAttribute> _ordinalAttributes = [];
     private readonly List<MdUsingDirectives> _usingDirectives = [];
+    private readonly List<MdAccumulator> _accumulators = [];
     private IBindingBuilder _bindingBuilder = bindingBuilderFactory();
     private MdSetup? _setup;
 
@@ -94,12 +95,13 @@ internal sealed class SetupsBuilder(
 
     public void VisitTag(in MdTag tag) => _bindingBuilder.AddTag(tag);
 
+    public void VisitAccumulator(in MdAccumulator accumulator) => 
+        _accumulators.Add(accumulator);
+
     public void VisitFinish() => FinishSetup();
 
-    private void FinishBinding()
-    {
+    private void FinishBinding() => 
         _bindings.Add(_bindingBuilder.Build(_setup!));
-    }
 
     private void FinishSetup()
     {
@@ -117,7 +119,8 @@ internal sealed class SetupsBuilder(
                 TypeAttributes = _typeAttributes.ToImmutableArray(),
                 TagAttributes = _tagAttributes.ToImmutableArray(),
                 OrdinalAttributes = _ordinalAttributes.ToImmutableArray(),
-                UsingDirectives = _usingDirectives.ToImmutableArray()
+                UsingDirectives = _usingDirectives.ToImmutableArray(),
+                Accumulators = _accumulators.ToImmutableArray()
         });
             
         _bindings.Clear();
@@ -126,6 +129,7 @@ internal sealed class SetupsBuilder(
         _typeAttributes.Clear();
         _ordinalAttributes.Clear();
         _usingDirectives.Clear();
+        _accumulators.Clear();
         _setup = default;
         _bindingBuilder = bindingBuilderFactory();
     }

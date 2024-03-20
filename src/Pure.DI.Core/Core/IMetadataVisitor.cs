@@ -35,5 +35,7 @@ internal interface IMetadataVisitor
 
     void VisitTag(in MdTag tag);
 
+    void VisitAccumulator(in MdAccumulator accumulator);
+
     void VisitFinish();
 }

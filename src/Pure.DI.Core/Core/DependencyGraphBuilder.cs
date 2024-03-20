@@ -51,6 +51,12 @@ internal sealed class DependencyGraphBuilder(
             }
         }
 
+        var accumulators = new Dictionary<AccumulatorKey, MdAccumulator>();
+        foreach (var accumulator in setup.Accumulators)
+        {
+            accumulators[new AccumulatorKey(accumulator.AccumulatorType, accumulator.Lifetime)] = accumulator;
+        }
+        
         var processed = new HashSet<ProcessingNode>();
         var notProcessed = new HashSet<ProcessingNode>();
         var edgesMap = new Dictionary<ProcessingNode, List<Dependency>>();
@@ -67,6 +73,32 @@ internal sealed class DependencyGraphBuilder(
                     {
                         continue;
                     }
+                }
+
+                if (accumulators.TryGetValue(new AccumulatorKey(injection.Type, node.Node.Lifetime), out var accumulator))
+                {
+                    var accumulatorBinding = new MdBinding(
+                        ++maxId,
+                        targetNode.Binding.Source,
+                        setup,
+                        targetNode.Binding.SemanticModel,
+                        ImmutableArray.Create(new MdContract(targetNode.Binding.SemanticModel, accumulator.Source, accumulator.AccumulatorType, ImmutableArray<MdTag>.Empty)),
+                        ImmutableArray<MdTag>.Empty,
+                        new MdLifetime(targetNode.Binding.SemanticModel, accumulator.Source, Lifetime.Transient),
+                        default,
+                        default,
+                        default,
+                        new MdConstruct(
+                            targetNode.Binding.SemanticModel,
+                            targetNode.Binding.Source,
+                            accumulator.AccumulatorType,
+                            accumulator.Type,
+                            MdConstructKind.Accumulator,
+                            ImmutableArray<MdContract>.Empty, 
+                            hasExplicitDefaultValue,
+                            explicitDefaultValue));
+                    
+                    return CreateNodes(setup, accumulatorBinding);
                 }
 
                 switch (injection.Type)
@@ -122,8 +154,8 @@ internal sealed class DependencyGraphBuilder(
                             var lifetime = constructKind == MdConstructKind.Enumerable ? Lifetime.PerBlock : Lifetime.Transient;
                             if (constructKind.HasValue)
                             {
-                                var enumerableBinding = CreateConstructBinding(setup, targetNode, injection, constructType, default, lifetime, ++maxId, constructKind.Value, false, default);
-                                return CreateNodes(setup, enumerableBinding);
+                                var constructBinding = CreateConstructBinding(setup, targetNode, injection, constructType, default, lifetime, ++maxId, constructKind.Value, false, default);
+                                return CreateNodes(setup, constructBinding);
                             }
                         }
                         
@@ -478,5 +510,31 @@ internal sealed class DependencyGraphBuilder(
     {
         var newSetup = setup with { Roots = ImmutableArray<MdRoot>.Empty, Bindings = ImmutableArray.Create(binding) };
         return dependencyNodeBuilders.SelectMany(builder => builder.Build(newSetup));
+    }
+
+    private readonly struct AccumulatorKey
+    {
+        private readonly ITypeSymbol _type;
+        private readonly Lifetime _lifetime;
+
+        public AccumulatorKey(ITypeSymbol type, Lifetime lifetime)
+        {
+            _type = type;
+            _lifetime = lifetime;
+        }
+
+        public override bool Equals(object? obj) => 
+            obj is AccumulatorKey other && Equals(other);
+
+        private bool Equals(AccumulatorKey other) => 
+            SymbolEqualityComparer.Default.Equals(_type, other._type) && _lifetime == other._lifetime;
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (SymbolEqualityComparer.Default.GetHashCode(_type) * 397) ^ (int)_lifetime;
+            }
+        }
     }
 }

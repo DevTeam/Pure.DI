@@ -122,6 +122,7 @@ internal class ApiInvocationProcessor(
                                 ImmutableArray<MdTypeAttribute>.Empty,
                                 ImmutableArray<MdTagAttribute>.Empty,
                                 ImmutableArray<MdOrdinalAttribute>.Empty,
+                                ImmutableArray<MdAccumulator>.Empty,
                                 comments.FilterHints(invocationComments).ToList()));
                         break;
                         
@@ -232,6 +233,17 @@ internal class ApiInvocationProcessor(
                         if (genericName.TypeArgumentList.Arguments is [{ } ordinalAttributeType])
                         {
                             metadataVisitor.VisitOrdinalAttribute(new MdOrdinalAttribute(semanticModel, invocation.ArgumentList, semanticModel.GetTypeSymbol<ITypeSymbol>(ordinalAttributeType, cancellationToken), BuildConstantArgs<object>(semanticModel, invocation.ArgumentList.Arguments) is [int positionVal] ? positionVal : 0));
+                        }
+
+                        break;
+                    
+                    case nameof(IConfiguration.Accumulate):
+                        if (genericName.TypeArgumentList.Arguments is [var typeSyntax, var accumulatorTypeSyntax] 
+                            && arguments.GetArgs(invocation.ArgumentList, "lifetime") is [{ Expression: {} lifetimeArgExpression }])
+                        {
+                            var typeSymbol = semanticModel.GetTypeSymbol<INamedTypeSymbol>(typeSyntax, cancellationToken);
+                            var accumulatorTypeSymbol = semanticModel.GetTypeSymbol<INamedTypeSymbol>(accumulatorTypeSyntax, cancellationToken);
+                            metadataVisitor.VisitAccumulator(new MdAccumulator(semanticModel, invocation, typeSymbol, accumulatorTypeSymbol, semanticModel.GetConstantValue<Lifetime>(lifetimeArgExpression)));
                         }
 
                         break;

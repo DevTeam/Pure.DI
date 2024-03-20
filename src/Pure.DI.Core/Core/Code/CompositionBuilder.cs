@@ -31,7 +31,8 @@ internal class CompositionBuilder(
                 new LinesBuilder(),
                 new LinesBuilder(),
                 root.Injection.Tag != MdTag.ContextTag ? root.Injection.Tag : default,
-                default);
+                default,
+                root.Node.Accumulators.ToImmutableArray());
 
             foreach (var perResolveVar in map.GetPerResolves())
             {

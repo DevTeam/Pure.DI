@@ -1,15 +1,80 @@
 ﻿namespace Pure.DI.IntegrationTests;
 
-public class ShroedingersCatTests
+public class AccumulatorTests
 {
     [Fact]
-    public async Task ShroedingersCatScenario()
+    public async Task ShouldSupportAccumulator()
     {
         // Given
 
         // When
         var result = await """
 using System;
+using System.Collections.Generic;
+using Pure.DI;
+
+namespace Sample
+{
+    interface IDependency {}
+
+    class Dependency: IDependency {}
+
+    interface IService
+    {
+        IDependency Dep { get; }
+    }
+
+    class Service: IService 
+    {
+        public Service(IDependency dep)
+        { 
+            Dep = dep;           
+        }
+
+        public IDependency Dep { get; }
+    }
+    
+    class DependencyAccumulator: List<IDependency>
+    {
+    }
+
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind<IDependency>().To(ctx => new Dependency())
+                .Bind<IService>().To<Service>()
+                .Accumulate<IDependency, DependencyAccumulator>(Lifetime.Transient)    
+                .Root<(IService service, DependencyAccumulator dependencies)>("Service");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            var root = composition.Service;
+            var service = root.service;
+        }
+    }                
+}
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+    }
+    
+    [Fact]
+    public async Task ShroedingersCatScenarioWhenAccumulator()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using System.Collections.Generic;
 using Pure.DI;
 using static Pure.DI.Lifetime;
 
@@ -27,7 +92,16 @@ namespace Sample
 
     class CardboardBox<T> : IBox<T>
     {
-        public CardboardBox(T content) => Content = content;
+        public CardboardBox(Func<(T value, Accumulator acc)> contentFactory)
+        {
+            var content = contentFactory();
+            foreach(var dep in content.acc)
+            {
+                Console.WriteLine(dep);
+            }
+            
+            Content = content.value;
+        }
 
         public T Content { get; }
 
@@ -46,6 +120,8 @@ namespace Sample
 
         public override string ToString() => $"{State} cat";
     }
+    
+    class Accumulator: List<object> { }
 
     // Let's glue all together
 
@@ -55,6 +131,8 @@ namespace Sample
         {
             // FormatCode = On
             DI.Setup(nameof(Composition))
+                .Accumulate<object, Accumulator>(Transient)
+                .Accumulate<object, Accumulator>(Singleton)
                 // Models a random subatomic event that may or may not occur
                 .Bind<Random>().As(Singleton).To<Random>()
                 // Represents a quantum superposition of 2 states: Alive or Dead
@@ -67,7 +145,7 @@ namespace Sample
                 // Represents a cardboard box with any content
                 .Bind<IBox<TT>>().To<CardboardBox<TT>>()                
                 // Composition Root
-                .Root<Program>("Root");
+                .Root<(Program program, Accumulator)>("Root");
         }
     }
 
@@ -77,13 +155,10 @@ namespace Sample
 
         internal Program(IBox<ICat> box) => _box = box;
 
-        private void Run() => Console.WriteLine(_box);
-
         public static void Main()
         {
             var composition = new Composition();            
-            composition.Root.Run();
-            Console.WriteLine(composition);
+            var root = composition.Root;
         }
     }                
 }
@@ -96,7 +171,6 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        (result.StdOut.Contains("[Dead cat]") || result.StdOut.Contains("[Alive cat]")).ShouldBeTrue(result);
-        result.GeneratedCode.Contains("= new System.Random();").ShouldBeTrue();
+        result.StdOut.Length.ShouldBe(3);
     }
 }

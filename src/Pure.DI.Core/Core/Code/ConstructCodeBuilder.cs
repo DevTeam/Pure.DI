@@ -35,12 +35,15 @@ internal class ConstructCodeBuilder(ITypeResolver typeResolver)
             case MdConstructKind.AsyncEnumerable:
                 BuildEnumerable(ctx, construct,"async ");
                 break;
+            
+            case MdConstructKind.Accumulator:
+                break;
 
             default:
                 throw new ArgumentOutOfRangeException();
         }
     }
-
+    
     private void BuildEnumerable(BuildContext ctx, in DpConstruct enumerable, string methodPrefix = "")
     {
         var variable = ctx.Variable;

@@ -9,5 +9,6 @@ internal enum MdConstructKind
     Composition,
     OnCannotResolve,
     ExplicitDefaultValue,
-    AsyncEnumerable
+    AsyncEnumerable,
+    Accumulator
 }

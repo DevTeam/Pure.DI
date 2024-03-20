@@ -1159,5 +1159,4 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.GeneratedCode.Split(Environment.NewLine).Count(i => i.Contains(" = new Sample.Dependency2();")).ShouldBe(2);
     }
-    
 }

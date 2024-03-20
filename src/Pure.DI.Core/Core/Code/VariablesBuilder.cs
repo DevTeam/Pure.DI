@@ -36,19 +36,42 @@ internal class VariablesBuilder(CancellationToken cancellationToken)
                     
                     case Variable variable:
                     {
-                        if (!graph.TryGetInEdges(variable.Node, out var dependencies)
-                            || dependencies.Count == 0)
+                        var isAccumulator = IsAccumulator(variable, out var construct);
+                        IReadOnlyCollection<Dependency> dependencies = Array.Empty<Dependency>();
+                        if (!isAccumulator)
                         {
-                            continue;
+                            if (!graph.TryGetInEdges(variable.Node, out dependencies)
+                                || dependencies.Count == 0)
+                            {
+                                continue;
+                            }
                         }
 
                         var pathIds = new HashSet<int>();
                         var hasLazy = false;
+                        ICollection<Accumulator>? accumulators = default;
                         foreach (var pathItem in currentStatement.GetPath())
                         {
                             var pathVar = pathItem.Current;
                             pathIds.Add(pathVar.Node.Binding.Id);
-                            hasLazy |= pathVar.IsLazy;
+                            if (!pathVar.IsLazy)
+                            {
+                                continue;
+                            }
+                            
+                            hasLazy = true;
+                            if (accumulators != default)
+                            {
+                                continue;
+                            }
+
+                            accumulators = pathVar.Node.Accumulators;
+                        }
+
+                        accumulators ??= rootNode.Accumulators;
+                        if (isAccumulator)
+                        {
+                            accumulators.Add(new Accumulator(GetAccumulatorName(variable), false, construct.ElementType, construct.Type)); 
                         }
 
                         foreach (var (isDepResolved, depNode, depInjection, _) in dependencies)
@@ -113,7 +136,22 @@ internal class VariablesBuilder(CancellationToken cancellationToken)
 
         return rootBlock;
     }
-    
+
+    private static bool IsAccumulator(Variable variable, out MdConstruct mdConstruct)
+    {
+        if(variable.Node.Construct?.Source is { Kind: MdConstructKind.Accumulator } construct)
+        {
+            mdConstruct = construct;
+            return true;
+        }
+
+        mdConstruct = default;
+        return false;
+    }
+
+    private static string GetAccumulatorName(Variable variable) => 
+        $"accumulator{Names.Salt}{variable.Node.Binding.Id}";
+
     private static Variable GetVariable(
         Block parentBlock,
         IDictionary<MdBinding, Variable> map,
@@ -129,8 +167,16 @@ internal class VariablesBuilder(CancellationToken cancellationToken)
             switch (node.Lifetime)
             {
                 case Lifetime.Transient:
-                    return new Variable(parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), node.IsLazy(), hasCycle);
-                
+                {
+                    var transientVariable = new Variable(parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), node.IsLazy(), hasCycle);
+                    if (node.Construct?.Source.Kind == MdConstructKind.Accumulator)
+                    {
+                        transientVariable.VariableCode = GetAccumulatorName(transientVariable);
+                    }
+
+                    return transientVariable;
+                }
+
                 case Lifetime.PerBlock:
                 {
                     var perBlockKey = (node.Binding, parentBlock.Id);

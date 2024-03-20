@@ -1087,6 +1087,70 @@ namespace Pure.DI
         /// </example>
         Type
     }
+
+    /// <summary>
+    /// Gives the opportunity to collect disposable objects.
+    /// </summary>
+    public class Owned : global::System.IDisposable
+    {
+        private bool _isDisposed;
+        private global::System.Collections.Generic.List<global::System.IDisposable> _disposables 
+            = new global::System.Collections.Generic.List<global::System.IDisposable>();
+
+        /// <summary>
+        /// Adds a disposable instance.
+        /// </summary>
+        /// <param name="disposable">The disposable instance.</param>
+        [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
+        public void Add(global::System.IDisposable disposable)
+        {
+            lock (_disposables)
+            {
+                _disposables.Add(disposable);
+            }
+        }
+
+        /// <inheritdoc />
+        [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)512)]
+        public void Dispose()
+        {
+            global::System.Collections.Generic.List<global::System.IDisposable> disposables;
+            lock (_disposables)
+            {
+                if (_isDisposed)
+                {
+                    return;
+                }
+
+                _isDisposed = true;
+                disposables = _disposables;
+            }
+
+            disposables.Reverse();
+            global::System.Collections.Generic.List<global::System.Exception> errors = null;
+            foreach (var disposable in disposables)
+            {
+                try
+                {
+                    disposable.Dispose();
+                }
+                catch (global::System.Exception error)
+                {
+                    if (errors == null)
+                    {
+                        errors = new global::System.Collections.Generic.List<global::System.Exception>();
+                    }
+                    
+                    errors.Add(error);
+                }
+            }
+
+            if (errors != null)
+            {
+                throw new global::System.AggregateException(errors);
+            }
+        }
+    }
     
     /// <summary>
     /// An API for a Dependency Injection setup.
@@ -1374,6 +1438,9 @@ namespace Pure.DI
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="Pure.DI.Hint"/>
         IConfiguration Hint(Hint hint, string value);
+
+        IConfiguration Accumulate<T, TAccumulator>(Lifetime lifetime)
+            where TAccumulator: new();
     }
 
     /// <summary>
@@ -1926,6 +1993,14 @@ namespace Pure.DI
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Hint(Hint hint, string value)
+            {
+                return Configuration.Shared;
+            }
+
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
+            public IConfiguration Accumulate<T, TAccumulator>(Lifetime lifetime)
+                where TAccumulator: new()
             {
                 return Configuration.Shared;
             }

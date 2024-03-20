@@ -9,4 +9,5 @@ internal record BuildContext(
     LinesBuilder Code,
     LinesBuilder LocalFunctionsCode,
     object? ContextTag,
-    bool? LockIsRequired);
+    bool? LockIsRequired,
+    ImmutableArray<Accumulator> Accumulators);
