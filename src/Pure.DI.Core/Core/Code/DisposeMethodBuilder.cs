@@ -1,7 +1,8 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal sealed class DisposeMethodBuilder: IBuilder<CompositionCode, CompositionCode>
+internal sealed class DisposeMethodBuilder()
+    : IBuilder<CompositionCode, CompositionCode>
 {
     public CompositionCode Build(CompositionCode composition)
     {
@@ -76,6 +77,12 @@ internal sealed class DisposeMethodBuilder: IBuilder<CompositionCode, Compositio
         membersCounter++;
         
         code.AppendLine();
+        code.AppendLine("/// <summary>");
+        code.AppendLine("/// Implement this partial method to handle the exception on disposing.");
+        code.AppendLine("/// <summary>");
+        code.AppendLine("/// <param name=\"disposableInstance\">The disposable instance.</param>");
+        code.AppendLine("/// <param name=\"exception\">Exception occurring during disposal.</param>");
+        code.AppendLine("/// <typeparam name=\"T\">The actual type of instance being disposed of.</typeparam>");
         code.AppendLine($"partial void {Names.OnDisposeExceptionMethodName}<T>(T disposableInstance, Exception exception) where T : {Names.IDisposableInterfaceName};");
         code.AppendLine();
         membersCounter++;

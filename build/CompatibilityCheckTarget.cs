@@ -51,19 +51,19 @@ internal class CompatibilityCheckTarget(
             "netcoreapp2.0",
             "netcoreapp1.1",
             "netcoreapp1.0",
-            "net48",
-            "net45",
-            "net35",
-            "net20",
             "netstandard1.3",
             "netstandard1.4",
             "netstandard1.5",
             "netstandard1.6",
             "netstandard2.0",
-            "netstandard2.1"
+            "netstandard2.1",
+            "net48",
+            "net45",
+            "net35",
+            "net20"
         ];
 
-        foreach (var framework in frameworks)
+        foreach (var framework in frameworks.Reverse())
         {
             await CompatibilityCheckAsync(generatorPackage.Path, framework, cancellationToken);
         }

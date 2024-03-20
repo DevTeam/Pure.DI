@@ -1091,9 +1091,8 @@ namespace Pure.DI
     /// <summary>
     /// Gives the opportunity to collect disposable objects.
     /// </summary>
-    public class Owned : global::System.IDisposable
+    public partial class Owned : global::System.IDisposable
     {
-        private bool _isDisposed;
         private global::System.Collections.Generic.List<global::System.IDisposable> _disposables 
             = new global::System.Collections.Generic.List<global::System.IDisposable>();
 
@@ -1117,39 +1116,32 @@ namespace Pure.DI
             global::System.Collections.Generic.List<global::System.IDisposable> disposables;
             lock (_disposables)
             {
-                if (_isDisposed)
-                {
-                    return;
-                }
-
-                _isDisposed = true;
                 disposables = _disposables;
+                _disposables = new global::System.Collections.Generic.List<global::System.IDisposable>();
             }
 
             disposables.Reverse();
-            global::System.Collections.Generic.List<global::System.Exception> errors = null;
             foreach (var disposable in disposables)
             {
                 try
                 {
                     disposable.Dispose();
                 }
-                catch (global::System.Exception error)
+                catch (global::System.Exception exception)
                 {
-                    if (errors == null)
-                    {
-                        errors = new global::System.Collections.Generic.List<global::System.Exception>();
-                    }
-                    
-                    errors.Add(error);
+                    OnDisposeException(disposable, exception);
                 }
             }
-
-            if (errors != null)
-            {
-                throw new global::System.AggregateException(errors);
-            }
         }
+
+        /// <summary>
+        /// Implement this partial method to handle the exception on disposing.
+        /// </summary>
+        /// <param name="disposableInstance">The disposable instance.</param>
+        /// <param name="exception">Exception occurring during disposal.</param>
+        /// <typeparam name="T">The actual type of instance being disposed of.</typeparam>
+        partial void OnDisposeException<T>(T disposableInstance, Exception exception)
+            where T : global::System.IDisposable;
     }
     
     /// <summary>
