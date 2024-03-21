@@ -83,60 +83,60 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM03D20di;
-  private readonly object _lockM03D20di;
+  private readonly Composition _rootM03D21di;
+  private readonly object _lockM03D21di;
   
   public Composition()
   {
-    _rootM03D20di = this;
-    _lockM03D20di = new object();
+    _rootM03D21di = this;
+    _lockM03D21di = new object();
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D20di = baseComposition._rootM03D20di;
-    _lockM03D20di = _rootM03D20di._lockM03D20di;
+    _rootM03D21di = baseComposition._rootM03D21di;
+    _lockM03D21di = _rootM03D21di._lockM03D21di;
   }
   
   public Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service Root
   {
     get
     {
-      var perResolveM03D20di40_Func = default(System.Func<(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep4)>);
-      perResolveM03D20di40_Func = new global::System.Func<(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep4)>(
+      var perResolveM03D21di42_Func = default(System.Func<(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep4)>);
+      perResolveM03D21di42_Func = new global::System.Func<(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep4)>(
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
       () =>
       {
-          Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency perBlockM03D20di4_Dependency = new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency();
-          var factory_M03D20di1 = (perBlockM03D20di4_Dependency, perBlockM03D20di4_Dependency);
-          return factory_M03D20di1;
+          Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency perBlockM03D21di4_Dependency = new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency();
+          var factory_M03D21di1 = (perBlockM03D21di4_Dependency, perBlockM03D21di4_Dependency);
+          return factory_M03D21di1;
       });
-      System.Lazy<(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep4)> transientM03D20di2_Lazy;
+      System.Lazy<(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep4)> transientM03D21di2_Lazy;
       {
-          var factory_M03D20di2 = perResolveM03D20di40_Func;
-          transientM03D20di2_Lazy = new global::System.Lazy<(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep4)>(factory_M03D20di2, true);
+          var factory_M03D21di2 = perResolveM03D21di42_Func;
+          transientM03D21di2_Lazy = new global::System.Lazy<(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.IDependency dep4)>(factory_M03D21di2, true);
       }
-      Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency perBlockM03D20di1_Dependency = new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency();
-      return new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service(perBlockM03D20di1_Dependency, perBlockM03D20di1_Dependency, transientM03D20di2_Lazy);
+      Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency perBlockM03D21di1_Dependency = new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Dependency();
+      return new Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service(perBlockM03D21di1_Dependency, perBlockM03D21di1_Dependency, transientM03D21di2_Lazy);
     }
   }
   
   public T Resolve<T>()
   {
-    return ResolverM03D20di<T>.Value.Resolve(this);
+    return ResolverM03D21di<T>.Value.Resolve(this);
   }
   
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D20di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D21di<T>.Value.ResolveByTag(this, tag);
   }
   
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D20di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D20di;
+    var index = (int)(_bucketSizeM03D21di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D21di;
     do {
-      ref var pair = ref _bucketsM03D20di[index];
+      ref var pair = ref _bucketsM03D21di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -148,10 +148,10 @@ partial class Composition
   
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D20di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D20di;
+    var index = (int)(_bucketSizeM03D21di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D21di;
     do {
-      ref var pair = ref _bucketsM03D20di[index];
+      ref var pair = ref _bucketsM03D21di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -197,25 +197,25 @@ partial class Composition
         "  FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ *--  ValueTupleᐸIDependencyˏIDependencyᐳ : ValueTupleᐸIDependencyˏIDependencyᐳ";
   }
   
-  private readonly static int _bucketSizeM03D20di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D20di;
+  private readonly static int _bucketSizeM03D21di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D21di;
   
   static Composition()
   {
-    var valResolverM03D20di_0000 = new ResolverM03D20di_0000();
-    ResolverM03D20di<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service>.Value = valResolverM03D20di_0000;
-    _bucketsM03D20di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM03D21di_0000 = new ResolverM03D21di_0000();
+    ResolverM03D21di<Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service>.Value = valResolverM03D21di_0000;
+    _bucketsM03D21di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM03D20di,
+      out _bucketSizeM03D21di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service), valResolverM03D20di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service), valResolverM03D21di_0000)
       });
   }
   
-  private sealed class ResolverM03D20di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM03D21di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D20di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D21di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -228,7 +228,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D20di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service>
+  private sealed class ResolverM03D21di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service>
   {
     public Pure.DI.UsageTests.Lifetimes.PerBlockScenario.Service Resolve(Composition composition)
     {

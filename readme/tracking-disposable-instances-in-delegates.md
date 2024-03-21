@@ -20,14 +20,14 @@ interface IService
     public IDependency Dependency { get; }
 }
 
-class Service(Func<(IDependency dependency, Owned owned)> dependencyFactory)
+class Service(Func<Owned<IDependency>> dependencyFactory)
     : IService, IDisposable
 {
-    private readonly (IDependency value, Owned owned) _dependency = dependencyFactory();
+    private readonly Owned<IDependency> _dependency = dependencyFactory();
 
-    public IDependency Dependency => _dependency.value;
+    public IDependency Dependency => _dependency.Value;
 
-    public void Dispose() => _dependency.owned.Dispose();
+    public void Dispose() => _dependency.Dispose();
 }
 
 partial class Composition
@@ -40,7 +40,6 @@ partial class Composition
 }
 
 var composition = new Composition();
-
 var root1 = composition.Root;
 var root2 = composition.Root;
         
@@ -74,26 +73,24 @@ classDiagram
     + object Resolve(Type type, object? tag)
   }
   class Owned
-  class ValueTupleᐸIDependencyˏOwnedᐳ {
-    +ValueTuple(IDependency item1, Owned item2)
-  }
   class Service {
-    +Service(FuncᐸValueTupleᐸIDependencyˏOwnedᐳᐳ dependencyFactory)
+    +Service(FuncᐸOwnedᐸIDependencyᐳᐳ dependencyFactory)
   }
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
   }
-  class FuncᐸValueTupleᐸIDependencyˏOwnedᐳᐳ
+  class FuncᐸOwnedᐸIDependencyᐳᐳ
+  class OwnedᐸIDependencyᐳ
   class IDependency {
     <<abstract>>
   }
-  ValueTupleᐸIDependencyˏOwnedᐳ *--  Dependency : IDependency
-  ValueTupleᐸIDependencyˏOwnedᐳ *--  Owned : Owned
-  Service o--  "PerResolve" FuncᐸValueTupleᐸIDependencyˏOwnedᐳᐳ : FuncᐸValueTupleᐸIDependencyˏOwnedᐳᐳ
-  Service o--  "PerResolve" FuncᐸValueTupleᐸIDependencyˏOwnedᐳᐳ : FuncᐸValueTupleᐸIDependencyˏOwnedᐳᐳ
+  Service o--  "PerResolve" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
+  Service o--  "PerResolve" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
   Composition ..> Service : Service Root
-  FuncᐸValueTupleᐸIDependencyˏOwnedᐳᐳ *--  ValueTupleᐸIDependencyˏOwnedᐳ : ValueTupleᐸIDependencyˏOwnedᐳ
+  FuncᐸOwnedᐸIDependencyᐳᐳ o--  "PerBlock" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ
+  OwnedᐸIDependencyᐳ *--  Owned : Owned
+  OwnedᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 
 </details>
@@ -104,56 +101,63 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM03D20di;
-  private readonly object _lockM03D20di;
+  private readonly Composition _rootM03D21di;
+  private readonly object _lockM03D21di;
   
   public Composition()
   {
-    _rootM03D20di = this;
-    _lockM03D20di = new object();
+    _rootM03D21di = this;
+    _lockM03D21di = new object();
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D20di = baseComposition._rootM03D20di;
-    _lockM03D20di = _rootM03D20di._lockM03D20di;
+    _rootM03D21di = baseComposition._rootM03D21di;
+    _lockM03D21di = _rootM03D21di._lockM03D21di;
   }
   
   public Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.Service Root
   {
     get
     {
-      var perResolveM03D20di41_Func = default(System.Func<(Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.IDependency dependency, Pure.DI.Owned owned)>);
-      perResolveM03D20di41_Func = new global::System.Func<(Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.IDependency dependency, Pure.DI.Owned owned)>(
+      var perResolveM03D21di43_Func = default(System.Func<Pure.DI.Owned<Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.IDependency>>);
+      perResolveM03D21di43_Func = new global::System.Func<Pure.DI.Owned<Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.IDependency>>(
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
       () =>
       {
-          var accumulatorM03D20di40 = new Pure.DI.Owned();
-          Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.Dependency transientM03D20di2_Dependency = new Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.Dependency();
-          accumulatorM03D20di40.Add(transientM03D20di2_Dependency);
-          var factory_M03D20di1 = (transientM03D20di2_Dependency, accumulatorM03D20di40);
-          return factory_M03D20di1;
+          var accumulatorM03D21di42 = new Pure.DI.Owned();
+          Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.Dependency transientM03D21di3_Dependency = new Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.Dependency();
+          accumulatorM03D21di42.Add(transientM03D21di3_Dependency);
+          Pure.DI.Owned<Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.IDependency> perBlockM03D21di1_Owned;
+          {
+              var owned_M03D21di2 = accumulatorM03D21di42;
+              var value_M03D21di3 = transientM03D21di3_Dependency;
+              perBlockM03D21di1_Owned = new Owned<Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.IDependency>(value_M03D21di3, owned_M03D21di2);
+          }
+          accumulatorM03D21di42.Add(perBlockM03D21di1_Owned);
+          var factory_M03D21di1 = perBlockM03D21di1_Owned;
+          return factory_M03D21di1;
       });
-      return new Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.Service(perResolveM03D20di41_Func);
+      return new Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.Service(perResolveM03D21di43_Func);
     }
   }
   
   public T Resolve<T>()
   {
-    return ResolverM03D20di<T>.Value.Resolve(this);
+    return ResolverM03D21di<T>.Value.Resolve(this);
   }
   
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D20di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D21di<T>.Value.ResolveByTag(this, tag);
   }
   
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D20di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D20di;
+    var index = (int)(_bucketSizeM03D21di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D21di;
     do {
-      ref var pair = ref _bucketsM03D20di[index];
+      ref var pair = ref _bucketsM03D21di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -165,10 +169,10 @@ partial class Composition
   
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D20di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D20di;
+    var index = (int)(_bucketSizeM03D21di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D21di;
     do {
-      ref var pair = ref _bucketsM03D20di[index];
+      ref var pair = ref _bucketsM03D21di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -190,47 +194,45 @@ partial class Composition
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  class Owned\n" +
-        "  class ValueTupleᐸIDependencyˏOwnedᐳ {\n" +
-          "    +ValueTuple(IDependency item1, Owned item2)\n" +
-        "  }\n" +
         "  class Service {\n" +
-          "    +Service(FuncᐸValueTupleᐸIDependencyˏOwnedᐳᐳ dependencyFactory)\n" +
+          "    +Service(FuncᐸOwnedᐸIDependencyᐳᐳ dependencyFactory)\n" +
         "  }\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  class FuncᐸValueTupleᐸIDependencyˏOwnedᐳᐳ\n" +
+        "  class FuncᐸOwnedᐸIDependencyᐳᐳ\n" +
+        "  class OwnedᐸIDependencyᐳ\n" +
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  ValueTupleᐸIDependencyˏOwnedᐳ *--  Dependency : IDependency\n" +
-        "  ValueTupleᐸIDependencyˏOwnedᐳ *--  Owned : Owned\n" +
-        "  Service o--  \"PerResolve\" FuncᐸValueTupleᐸIDependencyˏOwnedᐳᐳ : FuncᐸValueTupleᐸIDependencyˏOwnedᐳᐳ\n" +
-        "  Service o--  \"PerResolve\" FuncᐸValueTupleᐸIDependencyˏOwnedᐳᐳ : FuncᐸValueTupleᐸIDependencyˏOwnedᐳᐳ\n" +
+        "  Service o--  \"PerResolve\" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ\n" +
+        "  Service o--  \"PerResolve\" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ\n" +
         "  Composition ..> Service : Service Root\n" +
-        "  FuncᐸValueTupleᐸIDependencyˏOwnedᐳᐳ *--  ValueTupleᐸIDependencyˏOwnedᐳ : ValueTupleᐸIDependencyˏOwnedᐳ";
+        "  FuncᐸOwnedᐸIDependencyᐳᐳ o--  \"PerBlock\" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ\n" +
+        "  OwnedᐸIDependencyᐳ *--  Owned : Owned\n" +
+        "  OwnedᐸIDependencyᐳ *--  Dependency : IDependency";
   }
   
-  private readonly static int _bucketSizeM03D20di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D20di;
+  private readonly static int _bucketSizeM03D21di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D21di;
   
   static Composition()
   {
-    var valResolverM03D20di_0000 = new ResolverM03D20di_0000();
-    ResolverM03D20di<Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.Service>.Value = valResolverM03D20di_0000;
-    _bucketsM03D20di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM03D21di_0000 = new ResolverM03D21di_0000();
+    ResolverM03D21di<Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.Service>.Value = valResolverM03D21di_0000;
+    _bucketsM03D21di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM03D20di,
+      out _bucketSizeM03D21di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.Service), valResolverM03D20di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.Service), valResolverM03D21di_0000)
       });
   }
   
-  private sealed class ResolverM03D20di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM03D21di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D20di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D21di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -243,7 +245,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D20di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.Service>
+  private sealed class ResolverM03D21di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.Service>
   {
     public Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario.Service Resolve(Composition composition)
     {

@@ -1508,6 +1508,21 @@ namespace Pure.DI
         /// <seealso cref="Pure.DI.Hint"/>
         IConfiguration Hint(Hint hint, string value);
 
+        /// <summary>
+        /// Registers an accumulator for instances.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Accumulate&lt;IDisposable, MyAccumulator&gt;(Lifetime.Transient);
+        /// </code>
+        /// </example>
+        /// <param name="lifetime"><see cref="Lifetime"/> of the instances to be accumulated. Instances with lifetime <see cref="Lifetime.Singleton"/>, <see cref="Lifetime.Scoped"/>, or <see cref="Lifetime.PerResolve"/> only accumulate in an accumulator that is NOT lazily created.</param>
+        /// <typeparam name="T">The type of instance. All instances that can be cast to this type will be aacumulated.</typeparam>
+        /// <typeparam name="TAccumulator">The type of accumulator. It must have a public constructor without parameters and a <c>Add</c> method with a single argument that allows you to add an instance of type <typeparamref name="T"/>.</typeparam>
+        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="Pure.DI.Hint"/>
+        /// <seealso cref="Pure.DI.Lifetime"/>
         IConfiguration Accumulate<T, TAccumulator>(Lifetime lifetime)
             where TAccumulator: new();
     }
