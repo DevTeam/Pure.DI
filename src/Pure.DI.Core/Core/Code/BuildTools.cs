@@ -52,6 +52,7 @@ internal class BuildTools(
                 .ToImmutableHashSet(SymbolEqualityComparer.Default);
 
         var lines = ctx.Accumulators
+            .Where(i => FilterAccumulator(i, variable.Node.Lifetime))
             .Where(i => baseTypes.Contains(i.Type))
             .Select(i => new Line(0, $"{i.Name}.Add({variable.VariableName});"))
             .ToList();
@@ -74,6 +75,10 @@ internal class BuildTools(
         lines.Insert(0, new Line(0, $"{Names.OnNewInstanceMethodName}<{typeResolver.Resolve(variable.InstanceType)}>(ref {variable.VariableName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()});"));
         return lines;
     }
+
+    private static bool FilterAccumulator(Accumulator accumulator, Lifetime lifetime) => 
+        accumulator.IsRoot
+        || lifetime is not (Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve);
 
     private static object? GetTag(BuildContext ctx, Variable variable)
     {

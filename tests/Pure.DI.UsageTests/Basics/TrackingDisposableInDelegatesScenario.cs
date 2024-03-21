@@ -30,14 +30,14 @@ interface IService
     public IDependency Dependency { get; }
 }
 
-class Service(Func<(IDependency dependency, Owned owned)> dependencyFactory)
+class Service(Func<Owned<IDependency>> dependencyFactory)
     : IService, IDisposable
 {
-    private readonly (IDependency value, Owned owned) _dependency = dependencyFactory();
+    private readonly Owned<IDependency> _dependency = dependencyFactory();
 
-    public IDependency Dependency => _dependency.value;
+    public IDependency Dependency => _dependency.Value;
     
-    public void Dispose() => _dependency.owned.Dispose();
+    public void Dispose() => _dependency.Dispose();
 }
 
 partial class Composition
@@ -57,7 +57,6 @@ public class Scenario
     {
 // {            
         var composition = new Composition();
-
         var root1 = composition.Root;
         var root2 = composition.Root;
         

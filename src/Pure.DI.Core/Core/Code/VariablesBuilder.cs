@@ -50,6 +50,7 @@ internal class VariablesBuilder(CancellationToken cancellationToken)
                         var pathIds = new HashSet<int>();
                         var hasLazy = false;
                         ICollection<Accumulator>? accumulators = default;
+                        var isRoot = true;
                         foreach (var pathItem in currentStatement.GetPath())
                         {
                             var pathVar = pathItem.Current;
@@ -66,12 +67,13 @@ internal class VariablesBuilder(CancellationToken cancellationToken)
                             }
 
                             accumulators = pathVar.Node.Accumulators;
+                            isRoot = false;
                         }
 
                         accumulators ??= rootNode.Accumulators;
                         if (isAccumulator)
                         {
-                            accumulators.Add(new Accumulator(GetAccumulatorName(variable), false, construct.ElementType, construct.Type)); 
+                            accumulators.Add(new Accumulator(isRoot, GetAccumulatorName(variable), false, construct.ElementType, construct.Type)); 
                         }
 
                         foreach (var (isDepResolved, depNode, depInjection, _) in dependencies)

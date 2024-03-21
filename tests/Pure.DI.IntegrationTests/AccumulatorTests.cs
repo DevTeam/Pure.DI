@@ -95,11 +95,12 @@ namespace Sample
         public CardboardBox(Func<(T value, Accumulator acc)> contentFactory)
         {
             var content = contentFactory();
-            foreach(var dep in content.acc)
+            foreach(var dep in content.acc.Items)
             {
                 Console.WriteLine(dep);
             }
             
+            Console.WriteLine("CardboardBox created");
             Content = content.value;
         }
 
@@ -117,11 +118,16 @@ namespace Sample
 
         // The decoherence of the superposition at the time of observation via an irreversible process
         public State State => _superposition.Value;
-
-        public override string ToString() => $"{State} cat";
     }
     
-    class Accumulator: List<object> { }
+    class Accumulator 
+    {
+        private readonly List<object> _items = new List<object>();
+        
+        public IEnumerable<object> Items =>_items.ToArray();
+        
+        public void Add(object item) => _items.Add(item);
+    }
 
     // Let's glue all together
 
@@ -145,7 +151,7 @@ namespace Sample
                 // Represents a cardboard box with any content
                 .Bind<IBox<TT>>().To<CardboardBox<TT>>()                
                 // Composition Root
-                .Root<(Program program, Accumulator)>("Root");
+                .Root<(Program program, Accumulator acc)>("Root");
         }
     }
 
@@ -159,6 +165,13 @@ namespace Sample
         {
             var composition = new Composition();            
             var root = composition.Root;
+            Console.WriteLine(root);
+            foreach(var dep in root.acc.Items)
+            {
+                Console.WriteLine(dep);
+            }
+
+            Console.WriteLine("Program created");
         }
     }                
 }
@@ -171,6 +184,6 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.Length.ShouldBe(3);
+        result.StdOut.ShouldBe(ImmutableArray.Create("Value is not created.", "Sample.ShroedingersCat", "(Sample.ShroedingersCat, Sample.Accumulator)", "CardboardBox created", "(Sample.Program, Sample.Accumulator)", "System.Func`1[System.ValueTuple`2[Sample.ICat,Sample.Accumulator]]", "[Sample.ShroedingersCat]", "Sample.Program", "(Sample.Program, Sample.Accumulator)", "Program created"));
     }
 }

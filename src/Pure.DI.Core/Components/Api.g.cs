@@ -1089,13 +1089,22 @@ namespace Pure.DI
     }
 
     /// <summary>
-    /// Gives the opportunity to collect disposable objects.
+    /// Gives the ability to manage disposable objects.
     /// </summary>
-    public partial class Owned : global::System.IDisposable
+    public interface IOwned : global::System.IDisposable
+    {
+    }
+
+    /// <summary>
+    /// Gives the ability to manage disposable objects.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerDisplay("{_disposables.Count} item(s)")]
+    [global::System.Diagnostics.DebuggerTypeProxy(typeof(global::Pure.DI.Owned.DebugView))]
+    internal partial class Owned : global::Pure.DI.IOwned
     {
         private global::System.Collections.Generic.List<global::System.IDisposable> _disposables 
             = new global::System.Collections.Generic.List<global::System.IDisposable>();
-
+        
         /// <summary>
         /// Adds a disposable instance.
         /// </summary>
@@ -1103,6 +1112,11 @@ namespace Pure.DI
         [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
         public void Add(global::System.IDisposable disposable)
         {
+            if (disposable is global::Pure.DI.IOwned)
+            {
+                return;
+            }
+
             lock (_disposables)
             {
                 _disposables.Add(disposable);
@@ -1142,8 +1156,71 @@ namespace Pure.DI
         /// <typeparam name="T">The actual type of instance being disposed of.</typeparam>
         partial void OnDisposeException<T>(T disposableInstance, Exception exception)
             where T : global::System.IDisposable;
+        
+        private class DebugView
+        {
+            private readonly global::Pure.DI.Owned _owned;
+
+            public DebugView(global::Pure.DI.Owned owned)
+            {
+                _owned = owned;
+            }
+                
+            [global::System.Diagnostics.DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+            public global::System.Collections.Generic.List<global::System.IDisposable> Owns
+            {
+                get { return _owned._disposables; }
+            }
+        }
     }
     
+    /// <summary>
+    /// Contains a value and gives the ability to manage disposable objects.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerDisplay("{Value}")]
+    [global::System.Diagnostics.DebuggerTypeProxy(typeof(global::Pure.DI.Owned<>.DebugView))]
+    public readonly struct Owned<T> : global::Pure.DI.IOwned
+    {
+        /// <summary>
+        /// The value.
+        /// </summary>
+        public readonly T Value;
+        private readonly IOwned _owned;
+        
+        public Owned(T value, IOwned owned)
+        {
+            Value = value;
+            _owned = owned;
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _owned.Dispose();
+        }
+        
+        private class DebugView
+        {
+            private readonly global::Pure.DI.Owned<T> _owned;
+
+            public DebugView(global::Pure.DI.Owned<T> owned)
+            {
+                _owned = owned;
+            }
+            
+            public T Value
+            {
+                get { return _owned.Value; }
+            }
+                
+            [global::System.Diagnostics.DebuggerBrowsable(DebuggerBrowsableState.Collapsed)]
+            public global::Pure.DI.IOwned Owned
+            {
+                get { return _owned._owned; }
+            }
+        }
+    }
+
     /// <summary>
     /// An API for a Dependency Injection setup.
     /// </summary>

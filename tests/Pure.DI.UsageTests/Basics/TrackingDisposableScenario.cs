@@ -41,7 +41,7 @@ partial class Composition
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
-            .Root<(IService service, Owned owned)>("Root");
+            .Root<Owned<IService>>("Root");
 }
 // }
 
@@ -52,25 +52,24 @@ public class Scenario
     {
 // {            
         var composition = new Composition();
-
         var root1 = composition.Root;
         var root2 = composition.Root;
         
-        root2.owned.Dispose();
+        root2.Dispose();
         
         // Checks that the disposable instances
         // associated with root1 have been disposed of
-        root2.service.Dependency.IsDisposed.ShouldBeTrue();
+        root2.Value.Dependency.IsDisposed.ShouldBeTrue();
         
         // Checks that the disposable instances
         // associated with root2 have not been disposed of
-        root1.service.Dependency.IsDisposed.ShouldBeFalse();
+        root1.Value.Dependency.IsDisposed.ShouldBeFalse();
         
-        root1.owned.Dispose();
+        root1.Dispose();
         
         // Checks that the disposable instances
         // associated with root2 have been disposed of
-        root1.service.Dependency.IsDisposed.ShouldBeTrue();
+        root1.Value.Dependency.IsDisposed.ShouldBeTrue();
         // }
         new Composition().SaveClassDiagram();
     }
