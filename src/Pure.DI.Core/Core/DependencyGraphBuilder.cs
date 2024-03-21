@@ -11,6 +11,7 @@ internal sealed class DependencyGraphBuilder(
     Func<ITypeConstructor> typeConstructorFactory,
     Func<IBuilder<RewriterContext<MdFactory>, MdFactory>> factoryRewriterFactory,
     IFilter filter,
+    ICache<INamedTypeSymbol, MdConstructKind> constructKinds,
     CancellationToken cancellationToken)
     : IDependencyGraphBuilder
 {
@@ -77,27 +78,14 @@ internal sealed class DependencyGraphBuilder(
 
                 if (accumulators.TryGetValue(new AccumulatorKey(injection.Type, node.Node.Lifetime), out var accumulator))
                 {
-                    var accumulatorBinding = new MdBinding(
-                        ++maxId,
-                        targetNode.Binding.Source,
+                    var accumulatorBinding = CreateAccumulatorBinding(
                         setup,
-                        targetNode.Binding.SemanticModel,
-                        ImmutableArray.Create(new MdContract(targetNode.Binding.SemanticModel, accumulator.Source, accumulator.AccumulatorType, ImmutableArray<MdTag>.Empty)),
-                        ImmutableArray<MdTag>.Empty,
-                        new MdLifetime(targetNode.Binding.SemanticModel, accumulator.Source, Lifetime.Transient),
-                        default,
-                        default,
-                        default,
-                        new MdConstruct(
-                            targetNode.Binding.SemanticModel,
-                            targetNode.Binding.Source,
-                            accumulator.AccumulatorType,
-                            accumulator.Type,
-                            MdConstructKind.Accumulator,
-                            ImmutableArray<MdContract>.Empty, 
-                            hasExplicitDefaultValue,
-                            explicitDefaultValue));
-                    
+                        targetNode,
+                        ref maxId,
+                        accumulator,
+                        hasExplicitDefaultValue,
+                        explicitDefaultValue);
+
                     return CreateNodes(setup, accumulatorBinding);
                 }
 
@@ -126,7 +114,13 @@ internal sealed class DependencyGraphBuilder(
                             }
 
                             sourceNode = item.Value;
-                            var genericBinding = CreateGenericBinding(targetNode, injection, sourceNode, typeConstructor, ++maxId);
+                            var genericBinding = CreateGenericBinding(
+                                targetNode,
+                                injection,
+                                sourceNode,
+                                typeConstructor,
+                                ++maxId);
+                            
                             var genericNode = CreateNodes(setup, genericBinding).Single(i => i.Variation == sourceNode.Variation);
                             map[injection] = genericNode;
                             queue.Enqueue(CreateNewProcessingNode(injection, genericNode));
@@ -142,20 +136,34 @@ internal sealed class DependencyGraphBuilder(
                         // Construct
                         if (geneticType.TypeArguments is [{ } constructType])
                         {
-                            var constructKind = geneticType.ConstructUnboundGenericType().ToString() switch
+                            var constructKind = GetConstructKind(geneticType);
+                            // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+                            switch (constructKind)
                             {
-                                "System.Span<>" => MdConstructKind.Span,
-                                "System.ReadOnlySpan<>" => MdConstructKind.Span,
-                                "System.Collections.Generic.IEnumerable<>" => MdConstructKind.Enumerable,
-                                "System.Collections.Generic.IAsyncEnumerable<>" => MdConstructKind.AsyncEnumerable,
-                                _ => default(MdConstructKind?)
-                            };
-
-                            var lifetime = constructKind == MdConstructKind.Enumerable ? Lifetime.PerBlock : Lifetime.Transient;
-                            if (constructKind.HasValue)
-                            {
-                                var constructBinding = CreateConstructBinding(setup, targetNode, injection, constructType, default, lifetime, ++maxId, constructKind.Value, false, default);
-                                return CreateNodes(setup, constructBinding);
+                                case MdConstructKind.None:
+                                    break;
+                                
+                                case MdConstructKind.Accumulator:
+                                    var accumulatorBinding = CreateAccumulatorBinding(
+                                        setup,
+                                        targetNode,
+                                        ref maxId,
+                                        accumulator,
+                                        hasExplicitDefaultValue,
+                                        explicitDefaultValue);
+                                    return CreateNodes(setup, accumulatorBinding);
+                                
+                                default:
+                                    var lifetime = constructKind == MdConstructKind.Enumerable ? Lifetime.PerBlock : Lifetime.Transient;
+                                    var constructBinding = CreateConstructBinding(
+                                        setup,
+                                        targetNode,
+                                        injection,
+                                        constructType,
+                                        lifetime,
+                                        ++maxId,
+                                        constructKind);
+                                    return CreateNodes(setup, constructBinding);
                             }
                         }
                         
@@ -171,7 +179,15 @@ internal sealed class DependencyGraphBuilder(
                     // Array construct
                     case IArrayTypeSymbol arrayType:
                     {
-                        var arrayBinding = CreateConstructBinding(setup, targetNode, injection, arrayType.ElementType, default, Lifetime.Transient, ++maxId, MdConstructKind.Array, false, default);
+                        var arrayBinding = CreateConstructBinding(
+                            setup,
+                            targetNode,
+                            injection,
+                            arrayType.ElementType,
+                            Lifetime.Transient,
+                            ++maxId,
+                            MdConstructKind.Array);
+                        
                         return CreateNodes(setup, arrayBinding);
                     }
                 }
@@ -179,7 +195,17 @@ internal sealed class DependencyGraphBuilder(
                 // ExplicitDefaultValue
                 if (hasExplicitDefaultValue)
                 {
-                    var explicitDefaultBinding = CreateConstructBinding(setup, targetNode, injection, injection.Type, default, Lifetime.Transient, ++maxId, MdConstructKind.ExplicitDefaultValue, hasExplicitDefaultValue, explicitDefaultValue);
+                    var explicitDefaultBinding = CreateConstructBinding(
+                        setup,
+                        targetNode,
+                        injection,
+                        injection.Type,
+                        Lifetime.Transient,
+                        ++maxId,
+                        MdConstructKind.ExplicitDefaultValue,
+                        default,
+                        hasExplicitDefaultValue, explicitDefaultValue);
+
                     var newSourceNodes = CreateNodes(setup, explicitDefaultBinding);
                     foreach (var newSourceNode in newSourceNodes)
                     {
@@ -198,7 +224,15 @@ internal sealed class DependencyGraphBuilder(
                 if (injection.Type.ToString() == setup.Name.FullName)
                 {
                     // Composition
-                    var compositionBinding = CreateConstructBinding(setup, targetNode, injection, injection.Type, default, Lifetime.Transient, ++maxId, MdConstructKind.Composition, false, default);
+                    var compositionBinding = CreateConstructBinding(
+                        setup,
+                        targetNode,
+                        injection,
+                        injection.Type,
+                        Lifetime.Transient,
+                        ++maxId,
+                        MdConstructKind.Composition);
+                    
                     return CreateNodes(setup, compositionBinding);
                 }
 
@@ -256,6 +290,19 @@ internal sealed class DependencyGraphBuilder(
         
         dependencyGraph = CreateGraph(setup, roots, entries, map);
         return ImmutableArray<DependencyNode>.Empty;
+    }
+
+    private MdConstructKind GetConstructKind(INamedTypeSymbol geneticType)
+    {
+        var unboundGenericType = geneticType.ConstructUnboundGenericType();
+        return constructKinds.Get(unboundGenericType, type => type.ToString() switch
+        {
+            "System.Span<>" => MdConstructKind.Span,
+            "System.ReadOnlySpan<>" => MdConstructKind.Span,
+            "System.Collections.Generic.IEnumerable<>" => MdConstructKind.Enumerable,
+            "System.Collections.Generic.IAsyncEnumerable<>" => MdConstructKind.AsyncEnumerable,
+            _ => MdConstructKind.None
+        });
     }
 
     private static DependencyGraph CreateGraph(
@@ -322,12 +369,10 @@ internal sealed class DependencyGraphBuilder(
                 ownerNode,
                 unresolvedInjection,
                 unresolvedInjection.Type,
-                unresolvedInjection.Tag,
                 Lifetime.Transient,
                 ++maxId,
                 MdConstructKind.OnCannotResolve,
-                false,
-                default);
+                unresolvedInjection.Tag);
 
             var onCannotResolveNodes = CreateNodes(mdSetup, onCannotResolveBinding);
             foreach (var onCannotResolveNode in onCannotResolveNodes)
@@ -391,6 +436,33 @@ internal sealed class DependencyGraphBuilder(
         };
     }
 
+    private static MdBinding CreateAccumulatorBinding(MdSetup setup,
+        DependencyNode targetNode,
+        ref int maxId,
+        MdAccumulator accumulator,
+        bool hasExplicitDefaultValue,
+        object? explicitDefaultValue) =>
+        new(
+            ++maxId,
+            targetNode.Binding.Source,
+            setup,
+            targetNode.Binding.SemanticModel,
+            ImmutableArray.Create(new MdContract(targetNode.Binding.SemanticModel, accumulator.Source, accumulator.AccumulatorType, ImmutableArray<MdTag>.Empty)),
+            ImmutableArray<MdTag>.Empty,
+            new MdLifetime(targetNode.Binding.SemanticModel, accumulator.Source, Lifetime.Transient),
+            default,
+            default,
+            default,
+            new MdConstruct(
+                targetNode.Binding.SemanticModel,
+                targetNode.Binding.Source,
+                accumulator.AccumulatorType,
+                accumulator.Type,
+                MdConstructKind.Accumulator,
+                ImmutableArray<MdContract>.Empty, 
+                hasExplicitDefaultValue,
+                explicitDefaultValue));
+
     private MdBinding CreateAutoBinding(
         MdSetup setup,
         DependencyNode targetNode,
@@ -424,17 +496,16 @@ internal sealed class DependencyGraphBuilder(
         return newBinding;
     }
 
-    private MdBinding CreateConstructBinding(
-        MdSetup setup,
+    private MdBinding CreateConstructBinding(MdSetup setup,
         DependencyNode targetNode,
         Injection injection,
         ITypeSymbol elementType,
-        object? tag,
         Lifetime lifetime,
         int newId,
         MdConstructKind constructKind,
-        bool hasExplicitDefaultValue,
-        object? explicitDefaultValue)
+        object? tag = default,
+        bool hasExplicitDefaultValue = default,
+        object? explicitDefaultValue = default)
     {
         elementType = elementType.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
         var dependencyContracts = new List<MdContract>();
@@ -510,31 +581,5 @@ internal sealed class DependencyGraphBuilder(
     {
         var newSetup = setup with { Roots = ImmutableArray<MdRoot>.Empty, Bindings = ImmutableArray.Create(binding) };
         return dependencyNodeBuilders.SelectMany(builder => builder.Build(newSetup));
-    }
-
-    private readonly struct AccumulatorKey
-    {
-        private readonly ITypeSymbol _type;
-        private readonly Lifetime _lifetime;
-
-        public AccumulatorKey(ITypeSymbol type, Lifetime lifetime)
-        {
-            _type = type;
-            _lifetime = lifetime;
-        }
-
-        public override bool Equals(object? obj) => 
-            obj is AccumulatorKey other && Equals(other);
-
-        private bool Equals(AccumulatorKey other) => 
-            SymbolEqualityComparer.Default.Equals(_type, other._type) && _lifetime == other._lifetime;
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (SymbolEqualityComparer.Default.GetHashCode(_type) * 397) ^ (int)_lifetime;
-            }
-        }
     }
 }

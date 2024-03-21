@@ -58,6 +58,7 @@ public partial class Generator
             .Bind().To<Profiler>()
             .Bind().To<BaseSymbolsProvider>()
             .Bind().To<Formatter>()
+            .Bind<IEqualityComparer<INamedTypeSymbol>>().To<NamedTypeSymbolEqualityComparer>()
         
             // Validators
             .Bind(Tag.Type).To<MetadataValidator>()
