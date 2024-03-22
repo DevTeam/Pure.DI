@@ -2,6 +2,7 @@
 // ReSharper disable InvertIf
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+// ReSharper disable IdentifierTypo
 namespace Pure.DI.Core;
 
 internal sealed class DependencyGraphBuilder(
@@ -52,10 +53,16 @@ internal sealed class DependencyGraphBuilder(
             }
         }
 
-        var accumulators = new Dictionary<AccumulatorKey, MdAccumulator>();
+        var accumulators = new Dictionary<ITypeSymbol, List<MdAccumulator>>(SymbolEqualityComparer.Default);
         foreach (var accumulator in setup.Accumulators)
         {
-            accumulators[new AccumulatorKey(accumulator.AccumulatorType, accumulator.Lifetime)] = accumulator;
+            if (!accumulators.TryGetValue(accumulator.AccumulatorType, out var accs))
+            {
+                accs = [];
+                accumulators.Add(accumulator.AccumulatorType, accs);
+            }
+            
+            accs.Add(accumulator);
         }
         
         var processed = new HashSet<ProcessingNode>();
@@ -76,13 +83,13 @@ internal sealed class DependencyGraphBuilder(
                     }
                 }
 
-                if (accumulators.TryGetValue(new AccumulatorKey(injection.Type, node.Node.Lifetime), out var accumulator))
+                if (accumulators.TryGetValue(injection.Type, out var accs))
                 {
                     var accumulatorBinding = CreateAccumulatorBinding(
                         setup,
                         targetNode,
                         ref maxId,
-                        accumulator,
+                        accs,
                         hasExplicitDefaultValue,
                         explicitDefaultValue);
 
@@ -142,16 +149,6 @@ internal sealed class DependencyGraphBuilder(
                             {
                                 case MdConstructKind.None:
                                     break;
-                                
-                                case MdConstructKind.Accumulator:
-                                    var accumulatorBinding = CreateAccumulatorBinding(
-                                        setup,
-                                        targetNode,
-                                        ref maxId,
-                                        accumulator,
-                                        hasExplicitDefaultValue,
-                                        explicitDefaultValue);
-                                    return CreateNodes(setup, accumulatorBinding);
                                 
                                 default:
                                     var lifetime = constructKind == MdConstructKind.Enumerable ? Lifetime.PerBlock : Lifetime.Transient;
@@ -439,10 +436,12 @@ internal sealed class DependencyGraphBuilder(
     private static MdBinding CreateAccumulatorBinding(MdSetup setup,
         DependencyNode targetNode,
         ref int maxId,
-        MdAccumulator accumulator,
+        IReadOnlyCollection<MdAccumulator> accumulators,
         bool hasExplicitDefaultValue,
-        object? explicitDefaultValue) =>
-        new(
+        object? explicitDefaultValue)
+    {
+        var accumulator = accumulators.First();
+        return new MdBinding(
             ++maxId,
             targetNode.Binding.Source,
             setup,
@@ -459,9 +458,11 @@ internal sealed class DependencyGraphBuilder(
                 accumulator.AccumulatorType,
                 accumulator.Type,
                 MdConstructKind.Accumulator,
-                ImmutableArray<MdContract>.Empty, 
+                ImmutableArray<MdContract>.Empty,
                 hasExplicitDefaultValue,
-                explicitDefaultValue));
+                explicitDefaultValue,
+                accumulators));
+    }
 
     private MdBinding CreateAutoBinding(
         MdSetup setup,

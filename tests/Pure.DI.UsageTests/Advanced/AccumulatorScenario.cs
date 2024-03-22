@@ -10,45 +10,31 @@ $h=Accumulators allow you to accumulate instances of certain types and lifetimes
 // ReSharper disable UnusedType.Global
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable UnusedVariable
+#pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.AccumulatorScenario;
 
 using Shouldly;
 using Xunit;
 
 // {
-interface IAccumulating { }
+interface IAccumulating;
 
-class MyAccumulator: List<IAccumulating>;
+class MyAccumulator : List<IAccumulating>;
 
 interface IDependency;
 
 class AbcDependency : IDependency, IAccumulating;
-        
-class XyzDependency : IDependency;
-        
-class Dependency : IDependency;
 
-interface IService: IAccumulating
-{
-    IDependency Dependency1 { get; }
+class XyzDependency : IDependency, IAccumulating;
 
-    IDependency Dependency2 { get; }
-    
-    IDependency Dependency3 { get; }
-}
+interface IService;
 
 class Service(
     [Tag(typeof(AbcDependency))] IDependency dependency1,
     [Tag(typeof(XyzDependency))] IDependency dependency2,
     IDependency dependency3)
-    : IService
-{
-    public IDependency Dependency1 { get; } = dependency1;
-
-    public IDependency Dependency2 { get; } = dependency2;
-
-    public IDependency Dependency3 { get; } = dependency3;
-}
+    : IService, IAccumulating;
 // }
 
 public class Scenario
@@ -66,11 +52,9 @@ public class Scenario
             .Root<(IService service, MyAccumulator accumulator)>("Root");
 
         var composition = new Composition();
-        var root = composition.Root;
-        var service = root.service;
-        var accumulator = root.accumulator;
+        var (service, accumulator) = composition.Root;
         accumulator.Count.ShouldBe(3);
-        accumulator[0].ShouldBeOfType<AbcDependency>();
+        accumulator[0].ShouldBeOfType<XyzDependency>();
         accumulator[1].ShouldBeOfType<AbcDependency>();
         accumulator[2].ShouldBeOfType<Service>();
         

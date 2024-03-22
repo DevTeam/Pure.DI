@@ -36,19 +36,18 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
             {
                 parent = $"{Names.ParentFieldName}.";
             }
-            
-            var accumulators = new List<Accumulator>();
+
             var uniqueAccumulators = ctx.Accumulators
                 .Where(accumulator => !accumulator.IsDeclared)
-                .GroupBy(i => i.AccumulatorType, SymbolEqualityComparer.Default)
+                .GroupBy(i => i.Name)
                 .Select(i => i.First());
             
             foreach (var accumulator in uniqueAccumulators)
             {
                 code.AppendLine($"var {accumulator.Name} = new {accumulator.AccumulatorType}();");
-                accumulators.Add(accumulator with { IsDeclared = true });
             }
 
+            var accumulators = ctx.Accumulators.Select(accumulator => accumulator with { IsDeclared = true }).ToList();
             if (accumulators.Count > 0)
             {
                 ctx = ctx with { Accumulators = accumulators.ToImmutableArray() };

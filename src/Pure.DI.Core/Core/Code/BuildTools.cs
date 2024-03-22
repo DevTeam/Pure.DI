@@ -54,6 +54,9 @@ internal class BuildTools(
         var lines = ctx.Accumulators
             .Where(i => FilterAccumulator(i, variable.Node.Lifetime))
             .Where(i => baseTypes.Contains(i.Type))
+            .GroupBy(i => i.Name)
+            .Select(i => i.First())
+            .OrderBy(i => i.Name)
             .Select(i => new Line(0, $"{i.Name}.Add({variable.VariableName});"))
             .ToList();
 
@@ -76,9 +79,20 @@ internal class BuildTools(
         return lines;
     }
 
-    private static bool FilterAccumulator(Accumulator accumulator, Lifetime lifetime) => 
-        accumulator.IsRoot
-        || lifetime is not (Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve);
+    private static bool FilterAccumulator(Accumulator accumulator, Lifetime lifetime)
+    {
+        if (accumulator.Lifetime != lifetime)
+        {
+            return false;
+        }
+        
+        if (accumulator.IsRoot)
+        {
+            return true;
+        }
+        
+        return lifetime is not (Lifetime.Singleton or Lifetime.Scoped or Lifetime.PerResolve);
+    }
 
     private static object? GetTag(BuildContext ctx, Variable variable)
     {

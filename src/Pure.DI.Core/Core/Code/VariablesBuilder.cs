@@ -36,7 +36,7 @@ internal class VariablesBuilder(CancellationToken cancellationToken)
                     
                     case Variable variable:
                     {
-                        var isAccumulator = IsAccumulator(variable, out var construct);
+                        var isAccumulator = IsAccumulator(variable, out var construct, out var mdAccumulators);
                         IReadOnlyCollection<Dependency> dependencies = Array.Empty<Dependency>();
                         if (!isAccumulator)
                         {
@@ -73,7 +73,18 @@ internal class VariablesBuilder(CancellationToken cancellationToken)
                         accumulators ??= rootNode.Accumulators;
                         if (isAccumulator)
                         {
-                            accumulators.Add(new Accumulator(isRoot, GetAccumulatorName(variable), false, construct.ElementType, construct.Type)); 
+                            var name = GetAccumulatorName(variable);
+                            foreach (var mdAccumulator in mdAccumulators)
+                            {
+                                accumulators.Add(
+                                    new Accumulator(
+                                        isRoot,
+                                        name,
+                                        false,
+                                        construct.ElementType,
+                                        mdAccumulator.Lifetime,
+                                        construct.Type));
+                            }
                         }
 
                         foreach (var (isDepResolved, depNode, depInjection, _) in dependencies)
@@ -139,15 +150,17 @@ internal class VariablesBuilder(CancellationToken cancellationToken)
         return rootBlock;
     }
 
-    private static bool IsAccumulator(Variable variable, out MdConstruct mdConstruct)
+    private static bool IsAccumulator(Variable variable, out MdConstruct mdConstruct, out IReadOnlyCollection<MdAccumulator> accumulators)
     {
         if(variable.Node.Construct?.Source is { Kind: MdConstructKind.Accumulator } construct)
         {
             mdConstruct = construct;
+            accumulators = construct.State as IReadOnlyCollection<MdAccumulator> ?? ImmutableArray<MdAccumulator>.Empty; 
             return true;
         }
 
         mdConstruct = default;
+        accumulators = ImmutableArray<MdAccumulator>.Empty;
         return false;
     }
 

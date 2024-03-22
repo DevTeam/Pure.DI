@@ -11,8 +11,6 @@ class AbcDependency : IDependency;
 
 class XyzDependency : IDependency;
 
-class Dependency : IDependency;
-
 interface IService
 {
     IDependency Dependency1 { get; }

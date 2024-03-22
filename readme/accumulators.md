@@ -5,39 +5,23 @@
 Accumulators allow you to accumulate instances of certain types and lifetimes.
 
 ```c#
-interface IAccumulating { }
+interface IAccumulating;
 
-class MyAccumulator: List<IAccumulating>;
+class MyAccumulator : List<IAccumulating>;
 
 interface IDependency;
 
 class AbcDependency : IDependency, IAccumulating;
 
-class XyzDependency : IDependency;
+class XyzDependency : IDependency, IAccumulating;
 
-class Dependency : IDependency;
-
-interface IService: IAccumulating
-{
-    IDependency Dependency1 { get; }
-
-    IDependency Dependency2 { get; }
-
-    IDependency Dependency3 { get; }
-}
+interface IService;
 
 class Service(
     [Tag(typeof(AbcDependency))] IDependency dependency1,
     [Tag(typeof(XyzDependency))] IDependency dependency2,
     IDependency dependency3)
-    : IService
-{
-    public IDependency Dependency1 { get; } = dependency1;
-
-    public IDependency Dependency2 { get; } = dependency2;
-
-    public IDependency Dependency3 { get; } = dependency3;
-}
+    : IService, IAccumulating;
 
 DI.Setup(nameof(Composition))
     .Accumulate<IAccumulating, MyAccumulator>(Lifetime.Transient, Lifetime.Singleton)
@@ -48,11 +32,9 @@ DI.Setup(nameof(Composition))
     .Root<(IService service, MyAccumulator accumulator)>("Root");
 
 var composition = new Composition();
-var root = composition.Root;
-var service = root.service;
-var accumulator = root.accumulator;
+var (service, accumulator) = composition.Root;
 accumulator.Count.ShouldBe(3);
-accumulator[0].ShouldBeOfType<AbcDependency>();
+accumulator[0].ShouldBeOfType<XyzDependency>();
 accumulator[1].ShouldBeOfType<AbcDependency>();
 accumulator[2].ShouldBeOfType<Service>();
         
@@ -130,14 +112,17 @@ partial class Composition
     {
       var accumulatorM03D22di41 = new Pure.DI.UsageTests.Advanced.AccumulatorScenario.MyAccumulator();
       Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency perBlockM03D22di4_AbcDependency = new Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency();
-      accumulatorM03D22di41.Add(perBlockM03D22di4_AbcDependency);
       if (ReferenceEquals(_rootM03D22di._singletonM03D22di38_XyzDependency, null))
       {
           lock (_lockM03D22di)
           {
               if (ReferenceEquals(_rootM03D22di._singletonM03D22di38_XyzDependency, null))
               {
-                  _singletonM03D22di38_XyzDependency = new Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency();
+                  Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency _singletonM03D22di38_XyzDependencyTemp;
+                  _singletonM03D22di38_XyzDependencyTemp = new Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency();
+                  accumulatorM03D22di41.Add(_singletonM03D22di38_XyzDependencyTemp);
+                  global::System.Threading.Thread.MemoryBarrier();
+                  _singletonM03D22di38_XyzDependency = _singletonM03D22di38_XyzDependencyTemp;
                   _rootM03D22di._singletonM03D22di38_XyzDependency = _singletonM03D22di38_XyzDependency;
               }
           }
