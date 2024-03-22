@@ -96,44 +96,44 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM03D21di;
+  private readonly Composition _rootM03D22di;
   
   public Composition()
   {
-    _rootM03D21di = this;
+    _rootM03D22di = this;
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D21di = baseComposition._rootM03D21di;
+    _rootM03D22di = baseComposition._rootM03D22di;
   }
   
   public Pure.DI.Owned<Pure.DI.UsageTests.Basics.TrackingDisposableScenario.IService> Root
   {
     get
     {
-      var accumulatorM03D21di39 = new Pure.DI.Owned();
-      Pure.DI.UsageTests.Basics.TrackingDisposableScenario.Dependency transientM03D21di3_Dependency = new Pure.DI.UsageTests.Basics.TrackingDisposableScenario.Dependency();
-      accumulatorM03D21di39.Add(transientM03D21di3_Dependency);
-      Pure.DI.Owned<Pure.DI.UsageTests.Basics.TrackingDisposableScenario.IService> perBlockM03D21di0_Owned;
+      var accumulatorM03D22di39 = new Pure.DI.Owned();
+      Pure.DI.UsageTests.Basics.TrackingDisposableScenario.Dependency transientM03D22di3_Dependency = new Pure.DI.UsageTests.Basics.TrackingDisposableScenario.Dependency();
+      accumulatorM03D22di39.Add(transientM03D22di3_Dependency);
+      Pure.DI.Owned<Pure.DI.UsageTests.Basics.TrackingDisposableScenario.IService> perBlockM03D22di0_Owned;
       {
-          var owned_M03D21di1 = accumulatorM03D21di39;
-          var value_M03D21di2 = new Pure.DI.UsageTests.Basics.TrackingDisposableScenario.Service(transientM03D21di3_Dependency);
-          perBlockM03D21di0_Owned = new Owned<Pure.DI.UsageTests.Basics.TrackingDisposableScenario.IService>(value_M03D21di2, owned_M03D21di1);
+          var owned_M03D22di1 = accumulatorM03D22di39;
+          var value_M03D22di2 = new Pure.DI.UsageTests.Basics.TrackingDisposableScenario.Service(transientM03D22di3_Dependency);
+          perBlockM03D22di0_Owned = new Owned<Pure.DI.UsageTests.Basics.TrackingDisposableScenario.IService>(value_M03D22di2, owned_M03D22di1);
       }
-      accumulatorM03D21di39.Add(perBlockM03D21di0_Owned);
-      return perBlockM03D21di0_Owned;
+      accumulatorM03D22di39.Add(perBlockM03D22di0_Owned);
+      return perBlockM03D22di0_Owned;
     }
   }
   
   public T Resolve<T>()
   {
-    return ResolverM03D21di<T>.Value.Resolve(this);
+    return ResolverM03D22di<T>.Value.Resolve(this);
   }
   
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D21di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D22di<T>.Value.ResolveByTag(this, tag);
   }
   
   public object Resolve(global::System.Type type)
@@ -179,9 +179,9 @@ partial class Composition
   }
   
   
-  private sealed class ResolverM03D21di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM03D22di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D21di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D22di<T>();
     
     public T Resolve(Composition composite)
     {

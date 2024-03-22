@@ -274,6 +274,7 @@ dotnet run
 - [A few partial classes](readme/a-few-partial-classes.md)
 - [Partial class](readme/partial-class.md)
 - [Dependent compositions](readme/dependent-compositions.md)
+- [Accumulators](readme/accumulators.md)
 - [Global compositions](readme/global-compositions.md)
 ### Applications
 - Console

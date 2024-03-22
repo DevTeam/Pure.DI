@@ -87,16 +87,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM03D21di;
+  private readonly Composition _rootM03D22di;
   
   public Composition()
   {
-    _rootM03D21di = this;
+    _rootM03D22di = this;
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D21di = baseComposition._rootM03D21di;
+    _rootM03D22di = baseComposition._rootM03D22di;
   }
   
   private partial Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario.IService GetRoot()
@@ -119,20 +119,20 @@ partial class Composition
   
   public T Resolve<T>()
   {
-    return ResolverM03D21di<T>.Value.Resolve(this);
+    return ResolverM03D22di<T>.Value.Resolve(this);
   }
   
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D21di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D22di<T>.Value.ResolveByTag(this, tag);
   }
   
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D21di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    var finish = index + _bucketSizeM03D21di;
+    var index = (int)(_bucketSizeM03D22di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var finish = index + _bucketSizeM03D22di;
     do {
-      ref var pair = ref _bucketsM03D21di[index];
+      ref var pair = ref _bucketsM03D22di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -144,10 +144,10 @@ partial class Composition
   
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D21di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    var finish = index + _bucketSizeM03D21di;
+    var index = (int)(_bucketSizeM03D22di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var finish = index + _bucketSizeM03D22di;
     do {
-      ref var pair = ref _bucketsM03D21di[index];
+      ref var pair = ref _bucketsM03D22di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -194,28 +194,28 @@ partial class Composition
         "  Composition ..> Dependency : IDependency Dependency";
   }
   
-  private readonly static int _bucketSizeM03D21di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D21di;
+  private readonly static int _bucketSizeM03D22di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D22di;
   
   static Composition()
   {
-    var valResolverM03D21di_0000 = new ResolverM03D21di_0000();
-    ResolverM03D21di<Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario.IService>.Value = valResolverM03D21di_0000;
-    var valResolverM03D21di_0001 = new ResolverM03D21di_0001();
-    ResolverM03D21di<Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario.IDependency>.Value = valResolverM03D21di_0001;
-    _bucketsM03D21di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM03D22di_0000 = new ResolverM03D22di_0000();
+    ResolverM03D22di<Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario.IService>.Value = valResolverM03D22di_0000;
+    var valResolverM03D22di_0001 = new ResolverM03D22di_0001();
+    ResolverM03D22di<Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario.IDependency>.Value = valResolverM03D22di_0001;
+    _bucketsM03D22di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       4,
-      out _bucketSizeM03D21di,
+      out _bucketSizeM03D22di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[2]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario.IService), valResolverM03D21di_0000)
-        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario.IDependency), valResolverM03D21di_0001)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario.IService), valResolverM03D22di_0000)
+        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario.IDependency), valResolverM03D22di_0001)
       });
   }
   
-  private sealed class ResolverM03D21di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM03D22di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D21di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D22di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -228,7 +228,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D21di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario.IService>
+  private sealed class ResolverM03D22di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario.IService>
   {
     public Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario.IService Resolve(Composition composition)
     {
@@ -248,7 +248,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D21di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario.IDependency>
+  private sealed class ResolverM03D22di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario.IDependency>
   {
     public Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario.IDependency Resolve(Composition composition)
     {

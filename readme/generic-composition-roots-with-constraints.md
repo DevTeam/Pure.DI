@@ -95,16 +95,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM03D21di;
+  private readonly Composition _rootM03D22di;
   
   public Composition()
   {
-    _rootM03D21di = this;
+    _rootM03D22di = this;
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D21di = baseComposition._rootM03D21di;
+    _rootM03D22di = baseComposition._rootM03D22di;
   }
   
   public Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario.IService<T, T4> GetMyRoot<T, T4>()
@@ -117,12 +117,12 @@ partial class Composition
   public Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario.IService<T, bool> GetOtherService<T>()
     where T: System.IDisposable
   {
-    Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario.OtherService<T> transientM03D21di0_OtherService;
+    Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario.OtherService<T> transientM03D22di0_OtherService;
     {
-        var dependency_M03D21di1 = new Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario.Dependency<T>();
-        transientM03D21di0_OtherService = new OtherService<T>(dependency_M03D21di1);
+        var dependency_M03D22di1 = new Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario.Dependency<T>();
+        transientM03D22di0_OtherService = new OtherService<T>(dependency_M03D22di1);
     }
-    return transientM03D21di0_OtherService;
+    return transientM03D22di0_OtherService;
   }
   
   public override string ToString()
