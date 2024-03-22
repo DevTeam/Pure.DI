@@ -238,12 +238,25 @@ internal class ApiInvocationProcessor(
                         break;
                     
                     case nameof(IConfiguration.Accumulate):
-                        if (genericName.TypeArgumentList.Arguments is [var typeSyntax, var accumulatorTypeSyntax] 
-                            && arguments.GetArgs(invocation.ArgumentList, "lifetime") is [{ Expression: {} lifetimeArgExpression }])
+                        if (genericName.TypeArgumentList.Arguments is [var typeSyntax, var accumulatorTypeSyntax])
                         {
+                            var lifetimes = invocation.ArgumentList.Arguments
+                                .Select(i => semanticModel.GetConstantValue<Lifetime>(i.Expression))
+                                .Distinct()
+                                .OrderBy(i => i)
+                                .ToList();
+
+                            if (lifetimes.Count == 0)
+                            {
+                                lifetimes.AddRange(Enum.GetValues(typeof(Lifetime)).Cast<Lifetime>());
+                            }
+                            
                             var typeSymbol = semanticModel.GetTypeSymbol<INamedTypeSymbol>(typeSyntax, cancellationToken);
                             var accumulatorTypeSymbol = semanticModel.GetTypeSymbol<INamedTypeSymbol>(accumulatorTypeSyntax, cancellationToken);
-                            metadataVisitor.VisitAccumulator(new MdAccumulator(semanticModel, invocation, typeSymbol, accumulatorTypeSymbol, semanticModel.GetConstantValue<Lifetime>(lifetimeArgExpression)));
+                            foreach (var lifetime in lifetimes)
+                            {
+                                metadataVisitor.VisitAccumulator(new MdAccumulator(semanticModel, invocation, typeSymbol, accumulatorTypeSymbol, lifetime));   
+                            }
                         }
 
                         break;

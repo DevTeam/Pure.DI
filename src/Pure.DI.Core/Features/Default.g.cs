@@ -13,9 +13,10 @@ namespace Pure.DI
                 .TypeAttribute<TypeAttribute>()
                 .TagAttribute<TagAttribute>()
                 .OrdinalAttribute<OrdinalAttribute>()
-                .Accumulate<global::System.IDisposable, global::Pure.DI.Owned>(Lifetime.Transient)
-                .Accumulate<global::System.IDisposable, global::Pure.DI.Owned>(Lifetime.PerResolve)
-                .Accumulate<global::System.IDisposable, global::Pure.DI.Owned>(Lifetime.PerBlock)
+                .Accumulate<global::System.IDisposable, global::Pure.DI.Owned>(
+                    Lifetime.Transient,
+                    Lifetime.PerResolve,
+                    Lifetime.PerBlock)
                 .Bind<global::Pure.DI.IOwned>().To<Owned>()
                 .Bind<global::Pure.DI.Owned<TT>>()
                     .As(Lifetime.PerBlock)
