@@ -1,8 +1,6 @@
-#### Func
+#### Func with tag
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/FuncScenario.cs)
-
-_Func<T>_ helps when the logic must enter instances of some type on demand or more than once. This is a very handy mechanism for instance replication. For example it is used when implementing the `Lazy<T>` injection.
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/FuncWithTagScenario.cs)
 
 ```c#
 interface IDependency;
@@ -14,7 +12,8 @@ interface IService
     ImmutableArray<IDependency> Dependencies { get; }
 }
 
-class Service(Func<IDependency> dependencyFactory): IService
+class Service([Tag("my tag")] Func<IDependency> dependencyFactory)
+    : IService
 {
     public ImmutableArray<IDependency> Dependencies { get; } =
         Enumerable
@@ -24,7 +23,7 @@ class Service(Func<IDependency> dependencyFactory): IService
 }
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To<Dependency>()
+    .Bind<IDependency>("my tag").To<Dependency>()
     .Bind<IService>().To<Service>()
     .Root<IService>("Root");
 
@@ -32,8 +31,6 @@ var composition = new Composition();
 var service = composition.Root;
 service.Dependencies.Length.ShouldBe(10);
 ```
-
-Be careful, replication takes into account the lifetime of the object.
 
 <details open>
 <summary>Class Diagram</summary>
@@ -47,7 +44,7 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  Dependency --|> IDependency : 
+  Dependency --|> IDependency : "my tag" 
   class Dependency {
     +Dependency()
   }
@@ -62,9 +59,9 @@ classDiagram
   class IService {
     <<abstract>>
   }
-  Service o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+  Service o--  "PerResolve" FuncᐸIDependencyᐳ : "my tag"  FuncᐸIDependencyᐳ
   Composition ..> Service : IService Root
-  FuncᐸIDependencyᐳ *--  Dependency : IDependency
+  FuncᐸIDependencyᐳ *--  Dependency : "my tag"  IDependency
 ```
 
 </details>
@@ -90,19 +87,19 @@ partial class Composition
     _lockM03D22di = _rootM03D22di._lockM03D22di;
   }
   
-  public Pure.DI.UsageTests.BCL.FuncScenario.IService Root
+  public Pure.DI.UsageTests.BCL.FuncWithTagScenario.IService Root
   {
     get
     {
-      var perResolveM03D22di38_Func = default(System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>);
-      perResolveM03D22di38_Func = new global::System.Func<Pure.DI.UsageTests.BCL.FuncScenario.IDependency>(
+      var perResolveM03D22di38_Func = default(System.Func<Pure.DI.UsageTests.BCL.FuncWithTagScenario.IDependency>);
+      perResolveM03D22di38_Func = new global::System.Func<Pure.DI.UsageTests.BCL.FuncWithTagScenario.IDependency>(
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
       () =>
       {
-          var factory_M03D22di1 = new Pure.DI.UsageTests.BCL.FuncScenario.Dependency();
+          var factory_M03D22di1 = new Pure.DI.UsageTests.BCL.FuncWithTagScenario.Dependency();
           return factory_M03D22di1;
       });
-      return new Pure.DI.UsageTests.BCL.FuncScenario.Service(perResolveM03D22di38_Func);
+      return new Pure.DI.UsageTests.BCL.FuncWithTagScenario.Service(perResolveM03D22di38_Func);
     }
   }
   
@@ -157,7 +154,7 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  Dependency --|> IDependency : \n" +
+        "  Dependency --|> IDependency : \"my tag\" \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
@@ -172,9 +169,9 @@ partial class Composition
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  Service o--  \"PerResolve\" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ\n" +
+        "  Service o--  \"PerResolve\" FuncᐸIDependencyᐳ : \"my tag\"  FuncᐸIDependencyᐳ\n" +
         "  Composition ..> Service : IService Root\n" +
-        "  FuncᐸIDependencyᐳ *--  Dependency : IDependency";
+        "  FuncᐸIDependencyᐳ *--  Dependency : \"my tag\"  IDependency";
   }
   
   private readonly static int _bucketSizeM03D22di;
@@ -183,13 +180,13 @@ partial class Composition
   static Composition()
   {
     var valResolverM03D22di_0000 = new ResolverM03D22di_0000();
-    ResolverM03D22di<Pure.DI.UsageTests.BCL.FuncScenario.IService>.Value = valResolverM03D22di_0000;
+    ResolverM03D22di<Pure.DI.UsageTests.BCL.FuncWithTagScenario.IService>.Value = valResolverM03D22di_0000;
     _bucketsM03D22di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
       out _bucketSizeM03D22di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.FuncScenario.IService), valResolverM03D22di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.FuncWithTagScenario.IService), valResolverM03D22di_0000)
       });
   }
   
@@ -208,21 +205,21 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D22di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.FuncScenario.IService>
+  private sealed class ResolverM03D22di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.FuncWithTagScenario.IService>
   {
-    public Pure.DI.UsageTests.BCL.FuncScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.BCL.FuncWithTagScenario.IService Resolve(Composition composition)
     {
       return composition.Root;
     }
     
-    public Pure.DI.UsageTests.BCL.FuncScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.BCL.FuncWithTagScenario.IService ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Root;
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.FuncScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.FuncWithTagScenario.IService.");
     }
   }
 }

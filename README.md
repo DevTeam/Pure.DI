@@ -239,6 +239,7 @@ dotnet run
 - [Async Enumerable](readme/async-enumerable.md)
 - [Service collection](readme/service-collection.md)
 - [Func with arguments](readme/func-with-arguments.md)
+- [Func with tag](readme/func-with-tag.md)
 - [Keyed service provider](readme/keyed-service-provider.md)
 - [Service provider](readme/service-provider.md)
 - [Service provider with scope](readme/service-provider-with-scope.md)
