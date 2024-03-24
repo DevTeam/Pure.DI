@@ -8,13 +8,16 @@
 namespace Build;
 
 using System.IO.Compression;
-using NuGet.Versioning;
 
 internal class GeneratorTarget(
     Settings settings,
     Commands commands)
     : IInitializable, ITarget<Package>
 {
+    private const string PackagesDir = ".packages";
+    
+    private string PackageName => $"Pure.DI.{settings.Version}.nupkg";
+
     public Task InitializeAsync() => commands.Register(
         this,
         "Builds and tests generator",
@@ -27,26 +30,34 @@ internal class GeneratorTarget(
         // Generator package
         var generatorProjectDirectory = Path.Combine("src", "Pure.DI");
         var generatorPackages = settings.CodeAnalysis
-            .Select(codeAnalysis => CreateGeneratorPackage(settings.Version, codeAnalysis, generatorProjectDirectory));
+            .Select(codeAnalysis => CreateGeneratorPackage(codeAnalysis, generatorProjectDirectory))
+            .ToList();
 
         return Task.FromResult(
             new Package(
-                Path.GetFullPath(MergeGeneratorPackages(settings.Version, generatorPackages, generatorProjectDirectory)),
+                Path.GetFullPath(MergeGeneratorPackages(generatorPackages, generatorProjectDirectory)),
                 true));
     }
 
-    private string CreateGeneratorPackage(NuGetVersion packageVersion, CodeAnalysis codeAnalysis, string projectDirectory)
+    private string CreateGeneratorPackage(CodeAnalysis codeAnalysis, string projectDirectory)
     {
         var analyzerRoslynPackageVersion = codeAnalysis.AnalyzerRoslynPackageVersion;
         var analyzerRoslynVersion = new Version(analyzerRoslynPackageVersion.Major, analyzerRoslynPackageVersion.Minor);
         Info($"Build package for Roslyn {analyzerRoslynVersion}.");
 
+        var rolsynVersions = string.Join(
+            ';',
+            settings.CodeAnalysis
+                .Where(i => i.AnalyzerRoslynPackageVersion <= codeAnalysis.AnalyzerRoslynPackageVersion)
+                .Select(i => $"ROSLYN{i.AnalyzerRoslynPackageVersion.Major}_{i.AnalyzerRoslynPackageVersion.Minor}_OR_GREATER"));
+
         List<(string, string)> props =
         [
             ("configuration", settings.Configuration),
-            ("version", packageVersion.ToString()),
+            ("version", settings.Version.ToString()),
             ("AnalyzerRoslynVersion", analyzerRoslynVersion.ToString()),
-            ("AnalyzerRoslynPackageVersion", analyzerRoslynPackageVersion.ToString())
+            ("AnalyzerRoslynPackageVersion", analyzerRoslynPackageVersion.ToString()),
+            ("RolsynVersions", $"\"{rolsynVersions}\""),
         ];
 
         if (settings.BuildServer)
@@ -54,10 +65,20 @@ internal class GeneratorTarget(
             props.Add(("CI", "true"));
         }
 
-        new MSBuild()
+        var bin = Path.Combine(projectDirectory, "bin");
+        if (Directory.Exists(bin))
+        {
+            Directory.Delete(bin, true);
+        }
+        
+        var obj = Path.Combine(projectDirectory, "obj");
+        if (Directory.Exists(obj))
+        {
+            Directory.Delete(obj, true);
+        }
+
+        new DotNetBuild()
             .WithShortName($"Building {codeAnalysis.AnalyzerRoslynPackageVersion}")
-            .WithTarget("clean;rebuild")
-            .WithRestore(true)
             .WithProps(props)
             .Build()
             .Succeed();
@@ -73,6 +94,8 @@ internal class GeneratorTarget(
         WriteLine(testResult.ToString(), Color.Details);
         testResult.Succeed();
 
+        var packagePath = Path.Combine(PackagesDir, analyzerRoslynVersion.ToString());
+
         new DotNetPack()
             .WithShortName($"Packing {codeAnalysis.AnalyzerRoslynPackageVersion}")
             .WithProps(props)
@@ -80,20 +103,16 @@ internal class GeneratorTarget(
             .WithNoBuild(true)
             .WithNoLogo(true)
             .WithProject(Path.Combine(projectDirectory, "Pure.DI.csproj"))
+            .WithOutput(Path.Combine(projectDirectory, packagePath))
             .Build()
             .Succeed();
 
-        return Path.Combine(
-            projectDirectory,
-            "bin",
-            $"roslyn{analyzerRoslynVersion}",
-            settings.Configuration,
-            $"Pure.DI.{packageVersion.ToString()}.nupkg");
+        return Path.Combine(projectDirectory, packagePath, PackageName);
     }
 
-    private string MergeGeneratorPackages(NuGetVersion packageVersion, IEnumerable<string> mergingPackages, string projectDirectory)
+    private string MergeGeneratorPackages(IEnumerable<string> mergingPackages, string projectDirectory)
     {
-        var targetPackage = Path.GetFullPath(Path.Combine(projectDirectory, "bin", settings.Configuration, $"Pure.DI.{packageVersion}.nupkg"));
+        var targetPackage = Path.GetFullPath(Path.Combine(projectDirectory, PackagesDir, PackageName));
         Info($"Creating NuGet package {targetPackage}");
         var targetDir = Path.GetDirectoryName(targetPackage);
         if (!string.IsNullOrWhiteSpace(targetDir))

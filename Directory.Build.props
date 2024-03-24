@@ -16,11 +16,16 @@
         <Description>Coding in a pure DI paradigm without frameworks!</Description>
         <Product>$(BasePackageId)</Product>
         <Copyright>Copyright (C) $([System.DateTime]::Now.Year) Nikolay Pianikov</Copyright>
-        <AnalyzerRoslynVersion Condition="'$(AnalyzerRoslynVersion)'==''">4.3</AnalyzerRoslynVersion>
-        <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">4.3.1</AnalyzerRoslynPackageVersion>
-        <BaseIntermediateOutputPath>obj\roslyn$(AnalyzerRoslynVersion)</BaseIntermediateOutputPath>
-        <BaseOutputPath>bin\roslyn$(AnalyzerRoslynVersion)</BaseOutputPath>
         <EnableWindowsTargeting>true</EnableWindowsTargeting>
+
+        <!--<AnalyzerRoslynVersion Condition="'$(AnalyzerRoslynVersion)'==''">4.3</AnalyzerRoslynVersion>
+        <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">4.3.1</AnalyzerRoslynPackageVersion>-->
+
+        <AnalyzerRoslynVersion Condition="'$(AnalyzerRoslynVersion)'==''">4.8</AnalyzerRoslynVersion>
+        <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">4.8.0</AnalyzerRoslynPackageVersion>
+
+        <RolsynVersions Condition="'$(RolsynVersions)'==''">ROSLYN4_8_OR_GREATER;ROSLYN4_3_OR_GREATER</RolsynVersions>
+        <DefineConstants>$(DefineConstants);$(RolsynVersions)</DefineConstants>
     </PropertyGroup>
 
     <Target Name="Info" BeforeTargets="Build">

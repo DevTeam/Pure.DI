@@ -25,6 +25,7 @@ internal class Settings(
 
     public ImmutableArray<CodeAnalysis> CodeAnalysis { get; } =
     [
+        new CodeAnalysis(new Version(4, 8, 0)),
         new CodeAnalysis(new Version(4, 3, 1))
     ];
 
