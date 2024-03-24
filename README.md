@@ -200,6 +200,7 @@ dotnet run
 - [Auto-bindings](readme/auto-bindings.md)
 - [Injections of abstractions](readme/injections-of-abstractions.md)
 - [Composition roots](readme/composition-roots.md)
+- [Composition roots simplified](readme/composition-roots-simplified.md)
 - [Resolve methods](readme/resolve-methods.md)
 - [Simplified binding](readme/simplified-binding.md)
 - [Factory](readme/factory.md)
@@ -215,6 +216,7 @@ dotnet run
 - [Required properties or fields](readme/required-properties-or-fields.md)
 - [Tracking disposable instances in delegates](readme/tracking-disposable-instances-in-delegates.md)
 - [Tracking disposable instances per a composition root](readme/tracking-disposable-instances-per-a-composition-root.md)
+- [RootBind](readme/rootbind.md)
 ### Lifetimes
 - [Singleton](readme/singleton.md)
 - [PerResolve](readme/perresolve.md)

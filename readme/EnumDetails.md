@@ -88,48 +88,48 @@ classDiagram
 ```c#
 partial class Enum
 {
-  private readonly Enum _rootM03D22di;
+  private readonly Enum _rootM03D24di;
   
   public Enum()
   {
-    _rootM03D22di = this;
+    _rootM03D24di = this;
   }
   
   internal Enum(Enum baseComposition)
   {
-    _rootM03D22di = baseComposition._rootM03D22di;
+    _rootM03D24di = baseComposition._rootM03D24di;
   }
   
   public partial Pure.DI.Benchmarks.Model.CompositionRoot PureDIByCR()
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x200)]
-    System.Collections.Generic.IEnumerable<Pure.DI.Benchmarks.Model.IService3> LocalperBlockM03D22di10_IEnumerable()
+    System.Collections.Generic.IEnumerable<Pure.DI.Benchmarks.Model.IService3> LocalperBlockM03D24di10_IEnumerable()
     {
         yield return new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
         yield return new Pure.DI.Benchmarks.Model.Service3v2(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
         yield return new Pure.DI.Benchmarks.Model.Service3v3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
         yield return new Pure.DI.Benchmarks.Model.Service3v4(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
     }
-    System.Collections.Generic.IEnumerable<Pure.DI.Benchmarks.Model.IService3> perBlockM03D22di10_IEnumerable = LocalperBlockM03D22di10_IEnumerable();
-    return new Pure.DI.Benchmarks.Model.CompositionRoot(new Pure.DI.Benchmarks.Model.Service1(new Pure.DI.Benchmarks.Model.Service2Enum(perBlockM03D22di10_IEnumerable)), new Pure.DI.Benchmarks.Model.Service2Enum(perBlockM03D22di10_IEnumerable), new Pure.DI.Benchmarks.Model.Service2Enum(perBlockM03D22di10_IEnumerable), new Pure.DI.Benchmarks.Model.Service2Enum(perBlockM03D22di10_IEnumerable), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
+    System.Collections.Generic.IEnumerable<Pure.DI.Benchmarks.Model.IService3> perBlockM03D24di10_IEnumerable = LocalperBlockM03D24di10_IEnumerable();
+    return new Pure.DI.Benchmarks.Model.CompositionRoot(new Pure.DI.Benchmarks.Model.Service1(new Pure.DI.Benchmarks.Model.Service2Enum(perBlockM03D24di10_IEnumerable)), new Pure.DI.Benchmarks.Model.Service2Enum(perBlockM03D24di10_IEnumerable), new Pure.DI.Benchmarks.Model.Service2Enum(perBlockM03D24di10_IEnumerable), new Pure.DI.Benchmarks.Model.Service2Enum(perBlockM03D24di10_IEnumerable), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
   }
   
   public T Resolve<T>()
   {
-    return ResolverM03D22di<T>.Value.Resolve(this);
+    return ResolverM03D24di<T>.Value.Resolve(this);
   }
   
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D22di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D24di<T>.Value.ResolveByTag(this, tag);
   }
   
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D22di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D22di;
+    var index = (int)(_bucketSizeM03D24di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D24di;
     do {
-      ref var pair = ref _bucketsM03D22di[index];
+      ref var pair = ref _bucketsM03D24di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -141,10 +141,10 @@ partial class Enum
   
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D22di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D22di;
+    var index = (int)(_bucketSizeM03D24di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D24di;
     do {
-      ref var pair = ref _bucketsM03D22di[index];
+      ref var pair = ref _bucketsM03D24di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -233,25 +233,25 @@ partial class Enum
         "  Enum ..> CompositionRoot : CompositionRoot PureDIByCR()";
   }
   
-  private readonly static int _bucketSizeM03D22di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Enum, object>>[] _bucketsM03D22di;
+  private readonly static int _bucketSizeM03D24di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Enum, object>>[] _bucketsM03D24di;
   
   static Enum()
   {
-    var valResolverM03D22di_0000 = new ResolverM03D22di_0000();
-    ResolverM03D22di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM03D22di_0000;
-    _bucketsM03D22di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Enum, object>>.Create(
+    var valResolverM03D24di_0000 = new ResolverM03D24di_0000();
+    ResolverM03D24di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM03D24di_0000;
+    _bucketsM03D24di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Enum, object>>.Create(
       1,
-      out _bucketSizeM03D22di,
+      out _bucketSizeM03D24di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Enum, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Enum, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM03D22di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Enum, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM03D24di_0000)
       });
   }
   
-  private sealed class ResolverM03D22di<T>: global::Pure.DI.IResolver<Enum, T>
+  private sealed class ResolverM03D24di<T>: global::Pure.DI.IResolver<Enum, T>
   {
-    public static global::Pure.DI.IResolver<Enum, T> Value = new ResolverM03D22di<T>();
+    public static global::Pure.DI.IResolver<Enum, T> Value = new ResolverM03D24di<T>();
     
     public T Resolve(Enum composite)
     {
@@ -264,7 +264,7 @@ partial class Enum
     }
   }
   
-  private sealed class ResolverM03D22di_0000: global::Pure.DI.IResolver<Enum, Pure.DI.Benchmarks.Model.CompositionRoot>
+  private sealed class ResolverM03D24di_0000: global::Pure.DI.IResolver<Enum, Pure.DI.Benchmarks.Model.CompositionRoot>
   {
     public Pure.DI.Benchmarks.Model.CompositionRoot Resolve(Enum composition)
     {

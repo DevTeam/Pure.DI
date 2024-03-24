@@ -1,59 +1,20 @@
-#### OnDependencyInjection hint
+#### RootBind
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Hints/OnDependencyInjectionHintScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/RootBindScenario.cs)
 
-Hints are used to fine-tune code generation. The _OnDependencyInjection_ hint determines whether to generate partial _OnDependencyInjection_ method to control of dependency injection.
-In addition, setup hints can be comments before the _Setup_ method in the form ```hint = value```, for example: `// OnDependencyInjection = On`.
+You might want to register some services as roots. You can use `RootBind<T>()` method in order to reduce repetitions. The registration `composition.RootBind<IDependency>().To<Dependency>()` is an equivalent to `composition.Bind<IDependency>().To<Dependency>().Root<IDependency>()`.
 
 ```c#
-using static Hint;
-
 interface IDependency;
 
 class Dependency : IDependency;
 
-interface IService
-{
-    IDependency Dependency { get; }
-}
-
-class Service(IDependency dependency) : IService
-{
-    public IDependency Dependency { get; } = dependency;
-}
-
-partial class Composition
-{
-    private readonly List<string> _log;
-
-    public Composition(List<string> log) : this() =>
-        _log = log;
-
-    private partial T OnDependencyInjection<T>(
-        in T value,
-        object? tag,
-        Lifetime lifetime)
-    {
-        _log.Add($"{value?.GetType().Name} injected");
-        return value;
-    }
-}
-
-// OnDependencyInjection = On
 DI.Setup(nameof(Composition))
-    .Hint(OnDependencyInjectionContractTypeNameRegularExpression, nameof(IDependency))
-    .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
+    .RootBind<IDependency>("Root").To<Dependency>();
 
-var log = new List<string>();
-var composition = new Composition(log);
-var service = composition.Root;
-        
-log.ShouldBe(ImmutableArray.Create("Dependency injected"));
+var composition = new Composition();
+composition.Root.ShouldBeOfType<Dependency>();
 ```
-
-The `OnDependencyInjectionContractTypeNameRegularExpression` hint helps identify the set of types that require injection control. You can use it to specify a regular expression to filter the full name of a type.
-For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/README.md#setup-hints) page.
 
 <details open>
 <summary>Class Diagram</summary>
@@ -61,7 +22,7 @@ For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/README
 ```mermaid
 classDiagram
   class Composition {
-    +IService Root
+    +IDependency Root
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object Resolve(Type type)
@@ -71,18 +32,10 @@ classDiagram
   class Dependency {
     +Dependency()
   }
-  Service --|> IService : 
-  class Service {
-    +Service(IDependency dependency)
-  }
   class IDependency {
     <<abstract>>
   }
-  class IService {
-    <<abstract>>
-  }
-  Service *--  Dependency : IDependency
-  Composition ..> Service : IService Root
+  Composition ..> Dependency : IDependency Root
 ```
 
 </details>
@@ -105,11 +58,11 @@ partial class Composition
     _rootM03D24di = baseComposition._rootM03D24di;
   }
   
-  public Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.IService Root
+  public Pure.DI.UsageTests.Basics.RootBindScenario.IDependency Root
   {
     get
     {
-      return new Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.Service(OnDependencyInjection<Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.IDependency>(new Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.Dependency(), null, Pure.DI.Lifetime.Transient));
+      return new Pure.DI.UsageTests.Basics.RootBindScenario.Dependency();
     }
   }
   
@@ -153,14 +106,12 @@ partial class Composition
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
   
-  private partial T OnDependencyInjection<T>(in T value, object? tag, global::Pure.DI.Lifetime lifetime);
-  
   public override string ToString()
   {
     return
       "classDiagram\n" +
         "  class Composition {\n" +
-          "    +IService Root\n" +
+          "    +IDependency Root\n" +
           "    + T ResolveᐸTᐳ()\n" +
           "    + T ResolveᐸTᐳ(object? tag)\n" +
           "    + object Resolve(Type type)\n" +
@@ -170,18 +121,10 @@ partial class Composition
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(IDependency dependency)\n" +
-        "  }\n" +
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Service *--  Dependency : IDependency\n" +
-        "  Composition ..> Service : IService Root";
+        "  Composition ..> Dependency : IDependency Root";
   }
   
   private readonly static int _bucketSizeM03D24di;
@@ -190,13 +133,13 @@ partial class Composition
   static Composition()
   {
     var valResolverM03D24di_0000 = new ResolverM03D24di_0000();
-    ResolverM03D24di<Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.IService>.Value = valResolverM03D24di_0000;
+    ResolverM03D24di<Pure.DI.UsageTests.Basics.RootBindScenario.IDependency>.Value = valResolverM03D24di_0000;
     _bucketsM03D24di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
       out _bucketSizeM03D24di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.IService), valResolverM03D24di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.RootBindScenario.IDependency), valResolverM03D24di_0000)
       });
   }
   
@@ -215,21 +158,21 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D24di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.IService>
+  private sealed class ResolverM03D24di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.RootBindScenario.IDependency>
   {
-    public Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.Basics.RootBindScenario.IDependency Resolve(Composition composition)
     {
       return composition.Root;
     }
     
-    public Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Basics.RootBindScenario.IDependency ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Root;
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Hints.OnDependencyInjectionHintScenario.IService.");
+      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.RootBindScenario.IDependency.");
     }
   }
 }
