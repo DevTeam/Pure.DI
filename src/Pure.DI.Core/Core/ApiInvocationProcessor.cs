@@ -153,7 +153,7 @@ internal class ApiInvocationProcessor(
                         break;
 
                     case nameof(IConfiguration.RootBind):
-                        var tags = invocation.ArgumentList.Arguments.SkipWhile((arg, i) => arg.NameColon?.Name.Identifier.Text != "tags" && i < 2);
+                        var tags = invocation.ArgumentList.Arguments.SkipWhile((arg, i) => arg.NameColon?.Name.Identifier.Text != "tags" && i < 2).ToList();
                         VisitBind(metadataVisitor, semanticModel, invocation, tags.ToList(), genericName, cancellationToken);
                         var rootTag = tags.Select(t => semanticModel.GetConstantValue<object>(t.Expression)).FirstOrDefault();
                         VisitRoot(arguments, rootTag, metadataVisitor, semanticModel, invocation, invocationComments, genericName, cancellationToken);
