@@ -149,21 +149,16 @@ internal class ApiInvocationProcessor(
                 switch (genericName.Identifier.Text)
                 {
                     case nameof(IConfiguration.Bind):
-                        if (genericName.TypeArgumentList.Arguments is var contractTypes)
-                        {
-                            foreach (var contractType in contractTypes)
-                            {
-                                metadataVisitor.VisitContract(
-                                    new MdContract(
-                                        semanticModel,
-                                        invocation.ArgumentList,
-                                        semanticModel.GetTypeSymbol<ITypeSymbol>(contractType, cancellationToken),
-                                        BuildTags(semanticModel, invocation.ArgumentList.Arguments).ToImmutable()));   
-                            }
-                        }
-
+                        VisitBind(metadataVisitor, semanticModel, invocation, genericName, cancellationToken);
                         break;
-                    
+
+                    case nameof(IConfiguration.RootBind):
+                        var tags = invocation.ArgumentList.Arguments.SkipWhile((arg, i) => arg.NameColon?.Name.Identifier.Text != "tags" && i < 2).ToList();
+                        VisitBind(metadataVisitor, semanticModel, invocation, tags.ToList(), genericName, cancellationToken);
+                        var rootTag = tags.Select(t => semanticModel.GetConstantValue<object>(t.Expression)).FirstOrDefault();
+                        VisitRoot(arguments, rootTag, metadataVisitor, semanticModel, invocation, invocationComments, genericName, cancellationToken);
+                        break;
+
                     case nameof(IBinding.To):
                         if (genericName.TypeArgumentList.Arguments is [{ } implementationTypeSyntax])
                         {
@@ -201,16 +196,7 @@ internal class ApiInvocationProcessor(
                         break;
 
                     case nameof(IConfiguration.Root):
-                        if (genericName.TypeArgumentList.Arguments is [{ } rootType])
-                        {
-                            var rootSymbol = semanticModel.GetTypeSymbol<INamedTypeSymbol>(rootType, cancellationToken);
-                            var rootArgs = arguments.GetArgs(invocation.ArgumentList, "name", "tag", "kind");
-                            var name = rootArgs[0] is {} nameArg ? semanticModel.GetConstantValue<string>(nameArg.Expression) ?? "" : "";
-                            var tag = rootArgs[1] is {} tagArg ? semanticModel.GetConstantValue<object>(tagArg.Expression) : null;
-                            var kind = rootArgs[2] is {} kindArg ? semanticModel.GetConstantValue<RootKinds>(kindArg.Expression) : RootKinds.Default;
-                            metadataVisitor.VisitRoot(new MdRoot(rootType, semanticModel, rootSymbol, name, new MdTag(0, tag), kind, invocationComments));
-                        }
-
+                        VisitRoot(arguments, metadataVisitor, semanticModel, invocation, invocationComments, genericName, cancellationToken);
                         break;
 
                     case nameof(IConfiguration.TypeAttribute):
@@ -263,6 +249,52 @@ internal class ApiInvocationProcessor(
                 }
 
                 break;
+        }
+    }
+
+    private static void VisitRoot(IArguments arguments, IMetadataVisitor metadataVisitor, SemanticModel semanticModel, InvocationExpressionSyntax invocation, List<string> invocationComments, GenericNameSyntax genericName, CancellationToken cancellationToken)
+    {
+        if (genericName.TypeArgumentList.Arguments is [{ } rootType])
+        {
+            var rootSymbol = semanticModel.GetTypeSymbol<INamedTypeSymbol>(rootType, cancellationToken);
+            var rootArgs = arguments.GetArgs(invocation.ArgumentList, "name", "tag", "kind");
+            var name = rootArgs[0] is { } nameArg ? semanticModel.GetConstantValue<string>(nameArg.Expression) ?? "" : "";
+            var tag = rootArgs[1] is { } tagArg ? semanticModel.GetConstantValue<object>(tagArg.Expression) : null;
+            var kind = rootArgs[2] is { } kindArg ? semanticModel.GetConstantValue<RootKinds>(kindArg.Expression) : RootKinds.Default;
+            metadataVisitor.VisitRoot(new MdRoot(rootType, semanticModel, rootSymbol, name, new MdTag(0, tag), kind, invocationComments));
+        }
+    }
+
+    private static void VisitRoot(IArguments arguments, object? tag, IMetadataVisitor metadataVisitor, SemanticModel semanticModel, InvocationExpressionSyntax invocation, List<string> invocationComments, GenericNameSyntax genericName, CancellationToken cancellationToken)
+    {
+        if (genericName.TypeArgumentList.Arguments is [{ } rootType])
+        {
+            var rootSymbol = semanticModel.GetTypeSymbol<INamedTypeSymbol>(rootType, cancellationToken);
+            var rootArgs = arguments.GetArgs(invocation.ArgumentList, "name", "kind");
+            var name = rootArgs[0] is { } nameArg ? semanticModel.GetConstantValue<string>(nameArg.Expression) ?? "" : "";
+            var kind = rootArgs[1] is { } kindArg ? semanticModel.GetConstantValue<RootKinds>(kindArg.Expression) : RootKinds.Default;
+            metadataVisitor.VisitRoot(new MdRoot(rootType, semanticModel, rootSymbol, name, new MdTag(0, tag), kind, invocationComments));
+        }
+    }
+
+    private static void VisitBind(IMetadataVisitor metadataVisitor, SemanticModel semanticModel, InvocationExpressionSyntax invocation, GenericNameSyntax genericName, CancellationToken cancellationToken)
+    {
+        VisitBind(metadataVisitor, semanticModel, invocation, invocation.ArgumentList.Arguments, genericName, cancellationToken);
+    }
+
+    private static void VisitBind(IMetadataVisitor metadataVisitor, SemanticModel semanticModel, InvocationExpressionSyntax invocation, IReadOnlyList<ArgumentSyntax> bindTags, GenericNameSyntax genericName, CancellationToken cancellationToken)
+    {
+        if (genericName.TypeArgumentList.Arguments is var contractTypes)
+        {
+            foreach (var contractType in contractTypes)
+            {
+                metadataVisitor.VisitContract(
+                    new MdContract(
+                        semanticModel,
+                        invocation.ArgumentList,
+                        semanticModel.GetTypeSymbol<ITypeSymbol>(contractType, cancellationToken),
+                        BuildTags(semanticModel, bindTags).ToImmutable()));
+            }
         }
     }
 
@@ -438,7 +470,7 @@ internal class ApiInvocationProcessor(
         return values;
     }
 
-    private static ImmutableArray<MdTag>.Builder BuildTags(SemanticModel semanticModel, SeparatedSyntaxList<ArgumentSyntax> arguments)
+    private static ImmutableArray<MdTag>.Builder BuildTags(SemanticModel semanticModel, IReadOnlyList<ArgumentSyntax> arguments)
     {
         var builder = ImmutableArray.CreateBuilder<MdTag>();
         for (var index = 0; index < arguments.Count; index++)

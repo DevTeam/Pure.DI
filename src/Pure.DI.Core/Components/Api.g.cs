@@ -1305,7 +1305,7 @@ namespace Pure.DI
         /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
         /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
         /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
-        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T4">The type 4 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
         /// <seealso cref="IBinding.As"/>
@@ -1318,7 +1318,7 @@ namespace Pure.DI
         /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
         /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
         /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
-        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T4">The type 4 of dependency to be bound.</typeparam>
         /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
@@ -1332,7 +1332,7 @@ namespace Pure.DI
         /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
         /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
         /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
-        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T4">The type 4 of dependency to be bound.</typeparam>
         /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
         /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam> 
         /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding.</param>
@@ -1347,7 +1347,7 @@ namespace Pure.DI
         /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
         /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
         /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
-        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T4">The type 4 of dependency to be bound.</typeparam>
         /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
         /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam>
         /// <typeparam name="T7">The type 7 of dependency to be bound.</typeparam>
@@ -1363,7 +1363,7 @@ namespace Pure.DI
         /// <typeparam name="T1">The type 1 of dependency to be bound.</typeparam>
         /// <typeparam name="T2">The type 2 of dependency to be bound.</typeparam>
         /// <typeparam name="T3">The type 3 of dependency to be bound.</typeparam>
-        /// <typeparam name="T4">The type 3 of dependency to be bound.</typeparam>
+        /// <typeparam name="T4">The type 4 of dependency to be bound.</typeparam>
         /// <typeparam name="T5">The type 5 of dependency to be bound.</typeparam>
         /// <typeparam name="T6">The type 6 of dependency to be bound.</typeparam>
         /// <typeparam name="T7">The type 7 of dependency to be bound.</typeparam>
@@ -1373,7 +1373,25 @@ namespace Pure.DI
         /// <seealso cref="IBinding.As"/>
         /// <seealso cref="IBinding.To{T}()"/>
         IBinding Bind<T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags);
-        
+
+        /// <summary>
+        /// Begins the definition of the binding with <see cref="Root{T}"/> applied.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .RootBind&lt;IService&gt;();
+        /// </code>
+        /// </example>
+        /// <typeparam name="T">The type of dependency to be bound.</typeparam>
+        /// <param name="name">Specifies the unique name of the root of the composition. If the value is empty, a private root will be created, which can be used when calling <c>Resolve</c> methods.</param>
+        /// <param name="kind">The Optional argument specifying the kind for the root of the Composition.</param>
+        /// <param name="tags">The optional argument that specifies tags for a particular type of dependency binding. If is is not empty, the first tag is used for the root.</param>
+        /// <returns>Reference to the setup continuation chain.</returns>
+        /// <seealso cref="IBinding.As"/>
+        /// <seealso cref="IBinding.To{T}()"/>
+        IBinding RootBind<T>(string name = "", RootKinds kind = RootKinds.Default, params object[] tags);
+
         /// <summary>
         /// Indicates the use of some single or multiple setups as base setups by name.
         /// </summary>
@@ -2014,6 +2032,13 @@ namespace Pure.DI
             /// <inheritdoc />
             [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags)
+            {
+                return Binding.Shared;
+            }
+
+            /// <inheritdoc />
+            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
+            public IBinding RootBind<T>(string name = "", RootKinds kind = RootKinds.Default, params object[] tags)
             {
                 return Binding.Shared;
             }
