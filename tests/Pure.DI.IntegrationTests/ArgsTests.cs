@@ -465,4 +465,47 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(ImmutableArray.Create("Some Name"), result);
     }
+
+    [Fact]
+    public async Task ShouldSupportTagsAsArray()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Arg<int>("x")
+                .Arg<int>("y", [1, 2])
+                .Root<int>("Root")
+                .Root<int>("Root2", 1)
+                .Root<int>("Root3", 2);
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition(-1, 1);
+            Console.WriteLine(composition.Root);                             
+            Console.WriteLine(composition.Root2);                             
+            Console.WriteLine(composition.Root3);                             
+        }
+    }                
+}
+""".RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp12 });
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["-1", "1", "1"], result);
+    }
 }
