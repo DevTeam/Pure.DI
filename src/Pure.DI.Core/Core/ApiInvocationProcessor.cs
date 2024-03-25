@@ -2,6 +2,7 @@
 namespace Pure.DI.Core;
 
 using Microsoft.CodeAnalysis.Operations;
+using System.Xml.Linq;
 
 internal class ApiInvocationProcessor(
     IComments comments,
@@ -454,16 +455,13 @@ internal class ApiInvocationProcessor(
         throw new CompileErrorException($"The {invocation} is not supported.", invocation.GetLocation(), LogId.ErrorInvalidMetadata);
     }
 
-    private static List<T> BuildConstantArgs<T>(SemanticModel semanticModel, SeparatedSyntaxList<ArgumentSyntax> arguments)
+    private static IReadOnlyList<T> BuildConstantArgs<T>(SemanticModel semanticModel, SeparatedSyntaxList<ArgumentSyntax> arguments)
     {
-        var values = new List<T>();
-        // ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
-        foreach (var argument in arguments)
-        {
-            values.Add(semanticModel.GetRequiredConstantValue<T>(argument.Expression));
-        }
-
-        return values;
+        return arguments
+            .SelectMany(a => semanticModel.GetConstantValues<T>(a.Expression).Select(value => (value, a.Expression)))
+            .Select(a => a.value ?? throw new CompileErrorException(
+                $"{a.Expression} must be a non-null value of type {typeof(T)}.", a.Expression.GetLocation(), LogId.ErrorInvalidMetadata))
+            .ToList();
     }
 
     private static ImmutableArray<MdTag> BuildTags(SemanticModel semanticModel, IEnumerable<ArgumentSyntax> arguments)
