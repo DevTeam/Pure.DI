@@ -1,4 +1,4 @@
-name: Pure.DI check
+name: Pure.DI
 
 on: [ push, pull_request ]
 
