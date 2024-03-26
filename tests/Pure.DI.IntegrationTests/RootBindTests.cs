@@ -178,6 +178,7 @@ namespace Sample
         result.StdOut.ShouldBe(["True", "True"], result);
     }
 
+#if ROSLYN4_8_OR_GREATER    
     [Fact]
     public async Task ShouldSupportRootBindWithTagsAsNamedArgument()
     {
@@ -224,4 +225,5 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True", "True"], result);
     }
+#endif
 }

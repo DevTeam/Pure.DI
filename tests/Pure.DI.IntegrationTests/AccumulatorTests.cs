@@ -353,6 +353,7 @@ namespace Sample
         result.StdOut.ShouldBe(ImmutableArray.Create("True", "False", "True"));
     }
 
+#if ROSLYN4_8_OR_GREATER
     [Fact]
     public async Task ShouldSupportMultipleLifetimesAsArray()
     {
@@ -447,4 +448,5 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["3", "Sample.XyzDependency", "Sample.AbcDependency", "Sample.Service"]);
     }
+#endif
 }

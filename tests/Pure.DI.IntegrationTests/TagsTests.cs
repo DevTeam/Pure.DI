@@ -300,6 +300,7 @@ namespace Sample
         result.StdOut.ShouldBe(ImmutableArray.Create("1", "2"), result);
     }
 
+#if ROSLYN4_8_OR_GREATER    
     [Fact]
     public async Task ShouldSupportTagsAsArrayInBind()
     {
@@ -342,7 +343,7 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["1", "2", "2"], result);
     }
-
+    
     [Fact]
     public async Task ShouldSupportTagsAsArrayInTagsMethod()
     {
@@ -385,4 +386,5 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["1", "2", "2"], result);
     }
+#endif
 }

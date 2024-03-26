@@ -466,6 +466,7 @@ namespace Sample
         result.StdOut.ShouldBe(ImmutableArray.Create("Some Name"), result);
     }
 
+#if ROSLYN4_8_OR_GREATER    
     [Fact]
     public async Task ShouldSupportTagsAsArray()
     {
@@ -508,4 +509,5 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["-1", "1", "1"], result);
     }
+#endif
 }

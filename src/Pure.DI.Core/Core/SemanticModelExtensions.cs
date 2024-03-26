@@ -42,6 +42,7 @@ internal static class SemanticModelExtensions
 
     public static T?[] GetConstantValues<T>(this SemanticModel semanticModel, SyntaxNode node)
     {
+#if ROSLYN4_8_OR_GREATER
         if (node is CollectionExpressionSyntax collectionExpression)
         {
             return collectionExpression.Elements
@@ -49,6 +50,7 @@ internal static class SemanticModelExtensions
                     .Select(e => GetConstantValue<T>(semanticModel, e))
                     .ToArray();
         }
+#endif        
 
         return [GetConstantValue<T>(semanticModel, node)];
     }

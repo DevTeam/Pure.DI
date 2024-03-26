@@ -1708,6 +1708,7 @@ namespace Sample
         result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Service", "Sample.Service"), result);
     }
 
+#if ROSLYN4_8_OR_GREATER    
     [Fact]
     public async Task ShouldSupportMultipleBaseCompositions()
     {
@@ -1756,4 +1757,5 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["(1, 2)"], result);
     }
+#endif
 }
