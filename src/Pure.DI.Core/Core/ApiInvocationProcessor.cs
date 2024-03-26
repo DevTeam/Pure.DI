@@ -228,7 +228,7 @@ internal class ApiInvocationProcessor(
                         if (genericName.TypeArgumentList.Arguments is [var typeSyntax, var accumulatorTypeSyntax])
                         {
                             var lifetimes = invocation.ArgumentList.Arguments
-                                .Select(i => semanticModel.GetConstantValue<Lifetime>(i.Expression))
+                                .SelectMany(i => semanticModel.GetConstantValues<Lifetime>(i.Expression))
                                 .Distinct()
                                 .OrderBy(i => i)
                                 .ToList();
