@@ -1,10 +1,10 @@
 name: Pure.DI check
 
-on: [ push ]
+on: [ push, pull_request ]
 
 jobs:
-  build:
-
+  build:  
+    
     runs-on: ubuntu-latest
     
     steps:
@@ -16,11 +16,25 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Build and check
-        run: dotnet run --project ./build -- check
+        run: dotnet run --project ./build -- check      
+  
+  deploy-examples:
+    
+    if: ${{ github.event_name != 'pull_request' }}
+
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
 
       - name: Publish Blazor example
         if: ${{ github.ref == 'refs/heads/master' }}
-        run: dotnet run --project ./build -- publish        
+        run: dotnet run --project ./build -- publish
 
       - name: Commit wwwroot to GitHub Pages
         if: ${{ github.ref == 'refs/heads/master' }}
@@ -28,4 +42,4 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
-          FOLDER: samples/BlazorWebAssemblyApp/bin/wwwroot
+          FOLDER: samples/BlazorWebAssemblyApp/bin/wwwroot          
