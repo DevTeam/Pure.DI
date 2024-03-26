@@ -299,4 +299,92 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(ImmutableArray.Create("1", "2"), result);
     }
+
+#if ROSLYN4_8_OR_GREATER    
+    [Fact]
+    public async Task ShouldSupportTagsAsArrayInBind()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind().To(ctx => 1)
+                .Bind([1, 2]).To(ctx => 2)
+                .Root<int>("Root")
+                .Root<int>("Root2", 1)
+                .Root<int>("Root3", 2);
+        }
+    }          
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            Console.WriteLine(composition.Root);
+            Console.WriteLine(composition.Root2);
+            Console.WriteLine(composition.Root3);
+        }
+    }
+}
+""".RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp12 });
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["1", "2", "2"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportTagsAsArrayInTagsMethod()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    static class Setup
+    {
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition")
+                .Bind().To(ctx => 1)
+                .Bind().Tags([1, 2]).To(ctx => 2)
+                .Root<int>("Root")
+                .Root<int>("Root2", 1)
+                .Root<int>("Root3", 2);
+        }
+    }          
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            Console.WriteLine(composition.Root);
+            Console.WriteLine(composition.Root2);
+            Console.WriteLine(composition.Root3);
+        }
+    }
+}
+""".RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp12 });
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["1", "2", "2"], result);
+    }
+#endif
 }

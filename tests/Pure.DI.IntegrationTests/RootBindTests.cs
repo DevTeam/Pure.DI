@@ -178,6 +178,7 @@ namespace Sample
         result.StdOut.ShouldBe(["True", "True"], result);
     }
 
+#if ROSLYN4_8_OR_GREATER    
     [Fact]
     public async Task ShouldSupportRootBindWithTagsAsNamedArgument()
     {
@@ -202,8 +203,9 @@ namespace Sample
         {
             DI.Setup("Composition")
                 .Bind<IDependency>().To<Dependency>()
-                .RootBind<IDependency>(tags: "RootTag").As(Singleton).To<Dependency>()
-                .Root<IDependency>("Root2");
+                .RootBind<IDependency>(tags: ["RootTag", "Dep2"]).As(Singleton).To<Dependency>()
+                .Root<IDependency>("Root2", "Dep2")
+                .Root<IDependency>("Root3");
         }
     }
 
@@ -212,15 +214,16 @@ namespace Sample
         public static void Main()
         {
             var composition = new Composition();
-            Console.WriteLine(composition.Resolve<IDependency>("RootTag") == composition.Resolve<IDependency>("RootTag"));
-            Console.WriteLine(composition.Resolve<IDependency>("RootTag") != composition.Root2);
+            Console.WriteLine(composition.Resolve<IDependency>("RootTag") == composition.Root2);
+            Console.WriteLine(composition.Resolve<IDependency>("RootTag") != composition.Root3);
         }
     }                
 }
-""".RunAsync();
+""".RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp12 });
 
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["True", "True"], result);
     }
+#endif
 }

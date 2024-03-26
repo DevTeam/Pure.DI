@@ -40,6 +40,21 @@ internal static class SemanticModelExtensions
         throw new CompileErrorException($"{node} must be a non-null value of type {typeof(T)}.", node.GetLocation(), LogId.ErrorInvalidMetadata);
     }
 
+    public static T?[] GetConstantValues<T>(this SemanticModel semanticModel, SyntaxNode node)
+    {
+#if ROSLYN4_8_OR_GREATER
+        if (node is CollectionExpressionSyntax collectionExpression)
+        {
+            return collectionExpression.Elements
+                    .SelectMany(e => e.ChildNodes())
+                    .Select(e => GetConstantValue<T>(semanticModel, e))
+                    .ToArray();
+        }
+#endif        
+
+        return [GetConstantValue<T>(semanticModel, node)];
+    }
+
     public static T? GetConstantValue<T>(this SemanticModel semanticModel, SyntaxNode node)
     {
         switch (node)

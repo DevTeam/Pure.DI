@@ -1707,4 +1707,55 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Service", "Sample.Service"), result);
     }
+
+#if ROSLYN4_8_OR_GREATER    
+    [Fact]
+    public async Task ShouldSupportMultipleBaseCompositions()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+
+namespace Sample
+{
+    static class Setup
+    {
+        private static void SetupBaseComposition1()
+        {
+            DI.Setup("BaseComposition1")
+                .RootBind<int>().To(_ => 1);
+        }
+
+        private static void SetupBaseComposition2()
+        {
+            DI.Setup("BaseComposition2")
+                .RootBind<string>().To(_ => "2");
+        }
+
+        private static void SetupComposition()
+        {
+            DI.Setup("Composition").DependsOn(["BaseComposition1", "BaseComposition2"])
+                .Root<(int, string)>("Root");
+        }
+    }          
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();
+            Console.WriteLine(composition.Root);                                           
+        }
+    }
+}
+""".RunAsync(new Options { LanguageVersion = LanguageVersion.CSharp12 });
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["(1, 2)"], result);
+    }
+#endif
 }
