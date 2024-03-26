@@ -2,7 +2,6 @@
 namespace Pure.DI.Core;
 
 using Microsoft.CodeAnalysis.Operations;
-using System.Xml.Linq;
 
 internal class ApiInvocationProcessor(
     IComments comments,
