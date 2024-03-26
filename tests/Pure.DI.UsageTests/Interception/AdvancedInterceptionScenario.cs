@@ -115,7 +115,7 @@ public class Scenario
         // OnDependencyInjection = On
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
+            .RootBind<IService>("Root").To<Service>();
 
         var log = new List<string>();
         var composition = new Composition(log);

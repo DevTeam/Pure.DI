@@ -66,7 +66,7 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Hint(OnDependencyInjectionContractTypeNameRegularExpression, nameof(IDependency))
             .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
+            .RootBind<IService>("Root").To<Service>();
 
         var log = new List<string>();
         var composition = new Composition(log);

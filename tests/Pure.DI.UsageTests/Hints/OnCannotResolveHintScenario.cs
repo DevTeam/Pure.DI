@@ -66,7 +66,7 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Hint(OnCannotResolve, "On")
             .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().Tags().To<Service>().Root<IService>("Root");
+            .RootBind<IService>("Root").To<Service>();
 
         var composition = new Composition();
         var service = composition.Root;
