@@ -58,13 +58,18 @@ public class Scenario
             // This hint indicates to not generate methods such as Resolve
             .Hint(Hint.Resolve, "Off")
             .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>().Root<IService>("CreateService")
+            .Bind<IService>().To<Service>()
+            
             // Some argument
             .RootArg<int>("id")
             .RootArg<string>("dependencyName")
+            
             // An argument can be tagged (e.g., tag "forService")
             // to be injectable by type and this tag
-            .RootArg<string>("serviceName", "forService");
+            .RootArg<string>("serviceName", "forService")
+            
+            // Composition root
+            .Root<IService>("CreateService");
 
         var composition = new Composition();
         

@@ -44,16 +44,17 @@ public class Scenario
         // Resolve = Off
 // {            
         DI.Setup(nameof(Composition))
-            // Binding abstractions to their implementations:
+            // Binding abstractions to their implementations
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
+            
             // Specifies to create a composition root (a property)
-            // of type "Program" with the name "Root":
+            // of type "Program" with the name "Root"
             .Root<Program>("Root");
         
         var composition = new Composition();
 
-        // root = new Program(new Service(new Dependency()));
+        // var root = new Program(new Service(new Dependency()));
         var root = composition.Root;
 
         root.Run();

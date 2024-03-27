@@ -46,9 +46,10 @@ partial class Composition
             // to register each root
             .Hint(Hint.OnNewRoot, "On")
             
-            .Bind<IDependency>("MyDep").To<Dependency>()
-            .Bind<IService>().To<Service>()
+            .Bind("MyDep").To<Dependency>()
+            .Bind().To<Service>()
             
+            // Composition roots
             .Root<IDependency>(tag: "MyDep")
             .Root<IService>("Root");
 

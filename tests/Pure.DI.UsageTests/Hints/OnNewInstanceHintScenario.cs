@@ -66,8 +66,8 @@ public class Scenario
 // {
         DI.Setup(nameof(Composition))
             .Hint(OnNewInstance, "On")
-            .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
-            .Bind<IService>().To<Service>().Root<IService>("Root");
+            .Bind().As(Lifetime.Singleton).To<Dependency>()
+            .RootBind<IService>("Root").To<Service>();
 
         var log = new List<string>();
         var composition = new Composition(log);

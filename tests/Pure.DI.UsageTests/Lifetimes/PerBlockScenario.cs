@@ -39,7 +39,7 @@ public class Scenario
     {
 // {            
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>().As(Lifetime.PerBlock).To<Dependency>()
+            .Bind().As(Lifetime.PerBlock).To<Dependency>()
             .Root<Service>("Root");
 
         var composition = new Composition();

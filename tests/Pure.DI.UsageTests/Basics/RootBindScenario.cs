@@ -15,9 +15,9 @@ using Shouldly;
 using Xunit;
 
 // {
-interface IDependency;
+interface IService;
 
-class Dependency : IDependency;
+class Service : IService;
 // }
 
 public class Scenario
@@ -27,10 +27,10 @@ public class Scenario
     {
         // {            
         DI.Setup(nameof(Composition))
-            .RootBind<IDependency>("Root").To<Dependency>();
+            .RootBind<IService>("Root").To<Service>();
 
         var composition = new Composition();
-        composition.Root.ShouldBeOfType<Dependency>();
+        composition.Root.ShouldBeOfType<Service>();
         // }
         composition.SaveClassDiagram();
     }

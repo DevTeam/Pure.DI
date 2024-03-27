@@ -41,11 +41,11 @@ partial class Composition
 {
     private static void Setup() =>
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>().As(Scoped).To<Dependency>()
+            .Bind().As(Scoped).To<Dependency>()
             // Session composition root
             .Root<Service>("SessionRoot", kind: RootKinds.Private)
             // Auto scoped
-            .Bind<IService>().To<IService>(ctx =>
+            .Bind().To<IService>(ctx =>
             {
                 // Injects a base composition
                 ctx.Inject(out Composition baseComposition);
@@ -55,6 +55,7 @@ partial class Composition
                 
                 return session.SessionRoot;
             })
+            
             // Program composition root
             .Root<Program>("ProgramRoot");
 }

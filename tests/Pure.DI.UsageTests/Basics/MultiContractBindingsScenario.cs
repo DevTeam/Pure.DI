@@ -40,7 +40,10 @@ public class Scenario
             .Bind<IDependency, IAdvancedDependency>().To<Dependency>()
             // .Bind<IDependency>().Bind<IAdvancedDependency>().To<Dependency>()
             // is also allowed
-            .Bind<IService>().To<Service>().Root<IService>("Root");
+            .Bind<IService>().To<Service>()
+            
+            // Composition root
+            .Root<IService>("Root");
 
         var composition = new Composition();
         var service = composition.Root;

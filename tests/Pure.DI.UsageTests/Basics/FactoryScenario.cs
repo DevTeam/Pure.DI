@@ -50,13 +50,17 @@ public class Scenario
     {
 // {            
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>().To(_ =>
+            .Bind().To(_ => DateTimeOffset.Now)
+            .Bind<IDependency>().To(ctx =>
             {
-                var dependency = new Dependency(DateTimeOffset.Now);
+                ctx.Inject(out Dependency dependency);
                 dependency.Initialize();
                 return dependency;
             })
-            .Bind<IService>().To<Service>().Root<IService>("Root");
+            .Bind<IService>().To<Service>()
+            
+            // Composition root
+            .Root<IService>("Root");
 
         var composition = new Composition();
         var service = composition.Root;

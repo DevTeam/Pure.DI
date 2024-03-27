@@ -33,6 +33,7 @@ public class Scenario
 // {        
         // Specifies to create a partial class "Composition"
         DI.Setup("Composition")
+
             // Specifies to create a property "MyService"
             .Root<Service>("MyService");
         

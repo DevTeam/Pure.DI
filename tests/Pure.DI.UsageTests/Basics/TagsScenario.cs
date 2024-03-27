@@ -59,9 +59,13 @@ public class Scenario
             .Bind<IDependency>("Xyz")
                 .As(Lifetime.Singleton)
                 .To<XyzDependency>()
-                // "XyzRoot" is root name, "Xyz" is tag
-                .Root<IDependency>("XyzRoot", "Xyz")
-            .Bind<IService>().To<Service>().Root<IService>("Root");
+            .Bind<IService>().To<Service>()
+            
+            // "XyzRoot" is root name, "Xyz" is tag
+            .Root<IDependency>("XyzRoot", "Xyz")
+            
+            // Specifies to create the composition root named "Root"
+            .Root<IService>("Root");
 
         var composition = new Composition();
         var service = composition.Root;

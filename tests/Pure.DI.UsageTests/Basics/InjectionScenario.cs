@@ -46,6 +46,8 @@ public class Scenario
                     ctx.Inject<IDependency>(out var dependency);
                     return new Service(dependency);
                 })
+            
+                // Composition root
                 .Root<IService>("Root");
 
         var composition = new Composition();

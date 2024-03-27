@@ -62,6 +62,7 @@ public class Scenario
             //  .As(Lifetime.PerBlock)
             //  .To<Dependency>()
             .Bind().As(Lifetime.PerBlock).To<Dependency>()
+            
             // Specifies to create a property "MyService"
             .Root<Service>("MyService");
         

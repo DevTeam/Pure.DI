@@ -64,6 +64,8 @@ public class Scenario
             .Bind<IDependency<TTS>>("value type").To<DependencyStruct<TTS>>()
             .Bind<IService<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
                 .To<Service<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
+            
+            // Composition root
             .Root<Program<string>>("Root");
 
         var composition = new Composition();

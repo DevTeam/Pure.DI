@@ -39,8 +39,11 @@ partial class Composition
 {
     private void Setup() =>
         DI.Setup(nameof(Composition))
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>()
+            .Bind().To<Dependency>()
+            .Bind().To<Service>()
+            
+            // A special composition root
+            // that allows to manage disposable dependencies
             .Root<Owned<IService>>("Root");
 }
 // }

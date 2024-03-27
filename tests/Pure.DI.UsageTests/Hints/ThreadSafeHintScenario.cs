@@ -38,8 +38,8 @@ public class Scenario
 // {            
         DI.Setup(nameof(Composition))
             .Hint(ThreadSafe, "Off")
-            .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>().Root<IService>("Root");
+            .Bind().To<Dependency>()
+            .RootBind<IService>("Root").To<Service>();
 
         var composition = new Composition();
         var service = composition.Root;

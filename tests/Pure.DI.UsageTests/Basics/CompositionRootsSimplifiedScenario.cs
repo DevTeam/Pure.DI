@@ -2,6 +2,7 @@
 $v=true
 $p=1
 $d=Composition roots simplified
+$h=You can use `RootBind<T>()` method in order to reduce repetitions.
 */
 
 // ReSharper disable ClassNeverInstantiated.Local

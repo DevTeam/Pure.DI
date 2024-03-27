@@ -65,7 +65,7 @@ public class Scenario
         // OnDependencyInjection = On
         // OnDependencyInjectionContractTypeNameRegularExpression = IService
         DI.Setup(nameof(Composition))
-            .Bind<IService>().To<Service>().Root<IService>("Root");
+            .RootBind<IService>("Root").To<Service>();
 
         var composition = new Composition();
         var service = composition.Root;
