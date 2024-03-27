@@ -32,13 +32,17 @@ class Service(IDependency dependency) : IService
 }
 
 DI.Setup(nameof(Composition))
-    .Bind<IDependency>().To(_ =>
+    .Bind().To(_ => DateTimeOffset.Now)
+    .Bind<IDependency>().To(ctx =>
     {
-        var dependency = new Dependency(DateTimeOffset.Now);
+        ctx.Inject(out Dependency dependency);
         dependency.Initialize();
         return dependency;
     })
-    .Bind<IService>().To<Service>().Root<IService>("Root");
+    .Bind<IService>().To<Service>()
+
+    // Composition root
+    .Root<IService>("Root");
 
 var composition = new Composition();
 var service = composition.Root;
@@ -57,18 +61,58 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
-  Dependency --|> IDependency : 
-  class Dependency
+  class Dependency {
+    +Dependency(DateTimeOffset time)
+  }
+  DateTimeOffset --|> IComparable : 
+  DateTimeOffset --|> IComparableᐸDateTimeOffsetᐳ : 
+  DateTimeOffset --|> IEquatableᐸDateTimeOffsetᐳ : 
+  DateTimeOffset --|> ISpanFormattable : 
+  DateTimeOffset --|> IFormattable : 
+  DateTimeOffset --|> ISpanParsableᐸDateTimeOffsetᐳ : 
+  DateTimeOffset --|> IParsableᐸDateTimeOffsetᐳ : 
+  DateTimeOffset --|> IDeserializationCallback : 
+  DateTimeOffset --|> ISerializable : 
+  DateTimeOffset --|> IUtf8SpanFormattable : 
+  class DateTimeOffset
   Service --|> IService : 
   class Service {
     +Service(IDependency dependency)
   }
-  class IDependency {
+  class IComparable {
+    <<abstract>>
+  }
+  class IComparableᐸDateTimeOffsetᐳ {
+    <<abstract>>
+  }
+  class IEquatableᐸDateTimeOffsetᐳ {
+    <<abstract>>
+  }
+  class ISpanFormattable {
+    <<abstract>>
+  }
+  class IFormattable {
+    <<abstract>>
+  }
+  class ISpanParsableᐸDateTimeOffsetᐳ {
+    <<abstract>>
+  }
+  class IParsableᐸDateTimeOffsetᐳ {
+    <<abstract>>
+  }
+  class IDeserializationCallback {
+    <<abstract>>
+  }
+  class ISerializable {
+    <<abstract>>
+  }
+  class IUtf8SpanFormattable {
     <<abstract>>
   }
   class IService {
     <<abstract>>
   }
+  Dependency *--  DateTimeOffset : DateTimeOffset
   Service *--  Dependency : IDependency
   Composition ..> Service : IService Root
 ```
@@ -81,48 +125,49 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM03D26di;
+  private readonly Composition _rootM03D27di;
   
   public Composition()
   {
-    _rootM03D26di = this;
+    _rootM03D27di = this;
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D26di = baseComposition._rootM03D26di;
+    _rootM03D27di = baseComposition._rootM03D27di;
   }
   
   public Pure.DI.UsageTests.Basics.FactoryScenario.IService Root
   {
     get
     {
-      Pure.DI.UsageTests.Basics.FactoryScenario.Dependency transientM03D26di1_Dependency;
+      System.DateTimeOffset transientM03D27di3_DateTimeOffset = DateTimeOffset.Now;
+      Pure.DI.UsageTests.Basics.FactoryScenario.Dependency transientM03D27di1_Dependency;
       {
-          var dependency_M03D26di1 = new Dependency(DateTimeOffset.Now);
-          dependency_M03D26di1.Initialize();
-          transientM03D26di1_Dependency = dependency_M03D26di1;
+          var dependency_M03D27di1 = new Pure.DI.UsageTests.Basics.FactoryScenario.Dependency(transientM03D27di3_DateTimeOffset);
+          dependency_M03D27di1.Initialize();
+          transientM03D27di1_Dependency = dependency_M03D27di1;
       }
-      return new Pure.DI.UsageTests.Basics.FactoryScenario.Service(transientM03D26di1_Dependency);
+      return new Pure.DI.UsageTests.Basics.FactoryScenario.Service(transientM03D27di1_Dependency);
     }
   }
   
   public T Resolve<T>()
   {
-    return ResolverM03D26di<T>.Value.Resolve(this);
+    return ResolverM03D27di<T>.Value.Resolve(this);
   }
   
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D26di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D27di<T>.Value.ResolveByTag(this, tag);
   }
   
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D26di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D26di;
+    var index = (int)(_bucketSizeM03D27di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D27di;
     do {
-      ref var pair = ref _bucketsM03D26di[index];
+      ref var pair = ref _bucketsM03D27di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -134,10 +179,10 @@ partial class Composition
   
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D26di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D26di;
+    var index = (int)(_bucketSizeM03D27di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM03D27di;
     do {
-      ref var pair = ref _bucketsM03D26di[index];
+      ref var pair = ref _bucketsM03D27di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -158,41 +203,81 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
-        "  Dependency --|> IDependency : \n" +
-        "  class Dependency\n" +
+        "  class Dependency {\n" +
+          "    +Dependency(DateTimeOffset time)\n" +
+        "  }\n" +
+        "  DateTimeOffset --|> IComparable : \n" +
+        "  DateTimeOffset --|> IComparableᐸDateTimeOffsetᐳ : \n" +
+        "  DateTimeOffset --|> IEquatableᐸDateTimeOffsetᐳ : \n" +
+        "  DateTimeOffset --|> ISpanFormattable : \n" +
+        "  DateTimeOffset --|> IFormattable : \n" +
+        "  DateTimeOffset --|> ISpanParsableᐸDateTimeOffsetᐳ : \n" +
+        "  DateTimeOffset --|> IParsableᐸDateTimeOffsetᐳ : \n" +
+        "  DateTimeOffset --|> IDeserializationCallback : \n" +
+        "  DateTimeOffset --|> ISerializable : \n" +
+        "  DateTimeOffset --|> IUtf8SpanFormattable : \n" +
+        "  class DateTimeOffset\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
           "    +Service(IDependency dependency)\n" +
         "  }\n" +
-        "  class IDependency {\n" +
+        "  class IComparable {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IComparableᐸDateTimeOffsetᐳ {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IEquatableᐸDateTimeOffsetᐳ {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class ISpanFormattable {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IFormattable {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class ISpanParsableᐸDateTimeOffsetᐳ {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IParsableᐸDateTimeOffsetᐳ {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IDeserializationCallback {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class ISerializable {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IUtf8SpanFormattable {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
+        "  Dependency *--  DateTimeOffset : DateTimeOffset\n" +
         "  Service *--  Dependency : IDependency\n" +
         "  Composition ..> Service : IService Root";
   }
   
-  private readonly static int _bucketSizeM03D26di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D26di;
+  private readonly static int _bucketSizeM03D27di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D27di;
   
   static Composition()
   {
-    var valResolverM03D26di_0000 = new ResolverM03D26di_0000();
-    ResolverM03D26di<Pure.DI.UsageTests.Basics.FactoryScenario.IService>.Value = valResolverM03D26di_0000;
-    _bucketsM03D26di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM03D27di_0000 = new ResolverM03D27di_0000();
+    ResolverM03D27di<Pure.DI.UsageTests.Basics.FactoryScenario.IService>.Value = valResolverM03D27di_0000;
+    _bucketsM03D27di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM03D26di,
+      out _bucketSizeM03D27di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.FactoryScenario.IService), valResolverM03D26di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.FactoryScenario.IService), valResolverM03D27di_0000)
       });
   }
   
-  private sealed class ResolverM03D26di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM03D27di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D26di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D27di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -205,7 +290,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D26di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.FactoryScenario.IService>
+  private sealed class ResolverM03D27di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.FactoryScenario.IService>
   {
     public Pure.DI.UsageTests.Basics.FactoryScenario.IService Resolve(Composition composition)
     {

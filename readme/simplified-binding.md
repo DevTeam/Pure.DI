@@ -26,6 +26,7 @@ DI.Setup("Composition")
     //  .As(Lifetime.PerBlock)
     //  .To<Dependency>()
     .Bind().As(Lifetime.PerBlock).To<Dependency>()
+
     // Specifies to create a property "MyService"
     .Root<Service>("MyService");
         
@@ -87,24 +88,24 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM03D26di;
+  private readonly Composition _rootM03D27di;
   
   public Composition()
   {
-    _rootM03D26di = this;
+    _rootM03D27di = this;
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D26di = baseComposition._rootM03D26di;
+    _rootM03D27di = baseComposition._rootM03D27di;
   }
   
   public Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service MyService
   {
     get
     {
-      Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Dependency perBlockM03D26di1_Dependency = new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Dependency();
-      return new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service(perBlockM03D26di1_Dependency, perBlockM03D26di1_Dependency, perBlockM03D26di1_Dependency);
+      Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Dependency perBlockM03D27di1_Dependency = new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Dependency();
+      return new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service(perBlockM03D27di1_Dependency, perBlockM03D27di1_Dependency, perBlockM03D27di1_Dependency);
     }
   }
   

@@ -11,6 +11,7 @@ class Service(Dependency dependency);
 
 // Specifies to create a partial class "Composition"
 DI.Setup("Composition")
+
     // Specifies to create a property "MyService"
     .Root<Service>("MyService");
         
@@ -50,16 +51,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM03D26di;
+  private readonly Composition _rootM03D27di;
   
   public Composition()
   {
-    _rootM03D26di = this;
+    _rootM03D27di = this;
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D26di = baseComposition._rootM03D26di;
+    _rootM03D27di = baseComposition._rootM03D27di;
   }
   
   public Pure.DI.UsageTests.Basics.AutoBindingsScenario.Service MyService

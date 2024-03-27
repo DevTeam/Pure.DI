@@ -160,7 +160,8 @@ internal sealed class ClassDiagramBuilder(
             rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(arg.InstanceType)} {arg.VariableName}"))})";
         }
 
-        return $"{FormatType(root.Injection.Type, DefaultFormatOptions)} {root.DisplayName}{typeArgsStr}{rootArgsStr}";
+        var displayName = root.IsPublic ? root.DisplayName : "_";
+        return $"{FormatType(root.Injection.Type, DefaultFormatOptions)} {displayName}{typeArgsStr}{rootArgsStr}";
     }
 
     private static string FormatCardinality(Lifetime lifetime) =>

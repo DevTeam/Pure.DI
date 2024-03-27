@@ -40,13 +40,18 @@ DI.Setup(nameof(Composition))
     // This hint indicates to not generate methods such as Resolve
     .Hint(Hint.Resolve, "Off")
     .Bind<IDependency>().To<Dependency>()
-    .Bind<IService>().To<Service>().Root<IService>("CreateService")
+    .Bind<IService>().To<Service>()
+
     // Some argument
     .RootArg<int>("id")
     .RootArg<string>("dependencyName")
+
     // An argument can be tagged (e.g., tag "forService")
     // to be injectable by type and this tag
-    .RootArg<string>("serviceName", "forService");
+    .RootArg<string>("serviceName", "forService")
+
+    // Composition root
+    .Root<IService>("CreateService");
 
 var composition = new Composition();
         
@@ -99,16 +104,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM03D26di;
+  private readonly Composition _rootM03D27di;
   
   public Composition()
   {
-    _rootM03D26di = this;
+    _rootM03D27di = this;
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D26di = baseComposition._rootM03D26di;
+    _rootM03D27di = baseComposition._rootM03D27di;
   }
   
   public Pure.DI.UsageTests.Basics.RootArgumentsScenario.IService CreateService(int id, string dependencyName, string serviceName)
