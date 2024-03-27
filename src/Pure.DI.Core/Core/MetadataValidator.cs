@@ -5,7 +5,8 @@ namespace Pure.DI.Core;
 
 internal sealed class MetadataValidator(
     ILogger<MetadataValidator> logger,
-    IBaseSymbolsProvider baseSymbolsProvider)
+    IBaseSymbolsProvider baseSymbolsProvider,
+    IMarker marker)
     : IValidator<MdSetup>
 {
     public bool Validate(MdSetup setup)
@@ -54,8 +55,21 @@ internal sealed class MetadataValidator(
 
             foreach (var root in roots.Skip(1))
             {
-                logger.CompileError($"The composition root \"{root.Name}\" duplicates the previously declared root \"{roots[0].Name}\"", root.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                logger.CompileError($"The composition root \"{root.Name}\" duplicates the previously declared root \"{roots[0].Name}\".", root.Source.GetLocation(), LogId.ErrorInvalidMetadata);
                 isValid = false;
+            }
+        }
+
+        foreach (var accumulator in setup.Accumulators)
+        {
+            if (marker.IsMarkerBased(accumulator.AccumulatorType))
+            {
+                logger.CompileError("Accumulator based on marker type is not supported.", accumulator.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+            }
+            
+            if (marker.IsMarkerBased(accumulator.Type))
+            {
+                logger.CompileError("The accumulator cannot accumulate instances based on marker type.", accumulator.Source.GetLocation(), LogId.ErrorInvalidMetadata);
             }
         }
 
