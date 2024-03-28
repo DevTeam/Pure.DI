@@ -42,7 +42,10 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<AbcDependency>()
             .Bind<IDependency>(2).To<XyzDependency>()
-            .Bind<IService>().To<Service>().Root<IService>("Root");
+            .Bind<IService>().To<Service>()
+            
+            // Composition root
+            .Root<IService>("Root");
 
         var composition = new Composition();
         var service = composition.Root;

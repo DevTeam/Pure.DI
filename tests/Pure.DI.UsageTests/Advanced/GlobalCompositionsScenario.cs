@@ -9,12 +9,13 @@ $h=When the `Setup(name, kind)` method is called, the second optional parameter 
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedType.Global
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable ArrangeTypeMemberModifiers
 namespace Pure.DI.UsageTests.Advanced.GlobalCompositionsScenario;
 
 // {
 class MyGlobalComposition
 {
-    private static void Setup() =>
+    void Setup() =>
         DI.Setup(nameof(GlobalCompositionsScenario), CompositionKind.Global)
             .Hint(Hint.ToString, "On")
             .Hint(Hint.FormatCode, "Off");
@@ -22,7 +23,7 @@ class MyGlobalComposition
 
 class MyGlobalComposition2
 {
-    private static void Setup() =>
+    void Setup() =>
         DI.Setup(nameof(MyGlobalComposition2), CompositionKind.Global)
             .Hint(Hint.FormatCode, "On");
 }

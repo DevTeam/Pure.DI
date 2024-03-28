@@ -41,7 +41,7 @@ namespace Sample
 
     internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composition")
+        void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>().Root<IService>(); 
     }               
@@ -98,7 +98,7 @@ namespace Sample
 
     internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composition")
+        void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>(); 
     }               
@@ -150,7 +150,7 @@ namespace Sample
 
     internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composition")
+        void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
             .Root<IService>("MyService"); 
@@ -214,7 +214,7 @@ namespace Sample
 
     internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composition")
+        void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>().Root<IService>(); 
     }               
@@ -271,7 +271,7 @@ namespace Sample
 
     internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composition")
+        void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To(_ => new Dependency())
             .Bind<IService>().To<Service>().Root<IService>(); 
     }               
@@ -328,7 +328,7 @@ namespace Sample
 
     internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composition")
+        void Setup() => Pure.DI.DI.Setup("Composition")
             .Arg<IDependency>("dep")
             .Bind<IService>().To<Service>().Root<IService>(); 
     }
@@ -385,7 +385,7 @@ namespace Sample
 
     internal partial class Composition
     {                   
-        private static void Setup()
+        void Setup()
         {
              Pure.DI.DI.Setup("Composition")
                .Bind<IDependency>().To<Dependency>();
@@ -447,7 +447,7 @@ namespace Sample
 
     internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composition")
+        void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<int>().To(_ => 99)
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>().Root<IService>("Root"); 
@@ -730,7 +730,7 @@ namespace Sample
 
     internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composition")
+        void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IService>().To<Service>().Root<IService>() 
 """ + bindingCode;
 
@@ -786,7 +786,7 @@ namespace Sample
 
     internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composition")
+        void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>().Root<IService>(); 
     }
@@ -843,7 +843,7 @@ namespace Sample
 
     internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composition")
+        void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency<TT>>().To<Dependency<TT>>()
             .Bind<IService>().To<Service>().Root<IService>(); 
     }
@@ -900,7 +900,7 @@ namespace Sample
 
     internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composition")
+        void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency<TT>>().To(_ => new Dependency<TT>(new TT[1]))
             .Bind<IService>().To<Service>().Root<IService>(); 
     }
@@ -957,7 +957,7 @@ namespace Sample
 
     internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composition")
+        void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<string>("MyStr").To(_ => "Abc")                        
             .Bind<IDependency<TT>>().To(ctx => {
                 ctx.Inject<TT[]>(out var array); 
@@ -1049,7 +1049,7 @@ namespace Sample
 
     internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composition")
+        void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency<TT1, TT2>>().To<Dependency<TT1, TT2>>()
             .Bind<IService>().To<Service>().Root<IService>(); 
     }
@@ -1104,7 +1104,7 @@ namespace Sample
 
     internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composition")
+        void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IService>().To<Service>().Root<IService>(); 
     }
 
@@ -1165,7 +1165,7 @@ namespace Sample
 
     internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composition")
+        void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency2>().To<Dependency2>()
             .Bind<IService>().To<Service>().Root<IService>(); 
     }
@@ -1220,7 +1220,7 @@ namespace Sample
 
     internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composition")
+        void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IService>().To<Service>().Root<IService>(); 
     }
 
@@ -1283,7 +1283,7 @@ namespace Sample
 
     internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composition")
+        void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency1>().To<Dependency1>()
             .Bind<IDependency2>().To<Dependency2>()
             .Bind<IService>().To<Service>()
@@ -1606,7 +1606,7 @@ namespace Sample
 
     internal partial class Composition
     {                   
-        private static void Setup() => Pure.DI.DI.Setup("Composition")
+        void Setup() => Pure.DI.DI.Setup("Composition")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
             .Root<IService>("Root")

@@ -60,7 +60,10 @@ public class Scenario
             // if not specified then CancellationToken.None will be used
             .RootArg<CancellationToken>("cancellationToken")
             .Bind<IDependency>().To<Dependency>()
-            .Bind<IService>().To<Service>().Root<IService>("GetRoot");
+            .Bind<IService>().To<Service>()
+            
+            // Composition root
+            .Root<IService>("GetRoot");
 
         var composition = new Composition();
         using var cancellationTokenSource = new CancellationTokenSource();

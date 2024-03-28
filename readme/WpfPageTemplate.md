@@ -9,7 +9,7 @@ The definition of the composition is in [Composition.cs](/samples/WpfAppNetCore/
 ```csharp
 internal partial class Composition
 {
-    private static void Setup() => DI.Setup(nameof(Composition))
+    void Setup() => DI.Setup(nameof(Composition))
         // Provides the composition root for clock view model
         .Root<IClockViewModel>("ClockViewModel")
         

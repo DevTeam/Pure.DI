@@ -39,6 +39,7 @@ internal class ConstructCodeBuilder(ITypeResolver typeResolver)
             case MdConstructKind.Accumulator:
                 break;
 
+            case MdConstructKind.None:
             default:
                 throw new ArgumentOutOfRangeException();
         }

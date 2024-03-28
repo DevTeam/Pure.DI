@@ -1440,7 +1440,7 @@ namespace Sample
 
     partial class Composition
     {
-        private static void Setup() =>
+        void Setup() =>
             DI.Setup(nameof(Composition))
                 .Bind<ISingletonDep>()
                     .As(Singleton)

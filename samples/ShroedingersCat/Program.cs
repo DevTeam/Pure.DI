@@ -1,5 +1,6 @@
 ﻿using Pure.DI;
 using static Pure.DI.Lifetime;
+// ReSharper disable ArrangeTypeMemberModifiers
 
 // ReSharper disable InconsistentNaming
 // ReSharper disable UnusedMember.Local
@@ -56,7 +57,7 @@ internal partial class Composition
     // [Conditional("DI")] attribute avoids generating IL code for the method that follows it.
     // Since this method is needed only at the compile time.
     [Conditional("DI")]
-    private static void Setup() =>
+    void Setup() =>
         DI.Setup(nameof(Composition))
             // Models a random subatomic event that may or may not occur
             .Bind().As(Singleton).To<Random>()

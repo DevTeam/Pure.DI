@@ -11,6 +11,7 @@ $h=Sometimes you need to check if you can get the root of a composition using th
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMemberInSuper.Global
+// ReSharper disable ArrangeTypeMemberModifiers
 namespace Pure.DI.UsageTests.Hints.CheckForRootScenario;
 
 using Shouldly;
@@ -40,7 +41,7 @@ partial class Composition
     internal static bool HasRoot(Type type, object? key = default) =>
         Roots.Contains((type, key));
         
-    private static void Setup() =>
+    void Setup() =>
         DI.Setup(nameof(Composition))
             // Specifies to use the partial OnNewRoot method
             // to register each root

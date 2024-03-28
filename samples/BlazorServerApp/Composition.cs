@@ -1,5 +1,6 @@
 // ReSharper disable UnusedMember.Local
 
+// ReSharper disable ArrangeTypeMemberModifiers
 namespace BlazorServerApp;
 
 using Clock.Models;
@@ -12,7 +13,7 @@ using static Pure.DI.Lifetime;
 
 internal partial class Composition: ServiceProviderFactory<Composition>
 {
-    private static void Setup() =>
+    void Setup() =>
         DI.Setup(nameof(Composition))
             .DependsOn(Base)
             // Specifies not to attempt to resolve types whose fully qualified name

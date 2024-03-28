@@ -1387,7 +1387,7 @@ namespace Sample
     
     internal partial class Composition
     {                   
-        private static void Setup() => 
+        void Setup() => 
             DI.Setup("Composition")
             .Bind<IService>("Abc").To<Service>()
             .Root<IService>(tag: "Abc"); 
@@ -1435,7 +1435,7 @@ namespace Sample
     
     internal partial class Composition
     {                   
-        private static void Setup() => 
+        void Setup() => 
             DI.Setup("Composition")
             .Bind<IService>("Abc").To<Service>()
             .Bind<Consumer>().To(ctx => 
@@ -1481,7 +1481,7 @@ namespace Sample
     
     internal partial class Composition
     {                   
-        private static void Setup() => 
+        void Setup() => 
             DI.Setup("Composition")
                 .Bind(typeof(Service)).To<Service>()
                 .Root<IService>("Root1", typeof(Service))
@@ -1530,7 +1530,7 @@ namespace Sample
     
     internal partial class Composition
     {                   
-        private static void Setup() => 
+        void Setup() => 
             DI.Setup("Composition")
                 .Bind().To<MyEnum1>()
                 .Bind().To<MyEnum2>()
@@ -1580,7 +1580,7 @@ namespace Sample
     
     internal partial class Composition
     {                   
-        private static void Setup() => 
+        void Setup() => 
             DI.Setup("Composition")
                 .Bind().To<Dep1>()
                 .Bind().To<Dep2>()
@@ -1635,7 +1635,7 @@ namespace Sample
     
     internal partial class Composition
     {                   
-        private static void Setup() => 
+        void Setup() => 
             DI.Setup("Composition")
                 .Bind<IDep>(Tag.Unique).To<Dep1>()
                 .Bind(Tag.Unique).To<Dep2>()
@@ -1683,7 +1683,7 @@ namespace Sample
     
     internal partial class Composition
     {                   
-        private static void Setup() => 
+        void Setup() => 
             DI.Setup("Composition")
                 .Bind<Dep>(Tag.Type).To<Dep>()
                 .Bind<IService>(Tag.Type).To<Service>()

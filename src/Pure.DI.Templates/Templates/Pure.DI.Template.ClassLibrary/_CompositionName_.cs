@@ -10,7 +10,7 @@ namespace _PureDIProjectName_;
 internal class $(CompositionName)
 {
     [Conditional("DI")]
-    private static void Setup() => 
+    void Setup() => 
         DI.Setup(nameof($(CompositionName)), CompositionKind.Global)
             .Bind().As(Singleton).To<ConsoleAdapter>();
 }

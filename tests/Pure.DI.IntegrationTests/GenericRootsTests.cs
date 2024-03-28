@@ -32,7 +32,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private static void Setup()
+        void Setup()
         {
             DI.Setup(nameof(Composition))
                 .Hint(Hint.Resolve, "Off")
@@ -87,7 +87,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private static void Setup()
+        void Setup()
         {
             DI.Setup(nameof(Composition))
                 .Bind<IBox<TT>>().To<CardboardBox<TT>>()                
@@ -147,7 +147,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private static void Setup()
+        void Setup()
         {
             DI.Setup(nameof(Composition))
                 .Hint(Hint.Resolve, "Off")
@@ -214,7 +214,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private static void Setup()
+        void Setup()
         {
             DI.Setup(nameof(Composition))
                 .Hint(Hint.Resolve, "Off")
@@ -290,7 +290,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private static void Setup()
+        void Setup()
         {
             DI.Setup(nameof(Composition))
                 .Hint(Hint.Resolve, "Off")
@@ -357,7 +357,7 @@ namespace Sample
     
     internal partial class Composition
     {
-        private static void Setup()
+        void Setup()
         {
             DI.Setup(nameof(Composition))
                 .Hint(Hint.Resolve, "Off")

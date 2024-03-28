@@ -9,6 +9,7 @@ $d=Keyed service provider
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Local
+// ReSharper disable ArrangeTypeMemberModifiers
 namespace Pure.DI.UsageTests.BCL.KeyedServiceProviderScenario;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -32,7 +33,7 @@ class Service([Tag("Dependency Key")] IDependency dependency) : IService
 
 partial class Composition: IKeyedServiceProvider
 {
-    private void Setup() =>
+    void Setup() =>
         DI.Setup(nameof(Composition))
             // The following hint overrides the name of the
             // "object Resolve(Type type)" method in "GetService",

@@ -70,6 +70,8 @@ public class Scenario
             .RootArg<CancellationToken>("cancellationToken")
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
+            
+            // Composition root
             .Root<IService>("GetRoot");
 
         var composition = new Composition();

@@ -164,7 +164,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private static void Setup()
+        void Setup()
         {
             // FormatCode = On
             DI.Setup(nameof(Composition))
@@ -324,7 +324,7 @@ namespace Sample
 
         partial class Composition
         {
-            private static void Setup() =>
+            void Setup() =>
                 DI.Setup(nameof(Composition))
                     .Bind<IDependency>().To<Dependency>()
                     .Bind<IService>().To<Service>()

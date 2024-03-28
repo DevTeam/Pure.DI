@@ -56,7 +56,11 @@ public class Scenario
             .Bind<IDependency>(Tag.Type, default).To<AbcDependency>()
             // Tag.Type here is the same as typeof(XyzDependency)
             .Bind<IDependency>(Tag.Type).As(Lifetime.Singleton).To<XyzDependency>()
-            .Bind<IService>().To<Service>().Root<IService>("Root")
+            .Bind<IService>().To<Service>()
+            
+            // Composition root
+            .Root<IService>("Root")
+            
             // "XyzRoot" is root name, typeof(XyzDependency) is tag
             .Root<IDependency>("XyzRoot", typeof(XyzDependency));
 

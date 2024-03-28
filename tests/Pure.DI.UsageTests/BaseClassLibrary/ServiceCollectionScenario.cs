@@ -12,6 +12,7 @@ $h=The `// OnNewRoot = On` hint specifies to create a static method that will be
 // ReSharper disable UnusedTypeParameter
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable UnusedMember.Local
+// ReSharper disable ArrangeTypeMemberModifiers
 namespace Pure.DI.UsageTests.BCL.ServiceCollectionScenario;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -39,7 +40,7 @@ partial class Composition: ServiceProviderFactory<Composition>
     public IServiceCollection ServiceCollection =>
         CreateServiceCollection(this);
 
-    private void Setup() =>
+    void Setup() =>
         DI.Setup(nameof(Composition))
             .DependsOn(Base)
             .Bind<IDependency>("Dependency Key").As(Lifetime.Singleton).To<Dependency>()

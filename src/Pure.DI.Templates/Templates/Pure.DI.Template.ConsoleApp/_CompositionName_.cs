@@ -9,7 +9,7 @@ namespace _PureDIProjectName_;
 internal partial class $(CompositionName)
 {
     [Conditional("DI")]
-    private static void Setup() => 
+    void Setup() => 
         DI.Setup(nameof($(CompositionName)))
             .Bind().As(Singleton).To<ConsoleAdapter>()
             .Root<Program>("Root");

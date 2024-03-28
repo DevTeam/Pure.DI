@@ -9,6 +9,7 @@ $d=Service provider with scope
 // ReSharper disable UnusedParameter.Local
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Local
+// ReSharper disable ArrangeTypeMemberModifiers
 namespace Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -35,7 +36,7 @@ class Service(IDependency dependency) : IService
 partial class Composition
     : IKeyedServiceProvider, IServiceScopeFactory, IServiceScope
 {
-    private void Setup() =>
+    void Setup() =>
         // The following hint overrides the name of the
         // "object Resolve(Type type)" method in "GetService",
         // which implements the "IServiceProvider" interface:
@@ -51,6 +52,8 @@ partial class Composition
             .Hint(Hint.ObjectResolveByTagMethodName, "GetRequiredKeyedService")
             .Bind<IDependency>().As(Lifetime.Singleton).To<Dependency>()
             .Bind<IService>().As(Lifetime.Scoped).To<Service>()
+            
+            // Composition roots
             .Root<IDependency>()
             .Root<IService>();
 

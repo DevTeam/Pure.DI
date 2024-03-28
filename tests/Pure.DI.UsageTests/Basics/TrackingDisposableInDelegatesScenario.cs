@@ -8,6 +8,8 @@ $d=Tracking disposable instances in delegates
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable ArrangeTypeMemberModifiers
+// ReSharper disable UnusedMemberInSuper.Global
 namespace Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario;
 
 using Xunit;
@@ -42,7 +44,7 @@ class Service(Func<Owned<IDependency>> dependencyFactory)
 
 partial class Composition
 {
-    private void Setup() =>
+    void Setup() =>
         DI.Setup(nameof(Composition))
             .Bind().To<Dependency>()
             .Bind().To<Service>()

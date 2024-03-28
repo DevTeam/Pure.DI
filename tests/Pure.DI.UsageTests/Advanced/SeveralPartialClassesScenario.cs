@@ -10,6 +10,7 @@ $h=The setting code for one Composition can be located in several methods and/or
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable ArrangeTypeMemberModifiers
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.SeveralPartialClassesScenario;
 
@@ -28,7 +29,7 @@ class Service(IDependency dependency) : IService;
 partial class Composition
 {
     // This method will not be called in runtime
-    private void Setup1() =>
+    void Setup1() =>
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>();
 }
@@ -36,7 +37,7 @@ partial class Composition
 partial class Composition
 {
     // This method will not be called in runtime
-    private void Setup2() =>
+    void Setup2() =>
         DI.Setup(nameof(Composition))
             .Bind<IService>().To<Service>();
 }

@@ -1,6 +1,7 @@
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedMember.Global
 // ReSharper disable RedundantNameQualifier
+// ReSharper disable ArrangeTypeMemberModifiers
 namespace WinFormsAppNetCore;
 
 using System;
@@ -11,7 +12,7 @@ using static Pure.DI.Lifetime;
 
 internal partial class Composition
 {
-    private static void Setup() => DI.Setup(nameof(Composition))
+    void Setup() => DI.Setup(nameof(Composition))
         // Provides the composition root for main form
         .Root<FormMain>("FormMain")
 

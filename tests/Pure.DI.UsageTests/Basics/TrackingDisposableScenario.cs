@@ -8,6 +8,7 @@ $d=Tracking disposable instances per a composition root
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable ArrangeTypeMemberModifiers
 namespace Pure.DI.UsageTests.Basics.TrackingDisposableScenario;
 
 using Xunit;
@@ -37,7 +38,7 @@ class Service(IDependency dependency) : IService
 
 partial class Composition
 {
-    private void Setup() =>
+    void Setup() =>
         DI.Setup(nameof(Composition))
             .Bind().To<Dependency>()
             .Bind().To<Service>()

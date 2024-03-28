@@ -1,4 +1,5 @@
-﻿namespace Pure.DI.Core;
+﻿// ReSharper disable ClassNeverInstantiated.Global
+namespace Pure.DI.Core;
 
 internal class RootValidator(
     ILogger<RootValidator> logger)

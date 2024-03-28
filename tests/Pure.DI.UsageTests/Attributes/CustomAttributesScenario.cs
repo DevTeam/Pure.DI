@@ -63,7 +63,10 @@ public class Scenario
             .TypeAttribute<MyTypeAttribute>()
             .Arg<int>("personId")
             .Bind<string>("NikName").To(_ => "Nik")
-            .Bind<IPerson>().To<Person>().Root<IPerson>("Person");
+            .Bind<IPerson>().To<Person>()
+            
+            // Composition root
+            .Root<IPerson>("Person");
 
         var composition = new PersonComposition(personId: 123);
         var person = composition.Person;

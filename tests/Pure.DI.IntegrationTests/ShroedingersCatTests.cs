@@ -51,7 +51,7 @@ namespace Sample
 
     internal partial class Composition
     {
-        private static void Setup()
+        void Setup()
         {
             // FormatCode = On
             DI.Setup(nameof(Composition))

@@ -11,7 +11,7 @@ Composition setup file is [Composition.cs](/samples/BlazorWebAssemblyApp/Composi
 ```c#
 internal partial class Composition: ServiceProviderFactory<Composition>
 {
-    private static void Setup() =>
+    void Setup() =>
         DI.Setup(nameof(Composition))
             .DependsOn(Base)
             // Specifies not to attempt to resolve types whose fully qualified name

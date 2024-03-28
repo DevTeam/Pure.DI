@@ -1,6 +1,7 @@
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedMember.Global
 // ReSharper disable RedundantNameQualifier
+// ReSharper disable ArrangeTypeMemberModifiers
 namespace AvaloniaApp;
 
 using Clock.Models;
@@ -11,7 +12,7 @@ using static Pure.DI.Lifetime;
 
 internal partial class Composition
 {
-    private static void Setup() => DI.Setup(nameof(Composition))
+    void Setup() => DI.Setup(nameof(Composition))
         // Provides the composition root for main window
         .Root<MainWindow>("MainWindow")
         // Provides the composition root for Clock view model

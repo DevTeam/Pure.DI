@@ -43,6 +43,8 @@ public class Scenario
         DI.Setup(nameof(Composition))
             .Bind<IDependency>("my tag").To<Dependency>()
             .Bind<IService>().To<Service>()
+            
+            // Composition root
             .Root<IService>("Root");
 
         var composition = new Composition();

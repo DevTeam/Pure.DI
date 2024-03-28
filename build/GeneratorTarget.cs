@@ -57,7 +57,7 @@ internal class GeneratorTarget(
             ("version", settings.Version.ToString()),
             ("AnalyzerRoslynVersion", analyzerRoslynVersion.ToString()),
             ("AnalyzerRoslynPackageVersion", analyzerRoslynPackageVersion.ToString()),
-            ("RolsynVersions", $"\"{rolsynVersions}\""),
+            ("RolsynVersions", $"\"{rolsynVersions}\"")
         ];
 
         if (settings.BuildServer)

@@ -48,7 +48,10 @@ public class Scenario
             .Bind<Dependency>('a').To<Dependency>()
             .Bind<Dependency>('b').To<Dependency>()
             .Bind<Dependency>('c').To<Dependency>()
-            .Bind<IService>().To<Service>().Root<IService>("Root");
+            .Bind<IService>().To<Service>()
+            
+            // Composition root
+            .Root<IService>("Root");
 
         var composition = new Composition();
         var service = composition.Root;

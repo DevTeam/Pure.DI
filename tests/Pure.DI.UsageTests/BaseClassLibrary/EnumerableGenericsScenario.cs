@@ -44,8 +44,10 @@ public class Scenario
             .Bind<IDependency<TT>>().To<AbcDependency<TT>>()
             .Bind<IDependency<TT>>("Xyz").To<XyzDependency<TT>>()
             .Bind<IService<TT>>().To<Service<TT>>()
-                .Root<IService<int>>("IntRoot")
-                .Root<IService<string>>("StringRoot");
+            
+            // Composition roots
+            .Root<IService<int>>("IntRoot")
+            .Root<IService<string>>("StringRoot");
 
         var composition = new Composition();
         

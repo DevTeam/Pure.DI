@@ -10,6 +10,7 @@ $h=The _Scoped_ lifetime ensures that there will be a single instance of the dep
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Local
+// ReSharper disable ArrangeTypeMemberModifiers
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Lifetimes.ScopeScenario;
 
@@ -49,7 +50,7 @@ class Program(Func<Session> sessionFactory)
 
 partial class Composition
 {
-    private static void Setup() =>
+    void Setup() =>
         DI.Setup(nameof(Composition))
             .Bind().As(Scoped).To<Dependency>()
             

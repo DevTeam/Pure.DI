@@ -60,7 +60,7 @@ Let's bind the abstractions to their implementations and set up the creation of 
 ```c#
 partial class Composition
 {
-  private static void Setup() => 
+  void Setup() => 
     DI.Setup(nameof(Composition))
         // Models a random subatomic event that may or may not occur
         .Bind().As(Singleton).To<Random>()

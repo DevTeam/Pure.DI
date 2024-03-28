@@ -64,7 +64,10 @@ public class Scenario
             .Arg<int>("personId")
             .Arg<string>("personName")
             .Arg<DateTime>("personBirthday")
-            .Bind<IPerson>().To<Person>().Root<IPerson>("Person");
+            .Bind<IPerson>().To<Person>()
+            
+            // Composition root
+            .Root<IPerson>("Person");
 
         var composition = new PersonComposition(
             personId: 123,

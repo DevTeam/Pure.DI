@@ -61,7 +61,9 @@ public class Scenario
                     service.Initialize();
                     return service;
                 })
-                .Root<IService>("Root");
+            
+            // Composition root
+            .Root<IService>("Root");
 
         var composition = new Composition("My Service");
         var service = composition.Root;

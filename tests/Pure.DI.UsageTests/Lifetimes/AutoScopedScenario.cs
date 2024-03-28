@@ -10,6 +10,7 @@ $h=You can use the following example to automatically create a session when crea
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedMember.Local
+// ReSharper disable ArrangeTypeMemberModifiers
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Lifetimes.AutoScopedScenario;
 
@@ -39,7 +40,7 @@ class Program(Func<IService> serviceFactory)
 
 partial class Composition
 {
-    private static void Setup() =>
+    void Setup() =>
         DI.Setup(nameof(Composition))
             .Bind().As(Scoped).To<Dependency>()
             // Session composition root

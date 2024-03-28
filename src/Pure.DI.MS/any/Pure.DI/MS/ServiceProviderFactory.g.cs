@@ -16,7 +16,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 /// <code>
 /// internal partial class Composition: ServiceProviderFactory&lt;Composition&gt;
 /// {
-///     private static void Setup() =&gt;
+///     void Setup() =&gt;
 ///         DI.Setup(nameof(Composition))
 ///             .DependsOn(Base)
 ///             .Root&lt;HomeController&gt;();
@@ -39,7 +39,7 @@ internal class ServiceProviderFactory<TComposition>: IServiceProviderFactory<ISe
     /// <example>
     /// For example:
     /// <code>
-    /// private static void Setup() =&amp;gt;
+    /// void Setup() =&amp;gt;
     ///     DI.Setup(nameof(Composition)).DependsOn(Base);
     /// </code>
     /// </example>

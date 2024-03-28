@@ -11,6 +11,7 @@ $f=The partial class is also useful for specifying access modifiers to the gener
 // ReSharper disable UnusedMember.Local
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable ArrangeTypeModifiers
+// ReSharper disable ArrangeTypeMemberModifiers
 #pragma warning disable CS9113 // Parameter is unread.
 namespace Pure.DI.UsageTests.Advanced.PartialClassScenario;
 
@@ -58,7 +59,7 @@ public partial class Composition
     
     // In fact, this method will not be called at runtime
     [Conditional("DI")]
-    private void Setup() =>
+    void Setup() =>
         DI.Setup(nameof(Composition))
             .Bind<IDependency>().To<Dependency>()
             .Bind<long>().To(_ => GenerateId())

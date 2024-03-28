@@ -76,7 +76,10 @@ public class Scenario
                         ctx.Inject<Dependency>(out var dependency);
                         return dependency;
                     })
-            .Bind<IService>().To<Service>().Root<IService>("Root");
+            .Bind<IService>().To<Service>()
+            
+            // Composition root
+            .Root<IService>("Root");
 
         var composition = new Composition();
         var service = composition.Root;
