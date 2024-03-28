@@ -7,7 +7,7 @@ When the `Setup(name, kind)` method is called, the second optional parameter spe
 ```c#
 class MyGlobalComposition
 {
-    private static void Setup() =>
+    void Setup() =>
         DI.Setup(nameof(GlobalCompositionsScenario), CompositionKind.Global)
             .Hint(Hint.ToString, "On")
             .Hint(Hint.FormatCode, "Off");
@@ -15,7 +15,7 @@ class MyGlobalComposition
 
 class MyGlobalComposition2
 {
-    private static void Setup() =>
+    void Setup() =>
         DI.Setup(nameof(MyGlobalComposition2), CompositionKind.Global)
             .Hint(Hint.FormatCode, "On");
 }

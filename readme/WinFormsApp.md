@@ -9,7 +9,7 @@ The composition definition is in the file [Composition.cs](/samples/WinFormsApp/
 ```csharp
 internal partial class Composition
 {
-    private static void Setup() => DI.Setup(nameof(Composition))
+    void Setup() => DI.Setup(nameof(Composition))
         .Root<FormMain>("FormMain")
 
         // Forms

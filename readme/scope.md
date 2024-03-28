@@ -37,7 +37,7 @@ class Program(Func<Session> sessionFactory)
 
 partial class Composition
 {
-    private static void Setup() =>
+    void Setup() =>
         DI.Setup(nameof(Composition))
             .Bind().As(Scoped).To<Dependency>()
 
@@ -129,42 +129,42 @@ classDiagram
 ```c#
 partial class Composition: global::System.IDisposable
 {
-  private readonly Composition _rootM03D27di;
-  private readonly object _lockM03D27di;
-  private readonly global::System.IDisposable[] _disposablesM03D27di;
-  private int _disposeIndexM03D27di;
-  private Pure.DI.UsageTests.Lifetimes.ScopeScenario.Dependency _scopedM03D27di36_Dependency;
+  private readonly Composition _rootM03D28di;
+  private readonly object _lockM03D28di;
+  private readonly global::System.IDisposable[] _disposablesM03D28di;
+  private int _disposeIndexM03D28di;
+  private Pure.DI.UsageTests.Lifetimes.ScopeScenario.Dependency _scopedM03D28di36_Dependency;
   
   public Composition()
   {
-    _rootM03D27di = this;
-    _lockM03D27di = new object();
-    _disposablesM03D27di = new global::System.IDisposable[1];
+    _rootM03D28di = this;
+    _lockM03D28di = new object();
+    _disposablesM03D28di = new global::System.IDisposable[1];
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D27di = baseComposition._rootM03D27di;
-    _lockM03D27di = _rootM03D27di._lockM03D27di;
-    _disposablesM03D27di = new global::System.IDisposable[1];
+    _rootM03D28di = baseComposition._rootM03D28di;
+    _lockM03D28di = _rootM03D28di._lockM03D28di;
+    _disposablesM03D28di = new global::System.IDisposable[1];
   }
   
   public Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService SessionRoot
   {
     get
     {
-      if (ReferenceEquals(_scopedM03D27di36_Dependency, null))
+      if (ReferenceEquals(_scopedM03D28di36_Dependency, null))
       {
-          lock (_lockM03D27di)
+          lock (_lockM03D28di)
           {
-              if (ReferenceEquals(_scopedM03D27di36_Dependency, null))
+              if (ReferenceEquals(_scopedM03D28di36_Dependency, null))
               {
-                  _scopedM03D27di36_Dependency = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Dependency();
-                  _disposablesM03D27di[_disposeIndexM03D27di++] = _scopedM03D27di36_Dependency;
+                  _scopedM03D28di36_Dependency = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Dependency();
+                  _disposablesM03D28di[_disposeIndexM03D28di++] = _scopedM03D28di36_Dependency;
               }
           }
       }
-      return new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service(_scopedM03D27di36_Dependency);
+      return new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service(_scopedM03D28di36_Dependency);
     }
   }
   
@@ -172,35 +172,35 @@ partial class Composition: global::System.IDisposable
   {
     get
     {
-      var perResolveM03D27di42_Func = default(System.Func<Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session>);
-      perResolveM03D27di42_Func = new global::System.Func<Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session>(
+      var perResolveM03D28di42_Func = default(System.Func<Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session>);
+      perResolveM03D28di42_Func = new global::System.Func<Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session>(
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
       () =>
       {
-          Pure.DI.UsageTests.Lifetimes.ScopeScenario.Composition transientM03D27di2_Composition = this;
-          var factory_M03D27di1 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session(transientM03D27di2_Composition);
-          return factory_M03D27di1;
+          Pure.DI.UsageTests.Lifetimes.ScopeScenario.Composition transientM03D28di2_Composition = this;
+          var factory_M03D28di1 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session(transientM03D28di2_Composition);
+          return factory_M03D28di1;
       });
-      return new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program(perResolveM03D27di42_Func);
+      return new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program(perResolveM03D28di42_Func);
     }
   }
   
   public T Resolve<T>()
   {
-    return ResolverM03D27di<T>.Value.Resolve(this);
+    return ResolverM03D28di<T>.Value.Resolve(this);
   }
   
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D27di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM03D28di<T>.Value.ResolveByTag(this, tag);
   }
   
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D27di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    var finish = index + _bucketSizeM03D27di;
+    var index = (int)(_bucketSizeM03D28di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var finish = index + _bucketSizeM03D28di;
     do {
-      ref var pair = ref _bucketsM03D27di[index];
+      ref var pair = ref _bucketsM03D28di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.Resolve(this);
@@ -212,10 +212,10 @@ partial class Composition: global::System.IDisposable
   
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D27di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    var finish = index + _bucketSizeM03D27di;
+    var index = (int)(_bucketSizeM03D28di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var finish = index + _bucketSizeM03D28di;
     do {
-      ref var pair = ref _bucketsM03D27di[index];
+      ref var pair = ref _bucketsM03D28di[index];
       if (ReferenceEquals(pair.Key, type))
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -228,11 +228,11 @@ partial class Composition: global::System.IDisposable
   
   public void Dispose()
   {
-    lock (_lockM03D27di)
+    lock (_lockM03D28di)
     {
-      while (_disposeIndexM03D27di > 0)
+      while (_disposeIndexM03D28di > 0)
       {
-        var disposableInstance = _disposablesM03D27di[--_disposeIndexM03D27di];
+        var disposableInstance = _disposablesM03D28di[--_disposeIndexM03D28di];
         try
         {
           disposableInstance.Dispose();
@@ -243,7 +243,7 @@ partial class Composition: global::System.IDisposable
         }
       }
       
-      _scopedM03D27di36_Dependency = null;
+      _scopedM03D28di36_Dependency = null;
     }
   }
   
@@ -292,28 +292,28 @@ partial class Composition: global::System.IDisposable
         "  FuncᐸSessionᐳ *--  Session : Session";
   }
   
-  private readonly static int _bucketSizeM03D27di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D27di;
+  private readonly static int _bucketSizeM03D28di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D28di;
   
   static Composition()
   {
-    var valResolverM03D27di_0000 = new ResolverM03D27di_0000();
-    ResolverM03D27di<Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService>.Value = valResolverM03D27di_0000;
-    var valResolverM03D27di_0001 = new ResolverM03D27di_0001();
-    ResolverM03D27di<Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program>.Value = valResolverM03D27di_0001;
-    _bucketsM03D27di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM03D28di_0000 = new ResolverM03D28di_0000();
+    ResolverM03D28di<Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService>.Value = valResolverM03D28di_0000;
+    var valResolverM03D28di_0001 = new ResolverM03D28di_0001();
+    ResolverM03D28di<Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program>.Value = valResolverM03D28di_0001;
+    _bucketsM03D28di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       4,
-      out _bucketSizeM03D27di,
+      out _bucketSizeM03D28di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[2]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService), valResolverM03D27di_0000)
-        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program), valResolverM03D27di_0001)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService), valResolverM03D28di_0000)
+        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program), valResolverM03D28di_0001)
       });
   }
   
-  private sealed class ResolverM03D27di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM03D28di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D27di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D28di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -326,7 +326,7 @@ partial class Composition: global::System.IDisposable
     }
   }
   
-  private sealed class ResolverM03D27di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService>
+  private sealed class ResolverM03D28di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService>
   {
     public Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService Resolve(Composition composition)
     {
@@ -344,7 +344,7 @@ partial class Composition: global::System.IDisposable
     }
   }
   
-  private sealed class ResolverM03D27di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program>
+  private sealed class ResolverM03D28di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program>
   {
     public Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program Resolve(Composition composition)
     {
