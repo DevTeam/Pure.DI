@@ -57,7 +57,7 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
             {
                 var checkExpression = variable.InstanceType.IsValueType
                     ? $"!{parent}{variable.VariableName}Created"
-                    : $"ReferenceEquals({parent}{variable.VariableName}, null)";
+                    : $"{parent}{variable.VariableName} == null";
 
                 if (lockIsRequired)
                 {

@@ -168,7 +168,7 @@ internal sealed class ApiMembersBuilder(
                 using (code.Indent())
                 {
                     code.AppendLine($"ref var pair = ref {Names.BucketsFieldName}[index];");
-                    code.AppendLine("if (ReferenceEquals(pair.Key, type))");
+                    code.AppendLine("if (pair.Key == type)");
                     code.AppendLine("{");
                     using (code.Indent())
                     {
