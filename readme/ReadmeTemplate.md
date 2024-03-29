@@ -58,24 +58,20 @@ Add the _Pure.DI_ package to your project:
 Let's bind the abstractions to their implementations and set up the creation of the object graph:
 
 ```c#
-partial class Composition
-{
-  void Setup() => 
-    DI.Setup(nameof(Composition))
-        // Models a random subatomic event that may or may not occur
-        .Bind().As(Singleton).To<Random>()
-        // Represents a quantum superposition of 2 states: Alive or Dead
-        .Bind().To(ctx =>
-        {
-          ctx.Inject<Random>(out var random);
-          return (State)random.Next(2);
-        })
-        .Bind().To<ShroedingersCat>()
-        // Represents a cardboard box with any contents
-        .Bind().To<CardboardBox<TT>>()
-        // Composition Root
-        .Root<Program>("Root");
-}
+DI.Setup(nameof(Composition))
+    // Models a random subatomic event that may or may not occur
+    .Bind().As(Singleton).To<Random>()
+    // Represents a quantum superposition of 2 states: Alive or Dead
+    .Bind().To(ctx =>
+    {
+      ctx.Inject<Random>(out var random);
+      return (State)random.Next(2);
+    })
+    .Bind().To<ShroedingersCat>()
+    // Represents a cardboard box with any contents
+    .Bind().To<CardboardBox<TT>>()
+    // Composition Root
+    .Root<Program>("Root");
 ```
 
 The above code specifies the generation of a partial class named *__Composition__*, this name is defined in the `DI.Setup(nameof(Composition))` call. This class contains a *__Root__* property that returns a graph of objects with an object of type *__Program__* as the root. The type and name of the property is defined by calling `Root<Program>("Root")`. The code of the generated class looks as follows:
