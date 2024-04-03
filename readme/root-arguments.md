@@ -104,16 +104,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM03D28di;
+  private readonly Composition _rootM04D03di;
   
   public Composition()
   {
-    _rootM03D28di = this;
+    _rootM04D03di = this;
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D28di = baseComposition._rootM03D28di;
+    _rootM04D03di = baseComposition._rootM04D03di;
   }
   
   public Pure.DI.UsageTests.Basics.RootArgumentsScenario.IService CreateService(int id, string dependencyName, string serviceName)

@@ -85,80 +85,80 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM03D28di;
-  private readonly object _lockM03D28di;
+  private readonly Composition _rootM04D03di;
+  private readonly object _lockM04D03di;
   
   public Composition()
   {
-    _rootM03D28di = this;
-    _lockM03D28di = new object();
+    _rootM04D03di = this;
+    _lockM04D03di = new object();
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM03D28di = baseComposition._rootM03D28di;
-    _lockM03D28di = _rootM03D28di._lockM03D28di;
+    _rootM04D03di = baseComposition._rootM04D03di;
+    _lockM04D03di = _rootM04D03di._lockM04D03di;
   }
   
   public Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service Root
   {
     get
     {
-      var perResolveM03D28di36_Dependency = default(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency);
-      var perResolveM03D28di42_Func = default(System.Func<(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep4)>);
-      perResolveM03D28di42_Func = new global::System.Func<(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep4)>(
+      var perResolveM04D03di36_Dependency = default(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency);
+      var perResolveM04D03di42_Func = default(System.Func<(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep4)>);
+      perResolveM04D03di42_Func = new global::System.Func<(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep4)>(
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
       () =>
       {
-          if (ReferenceEquals(perResolveM03D28di36_Dependency, null))
+          if (perResolveM04D03di36_Dependency == null)
           {
-              lock (_lockM03D28di)
+              lock (_lockM04D03di)
               {
-                  if (ReferenceEquals(perResolveM03D28di36_Dependency, null))
+                  if (perResolveM04D03di36_Dependency == null)
                   {
-                      perResolveM03D28di36_Dependency = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency();
+                      perResolveM04D03di36_Dependency = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency();
                   }
               }
           }
-          var factory_M03D28di1 = (perResolveM03D28di36_Dependency, perResolveM03D28di36_Dependency);
-          return factory_M03D28di1;
+          var factory_M04D03di1 = (perResolveM04D03di36_Dependency, perResolveM04D03di36_Dependency);
+          return factory_M04D03di1;
       });
-      System.Lazy<(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep4)> transientM03D28di1_Lazy;
+      System.Lazy<(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep4)> transientM04D03di1_Lazy;
       {
-          var factory_M03D28di2 = perResolveM03D28di42_Func;
-          transientM03D28di1_Lazy = new global::System.Lazy<(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep4)>(factory_M03D28di2, true);
+          var factory_M04D03di2 = perResolveM04D03di42_Func;
+          transientM04D03di1_Lazy = new global::System.Lazy<(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep3, Pure.DI.UsageTests.Lifetimes.PerResolveScenario.IDependency dep4)>(factory_M04D03di2, true);
       }
-      if (ReferenceEquals(perResolveM03D28di36_Dependency, null))
+      if (perResolveM04D03di36_Dependency == null)
       {
-          lock (_lockM03D28di)
+          lock (_lockM04D03di)
           {
-              if (ReferenceEquals(perResolveM03D28di36_Dependency, null))
+              if (perResolveM04D03di36_Dependency == null)
               {
-                  perResolveM03D28di36_Dependency = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency();
+                  perResolveM04D03di36_Dependency = new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Dependency();
               }
           }
       }
-      return new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service(perResolveM03D28di36_Dependency, perResolveM03D28di36_Dependency, transientM03D28di1_Lazy);
+      return new Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service(perResolveM04D03di36_Dependency, perResolveM04D03di36_Dependency, transientM04D03di1_Lazy);
     }
   }
   
   public T Resolve<T>()
   {
-    return ResolverM03D28di<T>.Value.Resolve(this);
+    return ResolverM04D03di<T>.Value.Resolve(this);
   }
   
   public T Resolve<T>(object? tag)
   {
-    return ResolverM03D28di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM04D03di<T>.Value.ResolveByTag(this, tag);
   }
   
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM03D28di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D28di;
+    var index = (int)(_bucketSizeM04D03di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM04D03di;
     do {
-      ref var pair = ref _bucketsM03D28di[index];
-      if (ReferenceEquals(pair.Key, type))
+      ref var pair = ref _bucketsM04D03di[index];
+      if (pair.Key == type)
       {
         return pair.Value.Resolve(this);
       }
@@ -169,11 +169,11 @@ partial class Composition
   
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM03D28di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM03D28di;
+    var index = (int)(_bucketSizeM04D03di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var finish = index + _bucketSizeM04D03di;
     do {
-      ref var pair = ref _bucketsM03D28di[index];
-      if (ReferenceEquals(pair.Key, type))
+      ref var pair = ref _bucketsM04D03di[index];
+      if (pair.Key == type)
       {
         return pair.Value.ResolveByTag(this, tag);
       }
@@ -218,25 +218,25 @@ partial class Composition
         "  FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ *--  ValueTupleᐸIDependencyˏIDependencyᐳ : ValueTupleᐸIDependencyˏIDependencyᐳ";
   }
   
-  private readonly static int _bucketSizeM03D28di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM03D28di;
+  private readonly static int _bucketSizeM04D03di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM04D03di;
   
   static Composition()
   {
-    var valResolverM03D28di_0000 = new ResolverM03D28di_0000();
-    ResolverM03D28di<Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service>.Value = valResolverM03D28di_0000;
-    _bucketsM03D28di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM04D03di_0000 = new ResolverM04D03di_0000();
+    ResolverM04D03di<Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service>.Value = valResolverM04D03di_0000;
+    _bucketsM04D03di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM03D28di,
+      out _bucketSizeM04D03di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service), valResolverM03D28di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service), valResolverM04D03di_0000)
       });
   }
   
-  private sealed class ResolverM03D28di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM04D03di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM03D28di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM04D03di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -249,7 +249,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM03D28di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service>
+  private sealed class ResolverM04D03di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service>
   {
     public Pure.DI.UsageTests.Lifetimes.PerResolveScenario.Service Resolve(Composition composition)
     {
