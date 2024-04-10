@@ -17,11 +17,15 @@ namespace Pure.DI
                     Lifetime.Transient,
                     Lifetime.PerResolve,
                     Lifetime.PerBlock)
-                .Bind<global::Pure.DI.IOwned>().To<Owned>()
+                .Bind<global::Pure.DI.IOwned>().To(ctx =>
+                {
+                    ctx.Inject<Owned>(out var owned);
+                    return owned;
+                })
                 .Bind<global::Pure.DI.Owned<TT>>()
                     .As(Lifetime.PerBlock)
                     .To(ctx => {
-                        ctx.Inject<Owned>(out var owned);
+                        ctx.Inject<IOwned>(out var owned);
                         ctx.Inject<TT>(ctx.Tag, out var value);
                         return new Owned<TT>(value, owned);
                     })

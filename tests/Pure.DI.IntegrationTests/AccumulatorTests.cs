@@ -283,7 +283,7 @@ namespace Sample
     }
     
     [Fact]
-    public async Task ShouldSupportOwned()
+    public async Task ShouldSupportGenericOwned()
     {
         // Given
 
@@ -343,6 +343,148 @@ namespace Sample
                 Console.WriteLine(root1.Value.Dependency.IsDisposed);
                 root1.Dispose();
                 Console.WriteLine(root1.Value.Dependency.IsDisposed);
+            }
+        }
+    }
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True", "False", "True"));
+    }
+    
+    [Fact]
+    public async Task ShouldSupportIOwned()
+    {
+        // Given
+
+        // When
+        var result = await """
+    using System;
+    using System.Collections.Generic;
+    using Pure.DI;
+
+    namespace Sample
+    {
+        interface IDependency
+        {
+            bool IsDisposed { get; }
+        }
+
+        class Dependency : IDependency, IDisposable
+        {
+            public bool IsDisposed { get; private set; }
+
+            public void Dispose() => IsDisposed = true;
+        }
+
+        interface IService
+        {
+            public IDependency Dependency { get; }
+        }
+
+        class Service : IService
+        {
+            public Service(IDependency dependency)
+            {
+                Dependency = dependency;
+            }
+            
+            public IDependency Dependency { get; }
+        }
+
+        partial class Composition
+        {
+            void Setup() =>
+                DI.Setup(nameof(Composition))
+                    .Bind<IDependency>().To<Dependency>()
+                    .Bind<IService>().To<Service>()
+                    .Root<(IService Service, IOwned Owned)>("Root");
+        }
+
+        public class Program
+        {
+            public static void Main()
+            {
+                var composition = new Composition();
+                var root1 = composition.Root;
+                var root2 = composition.Root;
+                root2.Owned.Dispose();
+                Console.WriteLine(root2.Service.Dependency.IsDisposed);
+                Console.WriteLine(root1.Service.Dependency.IsDisposed);
+                root1.Owned.Dispose();
+                Console.WriteLine(root1.Service.Dependency.IsDisposed);
+            }
+        }
+    }
+""".RunAsync();
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(ImmutableArray.Create("True", "False", "True"));
+    }
+    
+    [Fact]
+    public async Task ShouldSupportOwned()
+    {
+        // Given
+
+        // When
+        var result = await """
+    using System;
+    using System.Collections.Generic;
+    using Pure.DI;
+
+    namespace Sample
+    {
+        interface IDependency
+        {
+            bool IsDisposed { get; }
+        }
+
+        class Dependency : IDependency, IDisposable
+        {
+            public bool IsDisposed { get; private set; }
+
+            public void Dispose() => IsDisposed = true;
+        }
+
+        interface IService
+        {
+            public IDependency Dependency { get; }
+        }
+
+        class Service : IService
+        {
+            public Service(IDependency dependency)
+            {
+                Dependency = dependency;
+            }
+            
+            public IDependency Dependency { get; }
+        }
+
+        partial class Composition
+        {
+            void Setup() =>
+                DI.Setup(nameof(Composition))
+                    .Bind<IDependency>().To<Dependency>()
+                    .Bind<IService>().To<Service>()
+                    .Root<(IService Service, Owned Owned)>("Root");
+        }
+
+        public class Program
+        {
+            public static void Main()
+            {
+                var composition = new Composition();
+                var root1 = composition.Root;
+                var root2 = composition.Root;
+                root2.Owned.Dispose();
+                Console.WriteLine(root2.Service.Dependency.IsDisposed);
+                Console.WriteLine(root1.Service.Dependency.IsDisposed);
+                root1.Owned.Dispose();
+                Console.WriteLine(root1.Service.Dependency.IsDisposed);
             }
         }
     }
