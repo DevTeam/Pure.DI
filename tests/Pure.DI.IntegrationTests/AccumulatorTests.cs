@@ -94,7 +94,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("3", "Sample.XyzDependency", "Sample.AbcDependency", "Sample.Service"));
+        result.StdOut.ShouldBe(["3", "Sample.XyzDependency", "Sample.AbcDependency", "Sample.Service"]);
     }
     
     [Fact]
@@ -215,7 +215,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Value is not created.", "Sample.ShroedingersCat", "(Sample.ShroedingersCat, Sample.Accumulator)", "CardboardBox created", "(Sample.Program, Sample.Accumulator)", "[Sample.ShroedingersCat]", "Sample.Program", "(Sample.Program, Sample.Accumulator)", "Program created"));
+        result.StdOut.ShouldBe(["Value is not created.", "Sample.ShroedingersCat", "(Sample.ShroedingersCat, Sample.Accumulator)", "CardboardBox created", "(Sample.Program, Sample.Accumulator)", "[Sample.ShroedingersCat]", "Sample.Program", "(Sample.Program, Sample.Accumulator)", "Program created"]);
     }
     
     [Fact]
@@ -279,7 +279,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Service", "(Sample.Service, Sample.MyAccumulator)"));
+        result.StdOut.ShouldBe(["Sample.Service", "(Sample.Service, Sample.MyAccumulator)"]);
     }
     
     [Fact]
@@ -350,7 +350,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True", "False", "True"));
+        result.StdOut.ShouldBe(["True", "False", "True"]);
     }
     
     [Fact]
@@ -421,7 +421,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True", "False", "True"));
+        result.StdOut.ShouldBe(["True", "False", "True"]);
     }
     
     [Fact]
@@ -492,7 +492,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True", "False", "True"));
+        result.StdOut.ShouldBe(["True", "False", "True"]);
     }
 
 #if ROSLYN4_8_OR_GREATER
