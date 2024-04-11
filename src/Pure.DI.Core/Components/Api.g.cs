@@ -1100,11 +1100,11 @@ namespace Pure.DI
     /// </summary>
     [global::System.Diagnostics.DebuggerDisplay("{_disposables.Count} item(s)")]
     [global::System.Diagnostics.DebuggerTypeProxy(typeof(global::Pure.DI.Owned.DebugView))]
-    internal partial struct Owned : global::Pure.DI.IOwned
+    internal partial class Owned : global::Pure.DI.IOwned
     {
         private const int InitialSize = 8;
         private int _count;
-        private volatile global::System.IDisposable[] _disposables;
+        private global::System.IDisposable[] _disposables = new global::System.IDisposable[InitialSize];
 
         /// <summary>
         /// Adds a disposable instance.
@@ -1116,14 +1116,6 @@ namespace Pure.DI
             if (disposable is global::Pure.DI.IOwned)
             {
                 return;
-            }
-
-            if (_disposables == null)
-            {
-                global::System.Threading.Interlocked.CompareExchange(
-                    ref _disposables,
-                    new global::System.IDisposable[InitialSize],
-                    null);
             }
 
             lock (_disposables)
@@ -1148,18 +1140,18 @@ namespace Pure.DI
             {
                 return;
             }
-            
-            global::System.IDisposable[] disposables;
+
             int count;
+            global::System.IDisposable[] disposables;
             lock (_disposables)
             {
-                disposables = new global::System.IDisposable[_count];
-                global::System.Array.Copy(_disposables, disposables, _count);
                 count = _count;
+                disposables = new global::System.IDisposable[count];
+                global::System.Array.Copy(_disposables, disposables, count);
                 _count = 0;
-                _disposables = null;
+                _disposables = new global::System.IDisposable[InitialSize];
             }
-
+            
             for (int i = count - 1; i >= 0; i--)
             {
                 var disposable = disposables[i];
