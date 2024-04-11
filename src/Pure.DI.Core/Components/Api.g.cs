@@ -1102,10 +1102,8 @@ namespace Pure.DI
     [global::System.Diagnostics.DebuggerTypeProxy(typeof(global::Pure.DI.Owned.DebugView))]
     internal partial class Owned : global::Pure.DI.IOwned
     {
-        private const int InitialSize = 8;
-        private int _count;
-        private global::System.IDisposable[] _disposables = new global::System.IDisposable[InitialSize];
-
+        private global::System.Collections.Generic.List<IDisposable> _disposables = new global::System.Collections.Generic.List<IDisposable>();
+        
         /// <summary>
         /// Adds a disposable instance.
         /// </summary>
@@ -1113,46 +1111,17 @@ namespace Pure.DI
         [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
         public void Add(global::System.IDisposable disposable)
         {
-            if (disposable is global::Pure.DI.IOwned)
+            if (!(disposable is global::Pure.DI.IOwned))
             {
-                return;
-            }
-
-            lock (_disposables)
-            {
-                var size = _disposables.Length;
-                if (size == _count)
-                {
-                    var disposables = new global::System.IDisposable[size << 1];
-                    global::System.Array.Copy(_disposables, disposables, size);
-                    _disposables = disposables;
-                }
-                
-                _disposables[_count++] = disposable;
+                _disposables.Add(disposable);
             }
         }
-
+        
         /// <inheritdoc />
-        [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)512)]
         public void Dispose()
         {
-            if (_disposables == null)
-            {
-                return;
-            }
-
-            int count;
-            global::System.IDisposable[] disposables;
-            lock (_disposables)
-            {
-                count = _count;
-                disposables = new global::System.IDisposable[count];
-                global::System.Array.Copy(_disposables, disposables, count);
-                _count = 0;
-                _disposables = new global::System.IDisposable[InitialSize];
-            }
-            
-            for (int i = count - 1; i >= 0; i--)
+            var disposables = global::System.Threading.Interlocked.Exchange(ref _disposables, new global::System.Collections.Generic.List<IDisposable>());
+            for (int i = disposables.Count - 1; i >= 0; i--)
             {
                 var disposable = disposables[i];
                 try
@@ -1189,13 +1158,7 @@ namespace Pure.DI
             {
                 get
                 {
-                    global::System.Collections.Generic.List<global::System.IDisposable> list = new global::System.Collections.Generic.List<global::System.IDisposable>(_owned._count);
-                    for (int i = 0; i < _owned._count; i++)
-                    {
-                        list.Add(_owned._disposables[i]);
-                    }
-
-                    return list;
+                    return _owned._disposables;
                 }
             }
         }

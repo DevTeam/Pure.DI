@@ -18,6 +18,7 @@ internal class CompositionBuilder(
         var map = new VariablesMap();
         var allArgs = new HashSet<Variable>();
         var isThreadSafe = false;
+        var isThreadSafeEnabled = graph.Source.Hints.IsThreadSafeEnabled;
         foreach (var root in graph.Roots.Values)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -71,7 +72,8 @@ internal class CompositionBuilder(
             };
             
             roots.Add(processedRoot);
-            isThreadSafe |= map.IsThreadSafe(graph.Source.Hints);
+            isThreadSafe |= isThreadSafeEnabled && root.Node.Accumulators.Count > 0;
+            isThreadSafe |= isThreadSafeEnabled && map.IsThreadSafe(graph.Source.Hints);
             map.Reset();
         }
 

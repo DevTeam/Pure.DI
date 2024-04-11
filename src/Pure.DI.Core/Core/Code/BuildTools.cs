@@ -51,7 +51,9 @@ internal class BuildTools(
                 .Concat(Enumerable.Repeat(variable.InstanceType, 1))
                 .ToImmutableHashSet(SymbolEqualityComparer.Default);
 
-        var lines = ctx.Accumulators
+        var code = new LinesBuilder();
+        var lockIsRequired = ctx.LockIsRequired ?? ctx.DependencyGraph.Source.Hints.IsThreadSafeEnabled;
+        var accLines = ctx.Accumulators
             .Where(i => FilterAccumulator(i, variable.Node.Lifetime))
             .Where(i => baseTypes.Contains(i.Type))
             .GroupBy(i => i.Name)
@@ -59,10 +61,25 @@ internal class BuildTools(
             .OrderBy(i => i.Name)
             .Select(i => new Line(0, $"{i.Name}.Add({variable.VariableName});"))
             .ToList();
+        
+        if (lockIsRequired && accLines.Count > 0)
+        {
+            code.AppendLine($"lock ({Names.LockFieldName})");
+            code.AppendLine("{");
+            code.IncIndent();
+        }
+
+        code.AppendLines(accLines);
+
+        if (lockIsRequired && accLines.Count > 0)
+        {
+            code.DecIndent();
+            code.AppendLine("}");
+        }
 
         if (!ctx.DependencyGraph.Source.Hints.IsOnNewInstanceEnabled)
         {
-            return lines;
+            return code.Lines;
         }
 
         if (!filter.IsMeetRegularExpression(
@@ -71,11 +88,16 @@ internal class BuildTools(
                 (Hint.OnNewInstanceTagRegularExpression, variable.Injection.Tag.ValueToString()),
                 (Hint.OnNewInstanceLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
         {
-            return lines;
+            return code.Lines;
         }
 
         var tag = GetTag(ctx, variable);
-        lines.Insert(0, new Line(0, $"{Names.OnNewInstanceMethodName}<{typeResolver.Resolve(variable.InstanceType)}>(ref {variable.VariableName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()});"));
+        var lines = new List<Line>
+        {
+            new(0, $"{Names.OnNewInstanceMethodName}<{typeResolver.Resolve(variable.InstanceType)}>(ref {variable.VariableName}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()});")
+        };
+        
+        lines.AddRange(code.Lines);
         return lines;
     }
 

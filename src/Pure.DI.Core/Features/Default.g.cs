@@ -25,7 +25,7 @@ namespace Pure.DI
                 .Bind<global::Pure.DI.Owned<TT>>()
                     .As(Lifetime.PerBlock)
                     .To(ctx => {
-                        ctx.Inject<IOwned>(out var owned);
+                        ctx.Inject<Owned>(out var owned);
                         ctx.Inject<TT>(ctx.Tag, out var value);
                         return new Owned<TT>(value, owned);
                     })
