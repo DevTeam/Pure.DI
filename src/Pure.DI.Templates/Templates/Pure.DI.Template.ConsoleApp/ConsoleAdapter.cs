@@ -2,7 +2,9 @@ namespace _PureDIProjectName_;
 
 internal class ConsoleAdapter: IInput, IOutput
 {
-    public string? ReadLine() => Console.ReadLine();
+    public ValueTask<string?> ReadLineAsync(CancellationToken cancellationToken = default) =>
+        Console.In.ReadLineAsync(cancellationToken);
 
-    public void WriteLine(string? line) => Console.WriteLine(line);
+    public Task WriteLineAsync(string line = "", CancellationToken cancellationToken = default) =>
+        Console.Out.WriteLineAsync(line.AsMemory(), cancellationToken);
 }

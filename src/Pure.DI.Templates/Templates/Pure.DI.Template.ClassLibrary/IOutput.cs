@@ -2,5 +2,5 @@ namespace _PureDIProjectName_;
 
 public interface IOutput
 {
-    void WriteLine(string? line);
+    Task WriteLineAsync(string line = "", CancellationToken cancellationToken = default);
 }
