@@ -90,87 +90,112 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM04D03di;
-  private readonly object _lockM04D03di;
-  private Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency _singletonM04D03di38_XyzDependency;
+  private readonly Composition _rootM04D12di;
+  private readonly object _lockM04D12di;
+  private Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency _singletonM04D12di38_XyzDependency;
   
   public Composition()
   {
-    _rootM04D03di = this;
-    _lockM04D03di = new object();
+    _rootM04D12di = this;
+    _lockM04D12di = new object();
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM04D03di = baseComposition._rootM04D03di;
-    _lockM04D03di = _rootM04D03di._lockM04D03di;
+    _rootM04D12di = baseComposition._rootM04D12di;
+    _lockM04D12di = _rootM04D12di._lockM04D12di;
   }
   
   public (Pure.DI.UsageTests.Advanced.AccumulatorScenario.IService service, Pure.DI.UsageTests.Advanced.AccumulatorScenario.MyAccumulator accumulator) Root
   {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     get
     {
-      var accumulatorM04D03di41 = new Pure.DI.UsageTests.Advanced.AccumulatorScenario.MyAccumulator();
-      Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency perBlockM04D03di4_AbcDependency = new Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency();
-      if (_rootM04D03di._singletonM04D03di38_XyzDependency == null)
+      var accumulatorM04D12di42 = new Pure.DI.UsageTests.Advanced.AccumulatorScenario.MyAccumulator();
+      Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency perBlockM04D12di4_AbcDependency = new Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency();
+      if (_rootM04D12di._singletonM04D12di38_XyzDependency == null)
       {
-          lock (_lockM04D03di)
+          lock (_lockM04D12di)
           {
-              if (_rootM04D03di._singletonM04D03di38_XyzDependency == null)
+              if (_rootM04D12di._singletonM04D12di38_XyzDependency == null)
               {
-                  Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency _singletonM04D03di38_XyzDependencyTemp;
-                  _singletonM04D03di38_XyzDependencyTemp = new Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency();
-                  accumulatorM04D03di41.Add(_singletonM04D03di38_XyzDependencyTemp);
+                  Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency _singletonM04D12di38_XyzDependencyTemp;
+                  _singletonM04D12di38_XyzDependencyTemp = new Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency();
+                  accumulatorM04D12di42.Add(_singletonM04D12di38_XyzDependencyTemp);
                   global::System.Threading.Thread.MemoryBarrier();
-                  _singletonM04D03di38_XyzDependency = _singletonM04D03di38_XyzDependencyTemp;
-                  _rootM04D03di._singletonM04D03di38_XyzDependency = _singletonM04D03di38_XyzDependency;
+                  _singletonM04D12di38_XyzDependency = _singletonM04D12di38_XyzDependencyTemp;
+                  _rootM04D12di._singletonM04D12di38_XyzDependency = _singletonM04D12di38_XyzDependency;
               }
           }
       }
-      Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency transientM04D03di3_AbcDependency = new Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency();
-      accumulatorM04D03di41.Add(transientM04D03di3_AbcDependency);
-      Pure.DI.UsageTests.Advanced.AccumulatorScenario.Service transientM04D03di1_Service = new Pure.DI.UsageTests.Advanced.AccumulatorScenario.Service(transientM04D03di3_AbcDependency, _rootM04D03di._singletonM04D03di38_XyzDependency, perBlockM04D03di4_AbcDependency);
-      accumulatorM04D03di41.Add(transientM04D03di1_Service);
-      return (transientM04D03di1_Service, accumulatorM04D03di41);
+      Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency transientM04D12di3_AbcDependency = new Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency();
+      lock (_lockM04D12di)
+      {
+          accumulatorM04D12di42.Add(transientM04D12di3_AbcDependency);
+      }
+      Pure.DI.UsageTests.Advanced.AccumulatorScenario.Service transientM04D12di1_Service = new Pure.DI.UsageTests.Advanced.AccumulatorScenario.Service(transientM04D12di3_AbcDependency, _rootM04D12di._singletonM04D12di38_XyzDependency, perBlockM04D12di4_AbcDependency);
+      lock (_lockM04D12di)
+      {
+          accumulatorM04D12di42.Add(transientM04D12di1_Service);
+      }
+      return (transientM04D12di1_Service, accumulatorM04D12di42);
     }
   }
   
   public T Resolve<T>()
   {
-    return ResolverM04D03di<T>.Value.Resolve(this);
+    return ResolverM04D12di<T>.Value.Resolve(this);
   }
   
   public T Resolve<T>(object? tag)
   {
-    return ResolverM04D03di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM04D12di<T>.Value.ResolveByTag(this, tag);
   }
   
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM04D03di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM04D03di;
-    do {
-      ref var pair = ref _bucketsM04D03di[index];
+    var index = (int)(_bucketSizeM04D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _bucketsM04D12di[index];
+    return pair.Key == type ? pair.Value.Resolve(this) : ResolveM04D12di(type, index);
+  }
+  
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x8)]
+  private object ResolveM04D12di(global::System.Type type, int index)
+  {
+    var finish = index + _bucketSizeM04D12di;
+    while (++index < finish)
+    {
+      ref var pair = ref _bucketsM04D12di[index];
       if (pair.Key == type)
       {
         return pair.Value.Resolve(this);
       }
-    } while (++index < finish);
+    }
     
     throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
   
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM04D03di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM04D03di;
-    do {
-      ref var pair = ref _bucketsM04D03di[index];
+    var index = (int)(_bucketSizeM04D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _bucketsM04D12di[index];
+    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : ResolveM04D12di(type, index);
+  }
+  
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x8)]
+  private object ResolveM04D12di(global::System.Type type, object? tag, int index)
+  {
+    var finish = index + _bucketSizeM04D12di;
+    while (++index < finish)
+    {
+      ref var pair = ref _bucketsM04D12di[index];
       if (pair.Key == type)
       {
         return pair.Value.ResolveByTag(this, tag);
       }
-    } while (++index < finish);
+    }
     
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
@@ -216,25 +241,25 @@ partial class Composition
         "  Composition ..> ValueTupleᐸIServiceˏMyAccumulatorᐳ : ValueTupleᐸIServiceˏMyAccumulatorᐳ Root";
   }
   
-  private readonly static int _bucketSizeM04D03di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM04D03di;
+  private readonly static int _bucketSizeM04D12di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM04D12di;
   
   static Composition()
   {
-    var valResolverM04D03di_0000 = new ResolverM04D03di_0000();
-    ResolverM04D03di<(Pure.DI.UsageTests.Advanced.AccumulatorScenario.IService service, Pure.DI.UsageTests.Advanced.AccumulatorScenario.MyAccumulator accumulator)>.Value = valResolverM04D03di_0000;
-    _bucketsM04D03di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM04D12di_0000 = new ResolverM04D12di_0000();
+    ResolverM04D12di<(Pure.DI.UsageTests.Advanced.AccumulatorScenario.IService service, Pure.DI.UsageTests.Advanced.AccumulatorScenario.MyAccumulator accumulator)>.Value = valResolverM04D12di_0000;
+    _bucketsM04D12di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM04D03di,
+      out _bucketSizeM04D12di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof((Pure.DI.UsageTests.Advanced.AccumulatorScenario.IService service, Pure.DI.UsageTests.Advanced.AccumulatorScenario.MyAccumulator accumulator)), valResolverM04D03di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof((Pure.DI.UsageTests.Advanced.AccumulatorScenario.IService service, Pure.DI.UsageTests.Advanced.AccumulatorScenario.MyAccumulator accumulator)), valResolverM04D12di_0000)
       });
   }
   
-  private sealed class ResolverM04D03di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM04D12di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM04D03di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM04D12di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -247,7 +272,7 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM04D03di_0000: global::Pure.DI.IResolver<Composition, (Pure.DI.UsageTests.Advanced.AccumulatorScenario.IService service, Pure.DI.UsageTests.Advanced.AccumulatorScenario.MyAccumulator accumulator)>, global::Pure.DI.IResolver<Composition, object>
+  private sealed class ResolverM04D12di_0000: global::Pure.DI.IResolver<Composition, (Pure.DI.UsageTests.Advanced.AccumulatorScenario.IService service, Pure.DI.UsageTests.Advanced.AccumulatorScenario.MyAccumulator accumulator)>, global::Pure.DI.IResolver<Composition, object>
   {
     public (Pure.DI.UsageTests.Advanced.AccumulatorScenario.IService service, Pure.DI.UsageTests.Advanced.AccumulatorScenario.MyAccumulator accumulator) Resolve(Composition composition)
     {

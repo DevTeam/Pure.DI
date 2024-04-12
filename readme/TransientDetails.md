@@ -6,7 +6,7 @@ Creating an object graph of 22 transient objects.
 ```mermaid
 classDiagram
   class Transient {
-    +CompositionRoot PureDIByCR()
+    +CompositionRoot TestPureDIByCR()
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object Resolve(Type type)
@@ -58,7 +58,7 @@ classDiagram
   Service2 *--  Service3 : IService3
   Service3 *--  Service4 : IService4
   Service3 *--  Service4 : IService4
-  Transient ..> CompositionRoot : CompositionRoot PureDIByCR()
+  Transient ..> CompositionRoot : CompositionRoot TestPureDIByCR()
 ```
 
 ### Generated code
@@ -69,59 +69,78 @@ classDiagram
 ```c#
 partial class Transient
 {
-  private readonly Transient _rootM04D03di;
+  private readonly Transient _rootM04D12di;
   
   public Transient()
   {
-    _rootM04D03di = this;
+    _rootM04D12di = this;
   }
   
   internal Transient(Transient baseComposition)
   {
-    _rootM04D03di = baseComposition._rootM04D03di;
+    _rootM04D12di = baseComposition._rootM04D12di;
   }
   
-  public partial Pure.DI.Benchmarks.Model.CompositionRoot PureDIByCR()
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+  public partial Pure.DI.Benchmarks.Model.CompositionRoot TestPureDIByCR()
   {
     return new Pure.DI.Benchmarks.Model.CompositionRoot(new Pure.DI.Benchmarks.Model.Service1(new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()))), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4())), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4())), new Pure.DI.Benchmarks.Model.Service2(new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4())), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
   }
   
   public T Resolve<T>()
   {
-    return ResolverM04D03di<T>.Value.Resolve(this);
+    return ResolverM04D12di<T>.Value.Resolve(this);
   }
   
   public T Resolve<T>(object? tag)
   {
-    return ResolverM04D03di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM04D12di<T>.Value.ResolveByTag(this, tag);
   }
   
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM04D03di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM04D03di;
-    do {
-      ref var pair = ref _bucketsM04D03di[index];
+    var index = (int)(_bucketSizeM04D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _bucketsM04D12di[index];
+    return pair.Key == type ? pair.Value.Resolve(this) : ResolveM04D12di(type, index);
+  }
+  
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x8)]
+  private object ResolveM04D12di(global::System.Type type, int index)
+  {
+    var finish = index + _bucketSizeM04D12di;
+    while (++index < finish)
+    {
+      ref var pair = ref _bucketsM04D12di[index];
       if (pair.Key == type)
       {
         return pair.Value.Resolve(this);
       }
-    } while (++index < finish);
+    }
     
     throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
   
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM04D03di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    var finish = index + _bucketSizeM04D03di;
-    do {
-      ref var pair = ref _bucketsM04D03di[index];
+    var index = (int)(_bucketSizeM04D12di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _bucketsM04D12di[index];
+    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : ResolveM04D12di(type, index);
+  }
+  
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x8)]
+  private object ResolveM04D12di(global::System.Type type, object? tag, int index)
+  {
+    var finish = index + _bucketSizeM04D12di;
+    while (++index < finish)
+    {
+      ref var pair = ref _bucketsM04D12di[index];
       if (pair.Key == type)
       {
         return pair.Value.ResolveByTag(this, tag);
       }
-    } while (++index < finish);
+    }
     
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
@@ -131,7 +150,7 @@ partial class Transient
     return
       "classDiagram\n" +
         "  class Transient {\n" +
-          "    +CompositionRoot PureDIByCR()\n" +
+          "    +CompositionRoot TestPureDIByCR()\n" +
           "    + T ResolveᐸTᐳ()\n" +
           "    + T ResolveᐸTᐳ(object? tag)\n" +
           "    + object Resolve(Type type)\n" +
@@ -183,28 +202,28 @@ partial class Transient
         "  Service2 *--  Service3 : IService3\n" +
         "  Service3 *--  Service4 : IService4\n" +
         "  Service3 *--  Service4 : IService4\n" +
-        "  Transient ..> CompositionRoot : CompositionRoot PureDIByCR()";
+        "  Transient ..> CompositionRoot : CompositionRoot TestPureDIByCR()";
   }
   
-  private readonly static int _bucketSizeM04D03di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>[] _bucketsM04D03di;
+  private readonly static int _bucketSizeM04D12di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>[] _bucketsM04D12di;
   
   static Transient()
   {
-    var valResolverM04D03di_0000 = new ResolverM04D03di_0000();
-    ResolverM04D03di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM04D03di_0000;
-    _bucketsM04D03di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Transient, object>>.Create(
+    var valResolverM04D12di_0000 = new ResolverM04D12di_0000();
+    ResolverM04D12di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM04D12di_0000;
+    _bucketsM04D12di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Transient, object>>.Create(
       1,
-      out _bucketSizeM04D03di,
+      out _bucketSizeM04D12di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM04D03di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Transient, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM04D12di_0000)
       });
   }
   
-  private sealed class ResolverM04D03di<T>: global::Pure.DI.IResolver<Transient, T>
+  private sealed class ResolverM04D12di<T>: global::Pure.DI.IResolver<Transient, T>
   {
-    public static global::Pure.DI.IResolver<Transient, T> Value = new ResolverM04D03di<T>();
+    public static global::Pure.DI.IResolver<Transient, T> Value = new ResolverM04D12di<T>();
     
     public T Resolve(Transient composite)
     {
@@ -217,11 +236,11 @@ partial class Transient
     }
   }
   
-  private sealed class ResolverM04D03di_0000: global::Pure.DI.IResolver<Transient, Pure.DI.Benchmarks.Model.CompositionRoot>
+  private sealed class ResolverM04D12di_0000: global::Pure.DI.IResolver<Transient, Pure.DI.Benchmarks.Model.CompositionRoot>
   {
     public Pure.DI.Benchmarks.Model.CompositionRoot Resolve(Transient composition)
     {
-      return composition.PureDIByCR();
+      return composition.TestPureDIByCR();
     }
     
     public Pure.DI.Benchmarks.Model.CompositionRoot ResolveByTag(Transient composition, object tag)
@@ -229,7 +248,7 @@ partial class Transient
       switch (tag)
       {
         case null:
-          return composition.PureDIByCR();
+          return composition.TestPureDIByCR();
       }
       throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.Benchmarks.Model.CompositionRoot.");
     }

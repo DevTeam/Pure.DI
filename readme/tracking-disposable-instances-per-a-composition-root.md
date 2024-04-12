@@ -99,55 +99,69 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM04D03di;
+  private readonly Composition _rootM04D12di;
+  private readonly object _lockM04D12di;
   
   public Composition()
   {
-    _rootM04D03di = this;
+    _rootM04D12di = this;
+    _lockM04D12di = new object();
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM04D03di = baseComposition._rootM04D03di;
+    _rootM04D12di = baseComposition._rootM04D12di;
+    _lockM04D12di = _rootM04D12di._lockM04D12di;
   }
   
   public Pure.DI.Owned<Pure.DI.UsageTests.Basics.TrackingDisposableScenario.IService> Root
   {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     get
     {
-      var accumulatorM04D03di39 = new Pure.DI.Owned();
-      Pure.DI.UsageTests.Basics.TrackingDisposableScenario.Dependency transientM04D03di3_Dependency = new Pure.DI.UsageTests.Basics.TrackingDisposableScenario.Dependency();
-      accumulatorM04D03di39.Add(transientM04D03di3_Dependency);
-      Pure.DI.Owned<Pure.DI.UsageTests.Basics.TrackingDisposableScenario.IService> perBlockM04D03di0_Owned;
+      var accumulatorM04D12di38 = new Pure.DI.Owned();
+      Pure.DI.UsageTests.Basics.TrackingDisposableScenario.Dependency transientM04D12di3_Dependency = new Pure.DI.UsageTests.Basics.TrackingDisposableScenario.Dependency();
+      lock (_lockM04D12di)
       {
-          var owned_M04D03di1 = accumulatorM04D03di39;
-          var value_M04D03di2 = new Pure.DI.UsageTests.Basics.TrackingDisposableScenario.Service(transientM04D03di3_Dependency);
-          perBlockM04D03di0_Owned = new Owned<Pure.DI.UsageTests.Basics.TrackingDisposableScenario.IService>(value_M04D03di2, owned_M04D03di1);
+          accumulatorM04D12di38.Add(transientM04D12di3_Dependency);
       }
-      accumulatorM04D03di39.Add(perBlockM04D03di0_Owned);
-      return perBlockM04D03di0_Owned;
+      Pure.DI.Owned<Pure.DI.UsageTests.Basics.TrackingDisposableScenario.IService> perBlockM04D12di0_Owned;
+      {
+          var owned_M04D12di1 = accumulatorM04D12di38;
+          var value_M04D12di2 = new Pure.DI.UsageTests.Basics.TrackingDisposableScenario.Service(transientM04D12di3_Dependency);
+          perBlockM04D12di0_Owned = new Owned<Pure.DI.UsageTests.Basics.TrackingDisposableScenario.IService>(value_M04D12di2, owned_M04D12di1);
+      }
+      lock (_lockM04D12di)
+      {
+          accumulatorM04D12di38.Add(perBlockM04D12di0_Owned);
+      }
+      return perBlockM04D12di0_Owned;
     }
   }
   
   public T Resolve<T>()
   {
-    return ResolverM04D03di<T>.Value.Resolve(this);
+    return ResolverM04D12di<T>.Value.Resolve(this);
   }
   
   public T Resolve<T>(object? tag)
   {
-    return ResolverM04D03di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM04D12di<T>.Value.ResolveByTag(this, tag);
   }
   
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
   public object Resolve(global::System.Type type)
   {
     throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
   
+  
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
   public object Resolve(global::System.Type type, object? tag)
   {
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
+  
   
   public override string ToString()
   {
@@ -182,9 +196,9 @@ partial class Composition
   }
   
   
-  private sealed class ResolverM04D03di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM04D12di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM04D03di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM04D12di<T>();
     
     public T Resolve(Composition composite)
     {

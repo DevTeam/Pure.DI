@@ -51,20 +51,21 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM04D03di;
+  private readonly Composition _rootM04D12di;
   
   public Composition()
   {
-    _rootM04D03di = this;
+    _rootM04D12di = this;
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM04D03di = baseComposition._rootM04D03di;
+    _rootM04D12di = baseComposition._rootM04D12di;
   }
   
   public Pure.DI.UsageTests.Basics.AutoBindingsScenario.Service MyService
   {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     get
     {
       return new Pure.DI.UsageTests.Basics.AutoBindingsScenario.Service(new Pure.DI.UsageTests.Basics.AutoBindingsScenario.Dependency());

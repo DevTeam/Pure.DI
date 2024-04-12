@@ -6,6 +6,7 @@ internal class BenchmarksTarget(
     Settings settings,
     Commands commands,
     Env env,
+    FileSystem fileSystem,
     ITeamCityArtifactsWriter artifactsWriter)
     : IInitializable, ITarget<int>
 {
@@ -45,19 +46,12 @@ internal class BenchmarksTarget(
         }
 
         var index = 0;
-        foreach (var reportName in Filters)
+        foreach (var originalReportFile in fileSystem.EnumerateFiles(artifactsDirectory, "*.html", SearchOption.AllDirectories))
         {
-            var reportFileName = Path.Combine(artifactsDirectory, "results", $"Pure.DI.Benchmarks.Benchmarks.{reportName}-report");
-            var reportFileNameHtml = reportFileName + ".html";
-            if (!File.Exists(reportFileNameHtml))
-            {
-                Warning($"The {reportFileNameHtml} file is missing.");
-                continue;
-            }
-
-            var reportFile = Path.Combine(logsDirectory, $"{index++:00} {reportName}.html");
-            File.Copy(reportFileNameHtml, reportFile, true);
-            artifactsWriter.PublishArtifact($"{reportFileNameHtml} => .");
+            var reportFile = $"{index++:00} {Path.GetFileName(originalReportFile).Replace("Pure.DI.Benchmarks.Benchmarks.", "").Replace("-report", "")}";
+            reportFile = Path.Combine(logsDirectory, reportFile);
+            File.Copy(originalReportFile, reportFile, true);
+            artifactsWriter.PublishArtifact($"{reportFile} => .");
         }
 
         return Task.FromResult(0);

@@ -49,7 +49,7 @@ internal class ReadmeTarget(
 
     public async Task<int> RunAsync(CancellationToken cancellationToken)
     {
-        var solutionDirectory = env.GetPath(PathType.TempDirectory);
+        var solutionDirectory = env.GetPath(PathType.SolutionDirectory);
         var logsDirectory = Path.Combine(solutionDirectory, ".logs");
 
         // Run benchmarks

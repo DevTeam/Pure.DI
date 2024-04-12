@@ -88,24 +88,25 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM04D03di;
+  private readonly Composition _rootM04D12di;
   
   public Composition()
   {
-    _rootM04D03di = this;
+    _rootM04D12di = this;
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM04D03di = baseComposition._rootM04D03di;
+    _rootM04D12di = baseComposition._rootM04D12di;
   }
   
   public Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service MyService
   {
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     get
     {
-      Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Dependency perBlockM04D03di1_Dependency = new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Dependency();
-      return new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service(perBlockM04D03di1_Dependency, perBlockM04D03di1_Dependency, perBlockM04D03di1_Dependency);
+      Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Dependency perBlockM04D12di1_Dependency = new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Dependency();
+      return new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service(perBlockM04D12di1_Dependency, perBlockM04D12di1_Dependency, perBlockM04D12di1_Dependency);
     }
   }
   
