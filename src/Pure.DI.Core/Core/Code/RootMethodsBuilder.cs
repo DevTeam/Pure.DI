@@ -88,6 +88,11 @@ internal sealed class RootMethodsBuilder(
         }
         
         name.Append(rootArgsStr);
+        if (root.IsMethod)
+        {
+            code.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x100)]");
+        }
+
         code.AppendLine(name.ToString());
 
         if (typeArgs.Count > 0)
@@ -144,6 +149,7 @@ internal sealed class RootMethodsBuilder(
             if (!root.IsMethod)
             {
                 buildTools.AddPureHeader(code);
+                code.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x100)]");
                 code.AppendLine("get");
                 code.AppendLine("{");
                 indentToken = code.Indent();

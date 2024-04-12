@@ -6,13 +6,13 @@ using BenchmarkDotNet.Attributes;
 using Moq;
 
 [SuppressMessage("Performance", "CA1822:Пометьте члены как статические")]
-public class OwnedBenchmark
+public class AddDisposableBenchmark
 {
     private const int Count = 128;
     private static readonly IDisposable Disposable = Mock.Of<IDisposable>();
     
     [Benchmark(Baseline = true)]
-    public List<IDisposable> ListAdd()
+    public List<IDisposable> Baseline()
     {
         var list = new List<IDisposable>();
         for (var i = 0; i < Count; i++)
@@ -29,7 +29,7 @@ public class OwnedBenchmark
     }
     
     [Benchmark]
-    public IOwned OwnedAdd()
+    public IOwned AddDisposable()
     {
         var owned = new Owned();
         for (var i = 0; i < Count; i++)

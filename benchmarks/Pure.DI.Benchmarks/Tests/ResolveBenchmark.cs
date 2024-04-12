@@ -1,6 +1,7 @@
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable MemberCanBeMadeStatic.Local
 // ReSharper disable RedundantNameQualifier
+// ReSharper disable UnusedMethodReturnValue.Local
 #pragma warning disable CS8500
 namespace Pure.DI.Benchmarks.Tests;
 
@@ -10,7 +11,7 @@ using BenchmarkDotNet.Attributes;
 
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
 [SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance")]
-public class GetBenchmark
+public class ResolveBenchmark
 {
     private const int MaxItems = 10;
     private static readonly Pair<Type, string>[] Pairs;
@@ -28,7 +29,7 @@ public class GetBenchmark
     private static readonly Type Key10;
     private static readonly Dictionary<Type, string> Dictionary;
 
-    static GetBenchmark()
+    static ResolveBenchmark()
     {
         var data = CreatePairs();
         Divisor = Buckets<Type, string>.GetDivisor((uint)data.Length);
@@ -52,7 +53,7 @@ public class GetBenchmark
     }
 
     [Benchmark(Baseline = true, OperationsPerInvoke = 10)]
-    public void Dict()
+    public void Baseline()
     {
         Dictionary.TryGetValue(Key1, out _);
         Dictionary.TryGetValue(Key2, out _);
@@ -67,7 +68,7 @@ public class GetBenchmark
     }
     
     [Benchmark(OperationsPerInvoke = 10)]
-    public string Resolve()
+    public void Resolve()
     {
         Resolve(Key1);
         Resolve(Key2);
@@ -80,18 +81,27 @@ public class GetBenchmark
         Resolve(Key9);
         Resolve(Key10);
     }
-
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private string Resolve(global::System.Type type)
     {
         var index = (int)(BucketSize * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % Divisor));
+        ref var pair = ref Pairs[index];
+        return pair.Key == type ? pair.Value : ResolveNoInlining(type, index);
+    }
+    
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private string ResolveNoInlining(global::System.Type type, int index)
+    {
         var finish = index + BucketSize;
-        do {
+        while (++index < finish) 
+        {
             ref var pair = ref Pairs[index];
             if (pair.Key == type)
             {
                 return pair.Value;
             }
-        } while (++index < finish);
+        }
       
         throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
     }

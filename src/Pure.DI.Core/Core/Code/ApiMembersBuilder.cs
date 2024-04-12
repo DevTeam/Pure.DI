@@ -86,7 +86,20 @@ internal sealed class ApiMembersBuilder(
                 apiCode);
             
             membersCounter++;
-            
+            apiCode.AppendLine();
+
+            if (resolvers.Length > 0)
+            {
+                CreateObjectConflictsResolver(resolvers,
+                    $"{Names.SystemNamespace}Type type",
+                    Names.ResolveMethodName,
+                    "this",
+                    false,
+                    apiCode);
+
+                membersCounter++;
+            }
+
             apiCode.AppendLine();
             if (isCommentsEnabled)
             {
@@ -109,6 +122,19 @@ internal sealed class ApiMembersBuilder(
                 apiCode);
 
             membersCounter++;
+            apiCode.AppendLine();
+
+            if (resolvers.Length > 0)
+            {
+                CreateObjectConflictsResolver(resolvers,
+                    $"{Names.SystemNamespace}Type type, object? tag",
+                    Names.ResolveByTagMethodName,
+                    "this, tag",
+                    true,
+                    apiCode);
+
+                membersCounter++;
+            }
         }
 
         if (composition.Source.Source.Hints is { IsOnNewInstanceEnabled: true, IsOnNewInstancePartial: true })
@@ -155,32 +181,57 @@ internal sealed class ApiMembersBuilder(
         LinesBuilder code)
     {
         buildTools.AddPureHeader(code);
+        code.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x100)]");
         code.AppendLine($"{methodModifiers} object {methodName}({methodArgs})");
         code.AppendLine("{");
         using (code.Indent())
         {
             var divisor = Buckets<object, object>.GetDivisor((uint)resolvers.Count);
-            if (resolvers.Any())
+            if (resolvers.Count > 0)
             {
                 code.AppendLine($"var index = (int)({Names.BucketSizeFieldName} * ((uint){Names.SystemNamespace}Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % {divisor}));");
-                code.AppendLine($"var finish = index + {Names.BucketSizeFieldName};");
-                code.AppendLine("do {");
+                code.AppendLine($"ref var pair = ref {Names.BucketsFieldName}[index];");
+                code.AppendLine($"return pair.Key == type ? pair.Value.{resolveMethodName}({resolveMethodArgs}) : Resolve{Names.Salt}(type, index);");
+            }
+            else
+            {
+                code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{Names.CannotResolve} {(byTag ? "\\\"{tag}\\\" " : "")}of type {{type}}.\");");
+            }
+        }
+        
+        code.AppendLine("}");
+    }
+    
+    private void CreateObjectConflictsResolver(
+        IReadOnlyCollection<ResolverInfo> resolvers,
+        string methodArgs,
+        string resolveMethodName,
+        string resolveMethodArgs,
+        bool byTag,
+        LinesBuilder code)
+    {
+        code.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x8)]");
+        code.AppendLine($"private object Resolve{Names.Salt}({methodArgs}, int index)");
+        code.AppendLine("{");
+        using (code.Indent())
+        {
+            code.AppendLine($"var finish = index + {Names.BucketSizeFieldName};");
+            code.AppendLine("while (++index < finish)");
+            code.AppendLine("{");
+            using (code.Indent())
+            {
+                code.AppendLine($"ref var pair = ref {Names.BucketsFieldName}[index];");
+                code.AppendLine("if (pair.Key == type)");
+                code.AppendLine("{");
                 using (code.Indent())
                 {
-                    code.AppendLine($"ref var pair = ref {Names.BucketsFieldName}[index];");
-                    code.AppendLine("if (pair.Key == type)");
-                    code.AppendLine("{");
-                    using (code.Indent())
-                    {
-                        code.AppendLine($"return pair.Value.{resolveMethodName}({resolveMethodArgs});");
-                    }
-                    
-                    code.AppendLine("}");
+                    code.AppendLine($"return pair.Value.{resolveMethodName}({resolveMethodArgs});");
                 }
-
-                code.AppendLine("} while (++index < finish);");
-                code.AppendLine();
+                code.AppendLine("}");
             }
+                
+            code.AppendLine("}");
+            code.AppendLine();
 
             code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{Names.CannotResolve} {(byTag ? "\\\"{tag}\\\" " : "")}of type {{type}}.\");");
         }
