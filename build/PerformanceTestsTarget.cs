@@ -15,8 +15,8 @@ internal class PerformanceTestsTarget(
 {
     private static readonly string[] Filters =
     [
-        // "Pure.DI.Benchmarks.Tests.*",
-        "Pure.DI.Benchmarks.Benchmarks.Transient*.Test*"
+        "Pure.DI.Benchmarks.Tests.*",
+        "Pure.DI.Benchmarks.Benchmarks.*.Test*"
     ];
 
     public Task InitializeAsync() => commands.Register(
