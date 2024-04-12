@@ -22,7 +22,7 @@ public partial class Singleton : BenchmarkBase
             .Bind().To<Service2>()
             .Bind().To<Service3>()
             .Bind().As(Lifetime.Scoped).To<Service4>()
-            .Root<CompositionRoot>(nameof(PureDIByCR), kind: RootKinds.Method | RootKinds.Partial);
+            .Root<CompositionRoot>(nameof(TestPureDIByCR), kind: RootKinds.Method | RootKinds.Partial);
 
     protected override TActualContainer? CreateContainer<TActualContainer, TAbstractContainer>()
         where TActualContainer : class =>
@@ -35,16 +35,16 @@ public partial class Singleton : BenchmarkBase
             .TryCreate();
 
     [Benchmark(Description = "Pure.DI Resolve<T>()")]
-    public CompositionRoot PureDI() => Resolve<CompositionRoot>();
+    public CompositionRoot TestPureDI() => Resolve<CompositionRoot>();
 
     [Benchmark(Description = "Pure.DI Resolve(Type)")]
-    public object PureDINonGeneric() => Resolve(typeof(CompositionRoot));
+    public object TestPureDINonGeneric() => Resolve(typeof(CompositionRoot));
 
     [Benchmark(Description = "Pure.DI composition root")]
-    public partial CompositionRoot PureDIByCR();
+    public partial CompositionRoot TestPureDIByCR();
 
     [Benchmark(Description = "Hand Coded", Baseline = true)]
-    public CompositionRoot HandCoded() =>
+    public CompositionRoot TestHandCoded() =>
         new(
             Singletons.Service1,
             new Service2(

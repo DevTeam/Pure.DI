@@ -13,6 +13,10 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Immutype" Version="1.0.14">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1"/>
         <ProjectReference Include="..\benchmarks\Pure.DI.Benchmarks\Pure.DI.Benchmarks.csproj"/>
     </ItemGroup>

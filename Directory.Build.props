@@ -17,6 +17,7 @@
         <Product>$(BasePackageId)</Product>
         <Copyright>Copyright (C) $([System.DateTime]::Now.Year) Nikolay Pianikov</Copyright>
         <EnableWindowsTargeting>true</EnableWindowsTargeting>
+        <ImmutypeAPI>False</ImmutypeAPI>
 
         <!--<AnalyzerRoslynVersion Condition="'$(AnalyzerRoslynVersion)'==''">4.3</AnalyzerRoslynVersion>
         <AnalyzerRoslynPackageVersion Condition="'$(AnalyzerRoslynPackageVersion)'==''">4.3.1</AnalyzerRoslynPackageVersion>-->
@@ -27,6 +28,10 @@
         <RolsynVersions Condition="'$(RolsynVersions)'==''">ROSLYN4_8_OR_GREATER;ROSLYN4_3_OR_GREATER</RolsynVersions>
         <DefineConstants>$(DefineConstants);$(RolsynVersions)</DefineConstants>
     </PropertyGroup>
+
+    <ItemGroup>
+        <CompilerVisibleProperty Include="ImmutypeAPI" />
+    </ItemGroup>
 
     <Target Name="Info" BeforeTargets="Build">
         <Message Text="Roslyn $(AnalyzerRoslynPackageVersion)" Importance="high"/>

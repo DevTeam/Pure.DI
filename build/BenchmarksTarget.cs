@@ -9,13 +9,9 @@ internal class BenchmarksTarget(
     ITeamCityArtifactsWriter artifactsWriter)
     : IInitializable, ITarget<int>
 {
-    private static readonly string[] Reports =
+    private static readonly string[] Filters =
     [
-        "Transient",
-        "Singleton",
-        "Func",
-        "Array",
-        "Enum"
+        "Pure.DI.Benchmarks.Benchmarks.*"
     ];
 
     public Task InitializeAsync() => commands.Register(
@@ -40,14 +36,16 @@ internal class BenchmarksTarget(
             new DotNetRun()
                 .WithProject(Path.Combine("benchmarks", "Pure.DI.Benchmarks", "Pure.DI.Benchmarks.csproj"))
                 .WithConfiguration(settings.Configuration)
-                .WithArgs("--artifacts", artifactsDirectory, "--", "--filter")
-                .AddArgs(Reports.Select(filter => $"*{filter}*").ToArray())
+                .WithArgs(
+                    "--artifacts", artifactsDirectory,
+                    "--", "--filter")
+                .AddArgs(Filters.Select(filter => filter).ToArray())
                 .Run()
                 .Succeed("Benchmarking");
         }
 
         var index = 0;
-        foreach (var reportName in Reports)
+        foreach (var reportName in Filters)
         {
             var reportFileName = Path.Combine(artifactsDirectory, "results", $"Pure.DI.Benchmarks.Benchmarks.{reportName}-report");
             var reportFileNameHtml = reportFileName + ".html";

@@ -47,19 +47,19 @@ internal class Analyzer
         return status;
     }
     
-    private BuildStatus CheckThreshold(string name, double? warningThreshold, double? errorThreshold, double baseline, double value, string benchmarkType, string benchmarkMethod)
+    private static BuildStatus CheckThreshold(string name, double? warningThreshold, double? errorThreshold, double baseline, double value, string benchmarkType, string benchmarkMethod)
     {
         var ratio = value / baseline;
-        if (errorThreshold > double.Epsilon && ratio >= errorThreshold)
+        if (errorThreshold > double.Epsilon && ratio > errorThreshold)
         {
             Error(CreateMessage(name, errorThreshold, ratio, benchmarkType, benchmarkMethod, "must"));
             return BuildStatus.Fail;
         }
         
         // ReSharper disable once InvertIf
-        if (warningThreshold > double.Epsilon && ratio >= warningThreshold)
+        if (warningThreshold > double.Epsilon && ratio > warningThreshold)
         {
-            Error(CreateMessage(name, warningThreshold, ratio, benchmarkType, benchmarkMethod, "could"));
+            Warning(CreateMessage(name, warningThreshold, ratio, benchmarkType, benchmarkMethod, "could"));
             return BuildStatus.Warnings;
         }
         

@@ -20,6 +20,7 @@ DI.Setup(nameof(Composition))
     .Bind(Tag.Type).To<DeployTarget>()
     .Bind(Tag.Type).To<TemplateTarget>()
     .Bind(Tag.Type).To<UpdateTarget>()
-    .Bind(Tag.Type).To<PublishBlazorTarget>();
+    .Bind(Tag.Type).To<PublishBlazorTarget>()
+    .Bind(Tag.Type).To<PerformanceTestsTarget>();
 
 return await new Composition().RootTarget.RunAsync(CancellationToken.None);
