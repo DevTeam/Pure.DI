@@ -5,7 +5,7 @@ namespace Build;
 internal class BenchmarksTarget(
     Settings settings,
     Commands commands,
-    Paths paths,
+    Env env,
     ITeamCityArtifactsWriter artifactsWriter)
     : IInitializable, ITarget<int>
 {
@@ -26,7 +26,7 @@ internal class BenchmarksTarget(
 
     public Task<int> RunAsync(CancellationToken cancellationToken)
     {
-        var solutionDirectory = paths.SolutionDirectory;
+        var solutionDirectory = env.GetPath(PathType.SolutionDirectory);
         var logsDirectory = Path.Combine(solutionDirectory, ".logs");
         Directory.CreateDirectory(logsDirectory);
         var artifactsDirectory = Path.Combine(solutionDirectory, "benchmarks", "data");

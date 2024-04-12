@@ -8,7 +8,7 @@ using Pure.DI.Benchmarks.Benchmarks;
 
 internal class ReadmeTarget(
     Commands commands,
-    Paths paths,
+    Env env,
     Versions versions,
     [Tag(typeof(BenchmarksTarget))] ITarget<int> benchmarksTarget)
     : IInitializable, ITarget<int>
@@ -49,7 +49,7 @@ internal class ReadmeTarget(
 
     public async Task<int> RunAsync(CancellationToken cancellationToken)
     {
-        var solutionDirectory = paths.SolutionDirectory;
+        var solutionDirectory = env.GetPath(PathType.TempDirectory);
         var logsDirectory = Path.Combine(solutionDirectory, ".logs");
 
         // Run benchmarks
@@ -113,7 +113,7 @@ internal class ReadmeTarget(
     private async Task<IEnumerable<(string GroupName, Dictionary<string, string>[] SampleItems)>> CreateExamples(CancellationToken cancellationToken)
     {
         var items = new List<Dictionary<string, string>>();
-        var testsDir = Path.Combine(paths.SolutionDirectory, "tests", "Pure.DI.UsageTests");
+        var testsDir = Path.Combine(env.GetPath(PathType.SolutionDirectory), "tests", "Pure.DI.UsageTests");
         var files = Directory.EnumerateFiles(testsDir, "*.cs", SearchOption.AllDirectories);
         foreach (var file in files)
         {

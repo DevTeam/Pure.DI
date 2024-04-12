@@ -12,7 +12,7 @@ using NuGet.Versioning;
 internal class CompatibilityCheckTarget(
     Settings settings,
     Commands commands,
-    Paths paths,
+    Env env,
     INuGet nuGet,
     [Tag(typeof(GeneratorTarget))] ITarget<Package> generatorTarget,
     [Tag(typeof(LibrariesTarget))] ITarget<IReadOnlyCollection<Library>> librariesTarget)
@@ -85,7 +85,7 @@ internal class CompatibilityCheckTarget(
         string framework,
         CancellationToken cancellationToken)
     {
-        var tempDirectory = paths.TempDirectory;
+        var tempDirectory = env.GetPath(PathType.TempDirectory);
         Info($"Compatibility check for {framework}.");
         try
         {
@@ -159,7 +159,7 @@ internal class CompatibilityCheckTarget(
 
     private async Task CompatibilityCheckAsync(string generatorPackage, Library library, CancellationToken cancellationToken)
     {
-        var tempDirectory = paths.TempDirectory;
+        var tempDirectory = env.GetPath(PathType.TempDirectory);
         try
         {
             foreach (var templateName in library.TemplateNames)

@@ -9,7 +9,7 @@ using NuGet.Versioning;
 internal class UpdateTarget(
     Settings settings,
     Commands commands,
-    Paths paths)
+    Env env)
     : IInitializable, ITarget<NuGetVersion>
 {
     private const string VersionPrefix = "PUREDI_API_V";
@@ -23,7 +23,7 @@ internal class UpdateTarget(
     [SuppressMessage("Performance", "CA1861:Avoid constant arrays as arguments")]
     public Task<NuGetVersion> RunAsync(CancellationToken cancellationToken)
     {
-        var solutionDirectory = paths.SolutionDirectory;
+        var solutionDirectory = env.GetPath(PathType.SolutionDirectory);
         var currentVersion = settings.Version;
         var propsFile = Path.Combine(solutionDirectory, "Directory.Build.props");
         var props = File.ReadAllLines(propsFile);

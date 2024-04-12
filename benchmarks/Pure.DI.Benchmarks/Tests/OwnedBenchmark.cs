@@ -1,5 +1,5 @@
 ﻿// ReSharper disable InconsistentlySynchronizedField
-namespace Pure.DI.Benchmarks;
+namespace Pure.DI.Benchmarks.Tests;
 
 using System.Diagnostics.CodeAnalysis;
 using BenchmarkDotNet.Attributes;
