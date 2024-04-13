@@ -139,7 +139,7 @@ partial class Composition
     }
   }
   
-  public Pure.DI.UsageTests.Basics.CompositionRootsScenario.IDependency RootM04D13di0003
+  private Pure.DI.UsageTests.Basics.CompositionRootsScenario.IDependency RootM04D13di0003
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     get

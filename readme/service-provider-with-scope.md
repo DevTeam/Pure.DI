@@ -131,7 +131,7 @@ partial class Composition: global::System.IDisposable
     _disposablesM04D13di = new global::System.IDisposable[1];
   }
   
-  public Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency RootM04D13di0001
+  private Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency RootM04D13di0001
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     get
@@ -151,7 +151,7 @@ partial class Composition: global::System.IDisposable
     }
   }
   
-  public Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService RootM04D13di0002
+  private Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService RootM04D13di0002
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     get

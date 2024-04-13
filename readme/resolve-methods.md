@@ -109,7 +109,7 @@ partial class Composition
     }
   }
   
-  public Pure.DI.UsageTests.Basics.ResolveScenario.IDependency RootM04D13di0001
+  private Pure.DI.UsageTests.Basics.ResolveScenario.IDependency RootM04D13di0001
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     get
@@ -118,7 +118,7 @@ partial class Composition
     }
   }
   
-  public Pure.DI.UsageTests.Basics.ResolveScenario.IService RootM04D13di0002
+  private Pure.DI.UsageTests.Basics.ResolveScenario.IService RootM04D13di0002
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     get

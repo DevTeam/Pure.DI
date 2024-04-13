@@ -97,7 +97,7 @@ partial class Composition
     _lockM04D13di = _rootM04D13di._lockM04D13di;
   }
   
-  public Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IDependency RootM04D13di0001
+  private Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IDependency RootM04D13di0001
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     get
@@ -117,7 +117,7 @@ partial class Composition
     }
   }
   
-  public Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService RootM04D13di0002
+  private Pure.DI.UsageTests.BCL.ServiceCollectionScenario.IService RootM04D13di0002
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     get

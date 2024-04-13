@@ -55,7 +55,7 @@ internal sealed class RootMethodsBuilder(
             buildTools.AddPureHeader(code);
         }
         
-        var modifier = (root.Kind & RootKinds.Private) == RootKinds.Private 
+        var modifier = !root.IsPublic || (root.Kind & RootKinds.Private) == RootKinds.Private
             ? "private"
             : (root.Kind & RootKinds.Internal) == RootKinds.Internal
                 ? "internal"
