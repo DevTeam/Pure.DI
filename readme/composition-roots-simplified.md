@@ -252,8 +252,9 @@ partial class Composition
           return composition.RootM04D13di0002;
         case null:
           return composition.MyRoot;
+        default:
+          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.CompositionRootsSimplifiedScenario.IService.");
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.CompositionRootsSimplifiedScenario.IService.");
     }
   }
 }

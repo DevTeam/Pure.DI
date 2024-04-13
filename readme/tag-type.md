@@ -299,8 +299,9 @@ partial class Composition
       if (Equals(tag, typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency))) return composition.XyzRoot;
       switch (tag)
       {
+        default:
+          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency.");
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Advanced.TagTypeScenario.IDependency.");
     }
   }
   
@@ -317,8 +318,9 @@ partial class Composition
       {
         case null:
           return composition.Root;
+        default:
+          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Advanced.TagTypeScenario.IService.");
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Advanced.TagTypeScenario.IService.");
     }
   }
 }

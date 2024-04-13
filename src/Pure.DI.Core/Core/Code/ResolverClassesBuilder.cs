@@ -143,10 +143,15 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
                         code.AppendLine($"return {GetRoot(composition, taggedRoot)};");
                     }
                 }
+                
+                code.AppendLine("default:");
+                using (code.Indent())
+                {
+                    code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{Names.CannotResolve} \\\"{{tag}}\\\" of type {resolver.Type}.\");");
+                }
             }
             
             code.AppendLine("}");
-            code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{Names.CannotResolve} \\\"{{tag}}\\\" of type {resolver.Type}.\");");
         }
 
         code.AppendLine("}");

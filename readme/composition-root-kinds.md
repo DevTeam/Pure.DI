@@ -267,8 +267,9 @@ partial class Composition
           return composition.GetOtherService();
         case null:
           return composition.GetRoot();
+        default:
+          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario.IService.");
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario.IService.");
     }
   }
   
@@ -285,8 +286,9 @@ partial class Composition
       {
         case null:
           return Composition.Dependency;
+        default:
+          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario.IDependency.");
       }
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Advanced.CompositionRootKindsScenario.IDependency.");
     }
   }
 }
