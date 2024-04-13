@@ -90,7 +90,7 @@ internal sealed class ApiMembersBuilder(
 
             if (resolvers.Length > 0)
             {
-                CreateObjectConflictsResolver(resolvers,
+                CreateObjectConflictsResolverMethod(resolvers,
                     $"{Names.SystemNamespace}Type type",
                     Names.ResolveMethodName,
                     "this",
@@ -126,7 +126,7 @@ internal sealed class ApiMembersBuilder(
 
             if (resolvers.Length > 0)
             {
-                CreateObjectConflictsResolver(resolvers,
+                CreateObjectConflictsResolverMethod(resolvers,
                     $"{Names.SystemNamespace}Type type, object? tag",
                     Names.ResolveByTagMethodName,
                     "this, tag",
@@ -191,7 +191,7 @@ internal sealed class ApiMembersBuilder(
             {
                 code.AppendLine($"var index = (int)({Names.BucketSizeFieldName} * ((uint){Names.SystemNamespace}Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % {divisor}));");
                 code.AppendLine($"ref var pair = ref {Names.BucketsFieldName}[index];");
-                code.AppendLine($"return pair.Key == type ? pair.Value.{resolveMethodName}({resolveMethodArgs}) : Resolve{Names.Salt}(type, index);");
+                code.AppendLine($"return pair.Key == type ? pair.Value.{resolveMethodName}({resolveMethodArgs}) : Resolve{Names.Salt}(type, {(byTag ? "tag, " : "")}index);");
             }
             else
             {
@@ -202,7 +202,7 @@ internal sealed class ApiMembersBuilder(
         code.AppendLine("}");
     }
     
-    private void CreateObjectConflictsResolver(
+    private static void CreateObjectConflictsResolverMethod(
         IReadOnlyCollection<ResolverInfo> resolvers,
         string methodArgs,
         string resolveMethodName,
