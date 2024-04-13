@@ -1,10 +1,10 @@
+using System;
+
 namespace _PureDIProjectName_;
 
 public class ConsoleAdapter: IInput, IOutput
 {
-    public ValueTask<string?> ReadLineAsync(CancellationToken cancellationToken = default) =>
-        Console.In.ReadLineAsync(cancellationToken);
+    public string? ReadLine() => Console.ReadLine();
 
-    public Task WriteLineAsync(string line = "", CancellationToken cancellationToken = default) =>
-        Console.Out.WriteLineAsync(line.AsMemory(), cancellationToken);
+    public void WriteLine(string? line) => Console.WriteLine(line);
 }

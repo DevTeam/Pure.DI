@@ -2,5 +2,5 @@
 
 internal interface IInput
 {
-    ValueTask<string?> ReadLineAsync(CancellationToken cancellationToken = default);
+    string? ReadLine();
 }

@@ -1,18 +1,23 @@
-var composition = new $(CompositionName)(args);
-return await composition.Root.RunAsync();
+var composition = new $(CompositionName)();
+return composition.Root.Run(args);
 
-internal partial class Program(
-    string[] args,
-    IInput input,
-    IOutput output)
+internal partial class Program
 {
-    private async Task<int> RunAsync(CancellationToken cancellationToken = default)
-    {
-        await output.WriteLineAsync("Hello!", cancellationToken);
-        await output.WriteLineAsync(string.Join(", ", args), cancellationToken);
+    private readonly IInput _input;
+    private readonly IOutput _output;
 
-        await output.WriteLineAsync("Press the Enter key to exit.", cancellationToken);
-        await input.ReadLineAsync(cancellationToken);
+    internal Program(IInput input, IOutput output)
+    {
+        _input = input ?? throw new ArgumentNullException(nameof(input));
+        _output = output ?? throw new ArgumentNullException(nameof(output));
+    }
+
+    private int Run(string[] args)
+    {
+        _output.WriteLine("Hello!");
+
+        _output.WriteLine("Press the Enter key to exit.");
+        _input.ReadLine();
 
         return 0;
     }
