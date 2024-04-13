@@ -51,7 +51,7 @@ internal class BenchmarksTarget(
             var reportFile = $"{index++:00} {Path.GetFileName(originalReportFile).Replace("Pure.DI.Benchmarks.Benchmarks.", "").Replace("-report", "")}";
             reportFile = Path.Combine(logsDirectory, reportFile);
             File.Copy(originalReportFile, reportFile, true);
-            artifactsWriter.PublishArtifact($"{reportFile} => .");
+            artifactsWriter.PublishArtifact($"{originalReportFile} => .");
         }
 
         return Task.FromResult(0);
