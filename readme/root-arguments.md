@@ -104,16 +104,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM04D12di;
+  private readonly Composition _rootM04D13di;
   
   public Composition()
   {
-    _rootM04D12di = this;
+    _rootM04D13di = this;
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM04D12di = baseComposition._rootM04D12di;
+    _rootM04D13di = baseComposition._rootM04D13di;
   }
   
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
