@@ -8,7 +8,10 @@ namespace Pure.DI.Benchmarks.Tests;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Order;
 
+[Orderer(SummaryOrderPolicy.FastestToSlowest)]
+[MemoryDiagnoser]
 [SuppressMessage("Performance", "CA1822:Mark members as static")]
 [SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance")]
 public class ResolveBenchmark

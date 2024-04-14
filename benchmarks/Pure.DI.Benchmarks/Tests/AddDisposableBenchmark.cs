@@ -3,9 +3,12 @@ namespace Pure.DI.Benchmarks.Tests;
 
 using System.Diagnostics.CodeAnalysis;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Order;
 using Moq;
 
-[SuppressMessage("Performance", "CA1822:Пометьте члены как статические")]
+[Orderer(SummaryOrderPolicy.FastestToSlowest)]
+[MemoryDiagnoser]
+[SuppressMessage("Performance", "CA1822:Mark members as static")]
 public class AddDisposableBenchmark
 {
     private const int Count = 128;

@@ -41,8 +41,6 @@ internal class PerformanceTestsTarget(
                 .WithArgs(
                     // Add Json exporter
                     "--exporters", "JSON",
-                    // Use Memory Diagnoser to get GC stats
-                    "-m",
                     "--artifacts", tempDirectory,
                     "--", "--filter")
                 .AddArgs(Filters.Select(filter => filter).ToArray())
