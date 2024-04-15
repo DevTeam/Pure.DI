@@ -33,8 +33,8 @@ namespace Pure.DI
                     .As(Lifetime.PerResolve)
                     .To(ctx => new global::System.Func<TT>(() =>
                     {
-                        ctx.Inject<TT>(ctx.Tag, out var factory);
-                        return factory;
+                        ctx.Inject<TT>(ctx.Tag, out var value);
+                        return value;
                     }))
                 .Bind<global::System.Collections.Generic.IComparer<TT>>()
                 .Bind<global::System.Collections.Generic.Comparer<TT>>()
