@@ -71,8 +71,14 @@ internal sealed class VariationalDependencyGraphBuilder(
         {
             var maxIterations = globalOptions.MaxIterations;
             DependencyGraph? first = default;
+            var maxAttempts = 0x2000;
             while (variator.TryGetNextVariants(variants, node => !node.HasNode, out var nodes))
             {
+                if (maxAttempts-- == 0)
+                {
+                    throw new CompileErrorException("It is not possible to construct a dependency graph.", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
+                }
+
                 if (maxIterations-- <= 0)
                 {
                     logger.CompileError($"The maximum number of iterations {globalOptions.MaxIterations.ToString()} was exceeded when building the optimal dependency graph. Try to specify the dependency graph more accurately.", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);

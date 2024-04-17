@@ -160,7 +160,14 @@ internal sealed class DependencyGraphBuilder(
                                         lifetime,
                                         ++maxId,
                                         constructKind);
-                                    return CreateNodes(setup, constructBinding);
+                                    
+                                    foreach (var newNode in CreateNodes(setup, constructBinding))
+                                    {
+                                        map[injection] = newNode;
+                                        queue.Enqueue(CreateNewProcessingNode(injection, newNode));
+                                    }
+                                    
+                                    continue;
                             }
                         }
                         
@@ -184,8 +191,14 @@ internal sealed class DependencyGraphBuilder(
                             Lifetime.Transient,
                             ++maxId,
                             MdConstructKind.Array);
+
+                        foreach (var newNode in CreateNodes(setup, arrayBinding))
+                        {
+                            map[injection] = newNode;
+                            queue.Enqueue(CreateNewProcessingNode(injection, newNode));
+                        }
                         
-                        return CreateNodes(setup, arrayBinding);
+                        continue;
                     }
                 }
                 
@@ -230,7 +243,13 @@ internal sealed class DependencyGraphBuilder(
                         ++maxId,
                         MdConstructKind.Composition);
                     
-                    return CreateNodes(setup, compositionBinding);
+                    foreach (var newNode in CreateNodes(setup, compositionBinding))
+                    {
+                        map[injection] = newNode;
+                        queue.Enqueue(CreateNewProcessingNode(injection, newNode));
+                    }
+
+                    continue;
                 }
 
                 // Auto-binding

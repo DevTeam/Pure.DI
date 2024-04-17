@@ -56,7 +56,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.CardboardBox`1[System.Int32]"), result);
+        result.StdOut.ShouldBe(["Sample.CardboardBox`1[System.Int32]"], result);
     }
     
     [Fact]
@@ -113,7 +113,7 @@ namespace Sample
         result.Errors.Count.ShouldBe(0);
         result.Warnings.Count.ShouldBe(1);
         result.Warnings.Count(i => i.Id == LogId.WarningTypeArgInResolveMethod).ShouldBe(1);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.CardboardBox`1[System.Int32]"), result);
+        result.StdOut.ShouldBe(["Sample.CardboardBox`1[System.Int32]"], result);
     }
     
     [Fact]
@@ -180,9 +180,10 @@ namespace Sample
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(
-            ImmutableArray.Create(
-                "Sample.Service`2[System.Int32,System.DateTime]",
-                "Sample.OtherService`1[System.String]"), result);
+        [
+            "Sample.Service`2[System.Int32,System.DateTime]",
+            "Sample.OtherService`1[System.String]"
+        ], result);
     }
     
     [Fact]
@@ -242,7 +243,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Consumer`1[System.Int32]"), result);
+        result.StdOut.ShouldBe(["Sample.Consumer`1[System.Int32]"], result);
     }
     
     [Fact]
@@ -314,7 +315,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.CardboardBox`2[Sample.Disposable,System.Int32]"), result);
+        result.StdOut.ShouldBe(["Sample.CardboardBox`2[Sample.Disposable,System.Int32]"], result);
     }
     
     [Fact]
@@ -387,6 +388,165 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Service`2[System.Int32,System.Double]"), result);
+        result.StdOut.ShouldBe(["Sample.Service`2[System.Int32,System.Double]"], result);
+    }
+    
+    [Fact]
+    public async Task ShouldSupportGenericRootWhenArray()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+using System.Collections.Generic;
+using static Pure.DI.Lifetime;
+
+namespace Sample
+{
+    interface IRecipient<T>
+    {
+    }
+
+    interface IPost<T>
+    {
+    }
+
+    class Post<T> : IPost<T>
+    {
+        public Post(IRecipient<T>[] recipients)
+        {
+        Console.WriteLine(recipients.Length);
+        }
+    }
+    
+    class Recipient<TT> : IRecipient<TT>
+    {
+    }
+
+    internal partial class Composition
+    {
+        void Setup()
+        {
+            DI.Setup(nameof(Composition))
+                .Hint(Hint.Resolve, "Off")
+                .Bind<IRecipient<TT>>(1).To<Recipient<TT>>()
+                .Bind<IRecipient<TT>>(2).To<Recipient<TT>>()
+                .RootBind<IPost<TT>>("GetRoot").To<Post<TT>>();
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();            
+            var root = composition.GetRoot<string>();
+            Console.WriteLine(root);
+        }
+    }                
+}
+""".RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["2", "Sample.Post`1[System.String]"], result);
+    }
+    
+    [Theory]
+    [InlineData("System.Collections.Generic.IEnumerable")]
+    [InlineData("System.Collections.Generic.IList")]
+    [InlineData("System.Collections.Immutable.ImmutableArray")]
+    [InlineData("System.Collections.Generic.IReadOnlyList")]
+    [InlineData("System.Collections.Generic.ISet")]
+    [InlineData("System.Collections.Generic.HashSet")]
+    [InlineData("System.Collections.Generic.Queue")]
+    [InlineData("System.Collections.Generic.Stack")]
+    [InlineData("System.Collections.Immutable.IImmutableList")]
+    [InlineData("System.Collections.Immutable.ImmutableList")]
+    [InlineData("System.Collections.Immutable.IImmutableSet")]
+    [InlineData("System.Collections.Immutable.IImmutableQueue")]
+    [InlineData("System.Collections.Immutable.ImmutableQueue")]
+    [InlineData("System.Collections.Immutable.IImmutableStack")]
+    [InlineData("System.Collections.Immutable.ImmutableStack")]
+    [InlineData("System.Span", "Length")]
+    [InlineData("System.Span", "Length", LanguageVersion.CSharp8)]
+    [InlineData("System.ReadOnlySpan", "Length")]
+    [InlineData("System.Memory", "Length")]
+    [InlineData("System.ReadOnlyMemory", "Length")]
+    [InlineData("System.Collections.Concurrent.IProducerConsumerCollection")]
+    [InlineData("System.Collections.Concurrent.ConcurrentBag")]
+    [InlineData("System.Collections.Concurrent.ConcurrentQueue")]
+    [InlineData("System.Collections.Concurrent.ConcurrentStack")]
+    [InlineData("System.Collections.Concurrent.BlockingCollection")]
+    public async Task ShouldSupportGenericRootWhenCollection(string collectionType, string counter = "Count()", LanguageVersion languageVersion = LanguageVersion.CSharp9)
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using Pure.DI;
+using System.Collections.Generic;
+using System.Linq;
+using static Pure.DI.Lifetime;
+
+namespace Sample
+{
+    interface IRecipient<T>
+    {
+    }
+
+    interface IPost<T>
+    {
+    }
+
+    class Post<T> : IPost<T>
+    {
+        public Post(###CollectionType###<IRecipient<T>> recipients)
+        {
+            Console.WriteLine(recipients.###Counter###);
+        }
+    }
+    
+    class Recipient<TT> : IRecipient<TT>
+    {
+    }
+
+    internal partial class Composition
+    {
+        void Setup()
+        {
+            DI.Setup(nameof(Composition))
+                .Hint(Hint.Resolve, "Off")
+                .Bind<IRecipient<TT>>(1).To<Recipient<TT>>()
+                .Bind<IRecipient<TT>>(2).To<Recipient<TT>>()
+                .RootBind<IPost<TT>>("GetRoot").To<Post<TT>>();
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            var composition = new Composition();            
+            var root = composition.GetRoot<string>();
+        }
+    }                
+}
+"""
+            .Replace("###CollectionType###", collectionType)
+            .Replace("###Counter###", counter)
+            .RunAsync(
+            new Options
+            {
+                LanguageVersion = languageVersion,
+                NullableContextOptions = NullableContextOptions.Disable
+            });
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["2"], result);
     }
 }

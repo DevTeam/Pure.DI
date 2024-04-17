@@ -80,10 +80,10 @@ internal class ConstructCodeBuilder(ITypeResolver typeResolver)
         ctx.Code.AppendLines(ctx.BuildTools.OnCreated(ctx, variable));
     }
     
-    private static void BuildArray(BuildContext ctx, in DpConstruct array)
+    private void BuildArray(BuildContext ctx, in DpConstruct array)
     {
         var variable = ctx.Variable;
-        var instantiation = $"new {array.Source.ElementType}[{variable.Args.Count.ToString()}] {{ {string.Join(", ", variable.Args.Select(i => ctx.BuildTools.OnInjected(ctx, i.Current)))} }}";
+        var instantiation = $"new {typeResolver.Resolve(array.Source.ElementType)}[{variable.Args.Count.ToString()}] {{ {string.Join(", ", variable.Args.Select(i => ctx.BuildTools.OnInjected(ctx, i.Current)))} }}";
         var onCreated = ctx.BuildTools.OnCreated(ctx, variable).ToArray();
         if (onCreated.Any())
         {
@@ -96,16 +96,16 @@ internal class ConstructCodeBuilder(ITypeResolver typeResolver)
         }
     }
 
-    private static void BuildSpan(BuildContext ctx, in DpConstruct span)
+    private void BuildSpan(BuildContext ctx, in DpConstruct span)
     {
         var variable = ctx.Variable;
-        var createArray = $"{span.Source.ElementType}[{variable.Args.Count.ToString()}] {{ {string.Join(", ", variable.Args.Select(i => ctx.BuildTools.OnInjected(ctx, i.Current)))} }}";
+        var createArray = $"{typeResolver.Resolve(span.Source.ElementType)}[{variable.Args.Count.ToString()}] {{ {string.Join(", ", variable.Args.Select(i => ctx.BuildTools.OnInjected(ctx, i.Current)))} }}";
 
         var isStackalloc = 
             span.Source.ElementType.IsValueType
             && span.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp7_3;
         
-        var createInstance = isStackalloc ? $"stackalloc {createArray}" : $"new {Names.SystemNamespace}Span<{span.Source.ElementType}>(new {createArray})";
+        var createInstance = isStackalloc ? $"stackalloc {createArray}" : $"new {Names.SystemNamespace}Span<{typeResolver.Resolve(span.Source.ElementType)}>(new {createArray})";
         ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = {createInstance};");
         ctx.Code.AppendLines(ctx.BuildTools.OnCreated(ctx, variable));
     }
