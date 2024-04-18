@@ -28,6 +28,11 @@ internal class VariablesBuilder(CancellationToken cancellationToken)
             var stack = new Stack<IStatement>(currentBlock.Statements);
             while (stack.TryPop(out var currentStatement))
             {
+                if (stack.Count > 0xffff)
+                {
+                    throw new CompileErrorException($"Cyclic dependency has been found.", rootNode.Binding.Source.GetLocation(), LogId.ErrorCyclicDependency);
+                }
+                
                 switch (currentStatement)
                 {
                     case Block block:

@@ -14,7 +14,7 @@ internal class BaseSymbolsProvider : IBaseSymbolsProvider
         while (true)
         {
             yield return symbol;
-            foreach (var type in symbol.AllInterfaces.SelectMany(i => GetBaseSymbols(i, deep)))
+            foreach (var type in symbol.Interfaces.SelectMany(i => GetBaseSymbols(i, deep)))
             {
                 yield return type;
             }

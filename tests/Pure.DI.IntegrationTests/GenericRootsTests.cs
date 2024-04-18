@@ -549,4 +549,85 @@ namespace Sample
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(["2"], result);
     }
+    
+    [Fact]
+    public async Task ShouldSupportGenericRootWithTags()
+    {
+        // Given
+
+        // When
+        var result = await """
+using System;
+using System.Linq;
+using Pure.DI;
+using static Pure.DI.Lifetime;
+
+namespace Sample
+{
+    interface IRunner<T>
+    {
+        T Run(T value);
+    }
+
+    interface IPipeline<T> : IRunner<T>
+    {
+    }
+
+    class Pipeline<T> : IPipeline<T>
+    {
+        private readonly IRunner<T>[] _runners;
+
+        public Pipeline(params IRunner<T>[] runners)
+        {
+            _runners = runners;
+        }
+
+        public T Run(T value) => 
+            _runners.Aggregate(
+                value,
+                (current, handler) => handler.Run(current));
+    }
+
+    class Tracer<T>: IRunner<T>
+    {
+        public T Run(T value)
+        {
+            Console.WriteLine(value);
+            return value;
+        }
+    }
+
+    class SquareRootCalculator: IRunner<decimal>
+    {
+        public decimal Run(decimal value) => 
+            value * value;
+    }
+
+    internal partial class Composition
+    {
+        void Setup()
+        {
+            DI.Setup(nameof(Composition))
+                .Bind(0).To<Tracer<TT>>()
+                .Bind(1).To<SquareRootCalculator>()
+                .Bind(2).To<Tracer<TT>>()
+                .Bind().To<Pipeline<TT>>()
+                .Root<Pipeline<decimal>>("Pipeline");
+        }
+    }
+
+    public class Program
+    {
+        public static void Main()
+        {
+            new Composition().Pipeline.Run(7);
+        }
+    }                
+}
+""".RunAsync(new Options(LanguageVersion.CSharp9));
+
+        // Then
+        result.Success.ShouldBeTrue(result);
+        result.StdOut.ShouldBe(["7", "49"], result);
+    }
 }
