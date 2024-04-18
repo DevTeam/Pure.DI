@@ -529,6 +529,7 @@ internal sealed class DependencyGraphBuilder(
     {
         elementType = elementType.WithNullableAnnotation(NullableAnnotation.NotAnnotated);
         var dependencyContracts = new List<MdContract>();
+        var contracts = new HashSet<Injection>();
         foreach (var nestedBinding in setup.Bindings.Where(i => i != targetNode.Binding))
         {
             var matchedContracts = GetMatchedMdContracts(targetNode.Binding.SemanticModel.Compilation, elementType, nestedBinding).ToArray();
@@ -541,6 +542,24 @@ internal sealed class DependencyGraphBuilder(
                 .Concat(nestedBinding.Tags)
                 .Select((i, position) => i with { Position = position })
                 .ToImmutableArray();
+
+            var isDuplicate = false;
+            if (constructKind is MdConstructKind.Enumerable or MdConstructKind.Array or MdConstructKind.Span or MdConstructKind.AsyncEnumerable)
+            {
+                foreach (var mdTag in tags.DefaultIfEmpty(new MdTag(0, default)))
+                {
+                    if (!contracts.Add(new Injection(elementType, mdTag)))
+                    {
+                        isDuplicate = true;
+                    }
+                }
+            }
+
+            if (isDuplicate)
+            {
+                continue;
+            }
+
             dependencyContracts.Add(new MdContract(targetNode.Binding.SemanticModel, targetNode.Binding.Source, elementType, tags));
         }
 

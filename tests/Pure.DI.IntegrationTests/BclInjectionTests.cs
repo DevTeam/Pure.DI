@@ -86,6 +86,7 @@ namespace Sample
             // FormatCode = On
             DI.Setup("Composition")
                 .Bind<IDependency>(1).To<Dependency>()
+                .Bind<IDependency>(1).To<Dependency>()
                 .Bind<IDependency>(2).To<Dependency>()
                 .Bind<IDependency>(3).To<Dependency>()
                 .Bind<Point>(1).To(_ => new Point(1, 2))
@@ -119,8 +120,8 @@ namespace Sample
             });
 
         // Then
-        result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency created", "Dependency created", "Dependency created", "Service creating"), result);
+        result.Errors.Count.ShouldBe(0, result);
+        result.StdOut.ShouldBe(["Dependency created", "Dependency created", "Dependency created", "Service creating"], result);
     }
     
     [Theory]
@@ -240,7 +241,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency created", "Dependency created", "Dependency created", "Service creating"), result);
+        result.StdOut.ShouldBe(["Dependency created", "Dependency created", "Dependency created", "Service creating"], result);
     }
     
     [Theory]
@@ -356,7 +357,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Service creating"), result);
+        result.StdOut.ShouldBe(["Service creating"], result);
     }
     
     [Theory]
@@ -455,6 +456,6 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency created", "Dependency created", "Dependency created", "Service creating"), result);
+        result.StdOut.ShouldBe(["Dependency created", "Dependency created", "Dependency created", "Service creating"], result);
     }
 }
