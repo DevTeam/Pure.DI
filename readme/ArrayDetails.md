@@ -15,7 +15,6 @@ classDiagram
   class CompositionRoot {
     +CompositionRoot(IService1 service1, IService2 service21, IService2 service22, IService2 service23, IService3 service3, IService4 service41, IService4 service42)
   }
-  class ArrayᐸIService3ᐳ
   Service1 --|> IService1 : 
   class Service1 {
     +Service1(IService2 service2)
@@ -44,6 +43,7 @@ classDiagram
   class Service4 {
     +Service4()
   }
+  class ArrayᐸIService3ᐳ
   class IService1 {
     <<abstract>>
   }
@@ -63,10 +63,6 @@ classDiagram
   CompositionRoot *--  Service3 : IService3
   CompositionRoot *--  Service4 : IService4
   CompositionRoot *--  Service4 : IService4
-  ArrayᐸIService3ᐳ *--  Service3 : IService3
-  ArrayᐸIService3ᐳ *--  Service3v2 : 2  IService3
-  ArrayᐸIService3ᐳ *--  Service3v3 : 3  IService3
-  ArrayᐸIService3ᐳ *--  Service3v4 : 4  IService3
   Service1 *--  Service2Array : IService2
   Service2Array *--  ArrayᐸIService3ᐳ : ArrayᐸIService3ᐳ
   Service3 *--  Service4 : IService4
@@ -78,6 +74,10 @@ classDiagram
   Service3v4 *--  Service4 : IService4
   Service3v4 *--  Service4 : IService4
   Array ..> CompositionRoot : CompositionRoot TestPureDIByCR()
+  ArrayᐸIService3ᐳ *--  Service3 : IService3
+  ArrayᐸIService3ᐳ *--  Service3v2 : 2  IService3
+  ArrayᐸIService3ᐳ *--  Service3v3 : 3  IService3
+  ArrayᐸIService3ᐳ *--  Service3v4 : 4  IService3
 ```
 
 ### Generated code
@@ -88,16 +88,16 @@ classDiagram
 ```c#
 partial class Array
 {
-  private readonly Array _rootM04D13di;
+  private readonly Array _rootM04D20di;
   
   public Array()
   {
-    _rootM04D13di = this;
+    _rootM04D20di = this;
   }
   
   internal Array(Array baseComposition)
   {
-    _rootM04D13di = baseComposition._rootM04D13di;
+    _rootM04D20di = baseComposition._rootM04D20di;
   }
   
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
@@ -106,31 +106,33 @@ partial class Array
     return new Pure.DI.Benchmarks.Model.CompositionRoot(new Pure.DI.Benchmarks.Model.Service1(new Pure.DI.Benchmarks.Model.Service2Array(new Pure.DI.Benchmarks.Model.IService3[4] { new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3v2(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3v3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3v4(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()) })), new Pure.DI.Benchmarks.Model.Service2Array(new Pure.DI.Benchmarks.Model.IService3[4] { new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3v2(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3v3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3v4(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()) }), new Pure.DI.Benchmarks.Model.Service2Array(new Pure.DI.Benchmarks.Model.IService3[4] { new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3v2(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3v3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3v4(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()) }), new Pure.DI.Benchmarks.Model.Service2Array(new Pure.DI.Benchmarks.Model.IService3[4] { new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3v2(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3v3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service3v4(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()) }), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
   }
   
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
   public T Resolve<T>()
   {
-    return ResolverM04D13di<T>.Value.Resolve(this);
+    return ResolverM04D20di<T>.Value.Resolve(this);
   }
   
+  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
   public T Resolve<T>(object? tag)
   {
-    return ResolverM04D13di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM04D20di<T>.Value.ResolveByTag(this, tag);
   }
   
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
   public object Resolve(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM04D13di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _bucketsM04D13di[index];
-    return pair.Key == type ? pair.Value.Resolve(this) : ResolveM04D13di(type, index);
+    var index = (int)(_bucketSizeM04D20di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _bucketsM04D20di[index];
+    return pair.Key == type ? pair.Value.Resolve(this) : ResolveM04D20di(type, index);
   }
   
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x8)]
-  private object ResolveM04D13di(global::System.Type type, int index)
+  private object ResolveM04D20di(global::System.Type type, int index)
   {
-    var finish = index + _bucketSizeM04D13di;
+    var finish = index + _bucketSizeM04D20di;
     while (++index < finish)
     {
-      ref var pair = ref _bucketsM04D13di[index];
+      ref var pair = ref _bucketsM04D20di[index];
       if (pair.Key == type)
       {
         return pair.Value.Resolve(this);
@@ -143,18 +145,18 @@ partial class Array
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
   public object Resolve(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM04D13di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _bucketsM04D13di[index];
-    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : ResolveM04D13di(type, tag, index);
+    var index = (int)(_bucketSizeM04D20di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _bucketsM04D20di[index];
+    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : ResolveM04D20di(type, tag, index);
   }
   
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x8)]
-  private object ResolveM04D13di(global::System.Type type, object? tag, int index)
+  private object ResolveM04D20di(global::System.Type type, object? tag, int index)
   {
-    var finish = index + _bucketSizeM04D13di;
+    var finish = index + _bucketSizeM04D20di;
     while (++index < finish)
     {
-      ref var pair = ref _bucketsM04D13di[index];
+      ref var pair = ref _bucketsM04D20di[index];
       if (pair.Key == type)
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -178,7 +180,6 @@ partial class Array
         "  class CompositionRoot {\n" +
           "    +CompositionRoot(IService1 service1, IService2 service21, IService2 service22, IService2 service23, IService3 service3, IService4 service41, IService4 service42)\n" +
         "  }\n" +
-        "  class ArrayᐸIService3ᐳ\n" +
         "  Service1 --|> IService1 : \n" +
         "  class Service1 {\n" +
           "    +Service1(IService2 service2)\n" +
@@ -207,6 +208,7 @@ partial class Array
         "  class Service4 {\n" +
           "    +Service4()\n" +
         "  }\n" +
+        "  class ArrayᐸIService3ᐳ\n" +
         "  class IService1 {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
@@ -226,10 +228,6 @@ partial class Array
         "  CompositionRoot *--  Service3 : IService3\n" +
         "  CompositionRoot *--  Service4 : IService4\n" +
         "  CompositionRoot *--  Service4 : IService4\n" +
-        "  ArrayᐸIService3ᐳ *--  Service3 : IService3\n" +
-        "  ArrayᐸIService3ᐳ *--  Service3v2 : 2  IService3\n" +
-        "  ArrayᐸIService3ᐳ *--  Service3v3 : 3  IService3\n" +
-        "  ArrayᐸIService3ᐳ *--  Service3v4 : 4  IService3\n" +
         "  Service1 *--  Service2Array : IService2\n" +
         "  Service2Array *--  ArrayᐸIService3ᐳ : ArrayᐸIService3ᐳ\n" +
         "  Service3 *--  Service4 : IService4\n" +
@@ -240,28 +238,32 @@ partial class Array
         "  Service3v3 *--  Service4 : IService4\n" +
         "  Service3v4 *--  Service4 : IService4\n" +
         "  Service3v4 *--  Service4 : IService4\n" +
-        "  Array ..> CompositionRoot : CompositionRoot TestPureDIByCR()";
+        "  Array ..> CompositionRoot : CompositionRoot TestPureDIByCR()\n" +
+        "  ArrayᐸIService3ᐳ *--  Service3 : IService3\n" +
+        "  ArrayᐸIService3ᐳ *--  Service3v2 : 2  IService3\n" +
+        "  ArrayᐸIService3ᐳ *--  Service3v3 : 3  IService3\n" +
+        "  ArrayᐸIService3ᐳ *--  Service3v4 : 4  IService3";
   }
   
-  private readonly static int _bucketSizeM04D13di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>[] _bucketsM04D13di;
+  private readonly static int _bucketSizeM04D20di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>[] _bucketsM04D20di;
   
   static Array()
   {
-    var valResolverM04D13di_0000 = new ResolverM04D13di_0000();
-    ResolverM04D13di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM04D13di_0000;
-    _bucketsM04D13di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Array, object>>.Create(
+    var valResolverM04D20di_0000 = new ResolverM04D20di_0000();
+    ResolverM04D20di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM04D20di_0000;
+    _bucketsM04D20di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Array, object>>.Create(
       1,
-      out _bucketSizeM04D13di,
+      out _bucketSizeM04D20di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM04D13di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Array, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM04D20di_0000)
       });
   }
   
-  private sealed class ResolverM04D13di<T>: global::Pure.DI.IResolver<Array, T>
+  private sealed class ResolverM04D20di<T>: global::Pure.DI.IResolver<Array, T>
   {
-    public static global::Pure.DI.IResolver<Array, T> Value = new ResolverM04D13di<T>();
+    public static global::Pure.DI.IResolver<Array, T> Value = new ResolverM04D20di<T>();
     
     public T Resolve(Array composite)
     {
@@ -274,7 +276,7 @@ partial class Array
     }
   }
   
-  private sealed class ResolverM04D13di_0000: global::Pure.DI.IResolver<Array, Pure.DI.Benchmarks.Model.CompositionRoot>
+  private sealed class ResolverM04D20di_0000: global::Pure.DI.IResolver<Array, Pure.DI.Benchmarks.Model.CompositionRoot>
   {
     public Pure.DI.Benchmarks.Model.CompositionRoot Resolve(Array composition)
     {

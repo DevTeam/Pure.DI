@@ -937,14 +937,14 @@ Installed [.NET SDK 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 <table>
 <thead><tr><th>Method              </th><th>Mean </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>181.4 ns</td><td>3.65 ns</td><td>6.09 ns</td><td>1.00</td><td>0.00</td><td>0.0365</td><td>-</td><td>632 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>182.0 ns</td><td>3.57 ns</td><td>7.29 ns</td><td>1.01</td><td>0.04</td><td>0.0365</td><td>-</td><td>632 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>186.1 ns</td><td>3.52 ns</td><td>4.58 ns</td><td>1.03</td><td>0.04</td><td>0.0365</td><td>-</td><td>632 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>189.8 ns</td><td>3.90 ns</td><td>11.05 ns</td><td>1.08</td><td>0.07</td><td>0.0365</td><td>-</td><td>632 B</td><td>1.00</td>
-</tr><tr><td>LightInject</td><td>198.9 ns</td><td>4.06 ns</td><td>8.01 ns</td><td>1.10</td><td>0.05</td><td>0.0365</td><td>-</td><td>632 B</td><td>1.00</td>
-</tr><tr><td>DryIoc</td><td>213.3 ns</td><td>4.35 ns</td><td>10.82 ns</td><td>1.20</td><td>0.07</td><td>0.0365</td><td>-</td><td>632 B</td><td>1.00</td>
-</tr><tr><td>Unity</td><td>10,172.3 ns</td><td>193.16 ns</td><td>180.68 ns</td><td>55.87</td><td>1.97</td><td>0.8392</td><td>-</td><td>14520 B</td><td>22.97</td>
-</tr><tr><td>Autofac</td><td>27,444.9 ns</td><td>318.63 ns</td><td>248.76 ns</td><td>149.08</td><td>3.87</td><td>1.6479</td><td>0.0610</td><td>28816 B</td><td>45.59</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>168.1 ns</td><td>1.72 ns</td><td>1.44 ns</td><td>1.00</td><td>0.00</td><td>0.0336</td><td>-</td><td>632 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>169.6 ns</td><td>3.08 ns</td><td>2.58 ns</td><td>1.01</td><td>0.02</td><td>0.0336</td><td>-</td><td>632 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>170.7 ns</td><td>3.02 ns</td><td>2.52 ns</td><td>1.02</td><td>0.02</td><td>0.0336</td><td>-</td><td>632 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>171.2 ns</td><td>2.44 ns</td><td>2.04 ns</td><td>1.02</td><td>0.02</td><td>0.0336</td><td>-</td><td>632 B</td><td>1.00</td>
+</tr><tr><td>LightInject</td><td>179.8 ns</td><td>3.43 ns</td><td>3.21 ns</td><td>1.07</td><td>0.02</td><td>0.0336</td><td>-</td><td>632 B</td><td>1.00</td>
+</tr><tr><td>DryIoc</td><td>200.5 ns</td><td>3.89 ns</td><td>4.16 ns</td><td>1.20</td><td>0.02</td><td>0.0336</td><td>-</td><td>632 B</td><td>1.00</td>
+</tr><tr><td>Unity</td><td>9,966.0 ns</td><td>80.16 ns</td><td>62.58 ns</td><td>59.26</td><td>0.42</td><td>0.7629</td><td>-</td><td>14520 B</td><td>22.97</td>
+</tr><tr><td>Autofac</td><td>27,170.5 ns</td><td>308.31 ns</td><td>257.45 ns</td><td>161.60</td><td>1.87</td><td>1.5259</td><td>0.0610</td><td>28816 B</td><td>45.59</td>
 </tr></tbody></table>
 
 [Array details](readme/ArrayDetails.md)
@@ -957,15 +957,15 @@ Installed [.NET SDK 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 <table>
 <thead><tr><th>Method              </th><th>Mean </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>136.3 ns</td><td>2.77 ns</td><td>4.48 ns</td><td>0.88</td><td>0.03</td><td>0.0198</td><td>-</td><td>344 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>137.9 ns</td><td>2.84 ns</td><td>4.66 ns</td><td>0.88</td><td>0.03</td><td>0.0198</td><td>-</td><td>344 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>141.5 ns</td><td>2.69 ns</td><td>5.50 ns</td><td>0.92</td><td>0.05</td><td>0.0198</td><td>-</td><td>344 B</td><td>1.00</td>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>157.7 ns</td><td>3.24 ns</td><td>3.32 ns</td><td>1.00</td><td>0.00</td><td>0.0198</td><td>-</td><td>344 B</td><td>1.00</td>
-</tr><tr><td>&#39;Microsoft DI&#39;</td><td>189.1 ns</td><td>3.11 ns</td><td>2.60 ns</td><td>1.20</td><td>0.02</td><td>0.0272</td><td>-</td><td>472 B</td><td>1.37</td>
-</tr><tr><td>LightInject</td><td>290.2 ns</td><td>5.79 ns</td><td>5.42 ns</td><td>1.84</td><td>0.05</td><td>0.0496</td><td>-</td><td>856 B</td><td>2.49</td>
-</tr><tr><td>DryIoc</td><td>308.8 ns</td><td>6.25 ns</td><td>14.12 ns</td><td>1.92</td><td>0.08</td><td>0.0496</td><td>-</td><td>856 B</td><td>2.49</td>
-</tr><tr><td>Unity</td><td>7,874.1 ns</td><td>137.31 ns</td><td>128.44 ns</td><td>50.05</td><td>1.18</td><td>0.7935</td><td>-</td><td>13752 B</td><td>39.98</td>
-</tr><tr><td>Autofac</td><td>26,601.4 ns</td><td>213.84 ns</td><td>189.56 ns</td><td>168.63</td><td>4.20</td><td>1.6479</td><td>0.0610</td><td>28944 B</td><td>84.14</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>128.2 ns</td><td>1.50 ns</td><td>1.25 ns</td><td>0.91</td><td>0.01</td><td>0.0184</td><td>-</td><td>344 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>130.5 ns</td><td>2.22 ns</td><td>1.85 ns</td><td>0.93</td><td>0.02</td><td>0.0184</td><td>-</td><td>344 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>133.8 ns</td><td>2.38 ns</td><td>1.99 ns</td><td>0.95</td><td>0.01</td><td>0.0184</td><td>-</td><td>344 B</td><td>1.00</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>140.3 ns</td><td>1.69 ns</td><td>1.41 ns</td><td>1.00</td><td>0.00</td><td>0.0184</td><td>-</td><td>344 B</td><td>1.00</td>
+</tr><tr><td>&#39;Microsoft DI&#39;</td><td>181.3 ns</td><td>2.01 ns</td><td>1.67 ns</td><td>1.29</td><td>0.02</td><td>0.0250</td><td>-</td><td>472 B</td><td>1.37</td>
+</tr><tr><td>LightInject</td><td>277.7 ns</td><td>3.47 ns</td><td>2.89 ns</td><td>1.98</td><td>0.03</td><td>0.0458</td><td>-</td><td>856 B</td><td>2.49</td>
+</tr><tr><td>DryIoc</td><td>281.7 ns</td><td>5.33 ns</td><td>4.45 ns</td><td>2.01</td><td>0.03</td><td>0.0458</td><td>-</td><td>856 B</td><td>2.49</td>
+</tr><tr><td>Unity</td><td>7,768.1 ns</td><td>124.10 ns</td><td>152.41 ns</td><td>55.43</td><td>1.24</td><td>0.7324</td><td>-</td><td>13752 B</td><td>39.98</td>
+</tr><tr><td>Autofac</td><td>26,954.8 ns</td><td>529.73 ns</td><td>543.99 ns</td><td>192.63</td><td>4.87</td><td>1.5259</td><td>0.0610</td><td>28944 B</td><td>84.14</td>
 </tr></tbody></table>
 
 [Enum details](readme/EnumDetails.md)
@@ -978,14 +978,14 @@ Installed [.NET SDK 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 <table>
 <thead><tr><th>Method              </th><th>Mean   </th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</tr><tr><td>&#39;Hand Coded&#39;</td><td>9.394 ns</td><td>0.2654 ns</td><td>0.3056 ns</td><td>1.00</td><td>0.00</td><td>0.0014</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>9.462 ns</td><td>0.2354 ns</td><td>0.2087 ns</td><td>1.00</td><td>0.04</td><td>0.0014</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>12.645 ns</td><td>0.2946 ns</td><td>0.2756 ns</td><td>1.34</td><td>0.05</td><td>0.0014</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>13.081 ns</td><td>0.1891 ns</td><td>0.1676 ns</td><td>1.38</td><td>0.04</td><td>0.0014</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>DryIoc</td><td>70.358 ns</td><td>1.4444 ns</td><td>1.2804 ns</td><td>7.41</td><td>0.27</td><td>0.0069</td><td>120 B</td><td>5.00</td>
-</tr><tr><td>LightInject</td><td>328.676 ns</td><td>5.6607 ns</td><td>4.7269 ns</td><td>34.52</td><td>0.99</td><td>0.0291</td><td>504 B</td><td>21.00</td>
-</tr><tr><td>Unity</td><td>4,550.994 ns</td><td>30.3968 ns</td><td>26.9460 ns</td><td>479.38</td><td>13.31</td><td>0.1450</td><td>2552 B</td><td>106.33</td>
-</tr><tr><td>Autofac</td><td>11,121.527 ns</td><td>148.2118 ns</td><td>138.6374 ns</td><td>1,174.57</td><td>28.55</td><td>0.8087</td><td>14008 B</td><td>583.67</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>8.002 ns</td><td>0.1496 ns</td><td>0.1326 ns</td><td>0.85</td><td>0.01</td><td>0.0013</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>9.445 ns</td><td>0.1727 ns</td><td>0.1615 ns</td><td>1.00</td><td>0.00</td><td>0.0013</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>10.327 ns</td><td>0.2801 ns</td><td>0.2620 ns</td><td>1.09</td><td>0.02</td><td>0.0013</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>11.954 ns</td><td>0.2458 ns</td><td>0.2053 ns</td><td>1.26</td><td>0.03</td><td>0.0013</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>DryIoc</td><td>62.785 ns</td><td>1.1086 ns</td><td>0.9828 ns</td><td>6.65</td><td>0.19</td><td>0.0063</td><td>120 B</td><td>5.00</td>
+</tr><tr><td>LightInject</td><td>296.638 ns</td><td>3.9363 ns</td><td>3.2870 ns</td><td>31.37</td><td>0.80</td><td>0.0267</td><td>504 B</td><td>21.00</td>
+</tr><tr><td>Unity</td><td>4,448.473 ns</td><td>35.3598 ns</td><td>33.0756 ns</td><td>471.11</td><td>9.33</td><td>0.1297</td><td>2552 B</td><td>106.33</td>
+</tr><tr><td>Autofac</td><td>10,857.806 ns</td><td>115.9508 ns</td><td>96.8241 ns</td><td>1,147.95</td><td>22.40</td><td>0.7477</td><td>14008 B</td><td>583.67</td>
 </tr></tbody></table>
 
 [Func details](readme/FuncDetails.md)
@@ -998,18 +998,18 @@ Installed [.NET SDK 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 <table>
 <thead><tr><th>Method              </th><th>Mean    </th><th>Error  </th><th>StdDev </th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>8.469 ns</td><td>0.2493 ns</td><td>0.4165 ns</td><td>1.00</td><td>0.00</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>9.506 ns</td><td>0.2733 ns</td><td>0.3648 ns</td><td>1.11</td><td>0.06</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>12.508 ns</td><td>0.2986 ns</td><td>0.2793 ns</td><td>1.43</td><td>0.08</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>12.572 ns</td><td>0.2674 ns</td><td>0.2501 ns</td><td>1.43</td><td>0.07</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>DryIoc</td><td>28.755 ns</td><td>0.2372 ns</td><td>0.2219 ns</td><td>3.28</td><td>0.15</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Simple Injector&#39;</td><td>35.304 ns</td><td>0.2639 ns</td><td>0.2060 ns</td><td>3.99</td><td>0.19</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Microsoft DI&#39;</td><td>39.436 ns</td><td>0.4113 ns</td><td>0.3435 ns</td><td>4.48</td><td>0.24</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>LightInject</td><td>910.508 ns</td><td>5.9297 ns</td><td>5.2565 ns</td><td>103.56</td><td>4.97</td><td>0.0010</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>Unity</td><td>7,927.580 ns</td><td>29.0347 ns</td><td>24.2453 ns</td><td>900.81</td><td>44.06</td><td>0.1831</td><td>-</td><td>3184 B</td><td>132.67</td>
-</tr><tr><td>Autofac</td><td>19,562.149 ns</td><td>236.3915 ns</td><td>209.5549 ns</td><td>2,224.36</td><td>94.37</td><td>1.3733</td><td>0.0305</td><td>24208 B</td><td>1,008.67</td>
-</tr><tr><td>&#39;Castle Windsor&#39;</td><td>31,009.123 ns</td><td>327.3126 ns</td><td>306.1684 ns</td><td>3,531.38</td><td>141.29</td><td>1.3428</td><td>-</td><td>23912 B</td><td>996.33</td>
-</tr><tr><td>Ninject</td><td>120,850.129 ns</td><td>2,359.7906 ns</td><td>3,532.0234 ns</td><td>14,228.15</td><td>605.72</td><td>4.2725</td><td>1.0986</td><td>74096 B</td><td>3,087.33</td>
+</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>7.600 ns</td><td>0.1685 ns</td><td>0.1316 ns</td><td>1.00</td><td>0.00</td><td>0.0013</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>8.652 ns</td><td>0.2436 ns</td><td>0.2392 ns</td><td>1.14</td><td>0.03</td><td>0.0013</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>9.919 ns</td><td>0.2579 ns</td><td>0.2154 ns</td><td>1.30</td><td>0.04</td><td>0.0013</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>11.393 ns</td><td>0.2199 ns</td><td>0.1836 ns</td><td>1.50</td><td>0.04</td><td>0.0013</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>DryIoc</td><td>27.581 ns</td><td>0.3758 ns</td><td>0.3138 ns</td><td>3.63</td><td>0.07</td><td>0.0013</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Simple Injector&#39;</td><td>33.807 ns</td><td>0.3441 ns</td><td>0.3050 ns</td><td>4.45</td><td>0.10</td><td>0.0013</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Microsoft DI&#39;</td><td>38.478 ns</td><td>0.3053 ns</td><td>0.2549 ns</td><td>5.06</td><td>0.07</td><td>0.0013</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>LightInject</td><td>865.775 ns</td><td>1.2567 ns</td><td>1.0494 ns</td><td>113.96</td><td>1.96</td><td>0.0010</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>Unity</td><td>7,677.459 ns</td><td>99.8336 ns</td><td>88.4999 ns</td><td>1,011.67</td><td>17.40</td><td>0.1678</td><td>-</td><td>3184 B</td><td>132.67</td>
+</tr><tr><td>Autofac</td><td>18,825.341 ns</td><td>315.1815 ns</td><td>263.1908 ns</td><td>2,478.00</td><td>62.67</td><td>1.2817</td><td>0.0305</td><td>24208 B</td><td>1,008.67</td>
+</tr><tr><td>&#39;Castle Windsor&#39;</td><td>31,318.225 ns</td><td>408.7010 ns</td><td>362.3028 ns</td><td>4,123.56</td><td>74.24</td><td>1.2207</td><td>-</td><td>23912 B</td><td>996.33</td>
+</tr><tr><td>Ninject</td><td>116,099.082 ns</td><td>2,240.6371 ns</td><td>2,991.1861 ns</td><td>15,609.54</td><td>360.85</td><td>3.9063</td><td>0.9766</td><td>74096 B</td><td>3,087.33</td>
 </tr></tbody></table>
 
 [Singleton details](readme/SingletonDetails.md)
@@ -1022,18 +1022,18 @@ Installed [.NET SDK 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 <table>
 <thead><tr><th>Method              </th><th>Mean    </th><th>Error  </th><th>StdDev </th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>&#39;Hand Coded&#39;</td><td>8.300 ns</td><td>0.2275 ns</td><td>0.2017 ns</td><td>1.00</td><td>0.00</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI composition root&#39;</td><td>8.417 ns</td><td>0.2472 ns</td><td>0.2313 ns</td><td>1.02</td><td>0.04</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>10.007 ns</td><td>0.2170 ns</td><td>0.1924 ns</td><td>1.21</td><td>0.03</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>10.739 ns</td><td>0.2942 ns</td><td>0.4915 ns</td><td>1.29</td><td>0.06</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>LightInject</td><td>18.968 ns</td><td>0.4292 ns</td><td>0.3805 ns</td><td>2.29</td><td>0.07</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Microsoft DI&#39;</td><td>24.761 ns</td><td>0.2356 ns</td><td>0.2089 ns</td><td>2.98</td><td>0.07</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>DryIoc</td><td>26.034 ns</td><td>0.3170 ns</td><td>0.2810 ns</td><td>3.14</td><td>0.06</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>&#39;Simple Injector&#39;</td><td>33.862 ns</td><td>0.4485 ns</td><td>0.3976 ns</td><td>4.08</td><td>0.11</td><td>0.0014</td><td>-</td><td>24 B</td><td>1.00</td>
-</tr><tr><td>Unity</td><td>11,055.904 ns</td><td>85.9931 ns</td><td>76.2306 ns</td><td>1,332.65</td><td>31.50</td><td>0.2899</td><td>-</td><td>5176 B</td><td>215.67</td>
-</tr><tr><td>Autofac</td><td>28,686.734 ns</td><td>523.7684 ns</td><td>464.3070 ns</td><td>3,458.02</td><td>103.75</td><td>1.9226</td><td>0.0916</td><td>33224 B</td><td>1,384.33</td>
-</tr><tr><td>&#39;Castle Windsor&#39;</td><td>57,113.574 ns</td><td>417.0749 ns</td><td>369.7260 ns</td><td>6,883.84</td><td>138.26</td><td>3.1128</td><td>-</td><td>54360 B</td><td>2,265.00</td>
-</tr><tr><td>Ninject</td><td>259,310.814 ns</td><td>5,082.3164 ns</td><td>5,438.0217 ns</td><td>31,238.77</td><td>1,101.53</td><td>7.3242</td><td>1.9531</td><td>131008 B</td><td>5,458.67</td>
+</thead><tbody><tr><td>&#39;Pure.DI composition root&#39;</td><td>7.903 ns</td><td>0.1254 ns</td><td>0.0979 ns</td><td>0.97</td><td>0.02</td><td>0.0013</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Hand Coded&#39;</td><td>8.135 ns</td><td>0.1484 ns</td><td>0.1158 ns</td><td>1.00</td><td>0.00</td><td>0.0013</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve&lt;T&gt;()&#39;</td><td>10.337 ns</td><td>0.2882 ns</td><td>0.3848 ns</td><td>1.28</td><td>0.04</td><td>0.0013</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Pure.DI Resolve(Type)&#39;</td><td>11.442 ns</td><td>0.2251 ns</td><td>0.1995 ns</td><td>1.41</td><td>0.03</td><td>0.0013</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>LightInject</td><td>20.096 ns</td><td>0.0607 ns</td><td>0.0507 ns</td><td>2.47</td><td>0.04</td><td>0.0013</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Microsoft DI&#39;</td><td>25.671 ns</td><td>0.1087 ns</td><td>0.0849 ns</td><td>3.16</td><td>0.05</td><td>0.0013</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>DryIoc</td><td>27.474 ns</td><td>0.5736 ns</td><td>0.4478 ns</td><td>3.38</td><td>0.07</td><td>0.0013</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>&#39;Simple Injector&#39;</td><td>34.814 ns</td><td>0.2384 ns</td><td>0.2114 ns</td><td>4.28</td><td>0.05</td><td>0.0013</td><td>-</td><td>24 B</td><td>1.00</td>
+</tr><tr><td>Unity</td><td>11,090.606 ns</td><td>65.9897 ns</td><td>61.7268 ns</td><td>1,366.08</td><td>19.49</td><td>0.2747</td><td>-</td><td>5176 B</td><td>215.67</td>
+</tr><tr><td>Autofac</td><td>28,646.903 ns</td><td>355.7947 ns</td><td>315.4027 ns</td><td>3,520.24</td><td>61.91</td><td>1.7700</td><td>0.0916</td><td>33224 B</td><td>1,384.33</td>
+</tr><tr><td>&#39;Castle Windsor&#39;</td><td>58,534.573 ns</td><td>988.3103 ns</td><td>876.1114 ns</td><td>7,196.49</td><td>162.41</td><td>2.8687</td><td>-</td><td>54360 B</td><td>2,265.00</td>
+</tr><tr><td>Ninject</td><td>253,820.129 ns</td><td>4,777.4163 ns</td><td>5,310.0855 ns</td><td>31,080.38</td><td>673.81</td><td>6.8359</td><td>1.4648</td><td>131008 B</td><td>5,458.67</td>
 </tr></tbody></table>
 
 [Transient details](readme/TransientDetails.md)
@@ -1045,7 +1045,7 @@ Installed [.NET SDK 8.0](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
 <pre><code>
 BenchmarkDotNet v0.13.12, Ubuntu 20.04.6 LTS (Focal Fossa)
-Intel Xeon Platinum 8175M CPU 2.50GHz, 1 CPU, 2 logical cores and 1 physical core
+Intel Xeon Platinum 8259CL CPU 2.50GHz, 1 CPU, 2 logical cores and 1 physical core
 .NET SDK 8.0.201
   [Host]     : .NET 8.0.2 (8.0.224.6711), X64 RyuJIT AVX-512F+CD+BW+DQ+VL
   DefaultJob : .NET 8.0.2 (8.0.224.6711), X64 RyuJIT AVX-512F+CD+BW+DQ+VL
