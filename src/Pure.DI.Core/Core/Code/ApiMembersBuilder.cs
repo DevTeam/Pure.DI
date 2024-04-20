@@ -30,6 +30,7 @@ internal sealed class ApiMembersBuilder(
             }
 
             buildTools.AddPureHeader(apiCode);
+            apiCode.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x100)]");
             apiCode.AppendLine($"{hints.ResolveMethodModifiers} T {hints.ResolveMethodName}<T>()");
             apiCode.AppendLine("{");
             using (apiCode.Indent())
@@ -53,6 +54,7 @@ internal sealed class ApiMembersBuilder(
             }
 
             buildTools.AddPureHeader(apiCode);
+            apiCode.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x100)]");
             apiCode.AppendLine($"{hints.ResolveByTagMethodModifiers} T {hints.ResolveByTagMethodName}<T>(object? tag)");
             apiCode.AppendLine("{");
             using (apiCode.Indent())
