@@ -1102,7 +1102,7 @@ namespace Pure.DI
     [global::System.Diagnostics.DebuggerTypeProxy(typeof(global::Pure.DI.Owned.DebugView))]
     internal partial class Owned : global::Pure.DI.IOwned
     {
-        private global::System.Collections.Generic.List<IDisposable> _disposables = new global::System.Collections.Generic.List<IDisposable>();
+        private global::System.Collections.Generic.List<global::System.IDisposable> _disposables = new global::System.Collections.Generic.List<global::System.IDisposable>();
         
         /// <summary>
         /// Adds a disposable instance.
@@ -1175,9 +1175,9 @@ namespace Pure.DI
         /// The value.
         /// </summary>
         public readonly T Value;
-        private readonly IOwned _owned;
+        private readonly global::Pure.DI.IOwned _owned;
         
-        public Owned(T value, IOwned owned)
+        public Owned(T value, global::Pure.DI.IOwned owned)
         {
             Value = value;
             _owned = owned;

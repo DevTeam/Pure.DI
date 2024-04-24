@@ -113,13 +113,14 @@ internal class BindingBuilder(
                     }
                 }
 
+                var id = new Lazy<int>(idGenerator.Generate);
                 return new MdBinding(
                     0,
                     source,
                     setup,
                     semanticModel,
-                    _contracts.Select(i => i with { Tags = i.Tags.Select(tag => BuildTag(tag, type)).ToImmutableArray()}).ToImmutableArray(),
-                    _tags.Select(tag => BuildTag(tag, type)).ToImmutableArray(),
+                    _contracts.Select(i => i with { Tags = i.Tags.Select(tag => BuildTag(tag, type, id)).ToImmutableArray()}).ToImmutableArray(),
+                    _tags.Select(tag => BuildTag(tag, type, id)).ToImmutableArray(),
                     _lifetime ?? _defaultLifetime?.Lifetime,
                     _implementation,
                     _factory,
@@ -141,7 +142,7 @@ internal class BindingBuilder(
         }
     }
 
-    private MdTag BuildTag(MdTag tag, ITypeSymbol? type)
+    private static MdTag BuildTag(MdTag tag, ITypeSymbol? type, Lazy<int> id)
     {
         if (type is null || tag.Value is null)
         {
@@ -157,7 +158,7 @@ internal class BindingBuilder(
                     return tag with { Value = type };
                 
                 case Tag.Unique:
-                    return tag with { Value = new UniqueTag(idGenerator.Generate()) };
+                    return tag with { Value = new UniqueTag(id.Value) };
             }
         }
 
