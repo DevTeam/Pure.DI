@@ -18,17 +18,14 @@ internal class VariablesBuilder(CancellationToken cancellationToken)
         rootBlock.Statements.AddFirst(rootVar);
         var blocks = new Stack<Block>();
         blocks.Push(rootBlock);
+        var counter = 0;
         while (blocks.TryPop(out var currentBlock))
         {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                break;
-            }
-
             var stack = new Stack<IStatement>(currentBlock.Statements);
             while (stack.TryPop(out var currentStatement))
             {
-                if (stack.Count > 0xffff)
+                cancellationToken.ThrowIfCancellationRequested();
+                if (counter++ > Const.MaxIterationsCount)
                 {
                     throw new CompileErrorException($"Cyclic dependency has been found.", rootNode.Binding.Source.GetLocation(), LogId.ErrorCyclicDependency);
                 }

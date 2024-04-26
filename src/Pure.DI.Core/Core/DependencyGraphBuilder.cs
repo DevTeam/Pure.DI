@@ -28,6 +28,7 @@ internal sealed class DependencyGraphBuilder(
         var roots = new List<DependencyNode>();
         foreach (var processingNode in nodes)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var node = processingNode.Node;
             if (node.Binding.Id > maxId)
             {
@@ -68,13 +69,19 @@ internal sealed class DependencyGraphBuilder(
         var processed = new HashSet<ProcessingNode>();
         var notProcessed = new HashSet<ProcessingNode>();
         var edgesMap = new Dictionary<ProcessingNode, List<Dependency>>();
+        var counter = 0;
         while (queue.TryDequeue(out var node))
         {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (counter++ > Const.MaxIterationsCount)
+            {
+                throw new CompileErrorException($"Cyclic dependency has been found.", setup.Source.GetLocation(), LogId.ErrorCyclicDependency);
+            }
+            
             var targetNode = node.Node;
             var isProcessed = true;
             foreach (var (injection, hasExplicitDefaultValue, explicitDefaultValue) in node.Injections)
             {
-                cancellationToken.ThrowIfCancellationRequested();
                 if (map.TryGetValue(injection, out var sourceNode))
                 {
                     if (!marker.IsMarkerBased(sourceNode.Type))
