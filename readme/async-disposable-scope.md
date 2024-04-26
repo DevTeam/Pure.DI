@@ -93,6 +93,7 @@ classDiagram
     + object Resolve(Type type, object? tag)
   }
   Composition --|> IDisposable
+  Composition --|> IAsyncDisposable
   class Session {
     +Session(Composition composition)
   }
@@ -338,6 +339,7 @@ partial class Composition: global::System.IDisposable, global::System.IAsyncDisp
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  Composition --|> IDisposable\n" +
+        "  Composition --|> IAsyncDisposable\n" +
         "  class Session {\n" +
           "    +Session(Composition composition)\n" +
         "  }\n" +

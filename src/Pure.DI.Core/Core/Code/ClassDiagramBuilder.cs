@@ -52,6 +52,11 @@ internal sealed class ClassDiagramBuilder(
             {
                 lines.AppendLine($"{composition.Source.Source.Name.ClassName} --|> IDisposable");
             }
+            
+            if (composition.AsyncDisposableCount > 0)
+            {
+                lines.AppendLine($"{composition.Source.Source.Name.ClassName} --|> IAsyncDisposable");
+            }
 
             var types = new HashSet<ITypeSymbol>(SymbolEqualityComparer.Default);
             var graph = composition.Source.Graph;

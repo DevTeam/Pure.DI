@@ -1,8 +1,7 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal sealed class DisposeMethodBuilder(
-    IAsyncDisposableSettings asyncDisposableSettings)
+internal sealed class DisposeMethodBuilder
     : IBuilder<CompositionCode, CompositionCode>
 {
     public CompositionCode Build(CompositionCode composition)
@@ -20,7 +19,7 @@ internal sealed class DisposeMethodBuilder(
         }
 
         var hasDisposable = composition.TotalDisposablesCount > composition.AsyncDisposableCount;
-        var hasAsyncDisposable = composition.AsyncDisposableCount > 0 && asyncDisposableSettings.IsEnabled(composition.Source.Source.SemanticModel.Compilation);
+        var hasAsyncDisposable = composition.AsyncDisposableCount > 0;
         var hints = composition.Source.Source.Hints;
         var isCommentsEnabled = hints.IsCommentsEnabled;
         if (isCommentsEnabled)

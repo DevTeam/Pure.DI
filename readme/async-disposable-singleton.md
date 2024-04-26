@@ -58,6 +58,7 @@ classDiagram
     + object Resolve(Type type, object? tag)
   }
   Composition --|> IDisposable
+  Composition --|> IAsyncDisposable
   Dependency --|> IDependency : 
   Dependency --|> IAsyncDisposable : 
   class Dependency {
@@ -272,6 +273,7 @@ partial class Composition: global::System.IDisposable, global::System.IAsyncDisp
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
         "  Composition --|> IDisposable\n" +
+        "  Composition --|> IAsyncDisposable\n" +
         "  Dependency --|> IDependency : \n" +
         "  Dependency --|> IAsyncDisposable : \n" +
         "  class Dependency {\n" +
