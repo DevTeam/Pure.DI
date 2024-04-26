@@ -52,7 +52,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Ctor1"), result);
+        result.StdOut.ShouldBe(["Ctor1"], result);
     }
     
     [Fact]
@@ -110,6 +110,6 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Ctor1"), result);
+        result.StdOut.ShouldBe(["Ctor1"], result);
     }
 }

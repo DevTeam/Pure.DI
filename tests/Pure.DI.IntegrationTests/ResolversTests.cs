@@ -41,6 +41,6 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Service", "Sample.Service", "Sample.Service", "Sample.Service"), result);
+        result.StdOut.ShouldBe(["Sample.Service", "Sample.Service", "Sample.Service", "Sample.Service"], result);
     }
 }

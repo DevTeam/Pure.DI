@@ -162,7 +162,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeFalse(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Xyz"), result);
+        result.StdOut.ShouldBe(["Xyz"], result);
         result.Warnings.Count.ShouldBe(1);
         result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1);
     }
@@ -210,10 +210,11 @@ namespace Sample
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(
-            ImmutableArray.Create(
+            [
                 "System.Func`2[System.Char,System.Collections.Generic.IList`1[System.String]]",
                 "System.Func`2[System.Byte,System.Int32[]]",
-                "System.Func`2[System.Int32,System.Collections.Generic.IList`1[System.Char]]"),
+                "System.Func`2[System.Int32,System.Collections.Generic.IList`1[System.Char]]"
+            ],
             result);
         result.Warnings.Count.ShouldBe(0);
         result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(0);
@@ -298,7 +299,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeFalse(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Xyz"), result);
+        result.StdOut.ShouldBe(["Xyz"], result);
         result.Warnings.Count.ShouldBe(1);
         result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1);
     }
@@ -344,7 +345,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Xyz"), result);
+        result.StdOut.ShouldBe(["Xyz"], result);
     }
     
     [Fact]
@@ -401,7 +402,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeFalse(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Xyz"), result);
+        result.StdOut.ShouldBe(["Xyz"], result);
         result.Warnings.Count.ShouldBe(1);
         result.Warnings.Count(i => i.Id == LogId.WarningOverriddenBinding).ShouldBe(1);
     }
@@ -469,7 +470,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("MyNs.Abc.Composition"), result);
+        result.StdOut.ShouldBe(["MyNs.Abc.Composition"], result);
     }
     
     [Fact]
@@ -526,7 +527,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Service", "Sample.OtherService"), result);
+        result.StdOut.ShouldBe(["Sample.Service", "Sample.OtherService"], result);
     }
     
     [Fact]
@@ -1019,7 +1020,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Initialize dep", "Initialize dep", "Initialize", "True", "Activate"), result);
+        result.StdOut.ShouldBe(["Initialize dep", "Initialize dep", "Initialize", "True", "Activate"], result);
     }
     
     [Fact]
@@ -1056,7 +1057,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Abc"), result);
+        result.StdOut.ShouldBe(["Abc"], result);
     }
     
     [Fact]
@@ -1093,7 +1094,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Abc"), result);
+        result.StdOut.ShouldBe(["Abc"], result);
     }
     
     [Fact]
@@ -1130,7 +1131,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Abc"), result);
+        result.StdOut.ShouldBe(["Abc"], result);
     }
     
     [Fact]
@@ -1169,7 +1170,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Abc"), result);
+        result.StdOut.ShouldBe(["Abc"], result);
     }
     
     [Fact]
@@ -1210,7 +1211,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Abc"), result);
+        result.StdOut.ShouldBe(["Abc"], result);
     }
     
     [Fact]
@@ -1249,7 +1250,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Abc"), result);
+        result.StdOut.ShouldBe(["Abc"], result);
     }
     
     [Fact]
@@ -1406,7 +1407,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Service"), result);
+        result.StdOut.ShouldBe(["Sample.Service"], result);
     }
     
     [Fact]
@@ -1459,7 +1460,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Consumer"), result);
+        result.StdOut.ShouldBe(["Sample.Consumer"], result);
     }
     
     [Fact]
@@ -1502,7 +1503,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Service", "Sample.Service"), result);
+        result.StdOut.ShouldBe(["Sample.Service", "Sample.Service"], result);
     }
     
     [Fact]
@@ -1552,7 +1553,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Abc", "Asd"), result);
+        result.StdOut.ShouldBe(["Abc", "Asd"], result);
     }
     
     [Fact]
@@ -1656,7 +1657,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("2", "Sample.Service"), result);
+        result.StdOut.ShouldBe(["2", "Sample.Service"], result);
     }
     
     [Fact]
@@ -1705,7 +1706,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Service", "Sample.Service"), result);
+        result.StdOut.ShouldBe(["Sample.Service", "Sample.Service"], result);
     }
 
 #if ROSLYN4_8_OR_GREATER    

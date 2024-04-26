@@ -39,7 +39,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
+        result.StdOut.ShouldBe(["True"], result);
     }
     
     [Fact]
@@ -80,7 +80,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
+        result.StdOut.ShouldBe(["True"], result);
     }
     
     [Fact]
@@ -120,7 +120,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
+        result.StdOut.ShouldBe(["True"], result);
     }
     
     [Fact]
@@ -187,7 +187,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True"), result);
+        result.StdOut.ShouldBe(["True", "True"], result);
     }
     
     [Fact]
@@ -250,7 +250,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency Created"), result);
+        result.StdOut.ShouldBe(["Dependency Created"], result);
     }
     
     [Fact]
@@ -359,7 +359,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True", "True", "True", "True"), result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True", "True"], result);
     }
     
     [Fact]
@@ -477,7 +477,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency2", "Dependency3", "Dispose3", "Dispose2"), result);
+        result.StdOut.ShouldBe(["Dependency2", "Dependency3", "Dispose3", "Dispose2"], result);
     }
     
     [Fact]
@@ -910,7 +910,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
+        result.StdOut.ShouldBe(["True"], result);
     }
     
     [Fact]
@@ -993,7 +993,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True"), result);
+        result.StdOut.ShouldBe(["True", "True"], result);
     }
     
     [Fact]
@@ -1083,7 +1083,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Dependency1 '' PerResolve created", "Sample.Dependency2 '' Transient created", "Sample.Service '' Transient created"), result);
+        result.StdOut.ShouldBe(["Sample.Dependency1 '' PerResolve created", "Sample.Dependency2 '' Transient created", "Sample.Service '' Transient created"], result);
     }
     
     [Fact]
@@ -1166,7 +1166,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True", "True"), result);
+        result.StdOut.ShouldBe(["True", "True", "True"], result);
     }
     
     [Fact]
@@ -1248,7 +1248,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
+        result.StdOut.ShouldBe(["True"], result);
     }
     
     [Fact]
@@ -1348,7 +1348,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
+        result.StdOut.ShouldBe(["True"], result);
     }
     
     [Fact]
@@ -1431,7 +1431,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True"), result);
+        result.StdOut.ShouldBe(["True", "True"], result);
     }
     
     [Fact]
@@ -1521,7 +1521,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("dep1"), result);
+        result.StdOut.ShouldBe(["dep1"], result);
     }
     
     [Fact]
@@ -1604,7 +1604,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True"), result);
+        result.StdOut.ShouldBe(["True", "True"], result);
     }
     
     [Fact]
@@ -1670,7 +1670,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True"), result);
+        result.StdOut.ShouldBe(["True"], result);
     }
     
     [Fact]
@@ -1737,7 +1737,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True"), result);
+        result.StdOut.ShouldBe(["True", "True"], result);
     }
     
     [Fact]
@@ -1895,6 +1895,6 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True", "True", "True", "True", "True", "False", "True", "True"), result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True", "True", "True", "False", "True", "True"], result);
     }
 }

@@ -72,7 +72,7 @@ internal class CompositionBuilder(
             
             roots.Add(processedRoot);
             isThreadSafe |= isThreadSafeEnabled && root.Node.Accumulators.Count > 0;
-            isThreadSafe |= isThreadSafeEnabled && map.IsThreadSafe(graph.Source.Hints);
+            isThreadSafe |= isThreadSafeEnabled && map.IsThreadSafe();
             map.Reset();
         }
 

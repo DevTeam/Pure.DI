@@ -1,5 +1,8 @@
+// ReSharper disable UnusedMember.Global
+// ReSharper disable MemberCanBeMadeStatic.Global
 namespace Build.Tools;
 
+[SuppressMessage("Performance", "CA1822:Mark members as static")]
 internal class FileSystem
 {
     private readonly Lazy<HashSet<char>> _invalidFileNameChars = new(() => Path.GetInvalidFileNameChars().ToHashSet());

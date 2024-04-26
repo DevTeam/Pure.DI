@@ -1,4 +1,6 @@
-﻿namespace Build.Tools;
+﻿// ReSharper disable HeapView.PossibleBoxingAllocation
+// ReSharper disable UnusedMember.Global
+namespace Build.Tools;
 
 using Newtonsoft.Json;
 

@@ -1,4 +1,5 @@
-﻿namespace Build;
+﻿// ReSharper disable MemberCanBePrivate.Global
+namespace Build;
 
 public readonly struct BuildStatus
 {

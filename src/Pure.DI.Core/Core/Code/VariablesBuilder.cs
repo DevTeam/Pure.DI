@@ -29,7 +29,7 @@ internal class VariablesBuilder(
                 cancellationToken.ThrowIfCancellationRequested();
                 if (counter++ > Const.MaxIterationsCount)
                 {
-                    throw new CompileErrorException($"Cyclic dependency has been found.", rootNode.Binding.Source.GetLocation(), LogId.ErrorCyclicDependency);
+                    throw new CompileErrorException("Cyclic dependency has been found.", rootNode.Binding.Source.GetLocation(), LogId.ErrorCyclicDependency);
                 }
                 
                 switch (currentStatement)
@@ -40,7 +40,7 @@ internal class VariablesBuilder(
                     
                     case Variable variable:
                     {
-                        var isAccumulator = IsAccumulator(variable, out var construct, out var mdAccumulators);
+                        var isAccumulator = IsAccumulator(variable, out var mdAccumulators);
                         IReadOnlyCollection<Dependency> dependencies = Array.Empty<Dependency>();
                         if (!isAccumulator)
                         {
@@ -156,17 +156,14 @@ internal class VariablesBuilder(
 
     private static bool IsAccumulator(
         Variable variable,
-        out MdConstruct mdConstruct,
         out IReadOnlyCollection<MdAccumulator> accumulators)
     {
         if (variable.Node.Construct?.Source is { Kind: MdConstructKind.Accumulator } construct)
         {
-            mdConstruct = construct;
             accumulators = construct.State as IReadOnlyCollection<MdAccumulator> ?? ImmutableArray<MdAccumulator>.Empty; 
             return true;
         }
 
-        mdConstruct = default;
         accumulators = ImmutableArray<MdAccumulator>.Empty;
         return false;
     }
@@ -222,7 +219,7 @@ internal class VariablesBuilder(
 
         if (map.TryGetValue(node.Binding, out var variable))
         {
-            variable.Info.AddRef(parentBlock);
+            variable.Info.AddRef();
             return variable with
             {
                 Parent = parentBlock,

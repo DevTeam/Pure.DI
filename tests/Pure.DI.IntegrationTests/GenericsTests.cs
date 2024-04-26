@@ -61,6 +61,6 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.Dependency`1[System.Int32]", "Sample.Dependency`1[System.String]"), result);
+        result.StdOut.ShouldBe(["Sample.Dependency`1[System.Int32]", "Sample.Dependency`1[System.String]"], result);
     }
 }

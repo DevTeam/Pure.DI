@@ -83,7 +83,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True"), result);
+        result.StdOut.ShouldBe(["True", "True"], result);
     }
     
     [Fact]
@@ -167,7 +167,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True"), result);
+        result.StdOut.ShouldBe(["True", "True"], result);
     }
     
     [Fact]
@@ -259,6 +259,6 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True"), result);
+        result.StdOut.ShouldBe(["True", "True"], result);
     }
 }

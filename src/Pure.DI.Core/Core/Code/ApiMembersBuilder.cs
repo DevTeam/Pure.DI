@@ -92,8 +92,7 @@ internal sealed class ApiMembersBuilder(
 
             if (resolvers.Length > 0)
             {
-                CreateObjectConflictsResolverMethod(resolvers,
-                    $"{Names.SystemNamespace}Type type",
+                CreateObjectConflictsResolverMethod($"{Names.SystemNamespace}Type type",
                     Names.ResolveMethodName,
                     "this",
                     false,
@@ -128,8 +127,7 @@ internal sealed class ApiMembersBuilder(
 
             if (resolvers.Length > 0)
             {
-                CreateObjectConflictsResolverMethod(resolvers,
-                    $"{Names.SystemNamespace}Type type, object? tag",
+                CreateObjectConflictsResolverMethod($"{Names.SystemNamespace}Type type, object? tag",
                     Names.ResolveByTagMethodName,
                     "this, tag",
                     true,
@@ -205,7 +203,6 @@ internal sealed class ApiMembersBuilder(
     }
     
     private static void CreateObjectConflictsResolverMethod(
-        IReadOnlyCollection<ResolverInfo> resolvers,
         string methodArgs,
         string resolveMethodName,
         string resolveMethodArgs,

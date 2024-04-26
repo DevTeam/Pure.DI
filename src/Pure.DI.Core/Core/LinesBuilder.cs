@@ -1,4 +1,5 @@
 // ReSharper disable ConvertIfStatementToReturnStatement
+// ReSharper disable ReturnTypeCanBeEnumerable.Global
 namespace Pure.DI.Core;
 
 internal sealed class LinesBuilder: IEnumerable<string>

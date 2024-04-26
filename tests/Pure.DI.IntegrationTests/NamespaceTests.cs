@@ -57,7 +57,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("MyNs.Abc.Composition"), result);
+        result.StdOut.ShouldBe(["MyNs.Abc.Composition"], result);
     }
     
     [Fact]
@@ -115,7 +115,7 @@ namespace My.Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("My.Sample.Composition"), result);
+        result.StdOut.ShouldBe(["My.Sample.Composition"], result);
     }
     
     [Fact]
@@ -173,7 +173,7 @@ public class Program
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("My.Sample.Composition"), result);
+        result.StdOut.ShouldBe(["My.Sample.Composition"], result);
     }
     
     [Fact]
@@ -225,7 +225,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create(".+"), result);
+        result.StdOut.ShouldBe([".+"], result);
     }
     
     [Fact]

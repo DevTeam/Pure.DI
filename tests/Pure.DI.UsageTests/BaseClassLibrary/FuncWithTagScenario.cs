@@ -27,10 +27,11 @@ class Service([Tag("my tag")] Func<IDependency> dependencyFactory)
     : IService
 {
     public ImmutableArray<IDependency> Dependencies { get; } =
-        Enumerable
-            .Range(0, 10)
-            .Select(_ => dependencyFactory())
-            .ToImmutableArray();
+        [
+            ..Enumerable
+                .Range(0, 10)
+                .Select(_ => dependencyFactory())
+        ];
 }
 // }
 

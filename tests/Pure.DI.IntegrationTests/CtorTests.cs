@@ -192,7 +192,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("99"), result);
+        result.StdOut.ShouldBe(["99"], result);
     }
     
     [Fact]
@@ -264,7 +264,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Murka"), result);
+        result.StdOut.ShouldBe(["Murka"], result);
     }
     
     [Fact]
@@ -348,7 +348,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("99"), result);
+        result.StdOut.ShouldBe(["99"], result);
     }
     
     [Fact]

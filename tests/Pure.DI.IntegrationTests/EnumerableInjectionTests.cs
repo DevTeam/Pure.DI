@@ -68,7 +68,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Service creating", "Dependency created", "Dependency created", "Dependency created"), result);
+        result.StdOut.ShouldBe(["Service creating", "Dependency created", "Dependency created", "Dependency created"], result);
     }
     
     [Fact]
@@ -134,7 +134,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Service creating", "Dependency created", "Dependency created", "Dependency created"), result);
+        result.StdOut.ShouldBe(["Service creating", "Dependency created", "Dependency created", "Dependency created"], result);
     }
     
     [Fact]
@@ -208,7 +208,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency created", "Dependency created", "Service creating"), result);
+        result.StdOut.ShouldBe(["Dependency created", "Dependency created", "Service creating"], result);
     }
     
     [Fact]
@@ -271,7 +271,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Service creating"), result);
+        result.StdOut.ShouldBe(["Service creating"], result);
     }
     
     [Fact]
@@ -337,7 +337,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Service creating", "Dependency created", "Dependency created", "Dependency created"), result);
+        result.StdOut.ShouldBe(["Service creating", "Dependency created", "Dependency created", "Dependency created"], result);
     }
     
     [Fact]
@@ -418,6 +418,6 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Service creating", "Dependency 1 created", "Dependency 2 created", "Dependency 3 created"), result);
+        result.StdOut.ShouldBe(["Service creating", "Dependency 1 created", "Dependency 2 created", "Dependency 3 created"], result);
     }
 }

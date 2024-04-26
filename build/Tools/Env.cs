@@ -1,5 +1,7 @@
-﻿namespace Build.Tools;
+﻿// ReSharper disable MemberCanBeMadeStatic.Global
+namespace Build.Tools;
 
+[SuppressMessage("Performance", "CA1822:Mark members as static")]
 internal class Env
 {
     public string GetPath(PathType pathType) =>

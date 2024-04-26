@@ -39,7 +39,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Some Name"), result);
+        result.StdOut.ShouldBe(["Some Name"], result);
     }
     
     [Fact]
@@ -103,7 +103,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Some Name"), result);
+        result.StdOut.ShouldBe(["Some Name"], result);
     }
     
     [Fact]
@@ -167,7 +167,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Some Name"), result);
+        result.StdOut.ShouldBe(["Some Name"], result);
     }
     
     [Fact]
@@ -243,7 +243,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Some Name", "Some Name"), result);
+        result.StdOut.ShouldBe(["Some Name", "Some Name"], result);
     }
 
     [Fact]
@@ -323,7 +323,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Some Name 37 56"), result);
+        result.StdOut.ShouldBe(["Some Name 37 56"], result);
     }
     
     [Fact]
@@ -398,7 +398,7 @@ namespace Sample
         result.Errors.Count.ShouldBe(0);
         result.Warnings.Count.ShouldBe(2);
         result.Warnings.Count(i => i.Id == LogId.WarningRootArgInResolveMethod).ShouldBe(2);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Some Name_99"), result);
+        result.StdOut.ShouldBe(["Some Name_99"], result);
     }
     
     [Fact]
@@ -463,7 +463,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Some Name"), result);
+        result.StdOut.ShouldBe(["Some Name"], result);
     }
 
 #if ROSLYN4_8_OR_GREATER    

@@ -60,6 +60,6 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Service creating"), result);
+        result.StdOut.ShouldBe(["Service creating"], result);
     }
 }

@@ -46,7 +46,6 @@ internal static class Names
     
     // Local methods
     public const string LocalMethodPrefix = "Local";
-    public const string EnsureExistsMethodNamePostfix = "EnsureExists";
     
     // Fields
     public static readonly string BucketsFieldName = $"_buckets{Salt}";

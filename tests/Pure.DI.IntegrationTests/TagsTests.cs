@@ -46,7 +46,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("1", "2", "3", "4"), result);
+        result.StdOut.ShouldBe(["1", "2", "3", "4"], result);
     }
     
     [Fact]
@@ -128,7 +128,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("True", "True", "True", "True"), result);
+        result.StdOut.ShouldBe(["True", "True", "True", "True"], result);
     }
     
     [Fact]
@@ -174,7 +174,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("1", "2"), result);
+        result.StdOut.ShouldBe(["1", "2"], result);
     }
     
     [Fact]
@@ -215,7 +215,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("1", "2"), result);
+        result.StdOut.ShouldBe(["1", "2"], result);
     }
     
     [Fact]
@@ -256,7 +256,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("1", "2"), result);
+        result.StdOut.ShouldBe(["1", "2"], result);
     }
     
     [Fact]
@@ -297,7 +297,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("1", "2"), result);
+        result.StdOut.ShouldBe(["1", "2"], result);
     }
 
 #if ROSLYN4_8_OR_GREATER    

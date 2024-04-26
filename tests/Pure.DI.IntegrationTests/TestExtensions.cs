@@ -79,7 +79,7 @@ public static class TestExtensions
         {
             return new Result(
                 false,
-                stdOut.ToImmutableArray(),
+                [..stdOut],
                 logs,
                 errors,
                 warnings,
@@ -123,7 +123,7 @@ public static class TestExtensions
             {
                 return new Result(
                     false,
-                    stdOut.ToImmutableArray(),
+                    [..stdOut],
                     logs,
                     errors,
                     warnings,
@@ -160,7 +160,7 @@ public static class TestExtensions
 
             return new Result(
                 !errors.Any() && !warnings.Any(),
-                stdOut.ToImmutableArray(),
+                [..stdOut],
                 logs,
                 errors,
                 warnings,

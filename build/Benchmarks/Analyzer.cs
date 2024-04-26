@@ -1,5 +1,7 @@
-﻿namespace Build.Benchmarks;
+﻿// ReSharper disable MemberCanBeMadeStatic.Global
+namespace Build.Benchmarks;
 
+[SuppressMessage("Performance", "CA1822:Mark members as static")]
 internal class Analyzer
 {
     public BuildStatus Analyze(IEnumerable<Benchmark> benchmarks, params Thresholds[] thresholds)

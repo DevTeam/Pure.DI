@@ -31,7 +31,7 @@ interface IService<T>
 class Service<T>(IEnumerable<IDependency<T>> dependencies) : IService<T>
 {
     public ImmutableArray<IDependency<T>> Dependencies { get; }
-        = dependencies.ToImmutableArray();
+        = [..dependencies];
 }
 // }
 

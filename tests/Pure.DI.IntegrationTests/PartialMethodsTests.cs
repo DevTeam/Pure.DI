@@ -189,7 +189,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("System.Func`1[Sample.IDependency] '' PerResolve created", "Sample.Dependency '' Singleton created", "Sample.Service '' Transient created"), result);
+        result.StdOut.ShouldBe(["System.Func`1[Sample.IDependency] '' PerResolve created", "Sample.Dependency '' Singleton created", "Sample.Service '' Transient created"], result);
     }
     
     [Fact]
@@ -272,7 +272,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("New composition root \"Service\" Sample.IService -> Sample.Service '123' Transient", "Sample.Dependency '123' Transient created", "Created", "Sample.Service '123' Transient created"), result);
+        result.StdOut.ShouldBe(["New composition root \"Service\" Sample.IService -> Sample.Service '123' Transient", "Sample.Dependency '123' Transient created", "Created", "Sample.Service '123' Transient created"], result);
     }
     
     [Fact]
@@ -345,7 +345,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.IDependency '' Singleton injected", "System.Func`1[Sample.IDependency] '' PerResolve injected", "Sample.IDependency '' Singleton injected", "Sample.IService '' Transient injected"), result);
+        result.StdOut.ShouldBe(["Sample.IDependency '' Singleton injected", "System.Func`1[Sample.IDependency] '' PerResolve injected", "Sample.IDependency '' Singleton injected", "Sample.IService '' Transient injected"], result);
     }
     
     [Fact]
@@ -420,7 +420,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.IDependency '' Singleton injected", "Sample.IDependency '' Singleton injected"), result);
+        result.StdOut.ShouldBe(["Sample.IDependency '' Singleton injected", "Sample.IDependency '' Singleton injected"], result);
     }
     
     [Fact]
@@ -495,7 +495,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.IService '' Transient injected"), result);
+        result.StdOut.ShouldBe(["Sample.IService '' Transient injected"], result);
     }
     
     [Fact]
@@ -569,7 +569,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Sample.IDependency 'Abc' Singleton injected", "Sample.IDependency 'Abc' Singleton injected"), result);
+        result.StdOut.ShouldBe(["Sample.IDependency 'Abc' Singleton injected", "Sample.IDependency 'Abc' Singleton injected"], result);
     }
     
     [Fact]
@@ -658,7 +658,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency 99 created", "Service 'MyService' created"), result);
+        result.StdOut.ShouldBe(["Dependency 99 created", "Service 'MyService' created"], result);
     }
     
     [Fact]
@@ -749,7 +749,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("String created", "Int32 created", "Dependency 99 created", "Int32 created", "String created", "Service 'MyService' created"), result);
+        result.StdOut.ShouldBe(["String created", "Int32 created", "Dependency 99 created", "Int32 created", "String created", "Service 'MyService' created"], result);
     }
     
     [Fact]
@@ -998,7 +998,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Service with Sample.Dependency`1[System.String] created"), result);
+        result.StdOut.ShouldBe(["Service with Sample.Dependency`1[System.String] created"], result);
     }
     
     [Fact]
@@ -1082,7 +1082,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("Dependency Xyz created", "Service 'Abc' created"), result);
+        result.StdOut.ShouldBe(["Dependency Xyz created", "Service 'Abc' created"], result);
     }
     
     [Fact]
@@ -1162,10 +1162,11 @@ namespace Sample
         // Then
         result.Success.ShouldBeTrue(result);
         result.StdOut.ShouldBe(
-            ImmutableArray.Create(
+            [
                 "New composition root \"Dependency\" Sample.IDependency -> Sample.Dependency '' Singleton",
                 "New composition root \"Root\" Sample.IService -> Sample.Service '' Transient",
-                "New composition root \"Service2\" Sample.IService2 -> Sample.Service '' Transient"),
+                "New composition root \"Service2\" Sample.IService2 -> Sample.Service '' Transient"
+            ],
             result);
     }
 }

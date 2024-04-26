@@ -24,4 +24,4 @@ internal readonly record struct MdAccumulator(
             return hashCode;
         }
     }
-};
+}

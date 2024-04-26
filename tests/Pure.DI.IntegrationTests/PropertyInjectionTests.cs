@@ -92,7 +92,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("OtherDep0", "True", "OtherDep1", "True"), result);
+        result.StdOut.ShouldBe(["OtherDep0", "True", "OtherDep1", "True"], result);
     }
     
     [Fact]
@@ -185,7 +185,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("OtherDep1", "True", "OtherDep0", "True"), result);
+        result.StdOut.ShouldBe(["OtherDep1", "True", "OtherDep0", "True"], result);
     }
     
     [Fact]
@@ -265,7 +265,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("OtherDep0", "True", "OtherDep1", "True"), result);
+        result.StdOut.ShouldBe(["OtherDep0", "True", "OtherDep1", "True"], result);
     }
     
     [Fact]
@@ -353,6 +353,6 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("OtherDep0", "True", "OtherDep1", "True"), result);
+        result.StdOut.ShouldBe(["OtherDep0", "True", "OtherDep1", "True"], result);
     }
 }

@@ -190,6 +190,6 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(ImmutableArray.Create("(Sample.Service, Point { X = 7, Y = 9 }, Sample.Dependency)"), result);
+        result.StdOut.ShouldBe(["(Sample.Service, Point { X = 7, Y = 9 }, Sample.Dependency)"], result);
     }
 }
