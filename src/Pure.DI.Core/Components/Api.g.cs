@@ -1091,7 +1091,11 @@ namespace Pure.DI
     /// <summary>
     /// Gives the ability to manage disposable objects.
     /// </summary>
-    public interface IOwned : global::System.IDisposable
+    public interface IOwned
+        : global::System.IDisposable
+#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+        , global::System.IAsyncDisposable
+#endif
     {
     }
 
@@ -1102,14 +1106,14 @@ namespace Pure.DI
     [global::System.Diagnostics.DebuggerTypeProxy(typeof(global::Pure.DI.Owned.DebugView))]
     internal partial class Owned : global::Pure.DI.IOwned
     {
-        private global::System.Collections.Generic.List<global::System.IDisposable> _disposables = new global::System.Collections.Generic.List<global::System.IDisposable>();
+        private global::System.Collections.Generic.List<object> _disposables = new global::System.Collections.Generic.List<object>();
         
         /// <summary>
         /// Adds a disposable instance.
         /// </summary>
         /// <param name="disposable">The disposable instance.</param>
         [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
-        public void Add(global::System.IDisposable disposable)
+        public void Add(object disposable)
         {
             if (!(disposable is global::Pure.DI.IOwned))
             {
@@ -1120,20 +1124,86 @@ namespace Pure.DI
         /// <inheritdoc />
         public void Dispose()
         {
-            var disposables = global::System.Threading.Interlocked.Exchange(ref _disposables, new global::System.Collections.Generic.List<IDisposable>());
-            for (int i = disposables.Count - 1; i >= 0; i--)
+            var disposables = global::System.Threading.Interlocked.Exchange(ref _disposables, new global::System.Collections.Generic.List<object>());
+            for (var i = disposables.Count - 1; i >= 0; i--)
             {
-                var disposable = disposables[i];
-                try
+                var instance = disposables[i];
+
+                var disposableInstance = instance as global::System.IDisposable;
+                if (disposableInstance != null)
                 {
-                    disposable.Dispose();
+                    try
+                    {
+                        disposableInstance.Dispose();
+                    }
+                    catch (global::System.Exception exception)
+                    {
+                        OnDisposeException(disposableInstance, exception);
+                    }
+                    
+                    continue;
                 }
-                catch (global::System.Exception exception)
+
+#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER 
+                var asyncDisposableInstance = instance as global::System.IAsyncDisposable;
+                if (disposableInstance != null)
                 {
-                    OnDisposeException(disposable, exception);
+                    try
+                    {
+                        var valueTask = asyncDisposableInstance.DisposeAsync();
+                        if (!valueTask.IsCompleted)
+                        {
+                          valueTask.AsTask().Wait();
+                        }
+                    }
+                    catch (global::System.Exception exception)
+                    {
+                        OnAsyncDisposeException(asyncDisposableInstance, exception);
+                    }
+                }
+#endif
+            }
+        }
+        
+#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+        /// <inheritdoc />
+        public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+        {
+            var disposables = global::System.Threading.Interlocked.Exchange(ref _disposables, new global::System.Collections.Generic.List<object>());
+            for (var i = disposables.Count - 1; i >= 0; i--)
+            {
+                var instance = disposables[i];
+
+                var asyncDisposableInstance = instance as global::System.IAsyncDisposable;
+                if (asyncDisposableInstance != null)
+                {
+                    try
+                    {
+                        await asyncDisposableInstance.DisposeAsync();
+                    }
+                    catch (global::System.Exception exception)
+                    {
+                        OnAsyncDisposeException(asyncDisposableInstance, exception);
+                    }
+
+                    continue;
+                }
+
+                var disposableInstance = instance as global::System.IDisposable;
+                if (disposableInstance != null)
+                {
+                    try
+                    {
+                        disposableInstance.Dispose();
+                    }
+                    catch (global::System.Exception exception)
+                    {
+                        OnDisposeException(disposableInstance, exception);
+                    }
                 }
             }
         }
+#endif
 
         /// <summary>
         /// Implement this partial method to handle the exception on disposing.
@@ -1143,6 +1213,17 @@ namespace Pure.DI
         /// <typeparam name="T">The actual type of instance being disposed of.</typeparam>
         partial void OnDisposeException<T>(T disposableInstance, Exception exception)
             where T : global::System.IDisposable;
+        
+#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER        
+        /// <summary>
+        /// Implement this partial method to handle the exception on disposing.
+        /// </summary>
+        /// <param name="asynDisposableInstance">The disposable instance.</param>
+        /// <param name="exception">Exception occurring during disposal.</param>
+        /// <typeparam name="T">The actual type of instance being disposed of.</typeparam>
+        partial void OnAsyncDisposeException<T>(T asynDisposableInstance, Exception exception)
+            where T : global::System.IAsyncDisposable;
+#endif
         
         private class DebugView
         {
@@ -1154,7 +1235,7 @@ namespace Pure.DI
             }
                 
             [global::System.Diagnostics.DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public global::System.Collections.Generic.List<global::System.IDisposable> Owns
+            public global::System.Collections.Generic.List<object> Owns
             {
                 get
                 {
@@ -1188,6 +1269,14 @@ namespace Pure.DI
         {
             _owned.Dispose();
         }
+        
+#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+        /// <inheritdoc />
+        public global::System.Threading.Tasks.ValueTask DisposeAsync()
+        {
+            return _owned.DisposeAsync();
+        }
+#endif        
         
         private class DebugView
         {

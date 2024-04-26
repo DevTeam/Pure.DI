@@ -36,7 +36,7 @@ internal class RootMethodsCommenter(
         code.AppendLine("/// <example>");
         code.AppendLine($"/// This shows how to get an instance of type {formatter.FormatRef(root.Node.Type)}:");
         code.AppendLine("/// <code>");
-        code.AppendLine($"/// {(composition.DisposablesCount == 0 ? "" : "using ")}var composition = new {composition.Source.Source.Name.ClassName}({string.Join(", ", composition.Args.Where(i => i.Node.Arg?.Source.Kind == ArgKind.Class).Select(arg => arg.VariableName))});");
+        code.AppendLine($"/// {(composition.TotalDisposablesCount == 0 ? "" : "using ")}var composition = new {composition.Source.Source.Name.ClassName}({string.Join(", ", composition.Args.Where(i => i.Node.Arg?.Source.Kind == ArgKind.Class).Select(arg => arg.VariableName))});");
         code.AppendLine($"/// var instance = composition.{formatter.Format(root)};");
         code.AppendLine("/// </code>");
         code.AppendLine("/// </example>");

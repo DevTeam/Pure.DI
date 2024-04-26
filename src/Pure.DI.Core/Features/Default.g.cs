@@ -17,6 +17,12 @@ namespace Pure.DI
                     Lifetime.Transient,
                     Lifetime.PerResolve,
                     Lifetime.PerBlock)
+#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+                .Accumulate<global::System.IAsyncDisposable, global::Pure.DI.Owned>(
+                    Lifetime.Transient,
+                    Lifetime.PerResolve,
+                    Lifetime.PerBlock)
+#endif
                 .Bind<global::Pure.DI.IOwned>().To(ctx =>
                 {
                     ctx.Inject<Owned>(out var owned);

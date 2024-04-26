@@ -96,7 +96,7 @@ internal sealed class MetadataBuilder(
 
     private void MergeSetups(IEnumerable<MdSetup> setups, out MdSetup mergedSetup, bool resolveDependsOn)
     {
-        SyntaxNode? source = default;
+        MdSetup? lastSetup = default;
         var name = new CompositionName("Composition", "", default);
         var kind = CompositionKind.Global;
         var settings = new Hints();
@@ -112,7 +112,7 @@ internal sealed class MetadataBuilder(
         var comments = new List<string>();
         foreach (var setup in setups)
         {
-            source = setup.Source;
+            lastSetup = setup;
             name = setup.Name;
             kind = setup.Kind;
             foreach (var setting in setup.Hints)
@@ -149,7 +149,8 @@ internal sealed class MetadataBuilder(
         }
 
         mergedSetup = new MdSetup(
-            source!,
+            lastSetup?.SemanticModel!,
+            lastSetup?.Source!,
             name,
             usingDirectives.ToImmutableArray(),
             kind,

@@ -111,6 +111,7 @@ internal class ApiInvocationProcessor(
                         var setupKind = setupArgs[1] is {} setupKindArg ? semanticModel.GetRequiredConstantValue<CompositionKind>(setupKindArg.Expression) : CompositionKind.Public;
                         metadataVisitor.VisitSetup(
                             new MdSetup(
+                                semanticModel,
                                 invocation.ArgumentList,
                                 CreateCompositionName(setupCompositionTypeName, @namespace, invocation.ArgumentList),
                                 ImmutableArray<MdUsingDirectives>.Empty,

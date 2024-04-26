@@ -1,7 +1,9 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal class VariablesBuilder(CancellationToken cancellationToken)
+internal class VariablesBuilder(
+    INodeInfo nodeInfo,
+    CancellationToken cancellationToken)
     : IVariablesBuilder
 {
     public Block Build(
@@ -83,9 +85,9 @@ internal class VariablesBuilder(CancellationToken cancellationToken)
                                         isRoot,
                                         name,
                                         false,
-                                        construct.ElementType,
+                                        mdAccumulator.Type,
                                         mdAccumulator.Lifetime,
-                                        construct.Type));
+                                        mdAccumulator.AccumulatorType));
                             }
                         }
 
@@ -106,11 +108,11 @@ internal class VariablesBuilder(CancellationToken cancellationToken)
                                     throw new CompileErrorException($"Cyclic dependency has been found: {pathStr}.", depNode.Binding.Source.GetLocation(), LogId.ErrorCyclicDependency);
                                 }
 
-                                isAlreadyCreated = depNode.IsLazy();
+                                isAlreadyCreated = nodeInfo.IsLazy(depNode);
                             }
 
                             var depVariable = GetVariable(currentBlock, map, blockMap, depNode, depInjection, ref transientId, hasCycle);
-                            var isBlock = depNode.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock || variable.Node.IsDelegate();
+                            var isBlock = depNode.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock || nodeInfo.IsDelegate(variable.Node);
                             if (isBlock)
                             {
                                 var depBlock = new Block(blockId++, currentStatement, []);
@@ -152,9 +154,12 @@ internal class VariablesBuilder(CancellationToken cancellationToken)
         return rootBlock;
     }
 
-    private static bool IsAccumulator(Variable variable, out MdConstruct mdConstruct, out IReadOnlyCollection<MdAccumulator> accumulators)
+    private static bool IsAccumulator(
+        Variable variable,
+        out MdConstruct mdConstruct,
+        out IReadOnlyCollection<MdAccumulator> accumulators)
     {
-        if(variable.Node.Construct?.Source is { Kind: MdConstructKind.Accumulator } construct)
+        if (variable.Node.Construct?.Source is { Kind: MdConstructKind.Accumulator } construct)
         {
             mdConstruct = construct;
             accumulators = construct.State as IReadOnlyCollection<MdAccumulator> ?? ImmutableArray<MdAccumulator>.Empty; 
@@ -169,7 +174,7 @@ internal class VariablesBuilder(CancellationToken cancellationToken)
     private static string GetAccumulatorName(Variable variable) => 
         $"accumulator{Names.Salt}{variable.Node.Binding.Id}";
 
-    private static Variable GetVariable(
+    private Variable GetVariable(
         Block parentBlock,
         IDictionary<MdBinding, Variable> map,
         IDictionary<(MdBinding, int), Variable> blockMap,
@@ -178,14 +183,14 @@ internal class VariablesBuilder(CancellationToken cancellationToken)
         ref int transientId,
         bool hasCycle)
     {
-        if (!node.IsArg())
+        if (node.Arg is null)
         {
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch (node.Lifetime)
             {
                 case Lifetime.Transient:
                 {
-                    var transientVariable = new Variable(parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), node.IsLazy(), hasCycle);
+                    var transientVariable = new Variable(parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), hasCycle);
                     if (node.Construct?.Source.Kind == MdConstructKind.Accumulator)
                     {
                         transientVariable.VariableCode = GetAccumulatorName(transientVariable);
@@ -208,7 +213,7 @@ internal class VariablesBuilder(CancellationToken cancellationToken)
                         };
                     }
                 
-                    blockVariable = new Variable(parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), node.IsLazy(), hasCycle);
+                    blockVariable = new Variable(parentBlock, transientId++, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), hasCycle);
                     blockMap.Add(perBlockKey, blockVariable);
                     return blockVariable;
                 }
@@ -227,7 +232,7 @@ internal class VariablesBuilder(CancellationToken cancellationToken)
             };
         }
 
-        variable = new Variable(parentBlock, node.Binding.Id, node, injection, new List<IStatement>(), new VariableInfo(), node.IsLazy(), hasCycle);
+        variable = new Variable(parentBlock, node.Binding.Id, node, injection, new List<IStatement>(), new VariableInfo(), nodeInfo.IsLazy(node), hasCycle);
         map.Add(node.Binding, variable);
         return variable;
     }

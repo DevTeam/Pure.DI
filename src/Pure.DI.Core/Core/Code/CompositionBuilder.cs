@@ -4,6 +4,7 @@ namespace Pure.DI.Core.Code;
 
 internal class CompositionBuilder(
     IBuildTools buildTools,
+    INodeInfo nodeInfo,
     ITypeResolver typeResolver,
     IVariablesBuilder variablesBuilder,
     ICodeBuilder<Block> blockBuilder,
@@ -30,7 +31,6 @@ internal class CompositionBuilder(
                 graph,
                 rootBlock.Current,
                 new LinesBuilder(),
-                new LinesBuilder(),
                 root.Injection.Tag != MdTag.ContextTag ? root.Injection.Tag : default,
                 default,
                 root.Node.Accumulators.ToImmutableArray());
@@ -46,7 +46,6 @@ internal class CompositionBuilder(
             
             blockBuilder.Build(ctx, rootBlock);
             ctx.Code.AppendLine($"return {buildTools.OnInjected(ctx, rootBlock.Current)};");
-            ctx.Code.AppendLines(ctx.LocalFunctionsCode.Lines);
             
             var args = GetRootArgs(map.Values).ToImmutableArray();
             var processedRoot = root with
@@ -78,7 +77,8 @@ internal class CompositionBuilder(
         }
 
         var singletons = map.GetSingletons().ToImmutableArray();
-        var disposableSingletons =  singletons.Where(i => i.Node.IsDisposable()).ToArray();
+        var totalDisposables =  singletons.Where(i => nodeInfo.IsDisposable(i.Node)).ToArray();
+        var asyncDisposables =  singletons.Where(i => nodeInfo.IsAsyncDisposable(i.Node)).ToArray();
         var publicRoots = roots
             .OrderByDescending(i => i.IsPublic)
             .ThenBy(i => i.Node.Binding.Id)
@@ -91,8 +91,9 @@ internal class CompositionBuilder(
             singletons,
             GetRootArgs(allArgs).ToImmutableArray(),
             publicRoots,
-            disposableSingletons.Length,
-            disposableSingletons.Count(i => i.Node.Lifetime == Lifetime.Scoped),
+            totalDisposables.Length,
+            asyncDisposables.Length,
+            totalDisposables.Count(i => i.Node.Lifetime == Lifetime.Scoped),
             isThreadSafe,
             ImmutableArray<Line>.Empty);
         

@@ -1,7 +1,9 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal class BlockCodeBuilder: ICodeBuilder<Block>
+internal class BlockCodeBuilder(
+    INodeInfo nodeInfo)
+    : ICodeBuilder<Block>
 {
     public void Build(BuildContext ctx, in Block block)
     {
@@ -99,7 +101,7 @@ internal class BlockCodeBuilder: ICodeBuilder<Block>
                 return;
             }
             
-            if (variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped && variable.Node.IsDisposable())
+            if (variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped && nodeInfo.IsDisposable(variable.Node))
             {
                 code.AppendLine($"{parent}{Names.DisposablesFieldName}[{parent}{Names.DisposeIndexFieldName}++] = {variable.VariableName};");
             }

@@ -5,6 +5,7 @@ namespace Pure.DI.Core.Code;
 
 internal class FactoryCodeBuilder(
     IIdGenerator idGenerator,
+    INodeInfo nodeInfo,
     IArguments arguments)
     : ICodeBuilder<DpFactory>
 {
@@ -16,7 +17,7 @@ internal class FactoryCodeBuilder(
         var code = ctx.Code;
         var level = ctx.Level;
         var lockIsRequired = ctx.LockIsRequired;
-        if (variable.Node.IsLazy())
+        if (nodeInfo.IsLazy(variable.Node))
         {
             level++;
             lockIsRequired = default;

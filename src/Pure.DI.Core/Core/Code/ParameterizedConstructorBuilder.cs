@@ -61,9 +61,9 @@ internal sealed class ParameterizedConstructorBuilder(
                 code.AppendLine($"{arg.VariableName} = {arg.Node.Arg?.Source.ArgName};");
             }
 
-            if (composition.DisposablesCount > 0)
+            if (composition.TotalDisposablesCount > 0)
             {
-                code.AppendLine($"{Names.DisposablesFieldName} = new {Names.IDisposableInterfaceName}[{composition.DisposablesCount.ToString()}];");
+                code.AppendLine($"{Names.DisposablesFieldName} = new object[{composition.TotalDisposablesCount.ToString()}];");
             }
         }
 

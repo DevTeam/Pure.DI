@@ -4,6 +4,7 @@
 namespace Pure.DI.Core.Models;
 
 internal record MdSetup(
+    SemanticModel SemanticModel,
     SyntaxNode Source,
     in CompositionName Name,
     in ImmutableArray<MdUsingDirectives> UsingDirectives,

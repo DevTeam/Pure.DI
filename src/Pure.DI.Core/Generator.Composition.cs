@@ -58,6 +58,7 @@ public partial class Generator
             .Bind().To<Profiler>()
             .Bind().To<BaseSymbolsProvider>()
             .Bind().To<Formatter>()
+            .Bind().To<NodeInfo>()
             .Bind<IEqualityComparer<INamedTypeSymbol>>().To<NamedTypeSymbolEqualityComparer>()
         
             // Validators
@@ -119,6 +120,7 @@ public partial class Generator
             .DefaultLifetime(PerResolve)
             .Bind().To<TypeResolver>()
             .Bind().To<LogObserver>()
+            .Bind().To<AsyncDisposableSettings>()
             .Bind().To<Filter>()
             .Bind("UniqueTags").To<IdGenerator>()
             .Bind().To<IdGenerator>();

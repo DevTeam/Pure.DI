@@ -48,7 +48,7 @@ internal sealed class ClassDiagramBuilder(
                 lines.AppendLine($"class {composition.Source.Source.Name.ClassName}");
             }
 
-            if (composition.DisposablesCount > 0)
+            if (composition.TotalDisposablesCount > 0)
             {
                 lines.AppendLine($"{composition.Source.Source.Name.ClassName} --|> IDisposable");
             }

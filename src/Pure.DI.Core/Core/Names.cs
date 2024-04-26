@@ -25,7 +25,12 @@ internal static class Names
     // Interfaces
     public const string ResolverPropertyName = "Value";
     public const string IDisposableInterfaceName = $"{SystemNamespace}{nameof(IDisposable)}";
+    public const string IAsyncDisposableInterfaceName = $"{SystemNamespace}IAsyncDisposable";
+    public const string IAsyncDisposableInterfaceShortName = $"{nameof(System)}.IAsyncDisposable";
     public const string ResolverInterfaceName = $"{ApiNamespace}{nameof(IResolver<object, object>)}";
+    
+    // Classes
+    public const string ValueTaskName = $"{SystemNamespace}Threading.Tasks.ValueTask";
     
     // Members
     public const string ResolveMethodName = nameof(IResolver<object, object>.Resolve);
@@ -34,6 +39,7 @@ internal static class Names
     // Partial methods
     public const string OnNewInstanceMethodName = "OnNewInstance";
     public const string OnDisposeExceptionMethodName = "OnDisposeException";
+    public const string OnAsyncDisposeExceptionMethodName = "OnAsyncDisposeException";
     public const string OnDependencyInjectionMethodName = "OnDependencyInjection";
     public const string OnCannotResolve = "OnCannotResolve";
     public const string OnNewRootMethodName = "OnNewRoot";

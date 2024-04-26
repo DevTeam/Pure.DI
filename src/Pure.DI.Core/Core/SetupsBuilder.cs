@@ -120,7 +120,7 @@ internal sealed class SetupsBuilder(
                 TagAttributes = _tagAttributes.ToImmutableArray(),
                 OrdinalAttributes = _ordinalAttributes.ToImmutableArray(),
                 UsingDirectives = _usingDirectives.ToImmutableArray(),
-                Accumulators = _accumulators.ToImmutableArray()
+                Accumulators = _accumulators.Distinct().ToImmutableArray()
         });
             
         _bindings.Clear();

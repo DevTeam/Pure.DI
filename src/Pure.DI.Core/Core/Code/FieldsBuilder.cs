@@ -20,10 +20,10 @@ internal sealed class FieldsBuilder(ITypeResolver typeResolver)
             membersCounter++;
         }
 
-        if (composition.DisposablesCount > 0)
+        if (composition.TotalDisposablesCount > 0)
         {
             // _disposables field
-            code.AppendLine($"private readonly {Names.IDisposableInterfaceName}[] {Names.DisposablesFieldName};");
+            code.AppendLine($"private object[] {Names.DisposablesFieldName};");
             membersCounter++;
             
             // _disposeIndex field

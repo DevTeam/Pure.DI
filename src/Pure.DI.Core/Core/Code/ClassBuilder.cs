@@ -17,6 +17,7 @@ internal sealed class ClassBuilder(
     [Tag(typeof(ResolverClassesBuilder))] IBuilder<CompositionCode, CompositionCode> resolversClassesBuilder,
     [Tag(typeof(ClassCommenter))] ICommenter<Unit> classCommenter,
     IInformation information,
+    IAsyncDisposableSettings asyncDisposableSettings,
     CancellationToken cancellationToken)
     : IBuilder<CompositionCode, CompositionCode>
 {
@@ -57,8 +58,17 @@ internal sealed class ClassBuilder(
         classCommenter.AddComments(composition, Unit.Shared);
 
         code.AppendLine($"[{Names.SystemNamespace}Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]");
-        var implementingInterfaces = composition.DisposablesCount > 0 ? $": {Names.IDisposableInterfaceName}" : "";
-        code.AppendLine($"partial class {name.ClassName}{implementingInterfaces}");
+        var implementingInterfaces = new List<string>();
+        if (composition.TotalDisposablesCount > 0)
+        {
+            implementingInterfaces.Add(Names.IDisposableInterfaceName);
+            if (composition.AsyncDisposableCount > 0 && asyncDisposableSettings.IsEnabled(composition.Source.Source.SemanticModel.Compilation))
+            {
+                implementingInterfaces.Add(Names.IAsyncDisposableInterfaceName);
+            }
+        }
+        
+        code.AppendLine($"partial class {name.ClassName}{(implementingInterfaces.Count > 0 ? ": " + string.Join(", ", implementingInterfaces) : "")}");
         code.AppendLine("{");
 
         using (code.Indent())
