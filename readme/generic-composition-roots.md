@@ -89,16 +89,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM04D20di;
+  private readonly Composition _rootM04D26di;
   
   public Composition()
   {
-    _rootM04D20di = this;
+    _rootM04D26di = this;
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM04D20di = baseComposition._rootM04D20di;
+    _rootM04D26di = baseComposition._rootM04D26di;
   }
   
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
@@ -110,12 +110,12 @@ partial class Composition
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
   public Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.IService<T54> GetOtherService<T54>()
   {
-    Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.OtherService<T54> transientM04D20di0_OtherService;
+    Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.OtherService<T54> transientM04D26di0_OtherService;
     {
-        var dependency_M04D20di1 = new Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.Dependency<T54>();
-        transientM04D20di0_OtherService = new OtherService<T54>(dependency_M04D20di1);
+        var dependency_M04D26di1 = new Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.Dependency<T54>();
+        transientM04D26di0_OtherService = new OtherService<T54>(dependency_M04D26di1);
     }
-    return transientM04D20di0_OtherService;
+    return transientM04D26di0_OtherService;
   }
   
   public override string ToString()

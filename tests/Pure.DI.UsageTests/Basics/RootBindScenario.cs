@@ -25,13 +25,13 @@ public class Scenario
     [Fact]
     public void Run()
     {
-        // {            
+// {            
         DI.Setup(nameof(Composition))
             .RootBind<IService>("Root").To<Service>();
 
         var composition = new Composition();
         composition.Root.ShouldBeOfType<Service>();
-        // }
+// }
         composition.SaveClassDiagram();
     }
 }

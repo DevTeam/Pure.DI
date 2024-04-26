@@ -1,6 +1,6 @@
-#### Tracking disposable instances per a composition root
+#### Tracking async disposable instances per a composition root
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/TrackingDisposableScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/TrackingAsyncDisposableScenario.cs)
 
 ```c#
 interface IDependency
@@ -8,11 +8,15 @@ interface IDependency
     bool IsDisposed { get; }
 }
 
-class Dependency : IDependency, IDisposable
+class Dependency : IDependency, IAsyncDisposable
 {
     public bool IsDisposed { get; private set; }
 
-    public void Dispose() => IsDisposed = true;
+    public ValueTask DisposeAsync()
+    {
+        IsDisposed = true;
+        return ValueTask.CompletedTask;
+    }
 }
 
 interface IService
@@ -41,7 +45,7 @@ var composition = new Composition();
 var root1 = composition.Root;
 var root2 = composition.Root;
         
-root2.Dispose();
+await root2.DisposeAsync();
         
 // Checks that the disposable instances
 // associated with root1 have been disposed of
@@ -51,7 +55,7 @@ root2.Value.Dependency.IsDisposed.ShouldBeTrue();
 // associated with root2 have not been disposed of
 root1.Value.Dependency.IsDisposed.ShouldBeFalse();
         
-root1.Dispose();
+await root1.DisposeAsync();
         
 // Checks that the disposable instances
 // associated with root2 have been disposed of
@@ -72,6 +76,7 @@ classDiagram
   }
   class Owned
   Dependency --|> IDependency : 
+  Dependency --|> IAsyncDisposable : 
   class Dependency {
     +Dependency()
   }
@@ -80,6 +85,9 @@ classDiagram
     +Service(IDependency dependency)
   }
   class IDependency {
+    <<abstract>>
+  }
+  class IAsyncDisposable {
     <<abstract>>
   }
   class IService {
@@ -114,22 +122,22 @@ partial class Composition
     _lockM04D26di = _rootM04D26di._lockM04D26di;
   }
   
-  public Pure.DI.Owned<Pure.DI.UsageTests.Basics.TrackingDisposableScenario.IService> Root
+  public Pure.DI.Owned<Pure.DI.UsageTests.Basics.TrackingAsyncDisposableScenario.IService> Root
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     get
     {
       var accumulatorM04D26di38 = new Pure.DI.Owned();
-      Pure.DI.UsageTests.Basics.TrackingDisposableScenario.Dependency transientM04D26di3_Dependency = new Pure.DI.UsageTests.Basics.TrackingDisposableScenario.Dependency();
+      Pure.DI.UsageTests.Basics.TrackingAsyncDisposableScenario.Dependency transientM04D26di3_Dependency = new Pure.DI.UsageTests.Basics.TrackingAsyncDisposableScenario.Dependency();
       lock (_lockM04D26di)
       {
           accumulatorM04D26di38.Add(transientM04D26di3_Dependency);
       }
-      Pure.DI.Owned<Pure.DI.UsageTests.Basics.TrackingDisposableScenario.IService> perBlockM04D26di0_Owned;
+      Pure.DI.Owned<Pure.DI.UsageTests.Basics.TrackingAsyncDisposableScenario.IService> perBlockM04D26di0_Owned;
       {
           var owned_M04D26di1 = accumulatorM04D26di38;
-          var value_M04D26di2 = new Pure.DI.UsageTests.Basics.TrackingDisposableScenario.Service(transientM04D26di3_Dependency);
-          perBlockM04D26di0_Owned = new Owned<Pure.DI.UsageTests.Basics.TrackingDisposableScenario.IService>(value_M04D26di2, owned_M04D26di1);
+          var value_M04D26di2 = new Pure.DI.UsageTests.Basics.TrackingAsyncDisposableScenario.Service(transientM04D26di3_Dependency);
+          perBlockM04D26di0_Owned = new Owned<Pure.DI.UsageTests.Basics.TrackingAsyncDisposableScenario.IService>(value_M04D26di2, owned_M04D26di1);
       }
       lock (_lockM04D26di)
       {
@@ -178,6 +186,7 @@ partial class Composition
         "  }\n" +
         "  class Owned\n" +
         "  Dependency --|> IDependency : \n" +
+        "  Dependency --|> IAsyncDisposable : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
@@ -186,6 +195,9 @@ partial class Composition
           "    +Service(IDependency dependency)\n" +
         "  }\n" +
         "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IAsyncDisposable {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  class IService {\n" +

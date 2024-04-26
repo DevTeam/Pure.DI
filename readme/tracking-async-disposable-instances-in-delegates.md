@@ -1,40 +1,72 @@
-#### Singleton
+#### Tracking async disposable instances in delegates
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/SingletonScenario.cs)
-
-The _Singleton_ lifetime ensures that there will be a single instance of the dependency for each composition.
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/TrackingAsyncDisposableInDelegatesScenario.cs)
 
 ```c#
-interface IDependency;
+interface IDependency
+{
+    bool IsDisposed { get; }
+}
 
-class Dependency : IDependency;
+class Dependency : IDependency, IAsyncDisposable
+{
+    public bool IsDisposed { get; private set; }
+
+    public ValueTask DisposeAsync()
+    {
+        IsDisposed = true;
+        return ValueTask.CompletedTask;
+    }
+}
 
 interface IService
 {
-    public IDependency Dependency1 { get; }
-
-    public IDependency Dependency2 { get; }
+    public IDependency Dependency { get; }
 }
 
-class Service(
-    IDependency dependency1,
-    IDependency dependency2)
-    : IService
+class Service(Func<Owned<IDependency>> dependencyFactory)
+    : IService, IAsyncDisposable
 {
-    public IDependency Dependency1 { get; } = dependency1;
+    private readonly Owned<IDependency> _dependency = dependencyFactory();
 
-    public IDependency Dependency2 { get; } = dependency2;
+    public IDependency Dependency => _dependency.Value;
+
+    public ValueTask DisposeAsync()
+    {
+        return _dependency.DisposeAsync();
+    }
 }
 
-DI.Setup(nameof(Composition))
-    .Bind().As(Lifetime.Singleton).To<Dependency>()
-    .RootBind<IService>("Root").To<Service>();
+partial class Composition
+{
+    void Setup() =>
+        DI.Setup(nameof(Composition))
+            .Bind<IDependency>().To<Dependency>()
+            .Bind().To<Service>()
+
+            // Composition root
+            .Root<Service>("Root");
+}
 
 var composition = new Composition();
-var service1 = composition.Root;
-var service2 = composition.Root;
-service1.Dependency1.ShouldBe(service1.Dependency2);
-service2.Dependency1.ShouldBe(service1.Dependency1);
+var root1 = composition.Root;
+var root2 = composition.Root;
+        
+await root2.DisposeAsync();
+        
+// Checks that the disposable instances
+// associated with root1 have been disposed of
+root2.Dependency.IsDisposed.ShouldBeTrue();
+        
+// Checks that the disposable instances
+// associated with root2 have not been disposed of
+root1.Dependency.IsDisposed.ShouldBeFalse();
+        
+await root1.DisposeAsync();
+        
+// Checks that the disposable instances
+// associated with root2 have been disposed of
+root1.Dependency.IsDisposed.ShouldBeTrue();
 ```
 
 <details open>
@@ -43,29 +75,38 @@ service2.Dependency1.ShouldBe(service1.Dependency1);
 ```mermaid
 classDiagram
   class Composition {
-    +IService Root
+    +Service Root
     + T ResolveᐸTᐳ()
     + T ResolveᐸTᐳ(object? tag)
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
+  class Owned
   Dependency --|> IDependency : 
   class Dependency {
     +Dependency()
   }
   Service --|> IService : 
+  Service --|> IAsyncDisposable : 
   class Service {
-    +Service(IDependency dependency1, IDependency dependency2)
+    +Service(FuncᐸOwnedᐸIDependencyᐳᐳ dependencyFactory)
   }
+  class FuncᐸOwnedᐸIDependencyᐳᐳ
+  class OwnedᐸIDependencyᐳ
   class IDependency {
     <<abstract>>
   }
   class IService {
     <<abstract>>
   }
-  Service o--  "Singleton" Dependency : IDependency
-  Service o--  "Singleton" Dependency : IDependency
-  Composition ..> Service : IService Root
+  class IAsyncDisposable {
+    <<abstract>>
+  }
+  Service o--  "PerResolve" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
+  Composition ..> Service : Service Root
+  FuncᐸOwnedᐸIDependencyᐳᐳ o--  "PerBlock" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ
+  OwnedᐸIDependencyᐳ *--  Owned : Owned
+  OwnedᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 
 </details>
@@ -78,7 +119,6 @@ partial class Composition
 {
   private readonly Composition _rootM04D26di;
   private readonly object _lockM04D26di;
-  private Pure.DI.UsageTests.Lifetimes.SingletonScenario.Dependency _singletonM04D26di36_Dependency;
   
   public Composition()
   {
@@ -92,23 +132,36 @@ partial class Composition
     _lockM04D26di = _rootM04D26di._lockM04D26di;
   }
   
-  public Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService Root
+  public Pure.DI.UsageTests.Basics.TrackingAsyncDisposableInDelegatesScenario.Service Root
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     get
     {
-      if (_rootM04D26di._singletonM04D26di36_Dependency == null)
+      var perResolveM04D26di39_Func = default(System.Func<Pure.DI.Owned<Pure.DI.UsageTests.Basics.TrackingAsyncDisposableInDelegatesScenario.IDependency>>);
+      perResolveM04D26di39_Func = new global::System.Func<Pure.DI.Owned<Pure.DI.UsageTests.Basics.TrackingAsyncDisposableInDelegatesScenario.IDependency>>(
+      [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
+      () =>
       {
+          var accumulatorM04D26di38 = new Pure.DI.Owned();
+          Pure.DI.UsageTests.Basics.TrackingAsyncDisposableInDelegatesScenario.Dependency transientM04D26di3_Dependency = new Pure.DI.UsageTests.Basics.TrackingAsyncDisposableInDelegatesScenario.Dependency();
           lock (_lockM04D26di)
           {
-              if (_rootM04D26di._singletonM04D26di36_Dependency == null)
-              {
-                  _singletonM04D26di36_Dependency = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Dependency();
-                  _rootM04D26di._singletonM04D26di36_Dependency = _singletonM04D26di36_Dependency;
-              }
+              accumulatorM04D26di38.Add(transientM04D26di3_Dependency);
           }
-      }
-      return new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service(_singletonM04D26di36_Dependency, _rootM04D26di._singletonM04D26di36_Dependency);
+          Pure.DI.Owned<Pure.DI.UsageTests.Basics.TrackingAsyncDisposableInDelegatesScenario.IDependency> perBlockM04D26di1_Owned;
+          {
+              var owned_M04D26di2 = accumulatorM04D26di38;
+              var value_M04D26di3 = transientM04D26di3_Dependency;
+              perBlockM04D26di1_Owned = new Owned<Pure.DI.UsageTests.Basics.TrackingAsyncDisposableInDelegatesScenario.IDependency>(value_M04D26di3, owned_M04D26di2);
+          }
+          lock (_lockM04D26di)
+          {
+              accumulatorM04D26di38.Add(perBlockM04D26di1_Owned);
+          }
+          var value_M04D26di1 = perBlockM04D26di1_Owned;
+          return value_M04D26di1;
+      });
+      return new Pure.DI.UsageTests.Basics.TrackingAsyncDisposableInDelegatesScenario.Service(perResolveM04D26di39_Func);
     }
   }
   
@@ -177,29 +230,38 @@ partial class Composition
     return
       "classDiagram\n" +
         "  class Composition {\n" +
-          "    +IService Root\n" +
+          "    +Service Root\n" +
           "    + T ResolveᐸTᐳ()\n" +
           "    + T ResolveᐸTᐳ(object? tag)\n" +
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
+        "  class Owned\n" +
         "  Dependency --|> IDependency : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
         "  Service --|> IService : \n" +
+        "  Service --|> IAsyncDisposable : \n" +
         "  class Service {\n" +
-          "    +Service(IDependency dependency1, IDependency dependency2)\n" +
+          "    +Service(FuncᐸOwnedᐸIDependencyᐳᐳ dependencyFactory)\n" +
         "  }\n" +
+        "  class FuncᐸOwnedᐸIDependencyᐳᐳ\n" +
+        "  class OwnedᐸIDependencyᐳ\n" +
         "  class IDependency {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  Service o--  \"Singleton\" Dependency : IDependency\n" +
-        "  Service o--  \"Singleton\" Dependency : IDependency\n" +
-        "  Composition ..> Service : IService Root";
+        "  class IAsyncDisposable {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  Service o--  \"PerResolve\" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ\n" +
+        "  Composition ..> Service : Service Root\n" +
+        "  FuncᐸOwnedᐸIDependencyᐳᐳ o--  \"PerBlock\" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ\n" +
+        "  OwnedᐸIDependencyᐳ *--  Owned : Owned\n" +
+        "  OwnedᐸIDependencyᐳ *--  Dependency : IDependency";
   }
   
   private readonly static int _bucketSizeM04D26di;
@@ -208,13 +270,13 @@ partial class Composition
   static Composition()
   {
     var valResolverM04D26di_0000 = new ResolverM04D26di_0000();
-    ResolverM04D26di<Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService>.Value = valResolverM04D26di_0000;
+    ResolverM04D26di<Pure.DI.UsageTests.Basics.TrackingAsyncDisposableInDelegatesScenario.Service>.Value = valResolverM04D26di_0000;
     _bucketsM04D26di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
       out _bucketSizeM04D26di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService), valResolverM04D26di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.TrackingAsyncDisposableInDelegatesScenario.Service), valResolverM04D26di_0000)
       });
   }
   
@@ -233,21 +295,21 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM04D26di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService>
+  private sealed class ResolverM04D26di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.TrackingAsyncDisposableInDelegatesScenario.Service>
   {
-    public Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.Basics.TrackingAsyncDisposableInDelegatesScenario.Service Resolve(Composition composition)
     {
       return composition.Root;
     }
     
-    public Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Basics.TrackingAsyncDisposableInDelegatesScenario.Service ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Root;
         default:
-          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService.");
+          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.TrackingAsyncDisposableInDelegatesScenario.Service.");
       }
     }
   }

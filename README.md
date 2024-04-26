@@ -211,9 +211,11 @@ dotnet run
 - [Property injection](readme/property-injection.md)
 - [Default values](readme/default-values.md)
 - [Required properties or fields](readme/required-properties-or-fields.md)
+- [Tracking async disposable instances in delegates](readme/tracking-async-disposable-instances-in-delegates.md)
 - [Tracking disposable instances in delegates](readme/tracking-disposable-instances-in-delegates.md)
 - [Tracking disposable instances per a composition root](readme/tracking-disposable-instances-per-a-composition-root.md)
 - [RootBind](readme/rootbind.md)
+- [Tracking async disposable instances per a composition root](readme/tracking-async-disposable-instances-per-a-composition-root.md)
 ### Lifetimes
 - [Singleton](readme/singleton.md)
 - [PerResolve](readme/perresolve.md)
@@ -221,6 +223,8 @@ dotnet run
 - [PerBlock](readme/perblock.md)
 - [Transient](readme/transient.md)
 - [Disposable singleton](readme/disposable-singleton.md)
+- [Async disposable scope](readme/async-disposable-scope.md)
+- [Async disposable singleton](readme/async-disposable-singleton.md)
 - [Auto scoped](readme/auto-scoped.md)
 - [Default lifetime](readme/default-lifetime.md)
 ### Base Class Library

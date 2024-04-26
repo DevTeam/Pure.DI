@@ -65,7 +65,7 @@ public class Scenario
 {
     [Fact]
     public async Task Run()
-    {
+    { 
 // {            
         var composition = new Composition();
         var root1 = composition.Root;
@@ -86,7 +86,7 @@ public class Scenario
         // Checks that the disposable instances
         // associated with root2 have been disposed of
         root1.Dependency.IsDisposed.ShouldBeTrue();
-        // }
+// }
         new Composition().SaveClassDiagram();
     }
 }

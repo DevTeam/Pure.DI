@@ -78,7 +78,7 @@ public class Scenario
         // Checks that the disposable instances
         // associated with root2 have been disposed of
         root1.Value.Dependency.IsDisposed.ShouldBeTrue();
-        // }
+// }
         new Composition().SaveClassDiagram();
     }
 }

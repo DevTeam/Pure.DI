@@ -1,40 +1,48 @@
-#### Singleton
+#### Async disposable singleton
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/SingletonScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/AsyncDisposableSingletonScenario.cs)
 
-The _Singleton_ lifetime ensures that there will be a single instance of the dependency for each composition.
+If at least one of these objects implements the `IAsyncDisposable` interface, then the composition implements `IAsyncDisposable` as well. To dispose of all created singleton instances in an asynchronous manner, simply dispose of the composition instance in an asynchronous manner:
 
 ```c#
-interface IDependency;
+interface IDependency
+{
+    bool IsDisposed { get; }
+}
 
-class Dependency : IDependency;
+class Dependency : IDependency, IAsyncDisposable
+{
+    public bool IsDisposed { get; private set; }
+
+    public ValueTask DisposeAsync()
+    {
+        IsDisposed = true;
+        return ValueTask.CompletedTask;
+    }
+}
 
 interface IService
 {
-    public IDependency Dependency1 { get; }
-
-    public IDependency Dependency2 { get; }
+    public IDependency Dependency { get; }
 }
 
-class Service(
-    IDependency dependency1,
-    IDependency dependency2)
-    : IService
+class Service(IDependency dependency): IService
 {
-    public IDependency Dependency1 { get; } = dependency1;
-
-    public IDependency Dependency2 { get; } = dependency2;
+    public IDependency Dependency { get; } = dependency;
 }
 
 DI.Setup(nameof(Composition))
     .Bind().As(Lifetime.Singleton).To<Dependency>()
     .RootBind<IService>("Root").To<Service>();
 
-var composition = new Composition();
-var service1 = composition.Root;
-var service2 = composition.Root;
-service1.Dependency1.ShouldBe(service1.Dependency2);
-service2.Dependency1.ShouldBe(service1.Dependency1);
+IDependency dependency;
+await using (var composition = new Composition())
+{
+    var service = composition.Root;
+    dependency = service.Dependency;
+}
+
+dependency.IsDisposed.ShouldBeTrue();
 ```
 
 <details open>
@@ -49,21 +57,25 @@ classDiagram
     + object Resolve(Type type)
     + object Resolve(Type type, object? tag)
   }
+  Composition --|> IDisposable
   Dependency --|> IDependency : 
+  Dependency --|> IAsyncDisposable : 
   class Dependency {
     +Dependency()
   }
   Service --|> IService : 
   class Service {
-    +Service(IDependency dependency1, IDependency dependency2)
+    +Service(IDependency dependency)
   }
   class IDependency {
+    <<abstract>>
+  }
+  class IAsyncDisposable {
     <<abstract>>
   }
   class IService {
     <<abstract>>
   }
-  Service o--  "Singleton" Dependency : IDependency
   Service o--  "Singleton" Dependency : IDependency
   Composition ..> Service : IService Root
 ```
@@ -74,16 +86,19 @@ classDiagram
 <summary>Pure.DI-generated partial class Composition</summary><blockquote>
 
 ```c#
-partial class Composition
+partial class Composition: global::System.IDisposable, global::System.IAsyncDisposable
 {
   private readonly Composition _rootM04D26di;
   private readonly object _lockM04D26di;
-  private Pure.DI.UsageTests.Lifetimes.SingletonScenario.Dependency _singletonM04D26di36_Dependency;
+  private object[] _disposablesM04D26di;
+  private int _disposeIndexM04D26di;
+  private Pure.DI.UsageTests.Lifetimes.AsyncDisposableSingletonScenario.Dependency _singletonM04D26di36_Dependency;
   
   public Composition()
   {
     _rootM04D26di = this;
     _lockM04D26di = new object();
+    _disposablesM04D26di = new object[1];
   }
   
   internal Composition(Composition baseComposition)
@@ -92,7 +107,7 @@ partial class Composition
     _lockM04D26di = _rootM04D26di._lockM04D26di;
   }
   
-  public Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService Root
+  public Pure.DI.UsageTests.Lifetimes.AsyncDisposableSingletonScenario.IService Root
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     get
@@ -103,12 +118,13 @@ partial class Composition
           {
               if (_rootM04D26di._singletonM04D26di36_Dependency == null)
               {
-                  _singletonM04D26di36_Dependency = new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Dependency();
+                  _singletonM04D26di36_Dependency = new Pure.DI.UsageTests.Lifetimes.AsyncDisposableSingletonScenario.Dependency();
                   _rootM04D26di._singletonM04D26di36_Dependency = _singletonM04D26di36_Dependency;
+                  _rootM04D26di._disposablesM04D26di[_rootM04D26di._disposeIndexM04D26di++] = _singletonM04D26di36_Dependency;
               }
           }
       }
-      return new Pure.DI.UsageTests.Lifetimes.SingletonScenario.Service(_singletonM04D26di36_Dependency, _rootM04D26di._singletonM04D26di36_Dependency);
+      return new Pure.DI.UsageTests.Lifetimes.AsyncDisposableSingletonScenario.Service(_rootM04D26di._singletonM04D26di36_Dependency);
     }
   }
   
@@ -172,6 +188,109 @@ partial class Composition
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
   
+  
+  public void Dispose()
+  {
+    int disposeIndex;
+    object[] disposables;
+    lock (_lockM04D26di)
+    {
+      disposeIndex = _disposeIndexM04D26di;
+      _disposeIndexM04D26di = 0;
+      disposables = _disposablesM04D26di;
+      _disposablesM04D26di = new object[1];
+      _singletonM04D26di36_Dependency = null;
+    }
+    
+    while (disposeIndex > 0)
+    {
+      var instance = disposables[--disposeIndex];
+      var disposableInstance = instance as global::System.IDisposable;
+      if (disposableInstance != null)
+      {
+        try
+        {
+          disposableInstance.Dispose();
+        }
+        catch (Exception exception)
+        {
+          OnDisposeException(disposableInstance, exception);
+        }
+        continue;
+      }
+      
+      var asyncDisposableInstance = instance as global::System.IAsyncDisposable;
+      if (asyncDisposableInstance != null)
+      {
+        try
+        {
+          var valueTask = asyncDisposableInstance.DisposeAsync();
+          if (!valueTask.IsCompleted)
+          {
+            valueTask.AsTask().Wait();
+          }
+        }
+        catch (Exception exception)
+        {
+          OnAsyncDisposeException(asyncDisposableInstance, exception);
+        }
+      continue;
+      }
+    }
+    
+  }
+  public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+  {
+    int disposeIndex;
+    object[] disposables;
+    lock (_lockM04D26di)
+    {
+      disposeIndex = _disposeIndexM04D26di;
+      _disposeIndexM04D26di = 0;
+      disposables = _disposablesM04D26di;
+      _disposablesM04D26di = new object[1];
+      _singletonM04D26di36_Dependency = null;
+    }
+    
+    while (disposeIndex > 0)
+    {
+      var instance = disposables[--disposeIndex];
+      
+      var asyncDisposableInstance = instance as global::System.IAsyncDisposable;
+      if (asyncDisposableInstance != null)
+      {
+        try
+        {
+          await asyncDisposableInstance.DisposeAsync();
+        }
+        catch (Exception exception)
+        {
+          OnAsyncDisposeException(asyncDisposableInstance, exception);
+        }
+      continue;
+      }
+      var disposableInstance = instance as global::System.IDisposable;
+      if (disposableInstance != null)
+      {
+        try
+        {
+          disposableInstance.Dispose();
+        }
+        catch (Exception exception)
+        {
+          OnDisposeException(disposableInstance, exception);
+        }
+        continue;
+      }
+    }
+    
+  }
+  
+  partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : global::System.IDisposable;
+  
+  
+  partial void OnAsyncDisposeException<T>(T asyncDisposableInstance, Exception exception) where T : global::System.IAsyncDisposable;
+  
   public override string ToString()
   {
     return
@@ -183,21 +302,25 @@ partial class Composition
           "    + object Resolve(Type type)\n" +
           "    + object Resolve(Type type, object? tag)\n" +
         "  }\n" +
+        "  Composition --|> IDisposable\n" +
         "  Dependency --|> IDependency : \n" +
+        "  Dependency --|> IAsyncDisposable : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
         "  Service --|> IService : \n" +
         "  class Service {\n" +
-          "    +Service(IDependency dependency1, IDependency dependency2)\n" +
+          "    +Service(IDependency dependency)\n" +
         "  }\n" +
         "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IAsyncDisposable {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  class IService {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
-        "  Service o--  \"Singleton\" Dependency : IDependency\n" +
         "  Service o--  \"Singleton\" Dependency : IDependency\n" +
         "  Composition ..> Service : IService Root";
   }
@@ -208,13 +331,13 @@ partial class Composition
   static Composition()
   {
     var valResolverM04D26di_0000 = new ResolverM04D26di_0000();
-    ResolverM04D26di<Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService>.Value = valResolverM04D26di_0000;
+    ResolverM04D26di<Pure.DI.UsageTests.Lifetimes.AsyncDisposableSingletonScenario.IService>.Value = valResolverM04D26di_0000;
     _bucketsM04D26di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       1,
       out _bucketSizeM04D26di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService), valResolverM04D26di_0000)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.AsyncDisposableSingletonScenario.IService), valResolverM04D26di_0000)
       });
   }
   
@@ -233,21 +356,21 @@ partial class Composition
     }
   }
   
-  private sealed class ResolverM04D26di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService>
+  private sealed class ResolverM04D26di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.AsyncDisposableSingletonScenario.IService>
   {
-    public Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.Lifetimes.AsyncDisposableSingletonScenario.IService Resolve(Composition composition)
     {
       return composition.Root;
     }
     
-    public Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Lifetimes.AsyncDisposableSingletonScenario.IService ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Root;
         default:
-          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.SingletonScenario.IService.");
+          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.AsyncDisposableSingletonScenario.IService.");
       }
     }
   }

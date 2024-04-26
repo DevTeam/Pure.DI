@@ -1,8 +1,6 @@
-#### Scope
+#### Async disposable scope
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/ScopeScenario.cs)
-
-The _Scoped_ lifetime ensures that there will be a single instance of the dependency for each scope.
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Lifetimes/AsyncDisposableScopeScenario.cs)
 
 ```c#
 interface IDependency
@@ -10,11 +8,15 @@ interface IDependency
     bool IsDisposed { get; }
 }
 
-class Dependency : IDependency, IDisposable
+class Dependency : IDependency, IAsyncDisposable
 {
     public bool IsDisposed { get; private set; }
 
-    public void Dispose() => IsDisposed = true;
+    public ValueTask DisposeAsync()
+    {
+        IsDisposed = true;
+        return ValueTask.CompletedTask;
+    }
 }
 
 interface IService
@@ -67,12 +69,12 @@ var dependency2 = session2.SessionRoot.Dependency;
 dependency1.ShouldNotBe(dependency2);
         
 // Disposes of session #1
-session1.Dispose();
+await session1.DisposeAsync();
 // Checks that the scoped instance is finalized
 dependency1.IsDisposed.ShouldBeTrue();
         
 // Disposes of session #2
-session2.Dispose();
+await session2.DisposeAsync();
 // Checks that the scoped instance is finalized
 dependency2.IsDisposed.ShouldBeTrue();
 ```
@@ -98,6 +100,7 @@ classDiagram
     +Program(FuncᐸSessionᐳ sessionFactory)
   }
   Dependency --|> IDependency : 
+  Dependency --|> IAsyncDisposable : 
   class Dependency {
     +Dependency()
   }
@@ -108,6 +111,9 @@ classDiagram
   class Composition
   class FuncᐸSessionᐳ
   class IDependency {
+    <<abstract>>
+  }
+  class IAsyncDisposable {
     <<abstract>>
   }
   class IService {
@@ -127,13 +133,13 @@ classDiagram
 <summary>Pure.DI-generated partial class Composition</summary><blockquote>
 
 ```c#
-partial class Composition: global::System.IDisposable
+partial class Composition: global::System.IDisposable, global::System.IAsyncDisposable
 {
   private readonly Composition _rootM04D26di;
   private readonly object _lockM04D26di;
   private object[] _disposablesM04D26di;
   private int _disposeIndexM04D26di;
-  private Pure.DI.UsageTests.Lifetimes.ScopeScenario.Dependency _scopedM04D26di36_Dependency;
+  private Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.Dependency _scopedM04D26di36_Dependency;
   
   public Composition()
   {
@@ -149,7 +155,7 @@ partial class Composition: global::System.IDisposable
     _disposablesM04D26di = new object[1];
   }
   
-  public Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService SessionRoot
+  public Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.IService SessionRoot
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     get
@@ -160,30 +166,30 @@ partial class Composition: global::System.IDisposable
           {
               if (_scopedM04D26di36_Dependency == null)
               {
-                  _scopedM04D26di36_Dependency = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Dependency();
+                  _scopedM04D26di36_Dependency = new Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.Dependency();
                   _disposablesM04D26di[_disposeIndexM04D26di++] = _scopedM04D26di36_Dependency;
               }
           }
       }
-      return new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Service(_scopedM04D26di36_Dependency);
+      return new Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.Service(_scopedM04D26di36_Dependency);
     }
   }
   
-  public Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program ProgramRoot
+  public Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.Program ProgramRoot
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     get
     {
-      var perResolveM04D26di43_Func = default(System.Func<Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session>);
-      perResolveM04D26di43_Func = new global::System.Func<Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session>(
+      var perResolveM04D26di43_Func = default(System.Func<Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.Session>);
+      perResolveM04D26di43_Func = new global::System.Func<Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.Session>(
       [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
       () =>
       {
-          Pure.DI.UsageTests.Lifetimes.ScopeScenario.Composition transientM04D26di2_Composition = this;
-          var value_M04D26di1 = new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Session(transientM04D26di2_Composition);
+          Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.Composition transientM04D26di2_Composition = this;
+          var value_M04D26di1 = new Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.Session(transientM04D26di2_Composition);
           return value_M04D26di1;
       });
-      return new Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program(perResolveM04D26di43_Func);
+      return new Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.Program(perResolveM04D26di43_Func);
     }
   }
   
@@ -298,6 +304,52 @@ partial class Composition: global::System.IDisposable
     }
     
   }
+  public async global::System.Threading.Tasks.ValueTask DisposeAsync()
+  {
+    int disposeIndex;
+    object[] disposables;
+    lock (_lockM04D26di)
+    {
+      disposeIndex = _disposeIndexM04D26di;
+      _disposeIndexM04D26di = 0;
+      disposables = _disposablesM04D26di;
+      _disposablesM04D26di = new object[1];
+      _scopedM04D26di36_Dependency = null;
+    }
+    
+    while (disposeIndex > 0)
+    {
+      var instance = disposables[--disposeIndex];
+      
+      var asyncDisposableInstance = instance as global::System.IAsyncDisposable;
+      if (asyncDisposableInstance != null)
+      {
+        try
+        {
+          await asyncDisposableInstance.DisposeAsync();
+        }
+        catch (Exception exception)
+        {
+          OnAsyncDisposeException(asyncDisposableInstance, exception);
+        }
+      continue;
+      }
+      var disposableInstance = instance as global::System.IDisposable;
+      if (disposableInstance != null)
+      {
+        try
+        {
+          disposableInstance.Dispose();
+        }
+        catch (Exception exception)
+        {
+          OnDisposeException(disposableInstance, exception);
+        }
+        continue;
+      }
+    }
+    
+  }
   
   partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : global::System.IDisposable;
   
@@ -324,6 +376,7 @@ partial class Composition: global::System.IDisposable
           "    +Program(FuncᐸSessionᐳ sessionFactory)\n" +
         "  }\n" +
         "  Dependency --|> IDependency : \n" +
+        "  Dependency --|> IAsyncDisposable : \n" +
         "  class Dependency {\n" +
           "    +Dependency()\n" +
         "  }\n" +
@@ -334,6 +387,9 @@ partial class Composition: global::System.IDisposable
         "  class Composition\n" +
         "  class FuncᐸSessionᐳ\n" +
         "  class IDependency {\n" +
+          "    <<abstract>>\n" +
+        "  }\n" +
+        "  class IAsyncDisposable {\n" +
           "    <<abstract>>\n" +
         "  }\n" +
         "  class IService {\n" +
@@ -353,16 +409,16 @@ partial class Composition: global::System.IDisposable
   static Composition()
   {
     var valResolverM04D26di_0000 = new ResolverM04D26di_0000();
-    ResolverM04D26di<Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService>.Value = valResolverM04D26di_0000;
+    ResolverM04D26di<Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.IService>.Value = valResolverM04D26di_0000;
     var valResolverM04D26di_0001 = new ResolverM04D26di_0001();
-    ResolverM04D26di<Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program>.Value = valResolverM04D26di_0001;
+    ResolverM04D26di<Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.Program>.Value = valResolverM04D26di_0001;
     _bucketsM04D26di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       4,
       out _bucketSizeM04D26di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[2]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService), valResolverM04D26di_0000)
-        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program), valResolverM04D26di_0001)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.IService), valResolverM04D26di_0000)
+        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.Program), valResolverM04D26di_0001)
       });
   }
   
@@ -381,40 +437,40 @@ partial class Composition: global::System.IDisposable
     }
   }
   
-  private sealed class ResolverM04D26di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService>
+  private sealed class ResolverM04D26di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.IService>
   {
-    public Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService Resolve(Composition composition)
+    public Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.IService Resolve(Composition composition)
     {
       return composition.SessionRoot;
     }
     
-    public Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.IService ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.SessionRoot;
         default:
-          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.ScopeScenario.IService.");
+          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.IService.");
       }
     }
   }
   
-  private sealed class ResolverM04D26di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program>
+  private sealed class ResolverM04D26di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.Program>
   {
-    public Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program Resolve(Composition composition)
+    public Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.Program Resolve(Composition composition)
     {
       return composition.ProgramRoot;
     }
     
-    public Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program ResolveByTag(Composition composition, object tag)
+    public Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.Program ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.ProgramRoot;
         default:
-          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.ScopeScenario.Program.");
+          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.AsyncDisposableScopeScenario.Program.");
       }
     }
   }
