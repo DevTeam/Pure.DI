@@ -19,6 +19,8 @@ internal sealed class DisposeMethodBuilder(
             code.AppendLine();
         }
 
+        var hasDisposable = composition.TotalDisposablesCount > composition.AsyncDisposableCount;
+        var hasAsyncDisposable = composition.AsyncDisposableCount > 0 && asyncDisposableSettings.IsEnabled(composition.Source.Source.SemanticModel.Compilation);
         var hints = composition.Source.Source.Hints;
         var isCommentsEnabled = hints.IsCommentsEnabled;
         if (isCommentsEnabled)
@@ -33,25 +35,48 @@ internal sealed class DisposeMethodBuilder(
         using (code.Indent())
         {
             AddSyncPart(composition, code);
-
+            code.AppendLine();
             code.AppendLine("while (disposeIndex > 0)");
             code.AppendLine("{");
             using (code.Indent())
             {
                 code.AppendLine("var instance = disposables[--disposeIndex];");
-                AddDisposePart(code);
-                AddAsyncDisposePart(composition, code, false);
+                if (hasDisposable)
+                {
+                    AddDisposePart(code);
+                }
+
+                if (hasAsyncDisposable)
+                {
+                    if (hasDisposable)
+                    {
+                        code.AppendLine();
+                    }
+
+                    AddAsyncDisposePart(composition, code, false);
+                }
             }
 
             code.AppendLine("}");
-            code.AppendLine();
         }
 
         code.AppendLine("}");
         membersCounter++;
 
-        if (composition.AsyncDisposableCount > 0 && asyncDisposableSettings.IsEnabled(composition.Source.Source.SemanticModel.Compilation))
+        code.AppendLine();
+        code.AppendLine("/// <summary>");
+        code.AppendLine("/// Implement this partial method to handle the exception on disposing.");
+        code.AppendLine("/// <summary>");
+        code.AppendLine("/// <param name=\"disposableInstance\">The disposable instance.</param>");
+        code.AppendLine("/// <param name=\"exception\">Exception occurring during disposal.</param>");
+        code.AppendLine("/// <typeparam name=\"T\">The actual type of instance being disposed of.</typeparam>");
+        code.AppendLine($"partial void {Names.OnDisposeExceptionMethodName}<T>(T disposableInstance, Exception exception) where T : {Names.IDisposableInterfaceName};");
+        membersCounter++;
+
+        // ReSharper disable once InvertIf
+        if (hasAsyncDisposable)
         {
+            code.AppendLine();
             if (isCommentsEnabled)
             {
                 code.AppendLine("/// <summary>");
@@ -64,38 +89,34 @@ internal sealed class DisposeMethodBuilder(
             using (code.Indent())
             {
                 AddSyncPart(composition, code);
-
+                code.AppendLine();
                 code.AppendLine("while (disposeIndex > 0)");
                 code.AppendLine("{");
                 using (code.Indent())
                 {
                     code.AppendLine("var instance = disposables[--disposeIndex];");
-                    AddAsyncDisposePart(composition, code, true);
-                    AddDisposePart(code);
+                    if (hasAsyncDisposable)
+                    {
+                        AddAsyncDisposePart(composition, code, true);
+                    }
+
+                    if (hasDisposable)
+                    {
+                        if (hasAsyncDisposable)
+                        {
+                            code.AppendLine();
+                        }
+
+                        AddDisposePart(code);
+                    }
                 }
 
                 code.AppendLine("}");
-                code.AppendLine();
             }
 
             code.AppendLine("}");
             membersCounter++;
-        }
-        
-        code.AppendLine();
-        code.AppendLine("/// <summary>");
-        code.AppendLine("/// Implement this partial method to handle the exception on disposing.");
-        code.AppendLine("/// <summary>");
-        code.AppendLine("/// <param name=\"disposableInstance\">The disposable instance.</param>");
-        code.AppendLine("/// <param name=\"exception\">Exception occurring during disposal.</param>");
-        code.AppendLine("/// <typeparam name=\"T\">The actual type of instance being disposed of.</typeparam>");
-        code.AppendLine($"partial void {Names.OnDisposeExceptionMethodName}<T>(T disposableInstance, Exception exception) where T : {Names.IDisposableInterfaceName};");
-        code.AppendLine();
-        membersCounter++;
-
-        // ReSharper disable once InvertIf
-        if (asyncDisposableSettings.IsEnabled(composition.Source.Source.SemanticModel.Compilation))
-        {
+            
             code.AppendLine();
             code.AppendLine("/// <summary>");
             code.AppendLine("/// Implement this partial method to handle the exception on async disposing.");
@@ -107,18 +128,12 @@ internal sealed class DisposeMethodBuilder(
             code.AppendLine();
             membersCounter++;
         }
-
+        
         return composition with { MembersCount = membersCounter };
     }
 
-    private void AddAsyncDisposePart(CompositionCode composition, LinesBuilder code, bool makeAsyncCall)
+    private static void AddAsyncDisposePart(CompositionCode composition, LinesBuilder code, bool makeAsyncCall)
     {
-        if (!asyncDisposableSettings.IsEnabled(composition.Source.Source.SemanticModel.Compilation))
-        {
-            return;
-        }
-        
-        code.AppendLine();
         code.AppendLine($"var asyncDisposableInstance = instance as {Names.IAsyncDisposableInterfaceName};");
         code.AppendLine("if (asyncDisposableInstance != null)");
         code.AppendLine("{");
@@ -154,9 +169,9 @@ internal sealed class DisposeMethodBuilder(
             }
             
             code.AppendLine("}");
+            code.AppendLine("continue;");
         }
-
-        code.AppendLine("continue;");
+        
         code.AppendLine("}");
     }
 
@@ -210,6 +225,5 @@ internal sealed class DisposeMethodBuilder(
             }
         }
         code.AppendLine("}");
-        code.AppendLine();
     }
 }

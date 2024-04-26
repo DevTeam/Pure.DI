@@ -198,7 +198,6 @@ partial class Composition
   }
   
   partial void OnNewInstance<T>(ref T value, object? tag, global::Pure.DI.Lifetime lifetime);
-  
   public override string ToString()
   {
     return

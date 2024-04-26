@@ -170,7 +170,6 @@ partial class Composition
     
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
-  
   public override string ToString()
   {
     return
@@ -349,7 +348,6 @@ partial class OtherComposition
     
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
-  
   public override string ToString()
   {
     return

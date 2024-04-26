@@ -39,10 +39,9 @@ internal sealed class ApiMembersBuilder(
             }
 
             apiCode.AppendLine("}");
-
-            apiCode.AppendLine();
             membersCounter++;
 
+            apiCode.AppendLine();
             if (isCommentsEnabled)
             {
                 apiCode.AppendLine("/// <summary>");
@@ -63,10 +62,9 @@ internal sealed class ApiMembersBuilder(
             }
 
             apiCode.AppendLine("}");
-
-            apiCode.AppendLine();
             membersCounter++;
 
+            apiCode.AppendLine();
             var resolvers = resolversBuilder.Build(composition.Roots).ToArray();
             if (isCommentsEnabled)
             {
@@ -88,10 +86,10 @@ internal sealed class ApiMembersBuilder(
                 apiCode);
             
             membersCounter++;
-            apiCode.AppendLine();
 
             if (resolvers.Length > 0)
             {
+                apiCode.AppendLine();
                 CreateObjectConflictsResolverMethod($"{Names.SystemNamespace}Type type",
                     Names.ResolveMethodName,
                     "this",
@@ -123,10 +121,10 @@ internal sealed class ApiMembersBuilder(
                 apiCode);
 
             membersCounter++;
-            apiCode.AppendLine();
 
             if (resolvers.Length > 0)
             {
+                apiCode.AppendLine();
                 CreateObjectConflictsResolverMethod($"{Names.SystemNamespace}Type type, object? tag",
                     Names.ResolveByTagMethodName,
                     "this, tag",
@@ -164,7 +162,6 @@ internal sealed class ApiMembersBuilder(
             code.AppendLine("#region API");
             code.AppendLines(apiCode.Lines);
             code.AppendLine("#endregion");
-            code.AppendLine();
         }
 
         return composition with { MembersCount = membersCounter };

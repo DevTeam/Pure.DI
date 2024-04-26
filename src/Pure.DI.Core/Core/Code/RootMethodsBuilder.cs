@@ -40,6 +40,7 @@ internal sealed class RootMethodsBuilder(
             BuildRoot(composition, root);
             membersCounter++;
         }
+
         code.AppendLine("#endregion");
         return composition with { MembersCount = membersCounter };
     }

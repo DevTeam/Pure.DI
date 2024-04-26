@@ -151,7 +151,6 @@ partial class Func
     
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
-  
   public override string ToString()
   {
     return

@@ -175,7 +175,6 @@ partial class Composition
   }
   
   private partial T OnDependencyInjection<T>(in T value, object? tag, global::Pure.DI.Lifetime lifetime);
-  
   public override string ToString()
   {
     return

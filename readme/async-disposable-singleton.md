@@ -188,7 +188,6 @@ partial class Composition: global::System.IDisposable, global::System.IAsyncDisp
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
   
-  
   public void Dispose()
   {
     int disposeIndex;
@@ -205,20 +204,6 @@ partial class Composition: global::System.IDisposable, global::System.IAsyncDisp
     while (disposeIndex > 0)
     {
       var instance = disposables[--disposeIndex];
-      var disposableInstance = instance as global::System.IDisposable;
-      if (disposableInstance != null)
-      {
-        try
-        {
-          disposableInstance.Dispose();
-        }
-        catch (Exception exception)
-        {
-          OnDisposeException(disposableInstance, exception);
-        }
-        continue;
-      }
-      
       var asyncDisposableInstance = instance as global::System.IAsyncDisposable;
       if (asyncDisposableInstance != null)
       {
@@ -234,11 +219,13 @@ partial class Composition: global::System.IDisposable, global::System.IAsyncDisp
         {
           OnAsyncDisposeException(asyncDisposableInstance, exception);
         }
-      continue;
+        continue;
       }
     }
-    
   }
+  
+  partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : global::System.IDisposable;
+  
   public async global::System.Threading.Tasks.ValueTask DisposeAsync()
   {
     int disposeIndex;
@@ -255,7 +242,6 @@ partial class Composition: global::System.IDisposable, global::System.IAsyncDisp
     while (disposeIndex > 0)
     {
       var instance = disposables[--disposeIndex];
-      
       var asyncDisposableInstance = instance as global::System.IAsyncDisposable;
       if (asyncDisposableInstance != null)
       {
@@ -267,27 +253,10 @@ partial class Composition: global::System.IDisposable, global::System.IAsyncDisp
         {
           OnAsyncDisposeException(asyncDisposableInstance, exception);
         }
-      continue;
-      }
-      var disposableInstance = instance as global::System.IDisposable;
-      if (disposableInstance != null)
-      {
-        try
-        {
-          disposableInstance.Dispose();
-        }
-        catch (Exception exception)
-        {
-          OnDisposeException(disposableInstance, exception);
-        }
         continue;
       }
     }
-    
   }
-  
-  partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : global::System.IDisposable;
-  
   
   partial void OnAsyncDisposeException<T>(T asyncDisposableInstance, Exception exception) where T : global::System.IAsyncDisposable;
   

@@ -236,7 +236,6 @@ partial class Composition: global::System.IDisposable
     throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
   
-  
   public void Dispose()
   {
     int disposeIndex;
@@ -267,33 +266,10 @@ partial class Composition: global::System.IDisposable
         }
         continue;
       }
-      
-      var asyncDisposableInstance = instance as global::System.IAsyncDisposable;
-      if (asyncDisposableInstance != null)
-      {
-        try
-        {
-          var valueTask = asyncDisposableInstance.DisposeAsync();
-          if (!valueTask.IsCompleted)
-          {
-            valueTask.AsTask().Wait();
-          }
-        }
-        catch (Exception exception)
-        {
-          OnAsyncDisposeException(asyncDisposableInstance, exception);
-        }
-      continue;
-      }
     }
-    
   }
   
   partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : global::System.IDisposable;
-  
-  
-  partial void OnAsyncDisposeException<T>(T asyncDisposableInstance, Exception exception) where T : global::System.IAsyncDisposable;
-  
   public override string ToString()
   {
     return
