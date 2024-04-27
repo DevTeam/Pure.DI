@@ -148,7 +148,7 @@ partial class Composition
     {
       var perResolve43_Func = default(Func<IService>);
       perResolve43_Func = new Func<IService>(
-      [MethodImpl((MethodImplOptions)768)]
+      [MethodImpl((MethodImplOptions)256)]
       () =>
       {
           Composition transient2_Composition = this;

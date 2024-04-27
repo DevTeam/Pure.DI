@@ -139,7 +139,7 @@ partial class Composition
     {
       var perResolve39_Func = default(Func<Owned<IDependency>>);
       perResolve39_Func = new Func<Owned<IDependency>>(
-      [MethodImpl((MethodImplOptions)768)]
+      [MethodImpl((MethodImplOptions)256)]
       () =>
       {
           var accumulator38 = new Owned();

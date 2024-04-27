@@ -141,7 +141,7 @@ partial class Composition
         perBlock2_TaskFactory = new TaskFactory<IDependency>(cancellationToken_1, taskCreationOptions_2, taskContinuationOptions_3, taskScheduler_4);
     }
     perResolve42_Func = new Func<IDependency>(
-    [MethodImpl((MethodImplOptions)768)]
+    [MethodImpl((MethodImplOptions)256)]
     () =>
     {
         var value_5 = new Dependency();

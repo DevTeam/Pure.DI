@@ -78,7 +78,7 @@ internal class ServiceCollectionFactory<TComposition>
     /// <param name="resolver">Instance resolver.</param>
     /// <param name="tag">The resolving tag.</param>
     /// <typeparam name="TContract">The type of object that the resolver returns.</typeparam>
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     public void AddResolver<TContract>(IResolver<TComposition, TContract> resolver, object tag = default)
     {
         _resolvers.Add(new InstanceResolver(typeof(TContract), (IResolver<TComposition, object>)resolver, tag));
@@ -92,7 +92,7 @@ internal class ServiceCollectionFactory<TComposition>
 #if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET40_OR_GREATER || NET
     [global::System.Diagnostics.Contracts.Pure]
 #endif
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     public IServiceCollection CreateServiceCollection(TComposition composition)
     {
         return new ServiceCollection().Add(CreateDescriptors(composition));
@@ -103,7 +103,7 @@ internal class ServiceCollectionFactory<TComposition>
     /// </summary>
     /// <param name="composition">An instance of composition.</param>
     /// <returns>A enumeration of <see cref="Microsoft.Extensions.DependencyInjection.ServiceDescriptor"/>.</returns>
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x300)]
+    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     private IEnumerable<ServiceDescriptor> CreateDescriptors(TComposition composition)
     {
         return _resolvers.Select(resolver => ServiceDescriptorProvider(composition, resolver));

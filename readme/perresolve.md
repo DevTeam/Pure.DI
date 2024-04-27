@@ -108,7 +108,7 @@ partial class Composition
       var perResolve36_Dependency = default(Dependency);
       var perResolve43_Func = default(Func<(IDependency dep3, IDependency dep4)>);
       perResolve43_Func = new Func<(IDependency dep3, IDependency dep4)>(
-      [MethodImpl((MethodImplOptions)768)]
+      [MethodImpl((MethodImplOptions)256)]
       () =>
       {
           if (perResolve36_Dependency == null)

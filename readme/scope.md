@@ -176,7 +176,7 @@ partial class Composition: IDisposable
     {
       var perResolve43_Func = default(Func<Session>);
       perResolve43_Func = new Func<Session>(
-      [MethodImpl((MethodImplOptions)768)]
+      [MethodImpl((MethodImplOptions)256)]
       () =>
       {
           Composition transient2_Composition = this;

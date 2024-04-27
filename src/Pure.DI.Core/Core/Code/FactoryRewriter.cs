@@ -17,7 +17,7 @@ internal sealed class FactoryRewriter(
                     SyntaxFactory.AttributeArgument(
                         SyntaxFactory.CastExpression(
                             SyntaxFactory.ParseTypeName(Names.MethodImplOptions),
-                            SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0x300)))))))
+                            SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(0x100)))))))
         .WithTrailingTrivia(SyntaxTriviaList.Create(SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, " ")));
     
     private static readonly IdentifierNameSyntax InjectionMarkerExpression = SyntaxFactory.IdentifierName(Names.InjectionMarker);

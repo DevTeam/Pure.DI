@@ -83,7 +83,7 @@ partial class Func
   public partial Benchmarks.Model.CompositionRoot TestPureDIByCR()
   {
     Func<Benchmarks.Model.IService3> perBlock10_Func = new Func<Benchmarks.Model.IService3>(
-    [MethodImpl((MethodImplOptions)768)]
+    [MethodImpl((MethodImplOptions)256)]
     () =>
     {
         var value_1 = new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4());

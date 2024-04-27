@@ -93,7 +93,7 @@ partial class Composition
     {
       var perResolve40_Func = default(Func<IDependency>);
       perResolve40_Func = new Func<IDependency>(
-      [MethodImpl((MethodImplOptions)768)]
+      [MethodImpl((MethodImplOptions)256)]
       () =>
       {
           var value_1 = new Dependency();
