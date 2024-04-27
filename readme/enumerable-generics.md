@@ -47,60 +47,60 @@ stringService.Dependencies[1].ShouldBeOfType<XyzDependency<string>>();
 
 ```mermaid
 classDiagram
-  class Composition {
-    +IServiceᐸInt32ᐳ IntRoot
-    +IServiceᐸStringᐳ StringRoot
-    + T ResolveᐸTᐳ()
-    + T ResolveᐸTᐳ(object? tag)
-    + object Resolve(Type type)
-    + object Resolve(Type type, object? tag)
-  }
-  ServiceᐸInt32ᐳ --|> IServiceᐸInt32ᐳ : 
-  class ServiceᐸInt32ᐳ {
-    +Service(IEnumerableᐸIDependencyᐸInt32ᐳᐳ dependencies)
-  }
-  ServiceᐸStringᐳ --|> IServiceᐸStringᐳ : 
-  class ServiceᐸStringᐳ {
-    +Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
-  }
-  class IEnumerableᐸIDependencyᐸInt32ᐳᐳ
-  class IEnumerableᐸIDependencyᐸStringᐳᐳ
-  AbcDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : 
-  class AbcDependencyᐸInt32ᐳ {
-    +AbcDependency()
-  }
-  XyzDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : "Xyz" 
-  class XyzDependencyᐸInt32ᐳ {
-    +XyzDependency()
-  }
-  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 
-  class AbcDependencyᐸStringᐳ {
-    +AbcDependency()
-  }
-  XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : "Xyz" 
-  class XyzDependencyᐸStringᐳ {
-    +XyzDependency()
-  }
-  class IServiceᐸInt32ᐳ {
-    <<abstract>>
-  }
-  class IServiceᐸStringᐳ {
-    <<abstract>>
-  }
-  class IDependencyᐸInt32ᐳ {
-    <<abstract>>
-  }
-  class IDependencyᐸStringᐳ {
-    <<abstract>>
-  }
-  Composition ..> ServiceᐸInt32ᐳ : IServiceᐸInt32ᐳ IntRoot
-  Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ StringRoot
-  ServiceᐸInt32ᐳ o--  "PerBlock" IEnumerableᐸIDependencyᐸInt32ᐳᐳ : IEnumerableᐸIDependencyᐸInt32ᐳᐳ
-  ServiceᐸStringᐳ o--  "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
-  IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  AbcDependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
-  IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  XyzDependencyᐸInt32ᐳ : "Xyz"  IDependencyᐸInt32ᐳ
-  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : IDependencyᐸStringᐳ
-  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : "Xyz"  IDependencyᐸStringᐳ
+	class Composition {
+		+IServiceᐸInt32ᐳ IntRoot
+		+IServiceᐸStringᐳ StringRoot
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	ServiceᐸInt32ᐳ --|> IServiceᐸInt32ᐳ : 
+	class ServiceᐸInt32ᐳ {
+		+Service(IEnumerableᐸIDependencyᐸInt32ᐳᐳ dependencies)
+	}
+	ServiceᐸStringᐳ --|> IServiceᐸStringᐳ : 
+	class ServiceᐸStringᐳ {
+		+Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
+	}
+	class IEnumerableᐸIDependencyᐸInt32ᐳᐳ
+	class IEnumerableᐸIDependencyᐸStringᐳᐳ
+	AbcDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : 
+	class AbcDependencyᐸInt32ᐳ {
+		+AbcDependency()
+	}
+	XyzDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : "Xyz" 
+	class XyzDependencyᐸInt32ᐳ {
+		+XyzDependency()
+	}
+	AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 
+	class AbcDependencyᐸStringᐳ {
+		+AbcDependency()
+	}
+	XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : "Xyz" 
+	class XyzDependencyᐸStringᐳ {
+		+XyzDependency()
+	}
+	class IServiceᐸInt32ᐳ {
+		<<abstract>>
+	}
+	class IServiceᐸStringᐳ {
+		<<abstract>>
+	}
+	class IDependencyᐸInt32ᐳ {
+		<<abstract>>
+	}
+	class IDependencyᐸStringᐳ {
+		<<abstract>>
+	}
+	Composition ..> ServiceᐸInt32ᐳ : IServiceᐸInt32ᐳ IntRoot
+	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ StringRoot
+	ServiceᐸInt32ᐳ o--  "PerBlock" IEnumerableᐸIDependencyᐸInt32ᐳᐳ : IEnumerableᐸIDependencyᐸInt32ᐳᐳ
+	ServiceᐸStringᐳ o--  "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
+	IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  AbcDependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
+	IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  XyzDependencyᐸInt32ᐳ : "Xyz"  IDependencyᐸInt32ᐳ
+	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : IDependencyᐸStringᐳ
+	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : "Xyz"  IDependencyᐸStringᐳ
 ```
 
 </details>
@@ -112,71 +112,71 @@ classDiagram
 partial class Composition
 {
   private readonly Composition _rootM04D27di;
-  
+
   public Composition()
   {
     _rootM04D27di = this;
   }
-  
+
   internal Composition(Composition baseComposition)
   {
     _rootM04D27di = baseComposition._rootM04D27di;
   }
-  
-  public Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int> IntRoot
+
+  public IService<int> IntRoot
   {
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+    [MethodImpl((MethodImplOptions)0x100)]
     get
     {
-      [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x200)]
-      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IDependency<int>> LocalperBlockM04D27di1_IEnumerable()
+      [MethodImpl((MethodImplOptions)0x200)]
+      System.Collections.Generic.IEnumerable<IDependency<int>> LocalperBlockM04D27di1_IEnumerable()
       {
-          yield return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.AbcDependency<int>();
-          yield return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.XyzDependency<int>();
+          yield return new AbcDependency<int>();
+          yield return new XyzDependency<int>();
       }
-      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IDependency<int>> perBlockM04D27di1_IEnumerable = LocalperBlockM04D27di1_IEnumerable();
-      return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service<int>(perBlockM04D27di1_IEnumerable);
+      System.Collections.Generic.IEnumerable<IDependency<int>> perBlockM04D27di1_IEnumerable = LocalperBlockM04D27di1_IEnumerable();
+      return new Service<int>(perBlockM04D27di1_IEnumerable);
     }
   }
-  
-  public Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string> StringRoot
+
+  public IService<string> StringRoot
   {
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+    [MethodImpl((MethodImplOptions)0x100)]
     get
     {
-      [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x200)]
-      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IDependency<string>> LocalperBlockM04D27di1_IEnumerable()
+      [MethodImpl((MethodImplOptions)0x200)]
+      System.Collections.Generic.IEnumerable<IDependency<string>> LocalperBlockM04D27di1_IEnumerable()
       {
-          yield return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.AbcDependency<string>();
-          yield return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.XyzDependency<string>();
+          yield return new AbcDependency<string>();
+          yield return new XyzDependency<string>();
       }
-      System.Collections.Generic.IEnumerable<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IDependency<string>> perBlockM04D27di1_IEnumerable = LocalperBlockM04D27di1_IEnumerable();
-      return new Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.Service<string>(perBlockM04D27di1_IEnumerable);
+      System.Collections.Generic.IEnumerable<IDependency<string>> perBlockM04D27di1_IEnumerable = LocalperBlockM04D27di1_IEnumerable();
+      return new Service<string>(perBlockM04D27di1_IEnumerable);
     }
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+
+  [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>()
   {
     return ResolverM04D27di<T>.Value.Resolve(this);
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+
+  [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>(object? tag)
   {
     return ResolverM04D27di<T>.Value.ResolveByTag(this, tag);
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
-  public object Resolve(global::System.Type type)
+
+  [MethodImpl((MethodImplOptions)0x100)]
+  public object Resolve(Type type)
   {
-    var index = (int)(_bucketSizeM04D27di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var index = (int)(_bucketSizeM04D27di * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
     ref var pair = ref _bucketsM04D27di[index];
     return pair.Key == type ? pair.Value.Resolve(this) : ResolveM04D27di(type, index);
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x8)]
-  private object ResolveM04D27di(global::System.Type type, int index)
+
+  [MethodImpl((MethodImplOptions)0x8)]
+  private object ResolveM04D27di(Type type, int index)
   {
     var finish = index + _bucketSizeM04D27di;
     while (++index < finish)
@@ -187,20 +187,20 @@ partial class Composition
         return pair.Value.Resolve(this);
       }
     }
-    
-    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+
+    throw new InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
-  public object Resolve(global::System.Type type, object? tag)
+
+  [MethodImpl((MethodImplOptions)0x100)]
+  public object Resolve(Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM04D27di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var index = (int)(_bucketSizeM04D27di * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
     ref var pair = ref _bucketsM04D27di[index];
     return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : ResolveM04D27di(type, tag, index);
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x8)]
-  private object ResolveM04D27di(global::System.Type type, object? tag, int index)
+
+  [MethodImpl((MethodImplOptions)0x8)]
+  private object ResolveM04D27di(Type type, object? tag, int index)
   {
     var finish = index + _bucketSizeM04D27di;
     while (++index < finish)
@@ -211,10 +211,10 @@ partial class Composition
         return pair.Value.ResolveByTag(this, tag);
       }
     }
-    
-    throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
+
+    throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
-  
+
   public override string ToString()
   {
     return
@@ -274,75 +274,75 @@ partial class Composition
         "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : IDependencyᐸStringᐳ\n" +
         "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : \"Xyz\"  IDependencyᐸStringᐳ";
   }
-  
+
   private readonly static int _bucketSizeM04D27di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM04D27di;
-  
+  private readonly static Pair<Type, IResolver<Composition, object>>[] _bucketsM04D27di;
+
   static Composition()
   {
     var valResolverM04D27di_0000 = new ResolverM04D27di_0000();
-    ResolverM04D27di<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int>>.Value = valResolverM04D27di_0000;
+    ResolverM04D27di<IService<int>>.Value = valResolverM04D27di_0000;
     var valResolverM04D27di_0001 = new ResolverM04D27di_0001();
-    ResolverM04D27di<Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string>>.Value = valResolverM04D27di_0001;
-    _bucketsM04D27di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    ResolverM04D27di<IService<string>>.Value = valResolverM04D27di_0001;
+    _bucketsM04D27di = Buckets<Type, IResolver<Composition, object>>.Create(
       4,
       out _bucketSizeM04D27di,
-      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[2]
+      new Pair<Type, IResolver<Composition, object>>[2]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int>), valResolverM04D27di_0000)
-        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string>), valResolverM04D27di_0001)
+         new Pair<Type, IResolver<Composition, object>>(typeof(IService<int>), valResolverM04D27di_0000)
+        ,new Pair<Type, IResolver<Composition, object>>(typeof(IService<string>), valResolverM04D27di_0001)
       });
   }
-  
-  private sealed class ResolverM04D27di<T>: global::Pure.DI.IResolver<Composition, T>
+
+  private sealed class ResolverM04D27di<T>: IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM04D27di<T>();
-    
+    public static IResolver<Composition, T> Value = new ResolverM04D27di<T>();
+
     public T Resolve(Composition composite)
     {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
+      throw new InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
     }
-    
+
     public T ResolveByTag(Composition composite, object tag)
     {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
+      throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
     }
   }
-  
-  private sealed class ResolverM04D27di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int>>
+
+  private sealed class ResolverM04D27di_0000: IResolver<Composition, IService<int>>
   {
-    public Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int> Resolve(Composition composition)
+    public IService<int> Resolve(Composition composition)
     {
       return composition.IntRoot;
     }
-    
-    public Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int> ResolveByTag(Composition composition, object tag)
+
+    public IService<int> ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.IntRoot;
         default:
-          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<int>.");
+          throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type IService<int>.");
       }
     }
   }
-  
-  private sealed class ResolverM04D27di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string>>
+
+  private sealed class ResolverM04D27di_0001: IResolver<Composition, IService<string>>
   {
-    public Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string> Resolve(Composition composition)
+    public IService<string> Resolve(Composition composition)
     {
       return composition.StringRoot;
     }
-    
-    public Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string> ResolveByTag(Composition composition, object tag)
+
+    public IService<string> ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.StringRoot;
         default:
-          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.EnumerableGenericsScenario.IService<string>.");
+          throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type IService<string>.");
       }
     }
   }

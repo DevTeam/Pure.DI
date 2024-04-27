@@ -57,27 +57,27 @@ Special types from the list above will not be added to bindings:
 
 ```mermaid
 classDiagram
-  class Composition {
-    +Service MyService
-  }
-  class Service {
-    +Service(Dependency dependencyImpl, IDependency dependency, IOtherDependency otherDependency)
-  }
-  Dependency --|> IDependency : 
-  Dependency --|> IOtherDependency : 
-  class Dependency {
-    +Dependency()
-  }
-  class IDependency {
-    <<abstract>>
-  }
-  class IOtherDependency {
-    <<abstract>>
-  }
-  Service o--  "PerBlock" Dependency : Dependency
-  Service o--  "PerBlock" Dependency : IDependency
-  Service o--  "PerBlock" Dependency : IOtherDependency
-  Composition ..> Service : Service MyService
+	class Composition {
+		+Service MyService
+	}
+	class Service {
+		+Service(Dependency dependencyImpl, IDependency dependency, IOtherDependency otherDependency)
+	}
+	Dependency --|> IDependency : 
+	Dependency --|> IOtherDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	class IDependency {
+		<<abstract>>
+	}
+	class IOtherDependency {
+		<<abstract>>
+	}
+	Service o--  "PerBlock" Dependency : Dependency
+	Service o--  "PerBlock" Dependency : IDependency
+	Service o--  "PerBlock" Dependency : IOtherDependency
+	Composition ..> Service : Service MyService
 ```
 
 </details>
@@ -89,27 +89,27 @@ classDiagram
 partial class Composition
 {
   private readonly Composition _rootM04D27di;
-  
+
   public Composition()
   {
     _rootM04D27di = this;
   }
-  
+
   internal Composition(Composition baseComposition)
   {
     _rootM04D27di = baseComposition._rootM04D27di;
   }
-  
-  public Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service MyService
+
+  public Service MyService
   {
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+    [MethodImpl((MethodImplOptions)0x100)]
     get
     {
-      Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Dependency perBlockM04D27di1_Dependency = new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Dependency();
-      return new Pure.DI.UsageTests.Basics.SimplifiedBindingScenario.Service(perBlockM04D27di1_Dependency, perBlockM04D27di1_Dependency, perBlockM04D27di1_Dependency);
+      Dependency perBlockM04D27di1_Dependency = new Dependency();
+      return new Service(perBlockM04D27di1_Dependency, perBlockM04D27di1_Dependency, perBlockM04D27di1_Dependency);
     }
   }
-  
+
   public override string ToString()
   {
     return
@@ -136,7 +136,7 @@ partial class Composition
         "  Service o--  \"PerBlock\" Dependency : IOtherDependency\n" +
         "  Composition ..> Service : Service MyService";
   }
-  
+
 }
 ```
 

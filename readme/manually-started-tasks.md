@@ -71,36 +71,36 @@ await service.RunAsync(cancellationTokenSource.Token);
 
 ```mermaid
 classDiagram
-  class Composition {
-    +IService GetRoot(System.Threading.CancellationToken cancellationToken)
-  }
-  class TaskFactory
-  class CancellationToken
-  Dependency --|> IDependency : 
-  class Dependency {
-    +Dependency()
-  }
-  Service --|> IService : 
-  class Service {
-    +Service(TaskᐸIDependencyᐳ dependencyTask)
-  }
-  class TaskᐸIDependencyᐳ
-  class FuncᐸIDependencyᐳ
-  class IDependency {
-    <<abstract>>
-  }
-  class IService {
-    <<abstract>>
-  }
-  TaskFactory o-- CancellationToken : Argument "cancellationToken"
-  TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-  TaskFactory *--  TaskScheduler : TaskScheduler
-  Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
-  Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)
-  TaskᐸIDependencyᐳ o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
-  TaskᐸIDependencyᐳ o-- CancellationToken : Argument "cancellationToken"
-  FuncᐸIDependencyᐳ *--  Dependency : IDependency
+	class Composition {
+		+IService GetRoot(System.Threading.CancellationToken cancellationToken)
+	}
+	class TaskFactory
+	class CancellationToken
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(TaskᐸIDependencyᐳ dependencyTask)
+	}
+	class TaskᐸIDependencyᐳ
+	class FuncᐸIDependencyᐳ
+	class IDependency {
+		<<abstract>>
+	}
+	class IService {
+		<<abstract>>
+	}
+	TaskFactory o-- CancellationToken : Argument "cancellationToken"
+	TaskFactory *--  TaskCreationOptions : TaskCreationOptions
+	TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
+	TaskFactory *--  TaskScheduler : TaskScheduler
+	Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
+	Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)
+	TaskᐸIDependencyᐳ o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+	TaskᐸIDependencyᐳ o-- CancellationToken : Argument "cancellationToken"
+	FuncᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 
 </details>
@@ -113,39 +113,39 @@ partial class Composition
 {
   private readonly Composition _rootM04D27di;
   private readonly object _lockM04D27di;
-  
+
   public Composition()
   {
     _rootM04D27di = this;
     _lockM04D27di = new object();
   }
-  
+
   internal Composition(Composition baseComposition)
   {
     _rootM04D27di = baseComposition._rootM04D27di;
     _lockM04D27di = _rootM04D27di._lockM04D27di;
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
-  public Pure.DI.UsageTests.BCL.ManualTaskScenario.IService GetRoot(System.Threading.CancellationToken cancellationToken)
+
+  [MethodImpl((MethodImplOptions)0x100)]
+  public IService GetRoot(System.Threading.CancellationToken cancellationToken)
   {
-    var perResolveM04D27di42_Func = default(System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>);
-    perResolveM04D27di42_Func = new global::System.Func<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
+    var perResolveM04D27di42_Func = default(System.Func<IDependency>);
+    perResolveM04D27di42_Func = new Func<IDependency>(
+    [MethodImpl((MethodImplOptions)768)]
     () =>
     {
-        var value_M04D27di1 = new Pure.DI.UsageTests.BCL.ManualTaskScenario.Dependency();
+        var value_M04D27di1 = new Dependency();
         return value_M04D27di1;
     });
-    System.Threading.Tasks.Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency> transientM04D27di1_Task;
+    System.Threading.Tasks.Task<IDependency> transientM04D27di1_Task;
     {
         var factory_M04D27di2 = perResolveM04D27di42_Func;
         var cancellationToken_M04D27di3 = cancellationToken;
-        transientM04D27di1_Task = new Task<Pure.DI.UsageTests.BCL.ManualTaskScenario.IDependency>(factory_M04D27di2, cancellationToken_M04D27di3);
+        transientM04D27di1_Task = new Task<IDependency>(factory_M04D27di2, cancellationToken_M04D27di3);
     }
-    return new Pure.DI.UsageTests.BCL.ManualTaskScenario.Service(transientM04D27di1_Task);
+    return new Service(transientM04D27di1_Task);
   }
-  
+
   public override string ToString()
   {
     return
@@ -181,7 +181,7 @@ partial class Composition
         "  TaskᐸIDependencyᐳ o-- CancellationToken : Argument \"cancellationToken\"\n" +
         "  FuncᐸIDependencyᐳ *--  Dependency : IDependency";
   }
-  
+
 }
 ```
 

@@ -60,26 +60,26 @@ person.ToString().ShouldBe("123 Nik");
 
 ```mermaid
 classDiagram
-  class PersonComposition {
-    +IPerson Person
-    + T ResolveᐸTᐳ()
-    + T ResolveᐸTᐳ(object? tag)
-    + object Resolve(Type type)
-    + object Resolve(Type type, object? tag)
-  }
-  class String
-  class Int32
-  Person --|> IPerson : 
-  class Person {
-    +Person(String name)
-    ~Object Id
-  }
-  class IPerson {
-    <<abstract>>
-  }
-  Person *--  String : "NikName"  String
-  Person o-- Int32 : Argument "personId"
-  PersonComposition ..> Person : IPerson Person
+	class PersonComposition {
+		+IPerson Person
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	class String
+	class Int32
+	Person --|> IPerson : 
+	class Person {
+		+Person(String name)
+		~Object Id
+	}
+	class IPerson {
+		<<abstract>>
+	}
+	Person *--  String : "NikName"  String
+	Person o-- Int32 : Argument "personId"
+	PersonComposition ..> Person : IPerson Person
 ```
 
 </details>
@@ -91,55 +91,55 @@ classDiagram
 partial class PersonComposition
 {
   private readonly PersonComposition _rootM04D27di;
-  
+
   private readonly int _argM04D27di_personId;
-  
+
   public PersonComposition(int personId)
   {
     _rootM04D27di = this;
     _argM04D27di_personId = personId;
   }
-  
+
   internal PersonComposition(PersonComposition baseComposition)
   {
     _rootM04D27di = baseComposition._rootM04D27di;
     _argM04D27di_personId = baseComposition._argM04D27di_personId;
   }
-  
-  public Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson Person
+
+  public IPerson Person
   {
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+    [MethodImpl((MethodImplOptions)0x100)]
     get
     {
       string transientM04D27di1_String = "Nik";
-      Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person transientM04D27di0_Person = new Pure.DI.UsageTests.Attributes.CustomAttributesScenario.Person(transientM04D27di1_String);
+      Person transientM04D27di0_Person = new Person(transientM04D27di1_String);
       transientM04D27di0_Person.Id = _argM04D27di_personId;
       return transientM04D27di0_Person;
     }
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+
+  [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>()
   {
     return ResolverM04D27di<T>.Value.Resolve(this);
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+
+  [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>(object? tag)
   {
     return ResolverM04D27di<T>.Value.ResolveByTag(this, tag);
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
-  public object Resolve(global::System.Type type)
+
+  [MethodImpl((MethodImplOptions)0x100)]
+  public object Resolve(Type type)
   {
-    var index = (int)(_bucketSizeM04D27di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var index = (int)(_bucketSizeM04D27di * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
     ref var pair = ref _bucketsM04D27di[index];
     return pair.Key == type ? pair.Value.Resolve(this) : ResolveM04D27di(type, index);
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x8)]
-  private object ResolveM04D27di(global::System.Type type, int index)
+
+  [MethodImpl((MethodImplOptions)0x8)]
+  private object ResolveM04D27di(Type type, int index)
   {
     var finish = index + _bucketSizeM04D27di;
     while (++index < finish)
@@ -150,20 +150,20 @@ partial class PersonComposition
         return pair.Value.Resolve(this);
       }
     }
-    
-    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+
+    throw new InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
-  public object Resolve(global::System.Type type, object? tag)
+
+  [MethodImpl((MethodImplOptions)0x100)]
+  public object Resolve(Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM04D27di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 1));
+    var index = (int)(_bucketSizeM04D27di * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
     ref var pair = ref _bucketsM04D27di[index];
     return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : ResolveM04D27di(type, tag, index);
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x8)]
-  private object ResolveM04D27di(global::System.Type type, object? tag, int index)
+
+  [MethodImpl((MethodImplOptions)0x8)]
+  private object ResolveM04D27di(Type type, object? tag, int index)
   {
     var finish = index + _bucketSizeM04D27di;
     while (++index < finish)
@@ -174,10 +174,10 @@ partial class PersonComposition
         return pair.Value.ResolveByTag(this, tag);
       }
     }
-    
-    throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
+
+    throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
-  
+
   public override string ToString()
   {
     return
@@ -203,53 +203,53 @@ partial class PersonComposition
         "  Person o-- Int32 : Argument \"personId\"\n" +
         "  PersonComposition ..> Person : IPerson Person";
   }
-  
+
   private readonly static int _bucketSizeM04D27di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[] _bucketsM04D27di;
-  
+  private readonly static Pair<Type, IResolver<PersonComposition, object>>[] _bucketsM04D27di;
+
   static PersonComposition()
   {
     var valResolverM04D27di_0000 = new ResolverM04D27di_0000();
-    ResolverM04D27di<Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson>.Value = valResolverM04D27di_0000;
-    _bucketsM04D27di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>.Create(
+    ResolverM04D27di<IPerson>.Value = valResolverM04D27di_0000;
+    _bucketsM04D27di = Buckets<Type, IResolver<PersonComposition, object>>.Create(
       1,
       out _bucketSizeM04D27di,
-      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>[1]
+      new Pair<Type, IResolver<PersonComposition, object>>[1]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<PersonComposition, object>>(typeof(Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson), valResolverM04D27di_0000)
+         new Pair<Type, IResolver<PersonComposition, object>>(typeof(IPerson), valResolverM04D27di_0000)
       });
   }
-  
-  private sealed class ResolverM04D27di<T>: global::Pure.DI.IResolver<PersonComposition, T>
+
+  private sealed class ResolverM04D27di<T>: IResolver<PersonComposition, T>
   {
-    public static global::Pure.DI.IResolver<PersonComposition, T> Value = new ResolverM04D27di<T>();
-    
+    public static IResolver<PersonComposition, T> Value = new ResolverM04D27di<T>();
+
     public T Resolve(PersonComposition composite)
     {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
+      throw new InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
     }
-    
+
     public T ResolveByTag(PersonComposition composite, object tag)
     {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
+      throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
     }
   }
-  
-  private sealed class ResolverM04D27di_0000: global::Pure.DI.IResolver<PersonComposition, Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson>
+
+  private sealed class ResolverM04D27di_0000: IResolver<PersonComposition, IPerson>
   {
-    public Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson Resolve(PersonComposition composition)
+    public IPerson Resolve(PersonComposition composition)
     {
       return composition.Person;
     }
-    
-    public Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson ResolveByTag(PersonComposition composition, object tag)
+
+    public IPerson ResolveByTag(PersonComposition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Person;
         default:
-          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Attributes.CustomAttributesScenario.IPerson.");
+          throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type IPerson.");
       }
     }
   }

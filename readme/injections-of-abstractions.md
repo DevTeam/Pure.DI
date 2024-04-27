@@ -46,29 +46,29 @@ root.Run();
 
 ```mermaid
 classDiagram
-  class Composition {
-    +Program Root
-  }
-  class Program {
-    +Program(IService service)
-  }
-  Dependency --|> IDependency : 
-  class Dependency {
-    +Dependency()
-  }
-  Service --|> IService : 
-  class Service {
-    +Service(IDependency dependency)
-  }
-  class IDependency {
-    <<abstract>>
-  }
-  class IService {
-    <<abstract>>
-  }
-  Program *--  Service : IService
-  Service *--  Dependency : IDependency
-  Composition ..> Program : Program Root
+	class Composition {
+		+Program Root
+	}
+	class Program {
+		+Program(IService service)
+	}
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(IDependency dependency)
+	}
+	class IDependency {
+		<<abstract>>
+	}
+	class IService {
+		<<abstract>>
+	}
+	Program *--  Service : IService
+	Service *--  Dependency : IDependency
+	Composition ..> Program : Program Root
 ```
 
 </details>
@@ -80,26 +80,26 @@ classDiagram
 partial class Composition
 {
   private readonly Composition _rootM04D27di;
-  
+
   public Composition()
   {
     _rootM04D27di = this;
   }
-  
+
   internal Composition(Composition baseComposition)
   {
     _rootM04D27di = baseComposition._rootM04D27di;
   }
-  
-  public Pure.DI.UsageTests.Basics.InjectionsOfAbstractionsScenario.Program Root
+
+  public Program Root
   {
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+    [MethodImpl((MethodImplOptions)0x100)]
     get
     {
-      return new Pure.DI.UsageTests.Basics.InjectionsOfAbstractionsScenario.Program(new Pure.DI.UsageTests.Basics.InjectionsOfAbstractionsScenario.Service(new Pure.DI.UsageTests.Basics.InjectionsOfAbstractionsScenario.Dependency()));
+      return new Program(new Service(new Dependency()));
     }
   }
-  
+
   public override string ToString()
   {
     return
@@ -128,7 +128,7 @@ partial class Composition
         "  Service *--  Dependency : IDependency\n" +
         "  Composition ..> Program : Program Root";
   }
-  
+
 }
 ```
 

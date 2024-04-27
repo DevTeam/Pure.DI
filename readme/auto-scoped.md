@@ -66,36 +66,36 @@ service1.Dependency.ShouldNotBe(service2.Dependency);
 
 ```mermaid
 classDiagram
-  class Composition {
-    +Program ProgramRoot
-    +Service SessionRoot
-    + T ResolveᐸTᐳ()
-    + T ResolveᐸTᐳ(object? tag)
-    + object Resolve(Type type)
-    + object Resolve(Type type, object? tag)
-  }
-  class Program {
-    +Program(FuncᐸIServiceᐳ serviceFactory)
-  }
-  class Service {
-    +Service(IDependency dependency)
-  }
-  class IService
-  Dependency --|> IDependency : 
-  class Dependency {
-    +Dependency()
-  }
-  class FuncᐸIServiceᐳ
-  class Composition
-  class IDependency {
-    <<abstract>>
-  }
-  Program o--  "PerResolve" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
-  Service o--  "Scoped" Dependency : IDependency
-  IService *--  Composition : Composition
-  Composition ..> Service : Service SessionRoot
-  Composition ..> Program : Program ProgramRoot
-  FuncᐸIServiceᐳ *--  IService : IService
+	class Composition {
+		+Program ProgramRoot
+		+Service SessionRoot
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	class Program {
+		+Program(FuncᐸIServiceᐳ serviceFactory)
+	}
+	class Service {
+		+Service(IDependency dependency)
+	}
+	class IService
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	class FuncᐸIServiceᐳ
+	class Composition
+	class IDependency {
+		<<abstract>>
+	}
+	Program o--  "PerResolve" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
+	Service o--  "Scoped" Dependency : IDependency
+	IService *--  Composition : Composition
+	Composition ..> Service : Service SessionRoot
+	Composition ..> Program : Program ProgramRoot
+	FuncᐸIServiceᐳ *--  IService : IService
 ```
 
 </details>
@@ -108,23 +108,23 @@ partial class Composition
 {
   private readonly Composition _rootM04D27di;
   private readonly object _lockM04D27di;
-  private Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.Dependency _scopedM04D27di36_Dependency;
-  
+  private Dependency _scopedM04D27di36_Dependency;
+
   public Composition()
   {
     _rootM04D27di = this;
     _lockM04D27di = new object();
   }
-  
+
   internal Composition(Composition baseComposition)
   {
     _rootM04D27di = baseComposition._rootM04D27di;
     _lockM04D27di = _rootM04D27di._lockM04D27di;
   }
-  
-  private Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.Service SessionRoot
+
+  private Service SessionRoot
   {
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+    [MethodImpl((MethodImplOptions)0x100)]
     get
     {
       if (_scopedM04D27di36_Dependency == null)
@@ -133,26 +133,26 @@ partial class Composition
           {
               if (_scopedM04D27di36_Dependency == null)
               {
-                  _scopedM04D27di36_Dependency = new Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.Dependency();
+                  _scopedM04D27di36_Dependency = new Dependency();
               }
           }
       }
-      return new Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.Service(_scopedM04D27di36_Dependency);
+      return new Service(_scopedM04D27di36_Dependency);
     }
   }
-  
-  public Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.Program ProgramRoot
+
+  public Program ProgramRoot
   {
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+    [MethodImpl((MethodImplOptions)0x100)]
     get
     {
-      var perResolveM04D27di43_Func = default(System.Func<Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.IService>);
-      perResolveM04D27di43_Func = new global::System.Func<Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.IService>(
-      [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)768)]
+      var perResolveM04D27di43_Func = default(System.Func<IService>);
+      perResolveM04D27di43_Func = new Func<IService>(
+      [MethodImpl((MethodImplOptions)768)]
       () =>
       {
-          Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.Composition transientM04D27di2_Composition = this;
-          Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.IService transientM04D27di1_IService;
+          Composition transientM04D27di2_Composition = this;
+          IService transientM04D27di1_IService;
           {
               var baseComposition_M04D27di2 = transientM04D27di2_Composition;
               // Creates a session
@@ -162,32 +162,32 @@ partial class Composition
           var value_M04D27di1 = transientM04D27di1_IService;
           return value_M04D27di1;
       });
-      return new Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.Program(perResolveM04D27di43_Func);
+      return new Program(perResolveM04D27di43_Func);
     }
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+
+  [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>()
   {
     return ResolverM04D27di<T>.Value.Resolve(this);
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+
+  [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>(object? tag)
   {
     return ResolverM04D27di<T>.Value.ResolveByTag(this, tag);
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
-  public object Resolve(global::System.Type type)
+
+  [MethodImpl((MethodImplOptions)0x100)]
+  public object Resolve(Type type)
   {
-    var index = (int)(_bucketSizeM04D27di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var index = (int)(_bucketSizeM04D27di * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
     ref var pair = ref _bucketsM04D27di[index];
     return pair.Key == type ? pair.Value.Resolve(this) : ResolveM04D27di(type, index);
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x8)]
-  private object ResolveM04D27di(global::System.Type type, int index)
+
+  [MethodImpl((MethodImplOptions)0x8)]
+  private object ResolveM04D27di(Type type, int index)
   {
     var finish = index + _bucketSizeM04D27di;
     while (++index < finish)
@@ -198,20 +198,20 @@ partial class Composition
         return pair.Value.Resolve(this);
       }
     }
-    
-    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+
+    throw new InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
-  public object Resolve(global::System.Type type, object? tag)
+
+  [MethodImpl((MethodImplOptions)0x100)]
+  public object Resolve(Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM04D27di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var index = (int)(_bucketSizeM04D27di * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
     ref var pair = ref _bucketsM04D27di[index];
     return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : ResolveM04D27di(type, tag, index);
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x8)]
-  private object ResolveM04D27di(global::System.Type type, object? tag, int index)
+
+  [MethodImpl((MethodImplOptions)0x8)]
+  private object ResolveM04D27di(Type type, object? tag, int index)
   {
     var finish = index + _bucketSizeM04D27di;
     while (++index < finish)
@@ -222,10 +222,10 @@ partial class Composition
         return pair.Value.ResolveByTag(this, tag);
       }
     }
-    
-    throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
+
+    throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
-  
+
   public override string ToString()
   {
     return
@@ -261,75 +261,75 @@ partial class Composition
         "  Composition ..> Program : Program ProgramRoot\n" +
         "  FuncᐸIServiceᐳ *--  IService : IService";
   }
-  
+
   private readonly static int _bucketSizeM04D27di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM04D27di;
-  
+  private readonly static Pair<Type, IResolver<Composition, object>>[] _bucketsM04D27di;
+
   static Composition()
   {
     var valResolverM04D27di_0000 = new ResolverM04D27di_0000();
-    ResolverM04D27di<Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.Service>.Value = valResolverM04D27di_0000;
+    ResolverM04D27di<Service>.Value = valResolverM04D27di_0000;
     var valResolverM04D27di_0001 = new ResolverM04D27di_0001();
-    ResolverM04D27di<Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.Program>.Value = valResolverM04D27di_0001;
-    _bucketsM04D27di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    ResolverM04D27di<Program>.Value = valResolverM04D27di_0001;
+    _bucketsM04D27di = Buckets<Type, IResolver<Composition, object>>.Create(
       4,
       out _bucketSizeM04D27di,
-      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[2]
+      new Pair<Type, IResolver<Composition, object>>[2]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.Service), valResolverM04D27di_0000)
-        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.Program), valResolverM04D27di_0001)
+         new Pair<Type, IResolver<Composition, object>>(typeof(Service), valResolverM04D27di_0000)
+        ,new Pair<Type, IResolver<Composition, object>>(typeof(Program), valResolverM04D27di_0001)
       });
   }
-  
-  private sealed class ResolverM04D27di<T>: global::Pure.DI.IResolver<Composition, T>
+
+  private sealed class ResolverM04D27di<T>: IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM04D27di<T>();
-    
+    public static IResolver<Composition, T> Value = new ResolverM04D27di<T>();
+
     public T Resolve(Composition composite)
     {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
+      throw new InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
     }
-    
+
     public T ResolveByTag(Composition composite, object tag)
     {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
+      throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
     }
   }
-  
-  private sealed class ResolverM04D27di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.Service>
+
+  private sealed class ResolverM04D27di_0000: IResolver<Composition, Service>
   {
-    public Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.Service Resolve(Composition composition)
+    public Service Resolve(Composition composition)
     {
       return composition.SessionRoot;
     }
-    
-    public Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.Service ResolveByTag(Composition composition, object tag)
+
+    public Service ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.SessionRoot;
         default:
-          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.Service.");
+          throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Service.");
       }
     }
   }
-  
-  private sealed class ResolverM04D27di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.Program>
+
+  private sealed class ResolverM04D27di_0001: IResolver<Composition, Program>
   {
-    public Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.Program Resolve(Composition composition)
+    public Program Resolve(Composition composition)
     {
       return composition.ProgramRoot;
     }
-    
-    public Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.Program ResolveByTag(Composition composition, object tag)
+
+    public Program ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.ProgramRoot;
         default:
-          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Lifetimes.AutoScopedScenario.Program.");
+          throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Program.");
       }
     }
   }

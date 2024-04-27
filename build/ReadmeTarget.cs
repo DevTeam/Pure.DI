@@ -320,6 +320,7 @@ internal class ReadmeTarget(
     {
         foreach (var generatedCodeFile in Directory.GetFiles(Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator"), exampleSearchPattern).OrderBy(i => i))
         {
+            var ns = string.Join('.', Path.GetFileName(generatedCodeFile).Split('.').Reverse().Skip(3).Reverse()) + ".";
             var name = Path.GetFileName(generatedCodeFile).Split('.').Reverse().Skip(2).FirstOrDefault() ?? "Generated";
             await examplesWriter.WriteLineAsync("<details>");
             await examplesWriter.WriteLineAsync($"<summary>Pure.DI-generated partial class {name}</summary><blockquote>");
@@ -347,7 +348,14 @@ internal class ReadmeTarget(
                             || line.StartsWith("#region")
                             || line.StartsWith("#endregion"));
                     })
-                    .Select(i => i.Length > 2 ? i[2..] : i));
+                    .Select(i => i.Length > 1 ? i[1..] : i)
+                    .Select(i => i
+                        .TrimEnd()
+                        .Replace("\t", "  ")
+                        .Replace("global::System.", "")
+                        .Replace("Runtime.CompilerServices.", "")
+                        .Replace("global::Pure.DI.", "")
+                        .Replace(ns, "")));
             await examplesWriter.WriteLineAsync(generatedCode);
             await examplesWriter.WriteLineAsync("```");
             await examplesWriter.WriteLineAsync("");

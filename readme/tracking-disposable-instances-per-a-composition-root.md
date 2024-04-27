@@ -63,32 +63,32 @@ root1.Value.Dependency.IsDisposed.ShouldBeTrue();
 
 ```mermaid
 classDiagram
-  class Composition {
-    +OwnedᐸIServiceᐳ Root
-    + T ResolveᐸTᐳ()
-    + T ResolveᐸTᐳ(object? tag)
-    + object Resolve(Type type)
-    + object Resolve(Type type, object? tag)
-  }
-  class Owned
-  Dependency --|> IDependency : 
-  class Dependency {
-    +Dependency()
-  }
-  Service --|> IService : 
-  class Service {
-    +Service(IDependency dependency)
-  }
-  class IDependency {
-    <<abstract>>
-  }
-  class IService {
-    <<abstract>>
-  }
-  Service *--  Dependency : IDependency
-  Composition ..> OwnedᐸIServiceᐳ : OwnedᐸIServiceᐳ Root
-  OwnedᐸIServiceᐳ *--  Owned : Owned
-  OwnedᐸIServiceᐳ *--  Service : IService
+	class Composition {
+		+OwnedᐸIServiceᐳ Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	class Owned
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(IDependency dependency)
+	}
+	class IDependency {
+		<<abstract>>
+	}
+	class IService {
+		<<abstract>>
+	}
+	Service *--  Dependency : IDependency
+	Composition ..> OwnedᐸIServiceᐳ : OwnedᐸIServiceᐳ Root
+	OwnedᐸIServiceᐳ *--  Owned : Owned
+	OwnedᐸIServiceᐳ *--  Service : IService
 ```
 
 </details>
@@ -101,35 +101,35 @@ partial class Composition
 {
   private readonly Composition _rootM04D27di;
   private readonly object _lockM04D27di;
-  
+
   public Composition()
   {
     _rootM04D27di = this;
     _lockM04D27di = new object();
   }
-  
+
   internal Composition(Composition baseComposition)
   {
     _rootM04D27di = baseComposition._rootM04D27di;
     _lockM04D27di = _rootM04D27di._lockM04D27di;
   }
-  
-  public Pure.DI.Owned<Pure.DI.UsageTests.Basics.TrackingDisposableScenario.IService> Root
+
+  public Pure.DI.Owned<IService> Root
   {
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+    [MethodImpl((MethodImplOptions)0x100)]
     get
     {
       var accumulatorM04D27di38 = new Pure.DI.Owned();
-      Pure.DI.UsageTests.Basics.TrackingDisposableScenario.Dependency transientM04D27di3_Dependency = new Pure.DI.UsageTests.Basics.TrackingDisposableScenario.Dependency();
+      Dependency transientM04D27di3_Dependency = new Dependency();
       lock (_lockM04D27di)
       {
           accumulatorM04D27di38.Add(transientM04D27di3_Dependency);
       }
-      Pure.DI.Owned<Pure.DI.UsageTests.Basics.TrackingDisposableScenario.IService> perBlockM04D27di0_Owned;
+      Pure.DI.Owned<IService> perBlockM04D27di0_Owned;
       {
           var owned_M04D27di1 = accumulatorM04D27di38;
-          var value_M04D27di2 = new Pure.DI.UsageTests.Basics.TrackingDisposableScenario.Service(transientM04D27di3_Dependency);
-          perBlockM04D27di0_Owned = new Owned<Pure.DI.UsageTests.Basics.TrackingDisposableScenario.IService>(value_M04D27di2, owned_M04D27di1);
+          var value_M04D27di2 = new Service(transientM04D27di3_Dependency);
+          perBlockM04D27di0_Owned = new Owned<IService>(value_M04D27di2, owned_M04D27di1);
       }
       lock (_lockM04D27di)
       {
@@ -138,31 +138,31 @@ partial class Composition
       return perBlockM04D27di0_Owned;
     }
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+
+  [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>()
   {
     return ResolverM04D27di<T>.Value.Resolve(this);
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+
+  [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>(object? tag)
   {
     return ResolverM04D27di<T>.Value.ResolveByTag(this, tag);
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
-  public object Resolve(global::System.Type type)
+
+  [MethodImpl((MethodImplOptions)0x100)]
+  public object Resolve(Type type)
   {
-    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+    throw new InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
-  public object Resolve(global::System.Type type, object? tag)
+
+  [MethodImpl((MethodImplOptions)0x100)]
+  public object Resolve(Type type, object? tag)
   {
-    throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
+    throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
-  
+
   public override string ToString()
   {
     return
@@ -194,19 +194,19 @@ partial class Composition
         "  OwnedᐸIServiceᐳ *--  Owned : Owned\n" +
         "  OwnedᐸIServiceᐳ *--  Service : IService";
   }
-  
-  private sealed class ResolverM04D27di<T>: global::Pure.DI.IResolver<Composition, T>
+
+  private sealed class ResolverM04D27di<T>: IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM04D27di<T>();
-    
+    public static IResolver<Composition, T> Value = new ResolverM04D27di<T>();
+
     public T Resolve(Composition composite)
     {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
+      throw new InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
     }
-    
+
     public T ResolveByTag(Composition composite, object tag)
     {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
+      throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
     }
   }
 }

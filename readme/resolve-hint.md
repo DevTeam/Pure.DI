@@ -33,27 +33,27 @@ For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/README
 
 ```mermaid
 classDiagram
-  class Composition {
-    +IDependency DependencyRoot
-    +IService Root
-  }
-  Dependency --|> IDependency : 
-  class Dependency {
-    +Dependency()
-  }
-  Service --|> IService : 
-  class Service {
-    +Service(IDependency dependency)
-  }
-  class IDependency {
-    <<abstract>>
-  }
-  class IService {
-    <<abstract>>
-  }
-  Service *--  Dependency : IDependency
-  Composition ..> Dependency : IDependency DependencyRoot
-  Composition ..> Service : IService Root
+	class Composition {
+		+IDependency DependencyRoot
+		+IService Root
+	}
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(IDependency dependency)
+	}
+	class IDependency {
+		<<abstract>>
+	}
+	class IService {
+		<<abstract>>
+	}
+	Service *--  Dependency : IDependency
+	Composition ..> Dependency : IDependency DependencyRoot
+	Composition ..> Service : IService Root
 ```
 
 </details>
@@ -65,35 +65,35 @@ classDiagram
 partial class Composition
 {
   private readonly Composition _rootM04D27di;
-  
+
   public Composition()
   {
     _rootM04D27di = this;
   }
-  
+
   internal Composition(Composition baseComposition)
   {
     _rootM04D27di = baseComposition._rootM04D27di;
   }
-  
-  public Pure.DI.UsageTests.Hints.ResolveHintScenario.IDependency DependencyRoot
+
+  public IDependency DependencyRoot
   {
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+    [MethodImpl((MethodImplOptions)0x100)]
     get
     {
-      return new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency();
+      return new Dependency();
     }
   }
-  
-  public Pure.DI.UsageTests.Hints.ResolveHintScenario.IService Root
+
+  public IService Root
   {
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+    [MethodImpl((MethodImplOptions)0x100)]
     get
     {
-      return new Pure.DI.UsageTests.Hints.ResolveHintScenario.Service(new Pure.DI.UsageTests.Hints.ResolveHintScenario.Dependency());
+      return new Service(new Dependency());
     }
   }
-  
+
   public override string ToString()
   {
     return
@@ -120,7 +120,7 @@ partial class Composition
         "  Composition ..> Dependency : IDependency DependencyRoot\n" +
         "  Composition ..> Service : IService Root";
   }
-  
+
 }
 ```
 

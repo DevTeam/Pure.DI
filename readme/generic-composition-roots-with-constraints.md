@@ -58,33 +58,33 @@ var someOtherService = composition.GetOtherService<BinaryReader>();
 
 ```mermaid
 classDiagram
-  class Composition {
-    +IServiceᐸTˏT4ᐳ GetMyRootᐸTˏT4ᐳ()
-    +IServiceᐸTˏBooleanᐳ GetOtherServiceᐸTᐳ()
-  }
-  ServiceᐸTˏT4ᐳ --|> IServiceᐸTˏT4ᐳ : 
-  class ServiceᐸTˏT4ᐳ {
-    +Service(IDependencyᐸTᐳ dependency)
-  }
-  OtherServiceᐸTᐳ --|> IServiceᐸTˏBooleanᐳ : "Other" 
-  class OtherServiceᐸTᐳ
-  DependencyᐸTᐳ --|> IDependencyᐸTᐳ : 
-  class DependencyᐸTᐳ {
-    +Dependency()
-  }
-  class IServiceᐸTˏT4ᐳ {
-    <<abstract>>
-  }
-  class IServiceᐸTˏBooleanᐳ {
-    <<abstract>>
-  }
-  class IDependencyᐸTᐳ {
-    <<abstract>>
-  }
-  Composition ..> ServiceᐸTˏT4ᐳ : IServiceᐸTˏT4ᐳ GetMyRootᐸTˏT4ᐳ()
-  Composition ..> OtherServiceᐸTᐳ : IServiceᐸTˏBooleanᐳ GetOtherServiceᐸTᐳ()
-  ServiceᐸTˏT4ᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ
-  OtherServiceᐸTᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ
+	class Composition {
+		+IServiceᐸTˏT4ᐳ GetMyRootᐸTˏT4ᐳ()
+		+IServiceᐸTˏBooleanᐳ GetOtherServiceᐸTᐳ()
+	}
+	ServiceᐸTˏT4ᐳ --|> IServiceᐸTˏT4ᐳ : 
+	class ServiceᐸTˏT4ᐳ {
+		+Service(IDependencyᐸTᐳ dependency)
+	}
+	OtherServiceᐸTᐳ --|> IServiceᐸTˏBooleanᐳ : "Other" 
+	class OtherServiceᐸTᐳ
+	DependencyᐸTᐳ --|> IDependencyᐸTᐳ : 
+	class DependencyᐸTᐳ {
+		+Dependency()
+	}
+	class IServiceᐸTˏT4ᐳ {
+		<<abstract>>
+	}
+	class IServiceᐸTˏBooleanᐳ {
+		<<abstract>>
+	}
+	class IDependencyᐸTᐳ {
+		<<abstract>>
+	}
+	Composition ..> ServiceᐸTˏT4ᐳ : IServiceᐸTˏT4ᐳ GetMyRootᐸTˏT4ᐳ()
+	Composition ..> OtherServiceᐸTᐳ : IServiceᐸTˏBooleanᐳ GetOtherServiceᐸTᐳ()
+	ServiceᐸTˏT4ᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ
+	OtherServiceᐸTᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ
 ```
 
 </details>
@@ -96,37 +96,37 @@ classDiagram
 partial class Composition
 {
   private readonly Composition _rootM04D27di;
-  
+
   public Composition()
   {
     _rootM04D27di = this;
   }
-  
+
   internal Composition(Composition baseComposition)
   {
     _rootM04D27di = baseComposition._rootM04D27di;
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
-  public Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario.IService<T, T4> GetMyRoot<T, T4>()
+
+  [MethodImpl((MethodImplOptions)0x100)]
+  public IService<T, T4> GetMyRoot<T, T4>()
     where T: System.IDisposable
     where T4: struct
   {
-    return new Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario.Service<T, T4>(new Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario.Dependency<T>());
+    return new Service<T, T4>(new Dependency<T>());
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
-  public Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario.IService<T, bool> GetOtherService<T>()
+
+  [MethodImpl((MethodImplOptions)0x100)]
+  public IService<T, bool> GetOtherService<T>()
     where T: System.IDisposable
   {
-    Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario.OtherService<T> transientM04D27di0_OtherService;
+    OtherService<T> transientM04D27di0_OtherService;
     {
-        var dependency_M04D27di1 = new Pure.DI.UsageTests.Generics.GenericCompositionRootsWithConstraintsScenario.Dependency<T>();
+        var dependency_M04D27di1 = new Dependency<T>();
         transientM04D27di0_OtherService = new OtherService<T>(dependency_M04D27di1);
     }
     return transientM04D27di0_OtherService;
   }
-  
+
   public override string ToString()
   {
     return
@@ -159,7 +159,7 @@ partial class Composition
         "  ServiceᐸTˏT4ᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ\n" +
         "  OtherServiceᐸTᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ";
   }
-  
+
 }
 ```
 

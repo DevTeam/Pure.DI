@@ -30,17 +30,17 @@ It is better to inject abstract dependencies, for example, in the form of interf
 
 ```mermaid
 classDiagram
-  class Composition {
-    +Service MyService
-  }
-  class Dependency {
-    +Dependency()
-  }
-  class Service {
-    +Service(Dependency dependency)
-  }
-  Service *--  Dependency : Dependency
-  Composition ..> Service : Service MyService
+	class Composition {
+		+Service MyService
+	}
+	class Dependency {
+		+Dependency()
+	}
+	class Service {
+		+Service(Dependency dependency)
+	}
+	Service *--  Dependency : Dependency
+	Composition ..> Service : Service MyService
 ```
 
 </details>
@@ -52,26 +52,26 @@ classDiagram
 partial class Composition
 {
   private readonly Composition _rootM04D27di;
-  
+
   public Composition()
   {
     _rootM04D27di = this;
   }
-  
+
   internal Composition(Composition baseComposition)
   {
     _rootM04D27di = baseComposition._rootM04D27di;
   }
-  
-  public Pure.DI.UsageTests.Basics.AutoBindingsScenario.Service MyService
+
+  public Service MyService
   {
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+    [MethodImpl((MethodImplOptions)0x100)]
     get
     {
-      return new Pure.DI.UsageTests.Basics.AutoBindingsScenario.Service(new Pure.DI.UsageTests.Basics.AutoBindingsScenario.Dependency());
+      return new Service(new Dependency());
     }
   }
-  
+
   public override string ToString()
   {
     return
@@ -88,7 +88,7 @@ partial class Composition
         "  Service *--  Dependency : Dependency\n" +
         "  Composition ..> Service : Service MyService";
   }
-  
+
 }
 ```
 

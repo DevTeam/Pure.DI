@@ -55,30 +55,30 @@ When a generic composition root is used, `Resolve` methods cannot be used to res
 
 ```mermaid
 classDiagram
-  class Composition {
-    +IServiceᐸT54ᐳ GetMyRootᐸT54ᐳ()
-    +IServiceᐸT54ᐳ GetOtherServiceᐸT54ᐳ()
-  }
-  ServiceᐸT54ᐳ --|> IServiceᐸT54ᐳ : 
-  class ServiceᐸT54ᐳ {
-    +Service(IDependencyᐸT54ᐳ dependency)
-  }
-  OtherServiceᐸT54ᐳ --|> IServiceᐸT54ᐳ : "Other" 
-  class OtherServiceᐸT54ᐳ
-  DependencyᐸT54ᐳ --|> IDependencyᐸT54ᐳ : 
-  class DependencyᐸT54ᐳ {
-    +Dependency()
-  }
-  class IServiceᐸT54ᐳ {
-    <<abstract>>
-  }
-  class IDependencyᐸT54ᐳ {
-    <<abstract>>
-  }
-  Composition ..> ServiceᐸT54ᐳ : IServiceᐸT54ᐳ GetMyRootᐸT54ᐳ()
-  Composition ..> OtherServiceᐸT54ᐳ : IServiceᐸT54ᐳ GetOtherServiceᐸT54ᐳ()
-  ServiceᐸT54ᐳ *--  DependencyᐸT54ᐳ : IDependencyᐸT54ᐳ
-  OtherServiceᐸT54ᐳ *--  DependencyᐸT54ᐳ : IDependencyᐸT54ᐳ
+	class Composition {
+		+IServiceᐸT54ᐳ GetMyRootᐸT54ᐳ()
+		+IServiceᐸT54ᐳ GetOtherServiceᐸT54ᐳ()
+	}
+	ServiceᐸT54ᐳ --|> IServiceᐸT54ᐳ : 
+	class ServiceᐸT54ᐳ {
+		+Service(IDependencyᐸT54ᐳ dependency)
+	}
+	OtherServiceᐸT54ᐳ --|> IServiceᐸT54ᐳ : "Other" 
+	class OtherServiceᐸT54ᐳ
+	DependencyᐸT54ᐳ --|> IDependencyᐸT54ᐳ : 
+	class DependencyᐸT54ᐳ {
+		+Dependency()
+	}
+	class IServiceᐸT54ᐳ {
+		<<abstract>>
+	}
+	class IDependencyᐸT54ᐳ {
+		<<abstract>>
+	}
+	Composition ..> ServiceᐸT54ᐳ : IServiceᐸT54ᐳ GetMyRootᐸT54ᐳ()
+	Composition ..> OtherServiceᐸT54ᐳ : IServiceᐸT54ᐳ GetOtherServiceᐸT54ᐳ()
+	ServiceᐸT54ᐳ *--  DependencyᐸT54ᐳ : IDependencyᐸT54ᐳ
+	OtherServiceᐸT54ᐳ *--  DependencyᐸT54ᐳ : IDependencyᐸT54ᐳ
 ```
 
 </details>
@@ -90,34 +90,34 @@ classDiagram
 partial class Composition
 {
   private readonly Composition _rootM04D27di;
-  
+
   public Composition()
   {
     _rootM04D27di = this;
   }
-  
+
   internal Composition(Composition baseComposition)
   {
     _rootM04D27di = baseComposition._rootM04D27di;
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
-  public Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.IService<T54> GetMyRoot<T54>()
+
+  [MethodImpl((MethodImplOptions)0x100)]
+  public IService<T54> GetMyRoot<T54>()
   {
-    return new Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.Service<T54>(new Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.Dependency<T54>());
+    return new Service<T54>(new Dependency<T54>());
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
-  public Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.IService<T54> GetOtherService<T54>()
+
+  [MethodImpl((MethodImplOptions)0x100)]
+  public IService<T54> GetOtherService<T54>()
   {
-    Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.OtherService<T54> transientM04D27di0_OtherService;
+    OtherService<T54> transientM04D27di0_OtherService;
     {
-        var dependency_M04D27di1 = new Pure.DI.UsageTests.Generics.GenericsCompositionRootsScenario.Dependency<T54>();
+        var dependency_M04D27di1 = new Dependency<T54>();
         transientM04D27di0_OtherService = new OtherService<T54>(dependency_M04D27di1);
     }
     return transientM04D27di0_OtherService;
   }
-  
+
   public override string ToString()
   {
     return
@@ -147,7 +147,7 @@ partial class Composition
         "  ServiceᐸT54ᐳ *--  DependencyᐸT54ᐳ : IDependencyᐸT54ᐳ\n" +
         "  OtherServiceᐸT54ᐳ *--  DependencyᐸT54ᐳ : IDependencyᐸT54ᐳ";
   }
-  
+
 }
 ```
 

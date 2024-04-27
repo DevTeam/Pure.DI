@@ -47,37 +47,37 @@ var otherService2 = composition.Resolve(typeof(IService),"Other");
 
 ```mermaid
 classDiagram
-  class Composition {
-    +IService OtherService
-    -IDependency _
-    -IService _
-    + T ResolveᐸTᐳ()
-    + T ResolveᐸTᐳ(object? tag)
-    + object Resolve(Type type)
-    + object Resolve(Type type, object? tag)
-  }
-  Dependency --|> IDependency : 
-  class Dependency {
-    +Dependency()
-  }
-  Service --|> IService : 
-  class Service {
-    +Service(IDependency dependency)
-  }
-  OtherService --|> IService : "Other" 
-  class OtherService {
-    +OtherService()
-  }
-  class IDependency {
-    <<abstract>>
-  }
-  class IService {
-    <<abstract>>
-  }
-  Service *--  Dependency : IDependency
-  Composition ..> Dependency : IDependency _
-  Composition ..> Service : IService _
-  Composition ..> OtherService : IService OtherService
+	class Composition {
+		+IService OtherService
+		-IDependency _
+		-IService _
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(IDependency dependency)
+	}
+	OtherService --|> IService : "Other" 
+	class OtherService {
+		+OtherService()
+	}
+	class IDependency {
+		<<abstract>>
+	}
+	class IService {
+		<<abstract>>
+	}
+	Service *--  Dependency : IDependency
+	Composition ..> Dependency : IDependency _
+	Composition ..> Service : IService _
+	Composition ..> OtherService : IService OtherService
 ```
 
 </details>
@@ -89,66 +89,66 @@ classDiagram
 partial class Composition
 {
   private readonly Composition _rootM04D27di;
-  
+
   public Composition()
   {
     _rootM04D27di = this;
   }
-  
+
   internal Composition(Composition baseComposition)
   {
     _rootM04D27di = baseComposition._rootM04D27di;
   }
-  
-  public Pure.DI.UsageTests.Basics.ResolveScenario.IService OtherService
+
+  public IService OtherService
   {
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+    [MethodImpl((MethodImplOptions)0x100)]
     get
     {
-      return new Pure.DI.UsageTests.Basics.ResolveScenario.OtherService();
+      return new OtherService();
     }
   }
-  
-  private Pure.DI.UsageTests.Basics.ResolveScenario.IDependency RootM04D27di0001
+
+  private IDependency RootM04D27di0001
   {
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+    [MethodImpl((MethodImplOptions)0x100)]
     get
     {
-      return new Pure.DI.UsageTests.Basics.ResolveScenario.Dependency();
+      return new Dependency();
     }
   }
-  
-  private Pure.DI.UsageTests.Basics.ResolveScenario.IService RootM04D27di0002
+
+  private IService RootM04D27di0002
   {
-    [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+    [MethodImpl((MethodImplOptions)0x100)]
     get
     {
-      return new Pure.DI.UsageTests.Basics.ResolveScenario.Service(new Pure.DI.UsageTests.Basics.ResolveScenario.Dependency());
+      return new Service(new Dependency());
     }
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+
+  [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>()
   {
     return ResolverM04D27di<T>.Value.Resolve(this);
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
+
+  [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>(object? tag)
   {
     return ResolverM04D27di<T>.Value.ResolveByTag(this, tag);
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
-  public object Resolve(global::System.Type type)
+
+  [MethodImpl((MethodImplOptions)0x100)]
+  public object Resolve(Type type)
   {
-    var index = (int)(_bucketSizeM04D27di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var index = (int)(_bucketSizeM04D27di * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
     ref var pair = ref _bucketsM04D27di[index];
     return pair.Key == type ? pair.Value.Resolve(this) : ResolveM04D27di(type, index);
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x8)]
-  private object ResolveM04D27di(global::System.Type type, int index)
+
+  [MethodImpl((MethodImplOptions)0x8)]
+  private object ResolveM04D27di(Type type, int index)
   {
     var finish = index + _bucketSizeM04D27di;
     while (++index < finish)
@@ -159,20 +159,20 @@ partial class Composition
         return pair.Value.Resolve(this);
       }
     }
-    
-    throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {type}.");
+
+    throw new InvalidOperationException($"Cannot resolve composition root of type {type}.");
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
-  public object Resolve(global::System.Type type, object? tag)
+
+  [MethodImpl((MethodImplOptions)0x100)]
+  public object Resolve(Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM04D27di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    var index = (int)(_bucketSizeM04D27di * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
     ref var pair = ref _bucketsM04D27di[index];
     return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : ResolveM04D27di(type, tag, index);
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x8)]
-  private object ResolveM04D27di(global::System.Type type, object? tag, int index)
+
+  [MethodImpl((MethodImplOptions)0x8)]
+  private object ResolveM04D27di(Type type, object? tag, int index)
   {
     var finish = index + _bucketSizeM04D27di;
     while (++index < finish)
@@ -183,10 +183,10 @@ partial class Composition
         return pair.Value.ResolveByTag(this, tag);
       }
     }
-    
-    throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
+
+    throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
   }
-  
+
   public override string ToString()
   {
     return
@@ -223,49 +223,49 @@ partial class Composition
         "  Composition ..> Service : IService _\n" +
         "  Composition ..> OtherService : IService OtherService";
   }
-  
+
   private readonly static int _bucketSizeM04D27di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM04D27di;
-  
+  private readonly static Pair<Type, IResolver<Composition, object>>[] _bucketsM04D27di;
+
   static Composition()
   {
     var valResolverM04D27di_0000 = new ResolverM04D27di_0000();
-    ResolverM04D27di<Pure.DI.UsageTests.Basics.ResolveScenario.IService>.Value = valResolverM04D27di_0000;
+    ResolverM04D27di<IService>.Value = valResolverM04D27di_0000;
     var valResolverM04D27di_0001 = new ResolverM04D27di_0001();
-    ResolverM04D27di<Pure.DI.UsageTests.Basics.ResolveScenario.IDependency>.Value = valResolverM04D27di_0001;
-    _bucketsM04D27di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    ResolverM04D27di<IDependency>.Value = valResolverM04D27di_0001;
+    _bucketsM04D27di = Buckets<Type, IResolver<Composition, object>>.Create(
       4,
       out _bucketSizeM04D27di,
-      new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[2]
+      new Pair<Type, IResolver<Composition, object>>[2]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.ResolveScenario.IService), valResolverM04D27di_0000)
-        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.Basics.ResolveScenario.IDependency), valResolverM04D27di_0001)
+         new Pair<Type, IResolver<Composition, object>>(typeof(IService), valResolverM04D27di_0000)
+        ,new Pair<Type, IResolver<Composition, object>>(typeof(IDependency), valResolverM04D27di_0001)
       });
   }
-  
-  private sealed class ResolverM04D27di<T>: global::Pure.DI.IResolver<Composition, T>
+
+  private sealed class ResolverM04D27di<T>: IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM04D27di<T>();
-    
+    public static IResolver<Composition, T> Value = new ResolverM04D27di<T>();
+
     public T Resolve(Composition composite)
     {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
+      throw new InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
     }
-    
+
     public T ResolveByTag(Composition composite, object tag)
     {
-      throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
+      throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
     }
   }
-  
-  private sealed class ResolverM04D27di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.ResolveScenario.IService>
+
+  private sealed class ResolverM04D27di_0000: IResolver<Composition, IService>
   {
-    public Pure.DI.UsageTests.Basics.ResolveScenario.IService Resolve(Composition composition)
+    public IService Resolve(Composition composition)
     {
       return composition.RootM04D27di0002;
     }
-    
-    public Pure.DI.UsageTests.Basics.ResolveScenario.IService ResolveByTag(Composition composition, object tag)
+
+    public IService ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
@@ -274,26 +274,26 @@ partial class Composition
         case null:
           return composition.RootM04D27di0002;
         default:
-          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.ResolveScenario.IService.");
+          throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type IService.");
       }
     }
   }
-  
-  private sealed class ResolverM04D27di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.Basics.ResolveScenario.IDependency>
+
+  private sealed class ResolverM04D27di_0001: IResolver<Composition, IDependency>
   {
-    public Pure.DI.UsageTests.Basics.ResolveScenario.IDependency Resolve(Composition composition)
+    public IDependency Resolve(Composition composition)
     {
       return composition.RootM04D27di0001;
     }
-    
-    public Pure.DI.UsageTests.Basics.ResolveScenario.IDependency ResolveByTag(Composition composition, object tag)
+
+    public IDependency ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.RootM04D27di0001;
         default:
-          throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.Basics.ResolveScenario.IDependency.");
+          throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type IDependency.");
       }
     }
   }

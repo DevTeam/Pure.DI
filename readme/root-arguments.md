@@ -70,30 +70,30 @@ When using composition root arguments, compilation warnings are shown if `Resolv
 
 ```mermaid
 classDiagram
-  class Composition {
-    +IService CreateService(int id, string dependencyName, string serviceName)
-  }
-  class Int32
-  class String
-  Dependency --|> IDependency : 
-  class Dependency {
-    +Dependency(Int32 id, String dependencyName)
-  }
-  Service --|> IService : 
-  class Service {
-    +Service(String name, IDependency dependency)
-  }
-  class IDependency {
-    <<abstract>>
-  }
-  class IService {
-    <<abstract>>
-  }
-  Dependency o-- Int32 : Argument "id"
-  Dependency o-- String : Argument "dependencyName"
-  Service o-- String : "forService"  Argument "serviceName"
-  Service *--  Dependency : IDependency
-  Composition ..> Service : IService CreateService(int id, string dependencyName, string serviceName)
+	class Composition {
+		+IService CreateService(int id, string dependencyName, string serviceName)
+	}
+	class Int32
+	class String
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency(Int32 id, String dependencyName)
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(String name, IDependency dependency)
+	}
+	class IDependency {
+		<<abstract>>
+	}
+	class IService {
+		<<abstract>>
+	}
+	Dependency o-- Int32 : Argument "id"
+	Dependency o-- String : Argument "dependencyName"
+	Service o-- String : "forService"  Argument "serviceName"
+	Service *--  Dependency : IDependency
+	Composition ..> Service : IService CreateService(int id, string dependencyName, string serviceName)
 ```
 
 </details>
@@ -105,23 +105,23 @@ classDiagram
 partial class Composition
 {
   private readonly Composition _rootM04D27di;
-  
+
   public Composition()
   {
     _rootM04D27di = this;
   }
-  
+
   internal Composition(Composition baseComposition)
   {
     _rootM04D27di = baseComposition._rootM04D27di;
   }
-  
-  [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
-  public Pure.DI.UsageTests.Basics.RootArgumentsScenario.IService CreateService(int id, string dependencyName, string serviceName)
+
+  [MethodImpl((MethodImplOptions)0x100)]
+  public IService CreateService(int id, string dependencyName, string serviceName)
   {
-    return new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Service(serviceName, new Pure.DI.UsageTests.Basics.RootArgumentsScenario.Dependency(id, dependencyName));
+    return new Service(serviceName, new Dependency(id, dependencyName));
   }
-  
+
   public override string ToString()
   {
     return
@@ -151,7 +151,7 @@ partial class Composition
         "  Service *--  Dependency : IDependency\n" +
         "  Composition ..> Service : IService CreateService(int id, string dependencyName, string serviceName)";
   }
-  
+
 }
 ```
 
