@@ -110,50 +110,50 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM04D27di;
-  private readonly object _lockM04D27di;
+  private readonly Composition _root;
+  private readonly object _lock;
 
   public Composition()
   {
-    _rootM04D27di = this;
-    _lockM04D27di = new object();
+    _root = this;
+    _lock = new object();
   }
 
   internal Composition(Composition baseComposition)
   {
-    _rootM04D27di = baseComposition._rootM04D27di;
-    _lockM04D27di = _rootM04D27di._lockM04D27di;
+    _root = baseComposition._root;
+    _lock = _root._lock;
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
-  public IService GetRoot(System.Threading.CancellationToken cancellationToken)
+  public IService GetRoot(CancellationToken cancellationToken)
   {
-    var perResolveM04D27di42_Func = default(System.Func<IDependency>);
-    System.Threading.Tasks.TaskScheduler transientM04D27di5_TaskScheduler = TaskScheduler.Current;
-    System.Threading.Tasks.TaskContinuationOptions transientM04D27di4_TaskContinuationOptions = Threading.Tasks.TaskContinuationOptions.None;
-    System.Threading.Tasks.TaskCreationOptions transientM04D27di3_TaskCreationOptions = Threading.Tasks.TaskCreationOptions.None;
-    System.Threading.Tasks.TaskFactory<IDependency> perBlockM04D27di2_TaskFactory;
+    var perResolve42_Func = default(Func<IDependency>);
+    TaskScheduler transient5_TaskScheduler = TaskScheduler.Current;
+    TaskContinuationOptions transient4_TaskContinuationOptions = TaskContinuationOptions.None;
+    TaskCreationOptions transient3_TaskCreationOptions = TaskCreationOptions.None;
+    TaskFactory<IDependency> perBlock2_TaskFactory;
     {
-        var cancellationToken_M04D27di1 = cancellationToken;
-        var taskCreationOptions_M04D27di2 = transientM04D27di3_TaskCreationOptions;
-        var taskContinuationOptions_M04D27di3 = transientM04D27di4_TaskContinuationOptions;
-        var taskScheduler_M04D27di4 = transientM04D27di5_TaskScheduler;
-        perBlockM04D27di2_TaskFactory = new Threading.Tasks.TaskFactory<IDependency>(cancellationToken_M04D27di1, taskCreationOptions_M04D27di2, taskContinuationOptions_M04D27di3, taskScheduler_M04D27di4);
+        var cancellationToken_1 = cancellationToken;
+        var taskCreationOptions_2 = transient3_TaskCreationOptions;
+        var taskContinuationOptions_3 = transient4_TaskContinuationOptions;
+        var taskScheduler_4 = transient5_TaskScheduler;
+        perBlock2_TaskFactory = new TaskFactory<IDependency>(cancellationToken_1, taskCreationOptions_2, taskContinuationOptions_3, taskScheduler_4);
     }
-    perResolveM04D27di42_Func = new Func<IDependency>(
+    perResolve42_Func = new Func<IDependency>(
     [MethodImpl((MethodImplOptions)768)]
     () =>
     {
-        var value_M04D27di5 = new Dependency();
-        return value_M04D27di5;
+        var value_5 = new Dependency();
+        return value_5;
     });
-    System.Threading.Tasks.Task<IDependency> transientM04D27di1_Task;
+    Task<IDependency> transient1_Task;
     {
-        var factory_M04D27di6 = perResolveM04D27di42_Func;
-        var taskFactory_M04D27di7 = perBlockM04D27di2_TaskFactory;
-        transientM04D27di1_Task = taskFactory_M04D27di7.StartNew(factory_M04D27di6);
+        var factory_6 = perResolve42_Func;
+        var taskFactory_7 = perBlock2_TaskFactory;
+        transient1_Task = taskFactory_7.StartNew(factory_6);
     }
-    return new Service(transientM04D27di1_Task);
+    return new Service(transient1_Task);
   }
 
   public override string ToString()
@@ -161,7 +161,7 @@ partial class Composition
     return
       "classDiagram\n" +
         "  class Composition {\n" +
-          "    +IService GetRoot(System.Threading.CancellationToken cancellationToken)\n" +
+          "    +IService GetRoot(CancellationToken cancellationToken)\n" +
         "  }\n" +
         "  class TaskCreationOptions\n" +
         "  class TaskContinuationOptions\n" +
@@ -190,7 +190,7 @@ partial class Composition
         "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
         "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ\n" +
-        "  Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)\n" +
+        "  Composition ..> Service : IService GetRoot(CancellationToken cancellationToken)\n" +
         "  TaskᐸIDependencyᐳ o--  \"PerResolve\" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ\n" +
         "  TaskᐸIDependencyᐳ o--  \"PerBlock\" TaskFactoryᐸIDependencyᐳ : TaskFactoryᐸIDependencyᐳ\n" +
         "  FuncᐸIDependencyᐳ *--  Dependency : IDependency\n" +

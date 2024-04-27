@@ -90,20 +90,20 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM04D27di;
-  private readonly object _lockM04D27di;
-  private XyzDependency _singletonM04D27di38_XyzDependency;
+  private readonly Composition _root;
+  private readonly object _lock;
+  private XyzDependency _singleton38_XyzDependency;
 
   public Composition()
   {
-    _rootM04D27di = this;
-    _lockM04D27di = new object();
+    _root = this;
+    _lock = new object();
   }
 
   internal Composition(Composition baseComposition)
   {
-    _rootM04D27di = baseComposition._rootM04D27di;
-    _lockM04D27di = _rootM04D27di._lockM04D27di;
+    _root = baseComposition._root;
+    _lock = _root._lock;
   }
 
   public (IService service, MyAccumulator accumulator) Root
@@ -111,64 +111,64 @@ partial class Composition
     [MethodImpl((MethodImplOptions)0x100)]
     get
     {
-      var accumulatorM04D27di42 = new MyAccumulator();
-      AbcDependency perBlockM04D27di4_AbcDependency = new AbcDependency();
-      if (_rootM04D27di._singletonM04D27di38_XyzDependency == null)
+      var accumulator42 = new MyAccumulator();
+      AbcDependency perBlock4_AbcDependency = new AbcDependency();
+      if (_root._singleton38_XyzDependency == null)
       {
-          lock (_lockM04D27di)
+          lock (_lock)
           {
-              if (_rootM04D27di._singletonM04D27di38_XyzDependency == null)
+              if (_root._singleton38_XyzDependency == null)
               {
-                  XyzDependency _singletonM04D27di38_XyzDependencyTemp;
-                  _singletonM04D27di38_XyzDependencyTemp = new XyzDependency();
-                  accumulatorM04D27di42.Add(_singletonM04D27di38_XyzDependencyTemp);
-                  Threading.Thread.MemoryBarrier();
-                  _singletonM04D27di38_XyzDependency = _singletonM04D27di38_XyzDependencyTemp;
-                  _rootM04D27di._singletonM04D27di38_XyzDependency = _singletonM04D27di38_XyzDependency;
+                  XyzDependency _singleton38_XyzDependencyTemp;
+                  _singleton38_XyzDependencyTemp = new XyzDependency();
+                  accumulator42.Add(_singleton38_XyzDependencyTemp);
+                  Thread.MemoryBarrier();
+                  _singleton38_XyzDependency = _singleton38_XyzDependencyTemp;
+                  _root._singleton38_XyzDependency = _singleton38_XyzDependency;
               }
           }
       }
-      AbcDependency transientM04D27di3_AbcDependency = new AbcDependency();
-      lock (_lockM04D27di)
+      AbcDependency transient3_AbcDependency = new AbcDependency();
+      lock (_lock)
       {
-          accumulatorM04D27di42.Add(transientM04D27di3_AbcDependency);
+          accumulator42.Add(transient3_AbcDependency);
       }
-      Service transientM04D27di1_Service = new Service(transientM04D27di3_AbcDependency, _rootM04D27di._singletonM04D27di38_XyzDependency, perBlockM04D27di4_AbcDependency);
-      lock (_lockM04D27di)
+      Service transient1_Service = new Service(transient3_AbcDependency, _root._singleton38_XyzDependency, perBlock4_AbcDependency);
+      lock (_lock)
       {
-          accumulatorM04D27di42.Add(transientM04D27di1_Service);
+          accumulator42.Add(transient1_Service);
       }
-      return (transientM04D27di1_Service, accumulatorM04D27di42);
+      return (transient1_Service, accumulator42);
     }
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>()
   {
-    return ResolverM04D27di<T>.Value.Resolve(this);
+    return Resolver<T>.Value.Resolve(this);
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>(object? tag)
   {
-    return ResolverM04D27di<T>.Value.ResolveByTag(this, tag);
+    return Resolver<T>.Value.ResolveByTag(this, tag);
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
   public object Resolve(Type type)
   {
-    var index = (int)(_bucketSizeM04D27di * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _bucketsM04D27di[index];
-    return pair.Key == type ? pair.Value.Resolve(this) : ResolveM04D27di(type, index);
+    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets[index];
+    return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
   }
 
   [MethodImpl((MethodImplOptions)0x8)]
-  private object ResolveM04D27di(Type type, int index)
+  private object Resolve(Type type, int index)
   {
-    var finish = index + _bucketSizeM04D27di;
+    var finish = index + _bucketSize;
     while (++index < finish)
     {
-      ref var pair = ref _bucketsM04D27di[index];
+      ref var pair = ref _buckets[index];
       if (pair.Key == type)
       {
         return pair.Value.Resolve(this);
@@ -181,18 +181,18 @@ partial class Composition
   [MethodImpl((MethodImplOptions)0x100)]
   public object Resolve(Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM04D27di * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _bucketsM04D27di[index];
-    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : ResolveM04D27di(type, tag, index);
+    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets[index];
+    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
 
   [MethodImpl((MethodImplOptions)0x8)]
-  private object ResolveM04D27di(Type type, object? tag, int index)
+  private object Resolve(Type type, object? tag, int index)
   {
-    var finish = index + _bucketSizeM04D27di;
+    var finish = index + _bucketSize;
     while (++index < finish)
     {
-      ref var pair = ref _bucketsM04D27di[index];
+      ref var pair = ref _buckets[index];
       if (pair.Key == type)
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -243,25 +243,25 @@ partial class Composition
         "  Composition ..> ValueTupleᐸIServiceˏMyAccumulatorᐳ : ValueTupleᐸIServiceˏMyAccumulatorᐳ Root";
   }
 
-  private readonly static int _bucketSizeM04D27di;
-  private readonly static Pair<Type, IResolver<Composition, object>>[] _bucketsM04D27di;
+  private readonly static int _bucketSize;
+  private readonly static Pair<Type, IResolver<Composition, object>>[] _buckets;
 
   static Composition()
   {
-    var valResolverM04D27di_0000 = new ResolverM04D27di_0000();
-    ResolverM04D27di<(IService service, MyAccumulator accumulator)>.Value = valResolverM04D27di_0000;
-    _bucketsM04D27di = Buckets<Type, IResolver<Composition, object>>.Create(
+    var valResolver_0000 = new Resolver_0000();
+    Resolver<(IService service, MyAccumulator accumulator)>.Value = valResolver_0000;
+    _buckets = Buckets<Type, IResolver<Composition, object>>.Create(
       1,
-      out _bucketSizeM04D27di,
+      out _bucketSize,
       new Pair<Type, IResolver<Composition, object>>[1]
       {
-         new Pair<Type, IResolver<Composition, object>>(typeof((IService service, MyAccumulator accumulator)), valResolverM04D27di_0000)
+         new Pair<Type, IResolver<Composition, object>>(typeof((IService service, MyAccumulator accumulator)), valResolver_0000)
       });
   }
 
-  private sealed class ResolverM04D27di<T>: IResolver<Composition, T>
+  private sealed class Resolver<T>: IResolver<Composition, T>
   {
-    public static IResolver<Composition, T> Value = new ResolverM04D27di<T>();
+    public static IResolver<Composition, T> Value = new Resolver<T>();
 
     public T Resolve(Composition composite)
     {
@@ -274,7 +274,7 @@ partial class Composition
     }
   }
 
-  private sealed class ResolverM04D27di_0000: IResolver<Composition, (IService service, MyAccumulator accumulator)>, IResolver<Composition, object>
+  private sealed class Resolver_0000: IResolver<Composition, (IService service, MyAccumulator accumulator)>, IResolver<Composition, object>
   {
     public (IService service, MyAccumulator accumulator) Resolve(Composition composition)
     {

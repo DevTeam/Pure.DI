@@ -110,99 +110,99 @@ classDiagram
 ```c#
 partial class Composition: IDisposable
 {
-  private readonly Composition _rootM04D27di;
-  private readonly object _lockM04D27di;
-  private object[] _disposablesM04D27di;
-  private int _disposeIndexM04D27di;
-  private Dependency _singletonM04D27di36_Dependency;
-  private Service _scopedM04D27di37_Service;
+  private readonly Composition _root;
+  private readonly object _lock;
+  private object[] _disposables;
+  private int _disposeIndex;
+  private Dependency _singleton36_Dependency;
+  private Service _scoped37_Service;
 
   public Composition()
   {
-    _rootM04D27di = this;
-    _lockM04D27di = new object();
-    _disposablesM04D27di = new object[1];
+    _root = this;
+    _lock = new object();
+    _disposables = new object[1];
   }
 
   internal Composition(Composition baseComposition)
   {
-    _rootM04D27di = baseComposition._rootM04D27di;
-    _lockM04D27di = _rootM04D27di._lockM04D27di;
-    _disposablesM04D27di = new object[1];
+    _root = baseComposition._root;
+    _lock = _root._lock;
+    _disposables = new object[1];
   }
 
-  private IDependency RootM04D27di0001
+  private IDependency Root0001
   {
     [MethodImpl((MethodImplOptions)0x100)]
     get
     {
-      if (_rootM04D27di._singletonM04D27di36_Dependency == null)
+      if (_root._singleton36_Dependency == null)
       {
-          lock (_lockM04D27di)
+          lock (_lock)
           {
-              if (_rootM04D27di._singletonM04D27di36_Dependency == null)
+              if (_root._singleton36_Dependency == null)
               {
-                  _singletonM04D27di36_Dependency = new Dependency();
-                  _rootM04D27di._singletonM04D27di36_Dependency = _singletonM04D27di36_Dependency;
+                  _singleton36_Dependency = new Dependency();
+                  _root._singleton36_Dependency = _singleton36_Dependency;
               }
           }
       }
-      return _rootM04D27di._singletonM04D27di36_Dependency;
+      return _root._singleton36_Dependency;
     }
   }
 
-  private IService RootM04D27di0002
+  private IService Root0002
   {
     [MethodImpl((MethodImplOptions)0x100)]
     get
     {
-      if (_scopedM04D27di37_Service == null)
+      if (_scoped37_Service == null)
       {
-          lock (_lockM04D27di)
+          lock (_lock)
           {
-              if (_scopedM04D27di37_Service == null)
+              if (_scoped37_Service == null)
               {
-                  if (_rootM04D27di._singletonM04D27di36_Dependency == null)
+                  if (_root._singleton36_Dependency == null)
                   {
-                      _singletonM04D27di36_Dependency = new Dependency();
-                      _rootM04D27di._singletonM04D27di36_Dependency = _singletonM04D27di36_Dependency;
+                      _singleton36_Dependency = new Dependency();
+                      _root._singleton36_Dependency = _singleton36_Dependency;
                   }
-                  _scopedM04D27di37_Service = new Service(_rootM04D27di._singletonM04D27di36_Dependency);
-                  _disposablesM04D27di[_disposeIndexM04D27di++] = _scopedM04D27di37_Service;
+                  _scoped37_Service = new Service(_root._singleton36_Dependency);
+                  _disposables[_disposeIndex++] = _scoped37_Service;
               }
           }
       }
-      return _scopedM04D27di37_Service;
+      return _scoped37_Service;
     }
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>()
   {
-    return ResolverM04D27di<T>.Value.Resolve(this);
+    return Resolver<T>.Value.Resolve(this);
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>(object? tag)
   {
-    return ResolverM04D27di<T>.Value.ResolveByTag(this, tag);
+    return Resolver<T>.Value.ResolveByTag(this, tag);
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
   public object GetService(Type type)
   {
-    var index = (int)(_bucketSizeM04D27di * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
-    ref var pair = ref _bucketsM04D27di[index];
-    return pair.Key == type ? pair.Value.Resolve(this) : ResolveM04D27di(type, index);
+    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
+    ref var pair = ref _buckets[index];
+    return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
   }
 
   [MethodImpl((MethodImplOptions)0x8)]
-  private object ResolveM04D27di(Type type, int index)
+  private object Resolve(Type type, int index)
   {
-    var finish = index + _bucketSizeM04D27di;
+    var finish = index + _bucketSize;
     while (++index < finish)
     {
-      ref var pair = ref _bucketsM04D27di[index];
+      ref var pair = ref _buckets[index];
       if (pair.Key == type)
       {
         return pair.Value.Resolve(this);
@@ -215,18 +215,18 @@ partial class Composition: IDisposable
   [MethodImpl((MethodImplOptions)0x100)]
   public object GetRequiredKeyedService(Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM04D27di * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
-    ref var pair = ref _bucketsM04D27di[index];
-    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : ResolveM04D27di(type, tag, index);
+    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
+    ref var pair = ref _buckets[index];
+    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
 
   [MethodImpl((MethodImplOptions)0x8)]
-  private object ResolveM04D27di(Type type, object? tag, int index)
+  private object Resolve(Type type, object? tag, int index)
   {
-    var finish = index + _bucketSizeM04D27di;
+    var finish = index + _bucketSize;
     while (++index < finish)
     {
-      ref var pair = ref _bucketsM04D27di[index];
+      ref var pair = ref _buckets[index];
       if (pair.Key == type)
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -240,14 +240,14 @@ partial class Composition: IDisposable
   {
     int disposeIndex;
     object[] disposables;
-    lock (_lockM04D27di)
+    lock (_lock)
     {
-      disposeIndex = _disposeIndexM04D27di;
-      _disposeIndexM04D27di = 0;
-      disposables = _disposablesM04D27di;
-      _disposablesM04D27di = new object[1];
-      _singletonM04D27di36_Dependency = null;
-      _scopedM04D27di37_Service = null;
+      disposeIndex = _disposeIndex;
+      _disposeIndex = 0;
+      disposables = _disposables;
+      _disposables = new object[1];
+      _singleton36_Dependency = null;
+      _scoped37_Service = null;
     }
 
     while (disposeIndex-- > 0)
@@ -302,28 +302,28 @@ partial class Composition: IDisposable
         "  Composition ..> Service : IService _";
   }
 
-  private readonly static int _bucketSizeM04D27di;
-  private readonly static Pair<Type, IResolver<Composition, object>>[] _bucketsM04D27di;
+  private readonly static int _bucketSize;
+  private readonly static Pair<Type, IResolver<Composition, object>>[] _buckets;
 
   static Composition()
   {
-    var valResolverM04D27di_0000 = new ResolverM04D27di_0000();
-    ResolverM04D27di<IDependency>.Value = valResolverM04D27di_0000;
-    var valResolverM04D27di_0001 = new ResolverM04D27di_0001();
-    ResolverM04D27di<IService>.Value = valResolverM04D27di_0001;
-    _bucketsM04D27di = Buckets<Type, IResolver<Composition, object>>.Create(
+    var valResolver_0000 = new Resolver_0000();
+    Resolver<IDependency>.Value = valResolver_0000;
+    var valResolver_0001 = new Resolver_0001();
+    Resolver<IService>.Value = valResolver_0001;
+    _buckets = Buckets<Type, IResolver<Composition, object>>.Create(
       4,
-      out _bucketSizeM04D27di,
+      out _bucketSize,
       new Pair<Type, IResolver<Composition, object>>[2]
       {
-         new Pair<Type, IResolver<Composition, object>>(typeof(IDependency), valResolverM04D27di_0000)
-        ,new Pair<Type, IResolver<Composition, object>>(typeof(IService), valResolverM04D27di_0001)
+         new Pair<Type, IResolver<Composition, object>>(typeof(IDependency), valResolver_0000)
+        ,new Pair<Type, IResolver<Composition, object>>(typeof(IService), valResolver_0001)
       });
   }
 
-  private sealed class ResolverM04D27di<T>: IResolver<Composition, T>
+  private sealed class Resolver<T>: IResolver<Composition, T>
   {
-    public static IResolver<Composition, T> Value = new ResolverM04D27di<T>();
+    public static IResolver<Composition, T> Value = new Resolver<T>();
 
     public T Resolve(Composition composite)
     {
@@ -336,11 +336,11 @@ partial class Composition: IDisposable
     }
   }
 
-  private sealed class ResolverM04D27di_0000: IResolver<Composition, IDependency>
+  private sealed class Resolver_0000: IResolver<Composition, IDependency>
   {
     public IDependency Resolve(Composition composition)
     {
-      return composition.RootM04D27di0001;
+      return composition.Root0001;
     }
 
     public IDependency ResolveByTag(Composition composition, object tag)
@@ -348,18 +348,18 @@ partial class Composition: IDisposable
       switch (tag)
       {
         case null:
-          return composition.RootM04D27di0001;
+          return composition.Root0001;
         default:
           throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type IDependency.");
       }
     }
   }
 
-  private sealed class ResolverM04D27di_0001: IResolver<Composition, IService>
+  private sealed class Resolver_0001: IResolver<Composition, IService>
   {
     public IService Resolve(Composition composition)
     {
-      return composition.RootM04D27di0002;
+      return composition.Root0002;
     }
 
     public IService ResolveByTag(Composition composition, object tag)
@@ -367,7 +367,7 @@ partial class Composition: IDisposable
       switch (tag)
       {
         case null:
-          return composition.RootM04D27di0002;
+          return composition.Root0002;
         default:
           throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type IService.");
       }

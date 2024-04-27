@@ -88,60 +88,60 @@ classDiagram
 ```c#
 partial class Enum
 {
-  private readonly Enum _rootM04D27di;
+  private readonly Enum _root;
 
   public Enum()
   {
-    _rootM04D27di = this;
+    _root = this;
   }
 
   internal Enum(Enum baseComposition)
   {
-    _rootM04D27di = baseComposition._rootM04D27di;
+    _root = baseComposition._root;
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
-  public partial Pure.DI.Benchmarks.Model.CompositionRoot TestPureDIByCR()
+  public partial Benchmarks.Model.CompositionRoot TestPureDIByCR()
   {
     [MethodImpl((MethodImplOptions)0x200)]
-    System.Collections.Generic.IEnumerable<Pure.DI.Benchmarks.Model.IService3> LocalperBlockM04D27di10_IEnumerable()
+    IEnumerable<Benchmarks.Model.IService3> LocalperBlock10_IEnumerable()
     {
-        yield return new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
-        yield return new Pure.DI.Benchmarks.Model.Service3v2(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
-        yield return new Pure.DI.Benchmarks.Model.Service3v3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
-        yield return new Pure.DI.Benchmarks.Model.Service3v4(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
+        yield return new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4());
+        yield return new Benchmarks.Model.Service3v2(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4());
+        yield return new Benchmarks.Model.Service3v3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4());
+        yield return new Benchmarks.Model.Service3v4(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4());
     }
-    System.Collections.Generic.IEnumerable<Pure.DI.Benchmarks.Model.IService3> perBlockM04D27di10_IEnumerable = LocalperBlockM04D27di10_IEnumerable();
-    return new Pure.DI.Benchmarks.Model.CompositionRoot(new Pure.DI.Benchmarks.Model.Service1(new Pure.DI.Benchmarks.Model.Service2Enum(perBlockM04D27di10_IEnumerable)), new Pure.DI.Benchmarks.Model.Service2Enum(perBlockM04D27di10_IEnumerable), new Pure.DI.Benchmarks.Model.Service2Enum(perBlockM04D27di10_IEnumerable), new Pure.DI.Benchmarks.Model.Service2Enum(perBlockM04D27di10_IEnumerable), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
+    IEnumerable<Benchmarks.Model.IService3> perBlock10_IEnumerable = LocalperBlock10_IEnumerable();
+    return new Benchmarks.Model.CompositionRoot(new Benchmarks.Model.Service1(new Benchmarks.Model.Service2Enum(perBlock10_IEnumerable)), new Benchmarks.Model.Service2Enum(perBlock10_IEnumerable), new Benchmarks.Model.Service2Enum(perBlock10_IEnumerable), new Benchmarks.Model.Service2Enum(perBlock10_IEnumerable), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4());
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>()
   {
-    return ResolverM04D27di<T>.Value.Resolve(this);
+    return Resolver<T>.Value.Resolve(this);
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>(object? tag)
   {
-    return ResolverM04D27di<T>.Value.ResolveByTag(this, tag);
+    return Resolver<T>.Value.ResolveByTag(this, tag);
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
   public object Resolve(Type type)
   {
-    var index = (int)(_bucketSizeM04D27di * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _bucketsM04D27di[index];
-    return pair.Key == type ? pair.Value.Resolve(this) : ResolveM04D27di(type, index);
+    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets[index];
+    return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
   }
 
   [MethodImpl((MethodImplOptions)0x8)]
-  private object ResolveM04D27di(Type type, int index)
+  private object Resolve(Type type, int index)
   {
-    var finish = index + _bucketSizeM04D27di;
+    var finish = index + _bucketSize;
     while (++index < finish)
     {
-      ref var pair = ref _bucketsM04D27di[index];
+      ref var pair = ref _buckets[index];
       if (pair.Key == type)
       {
         return pair.Value.Resolve(this);
@@ -154,18 +154,18 @@ partial class Enum
   [MethodImpl((MethodImplOptions)0x100)]
   public object Resolve(Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM04D27di * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _bucketsM04D27di[index];
-    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : ResolveM04D27di(type, tag, index);
+    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets[index];
+    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
 
   [MethodImpl((MethodImplOptions)0x8)]
-  private object ResolveM04D27di(Type type, object? tag, int index)
+  private object Resolve(Type type, object? tag, int index)
   {
-    var finish = index + _bucketSizeM04D27di;
+    var finish = index + _bucketSize;
     while (++index < finish)
     {
-      ref var pair = ref _bucketsM04D27di[index];
+      ref var pair = ref _buckets[index];
       if (pair.Key == type)
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -254,25 +254,25 @@ partial class Enum
         "  IEnumerableᐸIService3ᐳ *--  Service3v4 : 4  IService3";
   }
 
-  private readonly static int _bucketSizeM04D27di;
-  private readonly static Pair<Type, IResolver<Enum, object>>[] _bucketsM04D27di;
+  private readonly static int _bucketSize;
+  private readonly static Pair<Type, IResolver<Enum, object>>[] _buckets;
 
   static Enum()
   {
-    var valResolverM04D27di_0000 = new ResolverM04D27di_0000();
-    ResolverM04D27di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM04D27di_0000;
-    _bucketsM04D27di = Buckets<Type, IResolver<Enum, object>>.Create(
+    var valResolver_0000 = new Resolver_0000();
+    Resolver<Benchmarks.Model.CompositionRoot>.Value = valResolver_0000;
+    _buckets = Buckets<Type, IResolver<Enum, object>>.Create(
       1,
-      out _bucketSizeM04D27di,
+      out _bucketSize,
       new Pair<Type, IResolver<Enum, object>>[1]
       {
-         new Pair<Type, IResolver<Enum, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM04D27di_0000)
+         new Pair<Type, IResolver<Enum, object>>(typeof(Benchmarks.Model.CompositionRoot), valResolver_0000)
       });
   }
 
-  private sealed class ResolverM04D27di<T>: IResolver<Enum, T>
+  private sealed class Resolver<T>: IResolver<Enum, T>
   {
-    public static IResolver<Enum, T> Value = new ResolverM04D27di<T>();
+    public static IResolver<Enum, T> Value = new Resolver<T>();
 
     public T Resolve(Enum composite)
     {
@@ -285,21 +285,21 @@ partial class Enum
     }
   }
 
-  private sealed class ResolverM04D27di_0000: IResolver<Enum, Pure.DI.Benchmarks.Model.CompositionRoot>
+  private sealed class Resolver_0000: IResolver<Enum, Benchmarks.Model.CompositionRoot>
   {
-    public Pure.DI.Benchmarks.Model.CompositionRoot Resolve(Enum composition)
+    public Benchmarks.Model.CompositionRoot Resolve(Enum composition)
     {
       return composition.TestPureDIByCR();
     }
 
-    public Pure.DI.Benchmarks.Model.CompositionRoot ResolveByTag(Enum composition, object tag)
+    public Benchmarks.Model.CompositionRoot ResolveByTag(Enum composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.TestPureDIByCR();
         default:
-          throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.Benchmarks.Model.CompositionRoot.");
+          throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Benchmarks.Model.CompositionRoot.");
       }
     }
   }

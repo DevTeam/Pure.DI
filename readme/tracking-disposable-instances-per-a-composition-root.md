@@ -99,56 +99,56 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM04D27di;
-  private readonly object _lockM04D27di;
+  private readonly Composition _root;
+  private readonly object _lock;
 
   public Composition()
   {
-    _rootM04D27di = this;
-    _lockM04D27di = new object();
+    _root = this;
+    _lock = new object();
   }
 
   internal Composition(Composition baseComposition)
   {
-    _rootM04D27di = baseComposition._rootM04D27di;
-    _lockM04D27di = _rootM04D27di._lockM04D27di;
+    _root = baseComposition._root;
+    _lock = _root._lock;
   }
 
-  public Pure.DI.Owned<IService> Root
+  public Owned<IService> Root
   {
     [MethodImpl((MethodImplOptions)0x100)]
     get
     {
-      var accumulatorM04D27di38 = new Pure.DI.Owned();
-      Dependency transientM04D27di3_Dependency = new Dependency();
-      lock (_lockM04D27di)
+      var accumulator38 = new Owned();
+      Dependency transient3_Dependency = new Dependency();
+      lock (_lock)
       {
-          accumulatorM04D27di38.Add(transientM04D27di3_Dependency);
+          accumulator38.Add(transient3_Dependency);
       }
-      Pure.DI.Owned<IService> perBlockM04D27di0_Owned;
+      Owned<IService> perBlock0_Owned;
       {
-          var owned_M04D27di1 = accumulatorM04D27di38;
-          var value_M04D27di2 = new Service(transientM04D27di3_Dependency);
-          perBlockM04D27di0_Owned = new Owned<IService>(value_M04D27di2, owned_M04D27di1);
+          var owned_1 = accumulator38;
+          var value_2 = new Service(transient3_Dependency);
+          perBlock0_Owned = new Owned<IService>(value_2, owned_1);
       }
-      lock (_lockM04D27di)
+      lock (_lock)
       {
-          accumulatorM04D27di38.Add(perBlockM04D27di0_Owned);
+          accumulator38.Add(perBlock0_Owned);
       }
-      return perBlockM04D27di0_Owned;
+      return perBlock0_Owned;
     }
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>()
   {
-    return ResolverM04D27di<T>.Value.Resolve(this);
+    return Resolver<T>.Value.Resolve(this);
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>(object? tag)
   {
-    return ResolverM04D27di<T>.Value.ResolveByTag(this, tag);
+    return Resolver<T>.Value.ResolveByTag(this, tag);
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
@@ -195,9 +195,9 @@ partial class Composition
         "  OwnedᐸIServiceᐳ *--  Service : IService";
   }
 
-  private sealed class ResolverM04D27di<T>: IResolver<Composition, T>
+  private sealed class Resolver<T>: IResolver<Composition, T>
   {
-    public static IResolver<Composition, T> Value = new ResolverM04D27di<T>();
+    public static IResolver<Composition, T> Value = new Resolver<T>();
 
     public T Resolve(Composition composite)
     {

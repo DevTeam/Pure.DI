@@ -318,6 +318,7 @@ internal class ReadmeTarget(
 
     private static async Task AddExample(string logsDirectory, string exampleSearchPattern, TextWriter examplesWriter)
     {
+        var salt = $"M{DateTime.Now.Month:00}D{DateTime.Now.Day:00}di";
         foreach (var generatedCodeFile in Directory.GetFiles(Path.Combine(logsDirectory, "Pure.DI", "Pure.DI.SourceGenerator"), exampleSearchPattern).OrderBy(i => i))
         {
             var ns = string.Join('.', Path.GetFileName(generatedCodeFile).Split('.').Reverse().Skip(3).Reverse()) + ".";
@@ -352,10 +353,15 @@ internal class ReadmeTarget(
                     .Select(i => i
                         .TrimEnd()
                         .Replace("\t", "  ")
-                        .Replace("global::System.", "")
-                        .Replace("Runtime.CompilerServices.", "")
-                        .Replace("global::Pure.DI.", "")
-                        .Replace(ns, "")));
+                        .Replace(ns, "")
+                        .Replace("global::", "")
+                        .Replace("System.Threading.Tasks.", "")
+                        .Replace("System.Threading.", "")
+                        .Replace("System.Runtime.CompilerServices.", "")
+                        .Replace("System.Collections.Generic.", "")
+                        .Replace("System.", "")
+                        .Replace("Pure.DI.", "")
+                        .Replace(salt, "")));
             await examplesWriter.WriteLineAsync(generatedCode);
             await examplesWriter.WriteLineAsync("```");
             await examplesWriter.WriteLineAsync("");

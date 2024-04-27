@@ -100,31 +100,31 @@ classDiagram
 ```c#
 partial class PersonComposition
 {
-  private readonly PersonComposition _rootM04D27di;
+  private readonly PersonComposition _root;
 
-  private readonly int _argM04D27di_personId;
-  private readonly string _argM04D27di_personName;
-  private readonly System.DateTime _argM04D27di_personBirthday;
+  private readonly int _arg_personId;
+  private readonly string _arg_personName;
+  private readonly DateTime _arg_personBirthday;
 
-  public PersonComposition(int personId, string personName, System.DateTime personBirthday)
+  public PersonComposition(int personId, string personName, DateTime personBirthday)
   {
-    _rootM04D27di = this;
+    _root = this;
     if (ReferenceEquals(personName, null))
     {
       throw new ArgumentNullException("personName");
     }
 
-    _argM04D27di_personId = personId;
-    _argM04D27di_personName = personName;
-    _argM04D27di_personBirthday = personBirthday;
+    _arg_personId = personId;
+    _arg_personName = personName;
+    _arg_personBirthday = personBirthday;
   }
 
   internal PersonComposition(PersonComposition baseComposition)
   {
-    _rootM04D27di = baseComposition._rootM04D27di;
-    _argM04D27di_personId = baseComposition._argM04D27di_personId;
-    _argM04D27di_personName = baseComposition._argM04D27di_personName;
-    _argM04D27di_personBirthday = baseComposition._argM04D27di_personBirthday;
+    _root = baseComposition._root;
+    _arg_personId = baseComposition._arg_personId;
+    _arg_personName = baseComposition._arg_personName;
+    _arg_personBirthday = baseComposition._arg_personBirthday;
   }
 
   public IPerson Person
@@ -132,41 +132,41 @@ partial class PersonComposition
     [MethodImpl((MethodImplOptions)0x100)]
     get
     {
-      Person transientM04D27di0_Person = new Person();
-      transientM04D27di0_Person.Id = _argM04D27di_personId;
-      transientM04D27di0_Person.FirstName = _argM04D27di_personName;
-      transientM04D27di0_Person.Birthday = _argM04D27di_personBirthday;
-      return transientM04D27di0_Person;
+      Person transient0_Person = new Person();
+      transient0_Person.Id = _arg_personId;
+      transient0_Person.FirstName = _arg_personName;
+      transient0_Person.Birthday = _arg_personBirthday;
+      return transient0_Person;
     }
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>()
   {
-    return ResolverM04D27di<T>.Value.Resolve(this);
+    return Resolver<T>.Value.Resolve(this);
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>(object? tag)
   {
-    return ResolverM04D27di<T>.Value.ResolveByTag(this, tag);
+    return Resolver<T>.Value.ResolveByTag(this, tag);
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
   public object Resolve(Type type)
   {
-    var index = (int)(_bucketSizeM04D27di * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _bucketsM04D27di[index];
-    return pair.Key == type ? pair.Value.Resolve(this) : ResolveM04D27di(type, index);
+    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets[index];
+    return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
   }
 
   [MethodImpl((MethodImplOptions)0x8)]
-  private object ResolveM04D27di(Type type, int index)
+  private object Resolve(Type type, int index)
   {
-    var finish = index + _bucketSizeM04D27di;
+    var finish = index + _bucketSize;
     while (++index < finish)
     {
-      ref var pair = ref _bucketsM04D27di[index];
+      ref var pair = ref _buckets[index];
       if (pair.Key == type)
       {
         return pair.Value.Resolve(this);
@@ -179,18 +179,18 @@ partial class PersonComposition
   [MethodImpl((MethodImplOptions)0x100)]
   public object Resolve(Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM04D27di * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _bucketsM04D27di[index];
-    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : ResolveM04D27di(type, tag, index);
+    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets[index];
+    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
 
   [MethodImpl((MethodImplOptions)0x8)]
-  private object ResolveM04D27di(Type type, object? tag, int index)
+  private object Resolve(Type type, object? tag, int index)
   {
-    var finish = index + _bucketSizeM04D27di;
+    var finish = index + _bucketSize;
     while (++index < finish)
     {
-      ref var pair = ref _bucketsM04D27di[index];
+      ref var pair = ref _buckets[index];
       if (pair.Key == type)
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -230,25 +230,25 @@ partial class PersonComposition
         "  PersonComposition ..> Person : IPerson Person";
   }
 
-  private readonly static int _bucketSizeM04D27di;
-  private readonly static Pair<Type, IResolver<PersonComposition, object>>[] _bucketsM04D27di;
+  private readonly static int _bucketSize;
+  private readonly static Pair<Type, IResolver<PersonComposition, object>>[] _buckets;
 
   static PersonComposition()
   {
-    var valResolverM04D27di_0000 = new ResolverM04D27di_0000();
-    ResolverM04D27di<IPerson>.Value = valResolverM04D27di_0000;
-    _bucketsM04D27di = Buckets<Type, IResolver<PersonComposition, object>>.Create(
+    var valResolver_0000 = new Resolver_0000();
+    Resolver<IPerson>.Value = valResolver_0000;
+    _buckets = Buckets<Type, IResolver<PersonComposition, object>>.Create(
       1,
-      out _bucketSizeM04D27di,
+      out _bucketSize,
       new Pair<Type, IResolver<PersonComposition, object>>[1]
       {
-         new Pair<Type, IResolver<PersonComposition, object>>(typeof(IPerson), valResolverM04D27di_0000)
+         new Pair<Type, IResolver<PersonComposition, object>>(typeof(IPerson), valResolver_0000)
       });
   }
 
-  private sealed class ResolverM04D27di<T>: IResolver<PersonComposition, T>
+  private sealed class Resolver<T>: IResolver<PersonComposition, T>
   {
-    public static IResolver<PersonComposition, T> Value = new ResolverM04D27di<T>();
+    public static IResolver<PersonComposition, T> Value = new Resolver<T>();
 
     public T Resolve(PersonComposition composite)
     {
@@ -261,7 +261,7 @@ partial class PersonComposition
     }
   }
 
-  private sealed class ResolverM04D27di_0000: IResolver<PersonComposition, IPerson>
+  private sealed class Resolver_0000: IResolver<PersonComposition, IPerson>
   {
     public IPerson Resolve(PersonComposition composition)
     {

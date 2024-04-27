@@ -67,58 +67,58 @@ classDiagram
 ```c#
 partial class Func
 {
-  private readonly Func _rootM04D27di;
+  private readonly Func _root;
 
   public Func()
   {
-    _rootM04D27di = this;
+    _root = this;
   }
 
   internal Func(Func baseComposition)
   {
-    _rootM04D27di = baseComposition._rootM04D27di;
+    _root = baseComposition._root;
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
-  public partial Pure.DI.Benchmarks.Model.CompositionRoot TestPureDIByCR()
+  public partial Benchmarks.Model.CompositionRoot TestPureDIByCR()
   {
-    System.Func<Pure.DI.Benchmarks.Model.IService3> perBlockM04D27di10_Func = new Func<Pure.DI.Benchmarks.Model.IService3>(
+    Func<Benchmarks.Model.IService3> perBlock10_Func = new Func<Benchmarks.Model.IService3>(
     [MethodImpl((MethodImplOptions)768)]
     () =>
     {
-        var value_M04D27di1 = new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
-        return value_M04D27di1;
+        var value_1 = new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4());
+        return value_1;
     });
-    return new Pure.DI.Benchmarks.Model.CompositionRoot(new Pure.DI.Benchmarks.Model.Service1(new Pure.DI.Benchmarks.Model.Service2Func(perBlockM04D27di10_Func)), new Pure.DI.Benchmarks.Model.Service2Func(perBlockM04D27di10_Func), new Pure.DI.Benchmarks.Model.Service2Func(perBlockM04D27di10_Func), new Pure.DI.Benchmarks.Model.Service2Func(perBlockM04D27di10_Func), new Pure.DI.Benchmarks.Model.Service3(new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4()), new Pure.DI.Benchmarks.Model.Service4(), new Pure.DI.Benchmarks.Model.Service4());
+    return new Benchmarks.Model.CompositionRoot(new Benchmarks.Model.Service1(new Benchmarks.Model.Service2Func(perBlock10_Func)), new Benchmarks.Model.Service2Func(perBlock10_Func), new Benchmarks.Model.Service2Func(perBlock10_Func), new Benchmarks.Model.Service2Func(perBlock10_Func), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4());
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>()
   {
-    return ResolverM04D27di<T>.Value.Resolve(this);
+    return Resolver<T>.Value.Resolve(this);
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
   public T Resolve<T>(object? tag)
   {
-    return ResolverM04D27di<T>.Value.ResolveByTag(this, tag);
+    return Resolver<T>.Value.ResolveByTag(this, tag);
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
   public object Resolve(Type type)
   {
-    var index = (int)(_bucketSizeM04D27di * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _bucketsM04D27di[index];
-    return pair.Key == type ? pair.Value.Resolve(this) : ResolveM04D27di(type, index);
+    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets[index];
+    return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
   }
 
   [MethodImpl((MethodImplOptions)0x8)]
-  private object ResolveM04D27di(Type type, int index)
+  private object Resolve(Type type, int index)
   {
-    var finish = index + _bucketSizeM04D27di;
+    var finish = index + _bucketSize;
     while (++index < finish)
     {
-      ref var pair = ref _bucketsM04D27di[index];
+      ref var pair = ref _buckets[index];
       if (pair.Key == type)
       {
         return pair.Value.Resolve(this);
@@ -131,18 +131,18 @@ partial class Func
   [MethodImpl((MethodImplOptions)0x100)]
   public object Resolve(Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM04D27di * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _bucketsM04D27di[index];
-    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : ResolveM04D27di(type, tag, index);
+    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
+    ref var pair = ref _buckets[index];
+    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
 
   [MethodImpl((MethodImplOptions)0x8)]
-  private object ResolveM04D27di(Type type, object? tag, int index)
+  private object Resolve(Type type, object? tag, int index)
   {
-    var finish = index + _bucketSizeM04D27di;
+    var finish = index + _bucketSize;
     while (++index < finish)
     {
-      ref var pair = ref _bucketsM04D27di[index];
+      ref var pair = ref _buckets[index];
       if (pair.Key == type)
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -210,25 +210,25 @@ partial class Func
         "  FuncᐸIService3ᐳ *--  Service3 : IService3";
   }
 
-  private readonly static int _bucketSizeM04D27di;
-  private readonly static Pair<Type, IResolver<Func, object>>[] _bucketsM04D27di;
+  private readonly static int _bucketSize;
+  private readonly static Pair<Type, IResolver<Func, object>>[] _buckets;
 
   static Func()
   {
-    var valResolverM04D27di_0000 = new ResolverM04D27di_0000();
-    ResolverM04D27di<Pure.DI.Benchmarks.Model.CompositionRoot>.Value = valResolverM04D27di_0000;
-    _bucketsM04D27di = Buckets<Type, IResolver<Func, object>>.Create(
+    var valResolver_0000 = new Resolver_0000();
+    Resolver<Benchmarks.Model.CompositionRoot>.Value = valResolver_0000;
+    _buckets = Buckets<Type, IResolver<Func, object>>.Create(
       1,
-      out _bucketSizeM04D27di,
+      out _bucketSize,
       new Pair<Type, IResolver<Func, object>>[1]
       {
-         new Pair<Type, IResolver<Func, object>>(typeof(Pure.DI.Benchmarks.Model.CompositionRoot), valResolverM04D27di_0000)
+         new Pair<Type, IResolver<Func, object>>(typeof(Benchmarks.Model.CompositionRoot), valResolver_0000)
       });
   }
 
-  private sealed class ResolverM04D27di<T>: IResolver<Func, T>
+  private sealed class Resolver<T>: IResolver<Func, T>
   {
-    public static IResolver<Func, T> Value = new ResolverM04D27di<T>();
+    public static IResolver<Func, T> Value = new Resolver<T>();
 
     public T Resolve(Func composite)
     {
@@ -241,21 +241,21 @@ partial class Func
     }
   }
 
-  private sealed class ResolverM04D27di_0000: IResolver<Func, Pure.DI.Benchmarks.Model.CompositionRoot>
+  private sealed class Resolver_0000: IResolver<Func, Benchmarks.Model.CompositionRoot>
   {
-    public Pure.DI.Benchmarks.Model.CompositionRoot Resolve(Func composition)
+    public Benchmarks.Model.CompositionRoot Resolve(Func composition)
     {
       return composition.TestPureDIByCR();
     }
 
-    public Pure.DI.Benchmarks.Model.CompositionRoot ResolveByTag(Func composition, object tag)
+    public Benchmarks.Model.CompositionRoot ResolveByTag(Func composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.TestPureDIByCR();
         default:
-          throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.Benchmarks.Model.CompositionRoot.");
+          throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Benchmarks.Model.CompositionRoot.");
       }
     }
   }

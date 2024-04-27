@@ -95,21 +95,21 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM04D27di;
+  private readonly Composition _root;
 
   public Composition()
   {
-    _rootM04D27di = this;
+    _root = this;
   }
 
   internal Composition(Composition baseComposition)
   {
-    _rootM04D27di = baseComposition._rootM04D27di;
+    _root = baseComposition._root;
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
   public IService<T, T4> GetMyRoot<T, T4>()
-    where T: System.IDisposable
+    where T: IDisposable
     where T4: struct
   {
     return new Service<T, T4>(new Dependency<T>());
@@ -117,14 +117,14 @@ partial class Composition
 
   [MethodImpl((MethodImplOptions)0x100)]
   public IService<T, bool> GetOtherService<T>()
-    where T: System.IDisposable
+    where T: IDisposable
   {
-    OtherService<T> transientM04D27di0_OtherService;
+    OtherService<T> transient0_OtherService;
     {
-        var dependency_M04D27di1 = new Dependency<T>();
-        transientM04D27di0_OtherService = new OtherService<T>(dependency_M04D27di1);
+        var dependency_1 = new Dependency<T>();
+        transient0_OtherService = new OtherService<T>(dependency_1);
     }
-    return transientM04D27di0_OtherService;
+    return transient0_OtherService;
   }
 
   public override string ToString()

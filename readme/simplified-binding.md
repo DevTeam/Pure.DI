@@ -88,16 +88,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM04D27di;
+  private readonly Composition _root;
 
   public Composition()
   {
-    _rootM04D27di = this;
+    _root = this;
   }
 
   internal Composition(Composition baseComposition)
   {
-    _rootM04D27di = baseComposition._rootM04D27di;
+    _root = baseComposition._root;
   }
 
   public Service MyService
@@ -105,8 +105,8 @@ partial class Composition
     [MethodImpl((MethodImplOptions)0x100)]
     get
     {
-      Dependency perBlockM04D27di1_Dependency = new Dependency();
-      return new Service(perBlockM04D27di1_Dependency, perBlockM04D27di1_Dependency, perBlockM04D27di1_Dependency);
+      Dependency perBlock1_Dependency = new Dependency();
+      return new Service(perBlock1_Dependency, perBlock1_Dependency, perBlock1_Dependency);
     }
   }
 

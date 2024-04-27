@@ -111,39 +111,39 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM04D27di;
-  private readonly object _lockM04D27di;
+  private readonly Composition _root;
+  private readonly object _lock;
 
   public Composition()
   {
-    _rootM04D27di = this;
-    _lockM04D27di = new object();
+    _root = this;
+    _lock = new object();
   }
 
   internal Composition(Composition baseComposition)
   {
-    _rootM04D27di = baseComposition._rootM04D27di;
-    _lockM04D27di = _rootM04D27di._lockM04D27di;
+    _root = baseComposition._root;
+    _lock = _root._lock;
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
-  public IService GetRoot(System.Threading.CancellationToken cancellationToken)
+  public IService GetRoot(CancellationToken cancellationToken)
   {
-    var perResolveM04D27di42_Func = default(System.Func<IDependency>);
-    perResolveM04D27di42_Func = new Func<IDependency>(
+    var perResolve42_Func = default(Func<IDependency>);
+    perResolve42_Func = new Func<IDependency>(
     [MethodImpl((MethodImplOptions)768)]
     () =>
     {
-        var value_M04D27di1 = new Dependency();
-        return value_M04D27di1;
+        var value_1 = new Dependency();
+        return value_1;
     });
-    System.Threading.Tasks.Task<IDependency> transientM04D27di1_Task;
+    Task<IDependency> transient1_Task;
     {
-        var factory_M04D27di2 = perResolveM04D27di42_Func;
-        var cancellationToken_M04D27di3 = cancellationToken;
-        transientM04D27di1_Task = new Task<IDependency>(factory_M04D27di2, cancellationToken_M04D27di3);
+        var factory_2 = perResolve42_Func;
+        var cancellationToken_3 = cancellationToken;
+        transient1_Task = new Task<IDependency>(factory_2, cancellationToken_3);
     }
-    return new Service(transientM04D27di1_Task);
+    return new Service(transient1_Task);
   }
 
   public override string ToString()
@@ -151,7 +151,7 @@ partial class Composition
     return
       "classDiagram\n" +
         "  class Composition {\n" +
-          "    +IService GetRoot(System.Threading.CancellationToken cancellationToken)\n" +
+          "    +IService GetRoot(CancellationToken cancellationToken)\n" +
         "  }\n" +
         "  class TaskFactory\n" +
         "  class CancellationToken\n" +
@@ -176,7 +176,7 @@ partial class Composition
         "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
         "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
         "  Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ\n" +
-        "  Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)\n" +
+        "  Composition ..> Service : IService GetRoot(CancellationToken cancellationToken)\n" +
         "  TaskᐸIDependencyᐳ o--  \"PerResolve\" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ\n" +
         "  TaskᐸIDependencyᐳ o-- CancellationToken : Argument \"cancellationToken\"\n" +
         "  FuncᐸIDependencyᐳ *--  Dependency : IDependency";
