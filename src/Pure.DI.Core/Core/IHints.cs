@@ -46,5 +46,7 @@ internal interface IHints : IReadOnlyDictionary<Hint, string>
     
     string DisposeMethodModifiers { get; }
     
+    string DisposeAsyncMethodModifiers { get; }
+    
     DiagnosticSeverity SeverityOfNotImplementedContract { get; }
 }

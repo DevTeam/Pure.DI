@@ -217,7 +217,7 @@ partial class Composition: global::System.IDisposable, global::System.IAsyncDisp
           }
           catch (Exception exception)
           {
-            OnAsyncDisposeException(asyncDisposableInstance, exception);
+            OnDisposeAsyncException(asyncDisposableInstance, exception);
           }
           break;
       }
@@ -250,14 +250,14 @@ partial class Composition: global::System.IDisposable, global::System.IAsyncDisp
           }
           catch (Exception exception)
           {
-            OnAsyncDisposeException(asyncDisposableInstance, exception);
+            OnDisposeAsyncException(asyncDisposableInstance, exception);
           }
           break;
       }
     }
   }
   
-  partial void OnAsyncDisposeException<T>(T asyncDisposableInstance, Exception exception) where T : global::System.IAsyncDisposable;
+  partial void OnDisposeAsyncException<T>(T asyncDisposableInstance, Exception exception) where T : global::System.IAsyncDisposable;
   
   public override string ToString()
   {

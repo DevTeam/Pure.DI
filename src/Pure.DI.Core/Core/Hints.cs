@@ -67,6 +67,9 @@ internal sealed class Hints : Dictionary<Hint, string>, IHints
 
     public string DisposeMethodModifiers =>
         GetValueOrDefault(Hint.DisposeMethodModifiers, Names.DefaultApiMethodModifiers);
+    
+    public string DisposeAsyncMethodModifiers =>
+        GetValueOrDefault(Hint.DisposeAsyncMethodModifiers, Names.DefaultApiMethodModifiers);
 
     public DiagnosticSeverity SeverityOfNotImplementedContract =>
         GetHint(Hint.SeverityOfNotImplementedContract, DiagnosticSeverity.Error);

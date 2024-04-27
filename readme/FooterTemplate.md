@@ -285,6 +285,7 @@ Both approaches can be used in combination with each other.
 | [ObjectResolveByTagMethodModifiers](#objectresolvebytagmethodmodifiers-hint)                                                       | Method modifier                            |            | _public_  |
 | [ObjectResolveByTagMethodName](#objectresolvebytagmethodname-hint)                                                                 | Method name                                |            | _Resolve_ |
 | [DisposeMethodModifiers](#disposemethodmodifiers-hint)                                                                             | Method modifier                            |            | _public_  |
+| [DisposeAsyncMethodModifiers](#disposeasyncmethodmodifiers-hint)                                                                   | Method modifier                            |            | _public_  |
 | [FormatCode](#formatcode-hint)                                                                                                     | _On_ or _Off_                              |            | _Off_     |
 | [SeverityOfNotImplementedContract](#severityofnotimplementedcontract-hint)                                                         | _Error_ or _Warning_ or _Info_ or _Hidden_ |            | _Error_   |
 | [Comments](#comments-hint)                                                                                                         | _On_ or _Off_                              |            | _On_     |
@@ -493,6 +494,10 @@ Overrides the method name for `public object Resolve(Type type, object? tag)`.
 ### DisposeMethodModifiers Hint
 
 Overrides the modifiers of the `public void Dispose()` method.
+
+### DisposeAsyncMethodModifiers Hint
+
+Overrides the modifiers of the `public ValueTask DisposeAsync()` method.
 
 ### FormatCode Hint
 

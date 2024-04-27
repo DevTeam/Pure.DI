@@ -722,6 +722,27 @@ namespace Pure.DI
         DisposeMethodModifiers,
         
         /// <summary>
+        /// Overrides modifiers of the method <c>public <see cref="ValueTask"/> DisposeAsyncMethodModifiers()</c>. "public" by default.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// // DisposeAsyncMethodModifiers = internal
+        /// DI.Setup("Composition")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// <br/>
+        /// or using the API call <see cref="IConfiguration.Hint"/>:
+        /// <code>
+        /// DI.Setup("Composition")
+        ///     .Hint(Hint.DisposeAsyncMethodModifiers, "internal")
+        ///     .Bind&lt;IDependency&gt;().To&lt;Dependency&gt;();
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <seealso cref="IConfiguration.Hint"/>
+        DisposeAsyncMethodModifiers,
+        
+        /// <summary>
         /// <c>On</c> or <c>Off</c>. Specifies whether the generated code should be formatted. This option consumes a lot of CPU resources. <c>Off</c> by default.
         /// </summary>
         /// <example>
@@ -1152,7 +1173,7 @@ namespace Pure.DI
                         }
                         catch (global::System.Exception exception)
                         {
-                            OnAsyncDisposeException(asyncDisposableInstance, exception);
+                            OnDisposeAsyncException(asyncDisposableInstance, exception);
                         }
                         break;
 #endif
@@ -1176,7 +1197,7 @@ namespace Pure.DI
                         }
                         catch (global::System.Exception exception)
                         {
-                            OnAsyncDisposeException(asyncDisposableInstance, exception);
+                            OnDisposeAsyncException(asyncDisposableInstance, exception);
                         }
                         break;
 
@@ -1212,7 +1233,7 @@ namespace Pure.DI
         /// <param name="asynDisposableInstance">The disposable instance.</param>
         /// <param name="exception">Exception occurring during disposal.</param>
         /// <typeparam name="T">The actual type of instance being disposed of.</typeparam>
-        partial void OnAsyncDisposeException<T>(T asynDisposableInstance, Exception exception)
+        partial void OnDisposeAsyncException<T>(T asynDisposableInstance, Exception exception)
             where T : global::System.IAsyncDisposable;
 #endif
         

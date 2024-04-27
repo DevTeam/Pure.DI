@@ -545,7 +545,7 @@ namespace Sample
 
         public ValueTask DisposeAsync()
         {
-            Console.WriteLine("AsyncDispose3");
+            Console.WriteLine("DisposeAsync3");
             return ValueTask.CompletedTask;
         }
     }
@@ -611,7 +611,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["Dependency2", "Dependency3", "Dependency2", "Dependency3", "AsyncDispose3", "Dispose2", "Dispose3", "Dispose2"], result);
+        result.StdOut.ShouldBe(["Dependency2", "Dependency3", "Dependency2", "Dependency3", "DisposeAsync3", "Dispose2", "Dispose3", "Dispose2"], result);
     }
     
     [Fact]
@@ -674,7 +674,7 @@ namespace Sample
         
         public ValueTask DisposeAsync()
         {
-            Console.WriteLine("AsyncDispose3");
+            Console.WriteLine("DisposeAsync3");
             return ValueTask.CompletedTask;
         }
     }
@@ -740,7 +740,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["Dependency2", "Dependency3", "Dependency2", "Dependency3", "AsyncDispose3", "Dispose2", "AsyncDispose3", "Dispose2"], result);
+        result.StdOut.ShouldBe(["Dependency2", "Dependency3", "Dependency2", "Dependency3", "DisposeAsync3", "Dispose2", "DisposeAsync3", "Dispose2"], result);
     }
     
     [Fact]
@@ -777,7 +777,7 @@ namespace Sample
 
         public ValueTask DisposeAsync()
         {
-            Console.WriteLine("AsyncDispose2");
+            Console.WriteLine("DisposeAsync2");
             return ValueTask.CompletedTask;
         }
     }
@@ -804,7 +804,7 @@ namespace Sample
         
         public ValueTask DisposeAsync()
         {
-            Console.WriteLine("AsyncDispose3");
+            Console.WriteLine("DisposeAsync3");
             return ValueTask.CompletedTask;
         }
     }
@@ -870,7 +870,7 @@ namespace Sample
 
         // Then
         result.Success.ShouldBeTrue(result);
-        result.StdOut.ShouldBe(["Dependency2", "Dependency3", "Dependency2", "Dependency3", "AsyncDispose3", "AsyncDispose2", "AsyncDispose3", "AsyncDispose2"], result);
+        result.StdOut.ShouldBe(["Dependency2", "Dependency3", "Dependency2", "Dependency3", "DisposeAsync3", "DisposeAsync2", "DisposeAsync3", "DisposeAsync2"], result);
     }
     
     [Fact]

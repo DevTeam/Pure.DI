@@ -50,7 +50,7 @@ internal sealed class DisposeMethodBuilder
                             code.AppendLine();
                         }
 
-                        AddAsyncDisposePart(composition, code, false);
+                        AddDisposeAsyncPart(composition, code, false);
                     }
                 }
                 
@@ -84,7 +84,7 @@ internal sealed class DisposeMethodBuilder
                 code.AppendLine("/// </summary>");
             }
 
-            code.AppendLine($"{composition.Source.Source.Hints.DisposeMethodModifiers} async {Names.ValueTaskName} DisposeAsync()");
+            code.AppendLine($"{composition.Source.Source.Hints.DisposeAsyncMethodModifiers} async {Names.ValueTaskName} DisposeAsync()");
             code.AppendLine("{");
             using (code.Indent())
             {
@@ -100,7 +100,7 @@ internal sealed class DisposeMethodBuilder
                     {
                         if (hasAsyncDisposable)
                         {
-                            AddAsyncDisposePart(composition, code, true);
+                            AddDisposeAsyncPart(composition, code, true);
                         }
 
                         if (hasDisposable)
@@ -129,14 +129,14 @@ internal sealed class DisposeMethodBuilder
             code.AppendLine("/// <param name=\"asyncDisposableInstance\">The disposable instance.</param>");
             code.AppendLine("/// <param name=\"exception\">Exception occurring during disposal.</param>");
             code.AppendLine("/// <typeparam name=\"T\">The actual type of instance being disposed of.</typeparam>");
-            code.AppendLine($"partial void {Names.OnAsyncDisposeExceptionMethodName}<T>(T asyncDisposableInstance, Exception exception) where T : {Names.IAsyncDisposableInterfaceName};");
+            code.AppendLine($"partial void {Names.OnDisposeAsyncExceptionMethodName}<T>(T asyncDisposableInstance, Exception exception) where T : {Names.IAsyncDisposableInterfaceName};");
             membersCounter++;
         }
         
         return composition with { MembersCount = membersCounter };
     }
 
-    private static void AddAsyncDisposePart(CompositionCode composition, LinesBuilder code, bool makeAsyncCall)
+    private static void AddDisposeAsyncPart(CompositionCode composition, LinesBuilder code, bool makeAsyncCall)
     {
         code.AppendLine($"case {Names.IAsyncDisposableInterfaceName} asyncDisposableInstance:");
         using (code.Indent())
@@ -167,7 +167,7 @@ internal sealed class DisposeMethodBuilder
             code.AppendLine("{");
             using (code.Indent())
             {
-                code.AppendLine($"{Names.OnAsyncDisposeExceptionMethodName}(asyncDisposableInstance, exception);");
+                code.AppendLine($"{Names.OnDisposeAsyncExceptionMethodName}(asyncDisposableInstance, exception);");
             }
             
             code.AppendLine("}");

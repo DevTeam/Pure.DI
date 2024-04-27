@@ -39,7 +39,7 @@ internal static class Names
     // Partial methods
     public const string OnNewInstanceMethodName = "OnNewInstance";
     public const string OnDisposeExceptionMethodName = "OnDisposeException";
-    public const string OnAsyncDisposeExceptionMethodName = "OnAsyncDisposeException";
+    public const string OnDisposeAsyncExceptionMethodName = "OnDisposeAsyncException";
     public const string OnDependencyInjectionMethodName = "OnDependencyInjection";
     public const string OnCannotResolve = "OnCannotResolve";
     public const string OnNewRootMethodName = "OnNewRoot";
