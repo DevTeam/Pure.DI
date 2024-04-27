@@ -30,25 +30,31 @@ internal sealed class DisposeMethodBuilder
         {
             AddSyncPart(composition, code);
             code.AppendLine();
-            code.AppendLine("while (disposeIndex > 0)");
+            code.AppendLine("while (disposeIndex-- > 0)");
             code.AppendLine("{");
             using (code.Indent())
             {
-                code.AppendLine("var instance = disposables[--disposeIndex];");
-                if (hasDisposable)
-                {
-                    AddDisposePart(code);
-                }
-
-                if (hasAsyncDisposable)
+                code.AppendLine("switch (disposables[disposeIndex])");
+                code.AppendLine("{");
+                using (code.Indent())
                 {
                     if (hasDisposable)
                     {
-                        code.AppendLine();
+                        AddDisposePart(code);
                     }
 
-                    AddAsyncDisposePart(composition, code, false);
+                    if (hasAsyncDisposable)
+                    {
+                        if (hasDisposable)
+                        {
+                            code.AppendLine();
+                        }
+
+                        AddAsyncDisposePart(composition, code, false);
+                    }
                 }
+                
+                code.AppendLine("}");
             }
 
             code.AppendLine("}");
@@ -84,25 +90,30 @@ internal sealed class DisposeMethodBuilder
             {
                 AddSyncPart(composition, code);
                 code.AppendLine();
-                code.AppendLine("while (disposeIndex > 0)");
+                code.AppendLine("while (disposeIndex-- > 0)");
                 code.AppendLine("{");
                 using (code.Indent())
                 {
-                    code.AppendLine("var instance = disposables[--disposeIndex];");
-                    if (hasAsyncDisposable)
-                    {
-                        AddAsyncDisposePart(composition, code, true);
-                    }
-
-                    if (hasDisposable)
+                    code.AppendLine("switch (disposables[disposeIndex])");
+                    code.AppendLine("{");
+                    using (code.Indent())
                     {
                         if (hasAsyncDisposable)
                         {
-                            code.AppendLine();
+                            AddAsyncDisposePart(composition, code, true);
                         }
 
-                        AddDisposePart(code);
+                        if (hasDisposable)
+                        {
+                            if (hasAsyncDisposable)
+                            {
+                                code.AppendLine();
+                            }
+
+                            AddDisposePart(code);
+                        }
                     }
+                    code.AppendLine("}");
                 }
 
                 code.AppendLine("}");
@@ -127,9 +138,7 @@ internal sealed class DisposeMethodBuilder
 
     private static void AddAsyncDisposePart(CompositionCode composition, LinesBuilder code, bool makeAsyncCall)
     {
-        code.AppendLine($"var asyncDisposableInstance = instance as {Names.IAsyncDisposableInterfaceName};");
-        code.AppendLine("if (asyncDisposableInstance != null)");
-        code.AppendLine("{");
+        code.AppendLine($"case {Names.IAsyncDisposableInterfaceName} asyncDisposableInstance:");
         using (code.Indent())
         {
             code.AppendLine("try");
@@ -162,17 +171,13 @@ internal sealed class DisposeMethodBuilder
             }
             
             code.AppendLine("}");
-            code.AppendLine("continue;");
+            code.AppendLine("break;");
         }
-        
-        code.AppendLine("}");
     }
 
     private static void AddDisposePart(LinesBuilder code)
     {
-        code.AppendLine($"var disposableInstance = instance as {Names.IDisposableInterfaceName};");
-        code.AppendLine("if (disposableInstance != null)");
-        code.AppendLine("{");
+        code.AppendLine($"case {Names.IDisposableInterfaceName} disposableInstance:");
         using (code.Indent())
         {
             code.AppendLine("try");
@@ -191,10 +196,8 @@ internal sealed class DisposeMethodBuilder
             }
 
             code.AppendLine("}");
-            code.AppendLine("continue;");
+            code.AppendLine("break;");
         }
-
-        code.AppendLine("}");
     }
 
     private static void AddSyncPart(CompositionCode composition, LinesBuilder code)
@@ -217,6 +220,7 @@ internal sealed class DisposeMethodBuilder
                         : $"{singletonField.VariableName} = null;");
             }
         }
+
         code.AppendLine("}");
     }
 }

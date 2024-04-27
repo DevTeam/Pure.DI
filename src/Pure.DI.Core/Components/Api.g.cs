@@ -1120,51 +1120,46 @@ namespace Pure.DI
                 _disposables.Add(disposable);
             }
         }
-        
+
         /// <inheritdoc />
         public void Dispose()
         {
             var disposables = global::System.Threading.Interlocked.Exchange(ref _disposables, new global::System.Collections.Generic.List<object>());
             for (var i = disposables.Count - 1; i >= 0; i--)
             {
-                var instance = disposables[i];
-
-                var disposableInstance = instance as global::System.IDisposable;
-                if (disposableInstance != null)
+                switch (disposables[i])
                 {
-                    try
-                    {
-                        disposableInstance.Dispose();
-                    }
-                    catch (global::System.Exception exception)
-                    {
-                        OnDisposeException(disposableInstance, exception);
-                    }
-                    
-                    continue;
-                }
-
-#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER 
-                var asyncDisposableInstance = instance as global::System.IAsyncDisposable;
-                if (disposableInstance != null)
-                {
-                    try
-                    {
-                        var valueTask = asyncDisposableInstance.DisposeAsync();
-                        if (!valueTask.IsCompleted)
+                    case global::System.IDisposable disposableInstance:
+                        try
                         {
-                          valueTask.AsTask().Wait();
+                            disposableInstance.Dispose();
                         }
-                    }
-                    catch (global::System.Exception exception)
-                    {
-                        OnAsyncDisposeException(asyncDisposableInstance, exception);
-                    }
-                }
+                        catch (global::System.Exception exception)
+                        {
+                            OnDisposeException(disposableInstance, exception);
+                        }
+                        break;
+
+#if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+                    case global::System.IAsyncDisposable asyncDisposableInstance:
+                        try
+                        {
+                            var valueTask = asyncDisposableInstance.DisposeAsync();
+                            if (!valueTask.IsCompleted)
+                            {
+                                valueTask.AsTask().Wait();
+                            }
+                        }
+                        catch (global::System.Exception exception)
+                        {
+                            OnAsyncDisposeException(asyncDisposableInstance, exception);
+                        }
+                        break;
 #endif
+                }
             }
         }
-        
+
 #if NETCOREAPP3_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER
         /// <inheritdoc />
         public async global::System.Threading.Tasks.ValueTask DisposeAsync()
@@ -1172,38 +1167,34 @@ namespace Pure.DI
             var disposables = global::System.Threading.Interlocked.Exchange(ref _disposables, new global::System.Collections.Generic.List<object>());
             for (var i = disposables.Count - 1; i >= 0; i--)
             {
-                var instance = disposables[i];
-
-                var asyncDisposableInstance = instance as global::System.IAsyncDisposable;
-                if (asyncDisposableInstance != null)
+                switch (disposables[i])
                 {
-                    try
-                    {
-                        await asyncDisposableInstance.DisposeAsync();
-                    }
-                    catch (global::System.Exception exception)
-                    {
-                        OnAsyncDisposeException(asyncDisposableInstance, exception);
-                    }
+                    case global::System.IAsyncDisposable asyncDisposableInstance:
+                        try
+                        {
+                            await asyncDisposableInstance.DisposeAsync();
+                        }
+                        catch (global::System.Exception exception)
+                        {
+                            OnAsyncDisposeException(asyncDisposableInstance, exception);
+                        }
+                        break;
 
-                    continue;
-                }
-
-                var disposableInstance = instance as global::System.IDisposable;
-                if (disposableInstance != null)
-                {
-                    try
-                    {
-                        disposableInstance.Dispose();
-                    }
-                    catch (global::System.Exception exception)
-                    {
-                        OnDisposeException(disposableInstance, exception);
-                    }
+                    case global::System.IDisposable disposableInstance:
+                        try
+                        {
+                            disposableInstance.Dispose();
+                        }
+                        catch (global::System.Exception exception)
+                        {
+                            OnDisposeException(disposableInstance, exception);
+                        }
+                        break;
                 }
             }
         }
-#endif
+#endif                
+
 
         /// <summary>
         /// Implement this partial method to handle the exception on disposing.

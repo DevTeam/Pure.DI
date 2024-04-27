@@ -267,25 +267,24 @@ partial class Composition: global::System.IDisposable, global::System.IAsyncDisp
       _scopedM04D27di36_Dependency = null;
     }
     
-    while (disposeIndex > 0)
+    while (disposeIndex-- > 0)
     {
-      var instance = disposables[--disposeIndex];
-      var asyncDisposableInstance = instance as global::System.IAsyncDisposable;
-      if (asyncDisposableInstance != null)
+      switch (disposables[disposeIndex])
       {
-        try
-        {
-          var valueTask = asyncDisposableInstance.DisposeAsync();
-          if (!valueTask.IsCompleted)
+        case global::System.IAsyncDisposable asyncDisposableInstance:
+          try
           {
-            valueTask.AsTask().Wait();
+            var valueTask = asyncDisposableInstance.DisposeAsync();
+            if (!valueTask.IsCompleted)
+            {
+              valueTask.AsTask().Wait();
+            }
           }
-        }
-        catch (Exception exception)
-        {
-          OnAsyncDisposeException(asyncDisposableInstance, exception);
-        }
-        continue;
+          catch (Exception exception)
+          {
+            OnAsyncDisposeException(asyncDisposableInstance, exception);
+          }
+          break;
       }
     }
   }
@@ -305,21 +304,20 @@ partial class Composition: global::System.IDisposable, global::System.IAsyncDisp
       _scopedM04D27di36_Dependency = null;
     }
     
-    while (disposeIndex > 0)
+    while (disposeIndex-- > 0)
     {
-      var instance = disposables[--disposeIndex];
-      var asyncDisposableInstance = instance as global::System.IAsyncDisposable;
-      if (asyncDisposableInstance != null)
+      switch (disposables[disposeIndex])
       {
-        try
-        {
-          await asyncDisposableInstance.DisposeAsync();
-        }
-        catch (Exception exception)
-        {
-          OnAsyncDisposeException(asyncDisposableInstance, exception);
-        }
-        continue;
+        case global::System.IAsyncDisposable asyncDisposableInstance:
+          try
+          {
+            await asyncDisposableInstance.DisposeAsync();
+          }
+          catch (Exception exception)
+          {
+            OnAsyncDisposeException(asyncDisposableInstance, exception);
+          }
+          break;
       }
     }
   }

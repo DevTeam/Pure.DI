@@ -250,21 +250,20 @@ partial class Composition: global::System.IDisposable
       _scopedM04D27di37_Service = null;
     }
     
-    while (disposeIndex > 0)
+    while (disposeIndex-- > 0)
     {
-      var instance = disposables[--disposeIndex];
-      var disposableInstance = instance as global::System.IDisposable;
-      if (disposableInstance != null)
+      switch (disposables[disposeIndex])
       {
-        try
-        {
-          disposableInstance.Dispose();
-        }
-        catch (Exception exception)
-        {
-          OnDisposeException(disposableInstance, exception);
-        }
-        continue;
+        case global::System.IDisposable disposableInstance:
+          try
+          {
+            disposableInstance.Dispose();
+          }
+          catch (Exception exception)
+          {
+            OnDisposeException(disposableInstance, exception);
+          }
+          break;
       }
     }
   }
