@@ -15,11 +15,6 @@ internal sealed class StaticConstructorBuilder(
         }
         
         var code = composition.Code;
-        if (composition.MembersCount > 0)
-        {
-            code.AppendLine();
-        }
-        
         var membersCounter = 0;
         var hasOnNewRoot = composition.Source.Source.Hints.IsOnNewRootEnabled;
         // ReSharper disable once InvertIf

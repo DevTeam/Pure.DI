@@ -38,6 +38,7 @@ internal sealed class ToStringMethodBuilder
             }
         }
         code.AppendLine("}");
+        membersCounter++;
         return composition with { MembersCount = membersCounter };
     }
 }

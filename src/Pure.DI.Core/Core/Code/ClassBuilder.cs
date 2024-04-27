@@ -73,10 +73,17 @@ internal sealed class ClassBuilder(
 
         using (code.Indent())
         {
+            var prevCount = composition.MembersCount;
             // Generate class members
             foreach (var builder in _codeBuilders)
             {
                 cancellationToken.ThrowIfCancellationRequested();
+                if (prevCount != composition.MembersCount)
+                {
+                    code.AppendLine();
+                    prevCount = composition.MembersCount;
+                }
+                
                 composition = builder.Build(composition);
             }
         }

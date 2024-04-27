@@ -18,13 +18,7 @@ internal sealed class ResolversFieldsBuilder(IBuilder<ImmutableArray<Root>, IEnu
         }
 
         var code = composition.Code;
-        if (composition.MembersCount > 0)
-        {
-            code.AppendLine();
-        }
-
         code.AppendLine($"private readonly static int {Names.BucketSizeFieldName};");
-        
         var pairs = $"{Names.SystemNamespace}Type, {Names.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, object>";
         var pairTypeName = $"{Names.ApiNamespace}Pair<{pairs}>";
         code.AppendLine($"private readonly static {pairTypeName}[] {Names.BucketsFieldName};");

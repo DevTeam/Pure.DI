@@ -110,99 +110,99 @@ classDiagram
 ```c#
 partial class Composition: global::System.IDisposable
 {
-  private readonly Composition _rootM04D26di;
-  private readonly object _lockM04D26di;
-  private object[] _disposablesM04D26di;
-  private int _disposeIndexM04D26di;
-  private Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.Dependency _singletonM04D26di36_Dependency;
-  private Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.Service _scopedM04D26di37_Service;
+  private readonly Composition _rootM04D27di;
+  private readonly object _lockM04D27di;
+  private object[] _disposablesM04D27di;
+  private int _disposeIndexM04D27di;
+  private Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.Dependency _singletonM04D27di36_Dependency;
+  private Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.Service _scopedM04D27di37_Service;
   
   public Composition()
   {
-    _rootM04D26di = this;
-    _lockM04D26di = new object();
-    _disposablesM04D26di = new object[1];
+    _rootM04D27di = this;
+    _lockM04D27di = new object();
+    _disposablesM04D27di = new object[1];
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM04D26di = baseComposition._rootM04D26di;
-    _lockM04D26di = _rootM04D26di._lockM04D26di;
-    _disposablesM04D26di = new object[1];
+    _rootM04D27di = baseComposition._rootM04D27di;
+    _lockM04D27di = _rootM04D27di._lockM04D27di;
+    _disposablesM04D27di = new object[1];
   }
   
-  private Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency RootM04D26di0001
+  private Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency RootM04D27di0001
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     get
     {
-      if (_rootM04D26di._singletonM04D26di36_Dependency == null)
+      if (_rootM04D27di._singletonM04D27di36_Dependency == null)
       {
-          lock (_lockM04D26di)
+          lock (_lockM04D27di)
           {
-              if (_rootM04D26di._singletonM04D26di36_Dependency == null)
+              if (_rootM04D27di._singletonM04D27di36_Dependency == null)
               {
-                  _singletonM04D26di36_Dependency = new Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.Dependency();
-                  _rootM04D26di._singletonM04D26di36_Dependency = _singletonM04D26di36_Dependency;
+                  _singletonM04D27di36_Dependency = new Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.Dependency();
+                  _rootM04D27di._singletonM04D27di36_Dependency = _singletonM04D27di36_Dependency;
               }
           }
       }
-      return _rootM04D26di._singletonM04D26di36_Dependency;
+      return _rootM04D27di._singletonM04D27di36_Dependency;
     }
   }
   
-  private Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService RootM04D26di0002
+  private Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService RootM04D27di0002
   {
     [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
     get
     {
-      if (_scopedM04D26di37_Service == null)
+      if (_scopedM04D27di37_Service == null)
       {
-          lock (_lockM04D26di)
+          lock (_lockM04D27di)
           {
-              if (_scopedM04D26di37_Service == null)
+              if (_scopedM04D27di37_Service == null)
               {
-                  if (_rootM04D26di._singletonM04D26di36_Dependency == null)
+                  if (_rootM04D27di._singletonM04D27di36_Dependency == null)
                   {
-                      _singletonM04D26di36_Dependency = new Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.Dependency();
-                      _rootM04D26di._singletonM04D26di36_Dependency = _singletonM04D26di36_Dependency;
+                      _singletonM04D27di36_Dependency = new Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.Dependency();
+                      _rootM04D27di._singletonM04D27di36_Dependency = _singletonM04D27di36_Dependency;
                   }
-                  _scopedM04D26di37_Service = new Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.Service(_rootM04D26di._singletonM04D26di36_Dependency);
-                  _disposablesM04D26di[_disposeIndexM04D26di++] = _scopedM04D26di37_Service;
+                  _scopedM04D27di37_Service = new Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.Service(_rootM04D27di._singletonM04D27di36_Dependency);
+                  _disposablesM04D27di[_disposeIndexM04D27di++] = _scopedM04D27di37_Service;
               }
           }
       }
-      return _scopedM04D26di37_Service;
+      return _scopedM04D27di37_Service;
     }
   }
   
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
   public T Resolve<T>()
   {
-    return ResolverM04D26di<T>.Value.Resolve(this);
+    return ResolverM04D27di<T>.Value.Resolve(this);
   }
   
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
   public T Resolve<T>(object? tag)
   {
-    return ResolverM04D26di<T>.Value.ResolveByTag(this, tag);
+    return ResolverM04D27di<T>.Value.ResolveByTag(this, tag);
   }
   
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
   public object GetService(global::System.Type type)
   {
-    var index = (int)(_bucketSizeM04D26di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    ref var pair = ref _bucketsM04D26di[index];
-    return pair.Key == type ? pair.Value.Resolve(this) : ResolveM04D26di(type, index);
+    var index = (int)(_bucketSizeM04D27di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    ref var pair = ref _bucketsM04D27di[index];
+    return pair.Key == type ? pair.Value.Resolve(this) : ResolveM04D27di(type, index);
   }
   
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x8)]
-  private object ResolveM04D26di(global::System.Type type, int index)
+  private object ResolveM04D27di(global::System.Type type, int index)
   {
-    var finish = index + _bucketSizeM04D26di;
+    var finish = index + _bucketSizeM04D27di;
     while (++index < finish)
     {
-      ref var pair = ref _bucketsM04D26di[index];
+      ref var pair = ref _bucketsM04D27di[index];
       if (pair.Key == type)
       {
         return pair.Value.Resolve(this);
@@ -215,18 +215,18 @@ partial class Composition: global::System.IDisposable
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x100)]
   public object GetRequiredKeyedService(global::System.Type type, object? tag)
   {
-    var index = (int)(_bucketSizeM04D26di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
-    ref var pair = ref _bucketsM04D26di[index];
-    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : ResolveM04D26di(type, tag, index);
+    var index = (int)(_bucketSizeM04D27di * ((uint)global::System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(type) % 4));
+    ref var pair = ref _bucketsM04D27di[index];
+    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : ResolveM04D27di(type, tag, index);
   }
   
   [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)0x8)]
-  private object ResolveM04D26di(global::System.Type type, object? tag, int index)
+  private object ResolveM04D27di(global::System.Type type, object? tag, int index)
   {
-    var finish = index + _bucketSizeM04D26di;
+    var finish = index + _bucketSizeM04D27di;
     while (++index < finish)
     {
-      ref var pair = ref _bucketsM04D26di[index];
+      ref var pair = ref _bucketsM04D27di[index];
       if (pair.Key == type)
       {
         return pair.Value.ResolveByTag(this, tag);
@@ -240,14 +240,14 @@ partial class Composition: global::System.IDisposable
   {
     int disposeIndex;
     object[] disposables;
-    lock (_lockM04D26di)
+    lock (_lockM04D27di)
     {
-      disposeIndex = _disposeIndexM04D26di;
-      _disposeIndexM04D26di = 0;
-      disposables = _disposablesM04D26di;
-      _disposablesM04D26di = new object[1];
-      _singletonM04D26di36_Dependency = null;
-      _scopedM04D26di37_Service = null;
+      disposeIndex = _disposeIndexM04D27di;
+      _disposeIndexM04D27di = 0;
+      disposables = _disposablesM04D27di;
+      _disposablesM04D27di = new object[1];
+      _singletonM04D27di36_Dependency = null;
+      _scopedM04D27di37_Service = null;
     }
     
     while (disposeIndex > 0)
@@ -270,6 +270,7 @@ partial class Composition: global::System.IDisposable
   }
   
   partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : global::System.IDisposable;
+  
   public override string ToString()
   {
     return
@@ -302,28 +303,28 @@ partial class Composition: global::System.IDisposable
         "  Composition ..> Service : IService _";
   }
   
-  private readonly static int _bucketSizeM04D26di;
-  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM04D26di;
+  private readonly static int _bucketSizeM04D27di;
+  private readonly static global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[] _bucketsM04D27di;
   
   static Composition()
   {
-    var valResolverM04D26di_0000 = new ResolverM04D26di_0000();
-    ResolverM04D26di<Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency>.Value = valResolverM04D26di_0000;
-    var valResolverM04D26di_0001 = new ResolverM04D26di_0001();
-    ResolverM04D26di<Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService>.Value = valResolverM04D26di_0001;
-    _bucketsM04D26di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
+    var valResolverM04D27di_0000 = new ResolverM04D27di_0000();
+    ResolverM04D27di<Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency>.Value = valResolverM04D27di_0000;
+    var valResolverM04D27di_0001 = new ResolverM04D27di_0001();
+    ResolverM04D27di<Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService>.Value = valResolverM04D27di_0001;
+    _bucketsM04D27di = global::Pure.DI.Buckets<global::System.Type, global::Pure.DI.IResolver<Composition, object>>.Create(
       4,
-      out _bucketSizeM04D26di,
+      out _bucketSizeM04D27di,
       new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>[2]
       {
-         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency), valResolverM04D26di_0000)
-        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService), valResolverM04D26di_0001)
+         new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency), valResolverM04D27di_0000)
+        ,new global::Pure.DI.Pair<global::System.Type, global::Pure.DI.IResolver<Composition, object>>(typeof(Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService), valResolverM04D27di_0001)
       });
   }
   
-  private sealed class ResolverM04D26di<T>: global::Pure.DI.IResolver<Composition, T>
+  private sealed class ResolverM04D27di<T>: global::Pure.DI.IResolver<Composition, T>
   {
-    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM04D26di<T>();
+    public static global::Pure.DI.IResolver<Composition, T> Value = new ResolverM04D27di<T>();
     
     public T Resolve(Composition composite)
     {
@@ -336,11 +337,11 @@ partial class Composition: global::System.IDisposable
     }
   }
   
-  private sealed class ResolverM04D26di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency>
+  private sealed class ResolverM04D27di_0000: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency>
   {
     public Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency Resolve(Composition composition)
     {
-      return composition.RootM04D26di0001;
+      return composition.RootM04D27di0001;
     }
     
     public Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency ResolveByTag(Composition composition, object tag)
@@ -348,18 +349,18 @@ partial class Composition: global::System.IDisposable
       switch (tag)
       {
         case null:
-          return composition.RootM04D26di0001;
+          return composition.RootM04D27di0001;
         default:
           throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IDependency.");
       }
     }
   }
   
-  private sealed class ResolverM04D26di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService>
+  private sealed class ResolverM04D27di_0001: global::Pure.DI.IResolver<Composition, Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService>
   {
     public Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService Resolve(Composition composition)
     {
-      return composition.RootM04D26di0002;
+      return composition.RootM04D27di0002;
     }
     
     public Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService ResolveByTag(Composition composition, object tag)
@@ -367,7 +368,7 @@ partial class Composition: global::System.IDisposable
       switch (tag)
       {
         case null:
-          return composition.RootM04D26di0002;
+          return composition.RootM04D27di0002;
         default:
           throw new global::System.InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Pure.DI.UsageTests.BCL.ServiceProviderWithScopeScenario.IService.");
       }

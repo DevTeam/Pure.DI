@@ -20,11 +20,6 @@ internal sealed class ParameterizedConstructorBuilder(
             return composition;
         }
 
-        if (membersCounter > 0)
-        {
-            code.AppendLine();
-        }
-        
         constructorCommenter.AddComments(composition, Unit.Shared);
         
         var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToArray();

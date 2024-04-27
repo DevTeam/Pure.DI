@@ -17,11 +17,6 @@ internal sealed class RootMethodsBuilder(
         }
         
         var code = composition.Code;
-        if (composition.MembersCount > 0)
-        {
-            code.AppendLine();
-        }
-
         var generatePrivateRoots = composition.Source.Source.Hints.IsResolveEnabled;
         var membersCounter = composition.MembersCount;
         code.AppendLine("#region Composition Roots");

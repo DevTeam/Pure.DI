@@ -51,16 +51,16 @@ classDiagram
 ```c#
 partial class Composition
 {
-  private readonly Composition _rootM04D26di;
+  private readonly Composition _rootM04D27di;
   
   public Composition()
   {
-    _rootM04D26di = this;
+    _rootM04D27di = this;
   }
   
   internal Composition(Composition baseComposition)
   {
-    _rootM04D26di = baseComposition._rootM04D26di;
+    _rootM04D27di = baseComposition._rootM04D27di;
   }
   
   public Pure.DI.UsageTests.Basics.AutoBindingsScenario.Service MyService
@@ -88,6 +88,7 @@ partial class Composition
         "  Service *--  Dependency : Dependency\n" +
         "  Composition ..> Service : Service MyService";
   }
+  
 }
 ```
 

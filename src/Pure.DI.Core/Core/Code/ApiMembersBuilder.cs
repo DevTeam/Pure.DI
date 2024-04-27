@@ -10,11 +10,6 @@ internal sealed class ApiMembersBuilder(
     {
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
-        if (composition.MembersCount > 0)
-        {
-            code.AppendLine();
-        }
-
         var hints = composition.Source.Source.Hints;
         var isCommentsEnabled = hints.IsCommentsEnabled;
         var apiCode = new LinesBuilder();

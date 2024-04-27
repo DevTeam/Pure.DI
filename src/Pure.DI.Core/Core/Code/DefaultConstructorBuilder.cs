@@ -12,11 +12,6 @@ internal sealed class DefaultConstructorBuilder: IBuilder<CompositionCode, Compo
 
         var code = composition.Code;
         var membersCounter = composition.MembersCount;
-        if (membersCounter > 0)
-        {
-            code.AppendLine();
-        }
-
         var hints = composition.Source.Source.Hints;
         var isCommentsEnabled = hints.IsCommentsEnabled;
         if (isCommentsEnabled)

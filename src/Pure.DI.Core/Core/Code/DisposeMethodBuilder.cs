@@ -13,11 +13,6 @@ internal sealed class DisposeMethodBuilder
             return composition with { MembersCount = membersCounter };
         }
         
-        if (composition.MembersCount > 0)
-        {
-            code.AppendLine();
-        }
-
         var hasDisposable = composition.TotalDisposablesCount > composition.AsyncDisposableCount;
         var hasAsyncDisposable = composition.AsyncDisposableCount > 0;
         var hints = composition.Source.Source.Hints;
@@ -124,7 +119,6 @@ internal sealed class DisposeMethodBuilder
             code.AppendLine("/// <param name=\"exception\">Exception occurring during disposal.</param>");
             code.AppendLine("/// <typeparam name=\"T\">The actual type of instance being disposed of.</typeparam>");
             code.AppendLine($"partial void {Names.OnAsyncDisposeExceptionMethodName}<T>(T asyncDisposableInstance, Exception exception) where T : {Names.IAsyncDisposableInterfaceName};");
-            code.AppendLine();
             membersCounter++;
         }
         

@@ -14,11 +14,6 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
         }
         
         var code = composition.Code;
-        if (composition.MembersCount > 0)
-        {
-            code.AppendLine();
-        }
-        
         code.AppendLine("#region Resolvers");
         code.AppendLine($"private sealed class {Names.ResolverClassName}<T>: {Names.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, T>");
         code.AppendLine("{");
