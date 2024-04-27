@@ -1123,33 +1123,18 @@ namespace Pure.DI
     /// <summary>
     /// Gives the ability to manage disposable objects.
     /// </summary>
-    [global::System.Diagnostics.DebuggerDisplay("{_disposables.Count} item(s)")]
-    [global::System.Diagnostics.DebuggerTypeProxy(typeof(global::Pure.DI.Owned.DebugView))]
-    internal partial class Owned : global::Pure.DI.IOwned
+    internal sealed partial class Owned : global::System.Collections.Generic.List<object>, global::Pure.DI.IOwned
     {
-        private global::System.Collections.Generic.List<object> _disposables = new global::System.Collections.Generic.List<object>();
-        
-        /// <summary>
-        /// Adds a disposable instance.
-        /// </summary>
-        /// <param name="disposable">The disposable instance.</param>
-        [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
-        public void Add(object disposable)
-        {
-            if (!(disposable is global::Pure.DI.IOwned))
-            {
-                _disposables.Add(disposable);
-            }
-        }
-
         /// <inheritdoc />
         public void Dispose()
         {
-            var disposables = global::System.Threading.Interlocked.Exchange(ref _disposables, new global::System.Collections.Generic.List<object>());
-            for (var i = disposables.Count - 1; i >= 0; i--)
+            for (var i = Count - 1; i >= 0; i--)
             {
-                switch (disposables[i])
+                switch (this[i])
                 {
+                    case global::Pure.DI.IOwned _:
+                        break;
+
                     case global::System.IDisposable disposableInstance:
                         try
                         {
@@ -1185,11 +1170,13 @@ namespace Pure.DI
         /// <inheritdoc />
         public async global::System.Threading.Tasks.ValueTask DisposeAsync()
         {
-            var disposables = global::System.Threading.Interlocked.Exchange(ref _disposables, new global::System.Collections.Generic.List<object>());
-            for (var i = disposables.Count - 1; i >= 0; i--)
+            for (var i = Count - 1; i >= 0; i--)
             {
-                switch (disposables[i])
+                switch (this[i])
                 {
+                    case global::Pure.DI.IOwned _:
+                        break;
+
                     case global::System.IAsyncDisposable asyncDisposableInstance:
                         try
                         {
@@ -1236,25 +1223,6 @@ namespace Pure.DI
         partial void OnDisposeAsyncException<T>(T asynDisposableInstance, Exception exception)
             where T : global::System.IAsyncDisposable;
 #endif
-        
-        private class DebugView
-        {
-            private readonly global::Pure.DI.Owned _owned;
-
-            public DebugView(global::Pure.DI.Owned owned)
-            {
-                _owned = owned;
-            }
-                
-            [global::System.Diagnostics.DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-            public global::System.Collections.Generic.List<object> Owns
-            {
-                get
-                {
-                    return _owned._disposables;
-                }
-            }
-        }
     }
     
     /// <summary>
@@ -2052,7 +2020,6 @@ namespace Pure.DI
         /// <param name="compositionTypeName">This argument specifying the partial class name to generate.</param>
         /// <param name="kind">An optional argument specifying the kind of setup. Please <see cref="Pure.DI.CompositionKind"/> for details. It defaults to <c>Public</c>.</param>
         /// <returns>Reference to the setup continuation chain.</returns>
-        [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
         internal static IConfiguration Setup(string compositionTypeName, CompositionKind kind = CompositionKind.Public)
         {
             return Configuration.Shared;
@@ -2065,140 +2032,120 @@ namespace Pure.DI
             private Configuration() { }
             
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind(params object[] tags)
             {
                 return Binding.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T>(params object[] tags)
             {
                 return Binding.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2>(params object[] tags)
             {
                 return Binding.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3>(params object[] tags)
             {
                 return Binding.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4>(params object[] tags)
             {
                 return Binding.Shared;
             }
             
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4, T5>(params object[] tags)
             {
                 return Binding.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4, T5, T6>(params object[] tags)
             {
                 return Binding.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4, T5, T6, T7>(params object[] tags)
             {
                 return Binding.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags)
             {
                 return Binding.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding RootBind<T>(string name = "", RootKinds kind = RootKinds.Default, params object[] tags)
             {
                 return Binding.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration DependsOn(params string[] setupNames)
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration TypeAttribute<T>(int typeArgumentPosition = 0) where T : global::System.Attribute
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration TagAttribute<T>(int tagArgumentPosition = 0) where T : global::System.Attribute
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration OrdinalAttribute<T>(int ordinalArgumentPosition = 0) where T : global::System.Attribute
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration DefaultLifetime(Pure.DI.Lifetime lifetime)
             {
                 return Configuration.Shared;
             }
             
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Arg<T>(string name, params object[] tags)
             {
                 return Configuration.Shared;
             }
             
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration RootArg<T>(string name, params object[] tags)
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Root<T>(string name, object tag, RootKinds rootKind)
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Hint(Hint hint, string value)
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration Accumulate<T, TAccumulator>(params Lifetime[] lifetimes)
                 where TAccumulator: new()
             {
@@ -2213,98 +2160,84 @@ namespace Pure.DI
             private Binding() { }
             
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind(params object[] tags)
             {
                 return Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T>(params object[] tags)
             {
                 return Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2>(params object[] tags)
             {
                 return Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3>(params object[] tags)
             {
                 return Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4>(params object[] tags)
             {
                 return Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4, T5>(params object[] tags)
             {
                 return Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4, T5, T6>(params object[] tags)
             {
                 return Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4, T5, T6, T7>(params object[] tags)
             {
                 return Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Bind<T1, T2, T3, T4, T5, T6, T7, T8>(params object[] tags)
             {
                 return Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding As(Pure.DI.Lifetime lifetime)
             {
                 return Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IBinding Tags(params object[] tags)
             {
                 return Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T>()
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T>(global::System.Func<IContext, T> factory)
             {
                 return Configuration.Shared;
             }
 
             /// <inheritdoc />
-            [global::System.Runtime.CompilerServices.MethodImpl((global::System.Runtime.CompilerServices.MethodImplOptions)256)]
             public IConfiguration To<T>(string sourceCodeStatement)
             {
                 return Configuration.Shared;
