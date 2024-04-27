@@ -2,5 +2,5 @@
 
 public static class Const
 {
-    public const int MaxIterationsCount = 0xffff;
+    public const int MaxIterationsCount = 0x8FFFF;
 }

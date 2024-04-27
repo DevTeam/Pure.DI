@@ -2,20 +2,13 @@
 // ReSharper disable ReturnTypeCanBeEnumerable.Global
 namespace Pure.DI.Core;
 
+using System.Buffers;
+
 internal sealed class LinesBuilder: IEnumerable<string>
 {
-    private static readonly string[] Indents = new string[64]; 
     private readonly StringBuilder _sb = new(); 
     private readonly List<Line> _lines = [];
-    private readonly Indent _indent;
-
-    static LinesBuilder()
-    {
-        for (var i = 0; i < Indents.Length; i++)
-        {
-            Indents[i] = new Indent(i).ToString();
-        }
-    }
+    private Indent _indent;
 
     public LinesBuilder(Indent indent) => _indent = new Indent(indent.Value - 1);
 
@@ -72,19 +65,46 @@ internal sealed class LinesBuilder: IEnumerable<string>
     public void IncIndent(int value = 1)
     {
         FlushLines();
-        _indent.Value += value;
+        _indent = new Indent(_indent.Value + 1);
     }
 
     public void DecIndent(int value = 1)
     {
         FlushLines();
-        _indent.Value -= value;
+        _indent = new Indent(_indent.Value - 1);
     }
 
     public IEnumerator<string> GetEnumerator()
     {
         FlushLines();
         return _lines.Select(i => $"{GetIndent(i.Indent)}{i.Text}").GetEnumerator();
+    }
+
+    public IDisposable SaveToArray(Encoding encoding, out byte[] buffer, out int size)
+    {
+        var charCount = 0;
+        var newLine = Environment.NewLine;
+        foreach (var line in _lines)
+        {
+            charCount += GetIndent(line.Indent).Length;
+            charCount += line.Text.Length;
+            charCount += newLine.Length;
+        }
+
+        size = encoding.GetMaxByteCount(charCount);
+        var rent = ArrayPool<byte>.Shared.Rent(size);
+        buffer = rent;
+        var position = 0;
+        foreach (var line in _lines)
+        {
+            var indent = GetIndent(line.Indent);
+            position += encoding.GetBytes(indent, 0, indent.Length, buffer, position);
+            position += encoding.GetBytes(line.Text, 0, line.Text.Length, buffer, position);
+            position += encoding.GetBytes(newLine, 0, newLine.Length, buffer, position);
+        }
+        
+        size = position;
+        return Disposables.Create(() => ArrayPool<byte>.Shared.Return(rent));
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -97,18 +117,6 @@ internal sealed class LinesBuilder: IEnumerable<string>
         }
     }
 
-    private static string GetIndent(int indent)
-    {
-        if (indent < 1)
-        {
-            return string.Empty;
-        }
-
-        if (indent < Indents.Length)
-        {
-            return Indents[indent];
-        }
-
-        return new Indent(indent).ToString();
-    }
+    private static string GetIndent(int indent) => 
+        new Indent(indent).ToString();
 }

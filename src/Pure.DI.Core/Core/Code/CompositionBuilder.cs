@@ -31,6 +31,7 @@ internal class CompositionBuilder(
                 graph,
                 rootBlock.Current,
                 new LinesBuilder(),
+                new LinesBuilder(),
                 root.Injection.Tag != MdTag.ContextTag ? root.Injection.Tag : default,
                 default,
                 root.Node.Accumulators.ToImmutableArray());
@@ -46,6 +47,7 @@ internal class CompositionBuilder(
             
             blockBuilder.Build(ctx, rootBlock);
             ctx.Code.AppendLine($"return {buildTools.OnInjected(ctx, rootBlock.Current)};");
+            ctx.Code.AppendLines(ctx.LocalFunctionsCode.Lines);
             
             var args = GetRootArgs(map.Values).ToImmutableArray();
             var processedRoot = root with

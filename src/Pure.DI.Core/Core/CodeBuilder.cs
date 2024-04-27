@@ -55,14 +55,8 @@ internal class CodeBuilder(
         composition = classBuilder.Build(composition);
 
         cancellationToken.ThrowIfCancellationRequested();
-        var code = new StringBuilder(composition.Code.Sum(i => i.Length + 2));
-        foreach (var line in composition.Code)
-        {
-            code.AppendLine(line);
-        }
-        
-        cancellationToken.ThrowIfCancellationRequested();
-        sources.AddSource($"{setup.Name.FullName}.g.cs", SourceText.From(code.ToString(), Encoding.UTF8));
+        using var rent = composition.Code.SaveToArray(Encoding.UTF8, out var buffer, out var size);
+        sources.AddSource($"{setup.Name.FullName}.g.cs", SourceText.From(buffer, size, Encoding.UTF8, SourceHashAlgorithm.Sha1, false, true));
         return Unit.Shared;
     }
 }

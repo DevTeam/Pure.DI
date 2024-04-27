@@ -1,18 +1,10 @@
 namespace Pure.DI.Core;
 
-internal sealed class Indent
+internal readonly struct Indent(int value)
 {
-    private readonly string _str;
-    
-    public Indent(int value)
-    {
-        Value = value;
-        _str = Formatting.IndentPrefix(this);
-    }
-
-    public int Value { get; set; }
+    public int Value { get; } = value;
 
     public static implicit operator Indent(int value) => new(value);
 
-    public override string ToString() => _str;
+    public override string ToString() => Formatting.IndentPrefix(this);
 }

@@ -23,13 +23,17 @@ internal class VariablesBuilder(
         var counter = 0;
         while (blocks.TryPop(out var currentBlock))
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                break;
+            }
+
             var stack = new Stack<IStatement>(currentBlock.Statements);
             while (stack.TryPop(out var currentStatement))
             {
-                cancellationToken.ThrowIfCancellationRequested();
                 if (counter++ > Const.MaxIterationsCount)
                 {
-                    throw new CompileErrorException("Cyclic dependency has been found.", rootNode.Binding.Source.GetLocation(), LogId.ErrorCyclicDependency);
+                    throw new CompileErrorException($"The composition is too large. Stopped on the #{counter} instance.", rootNode.Binding.Source.GetLocation(), LogId.ErrorInvalidMetadata);
                 }
                 
                 switch (currentStatement)
@@ -219,7 +223,7 @@ internal class VariablesBuilder(
 
         if (map.TryGetValue(node.Binding, out var variable))
         {
-            variable.Info.AddRef();
+            variable.Info.AddRef(parentBlock);
             return variable with
             {
                 Parent = parentBlock,

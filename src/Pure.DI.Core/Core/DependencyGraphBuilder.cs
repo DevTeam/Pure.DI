@@ -75,7 +75,7 @@ internal sealed class DependencyGraphBuilder(
             cancellationToken.ThrowIfCancellationRequested();
             if (counter++ > Const.MaxIterationsCount)
             {
-                throw new CompileErrorException("Cyclic dependency has been found.", setup.Source.GetLocation(), LogId.ErrorCyclicDependency);
+                throw new CompileErrorException($"The composition is too large. Stopped on the #{counter} dependency.", setup.Source.GetLocation(), LogId.ErrorInvalidMetadata);
             }
             
             var targetNode = node.Node;
