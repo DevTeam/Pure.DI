@@ -17,6 +17,7 @@ internal static class Names
     
     // Messages
     public const string CannotResolve = "Cannot resolve composition root";
+    public const string CannotResolveOfType = "of type";
     
     // Others
     public static readonly string ResolverClassName = $"Resolver{Salt}";

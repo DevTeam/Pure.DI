@@ -223,36 +223,38 @@ partial class Transient
       });
   }
 
-  private sealed class Resolver<T>: IResolver<Transient, T>
+  private class Resolver<T>: IResolver<Transient, T>
   {
+    private const string CannotResolve = "Cannot resolve composition root ";
+    private const string OfType = "of type ";
     public static IResolver<Transient, T> Value = new Resolver<T>();
 
-    public T Resolve(Transient composite)
+    public virtual T Resolve(Transient composite)
     {
-      throw new InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
+      throw new InvalidOperationException($"{CannotResolve}{OfType}{typeof(T)}.");
     }
 
-    public T ResolveByTag(Transient composite, object tag)
+    public virtual T ResolveByTag(Transient composite, object tag)
     {
-      throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
+      throw new InvalidOperationException($"{CannotResolve}\"{tag}\" {OfType}{typeof(T)}.");
     }
   }
 
-  private sealed class Resolver_0000: IResolver<Transient, Benchmarks.Model.CompositionRoot>
+  private sealed class Resolver_0000: Resolver<Benchmarks.Model.CompositionRoot>
   {
-    public Benchmarks.Model.CompositionRoot Resolve(Transient composition)
+    public override Benchmarks.Model.CompositionRoot Resolve(Transient composition)
     {
       return composition.TestPureDIByCR();
     }
 
-    public Benchmarks.Model.CompositionRoot ResolveByTag(Transient composition, object tag)
+    public override Benchmarks.Model.CompositionRoot ResolveByTag(Transient composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.TestPureDIByCR();
         default:
-          throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Benchmarks.Model.CompositionRoot.");
+          return base.ResolveByTag(composition, tag);
       }
     }
   }

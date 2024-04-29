@@ -220,36 +220,38 @@ partial class PersonComposition
       });
   }
 
-  private sealed class Resolver<T>: IResolver<PersonComposition, T>
+  private class Resolver<T>: IResolver<PersonComposition, T>
   {
+    private const string CannotResolve = "Cannot resolve composition root ";
+    private const string OfType = "of type ";
     public static IResolver<PersonComposition, T> Value = new Resolver<T>();
 
-    public T Resolve(PersonComposition composite)
+    public virtual T Resolve(PersonComposition composite)
     {
-      throw new InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
+      throw new InvalidOperationException($"{CannotResolve}{OfType}{typeof(T)}.");
     }
 
-    public T ResolveByTag(PersonComposition composite, object tag)
+    public virtual T ResolveByTag(PersonComposition composite, object tag)
     {
-      throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
+      throw new InvalidOperationException($"{CannotResolve}\"{tag}\" {OfType}{typeof(T)}.");
     }
   }
 
-  private sealed class Resolver_0000: IResolver<PersonComposition, IPerson>
+  private sealed class Resolver_0000: Resolver<IPerson>
   {
-    public IPerson Resolve(PersonComposition composition)
+    public override IPerson Resolve(PersonComposition composition)
     {
       return composition.Person;
     }
 
-    public IPerson ResolveByTag(PersonComposition composition, object tag)
+    public override IPerson ResolveByTag(PersonComposition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Person;
         default:
-          throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type IPerson.");
+          return base.ResolveByTag(composition, tag);
       }
     }
   }

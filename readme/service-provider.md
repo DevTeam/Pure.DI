@@ -245,55 +245,57 @@ partial class Composition
       });
   }
 
-  private sealed class Resolver<T>: IResolver<Composition, T>
+  private class Resolver<T>: IResolver<Composition, T>
   {
+    private const string CannotResolve = "Cannot resolve composition root ";
+    private const string OfType = "of type ";
     public static IResolver<Composition, T> Value = new Resolver<T>();
 
-    public T Resolve(Composition composite)
+    public virtual T Resolve(Composition composite)
     {
-      throw new InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
+      throw new InvalidOperationException($"{CannotResolve}{OfType}{typeof(T)}.");
     }
 
-    public T ResolveByTag(Composition composite, object tag)
+    public virtual T ResolveByTag(Composition composite, object tag)
     {
-      throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
+      throw new InvalidOperationException($"{CannotResolve}\"{tag}\" {OfType}{typeof(T)}.");
     }
   }
 
-  private sealed class Resolver_0000: IResolver<Composition, IDependency>
+  private sealed class Resolver_0000: Resolver<IDependency>
   {
-    public IDependency Resolve(Composition composition)
+    public override IDependency Resolve(Composition composition)
     {
       return composition.Root0001;
     }
 
-    public IDependency ResolveByTag(Composition composition, object tag)
+    public override IDependency ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Root0001;
         default:
-          throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type IDependency.");
+          return base.ResolveByTag(composition, tag);
       }
     }
   }
 
-  private sealed class Resolver_0001: IResolver<Composition, IService>
+  private sealed class Resolver_0001: Resolver<IService>
   {
-    public IService Resolve(Composition composition)
+    public override IService Resolve(Composition composition)
     {
       return composition.Root0002;
     }
 
-    public IService ResolveByTag(Composition composition, object tag)
+    public override IService ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Root0002;
         default:
-          throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type IService.");
+          return base.ResolveByTag(composition, tag);
       }
     }
   }

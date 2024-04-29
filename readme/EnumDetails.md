@@ -270,36 +270,38 @@ partial class Enum
       });
   }
 
-  private sealed class Resolver<T>: IResolver<Enum, T>
+  private class Resolver<T>: IResolver<Enum, T>
   {
+    private const string CannotResolve = "Cannot resolve composition root ";
+    private const string OfType = "of type ";
     public static IResolver<Enum, T> Value = new Resolver<T>();
 
-    public T Resolve(Enum composite)
+    public virtual T Resolve(Enum composite)
     {
-      throw new InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
+      throw new InvalidOperationException($"{CannotResolve}{OfType}{typeof(T)}.");
     }
 
-    public T ResolveByTag(Enum composite, object tag)
+    public virtual T ResolveByTag(Enum composite, object tag)
     {
-      throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
+      throw new InvalidOperationException($"{CannotResolve}\"{tag}\" {OfType}{typeof(T)}.");
     }
   }
 
-  private sealed class Resolver_0000: IResolver<Enum, Benchmarks.Model.CompositionRoot>
+  private sealed class Resolver_0000: Resolver<Benchmarks.Model.CompositionRoot>
   {
-    public Benchmarks.Model.CompositionRoot Resolve(Enum composition)
+    public override Benchmarks.Model.CompositionRoot Resolve(Enum composition)
     {
       return composition.TestPureDIByCR();
     }
 
-    public Benchmarks.Model.CompositionRoot ResolveByTag(Enum composition, object tag)
+    public override Benchmarks.Model.CompositionRoot ResolveByTag(Enum composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.TestPureDIByCR();
         default:
-          throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Benchmarks.Model.CompositionRoot.");
+          return base.ResolveByTag(composition, tag);
       }
     }
   }

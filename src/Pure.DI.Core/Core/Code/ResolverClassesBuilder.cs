@@ -19,6 +19,8 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
         code.AppendLine("{");
         using (code.Indent())
         {
+            code.AppendLine($"private const string CannotResolve = \"{Names.CannotResolve} \";");
+            code.AppendLine($"private const string OfType = \"{Names.CannotResolveOfType} \";");
             code.AppendLine($"public static {Names.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, T> {Names.ResolverPropertyName} = new {Names.ResolverClassName}<T>();");
 
             code.AppendLine();
@@ -26,7 +28,7 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
             code.AppendLine("{");
             using (code.Indent())
             {
-                code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{Names.CannotResolve} of type {{typeof(T)}}.\");");
+                code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{{CannotResolve}}{{OfType}}{{typeof(T)}}.\");");
             }
             
             code.AppendLine("}");
@@ -36,7 +38,7 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
             code.AppendLine("{");
             using (code.Indent())
             {
-                code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{Names.CannotResolve} \\\"{{tag}}\\\" of type {{typeof(T)}}.\");");
+                code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{{CannotResolve}}\\\"{{tag}}\\\" {{OfType}}{{typeof(T)}}.\");");
             }
             
             code.AppendLine("}");

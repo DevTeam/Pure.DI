@@ -248,36 +248,38 @@ partial class Composition
       });
   }
 
-  private sealed class Resolver<T>: IResolver<Composition, T>
+  private class Resolver<T>: IResolver<Composition, T>
   {
+    private const string CannotResolve = "Cannot resolve composition root ";
+    private const string OfType = "of type ";
     public static IResolver<Composition, T> Value = new Resolver<T>();
 
-    public T Resolve(Composition composite)
+    public virtual T Resolve(Composition composite)
     {
-      throw new InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
+      throw new InvalidOperationException($"{CannotResolve}{OfType}{typeof(T)}.");
     }
 
-    public T ResolveByTag(Composition composite, object tag)
+    public virtual T ResolveByTag(Composition composite, object tag)
     {
-      throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
+      throw new InvalidOperationException($"{CannotResolve}\"{tag}\" {OfType}{typeof(T)}.");
     }
   }
 
-  private sealed class Resolver_0000: IResolver<Composition, Program<string>>
+  private sealed class Resolver_0000: Resolver<Program<string>>
   {
-    public Program<string> Resolve(Composition composition)
+    public override Program<string> Resolve(Composition composition)
     {
       return composition.Root;
     }
 
-    public Program<string> ResolveByTag(Composition composition, object tag)
+    public override Program<string> ResolveByTag(Composition composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.Root;
         default:
-          throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Program<string>.");
+          return base.ResolveByTag(composition, tag);
       }
     }
   }

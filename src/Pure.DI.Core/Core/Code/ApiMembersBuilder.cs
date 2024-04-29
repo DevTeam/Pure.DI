@@ -187,7 +187,7 @@ internal sealed class ApiMembersBuilder(
             }
             else
             {
-                code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{Names.CannotResolve} {(byTag ? "\\\"{tag}\\\" " : "")}of type {{type}}.\");");
+                code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{Names.CannotResolve} {(byTag ? "\\\"{tag}\\\" " : "")}{Names.CannotResolveOfType} {{type}}.\");");
             }
         }
         
@@ -224,7 +224,7 @@ internal sealed class ApiMembersBuilder(
             code.AppendLine("}");
             code.AppendLine();
 
-            code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{Names.CannotResolve} {(byTag ? "\\\"{tag}\\\" " : "")}of type {{type}}.\");");
+            code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{Names.CannotResolve} {(byTag ? "\\\"{tag}\\\" " : "")}{Names.CannotResolveOfType} {{type}}.\");");
         }
         
         code.AppendLine("}");

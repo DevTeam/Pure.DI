@@ -233,36 +233,38 @@ partial class Singleton
       });
   }
 
-  private sealed class Resolver<T>: IResolver<Singleton, T>
+  private class Resolver<T>: IResolver<Singleton, T>
   {
+    private const string CannotResolve = "Cannot resolve composition root ";
+    private const string OfType = "of type ";
     public static IResolver<Singleton, T> Value = new Resolver<T>();
 
-    public T Resolve(Singleton composite)
+    public virtual T Resolve(Singleton composite)
     {
-      throw new InvalidOperationException($"Cannot resolve composition root of type {typeof(T)}.");
+      throw new InvalidOperationException($"{CannotResolve}{OfType}{typeof(T)}.");
     }
 
-    public T ResolveByTag(Singleton composite, object tag)
+    public virtual T ResolveByTag(Singleton composite, object tag)
     {
-      throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {typeof(T)}.");
+      throw new InvalidOperationException($"{CannotResolve}\"{tag}\" {OfType}{typeof(T)}.");
     }
   }
 
-  private sealed class Resolver_0000: IResolver<Singleton, Benchmarks.Model.CompositionRoot>
+  private sealed class Resolver_0000: Resolver<Benchmarks.Model.CompositionRoot>
   {
-    public Benchmarks.Model.CompositionRoot Resolve(Singleton composition)
+    public override Benchmarks.Model.CompositionRoot Resolve(Singleton composition)
     {
       return composition.TestPureDIByCR();
     }
 
-    public Benchmarks.Model.CompositionRoot ResolveByTag(Singleton composition, object tag)
+    public override Benchmarks.Model.CompositionRoot ResolveByTag(Singleton composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.TestPureDIByCR();
         default:
-          throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type Benchmarks.Model.CompositionRoot.");
+          return base.ResolveByTag(composition, tag);
       }
     }
   }
