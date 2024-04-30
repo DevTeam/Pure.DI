@@ -13,6 +13,7 @@ internal sealed class ApiMembersBuilder(
         var hints = composition.Source.Source.Hints;
         var isCommentsEnabled = hints.IsCommentsEnabled;
         var apiCode = new LinesBuilder();
+        var nullable = composition.Source.Source.SemanticModel.Compilation.Options.NullableContextOptions == NullableContextOptions.Disable ? "" : "?";
         if (hints.IsResolveEnabled)
         {
             if (isCommentsEnabled)
@@ -49,7 +50,7 @@ internal sealed class ApiMembersBuilder(
 
             buildTools.AddPureHeader(apiCode);
             apiCode.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x100)]");
-            apiCode.AppendLine($"{hints.ResolveByTagMethodModifiers} T {hints.ResolveByTagMethodName}<T>(object? tag)");
+            apiCode.AppendLine($"{hints.ResolveByTagMethodModifiers} T {hints.ResolveByTagMethodName}<T>(object{nullable} tag)");
             apiCode.AppendLine("{");
             using (apiCode.Indent())
             {
@@ -109,7 +110,7 @@ internal sealed class ApiMembersBuilder(
                 hints.ObjectResolveByTagMethodModifiers,
                 hints.ObjectResolveByTagMethodName,
                 resolvers,
-                $"{Names.SystemNamespace}Type type, object? tag",
+                $"{Names.SystemNamespace}Type type, object{nullable} tag",
                 Names.ResolveByTagMethodName,
                 "this, tag",
                 true,
@@ -120,7 +121,7 @@ internal sealed class ApiMembersBuilder(
             if (resolvers.Length > 0)
             {
                 apiCode.AppendLine();
-                CreateObjectConflictsResolverMethod($"{Names.SystemNamespace}Type type, object? tag",
+                CreateObjectConflictsResolverMethod($"{Names.SystemNamespace}Type type, object{nullable} tag",
                     Names.ResolveByTagMethodName,
                     "this, tag",
                     true,
@@ -133,21 +134,21 @@ internal sealed class ApiMembersBuilder(
         if (composition.Source.Source.Hints is { IsOnNewInstanceEnabled: true, IsOnNewInstancePartial: true })
         {
             apiCode.AppendLine();
-            apiCode.AppendLine($"partial void {Names.OnNewInstanceMethodName}<T>(ref T value, object? tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
+            apiCode.AppendLine($"partial void {Names.OnNewInstanceMethodName}<T>(ref T value, object{nullable} tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
 
         if (composition.Source.Source.Hints is { IsOnDependencyInjectionEnabled: true, IsOnDependencyInjectionPartial: true })
         {
             apiCode.AppendLine();
-            apiCode.AppendLine($"private partial T {Names.OnDependencyInjectionMethodName}<T>(in T value, object? tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
+            apiCode.AppendLine($"private partial T {Names.OnDependencyInjectionMethodName}<T>(in T value, object{nullable} tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
         
         if (composition.Source.Source.Hints is { IsOnCannotResolveEnabled: true, IsOnCannotResolvePartial: true })
         {
             apiCode.AppendLine();
-            apiCode.AppendLine($"private partial T {Names.OnCannotResolve}<T>(object? tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
+            apiCode.AppendLine($"private partial T {Names.OnCannotResolve}<T>(object{nullable} tag, {Names.ApiNamespace}{nameof(Lifetime)} lifetime);");
             membersCounter++;
         }
 
