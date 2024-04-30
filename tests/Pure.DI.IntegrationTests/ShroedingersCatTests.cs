@@ -2,8 +2,12 @@
 
 public class ShroedingersCatTests
 {
-    [Fact]
-    public async Task ShroedingersCatScenario()
+    [Theory]
+    [InlineData(NullableContextOptions.Disable)]
+    [InlineData(NullableContextOptions.Annotations)]
+    [InlineData(NullableContextOptions.Warnings)]
+    [InlineData(NullableContextOptions.Enable)]
+    public async Task ShroedingersCatScenario(NullableContextOptions nullableContextOptions)
     {
         // Given
 
@@ -90,7 +94,7 @@ namespace Sample
 """.RunAsync(new Options
         {
             LanguageVersion = LanguageVersion.CSharp8,
-            NullableContextOptions = NullableContextOptions.Disable,
+            NullableContextOptions = nullableContextOptions,
             PreprocessorSymbols = ["NET", "NET6_0_OR_GREATER"]
         } );
 
