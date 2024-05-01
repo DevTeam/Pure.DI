@@ -27,7 +27,7 @@ internal sealed class ParameterizedConstructorBuilder(
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine($"{Names.ParentFieldName} = this;");
+            code.AppendLine($"{Names.RootFieldName} = this;");
             if (composition.IsThreadSafe)
             {
                 code.AppendLine($"{Names.LockFieldName} = new object();");

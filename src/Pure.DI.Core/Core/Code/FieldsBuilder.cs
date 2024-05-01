@@ -10,7 +10,7 @@ internal sealed class FieldsBuilder(ITypeResolver typeResolver)
         var membersCounter = composition.MembersCount;
         
         // _parent filed
-        code.AppendLine($"private readonly {composition.Source.Source.Name.ClassName} {Names.ParentFieldName};");
+        code.AppendLine($"private readonly {composition.Source.Source.Name.ClassName} {Names.RootFieldName};");
         membersCounter++;
 
         if (composition.IsThreadSafe)

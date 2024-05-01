@@ -87,9 +87,9 @@ partial class Composition
     _root = this;
   }
 
-  internal Composition(Composition baseComposition)
+  internal Composition(Composition parentScope)
   {
-    _root = baseComposition._root;
+    _root = parentScope._root;
   }
 
   public IService<string> Root
@@ -98,12 +98,12 @@ partial class Composition
     get
     {
       [MethodImpl((MethodImplOptions)0x200)]
-      IEnumerable<IDependency<string>> LocalperBlock1_IEnumerable()
+      IEnumerable<IDependency<string>> Local_perBlock1_IEnumerable()
       {
           yield return new AbcDependency<string>();
           yield return new XyzDependency<string>();
       }
-      IEnumerable<IDependency<string>> perBlock1_IEnumerable = LocalperBlock1_IEnumerable();
+      IEnumerable<IDependency<string>> perBlock1_IEnumerable = Local_perBlock1_IEnumerable();
       return new Service<string>(perBlock1_IEnumerable);
     }
   }

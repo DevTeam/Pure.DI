@@ -95,23 +95,23 @@ partial class Enum
     _root = this;
   }
 
-  internal Enum(Enum baseComposition)
+  internal Enum(Enum parentScope)
   {
-    _root = baseComposition._root;
+    _root = parentScope._root;
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
   public partial Benchmarks.Model.CompositionRoot TestPureDIByCR()
   {
     [MethodImpl((MethodImplOptions)0x200)]
-    IEnumerable<Benchmarks.Model.IService3> LocalperBlock10_IEnumerable()
+    IEnumerable<Benchmarks.Model.IService3> Local_perBlock10_IEnumerable()
     {
         yield return new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4());
         yield return new Benchmarks.Model.Service3v2(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4());
         yield return new Benchmarks.Model.Service3v3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4());
         yield return new Benchmarks.Model.Service3v4(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4());
     }
-    IEnumerable<Benchmarks.Model.IService3> perBlock10_IEnumerable = LocalperBlock10_IEnumerable();
+    IEnumerable<Benchmarks.Model.IService3> perBlock10_IEnumerable = Local_perBlock10_IEnumerable();
     return new Benchmarks.Model.CompositionRoot(new Benchmarks.Model.Service1(new Benchmarks.Model.Service2Enum(perBlock10_IEnumerable)), new Benchmarks.Model.Service2Enum(perBlock10_IEnumerable), new Benchmarks.Model.Service2Enum(perBlock10_IEnumerable), new Benchmarks.Model.Service2Enum(perBlock10_IEnumerable), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4());
   }
 

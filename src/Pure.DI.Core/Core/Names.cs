@@ -22,6 +22,7 @@ internal static class Names
     // Others
     public static readonly string ResolverClassName = $"Resolver{Salt}";
     public const string DefaultApiMethodModifiers = "public";
+    public const string ParentScopeArgName = "parentScope";
     
     // Interfaces
     public const string ResolverPropertyName = "Value";
@@ -46,7 +47,7 @@ internal static class Names
     public const string OnNewRootMethodName = "OnNewRoot";
     
     // Local methods
-    public const string LocalMethodPrefix = "Local";
+    public const string LocalMethodPrefix = "Local_";
     public const string EnsureExistsMethodNamePostfix = "EnsureExists";
     
     // Fields
@@ -55,7 +56,7 @@ internal static class Names
     public static readonly string DisposeIndexFieldName = "_disposeIndex" + Salt;
     public static readonly string DisposablesFieldName = "_disposables" + Salt;
     public static readonly string LockFieldName = "_lock" + Salt;
-    public static readonly string ParentFieldName = "_root" + Salt;
+    public static readonly string RootFieldName = "_root" + Salt;
     
     // Vars
     private const string TransientVariablePrefix = "transient";

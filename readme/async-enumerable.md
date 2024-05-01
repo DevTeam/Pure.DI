@@ -97,9 +97,9 @@ partial class Composition
     _root = this;
   }
 
-  internal Composition(Composition baseComposition)
+  internal Composition(Composition parentScope)
   {
-    _root = baseComposition._root;
+    _root = parentScope._root;
   }
 
   public IService Root
@@ -108,12 +108,12 @@ partial class Composition
     get
     {
       [MethodImpl((MethodImplOptions)0x200)]
-      async IAsyncEnumerable<IDependency> Localtransient1_IAsyncEnumerable()
+      async IAsyncEnumerable<IDependency> Local_transient1_IAsyncEnumerable()
       {
           yield return new AbcDependency();
           yield return new XyzDependency();
       }
-      IAsyncEnumerable<IDependency> transient1_IAsyncEnumerable = Localtransient1_IAsyncEnumerable();
+      IAsyncEnumerable<IDependency> transient1_IAsyncEnumerable = Local_transient1_IAsyncEnumerable();
       return new Service(transient1_IAsyncEnumerable);
     }
   }

@@ -36,7 +36,7 @@ internal class BlockCodeBuilder(
             var parent = "";
             if (variable.Node.Lifetime == Lifetime.Singleton)
             {
-                parent = $"{Names.ParentFieldName}.";
+                parent = $"{Names.RootFieldName}.";
             }
 
             var uniqueAccumulators = ctx.Accumulators

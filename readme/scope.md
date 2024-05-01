@@ -142,9 +142,9 @@ partial class Composition: IDisposable
     _disposables = new object[1];
   }
 
-  internal Composition(Composition baseComposition)
+  internal Composition(Composition parentScope)
   {
-    _root = baseComposition._root;
+    _root = parentScope._root;
     _lock = _root._lock;
     _disposables = new object[1];
   }

@@ -74,9 +74,9 @@ partial class Func
     _root = this;
   }
 
-  internal Func(Func baseComposition)
+  internal Func(Func parentScope)
   {
-    _root = baseComposition._root;
+    _root = parentScope._root;
   }
 
   [MethodImpl((MethodImplOptions)0x100)]

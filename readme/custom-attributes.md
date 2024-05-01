@@ -100,10 +100,10 @@ partial class PersonComposition
     _arg_personId = personId;
   }
 
-  internal PersonComposition(PersonComposition baseComposition)
+  internal PersonComposition(PersonComposition parentScope)
   {
-    _root = baseComposition._root;
-    _arg_personId = baseComposition._arg_personId;
+    _root = parentScope._root;
+    _arg_personId = parentScope._arg_personId;
   }
 
   public IPerson Person

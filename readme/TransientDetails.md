@@ -76,9 +76,9 @@ partial class Transient
     _root = this;
   }
 
-  internal Transient(Transient baseComposition)
+  internal Transient(Transient parentScope)
   {
-    _root = baseComposition._root;
+    _root = parentScope._root;
   }
 
   [MethodImpl((MethodImplOptions)0x100)]

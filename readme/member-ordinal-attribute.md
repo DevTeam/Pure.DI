@@ -119,12 +119,12 @@ partial class PersonComposition
     _arg_personBirthday = personBirthday;
   }
 
-  internal PersonComposition(PersonComposition baseComposition)
+  internal PersonComposition(PersonComposition parentScope)
   {
-    _root = baseComposition._root;
-    _arg_personId = baseComposition._arg_personId;
-    _arg_personName = baseComposition._arg_personName;
-    _arg_personBirthday = baseComposition._arg_personBirthday;
+    _root = parentScope._root;
+    _arg_personId = parentScope._arg_personId;
+    _arg_personName = parentScope._arg_personName;
+    _arg_personBirthday = parentScope._arg_personBirthday;
   }
 
   public IPerson Person

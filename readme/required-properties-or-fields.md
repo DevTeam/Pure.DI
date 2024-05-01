@@ -96,10 +96,10 @@ partial class Composition
     _arg_name = name;
   }
 
-  internal Composition(Composition baseComposition)
+  internal Composition(Composition parentScope)
   {
-    _root = baseComposition._root;
-    _arg_name = baseComposition._arg_name;
+    _root = parentScope._root;
+    _arg_name = parentScope._arg_name;
   }
 
   public IService Root

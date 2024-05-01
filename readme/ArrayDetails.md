@@ -95,9 +95,9 @@ partial class Array
     _root = this;
   }
 
-  internal Array(Array baseComposition)
+  internal Array(Array parentScope)
   {
-    _root = baseComposition._root;
+    _root = parentScope._root;
   }
 
   [MethodImpl((MethodImplOptions)0x100)]

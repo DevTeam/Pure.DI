@@ -97,9 +97,9 @@ partial class Composition
     _root = this;
   }
 
-  internal Composition(Composition baseComposition)
+  internal Composition(Composition parentScope)
   {
-    _root = baseComposition._root;
+    _root = parentScope._root;
   }
 
   [MethodImpl((MethodImplOptions)0x100)]

@@ -121,9 +121,9 @@ partial class Composition
     _lock = new object();
   }
 
-  internal Composition(Composition baseComposition)
+  internal Composition(Composition parentScope)
   {
-    _root = baseComposition._root;
+    _root = parentScope._root;
     _lock = _root._lock;
   }
 

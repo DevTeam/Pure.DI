@@ -78,9 +78,9 @@ partial class Singleton
     _root = this;
   }
 
-  internal Singleton(Singleton baseComposition)
+  internal Singleton(Singleton parentScope)
   {
-    _root = baseComposition._root;
+    _root = parentScope._root;
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
