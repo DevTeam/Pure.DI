@@ -309,8 +309,7 @@ namespace Sample
 """.RunAsync(new Options
         {
             LanguageVersion = LanguageVersion.CSharp8,
-            NullableContextOptions = NullableContextOptions.Disable,
-            PreprocessorSymbols = ["NET", "NET6_0_OR_GREATER"]
+            NullableContextOptions = NullableContextOptions.Disable
         } );
 
         // Then

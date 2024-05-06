@@ -33,12 +33,6 @@ internal class BlockCodeBuilder(
                 // The "per resolve" instance should be created without checks if it is the only one in the composition
                 || (variable.Node.Lifetime == Lifetime.PerResolve && variable.Info.RefCount > 1);
 
-            var parent = "";
-            if (variable.Node.Lifetime == Lifetime.Singleton)
-            {
-                parent = $"{Names.RootFieldName}.";
-            }
-
             var uniqueAccumulators = ctx.Accumulators
                 .Where(accumulator => !accumulator.IsDeclared)
                 .GroupBy(i => i.Name)
@@ -58,8 +52,8 @@ internal class BlockCodeBuilder(
             if (toCheckExistence)
             {
                 var checkExpression = variable.InstanceType.IsValueType
-                    ? $"!{parent}{variable.VariableName}Created"
-                    : $"{parent}{variable.VariableName} == null";
+                    ? $"!{variable.VariableName}Created"
+                    : $"{variable.VariableName} == null";
 
                 if (lockIsRequired)
                 {
@@ -90,12 +84,6 @@ internal class BlockCodeBuilder(
                 }
             }
             
-            if (variable.Node.Lifetime is Lifetime.Singleton)
-            {
-                code.AppendLine($"{parent}{variable.VariableName} = {variable.VariableName};");
-                variable.VariableCode = $"{parent}{variable.VariableName}";
-            }
-
             if (!toCheckExistence)
             {
                 return;
@@ -103,6 +91,12 @@ internal class BlockCodeBuilder(
             
             if (variable.Node.Lifetime is Lifetime.Singleton or Lifetime.Scoped && nodeInfo.IsDisposable(variable.Node))
             {
+                var parent = "";
+                if (variable.Node.Lifetime == Lifetime.Singleton)
+                {
+                    parent = $"{Names.RootFieldName}.";
+                }
+
                 code.AppendLine($"{parent}{Names.DisposablesFieldName}[{parent}{Names.DisposeIndexFieldName}++] = {variable.VariableName};");
             }
             
@@ -113,7 +107,7 @@ internal class BlockCodeBuilder(
                     code.AppendLine($"{Names.SystemNamespace}Threading.Thread.MemoryBarrier();");
                 }
 
-                code.AppendLine($"{parent}{variable.VariableName}Created = true;");
+                code.AppendLine($"{variable.VariableName}Created = true;");
             }
 
             code.DecIndent();
@@ -134,10 +128,10 @@ internal class BlockCodeBuilder(
             info.HasCode = true;
             // ctx.Code.AppendLines(info.Code.Lines);
             if (block.Parent is not null
-                && info is { PerBlockRefCount: > 2, Code.Lines.Count: > 3 }) 
+                && info is { PerBlockRefCount: > 1, Code.Lines.Count: > 3 }) 
             {
                 var localFunctionsCode = ctx.LocalFunctionsCode;
-                var localMethodName = $"{Names.LocalMethodPrefix}{variable.VariableName}{Names.EnsureExistsMethodNamePostfix}";
+                var localMethodName = $"{Names.LocalMethodPrefix}{variable.VariableDeclarationName}{Names.EnsureExistsMethodNamePostfix}";
                 if (variable.Node.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp9)
                 {
                     localFunctionsCode.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x100)]");
@@ -151,12 +145,11 @@ internal class BlockCodeBuilder(
                 }
                 
                 localFunctionsCode.AppendLine("}");
-                ctx.Code.AppendLine($"{localMethodName}();");
+                info.Code = new LinesBuilder();
+                info.Code.AppendLine($"{localMethodName}();");
             }
-            else
-            {
-                ctx.Code.AppendLines(info.Code.Lines);
-            }
+            
+            ctx.Code.AppendLines(info.Code.Lines);
         }
     }
     

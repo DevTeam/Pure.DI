@@ -24,7 +24,7 @@ internal class FactoryCodeBuilder(
         }
         
         // Rewrites syntax tree
-        var finishLabel = $"{variable.VariableName}Finish";
+        var finishLabel = $"{variable.VariableDeclarationName}Finish";
         var injections = new List<FactoryRewriter.Injection>();
         var localVariableRenamingRewriter = new LocalVariableRenamingRewriter(idGenerator, factory.Source.SemanticModel);
         var factoryExpression = localVariableRenamingRewriter.Rewrite(factory.Source.Factory);

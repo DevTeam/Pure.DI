@@ -50,7 +50,7 @@ internal class ConstructCodeBuilder(ITypeResolver typeResolver)
         var variable = ctx.Variable;
         var code = ctx.Code;
         var level = ctx.Level + 1;
-        var localFuncName = $"{Names.LocalMethodPrefix}{variable.VariableName}";
+        var localFuncName = $"{Names.LocalMethodPrefix}{variable.VariableDeclarationName}";
         if (enumerable.Source.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp9)
         {
             code.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x200)]");
@@ -67,10 +67,17 @@ internal class ConstructCodeBuilder(ITypeResolver typeResolver)
                 code.AppendLine($"yield return {ctx.BuildTools.OnInjected(ctx, statement.Current)};");
                 hasYieldReturn = true;
             }
-            
-            if (!hasYieldReturn)
+
+            if (methodPrefix == "async ")
             {
-                code.AppendLine("yield break;");
+                code.AppendLine("await Task.CompletedTask;");
+            }
+            else
+            {
+                if (!hasYieldReturn)
+                {
+                    code.AppendLine("yield break;");
+                }   
             }
         }
 

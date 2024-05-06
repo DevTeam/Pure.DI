@@ -17,8 +17,15 @@ internal record Variable(
     public Variable Current => this;
     
     public bool IsDeclared { get; } = Node.Lifetime is not Lifetime.Transient and not Lifetime.PerBlock || Node.Arg is not null;
+    
+    public string VariableDeclarationName => 
+        string.IsNullOrEmpty(NameOverride)
+            ? Node.GetVariableName(PerLifetimeId)
+            : NameOverride;
 
-    public string VariableName => string.IsNullOrEmpty(NameOverride) ? Node.GetVariableName(PerLifetimeId) : NameOverride;
+    public string VariableName => string.IsNullOrEmpty(NameOverride) 
+        ? (Node.Lifetime == Lifetime.Singleton ? $"{Names.RootFieldName}." : "") + Node.GetVariableName(PerLifetimeId)
+        : NameOverride;
 
     public string VariableCode
     {

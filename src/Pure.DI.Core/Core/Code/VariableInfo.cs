@@ -10,7 +10,7 @@ internal class VariableInfo
     
     public int RefCount { get; private set; } = 1;
 
-    public int PerBlockRefCount => _perBlockRefCounts.Count;
+    public int PerBlockRefCount => _perBlockRefCounts.Count + 1;
 
     public void AddRef(Block parentBlock)
     {

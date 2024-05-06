@@ -31,13 +31,20 @@ internal sealed class ScopeConstructorBuilder: IBuilder<CompositionCode, Composi
             {
                 code.AppendLine($"{Names.DisposablesFieldName} = new object[{composition.DisposablesScopedCount.ToString()}];");
             }
+            else
+            {
+                if (composition.TotalDisposablesCount > 0)
+                {
+                    code.AppendLine($"{Names.DisposablesFieldName} = {Names.ParentScopeArgName}.{Names.DisposablesFieldName};");
+                }
+            }
             
             var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToArray();
             if (classArgs.Any())
             {
                 foreach (var argsField in classArgs)
                 {
-                    code.AppendLine($"{argsField.VariableName} = {Names.ParentScopeArgName}.{argsField.VariableName};");
+                    code.AppendLine($"{argsField.VariableDeclarationName} = {Names.ParentScopeArgName}.{argsField.VariableDeclarationName};");
                 }
             }
         }

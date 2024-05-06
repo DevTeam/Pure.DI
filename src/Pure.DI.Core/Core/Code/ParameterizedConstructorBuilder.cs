@@ -53,7 +53,7 @@ internal sealed class ParameterizedConstructorBuilder(
 
             foreach (var arg in classArgs)
             {
-                code.AppendLine($"{arg.VariableName} = {arg.Node.Arg?.Source.ArgName};");
+                code.AppendLine($"{arg.VariableDeclarationName} = {arg.Node.Arg?.Source.ArgName};");
             }
 
             if (composition.TotalDisposablesCount > 0)

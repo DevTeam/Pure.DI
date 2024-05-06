@@ -45,7 +45,7 @@ class Service(IDependency dependency) : IService
 
 internal partial class Composition
 {
-    private readonly List<string> _log;
+    private readonly List<string> _log = [];
 
     public Composition(List<string> log) : this() =>
         _log = log;

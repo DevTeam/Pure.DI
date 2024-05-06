@@ -47,7 +47,7 @@ internal sealed class RootMethodsBuilder(
         var rootArgsStr = "";
         if (root.IsMethod)
         {
-            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(arg.InstanceType)} {arg.VariableName}"))})";
+            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(arg.InstanceType)} {arg.VariableDeclarationName}"))})";
             buildTools.AddPureHeader(code);
         }
         

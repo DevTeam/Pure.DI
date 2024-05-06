@@ -68,8 +68,8 @@ internal class ImplementationCodeBuilder(
 
         if (tempVariableInit)
         {
-            ctx = ctx with { Variable = variable with { NameOverride = variable.VariableName + "Temp" } };
-            ctx.Code.AppendLine($"{typeResolver.Resolve(ctx.Variable.InstanceType)} {ctx.Variable.VariableName};");
+            ctx = ctx with { Variable = variable with { NameOverride = variable.VariableDeclarationName + "Temp" } };
+            ctx.Code.AppendLine($"{typeResolver.Resolve(ctx.Variable.InstanceType)} {ctx.Variable.VariableDeclarationName};");
             if (onCreatedStatements.Any())
             {
                 onCreatedStatements = ctx.BuildTools.OnCreated(ctx, ctx.Variable).ToArray();

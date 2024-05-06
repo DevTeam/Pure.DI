@@ -31,7 +31,7 @@ namespace Sample
 
     class CardboardBox<T> : IBox<T>
     {
-        public CardboardBox(T content) => Content = content;
+        public CardboardBox(T content, Random rnd) => Content = content;
 
         public T Content { get; }
 
@@ -43,7 +43,7 @@ namespace Sample
         // Represents the superposition of the states
         private readonly Lazy<State> _superposition;
 
-        public ShroedingersCat(Lazy<State> superposition) => _superposition = superposition;
+        public ShroedingersCat(Lazy<State> superposition, Random rnd) => _superposition = superposition;
 
         // The decoherence of the superposition at the time of observation via an irreversible process
         public State State => _superposition.Value;
@@ -94,8 +94,7 @@ namespace Sample
 """.RunAsync(new Options
         {
             LanguageVersion = LanguageVersion.CSharp8,
-            NullableContextOptions = nullableContextOptions,
-            PreprocessorSymbols = ["NET", "NET6_0_OR_GREATER"]
+            NullableContextOptions = nullableContextOptions
         } );
 
         // Then

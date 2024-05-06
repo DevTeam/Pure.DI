@@ -216,8 +216,8 @@ internal sealed class DisposeMethodBuilder
             {
                 code.AppendLine(
                     singletonField.InstanceType.IsValueType
-                        ? $"{singletonField.VariableName}Created = false;"
-                        : $"{singletonField.VariableName} = null;");
+                        ? $"{singletonField.VariableDeclarationName}Created = false;"
+                        : $"{singletonField.VariableDeclarationName} = null;");
             }
         }
 

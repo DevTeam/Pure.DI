@@ -24,7 +24,7 @@ internal class Formatter(
         }
             
         sb.Append('(');
-        sb.Append(string.Join(", ", root.Args.Select(i => i.VariableName)));
+        sb.Append(string.Join(", ", root.Args.Select(i => i.VariableDeclarationName)));
         sb.Append(')');
         return sb.ToString();
     }

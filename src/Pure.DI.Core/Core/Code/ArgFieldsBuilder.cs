@@ -16,7 +16,7 @@ internal sealed class ArgFieldsBuilder(ITypeResolver typeResolver)
         var membersCounter = composition.MembersCount;
         foreach (var arg in classArgs)
         {
-            code.AppendLine($"private readonly {typeResolver.Resolve(arg.InstanceType)} {arg.VariableName};");
+            code.AppendLine($"private readonly {typeResolver.Resolve(arg.InstanceType)} {arg.VariableDeclarationName};");
             membersCounter++;
         }
 

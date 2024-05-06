@@ -163,7 +163,7 @@ internal sealed class ClassDiagramBuilder(
         var rootArgsStr = "";
         if (root.IsMethod)
         {
-            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(arg.InstanceType)} {arg.VariableName}"))})";
+            rootArgsStr = $"({string.Join(", ", root.Args.Select(arg => $"{typeResolver.Resolve(arg.InstanceType)} {arg.VariableDeclarationName}"))})";
         }
 
         var displayName = root.IsPublic ? root.DisplayName : "_";

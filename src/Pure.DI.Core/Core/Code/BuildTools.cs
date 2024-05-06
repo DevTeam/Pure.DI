@@ -20,9 +20,26 @@ internal class BuildTools(
     
     public string OnInjected(BuildContext ctx, Variable variable)
     {
+        var variableCode = variable.VariableCode;
+        if (variableCode == variable.VariableName)
+        {
+            var skipNotNullCheck = (variable.HasCycle || variable.Info.HasCode)
+                && variable.InstanceType.IsReferenceType
+                && ctx.DependencyGraph.Source.SemanticModel.Compilation.Options.NullableContextOptions != NullableContextOptions.Disable;
+
+            if (skipNotNullCheck)
+            {
+                variableCode = variable.Node.Lifetime switch
+                {
+                    Lifetime.Singleton or Lifetime.PerResolve or Lifetime.Scoped => $"{variableCode}!",
+                    _ => variableCode
+                };
+            }
+        }
+
         if (!ctx.DependencyGraph.Source.Hints.IsOnDependencyInjectionEnabled)
         {
-            return variable.VariableCode;
+            return variableCode;
         }
 
         if (!filter.IsMeetRegularExpression(
@@ -32,11 +49,11 @@ internal class BuildTools(
                 (Hint.OnDependencyInjectionTagRegularExpression, variable.Injection.Tag.ValueToString()),
                 (Hint.OnDependencyInjectionLifetimeRegularExpression, variable.Node.Lifetime.ValueToString())))
         {
-            return variable.VariableCode;
+            return variableCode;
         }
         
         var tag = GetTag(ctx, variable);
-        return $"{Names.OnDependencyInjectionMethodName}<{variable.ContractType}>({variable.VariableCode}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})";
+        return $"{Names.OnDependencyInjectionMethodName}<{variable.ContractType}>({variableCode}, {tag.ValueToString()}, {variable.Node.Lifetime.ValueToString()})";
     }
     
     public IEnumerable<Line> OnCreated(BuildContext ctx, Variable variable)
