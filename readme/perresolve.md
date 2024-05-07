@@ -121,12 +121,12 @@ partial class Composition
                   }
               }
           }
-          var value_1 = (perResolve36_Dependency, perResolve36_Dependency);
+          var value_1 = (perResolve36_Dependency!, perResolve36_Dependency!);
           return value_1;
       });
       Lazy<(IDependency dep3, IDependency dep4)> transient1_Lazy;
       {
-          var factory_2 = perResolve43_Func;
+          var factory_2 = perResolve43_Func!;
           transient1_Lazy = new Lazy<(IDependency dep3, IDependency dep4)>(factory_2, true);
       }
       if (perResolve36_Dependency == null)
@@ -139,7 +139,7 @@ partial class Composition
               }
           }
       }
-      return new Service(perResolve36_Dependency, perResolve36_Dependency, transient1_Lazy);
+      return new Service(perResolve36_Dependency!, perResolve36_Dependency!, transient1_Lazy);
     }
   }
 

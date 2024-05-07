@@ -70,8 +70,8 @@ classDiagram
 partial class Singleton
 {
   private readonly Singleton _root;
-  private Benchmarks.Model.Service1 _scoped37_Service1;
-  private Benchmarks.Model.Service4 _scoped40_Service4;
+  private Benchmarks.Model.Service1? _scoped37_Service1;
+  private Benchmarks.Model.Service4? _scoped40_Service4;
 
   public Singleton()
   {
@@ -92,9 +92,9 @@ partial class Singleton
     }
     if (_scoped37_Service1 == null)
     {
-        _scoped37_Service1 = new Benchmarks.Model.Service1(new Benchmarks.Model.Service2(new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4), new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4), new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4), new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4), new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4)));
+        _scoped37_Service1 = new Benchmarks.Model.Service1(new Benchmarks.Model.Service2(new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!), new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!), new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!), new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!), new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!)));
     }
-    return new Benchmarks.Model.CompositionRoot(_scoped37_Service1, new Benchmarks.Model.Service2(new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4), new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4), new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4), new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4), new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4)), new Benchmarks.Model.Service2(new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4), new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4), new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4), new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4), new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4)), new Benchmarks.Model.Service2(new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4), new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4), new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4), new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4), new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4)), new Benchmarks.Model.Service3(_scoped40_Service4, _scoped40_Service4), _scoped40_Service4, _scoped40_Service4);
+    return new Benchmarks.Model.CompositionRoot(_scoped37_Service1!, new Benchmarks.Model.Service2(new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!), new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!), new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!), new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!), new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!)), new Benchmarks.Model.Service2(new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!), new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!), new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!), new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!), new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!)), new Benchmarks.Model.Service2(new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!), new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!), new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!), new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!), new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!)), new Benchmarks.Model.Service3(_scoped40_Service4!, _scoped40_Service4!), _scoped40_Service4!, _scoped40_Service4!);
   }
 
   [MethodImpl((MethodImplOptions)0x100)]

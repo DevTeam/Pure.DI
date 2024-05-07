@@ -2,7 +2,7 @@
 #if !PUREDI_API_SUPPRESSION || PUREDI_API_V1
 #pragma warning disable
 
-#if !NET40_OR_GREATER && !NETSTANDARD2_0_OR_GREATER && !NETCOREAPP2_0_OR_GREATER 
+#if !NET40_OR_GREATER && !NETSTANDARD2_0_OR_GREATER && !NETCOREAPP2_0_OR_GREATER && !NET5_0_OR_GREATER
 namespace System.Diagnostics.CodeAnalysis
 {
     // ReSharper disable UnusedType.Global

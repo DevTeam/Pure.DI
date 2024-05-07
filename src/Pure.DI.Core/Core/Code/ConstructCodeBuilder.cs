@@ -50,13 +50,13 @@ internal class ConstructCodeBuilder(ITypeResolver typeResolver)
         var variable = ctx.Variable;
         var code = ctx.Code;
         var level = ctx.Level + 1;
-        var localFuncName = $"{Names.LocalMethodPrefix}{variable.VariableDeclarationName}";
+        var localMethodName = $"{Names.EnumerateMethodNamePrefix}_{variable.VariableDeclarationName}".Replace("__", "_");
         if (enumerable.Source.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp9)
         {
-            code.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x200)]");
+            code.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x100)]");
         }
 
-        code.AppendLine($"{methodPrefix}{typeResolver.Resolve(variable.InstanceType)} {localFuncName}()");
+        code.AppendLine($"{methodPrefix}{typeResolver.Resolve(variable.InstanceType)} {localMethodName}()");
         code.AppendLine("{");
         using (code.Indent())
         {
@@ -83,7 +83,7 @@ internal class ConstructCodeBuilder(ITypeResolver typeResolver)
 
         code.AppendLine("}");
         code.AppendLine();
-        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = {localFuncName}();");
+        ctx.Code.AppendLine($"{ctx.BuildTools.GetDeclaration(variable)}{variable.VariableName} = {localMethodName}();");
         ctx.Code.AppendLines(ctx.BuildTools.OnCreated(ctx, variable));
     }
     

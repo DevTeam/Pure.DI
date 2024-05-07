@@ -103,7 +103,7 @@ partial class Composition
           var value_1 = new Dependency();
           return value_1;
       });
-      return new Service(perResolve39_Func);
+      return new Service(perResolve39_Func!);
     }
   }
 

@@ -150,7 +150,7 @@ partial class Composition
           var value_1 = perBlock1_Owned;
           return value_1;
       });
-      return new Service(perResolve39_Func);
+      return new Service(perResolve39_Func!);
     }
   }
 

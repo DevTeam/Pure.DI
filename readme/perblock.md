@@ -116,7 +116,7 @@ partial class Composition
       });
       Lazy<(IDependency dep3, IDependency dep4)> transient2_Lazy;
       {
-          var factory_2 = perResolve43_Func;
+          var factory_2 = perResolve43_Func!;
           transient2_Lazy = new Lazy<(IDependency dep3, IDependency dep4)>(factory_2, true);
       }
       Dependency perBlock1_Dependency = new Dependency();

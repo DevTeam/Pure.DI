@@ -101,7 +101,7 @@ partial class Composition
       });
       Lazy<IDependency> transient1_Lazy;
       {
-          var factory_2 = perResolve40_Func;
+          var factory_2 = perResolve40_Func!;
           transient1_Lazy = new Lazy<IDependency>(factory_2, true);
       }
       return new Service(transient1_Lazy);

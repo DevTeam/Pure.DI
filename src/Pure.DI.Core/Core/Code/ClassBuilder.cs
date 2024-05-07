@@ -44,10 +44,7 @@ internal sealed class ClassBuilder(
             code.AppendLine("#nullable enable");
         }
         
-        code.AppendLine("#pragma warning disable CS0436");
-        
         code.AppendLine();
-
         composition = usingDeclarationsBuilder.Build(composition);
         
         var nsIndent = Disposables.Empty;

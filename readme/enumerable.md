@@ -99,13 +99,13 @@ partial class Composition
     [MethodImpl((MethodImplOptions)0x100)]
     get
     {
-      [MethodImpl((MethodImplOptions)0x200)]
-      IEnumerable<IDependency> Local_perBlock1_IEnumerable()
+      [MethodImpl((MethodImplOptions)0x100)]
+      IEnumerable<IDependency> EnumerationOf_perBlock1_IEnumerable()
       {
           yield return new AbcDependency();
           yield return new XyzDependency();
       }
-      IEnumerable<IDependency> perBlock1_IEnumerable = Local_perBlock1_IEnumerable();
+      IEnumerable<IDependency> perBlock1_IEnumerable = EnumerationOf_perBlock1_IEnumerable();
       return new Service(perBlock1_IEnumerable);
     }
   }

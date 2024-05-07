@@ -113,7 +113,7 @@ partial class Composition
 {
   private readonly Composition _root;
   private readonly object _lock;
-  private Clock _singleton36_Clock;
+  private Clock? _singleton36_Clock;
 
   public Composition()
   {
@@ -141,12 +141,11 @@ partial class Composition
               {
                   if (_root._singleton36_Clock == null)
                   {
-                      _singleton36_Clock = new Clock();
-                      _root._singleton36_Clock = _singleton36_Clock;
+                      _root._singleton36_Clock = new Clock();
                   }
               }
           }
-          var dependency_1 = new Dependency(_root._singleton36_Clock, transient3_Int32);
+          var dependency_1 = new Dependency(_root._singleton36_Clock!, transient3_Int32);
           return dependency_1;
       };
       return new Service(transient1_Func);

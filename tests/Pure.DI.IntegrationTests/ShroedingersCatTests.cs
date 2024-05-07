@@ -60,7 +60,12 @@ namespace Sample
             // FormatCode = On
             DI.Setup(nameof(Composition))
                 // Models a random subatomic event that may or may not occur
-                .Bind<Random>().As(Singleton).To<Random>()
+                .Bind<Random>().As(Singleton).To(_ => 
+                {
+                    var i = 0;
+                    i++;
+                    return new Random();
+                })
                 // Represents a quantum superposition of 2 states: Alive or Dead
                 .Bind<State>().To(ctx =>
                 {
@@ -93,13 +98,15 @@ namespace Sample
 }
 """.RunAsync(new Options
         {
-            LanguageVersion = LanguageVersion.CSharp8,
+            LanguageVersion = LanguageVersion.CSharp9,
             NullableContextOptions = nullableContextOptions
         } );
 
         // Then
         result.Success.ShouldBeTrue(result);
         (result.StdOut.Contains("[Dead cat]") || result.StdOut.Contains("[Alive cat]")).ShouldBeTrue(result);
-        result.GeneratedCode.Contains("= new System.Random();").ShouldBeTrue();
+        var lines = result.GeneratedCode.Split(Environment.NewLine);
+        lines.Count(i => i.Contains(" = new Random();")).ShouldBe(1);
+        lines.Count(i => i.Contains("EnsureExistenceOf_")).ShouldBe(3);
     }
 }

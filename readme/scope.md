@@ -133,7 +133,7 @@ partial class Composition: IDisposable
   private readonly object _lock;
   private object[] _disposables;
   private int _disposeIndex;
-  private Dependency _scoped36_Dependency;
+  private Dependency? _scoped36_Dependency;
 
   public Composition()
   {
@@ -165,7 +165,7 @@ partial class Composition: IDisposable
               }
           }
       }
-      return new Service(_scoped36_Dependency);
+      return new Service(_scoped36_Dependency!);
     }
   }
 
@@ -183,7 +183,7 @@ partial class Composition: IDisposable
           var value_1 = new Session(transient2_Composition);
           return value_1;
       });
-      return new Program(perResolve43_Func);
+      return new Program(perResolve43_Func!);
     }
   }
 

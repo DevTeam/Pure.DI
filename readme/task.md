@@ -149,7 +149,7 @@ partial class Composition
     });
     Task<IDependency> transient1_Task;
     {
-        var factory_6 = perResolve42_Func;
+        var factory_6 = perResolve42_Func!;
         var taskFactory_7 = perBlock2_TaskFactory;
         transient1_Task = taskFactory_7.StartNew(factory_6);
     }

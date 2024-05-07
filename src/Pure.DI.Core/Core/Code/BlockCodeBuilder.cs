@@ -126,12 +126,11 @@ internal class BlockCodeBuilder(
         finally
         {
             info.HasCode = true;
-            // ctx.Code.AppendLines(info.Code.Lines);
             if (block.Parent is not null
-                && info is { PerBlockRefCount: > 1, Code.Lines.Count: > 3 }) 
+                && info is { PerBlockRefCount: > 1, Code.Lines.Count: > 11 }) 
             {
                 var localFunctionsCode = ctx.LocalFunctionsCode;
-                var localMethodName = $"{Names.LocalMethodPrefix}{variable.VariableDeclarationName}{Names.EnsureExistsMethodNamePostfix}";
+                var localMethodName = $"{Names.EnsureExistsMethodNamePrefix}_{variable.VariableDeclarationName}".Replace("__", "_");
                 if (variable.Node.Binding.SemanticModel.Compilation.GetLanguageVersion() >= LanguageVersion.CSharp9)
                 {
                     localFunctionsCode.AppendLine($"[{Names.MethodImplAttribute}(({Names.MethodImplOptions})0x100)]");

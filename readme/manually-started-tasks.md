@@ -139,7 +139,7 @@ partial class Composition
     });
     Task<IDependency> transient1_Task;
     {
-        var factory_2 = perResolve42_Func;
+        var factory_2 = perResolve42_Func!;
         var cancellationToken_3 = cancellationToken;
         transient1_Task = new Task<IDependency>(factory_2, cancellationToken_3);
     }

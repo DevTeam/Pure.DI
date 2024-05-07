@@ -47,8 +47,8 @@ internal static class Names
     public const string OnNewRootMethodName = "OnNewRoot";
     
     // Local methods
-    public const string LocalMethodPrefix = "Local_";
-    public const string EnsureExistsMethodNamePostfix = "EnsureExists";
+    public const string EnsureExistsMethodNamePrefix = "EnsureExistenceOf";
+    public const string EnumerateMethodNamePrefix = "EnumerationOf";
     
     // Fields
     public static readonly string BucketsFieldName = $"_buckets{Salt}";

@@ -36,7 +36,7 @@ public static class TestExtensions
             .WithLanguageVersion(runOptions.LanguageVersion);
 
         parseOptions = runOptions.PreprocessorSymbols.IsDefaultOrEmpty
-            ? parseOptions.WithPreprocessorSymbols("NET", "NET6_0_OR_GREATER", "NETCOREAPP2_0_OR_GREATER")
+            ? parseOptions.WithPreprocessorSymbols("NET", "NET6_0_OR_GREATER", "NET5_0_OR_GREATER")
             : parseOptions.WithPreprocessorSymbols(runOptions.PreprocessorSymbols);
 
         var generator = new Generator();

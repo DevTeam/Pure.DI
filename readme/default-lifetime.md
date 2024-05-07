@@ -79,8 +79,8 @@ partial class Composition
 {
   private readonly Composition _root;
   private readonly object _lock;
-  private Service _singleton37_Service;
-  private Dependency _singleton36_Dependency;
+  private Service? _singleton37_Service;
+  private Dependency? _singleton36_Dependency;
 
   public Composition()
   {
@@ -107,15 +107,13 @@ partial class Composition
               {
                   if (_root._singleton36_Dependency == null)
                   {
-                      _singleton36_Dependency = new Dependency();
-                      _root._singleton36_Dependency = _singleton36_Dependency;
+                      _root._singleton36_Dependency = new Dependency();
                   }
-                  _singleton37_Service = new Service(_singleton36_Dependency, _root._singleton36_Dependency);
-                  _root._singleton37_Service = _singleton37_Service;
+                  _root._singleton37_Service = new Service(_root._singleton36_Dependency!, _root._singleton36_Dependency!);
               }
           }
       }
-      return _root._singleton37_Service;
+      return _root._singleton37_Service!;
     }
   }
 

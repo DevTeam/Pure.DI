@@ -92,7 +92,7 @@ partial class Composition
 {
   private readonly Composition _root;
   private readonly object _lock;
-  private XyzDependency _singleton38_XyzDependency;
+  private XyzDependency? _singleton38_XyzDependency;
 
   public Composition()
   {
@@ -123,8 +123,7 @@ partial class Composition
                   _singleton38_XyzDependencyTemp = new XyzDependency();
                   accumulator42.Add(_singleton38_XyzDependencyTemp);
                   Thread.MemoryBarrier();
-                  _singleton38_XyzDependency = _singleton38_XyzDependencyTemp;
-                  _root._singleton38_XyzDependency = _singleton38_XyzDependency;
+                  _root._singleton38_XyzDependency = _singleton38_XyzDependencyTemp;
               }
           }
       }
@@ -133,7 +132,7 @@ partial class Composition
       {
           accumulator42.Add(transient3_AbcDependency);
       }
-      Service transient1_Service = new Service(transient3_AbcDependency, _root._singleton38_XyzDependency, perBlock4_AbcDependency);
+      Service transient1_Service = new Service(transient3_AbcDependency, _root._singleton38_XyzDependency!, perBlock4_AbcDependency);
       lock (_lock)
       {
           accumulator42.Add(transient1_Service);

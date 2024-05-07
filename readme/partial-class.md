@@ -30,7 +30,7 @@ class Service(
 // The partial class is also useful for specifying access modifiers to the generated class
 public partial class Composition
 {
-    private readonly string _serviceName;
+    private readonly string _serviceName = "";
     private long _id;
 
     // Customizable constructor

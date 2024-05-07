@@ -86,7 +86,7 @@ partial class Composition: IDisposable
   private readonly object _lock;
   private object[] _disposables;
   private int _disposeIndex;
-  private Dependency _singleton36_Dependency;
+  private Dependency? _singleton36_Dependency;
 
   public Composition()
   {
@@ -99,6 +99,7 @@ partial class Composition: IDisposable
   {
     _root = parentScope._root;
     _lock = _root._lock;
+    _disposables = parentScope._disposables;
   }
 
   public IService Root
@@ -112,13 +113,12 @@ partial class Composition: IDisposable
           {
               if (_root._singleton36_Dependency == null)
               {
-                  _singleton36_Dependency = new Dependency();
-                  _root._singleton36_Dependency = _singleton36_Dependency;
-                  _root._disposables[_root._disposeIndex++] = _singleton36_Dependency;
+                  _root._singleton36_Dependency = new Dependency();
+                  _root._disposables[_root._disposeIndex++] = _root._singleton36_Dependency;
               }
           }
       }
-      return new Service(_root._singleton36_Dependency);
+      return new Service(_root._singleton36_Dependency!);
     }
   }
 

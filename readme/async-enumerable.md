@@ -107,13 +107,14 @@ partial class Composition
     [MethodImpl((MethodImplOptions)0x100)]
     get
     {
-      [MethodImpl((MethodImplOptions)0x200)]
-      async IAsyncEnumerable<IDependency> Local_transient1_IAsyncEnumerable()
+      [MethodImpl((MethodImplOptions)0x100)]
+      async IAsyncEnumerable<IDependency> EnumerationOf_transient1_IAsyncEnumerable()
       {
           yield return new AbcDependency();
           yield return new XyzDependency();
+          await Task.CompletedTask;
       }
-      IAsyncEnumerable<IDependency> transient1_IAsyncEnumerable = Local_transient1_IAsyncEnumerable();
+      IAsyncEnumerable<IDependency> transient1_IAsyncEnumerable = EnumerationOf_transient1_IAsyncEnumerable();
       return new Service(transient1_IAsyncEnumerable);
     }
   }

@@ -29,7 +29,7 @@ class Service(IDependency dependency) : IService
 
 internal partial class Composition
 {
-    private readonly List<string> _log;
+    private readonly List<string> _log = [];
 
     public Composition(List<string> log) : this() =>
         _log = log;
@@ -97,7 +97,7 @@ partial class Composition
 {
   private readonly Composition _root;
   private readonly object _lock;
-  private Dependency _singleton36_Dependency;
+  private Dependency? _singleton36_Dependency;
 
   public Composition()
   {
@@ -126,12 +126,11 @@ partial class Composition
                   _singleton36_DependencyTemp = new Dependency();
                   OnNewInstance<Dependency>(ref _singleton36_DependencyTemp, null, Lifetime.Singleton);
                   Thread.MemoryBarrier();
-                  _singleton36_Dependency = _singleton36_DependencyTemp;
-                  _root._singleton36_Dependency = _singleton36_Dependency;
+                  _root._singleton36_Dependency = _singleton36_DependencyTemp;
               }
           }
       }
-      Service transient0_Service = new Service(_root._singleton36_Dependency);
+      Service transient0_Service = new Service(_root._singleton36_Dependency!);
       OnNewInstance<Service>(ref transient0_Service, null, Lifetime.Transient);
       return transient0_Service;
     }
