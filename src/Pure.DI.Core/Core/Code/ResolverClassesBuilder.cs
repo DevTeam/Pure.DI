@@ -1,6 +1,7 @@
 // ReSharper disable ConvertIfStatementToConditionalTernaryExpression
 // ReSharper disable InvertIf
 // ReSharper disable ClassNeverInstantiated.Global
+
 namespace Pure.DI.Core.Code;
 
 internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnumerable<ResolverInfo>> resolversBuilder)
@@ -12,87 +13,93 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
         {
             return composition;
         }
-        
+
+        var membersCount = composition.MembersCount;
         var code = composition.Code;
         code.AppendLine("#region Resolvers");
+        code.AppendLine($"private const string {Names.CannotResolveFieldName} = \"{Names.CannotResolveMessage} \";");
+        membersCount++;
+        code.AppendLine($"private const string {Names.OfTypeFieldName} = \"{Names.OfTypeMessage} \";");
+        membersCount++;
+        code.AppendLine("");
+
         code.AppendLine($"private class {Names.ResolverClassName}<T>: {Names.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, T>");
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine($"private const string CannotResolve = \"{Names.CannotResolve} \";");
-            code.AppendLine($"private const string OfType = \"{Names.CannotResolveOfType} \";");
             code.AppendLine($"public static {Names.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, T> {Names.ResolverPropertyName} = new {Names.ResolverClassName}<T>();");
-
             code.AppendLine();
             code.AppendLine($"public virtual T {Names.ResolveMethodName}({composition.Source.Source.Name.ClassName} composite)");
             code.AppendLine("{");
             using (code.Indent())
             {
-                code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{{CannotResolve}}{{OfType}}{{typeof(T)}}.\");");
+                code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{{{Names.CannotResolveFieldName}}}{{{Names.OfTypeFieldName}}}{{typeof(T)}}.\");");
             }
-            
+
             code.AppendLine("}");
-            
+
             code.AppendLine();
             code.AppendLine($"public virtual T {Names.ResolveByTagMethodName}({composition.Source.Source.Name.ClassName} composite, object tag)");
             code.AppendLine("{");
             using (code.Indent())
             {
-                code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{{CannotResolve}}\\\"{{tag}}\\\" {{OfType}}{{typeof(T)}}.\");");
+                code.AppendLine($"throw new {Names.SystemNamespace}InvalidOperationException($\"{{{Names.CannotResolveFieldName}}}\\\"{{tag}}\\\" {{{Names.OfTypeFieldName}}}{{typeof(T)}}.\");");
             }
-            
+
             code.AppendLine("}");
         }
-        code.AppendLine("}");
-        
-        var resolvers = resolversBuilder.Build(composition.Roots).ToArray();
-        if (resolvers.Any())
-        {
-            foreach (var resolver in resolvers)
-            {
-                var resolverClassName = resolver.ClassName;
-                code.AppendLine();
-                var baseTypeName = $"{Names.ResolverClassName}<{resolver.Type}>";
-                var baseTypes = new List<string> { baseTypeName };
-                var objectTypeName = "";
-                if (resolver.Type.IsValueType)
-                {
-                    objectTypeName = $"{Names.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, object>";
-                    baseTypes.Add(objectTypeName);
-                }
-                
-                code.AppendLine($"private sealed class {resolverClassName}: {string.Join(", ", baseTypes)}");
-                code.AppendLine("{");
-                using (code.Indent())
-                {
-                    ImplementInterface(composition, resolver, code);
 
-                    if (!string.IsNullOrWhiteSpace(objectTypeName))
-                    {
-                        code.AppendLine($"object {objectTypeName}.{Names.ResolveMethodName}({composition.Source.Source.Name.ClassName} composition)");
-                        code.AppendLine("{");
-                        using (code.Indent())
-                        {
-                            code.AppendLine($"return {Names.ResolveMethodName}(composition);");
-                        }
-                        code.AppendLine("}");
-                        
-                        code.AppendLine();
-                        code.AppendLine($"object {objectTypeName}.{Names.ResolveByTagMethodName}({composition.Source.Source.Name.ClassName} composition, object tag)");
-                        code.AppendLine("{");
-                        using (code.Indent())
-                        {
-                            code.AppendLine($"return {Names.ResolveByTagMethodName}(composition, tag);");
-                        }
-                        code.AppendLine("}");
-                    }
-                }
-                code.AppendLine("}");   
+        code.AppendLine("}");
+        membersCount++;
+
+        foreach (var resolver in resolversBuilder.Build(composition.Roots))
+        {
+            var resolverClassName = resolver.ClassName;
+            var baseTypeName = $"{Names.ResolverClassName}<{resolver.Type}>";
+            var baseTypes = new List<string> { baseTypeName };
+            var objectTypeName = "";
+            if (resolver.Type.IsValueType)
+            {
+                objectTypeName = $"{Names.ResolverInterfaceName}<{composition.Source.Source.Name.ClassName}, object>";
+                baseTypes.Add(objectTypeName);
             }
+
+            code.AppendLine();
+            code.AppendLine($"private sealed class {resolverClassName}: {string.Join(", ", baseTypes)}");
+            code.AppendLine("{");
+            using (code.Indent())
+            {
+                ImplementInterface(composition, resolver, code);
+
+                if (!string.IsNullOrWhiteSpace(objectTypeName))
+                {
+                    code.AppendLine($"object {objectTypeName}.{Names.ResolveMethodName}({composition.Source.Source.Name.ClassName} composition)");
+                    code.AppendLine("{");
+                    using (code.Indent())
+                    {
+                        code.AppendLine($"return {Names.ResolveMethodName}(composition);");
+                    }
+
+                    code.AppendLine("}");
+
+                    code.AppendLine();
+                    code.AppendLine($"object {objectTypeName}.{Names.ResolveByTagMethodName}({composition.Source.Source.Name.ClassName} composition, object tag)");
+                    code.AppendLine("{");
+                    using (code.Indent())
+                    {
+                        code.AppendLine($"return {Names.ResolveByTagMethodName}(composition, tag);");
+                    }
+
+                    code.AppendLine("}");
+                }
+            }
+
+            code.AppendLine("}");
+            membersCount++;
         }
-        
+
         code.AppendLine("#endregion");
-        return composition with { MembersCount = composition.MembersCount + 1 };
+        return composition with { MembersCount = membersCount };
     }
 
     private static void ImplementInterface(CompositionCode composition, ResolverInfo resolver, LinesBuilder code)
@@ -106,7 +113,7 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
             {
                 var isStatic = (defaultRoot.Kind & RootKinds.Static) == RootKinds.Static;
                 var isMethod = !defaultRoot.Args.IsEmpty || (defaultRoot.Kind & RootKinds.Method) == RootKinds.Method;
-                code.AppendLine($"return {(isStatic ? composition.Source.Source.Name.ClassName : "composition")}.{defaultRoot.DisplayName}{(isMethod ? "()": "")};");
+                code.AppendLine($"return {(isStatic ? composition.Source.Source.Name.ClassName : "composition")}.{defaultRoot.DisplayName}{(isMethod ? "()" : "")};");
             }
             else
             {
@@ -127,7 +134,7 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
             {
                 code.AppendLine($"if (Equals(tag, {taggedRoot.Injection.Tag.ValueToString()})) return {GetRoot(composition, taggedRoot)};");
             }
-            
+
             code.AppendLine("switch (tag)");
             code.AppendLine("{");
             using (code.Indent())
@@ -140,14 +147,14 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
                         code.AppendLine($"return {GetRoot(composition, taggedRoot)};");
                     }
                 }
-                
+
                 code.AppendLine("default:");
                 using (code.Indent())
                 {
                     code.AppendLine($"return base.{Names.ResolveByTagMethodName}(composition, tag);");
                 }
             }
-            
+
             code.AppendLine("}");
         }
 
@@ -161,7 +168,7 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
         {
             return true;
         }
-        
+
         if (tagType.IsPrimitive)
         {
             return true;
@@ -184,6 +191,6 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
     {
         var target = (root.Kind & RootKinds.Static) == RootKinds.Static ? composition.Source.Source.Name.ClassName : "composition";
         var isMethod = !root.Args.IsEmpty || (root.Kind & RootKinds.Method) == RootKinds.Method;
-        return $"{target}.{root.DisplayName}{(isMethod ? "()": "")}";
+        return $"{target}.{root.DisplayName}{(isMethod ? "()" : "")}";
     }
 }

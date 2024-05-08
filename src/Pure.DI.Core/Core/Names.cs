@@ -16,8 +16,8 @@ internal static class Names
     public const string MethodImplOptions = $"{SystemNamespace}Runtime.CompilerServices.MethodImplOptions";
     
     // Messages
-    public const string CannotResolve = "Cannot resolve composition root";
-    public const string CannotResolveOfType = "of type";
+    public const string CannotResolveMessage = "Cannot resolve composition root";
+    public const string OfTypeMessage = "of type";
     
     // Others
     public static readonly string ResolverClassName = $"Resolver{Salt}";
@@ -57,6 +57,8 @@ internal static class Names
     public static readonly string DisposablesFieldName = "_disposables" + Salt;
     public static readonly string LockFieldName = "_lock" + Salt;
     public static readonly string RootFieldName = "_root" + Salt;
+    public static readonly string CannotResolveFieldName = "CannotResolveMessage" + Salt;
+    public static readonly string OfTypeFieldName = "OfTypeMessage" + Salt;
     
     // Vars
     private const string TransientVariablePrefix = "transient";

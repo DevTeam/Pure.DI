@@ -21,7 +21,16 @@ internal sealed class ScopeConstructorBuilder: IBuilder<CompositionCode, Composi
         code.AppendLine("{");
         using (code.Indent())
         {
-            code.AppendLine($"{Names.RootFieldName} = {Names.ParentScopeArgName}.{Names.RootFieldName};");
+            code.AppendLine($"{Names.RootFieldName} = ({Names.ParentScopeArgName} ?? throw new {Names.SystemNamespace}ArgumentNullException(nameof({Names.ParentScopeArgName}))).{Names.RootFieldName};");
+            var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToArray();
+            if (classArgs.Any())
+            {
+                foreach (var argsField in classArgs)
+                {
+                    code.AppendLine($"{argsField.VariableDeclarationName} = {Names.RootFieldName}.{argsField.VariableDeclarationName};");
+                }
+            }
+            
             if (composition.IsThreadSafe)
             {
                 code.AppendLine($"{Names.LockFieldName} = {Names.RootFieldName}.{Names.LockFieldName};");
@@ -36,15 +45,6 @@ internal sealed class ScopeConstructorBuilder: IBuilder<CompositionCode, Composi
                 if (composition.TotalDisposablesCount > 0)
                 {
                     code.AppendLine($"{Names.DisposablesFieldName} = {Names.ParentScopeArgName}.{Names.DisposablesFieldName};");
-                }
-            }
-            
-            var classArgs = composition.Args.GetArgsOfKind(ArgKind.Class).ToArray();
-            if (classArgs.Any())
-            {
-                foreach (var argsField in classArgs)
-                {
-                    code.AppendLine($"{argsField.VariableDeclarationName} = {Names.ParentScopeArgName}.{argsField.VariableDeclarationName};");
                 }
             }
         }

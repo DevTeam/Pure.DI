@@ -27,35 +27,23 @@ internal sealed class ParameterizedConstructorBuilder(
         code.AppendLine("{");
         using (code.Indent())
         {
+            foreach (var arg in classArgs)
+            {
+                var nullCheck = "";
+                if (arg.InstanceType.IsReferenceType)
+                {
+                    nullCheck = $" ?? throw new {Names.SystemNamespace}ArgumentNullException(nameof({arg.Node.Arg?.Source.ArgName}))";
+                }
+                
+                code.AppendLine($"{arg.VariableDeclarationName} = {arg.Node.Arg?.Source.ArgName}{nullCheck};");
+            }
+
             code.AppendLine($"{Names.RootFieldName} = this;");
             if (composition.IsThreadSafe)
             {
                 code.AppendLine($"{Names.LockFieldName} = new object();");
             }
             
-            foreach (var arg in classArgs)
-            {
-                if (arg.InstanceType.IsValueType)
-                {
-                    continue;
-                }
-
-                code.AppendLine($"if (ReferenceEquals({arg.Node.Arg?.Source.ArgName}, null))");
-                code.AppendLine("{");
-                using (code.Indent())
-                {
-                    code.AppendLine($"throw new {Names.SystemNamespace}ArgumentNullException(\"{arg.Node.Arg?.Source.ArgName}\");");
-                }
-
-                code.AppendLine("}");
-                code.AppendLine();
-            }
-
-            foreach (var arg in classArgs)
-            {
-                code.AppendLine($"{arg.VariableDeclarationName} = {arg.Node.Arg?.Source.ArgName};");
-            }
-
             if (composition.TotalDisposablesCount > 0)
             {
                 code.AppendLine($"{Names.DisposablesFieldName} = new object[{composition.TotalDisposablesCount.ToString()}];");
