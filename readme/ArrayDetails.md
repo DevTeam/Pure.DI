@@ -97,7 +97,7 @@ partial class Array
 
   internal Array(Array parentScope)
   {
-    _root = parentScope._root;
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
@@ -139,7 +139,7 @@ partial class Array
       }
     }
 
-    throw new InvalidOperationException($"Cannot resolve composition root of type {type}.");
+    throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
@@ -163,7 +163,7 @@ partial class Array
       }
     }
 
-    throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
+    throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
   }
 
   public override string ToString()
@@ -261,20 +261,21 @@ partial class Array
       });
   }
 
+  private const string CannotResolveMessage = "Cannot resolve composition root ";
+  private const string OfTypeMessage = "of type ";
+
   private class Resolver<T>: IResolver<Array, T>
   {
-    private const string CannotResolve = "Cannot resolve composition root ";
-    private const string OfType = "of type ";
     public static IResolver<Array, T> Value = new Resolver<T>();
 
     public virtual T Resolve(Array composite)
     {
-      throw new InvalidOperationException($"{CannotResolve}{OfType}{typeof(T)}.");
+      throw new InvalidOperationException($"{CannotResolveMessage}{OfTypeMessage}{typeof(T)}.");
     }
 
     public virtual T ResolveByTag(Array composite, object tag)
     {
-      throw new InvalidOperationException($"{CannotResolve}\"{tag}\" {OfType}{typeof(T)}.");
+      throw new InvalidOperationException($"{CannotResolveMessage}\"{tag}\" {OfTypeMessage}{typeof(T)}.");
     }
   }
 

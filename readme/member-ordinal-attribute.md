@@ -108,23 +108,18 @@ partial class PersonComposition
 
   public PersonComposition(int personId, string personName, DateTime personBirthday)
   {
-    _root = this;
-    if (ReferenceEquals(personName, null))
-    {
-      throw new ArgumentNullException("personName");
-    }
-
     _arg_personId = personId;
-    _arg_personName = personName;
+    _arg_personName = personName ?? throw new ArgumentNullException(nameof(personName));
     _arg_personBirthday = personBirthday;
+    _root = this;
   }
 
   internal PersonComposition(PersonComposition parentScope)
   {
-    _root = parentScope._root;
-    _arg_personId = parentScope._arg_personId;
-    _arg_personName = parentScope._arg_personName;
-    _arg_personBirthday = parentScope._arg_personBirthday;
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _arg_personId = _root._arg_personId;
+    _arg_personName = _root._arg_personName;
+    _arg_personBirthday = _root._arg_personBirthday;
   }
 
   public IPerson Person
@@ -173,7 +168,7 @@ partial class PersonComposition
       }
     }
 
-    throw new InvalidOperationException($"Cannot resolve composition root of type {type}.");
+    throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
   }
 
   [MethodImpl((MethodImplOptions)0x100)]
@@ -197,7 +192,7 @@ partial class PersonComposition
       }
     }
 
-    throw new InvalidOperationException($"Cannot resolve composition root \"{tag}\" of type {type}.");
+    throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
   }
 
   public override string ToString()
@@ -246,20 +241,21 @@ partial class PersonComposition
       });
   }
 
+  private const string CannotResolveMessage = "Cannot resolve composition root ";
+  private const string OfTypeMessage = "of type ";
+
   private class Resolver<T>: IResolver<PersonComposition, T>
   {
-    private const string CannotResolve = "Cannot resolve composition root ";
-    private const string OfType = "of type ";
     public static IResolver<PersonComposition, T> Value = new Resolver<T>();
 
     public virtual T Resolve(PersonComposition composite)
     {
-      throw new InvalidOperationException($"{CannotResolve}{OfType}{typeof(T)}.");
+      throw new InvalidOperationException($"{CannotResolveMessage}{OfTypeMessage}{typeof(T)}.");
     }
 
     public virtual T ResolveByTag(PersonComposition composite, object tag)
     {
-      throw new InvalidOperationException($"{CannotResolve}\"{tag}\" {OfType}{typeof(T)}.");
+      throw new InvalidOperationException($"{CannotResolveMessage}\"{tag}\" {OfTypeMessage}{typeof(T)}.");
     }
   }
 

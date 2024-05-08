@@ -88,7 +88,7 @@ partial class Composition
 
   internal Composition(Composition parentScope)
   {
-    _root = parentScope._root;
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
   public Program Root
