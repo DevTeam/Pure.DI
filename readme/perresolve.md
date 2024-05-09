@@ -65,7 +65,7 @@ classDiagram
 	class LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ
 	class FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ
 	class IDependency {
-		<<abstract>>
+		<<interface>>
 	}
 	ValueTupleᐸIDependencyˏIDependencyᐳ o--  "PerResolve" Dependency : IDependency
 	ValueTupleᐸIDependencyˏIDependencyᐳ o--  "PerResolve" Dependency : IDependency
@@ -102,13 +102,13 @@ partial class Composition
 
   public Service Root
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       var perResolve36_Dependency = default(Dependency);
       var perResolve43_Func = default(Func<(IDependency dep3, IDependency dep4)>);
       perResolve43_Func = new Func<(IDependency dep3, IDependency dep4)>(
-      [MethodImpl((MethodImplOptions)256)]
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
           if (perResolve36_Dependency == null)
@@ -143,19 +143,19 @@ partial class Composition
     }
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>()
   {
     return Resolver<T>.Value.Resolve(this);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>(object? tag)
   {
     return Resolver<T>.Value.ResolveByTag(this, tag);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
@@ -163,7 +163,7 @@ partial class Composition
     return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, int index)
   {
     var finish = index + _bucketSize;
@@ -179,7 +179,7 @@ partial class Composition
     throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type, object? tag)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
@@ -187,7 +187,7 @@ partial class Composition
     return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, object? tag, int index)
   {
     var finish = index + _bucketSize;
@@ -201,42 +201,6 @@ partial class Composition
     }
 
     throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
-  }
-
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Composition {\n" +
-          "    +Service Root\n" +
-          "    + T ResolveᐸTᐳ()\n" +
-          "    + T ResolveᐸTᐳ(object? tag)\n" +
-          "    + object Resolve(Type type)\n" +
-          "    + object Resolve(Type type, object? tag)\n" +
-        "  }\n" +
-        "  class ValueTupleᐸIDependencyˏIDependencyᐳ {\n" +
-          "    +ValueTuple(IDependency item1, IDependency item2)\n" +
-        "  }\n" +
-        "  class Service {\n" +
-          "    +Service(IDependency dep1, IDependency dep2, LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ deps)\n" +
-        "  }\n" +
-        "  Dependency --|> IDependency : \n" +
-        "  class Dependency {\n" +
-          "    +Dependency()\n" +
-        "  }\n" +
-        "  class LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ\n" +
-        "  class FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ\n" +
-        "  class IDependency {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  ValueTupleᐸIDependencyˏIDependencyᐳ o--  \"PerResolve\" Dependency : IDependency\n" +
-        "  ValueTupleᐸIDependencyˏIDependencyᐳ o--  \"PerResolve\" Dependency : IDependency\n" +
-        "  Service o--  \"PerResolve\" Dependency : IDependency\n" +
-        "  Service o--  \"PerResolve\" Dependency : IDependency\n" +
-        "  Service *--  LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ : LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ\n" +
-        "  Composition ..> Service : Service Root\n" +
-        "  LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ o--  \"PerResolve\" FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ : FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ\n" +
-        "  FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ *--  ValueTupleᐸIDependencyˏIDependencyᐳ : ValueTupleᐸIDependencyˏIDependencyᐳ";
   }
 
   private readonly static int _bucketSize;
@@ -286,6 +250,7 @@ partial class Composition
       {
         case null:
           return composition.Root;
+
         default:
           return base.ResolveByTag(composition, tag);
       }

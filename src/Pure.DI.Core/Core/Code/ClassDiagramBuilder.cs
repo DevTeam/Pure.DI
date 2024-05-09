@@ -100,9 +100,16 @@ internal sealed class ClassDiagramBuilder(
                     }
                     else
                     {
-                        if (type.IsAbstract)
+                        if (type.TypeKind == TypeKind.Interface)
                         {
-                            typeKind = "abstract";
+                            typeKind = "interface";
+                        }
+                        else
+                        {
+                            if (type.IsAbstract)
+                            {
+                                typeKind = "abstract";
+                            }   
                         }
                     }
                 }

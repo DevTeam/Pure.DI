@@ -53,8 +53,15 @@ public class Scenario
             .Bind().To(_ => DateTimeOffset.Now)
             .Bind<IDependency>().To(ctx =>
             {
+                // Some custom logic for creating an instance.
+                // For example, here's how you can inject
+                // an instance of a particular type
                 ctx.Inject(out Dependency dependency);
+                
+                // And do something about it
                 dependency.Initialize();
+                
+                // And at the end return an instance
                 return dependency;
             })
             .Bind<IService>().To<Service>()

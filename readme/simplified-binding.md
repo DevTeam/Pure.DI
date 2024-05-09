@@ -69,10 +69,10 @@ classDiagram
 		+Dependency()
 	}
 	class IDependency {
-		<<abstract>>
+		<<interface>>
 	}
 	class IOtherDependency {
-		<<abstract>>
+		<<interface>>
 	}
 	Service o--  "PerBlock" Dependency : Dependency
 	Service o--  "PerBlock" Dependency : IDependency
@@ -102,41 +102,13 @@ partial class Composition
 
   public Service MyService
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       Dependency perBlock1_Dependency = new Dependency();
       return new Service(perBlock1_Dependency, perBlock1_Dependency, perBlock1_Dependency);
     }
   }
-
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Composition {\n" +
-          "    +Service MyService\n" +
-        "  }\n" +
-        "  class Service {\n" +
-          "    +Service(Dependency dependencyImpl, IDependency dependency, IOtherDependency otherDependency)\n" +
-        "  }\n" +
-        "  Dependency --|> IDependency : \n" +
-        "  Dependency --|> IOtherDependency : \n" +
-        "  class Dependency {\n" +
-          "    +Dependency()\n" +
-        "  }\n" +
-        "  class IDependency {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IOtherDependency {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Service o--  \"PerBlock\" Dependency : Dependency\n" +
-        "  Service o--  \"PerBlock\" Dependency : IDependency\n" +
-        "  Service o--  \"PerBlock\" Dependency : IOtherDependency\n" +
-        "  Composition ..> Service : Service MyService";
-  }
-
 }
 ```
 

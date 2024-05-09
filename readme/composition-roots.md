@@ -21,17 +21,17 @@ DI.Setup(nameof(Composition))
     .Bind<IDependency>().To<Dependency>()
 
     // Specifies to create a regular public composition root
-    // of type "IService" with the name "SomeOtherService"
-    // using the "Other" tag
-    .Root<IService>("SomeOtherService", "Other")
-
-    // Specifies to create a regular public composition root
     // of type "IService" with the name "MyRoot"
     .Root<IService>("MyRoot")
 
     // Specifies to create a private composition root
     // that is only accessible from "Resolve()" methods
-    .Root<IDependency>();
+    .Root<IDependency>()
+
+    // Specifies to create a regular public composition root
+    // of type "IService" with the name "SomeOtherService"
+    // using the "Other" tag
+    .Root<IService>("SomeOtherService", "Other");
 
 var composition = new Composition();
         
@@ -41,6 +41,8 @@ var service = composition.MyRoot;
 // someOtherService = new OtherService();
 var someOtherService = composition.SomeOtherService;
         
+// All and only the roots of the composition
+// can be obtained by Resolve method
 var dependency = composition.Resolve<IDependency>();
 ```
 
@@ -90,15 +92,15 @@ classDiagram
 		+Dependency()
 	}
 	class IService {
-		<<abstract>>
+		<<interface>>
 	}
 	class IDependency {
-		<<abstract>>
+		<<interface>>
 	}
 	Service *--  Dependency : IDependency
-	Composition ..> OtherService : IService SomeOtherService
 	Composition ..> Service : IService MyRoot
 	Composition ..> Dependency : IDependency _
+	Composition ..> OtherService : IService SomeOtherService
 ```
 
 </details>
@@ -123,7 +125,7 @@ partial class Composition
 
   public IService MyRoot
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       return new Service(new Dependency());
@@ -132,35 +134,35 @@ partial class Composition
 
   public IService SomeOtherService
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       return new OtherService();
     }
   }
 
-  private IDependency Root0003
+  private IDependency Root0002
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       return new Dependency();
     }
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>()
   {
     return Resolver<T>.Value.Resolve(this);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>(object? tag)
   {
     return Resolver<T>.Value.ResolveByTag(this, tag);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
@@ -168,7 +170,7 @@ partial class Composition
     return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, int index)
   {
     var finish = index + _bucketSize;
@@ -184,7 +186,7 @@ partial class Composition
     throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type, object? tag)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
@@ -192,7 +194,7 @@ partial class Composition
     return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, object? tag, int index)
   {
     var finish = index + _bucketSize;
@@ -206,43 +208,6 @@ partial class Composition
     }
 
     throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
-  }
-
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Composition {\n" +
-          "    +IService MyRoot\n" +
-          "    +IService SomeOtherService\n" +
-          "    -IDependency _\n" +
-          "    + T ResolveᐸTᐳ()\n" +
-          "    + T ResolveᐸTᐳ(object? tag)\n" +
-          "    + object Resolve(Type type)\n" +
-          "    + object Resolve(Type type, object? tag)\n" +
-        "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(IDependency dependency)\n" +
-        "  }\n" +
-        "  OtherService --|> IService : \"Other\" \n" +
-        "  class OtherService {\n" +
-          "    +OtherService()\n" +
-        "  }\n" +
-        "  Dependency --|> IDependency : \n" +
-        "  class Dependency {\n" +
-          "    +Dependency()\n" +
-        "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IDependency {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Service *--  Dependency : IDependency\n" +
-        "  Composition ..> OtherService : IService SomeOtherService\n" +
-        "  Composition ..> Service : IService MyRoot\n" +
-        "  Composition ..> Dependency : IDependency _";
   }
 
   private readonly static int _bucketSize;
@@ -295,8 +260,10 @@ partial class Composition
       {
         case "Other":
           return composition.SomeOtherService;
+
         case null:
           return composition.MyRoot;
+
         default:
           return base.ResolveByTag(composition, tag);
       }
@@ -307,7 +274,7 @@ partial class Composition
   {
     public override IDependency Resolve(Composition composition)
     {
-      return composition.Root0003;
+      return composition.Root0002;
     }
 
     public override IDependency ResolveByTag(Composition composition, object tag)
@@ -315,7 +282,8 @@ partial class Composition
       switch (tag)
       {
         case null:
-          return composition.Root0003;
+          return composition.Root0002;
+
         default:
           return base.ResolveByTag(composition, tag);
       }

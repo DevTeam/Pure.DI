@@ -28,6 +28,9 @@ class Person : IPerson
 
     public string Name => _name.ToString();
 
+    // The Ordinal attribute specifies to perform an injection,
+    // the integer value in the argument specifies
+    // the ordinal of injection
     [Ordinal(0)]
     public int Id;
 

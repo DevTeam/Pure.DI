@@ -35,8 +35,15 @@ DI.Setup(nameof(Composition))
     .Bind().To(_ => DateTimeOffset.Now)
     .Bind<IDependency>().To(ctx =>
     {
+        // Some custom logic for creating an instance.
+        // For example, here's how you can inject
+        // an instance of a particular type
         ctx.Inject(out Dependency dependency);
+
+        // And do something about it
         dependency.Initialize();
+
+        // And at the end return an instance
         return dependency;
     })
     .Bind<IService>().To<Service>()
@@ -70,7 +77,7 @@ classDiagram
 		+Service(IDependency dependency)
 	}
 	class IService {
-		<<abstract>>
+		<<interface>>
 	}
 	Dependency *--  DateTimeOffset : DateTimeOffset
 	Service *--  Dependency : IDependency
@@ -99,7 +106,7 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       DateTimeOffset transient3_DateTimeOffset = DateTimeOffset.Now;
@@ -113,19 +120,19 @@ partial class Composition
     }
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>()
   {
     return Resolver<T>.Value.Resolve(this);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>(object? tag)
   {
     return Resolver<T>.Value.ResolveByTag(this, tag);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
@@ -133,7 +140,7 @@ partial class Composition
     return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, int index)
   {
     var finish = index + _bucketSize;
@@ -149,7 +156,7 @@ partial class Composition
     throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type, object? tag)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
@@ -157,7 +164,7 @@ partial class Composition
     return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, object? tag, int index)
   {
     var finish = index + _bucketSize;
@@ -171,33 +178,6 @@ partial class Composition
     }
 
     throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
-  }
-
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Composition {\n" +
-          "    +IService Root\n" +
-          "    + T ResolveᐸTᐳ()\n" +
-          "    + T ResolveᐸTᐳ(object? tag)\n" +
-          "    + object Resolve(Type type)\n" +
-          "    + object Resolve(Type type, object? tag)\n" +
-        "  }\n" +
-        "  class Dependency {\n" +
-          "    +Dependency(DateTimeOffset time)\n" +
-        "  }\n" +
-        "  class DateTimeOffset\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(IDependency dependency)\n" +
-        "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Dependency *--  DateTimeOffset : DateTimeOffset\n" +
-        "  Service *--  Dependency : IDependency\n" +
-        "  Composition ..> Service : IService Root";
   }
 
   private readonly static int _bucketSize;
@@ -247,6 +227,7 @@ partial class Composition
       {
         case null:
           return composition.Root;
+
         default:
           return base.ResolveByTag(composition, tag);
       }

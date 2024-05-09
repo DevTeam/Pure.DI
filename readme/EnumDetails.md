@@ -100,34 +100,34 @@ partial class Enum
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
-  public partial Benchmarks.Model.CompositionRoot TestPureDIByCR()
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public partialCompositionRoot TestPureDIByCR()
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     IEnumerable<Benchmarks.Model.IService3> EnumerationOf_perBlock10_IEnumerable()
     {
-        yield return new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4());
-        yield return new Benchmarks.Model.Service3v2(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4());
-        yield return new Benchmarks.Model.Service3v3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4());
-        yield return new Benchmarks.Model.Service3v4(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4());
+        yield return newService3(newService4(), newService4());
+        yield return newService3v2(newService4(), newService4());
+        yield return newService3v3(newService4(), newService4());
+        yield return newService3v4(newService4(), newService4());
     }
     IEnumerable<Benchmarks.Model.IService3> perBlock10_IEnumerable = EnumerationOf_perBlock10_IEnumerable();
-    return new Benchmarks.Model.CompositionRoot(new Benchmarks.Model.Service1(new Benchmarks.Model.Service2Enum(perBlock10_IEnumerable)), new Benchmarks.Model.Service2Enum(perBlock10_IEnumerable), new Benchmarks.Model.Service2Enum(perBlock10_IEnumerable), new Benchmarks.Model.Service2Enum(perBlock10_IEnumerable), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4());
+    return newCompositionRoot(newService1(newService2Enum(perBlock10_IEnumerable)), newService2Enum(perBlock10_IEnumerable), newService2Enum(perBlock10_IEnumerable), newService2Enum(perBlock10_IEnumerable), newService3(newService4(), newService4()), newService4(), newService4());
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>()
   {
     return Resolver<T>.Value.Resolve(this);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>(object? tag)
   {
     return Resolver<T>.Value.ResolveByTag(this, tag);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
@@ -135,7 +135,7 @@ partial class Enum
     return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, int index)
   {
     var finish = index + _bucketSize;
@@ -151,7 +151,7 @@ partial class Enum
     throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type, object? tag)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
@@ -159,7 +159,7 @@ partial class Enum
     return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, object? tag, int index)
   {
     var finish = index + _bucketSize;
@@ -173,85 +173,6 @@ partial class Enum
     }
 
     throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
-  }
-
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Enum {\n" +
-          "    +CompositionRoot TestPureDIByCR()\n" +
-          "    + T ResolveᐸTᐳ()\n" +
-          "    + T ResolveᐸTᐳ(object? tag)\n" +
-          "    + object Resolve(Type type)\n" +
-          "    + object Resolve(Type type, object? tag)\n" +
-        "  }\n" +
-        "  class CompositionRoot {\n" +
-          "    +CompositionRoot(IService1 service1, IService2 service21, IService2 service22, IService2 service23, IService3 service3, IService4 service41, IService4 service42)\n" +
-        "  }\n" +
-        "  Service1 --|> IService1 : \n" +
-        "  class Service1 {\n" +
-          "    +Service1(IService2 service2)\n" +
-        "  }\n" +
-        "  Service2Enum --|> IService2 : \n" +
-        "  class Service2Enum {\n" +
-          "    +Service2Enum(IEnumerableᐸIService3ᐳ services)\n" +
-        "  }\n" +
-        "  Service3 --|> IService3 : \n" +
-        "  class Service3 {\n" +
-          "    +Service3(IService4 service41, IService4 service42)\n" +
-        "  }\n" +
-        "  Service3v2 --|> IService3 : 2 \n" +
-        "  class Service3v2 {\n" +
-          "    +Service3v2(IService4 service41, IService4 service42)\n" +
-        "  }\n" +
-        "  Service3v3 --|> IService3 : 3 \n" +
-        "  class Service3v3 {\n" +
-          "    +Service3v3(IService4 service41, IService4 service42)\n" +
-        "  }\n" +
-        "  Service3v4 --|> IService3 : 4 \n" +
-        "  class Service3v4 {\n" +
-          "    +Service3v4(IService4 service41, IService4 service42)\n" +
-        "  }\n" +
-        "  Service4 --|> IService4 : \n" +
-        "  class Service4 {\n" +
-          "    +Service4()\n" +
-        "  }\n" +
-        "  class IEnumerableᐸIService3ᐳ\n" +
-        "  class IService1 {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IService2 {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IService3 {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IService4 {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  CompositionRoot *--  Service1 : IService1\n" +
-        "  CompositionRoot *--  Service2Enum : IService2\n" +
-        "  CompositionRoot *--  Service2Enum : IService2\n" +
-        "  CompositionRoot *--  Service2Enum : IService2\n" +
-        "  CompositionRoot *--  Service3 : IService3\n" +
-        "  CompositionRoot *--  Service4 : IService4\n" +
-        "  CompositionRoot *--  Service4 : IService4\n" +
-        "  Service1 *--  Service2Enum : IService2\n" +
-        "  Service2Enum o--  \"PerBlock\" IEnumerableᐸIService3ᐳ : IEnumerableᐸIService3ᐳ\n" +
-        "  Service3 *--  Service4 : IService4\n" +
-        "  Service3 *--  Service4 : IService4\n" +
-        "  Service3v2 *--  Service4 : IService4\n" +
-        "  Service3v2 *--  Service4 : IService4\n" +
-        "  Service3v3 *--  Service4 : IService4\n" +
-        "  Service3v3 *--  Service4 : IService4\n" +
-        "  Service3v4 *--  Service4 : IService4\n" +
-        "  Service3v4 *--  Service4 : IService4\n" +
-        "  Enum ..> CompositionRoot : CompositionRoot TestPureDIByCR()\n" +
-        "  IEnumerableᐸIService3ᐳ *--  Service3 : IService3\n" +
-        "  IEnumerableᐸIService3ᐳ *--  Service3v2 : 2  IService3\n" +
-        "  IEnumerableᐸIService3ᐳ *--  Service3v3 : 3  IService3\n" +
-        "  IEnumerableᐸIService3ᐳ *--  Service3v4 : 4  IService3";
   }
 
   private readonly static int _bucketSize;
@@ -290,17 +211,18 @@ partial class Enum
 
   private sealed class Resolver_0000: Resolver<Benchmarks.Model.CompositionRoot>
   {
-    public override Benchmarks.Model.CompositionRoot Resolve(Enum composition)
+    public overrideCompositionRoot Resolve(Enum composition)
     {
       return composition.TestPureDIByCR();
     }
 
-    public override Benchmarks.Model.CompositionRoot ResolveByTag(Enum composition, object tag)
+    public overrideCompositionRoot ResolveByTag(Enum composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.TestPureDIByCR();
+
         default:
           return base.ResolveByTag(composition, tag);
       }

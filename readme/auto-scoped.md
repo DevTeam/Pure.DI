@@ -88,7 +88,7 @@ classDiagram
 	class FuncᐸIServiceᐳ
 	class Composition
 	class IDependency {
-		<<abstract>>
+		<<interface>>
 	}
 	Program o--  "PerResolve" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
 	Service o--  "Scoped" Dependency : IDependency
@@ -124,7 +124,7 @@ partial class Composition
 
   private Service SessionRoot
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       if (_scoped36_Dependency == null)
@@ -143,12 +143,12 @@ partial class Composition
 
   public Program ProgramRoot
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       var perResolve43_Func = default(Func<IService>);
       perResolve43_Func = new Func<IService>(
-      [MethodImpl((MethodImplOptions)256)]
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
           Composition transient2_Composition = this;
@@ -166,19 +166,19 @@ partial class Composition
     }
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>()
   {
     return Resolver<T>.Value.Resolve(this);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>(object? tag)
   {
     return Resolver<T>.Value.ResolveByTag(this, tag);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
@@ -186,7 +186,7 @@ partial class Composition
     return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, int index)
   {
     var finish = index + _bucketSize;
@@ -202,7 +202,7 @@ partial class Composition
     throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type, object? tag)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
@@ -210,7 +210,7 @@ partial class Composition
     return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, object? tag, int index)
   {
     var finish = index + _bucketSize;
@@ -224,42 +224,6 @@ partial class Composition
     }
 
     throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
-  }
-
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Composition {\n" +
-          "    +Program ProgramRoot\n" +
-          "    +Service SessionRoot\n" +
-          "    + T ResolveᐸTᐳ()\n" +
-          "    + T ResolveᐸTᐳ(object? tag)\n" +
-          "    + object Resolve(Type type)\n" +
-          "    + object Resolve(Type type, object? tag)\n" +
-        "  }\n" +
-        "  class Program {\n" +
-          "    +Program(FuncᐸIServiceᐳ serviceFactory)\n" +
-        "  }\n" +
-        "  class Service {\n" +
-          "    +Service(IDependency dependency)\n" +
-        "  }\n" +
-        "  class IService\n" +
-        "  Dependency --|> IDependency : \n" +
-        "  class Dependency {\n" +
-          "    +Dependency()\n" +
-        "  }\n" +
-        "  class FuncᐸIServiceᐳ\n" +
-        "  class Composition\n" +
-        "  class IDependency {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Program o--  \"PerResolve\" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ\n" +
-        "  Service o--  \"Scoped\" Dependency : IDependency\n" +
-        "  IService *--  Composition : Composition\n" +
-        "  Composition ..> Service : Service SessionRoot\n" +
-        "  Composition ..> Program : Program ProgramRoot\n" +
-        "  FuncᐸIServiceᐳ *--  IService : IService";
   }
 
   private readonly static int _bucketSize;
@@ -312,6 +276,7 @@ partial class Composition
       {
         case null:
           return composition.SessionRoot;
+
         default:
           return base.ResolveByTag(composition, tag);
       }
@@ -331,6 +296,7 @@ partial class Composition
       {
         case null:
           return composition.ProgramRoot;
+
         default:
           return base.ResolveByTag(composition, tag);
       }

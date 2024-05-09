@@ -19,11 +19,7 @@ interface ICat
     State State { get; }
 }
 
-enum State
-{
-    Alive,
-    Dead
-}
+enum State { Alive, Dead }
 ```
 
 ### Here's our implementation
@@ -31,18 +27,14 @@ enum State
 ```c#
 class CardboardBox<T>(T content) : IBox<T>
 {
-    public T Content { get; } = content;
-
-    public override string ToString() => $"[{Content}]";
+    public T Content { get; } = content;    
 }
 
 class ShroedingersCat(Lazy<State> superposition) : ICat
 {
     // The decoherence of the superposition
     // at the time of observation via an irreversible process
-    public State State => superposition.Value;
-
-    public override string ToString() => $"{State} cat";
+    public State State => superposition.Value;    
 }
 
 ```
@@ -61,14 +53,14 @@ Let's bind the abstractions to their implementations and set up the creation of 
 DI.Setup(nameof(Composition))
     // Models a random subatomic event that may or may not occur
     .Bind().As(Singleton).To<Random>()
-    // Represents a quantum superposition of 2 states: Alive or Dead
+    // Quantum superposition of two states: Alive or Dead
     .Bind().To(ctx =>
     {
       ctx.Inject<Random>(out var random);
       return (State)random.Next(2);
     })
     .Bind().To<ShroedingersCat>()
-    // Represents a cardboard box with any contents
+    // Cardboard box with any contents
     .Bind().To<CardboardBox<TT>>()
     // Composition Root
     .Root<Program>("Root");
@@ -80,27 +72,27 @@ The above code specifies the generation of a partial class named *__Composition_
 partial class Composition
 {
     private object _lock = new object();
-    private Random _random;    
+    private Random? _random;    
     
     public Program Root
     {
       get
       {
-        Func<State> stateFunc = new Func<State>(() =>
-        {
-          if (_random == null)
-          {
-            lock (_lock)
+        var stateFunc = new Func<State>(() =>
             {
               if (_random == null)
               {
-                _random = new Random();
+                lock (_lock)
+                {
+                  if (_random == null)
+                  {
+                    _random = new Random();
+                  }
+                }
               }
-            }
-          }
-          
-          return (State)_random.Next(2);      
-        });
+              
+              return (State)_random.Next(2);      
+            });
         
         return new Program(
           new CardboardBox<ICat>(

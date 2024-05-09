@@ -1,5 +1,7 @@
 # Pure DI for .NET
 
+_Supports .NET starting with .NET Framework 2.0, released 2005-10-27, and all newer versions._
+
 <a href="https://t.me/pure_di"><img src="https://github.com/DevTeam/Pure.DI/blob/master/readme/telegram.png" align="left" height="20" width="20" ></a>
 [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -7,6 +9,11 @@
 [![Build](https://teamcity.jetbrains.com/app/rest/builds/buildType:(id:OpenSourceProjects_DevTeam_PureDi_PerformanceTests)/statusIcon)](https://teamcity.jetbrains.com/viewType.html?buildTypeId=OpenSourceProjects_DevTeam_PureDi_PerformanceTests&guest=1)
 
 ![](readme/di.gif)
+
+## Usage requirements
+
+- Installed [.NET SDK 6.0.4](https://dotnet.microsoft.com/download/dotnet/6.0) or later
+- Using [C# 8](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-version-history#c-version-80) or later
 
 ## Key features
 
@@ -52,11 +59,7 @@ interface ICat
     State State { get; }
 }
 
-enum State
-{
-    Alive,
-    Dead
-}
+enum State { Alive, Dead }
 ```
 
 ### Here's our implementation
@@ -64,18 +67,14 @@ enum State
 ```c#
 class CardboardBox<T>(T content) : IBox<T>
 {
-    public T Content { get; } = content;
-
-    public override string ToString() => $"[{Content}]";
+    public T Content { get; } = content;    
 }
 
 class ShroedingersCat(Lazy<State> superposition) : ICat
 {
     // The decoherence of the superposition
     // at the time of observation via an irreversible process
-    public State State => superposition.Value;
-
-    public override string ToString() => $"{State} cat";
+    public State State => superposition.Value;    
 }
 
 ```
@@ -94,14 +93,14 @@ Let's bind the abstractions to their implementations and set up the creation of 
 DI.Setup(nameof(Composition))
     // Models a random subatomic event that may or may not occur
     .Bind().As(Singleton).To<Random>()
-    // Represents a quantum superposition of 2 states: Alive or Dead
+    // Quantum superposition of two states: Alive or Dead
     .Bind().To(ctx =>
     {
       ctx.Inject<Random>(out var random);
       return (State)random.Next(2);
     })
     .Bind().To<ShroedingersCat>()
-    // Represents a cardboard box with any contents
+    // Cardboard box with any contents
     .Bind().To<CardboardBox<TT>>()
     // Composition Root
     .Root<Program>("Root");
@@ -113,27 +112,27 @@ The above code specifies the generation of a partial class named *__Composition_
 partial class Composition
 {
     private object _lock = new object();
-    private Random _random;    
+    private Random? _random;    
     
     public Program Root
     {
       get
       {
-        Func<State> stateFunc = new Func<State>(() =>
-        {
-          if (_random == null)
-          {
-            lock (_lock)
+        var stateFunc = new Func<State>(() =>
             {
               if (_random == null)
               {
-                _random = new Random();
+                lock (_lock)
+                {
+                  if (_random == null)
+                  {
+                    _random = new Random();
+                  }
+                }
               }
-            }
-          }
-          
-          return (State)_random.Next(2);      
-        });
+              
+              return (State)_random.Next(2);      
+            });
         
         return new Program(
           new CardboardBox<ICat>(
@@ -197,25 +196,18 @@ dotnet run
 - [Auto-bindings](readme/auto-bindings.md)
 - [Injections of abstractions](readme/injections-of-abstractions.md)
 - [Composition roots](readme/composition-roots.md)
-- [Composition roots simplified](readme/composition-roots-simplified.md)
 - [Resolve methods](readme/resolve-methods.md)
 - [Simplified binding](readme/simplified-binding.md)
 - [Factory](readme/factory.md)
-- [Injection](readme/injection.md)
 - [Arguments](readme/arguments.md)
 - [Root arguments](readme/root-arguments.md)
 - [Tags](readme/tags.md)
-- [Multi-contract bindings](readme/multi-contract-bindings.md)
 - [Field injection](readme/field-injection.md)
 - [Method injection](readme/method-injection.md)
 - [Property injection](readme/property-injection.md)
 - [Default values](readme/default-values.md)
 - [Required properties or fields](readme/required-properties-or-fields.md)
-- [Tracking async disposable instances in delegates](readme/tracking-async-disposable-instances-in-delegates.md)
-- [Tracking disposable instances in delegates](readme/tracking-disposable-instances-in-delegates.md)
-- [Tracking disposable instances per a composition root](readme/tracking-disposable-instances-per-a-composition-root.md)
-- [RootBind](readme/rootbind.md)
-- [Tracking async disposable instances per a composition root](readme/tracking-async-disposable-instances-per-a-composition-root.md)
+- [Root binding](readme/root-binding.md)
 ### Lifetimes
 - [Singleton](readme/singleton.md)
 - [PerResolve](readme/perresolve.md)
@@ -272,7 +264,6 @@ dotnet run
 - [Check for a root](readme/check-for-a-root.md)
 ### Advanced
 - [Composition root kinds](readme/composition-root-kinds.md)
-- [Instance Initialization](readme/instance-initialization.md)
 - [Tag Type](readme/tag-type.md)
 - [Tag Unique](readme/tag-unique.md)
 - [A few partial classes](readme/a-few-partial-classes.md)
@@ -280,6 +271,10 @@ dotnet run
 - [Dependent compositions](readme/dependent-compositions.md)
 - [Accumulators](readme/accumulators.md)
 - [Global compositions](readme/global-compositions.md)
+- [Tracking async disposable instances in delegates](readme/tracking-async-disposable-instances-in-delegates.md)
+- [Tracking disposable instances in delegates](readme/tracking-disposable-instances-in-delegates.md)
+- [Tracking disposable instances per a composition root](readme/tracking-disposable-instances-per-a-composition-root.md)
+- [Tracking async disposable instances per a composition root](readme/tracking-async-disposable-instances-per-a-composition-root.md)
 ### Applications
 - Console
   - [Schrödinger's cat](readme/Console.md)
@@ -823,11 +818,6 @@ Then documentation for the composition root:
 | Pure.DI           | [![NuGet](https://buildstats.info/nuget/Pure.DI)](https://www.nuget.org/packages/Pure.DI)                     | DI Source code generator                                   |
 | Pure.DI.Templates | [![NuGet](https://buildstats.info/nuget/Pure.DI.Templates)](https://www.nuget.org/packages/Pure.DI.Templates) | Template Package you can call from the shell/command line. |
 | Pure.DI.MS        | [![NuGet](https://buildstats.info/nuget/Pure.DI.MS)](https://www.nuget.org/packages/Pure.DI.MS)               | Tools for working with Microsoft DI                        |
-
-## Requirements for development environments
-
-- [.NET SDK 6.0.4xx or newer](https://dotnet.microsoft.com/download/dotnet/6.0)
-- [C# 8 or newer](https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-version-history#c-version-80)
 
 ## Project template
 

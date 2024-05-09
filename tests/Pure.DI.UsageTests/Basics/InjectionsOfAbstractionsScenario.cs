@@ -48,7 +48,7 @@ public class Scenario
             .Bind<IDependency>().To<Dependency>()
             .Bind<IService>().To<Service>()
             
-            // Specifies to create a composition root (a property)
+            // Specifies to create a composition root
             // of type "Program" with the name "Root"
             .Root<Program>("Root");
         

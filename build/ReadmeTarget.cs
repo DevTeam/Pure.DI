@@ -335,9 +335,10 @@ internal class ReadmeTarget(
                     .SkipWhile(i => i != "{")
                     .Skip(2)
                     .Reverse()
-                    .SkipWhile(i => i != "}")
-                    .Skip(1)
+                    .SkipWhile(i => !i.Contains("public override string ToString()"))
+                    .Skip(5)
                     .Reverse()
+                    .Concat(["}"])
                     .Where(i =>
                     {
                         var line = i.TrimStart();
@@ -361,7 +362,11 @@ internal class ReadmeTarget(
                         .Replace("System.Collections.Generic.", "")
                         .Replace("System.", "")
                         .Replace("Pure.DI.", "")
-                        .Replace(salt, "")));
+                        .Replace(" Benchmarks.Model.", "")
+                        .Replace(salt, "")
+                        .Replace("(MethodImplOptions)0x100", "MethodImplOptions.AggressiveInlining")
+                        .Replace("(MethodImplOptions)256", "MethodImplOptions.AggressiveInlining")
+                        .Replace("(MethodImplOptions)0x8", "MethodImplOptions.NoInlining")));
             await examplesWriter.WriteLineAsync(generatedCode);
             await examplesWriter.WriteLineAsync("```");
             await examplesWriter.WriteLineAsync("");

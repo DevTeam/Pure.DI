@@ -28,6 +28,8 @@ class Service : IService
 {
     private readonly string _name;
 
+    // The integer value in the argument specifies
+    // the ordinal of injection
     [Ordinal(1)]
     public Service(IDependency dependency) =>
         _name = "with dependency";

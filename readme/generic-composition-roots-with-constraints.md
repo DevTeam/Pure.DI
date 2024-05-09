@@ -73,13 +73,13 @@ classDiagram
 		+Dependency()
 	}
 	class IServiceᐸTˏT4ᐳ {
-		<<abstract>>
+		<<interface>>
 	}
 	class IServiceᐸTˏBooleanᐳ {
-		<<abstract>>
+		<<interface>>
 	}
 	class IDependencyᐸTᐳ {
-		<<abstract>>
+		<<interface>>
 	}
 	Composition ..> ServiceᐸTˏT4ᐳ : IServiceᐸTˏT4ᐳ GetMyRootᐸTˏT4ᐳ()
 	Composition ..> OtherServiceᐸTᐳ : IServiceᐸTˏBooleanᐳ GetOtherServiceᐸTᐳ()
@@ -107,7 +107,7 @@ partial class Composition
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService<T, T4> GetMyRoot<T, T4>()
     where T: IDisposable
     where T4: struct
@@ -115,7 +115,7 @@ partial class Composition
     return new Service<T, T4>(new Dependency<T>());
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService<T, bool> GetOtherService<T>()
     where T: IDisposable
   {
@@ -126,40 +126,6 @@ partial class Composition
     }
     return transient0_OtherService;
   }
-
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Composition {\n" +
-          "    +IServiceᐸTˏT4ᐳ GetMyRootᐸTˏT4ᐳ()\n" +
-          "    +IServiceᐸTˏBooleanᐳ GetOtherServiceᐸTᐳ()\n" +
-        "  }\n" +
-        "  ServiceᐸTˏT4ᐳ --|> IServiceᐸTˏT4ᐳ : \n" +
-        "  class ServiceᐸTˏT4ᐳ {\n" +
-          "    +Service(IDependencyᐸTᐳ dependency)\n" +
-        "  }\n" +
-        "  OtherServiceᐸTᐳ --|> IServiceᐸTˏBooleanᐳ : \"Other\" \n" +
-        "  class OtherServiceᐸTᐳ\n" +
-        "  DependencyᐸTᐳ --|> IDependencyᐸTᐳ : \n" +
-        "  class DependencyᐸTᐳ {\n" +
-          "    +Dependency()\n" +
-        "  }\n" +
-        "  class IServiceᐸTˏT4ᐳ {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IServiceᐸTˏBooleanᐳ {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IDependencyᐸTᐳ {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Composition ..> ServiceᐸTˏT4ᐳ : IServiceᐸTˏT4ᐳ GetMyRootᐸTˏT4ᐳ()\n" +
-        "  Composition ..> OtherServiceᐸTᐳ : IServiceᐸTˏBooleanᐳ GetOtherServiceᐸTᐳ()\n" +
-        "  ServiceᐸTˏT4ᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ\n" +
-        "  OtherServiceᐸTᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ";
-  }
-
 }
 ```
 

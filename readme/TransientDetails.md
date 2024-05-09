@@ -81,25 +81,25 @@ partial class Transient
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
-  public partial Benchmarks.Model.CompositionRoot TestPureDIByCR()
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
+  public partialCompositionRoot TestPureDIByCR()
   {
-    return new Benchmarks.Model.CompositionRoot(new Benchmarks.Model.Service1(new Benchmarks.Model.Service2(new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()))), new Benchmarks.Model.Service2(new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4())), new Benchmarks.Model.Service2(new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4())), new Benchmarks.Model.Service2(new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4())), new Benchmarks.Model.Service3(new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4()), new Benchmarks.Model.Service4(), new Benchmarks.Model.Service4());
+    return newCompositionRoot(newService1(newService2(newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4()))), newService2(newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4())), newService2(newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4())), newService2(newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4()), newService3(newService4(), newService4())), newService3(newService4(), newService4()), newService4(), newService4());
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>()
   {
     return Resolver<T>.Value.Resolve(this);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>(object? tag)
   {
     return Resolver<T>.Value.ResolveByTag(this, tag);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
@@ -107,7 +107,7 @@ partial class Transient
     return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, int index)
   {
     var finish = index + _bucketSize;
@@ -123,7 +123,7 @@ partial class Transient
     throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type, object? tag)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
@@ -131,7 +131,7 @@ partial class Transient
     return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, object? tag, int index)
   {
     var finish = index + _bucketSize;
@@ -145,66 +145,6 @@ partial class Transient
     }
 
     throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
-  }
-
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Transient {\n" +
-          "    +CompositionRoot TestPureDIByCR()\n" +
-          "    + T ResolveᐸTᐳ()\n" +
-          "    + T ResolveᐸTᐳ(object? tag)\n" +
-          "    + object Resolve(Type type)\n" +
-          "    + object Resolve(Type type, object? tag)\n" +
-        "  }\n" +
-        "  class CompositionRoot {\n" +
-          "    +CompositionRoot(IService1 service1, IService2 service21, IService2 service22, IService2 service23, IService3 service3, IService4 service41, IService4 service42)\n" +
-        "  }\n" +
-        "  Service1 --|> IService1 : \n" +
-        "  class Service1 {\n" +
-          "    +Service1(IService2 service2)\n" +
-        "  }\n" +
-        "  Service2 --|> IService2 : \n" +
-        "  class Service2 {\n" +
-          "    +Service2(IService3 service31, IService3 service32, IService3 service33, IService3 service34, IService3 service35)\n" +
-        "  }\n" +
-        "  Service3 --|> IService3 : \n" +
-        "  class Service3 {\n" +
-          "    +Service3(IService4 service41, IService4 service42)\n" +
-        "  }\n" +
-        "  Service4 --|> IService4 : \n" +
-        "  class Service4 {\n" +
-          "    +Service4()\n" +
-        "  }\n" +
-        "  class IService1 {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IService2 {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IService3 {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IService4 {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  CompositionRoot *--  Service1 : IService1\n" +
-        "  CompositionRoot *--  Service2 : IService2\n" +
-        "  CompositionRoot *--  Service2 : IService2\n" +
-        "  CompositionRoot *--  Service2 : IService2\n" +
-        "  CompositionRoot *--  Service3 : IService3\n" +
-        "  CompositionRoot *--  Service4 : IService4\n" +
-        "  CompositionRoot *--  Service4 : IService4\n" +
-        "  Service1 *--  Service2 : IService2\n" +
-        "  Service2 *--  Service3 : IService3\n" +
-        "  Service2 *--  Service3 : IService3\n" +
-        "  Service2 *--  Service3 : IService3\n" +
-        "  Service2 *--  Service3 : IService3\n" +
-        "  Service2 *--  Service3 : IService3\n" +
-        "  Service3 *--  Service4 : IService4\n" +
-        "  Service3 *--  Service4 : IService4\n" +
-        "  Transient ..> CompositionRoot : CompositionRoot TestPureDIByCR()";
   }
 
   private readonly static int _bucketSize;
@@ -243,17 +183,18 @@ partial class Transient
 
   private sealed class Resolver_0000: Resolver<Benchmarks.Model.CompositionRoot>
   {
-    public override Benchmarks.Model.CompositionRoot Resolve(Transient composition)
+    public overrideCompositionRoot Resolve(Transient composition)
     {
       return composition.TestPureDIByCR();
     }
 
-    public override Benchmarks.Model.CompositionRoot ResolveByTag(Transient composition, object tag)
+    public overrideCompositionRoot ResolveByTag(Transient composition, object tag)
     {
       switch (tag)
       {
         case null:
           return composition.TestPureDIByCR();
+
         default:
           return base.ResolveByTag(composition, tag);
       }

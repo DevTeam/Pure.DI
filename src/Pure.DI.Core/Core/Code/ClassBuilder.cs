@@ -2,37 +2,39 @@
 namespace Pure.DI.Core.Code;
 
 internal sealed class ClassBuilder(
-    [Tag(typeof(UsingDeclarationsBuilder))] IBuilder<CompositionCode, CompositionCode> usingDeclarationsBuilder,
-    [Tag(typeof(FieldsBuilder))] IBuilder<CompositionCode, CompositionCode> fieldsBuilder,
-    [Tag(typeof(ArgFieldsBuilder))] IBuilder<CompositionCode, CompositionCode> argFieldsBuilder,
-    [Tag(typeof(ParameterizedConstructorBuilder))] IBuilder<CompositionCode, CompositionCode> parameterizedConstructorBuilder,
-    [Tag(typeof(DefaultConstructorBuilder))] IBuilder<CompositionCode, CompositionCode> defaultConstructorBuilder,
-    [Tag(typeof(ScopeConstructorBuilder))] IBuilder<CompositionCode, CompositionCode> scopeConstructorBuilder,
-    [Tag(typeof(RootMethodsBuilder))] IBuilder<CompositionCode, CompositionCode> rootPropertiesBuilder,
-    [Tag(typeof(ApiMembersBuilder))] IBuilder<CompositionCode, CompositionCode> apiMembersBuilder,
-    [Tag(typeof(DisposeMethodBuilder))] IBuilder<CompositionCode, CompositionCode> disposeMethodBuilder,
-    [Tag(typeof(ToStringMethodBuilder))] IBuilder<CompositionCode, CompositionCode> toStringBuilder,
-    [Tag(typeof(ResolversFieldsBuilder))] IBuilder<CompositionCode, CompositionCode> resolversFieldsBuilder,
-    [Tag(typeof(StaticConstructorBuilder))] IBuilder<CompositionCode, CompositionCode> staticConstructorBuilder,
-    [Tag(typeof(ResolverClassesBuilder))] IBuilder<CompositionCode, CompositionCode> resolversClassesBuilder,
+    [Tag(typeof(UsingDeclarationsBuilder))] IBuilder<CompositionCode, CompositionCode> usingDeclarations,
+    [Tag(typeof(FieldsBuilder))] IBuilder<CompositionCode, CompositionCode> fields,
+    [Tag(typeof(ArgFieldsBuilder))] IBuilder<CompositionCode, CompositionCode> argFields,
+    [Tag(typeof(ParameterizedConstructorBuilder))] IBuilder<CompositionCode, CompositionCode> parameterizedConstructor,
+    [Tag(typeof(DefaultConstructorBuilder))] IBuilder<CompositionCode, CompositionCode> defaultConstructor,
+    [Tag(typeof(ScopeConstructorBuilder))] IBuilder<CompositionCode, CompositionCode> scopeConstructor,
+    [Tag(typeof(RootMethodsBuilder))] IBuilder<CompositionCode, CompositionCode> rootProperties,
+    [Tag(typeof(ApiMembersBuilder))] IBuilder<CompositionCode, CompositionCode> apiMembers,
+    [Tag(typeof(DisposeMethodBuilder))] IBuilder<CompositionCode, CompositionCode> disposeMethod,
+    [Tag(typeof(ResolversFieldsBuilder))] IBuilder<CompositionCode, CompositionCode> resolversFields,
+    [Tag(typeof(StaticConstructorBuilder))] IBuilder<CompositionCode, CompositionCode> staticConstructor,
+    [Tag(typeof(ResolverClassesBuilder))] IBuilder<CompositionCode, CompositionCode> resolversClasses,
+    [Tag(typeof(ToStringMethodBuilder))] IBuilder<CompositionCode, CompositionCode> toString,
     [Tag(typeof(ClassCommenter))] ICommenter<Unit> classCommenter,
     IInformation information,
     CancellationToken cancellationToken)
     : IBuilder<CompositionCode, CompositionCode>
 {
-    private readonly ImmutableArray<IBuilder<CompositionCode, CompositionCode>> _codeBuilders = ImmutableArray.Create(
-        fieldsBuilder,
-        argFieldsBuilder,
-        parameterizedConstructorBuilder,
-        defaultConstructorBuilder,
-        scopeConstructorBuilder,
-        rootPropertiesBuilder,
-        apiMembersBuilder,
-        disposeMethodBuilder,
-        toStringBuilder,
-        resolversFieldsBuilder,
-        staticConstructorBuilder,
-        resolversClassesBuilder);
+    private readonly IBuilder<CompositionCode, CompositionCode>[] _codeBuilders = 
+    [
+        fields,
+        argFields,
+        parameterizedConstructor,
+        defaultConstructor,
+        scopeConstructor,
+        rootProperties,
+        apiMembers,
+        disposeMethod,
+        resolversFields,
+        staticConstructor,
+        resolversClasses,
+        toString
+    ];
 
     public CompositionCode Build(CompositionCode composition)
     {
@@ -45,7 +47,7 @@ internal sealed class ClassBuilder(
         }
         
         code.AppendLine();
-        composition = usingDeclarationsBuilder.Build(composition);
+        composition = usingDeclarations.Build(composition);
         
         var nsIndent = Disposables.Empty;
         var name = composition.Source.Source.Name;

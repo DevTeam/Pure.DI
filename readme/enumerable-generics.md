@@ -82,16 +82,16 @@ classDiagram
 		+XyzDependency()
 	}
 	class IServiceᐸInt32ᐳ {
-		<<abstract>>
+		<<interface>>
 	}
 	class IServiceᐸStringᐳ {
-		<<abstract>>
+		<<interface>>
 	}
 	class IDependencyᐸInt32ᐳ {
-		<<abstract>>
+		<<interface>>
 	}
 	class IDependencyᐸStringᐳ {
-		<<abstract>>
+		<<interface>>
 	}
 	Composition ..> ServiceᐸInt32ᐳ : IServiceᐸInt32ᐳ IntRoot
 	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ StringRoot
@@ -125,10 +125,10 @@ partial class Composition
 
   public IService<int> IntRoot
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      [MethodImpl((MethodImplOptions)0x100)]
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       IEnumerable<IDependency<int>> EnumerationOf_perBlock1_IEnumerable()
       {
           yield return new AbcDependency<int>();
@@ -141,10 +141,10 @@ partial class Composition
 
   public IService<string> StringRoot
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      [MethodImpl((MethodImplOptions)0x100)]
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       IEnumerable<IDependency<string>> EnumerationOf_perBlock1_IEnumerable()
       {
           yield return new AbcDependency<string>();
@@ -155,19 +155,19 @@ partial class Composition
     }
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>()
   {
     return Resolver<T>.Value.Resolve(this);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>(object? tag)
   {
     return Resolver<T>.Value.ResolveByTag(this, tag);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
@@ -175,7 +175,7 @@ partial class Composition
     return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, int index)
   {
     var finish = index + _bucketSize;
@@ -191,7 +191,7 @@ partial class Composition
     throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type, object? tag)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
@@ -199,7 +199,7 @@ partial class Composition
     return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, object? tag, int index)
   {
     var finish = index + _bucketSize;
@@ -213,66 +213,6 @@ partial class Composition
     }
 
     throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
-  }
-
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Composition {\n" +
-          "    +IServiceᐸInt32ᐳ IntRoot\n" +
-          "    +IServiceᐸStringᐳ StringRoot\n" +
-          "    + T ResolveᐸTᐳ()\n" +
-          "    + T ResolveᐸTᐳ(object? tag)\n" +
-          "    + object Resolve(Type type)\n" +
-          "    + object Resolve(Type type, object? tag)\n" +
-        "  }\n" +
-        "  ServiceᐸInt32ᐳ --|> IServiceᐸInt32ᐳ : \n" +
-        "  class ServiceᐸInt32ᐳ {\n" +
-          "    +Service(IEnumerableᐸIDependencyᐸInt32ᐳᐳ dependencies)\n" +
-        "  }\n" +
-        "  ServiceᐸStringᐳ --|> IServiceᐸStringᐳ : \n" +
-        "  class ServiceᐸStringᐳ {\n" +
-          "    +Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)\n" +
-        "  }\n" +
-        "  class IEnumerableᐸIDependencyᐸInt32ᐳᐳ\n" +
-        "  class IEnumerableᐸIDependencyᐸStringᐳᐳ\n" +
-        "  AbcDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : \n" +
-        "  class AbcDependencyᐸInt32ᐳ {\n" +
-          "    +AbcDependency()\n" +
-        "  }\n" +
-        "  XyzDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : \"Xyz\" \n" +
-        "  class XyzDependencyᐸInt32ᐳ {\n" +
-          "    +XyzDependency()\n" +
-        "  }\n" +
-        "  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : \n" +
-        "  class AbcDependencyᐸStringᐳ {\n" +
-          "    +AbcDependency()\n" +
-        "  }\n" +
-        "  XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : \"Xyz\" \n" +
-        "  class XyzDependencyᐸStringᐳ {\n" +
-          "    +XyzDependency()\n" +
-        "  }\n" +
-        "  class IServiceᐸInt32ᐳ {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IServiceᐸStringᐳ {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IDependencyᐸInt32ᐳ {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IDependencyᐸStringᐳ {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Composition ..> ServiceᐸInt32ᐳ : IServiceᐸInt32ᐳ IntRoot\n" +
-        "  Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ StringRoot\n" +
-        "  ServiceᐸInt32ᐳ o--  \"PerBlock\" IEnumerableᐸIDependencyᐸInt32ᐳᐳ : IEnumerableᐸIDependencyᐸInt32ᐳᐳ\n" +
-        "  ServiceᐸStringᐳ o--  \"PerBlock\" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ\n" +
-        "  IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  AbcDependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ\n" +
-        "  IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  XyzDependencyᐸInt32ᐳ : \"Xyz\"  IDependencyᐸInt32ᐳ\n" +
-        "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : IDependencyᐸStringᐳ\n" +
-        "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : \"Xyz\"  IDependencyᐸStringᐳ";
   }
 
   private readonly static int _bucketSize;
@@ -325,6 +265,7 @@ partial class Composition
       {
         case null:
           return composition.IntRoot;
+
         default:
           return base.ResolveByTag(composition, tag);
       }
@@ -344,6 +285,7 @@ partial class Composition
       {
         case null:
           return composition.StringRoot;
+
         default:
           return base.ResolveByTag(composition, tag);
       }

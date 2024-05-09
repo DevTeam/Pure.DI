@@ -82,10 +82,10 @@ classDiagram
 	class FuncᐸIDependencyᐳ
 	class TaskFactoryᐸIDependencyᐳ
 	class IDependency {
-		<<abstract>>
+		<<interface>>
 	}
 	class IService {
-		<<abstract>>
+		<<interface>>
 	}
 	TaskFactory o-- CancellationToken : Argument "cancellationToken"
 	TaskFactory *--  TaskCreationOptions : TaskCreationOptions
@@ -125,7 +125,7 @@ partial class Composition
     _lock = _root._lock;
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService GetRoot(CancellationToken cancellationToken)
   {
     var perResolve42_Func = default(Func<IDependency>);
@@ -141,7 +141,7 @@ partial class Composition
         perBlock2_TaskFactory = new TaskFactory<IDependency>(cancellationToken_1, taskCreationOptions_2, taskContinuationOptions_3, taskScheduler_4);
     }
     perResolve42_Func = new Func<IDependency>(
-    [MethodImpl((MethodImplOptions)256)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
         var value_5 = new Dependency();
@@ -155,51 +155,6 @@ partial class Composition
     }
     return new Service(transient1_Task);
   }
-
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Composition {\n" +
-          "    +IService GetRoot(CancellationToken cancellationToken)\n" +
-        "  }\n" +
-        "  class TaskCreationOptions\n" +
-        "  class TaskContinuationOptions\n" +
-        "  class TaskFactory\n" +
-        "  class TaskScheduler\n" +
-        "  class CancellationToken\n" +
-        "  Dependency --|> IDependency : \n" +
-        "  class Dependency {\n" +
-          "    +Dependency()\n" +
-        "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(TaskᐸIDependencyᐳ dependencyTask)\n" +
-        "  }\n" +
-        "  class TaskᐸIDependencyᐳ\n" +
-        "  class FuncᐸIDependencyᐳ\n" +
-        "  class TaskFactoryᐸIDependencyᐳ\n" +
-        "  class IDependency {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  TaskFactory o-- CancellationToken : Argument \"cancellationToken\"\n" +
-        "  TaskFactory *--  TaskCreationOptions : TaskCreationOptions\n" +
-        "  TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions\n" +
-        "  TaskFactory *--  TaskScheduler : TaskScheduler\n" +
-        "  Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ\n" +
-        "  Composition ..> Service : IService GetRoot(CancellationToken cancellationToken)\n" +
-        "  TaskᐸIDependencyᐳ o--  \"PerResolve\" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ\n" +
-        "  TaskᐸIDependencyᐳ o--  \"PerBlock\" TaskFactoryᐸIDependencyᐳ : TaskFactoryᐸIDependencyᐳ\n" +
-        "  FuncᐸIDependencyᐳ *--  Dependency : IDependency\n" +
-        "  TaskFactoryᐸIDependencyᐳ o-- CancellationToken : Argument \"cancellationToken\"\n" +
-        "  TaskFactoryᐸIDependencyᐳ *--  TaskCreationOptions : TaskCreationOptions\n" +
-        "  TaskFactoryᐸIDependencyᐳ *--  TaskContinuationOptions : TaskContinuationOptions\n" +
-        "  TaskFactoryᐸIDependencyᐳ *--  TaskScheduler : TaskScheduler";
-  }
-
 }
 ```
 

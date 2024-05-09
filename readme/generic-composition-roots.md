@@ -70,10 +70,10 @@ classDiagram
 		+Dependency()
 	}
 	class IServiceᐸT54ᐳ {
-		<<abstract>>
+		<<interface>>
 	}
 	class IDependencyᐸT54ᐳ {
-		<<abstract>>
+		<<interface>>
 	}
 	Composition ..> ServiceᐸT54ᐳ : IServiceᐸT54ᐳ GetMyRootᐸT54ᐳ()
 	Composition ..> OtherServiceᐸT54ᐳ : IServiceᐸT54ᐳ GetOtherServiceᐸT54ᐳ()
@@ -101,13 +101,13 @@ partial class Composition
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService<T54> GetMyRoot<T54>()
   {
     return new Service<T54>(new Dependency<T54>());
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService<T54> GetOtherService<T54>()
   {
     OtherService<T54> transient0_OtherService;
@@ -117,37 +117,6 @@ partial class Composition
     }
     return transient0_OtherService;
   }
-
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Composition {\n" +
-          "    +IServiceᐸT54ᐳ GetMyRootᐸT54ᐳ()\n" +
-          "    +IServiceᐸT54ᐳ GetOtherServiceᐸT54ᐳ()\n" +
-        "  }\n" +
-        "  ServiceᐸT54ᐳ --|> IServiceᐸT54ᐳ : \n" +
-        "  class ServiceᐸT54ᐳ {\n" +
-          "    +Service(IDependencyᐸT54ᐳ dependency)\n" +
-        "  }\n" +
-        "  OtherServiceᐸT54ᐳ --|> IServiceᐸT54ᐳ : \"Other\" \n" +
-        "  class OtherServiceᐸT54ᐳ\n" +
-        "  DependencyᐸT54ᐳ --|> IDependencyᐸT54ᐳ : \n" +
-        "  class DependencyᐸT54ᐳ {\n" +
-          "    +Dependency()\n" +
-        "  }\n" +
-        "  class IServiceᐸT54ᐳ {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IDependencyᐸT54ᐳ {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Composition ..> ServiceᐸT54ᐳ : IServiceᐸT54ᐳ GetMyRootᐸT54ᐳ()\n" +
-        "  Composition ..> OtherServiceᐸT54ᐳ : IServiceᐸT54ᐳ GetOtherServiceᐸT54ᐳ()\n" +
-        "  ServiceᐸT54ᐳ *--  DependencyᐸT54ᐳ : IDependencyᐸT54ᐳ\n" +
-        "  OtherServiceᐸT54ᐳ *--  DependencyᐸT54ᐳ : IDependencyᐸT54ᐳ";
-  }
-
 }
 ```
 

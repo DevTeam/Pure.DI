@@ -42,7 +42,11 @@ public class Scenario
     {
 // {            
         DI.Setup(nameof(Composition))
+            // Default Lifetime applies
+            // to all bindings until the end of the chain
+            // or the next call to the DefaultLifetime method
             .DefaultLifetime(Lifetime.Singleton)
+
             .Bind().To<Dependency>()
             .RootBind<IService>("Root").To<Service>();
 

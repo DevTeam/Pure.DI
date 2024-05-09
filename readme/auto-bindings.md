@@ -65,30 +65,12 @@ partial class Composition
 
   public Service MyService
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       return new Service(new Dependency());
     }
   }
-
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Composition {\n" +
-          "    +Service MyService\n" +
-        "  }\n" +
-        "  class Dependency {\n" +
-          "    +Dependency()\n" +
-        "  }\n" +
-        "  class Service {\n" +
-          "    +Service(Dependency dependency)\n" +
-        "  }\n" +
-        "  Service *--  Dependency : Dependency\n" +
-        "  Composition ..> Service : Service MyService";
-  }
-
 }
 ```
 

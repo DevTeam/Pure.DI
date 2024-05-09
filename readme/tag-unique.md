@@ -61,10 +61,10 @@ classDiagram
 		+XyzDependency()
 	}
 	class IServiceᐸStringᐳ {
-		<<abstract>>
+		<<interface>>
 	}
 	class IDependencyᐸStringᐳ {
-		<<abstract>>
+		<<interface>>
 	}
 	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root
 	ServiceᐸStringᐳ o--  "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
@@ -94,10 +94,10 @@ partial class Composition
 
   public IService<string> Root
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      [MethodImpl((MethodImplOptions)0x100)]
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       IEnumerable<IDependency<string>> EnumerationOf_perBlock1_IEnumerable()
       {
           yield return new AbcDependency<string>();
@@ -108,19 +108,19 @@ partial class Composition
     }
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>()
   {
     return Resolver<T>.Value.Resolve(this);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>(object? tag)
   {
     return Resolver<T>.Value.ResolveByTag(this, tag);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
@@ -128,7 +128,7 @@ partial class Composition
     return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, int index)
   {
     var finish = index + _bucketSize;
@@ -144,7 +144,7 @@ partial class Composition
     throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type, object? tag)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
@@ -152,7 +152,7 @@ partial class Composition
     return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, object? tag, int index)
   {
     var finish = index + _bucketSize;
@@ -166,42 +166,6 @@ partial class Composition
     }
 
     throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
-  }
-
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Composition {\n" +
-          "    +IServiceᐸStringᐳ Root\n" +
-          "    + T ResolveᐸTᐳ()\n" +
-          "    + T ResolveᐸTᐳ(object? tag)\n" +
-          "    + object Resolve(Type type)\n" +
-          "    + object Resolve(Type type, object? tag)\n" +
-        "  }\n" +
-        "  ServiceᐸStringᐳ --|> IServiceᐸStringᐳ : \n" +
-        "  class ServiceᐸStringᐳ {\n" +
-          "    +Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)\n" +
-        "  }\n" +
-        "  class IEnumerableᐸIDependencyᐸStringᐳᐳ\n" +
-        "  AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : Unique tag 1 \n" +
-        "  class AbcDependencyᐸStringᐳ {\n" +
-          "    +AbcDependency()\n" +
-        "  }\n" +
-        "  XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : Unique tag 2 \n" +
-        "  class XyzDependencyᐸStringᐳ {\n" +
-          "    +XyzDependency()\n" +
-        "  }\n" +
-        "  class IServiceᐸStringᐳ {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IDependencyᐸStringᐳ {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root\n" +
-        "  ServiceᐸStringᐳ o--  \"PerBlock\" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ\n" +
-        "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : Unique tag 1  IDependencyᐸStringᐳ\n" +
-        "  IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : Unique tag 2  IDependencyᐸStringᐳ";
   }
 
   private readonly static int _bucketSize;
@@ -251,6 +215,7 @@ partial class Composition
       {
         case null:
           return composition.Root;
+
         default:
           return base.ResolveByTag(composition, tag);
       }

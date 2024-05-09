@@ -1,6 +1,6 @@
 #### Tracking async disposable instances in delegates
 
-[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Basics/TrackingAsyncDisposableInDelegatesScenario.cs)
+[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/TrackingAsyncDisposableInDelegatesScenario.cs)
 
 ```c#
 interface IDependency
@@ -94,13 +94,13 @@ classDiagram
 	class FuncᐸOwnedᐸIDependencyᐳᐳ
 	class OwnedᐸIDependencyᐳ
 	class IDependency {
-		<<abstract>>
+		<<interface>>
 	}
 	class IService {
-		<<abstract>>
+		<<interface>>
 	}
 	class IAsyncDisposable {
-		<<abstract>>
+		<<interface>>
 	}
 	Service o--  "PerResolve" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
 	Composition ..> Service : Service Root
@@ -134,12 +134,12 @@ partial class Composition
 
   public Service Root
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       var perResolve39_Func = default(Func<Owned<IDependency>>);
       perResolve39_Func = new Func<Owned<IDependency>>(
-      [MethodImpl((MethodImplOptions)256)]
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
           var accumulator38 = new Owned();
@@ -165,19 +165,19 @@ partial class Composition
     }
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>()
   {
     return Resolver<T>.Value.Resolve(this);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>(object? tag)
   {
     return Resolver<T>.Value.ResolveByTag(this, tag);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
@@ -185,7 +185,7 @@ partial class Composition
     return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, int index)
   {
     var finish = index + _bucketSize;
@@ -201,7 +201,7 @@ partial class Composition
     throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type, object? tag)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
@@ -209,7 +209,7 @@ partial class Composition
     return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, object? tag, int index)
   {
     var finish = index + _bucketSize;
@@ -223,45 +223,6 @@ partial class Composition
     }
 
     throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
-  }
-
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Composition {\n" +
-          "    +Service Root\n" +
-          "    + T ResolveᐸTᐳ()\n" +
-          "    + T ResolveᐸTᐳ(object? tag)\n" +
-          "    + object Resolve(Type type)\n" +
-          "    + object Resolve(Type type, object? tag)\n" +
-        "  }\n" +
-        "  class Owned\n" +
-        "  Dependency --|> IDependency : \n" +
-        "  class Dependency {\n" +
-          "    +Dependency()\n" +
-        "  }\n" +
-        "  Service --|> IService : \n" +
-        "  Service --|> IAsyncDisposable : \n" +
-        "  class Service {\n" +
-          "    +Service(FuncᐸOwnedᐸIDependencyᐳᐳ dependencyFactory)\n" +
-        "  }\n" +
-        "  class FuncᐸOwnedᐸIDependencyᐳᐳ\n" +
-        "  class OwnedᐸIDependencyᐳ\n" +
-        "  class IDependency {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IAsyncDisposable {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Service o--  \"PerResolve\" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ\n" +
-        "  Composition ..> Service : Service Root\n" +
-        "  FuncᐸOwnedᐸIDependencyᐳᐳ o--  \"PerBlock\" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ\n" +
-        "  OwnedᐸIDependencyᐳ *--  Owned : Owned\n" +
-        "  OwnedᐸIDependencyᐳ *--  Dependency : IDependency";
   }
 
   private readonly static int _bucketSize;
@@ -311,6 +272,7 @@ partial class Composition
       {
         case null:
           return composition.Root;
+
         default:
           return base.ResolveByTag(composition, tag);
       }

@@ -20,14 +20,14 @@ static void Setup() =>
     DI.Setup(nameof(Composition))
         // Models a random subatomic event that may or may not occur
         .Bind().As(Singleton).To<Random>()
-        // Represents a quantum superposition of 2 states: Alive or Dead
+        // Quantum superposition of two states: Alive or Dead
         .Bind().To(ctx =>
         {
             ctx.Inject<Random>(out var random);
             return (State)random.Next(2);
         })
         .Bind().To<ShroedingersCat>()
-        // Represents a cardboard box with any contents
+        // Cardboard box with any contents
         .Bind().To<CardboardBox<TT>>()
         // Provides the composition root
         .Root<Program>("Root");

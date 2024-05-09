@@ -25,6 +25,8 @@ interface IService
     IDependency Dependency { get;}
 }
 
+// If injection cannot be performed explicitly,
+// the default value will be used
 class Service(string name = "My Service") : IService
 {
     public string Name { get; } = name;

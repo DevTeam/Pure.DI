@@ -46,10 +46,10 @@ classDiagram
 		+Service(IDependency dependency)
 	}
 	class IDependency {
-		<<abstract>>
+		<<interface>>
 	}
 	class IService {
-		<<abstract>>
+		<<interface>>
 	}
 	Service *--  Dependency : IDependency
 	Composition ..> Dependency : IDependency DependencyRoot
@@ -78,7 +78,7 @@ partial class Composition
 
   public IDependency DependencyRoot
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       return new Dependency();
@@ -87,40 +87,12 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       return new Service(new Dependency());
     }
   }
-
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Composition {\n" +
-          "    +IDependency DependencyRoot\n" +
-          "    +IService Root\n" +
-        "  }\n" +
-        "  Dependency --|> IDependency : \n" +
-        "  class Dependency {\n" +
-          "    +Dependency()\n" +
-        "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(IDependency dependency)\n" +
-        "  }\n" +
-        "  class IDependency {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Service *--  Dependency : IDependency\n" +
-        "  Composition ..> Dependency : IDependency DependencyRoot\n" +
-        "  Composition ..> Service : IService Root";
-  }
-
 }
 ```
 

@@ -91,10 +91,10 @@ classDiagram
 		+Service(FuncᐸInt32ˏIDependencyᐳ dependencyFactory)
 	}
 	class IClock {
-		<<abstract>>
+		<<interface>>
 	}
 	class IService {
-		<<abstract>>
+		<<interface>>
 	}
 	Dependency o--  "Singleton" Clock : IClock
 	Dependency *--  Int32 : Int32
@@ -129,7 +129,7 @@ partial class Composition
 
   public IService Root
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       Func<int, IDependency> transient1_Func = dependencyId =>
@@ -152,19 +152,19 @@ partial class Composition
     }
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>()
   {
     return Resolver<T>.Value.Resolve(this);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>(object? tag)
   {
     return Resolver<T>.Value.ResolveByTag(this, tag);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
@@ -172,7 +172,7 @@ partial class Composition
     return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, int index)
   {
     var finish = index + _bucketSize;
@@ -188,7 +188,7 @@ partial class Composition
     throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type, object? tag)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
@@ -196,7 +196,7 @@ partial class Composition
     return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, object? tag, int index)
   {
     var finish = index + _bucketSize;
@@ -210,43 +210,6 @@ partial class Composition
     }
 
     throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
-  }
-
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Composition {\n" +
-          "    +IService Root\n" +
-          "    + T ResolveᐸTᐳ()\n" +
-          "    + T ResolveᐸTᐳ(object? tag)\n" +
-          "    + object Resolve(Type type)\n" +
-          "    + object Resolve(Type type, object? tag)\n" +
-        "  }\n" +
-        "  class Dependency {\n" +
-          "    +Dependency(IClock clock, Int32 id)\n" +
-        "  }\n" +
-        "  class Int32\n" +
-        "  class FuncᐸInt32ˏIDependencyᐳ\n" +
-        "  Clock --|> IClock : \n" +
-        "  class Clock {\n" +
-          "    +Clock()\n" +
-        "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(FuncᐸInt32ˏIDependencyᐳ dependencyFactory)\n" +
-        "  }\n" +
-        "  class IClock {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Dependency o--  \"Singleton\" Clock : IClock\n" +
-        "  Dependency *--  Int32 : Int32\n" +
-        "  FuncᐸInt32ˏIDependencyᐳ *--  Dependency : Dependency\n" +
-        "  Service *--  FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ\n" +
-        "  Composition ..> Service : IService Root";
   }
 
   private readonly static int _bucketSize;
@@ -296,6 +259,7 @@ partial class Composition
       {
         case null:
           return composition.Root;
+
         default:
           return base.ResolveByTag(composition, tag);
       }

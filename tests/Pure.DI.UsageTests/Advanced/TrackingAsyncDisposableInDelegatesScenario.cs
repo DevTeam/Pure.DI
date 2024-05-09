@@ -10,7 +10,7 @@ $d=Tracking async disposable instances in delegates
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ArrangeTypeMemberModifiers
 // ReSharper disable UnusedMemberInSuper.Global
-namespace Pure.DI.UsageTests.Basics.TrackingAsyncDisposableInDelegatesScenario;
+namespace Pure.DI.UsageTests.Advanced.TrackingAsyncDisposableInDelegatesScenario;
 
 using Xunit;
 

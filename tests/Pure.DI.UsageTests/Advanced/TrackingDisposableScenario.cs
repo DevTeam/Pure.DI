@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
-$p=17
-$d=Tracking async disposable instances per a composition root
+$p=16
+$d=Tracking disposable instances per a composition root
 */
 
 // ReSharper disable CheckNamespace
@@ -9,7 +9,7 @@ $d=Tracking async disposable instances per a composition root
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ArrangeTypeMemberModifiers
-namespace Pure.DI.UsageTests.Basics.TrackingAsyncDisposableScenario;
+namespace Pure.DI.UsageTests.Advanced.TrackingDisposableScenario;
 
 using Xunit;
 
@@ -19,15 +19,11 @@ interface IDependency
     bool IsDisposed { get; }
 }
 
-class Dependency : IDependency, IAsyncDisposable
+class Dependency : IDependency, IDisposable
 {
     public bool IsDisposed { get; private set; }
 
-    public ValueTask DisposeAsync()
-    {
-        IsDisposed = true;
-        return ValueTask.CompletedTask;
-    }
+    public void Dispose() => IsDisposed = true;
 }
 
 interface IService
@@ -56,14 +52,14 @@ partial class Composition
 public class Scenario
 {
     [Fact]
-    public async Task Run()
+    public void Run()
     {
 // {            
         var composition = new Composition();
         var root1 = composition.Root;
         var root2 = composition.Root;
         
-        await root2.DisposeAsync();
+        root2.Dispose();
         
         // Checks that the disposable instances
         // associated with root1 have been disposed of
@@ -73,7 +69,7 @@ public class Scenario
         // associated with root2 have not been disposed of
         root1.Value.Dependency.IsDisposed.ShouldBeFalse();
         
-        await root1.DisposeAsync();
+        root1.Dispose();
         
         // Checks that the disposable instances
         // associated with root2 have been disposed of

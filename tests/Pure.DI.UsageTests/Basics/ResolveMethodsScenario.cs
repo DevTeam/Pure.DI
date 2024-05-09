@@ -11,7 +11,7 @@ $h=This example shows how to resolve the composition roots using the _Resolve_ m
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable UnusedVariable
 #pragma warning disable CS9113 // Parameter is unread.
-namespace Pure.DI.UsageTests.Basics.ResolveScenario;
+namespace Pure.DI.UsageTests.Basics.ResolveMethodsScenario;
 
 using Shouldly;
 using Xunit;

@@ -32,6 +32,8 @@ class Service : IService
 
     public string Name => ServiceNameField;
 
+    // The required property will be injected automatically
+    // without additional effort
     public required IDependency Dependency { get; init; }
 }
 // }

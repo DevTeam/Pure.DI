@@ -26,6 +26,9 @@ interface IService
 
 class Service : IService
 {
+    // The Ordinal attribute specifies to perform an injection,
+    // the integer value in the argument specifies
+    // the ordinal of injection
     [Ordinal(0)]
     public IDependency? Dependency { get; set; }
 }

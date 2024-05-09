@@ -133,6 +133,7 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
             foreach (var taggedRoot in taggedRoots.Where(i => !CanBeUsedInSwitch(i)))
             {
                 code.AppendLine($"if (Equals(tag, {taggedRoot.Injection.Tag.ValueToString()})) return {GetRoot(composition, taggedRoot)};");
+                code.AppendLine();
             }
 
             code.AppendLine("switch (tag)");
@@ -146,6 +147,8 @@ internal sealed class ResolverClassesBuilder(IBuilder<ImmutableArray<Root>, IEnu
                     {
                         code.AppendLine($"return {GetRoot(composition, taggedRoot)};");
                     }
+                    
+                    code.AppendLine();
                 }
 
                 code.AppendLine("default:");

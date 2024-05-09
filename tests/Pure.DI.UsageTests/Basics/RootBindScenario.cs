@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
 $p=17
-$d=RootBind
+$d=Root binding
 $h=You might want to register some services as roots. You can use `RootBind<T>()` method in order to reduce repetitions. The registration `composition.RootBind<IDependency>().To<Dependency>()` is an equivalent to `composition.Bind<IDependency>().To<Dependency>().Root<IDependency>()`.
 */
 

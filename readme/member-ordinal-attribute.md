@@ -16,6 +16,9 @@ class Person : IPerson
 
     public string Name => _name.ToString();
 
+    // The Ordinal attribute specifies to perform an injection,
+    // the integer value in the argument specifies
+    // the ordinal of injection
     [Ordinal(0)]
     public int Id;
 
@@ -84,7 +87,7 @@ classDiagram
 		+DateTime Birthday
 	}
 	class IPerson {
-		<<abstract>>
+		<<interface>>
 	}
 	Person o-- Int32 : Argument "personId"
 	Person o-- String : Argument "personName"
@@ -124,7 +127,7 @@ partial class PersonComposition
 
   public IPerson Person
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       Person transient0_Person = new Person();
@@ -135,19 +138,19 @@ partial class PersonComposition
     }
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>()
   {
     return Resolver<T>.Value.Resolve(this);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>(object? tag)
   {
     return Resolver<T>.Value.ResolveByTag(this, tag);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
@@ -155,7 +158,7 @@ partial class PersonComposition
     return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, int index)
   {
     var finish = index + _bucketSize;
@@ -171,7 +174,7 @@ partial class PersonComposition
     throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type, object? tag)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
@@ -179,7 +182,7 @@ partial class PersonComposition
     return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, object? tag, int index)
   {
     var finish = index + _bucketSize;
@@ -193,36 +196,6 @@ partial class PersonComposition
     }
 
     throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
-  }
-
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class PersonComposition {\n" +
-          "    +IPerson Person\n" +
-          "    + T ResolveᐸTᐳ()\n" +
-          "    + T ResolveᐸTᐳ(object? tag)\n" +
-          "    + object Resolve(Type type)\n" +
-          "    + object Resolve(Type type, object? tag)\n" +
-        "  }\n" +
-        "  class Int32\n" +
-        "  class String\n" +
-        "  class DateTime\n" +
-        "  Person --|> IPerson : \n" +
-        "  class Person {\n" +
-          "    +Person()\n" +
-          "    +Int32 Id\n" +
-          "    +String FirstName\n" +
-          "    +DateTime Birthday\n" +
-        "  }\n" +
-        "  class IPerson {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Person o-- Int32 : Argument \"personId\"\n" +
-        "  Person o-- String : Argument \"personName\"\n" +
-        "  Person o-- DateTime : Argument \"personBirthday\"\n" +
-        "  PersonComposition ..> Person : IPerson Person";
   }
 
   private readonly static int _bucketSize;
@@ -272,6 +245,7 @@ partial class PersonComposition
       {
         case null:
           return composition.Person;
+
         default:
           return base.ResolveByTag(composition, tag);
       }

@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
 $p=16
-$d=Tracking disposable instances per a composition root
+$d=Tracking disposable instances in delegates
 */
 
 // ReSharper disable CheckNamespace
@@ -9,7 +9,8 @@ $d=Tracking disposable instances per a composition root
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ArrangeTypeMemberModifiers
-namespace Pure.DI.UsageTests.Basics.TrackingDisposableScenario;
+// ReSharper disable UnusedMemberInSuper.Global
+namespace Pure.DI.UsageTests.Advanced.TrackingDisposableInDelegatesScenario;
 
 using Xunit;
 
@@ -31,9 +32,14 @@ interface IService
     public IDependency Dependency { get; }
 }
 
-class Service(IDependency dependency) : IService
+class Service(Func<Owned<IDependency>> dependencyFactory)
+    : IService, IDisposable
 {
-    public IDependency Dependency { get; } = dependency;
+    private readonly Owned<IDependency> _dependency = dependencyFactory();
+
+    public IDependency Dependency => _dependency.Value;
+    
+    public void Dispose() => _dependency.Dispose();
 }
 
 partial class Composition
@@ -43,9 +49,8 @@ partial class Composition
             .Bind().To<Dependency>()
             .Bind().To<Service>()
             
-            // A special composition root
-            // that allows to manage disposable dependencies
-            .Root<Owned<IService>>("Root");
+            // Composition root
+            .Root<Service>("Root");
 }
 // }
 
@@ -63,17 +68,17 @@ public class Scenario
         
         // Checks that the disposable instances
         // associated with root1 have been disposed of
-        root2.Value.Dependency.IsDisposed.ShouldBeTrue();
+        root2.Dependency.IsDisposed.ShouldBeTrue();
         
         // Checks that the disposable instances
         // associated with root2 have not been disposed of
-        root1.Value.Dependency.IsDisposed.ShouldBeFalse();
+        root1.Dependency.IsDisposed.ShouldBeFalse();
         
         root1.Dispose();
         
         // Checks that the disposable instances
         // associated with root2 have been disposed of
-        root1.Value.Dependency.IsDisposed.ShouldBeTrue();
+        root1.Dependency.IsDisposed.ShouldBeTrue();
 // }
         new Composition().SaveClassDiagram();
     }

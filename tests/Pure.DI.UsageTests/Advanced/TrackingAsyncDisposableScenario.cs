@@ -1,7 +1,7 @@
 ﻿/*
 $v=true
-$p=16
-$d=Tracking disposable instances in delegates
+$p=17
+$d=Tracking async disposable instances per a composition root
 */
 
 // ReSharper disable CheckNamespace
@@ -9,8 +9,7 @@ $d=Tracking disposable instances in delegates
 // ReSharper disable UnusedParameterInPartialMethod
 // ReSharper disable ArrangeTypeModifiers
 // ReSharper disable ArrangeTypeMemberModifiers
-// ReSharper disable UnusedMemberInSuper.Global
-namespace Pure.DI.UsageTests.Basics.TrackingDisposableInDelegatesScenario;
+namespace Pure.DI.UsageTests.Advanced.TrackingAsyncDisposableScenario;
 
 using Xunit;
 
@@ -20,11 +19,15 @@ interface IDependency
     bool IsDisposed { get; }
 }
 
-class Dependency : IDependency, IDisposable
+class Dependency : IDependency, IAsyncDisposable
 {
     public bool IsDisposed { get; private set; }
 
-    public void Dispose() => IsDisposed = true;
+    public ValueTask DisposeAsync()
+    {
+        IsDisposed = true;
+        return ValueTask.CompletedTask;
+    }
 }
 
 interface IService
@@ -32,14 +35,9 @@ interface IService
     public IDependency Dependency { get; }
 }
 
-class Service(Func<Owned<IDependency>> dependencyFactory)
-    : IService, IDisposable
+class Service(IDependency dependency) : IService
 {
-    private readonly Owned<IDependency> _dependency = dependencyFactory();
-
-    public IDependency Dependency => _dependency.Value;
-    
-    public void Dispose() => _dependency.Dispose();
+    public IDependency Dependency { get; } = dependency;
 }
 
 partial class Composition
@@ -49,36 +47,37 @@ partial class Composition
             .Bind().To<Dependency>()
             .Bind().To<Service>()
             
-            // Composition root
-            .Root<Service>("Root");
+            // A special composition root
+            // that allows to manage disposable dependencies
+            .Root<Owned<IService>>("Root");
 }
 // }
 
 public class Scenario
 {
     [Fact]
-    public void Run()
+    public async Task Run()
     {
 // {            
         var composition = new Composition();
         var root1 = composition.Root;
         var root2 = composition.Root;
         
-        root2.Dispose();
+        await root2.DisposeAsync();
         
         // Checks that the disposable instances
         // associated with root1 have been disposed of
-        root2.Dependency.IsDisposed.ShouldBeTrue();
+        root2.Value.Dependency.IsDisposed.ShouldBeTrue();
         
         // Checks that the disposable instances
         // associated with root2 have not been disposed of
-        root1.Dependency.IsDisposed.ShouldBeFalse();
+        root1.Value.Dependency.IsDisposed.ShouldBeFalse();
         
-        root1.Dispose();
+        await root1.DisposeAsync();
         
         // Checks that the disposable instances
         // associated with root2 have been disposed of
-        root1.Dependency.IsDisposed.ShouldBeTrue();
+        root1.Value.Dependency.IsDisposed.ShouldBeTrue();
 // }
         new Composition().SaveClassDiagram();
     }

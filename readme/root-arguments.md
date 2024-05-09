@@ -84,10 +84,10 @@ classDiagram
 		+Service(String name, IDependency dependency)
 	}
 	class IDependency {
-		<<abstract>>
+		<<interface>>
 	}
 	class IService {
-		<<abstract>>
+		<<interface>>
 	}
 	Dependency o-- Int32 : Argument "id"
 	Dependency o-- String : Argument "dependencyName"
@@ -116,42 +116,11 @@ partial class Composition
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public IService CreateService(int id, string dependencyName, string serviceName)
   {
     return new Service(serviceName, new Dependency(id, dependencyName));
   }
-
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Composition {\n" +
-          "    +IService CreateService(int id, string dependencyName, string serviceName)\n" +
-        "  }\n" +
-        "  class Int32\n" +
-        "  class String\n" +
-        "  Dependency --|> IDependency : \n" +
-        "  class Dependency {\n" +
-          "    +Dependency(Int32 id, String dependencyName)\n" +
-        "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(String name, IDependency dependency)\n" +
-        "  }\n" +
-        "  class IDependency {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Dependency o-- Int32 : Argument \"id\"\n" +
-        "  Dependency o-- String : Argument \"dependencyName\"\n" +
-        "  Service o-- String : \"forService\"  Argument \"serviceName\"\n" +
-        "  Service *--  Dependency : IDependency\n" +
-        "  Composition ..> Service : IService CreateService(int id, string dependencyName, string serviceName)";
-  }
-
 }
 ```
 

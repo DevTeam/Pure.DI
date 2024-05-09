@@ -29,7 +29,7 @@ DI.Setup(nameof(Composition))
     .Bind<IDependency>().To<Dependency>()
     .Bind<IService>().To<Service>()
 
-    // Specifies to create a composition root (a property)
+    // Specifies to create a composition root
     // of type "Program" with the name "Root"
     .Root<Program>("Root");
         
@@ -61,10 +61,10 @@ classDiagram
 		+Service(IDependency dependency)
 	}
 	class IDependency {
-		<<abstract>>
+		<<interface>>
 	}
 	class IService {
-		<<abstract>>
+		<<interface>>
 	}
 	Program *--  Service : IService
 	Service *--  Dependency : IDependency
@@ -93,42 +93,12 @@ partial class Composition
 
   public Program Root
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       return new Program(new Service(new Dependency()));
     }
   }
-
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Composition {\n" +
-          "    +Program Root\n" +
-        "  }\n" +
-        "  class Program {\n" +
-          "    +Program(IService service)\n" +
-        "  }\n" +
-        "  Dependency --|> IDependency : \n" +
-        "  class Dependency {\n" +
-          "    +Dependency()\n" +
-        "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(IDependency dependency)\n" +
-        "  }\n" +
-        "  class IDependency {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Program *--  Service : IService\n" +
-        "  Service *--  Dependency : IDependency\n" +
-        "  Composition ..> Program : Program Root";
-  }
-
 }
 ```
 

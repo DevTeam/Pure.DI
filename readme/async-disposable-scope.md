@@ -112,13 +112,13 @@ classDiagram
 	class Composition
 	class FuncᐸSessionᐳ
 	class IDependency {
-		<<abstract>>
+		<<interface>>
 	}
 	class IAsyncDisposable {
-		<<abstract>>
+		<<interface>>
 	}
 	class IService {
-		<<abstract>>
+		<<interface>>
 	}
 	Session *--  Composition : Composition
 	Program o--  "PerResolve" FuncᐸSessionᐳ : FuncᐸSessionᐳ
@@ -158,7 +158,7 @@ partial class Composition: IDisposable, IAsyncDisposable
 
   public IService SessionRoot
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       if (_scoped36_Dependency == null)
@@ -178,12 +178,12 @@ partial class Composition: IDisposable, IAsyncDisposable
 
   public Program ProgramRoot
   {
-    [MethodImpl((MethodImplOptions)0x100)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
       var perResolve43_Func = default(Func<Session>);
       perResolve43_Func = new Func<Session>(
-      [MethodImpl((MethodImplOptions)256)]
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
           Composition transient2_Composition = this;
@@ -194,19 +194,19 @@ partial class Composition: IDisposable, IAsyncDisposable
     }
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>()
   {
     return Resolver<T>.Value.Resolve(this);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public T Resolve<T>(object? tag)
   {
     return Resolver<T>.Value.ResolveByTag(this, tag);
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
@@ -214,7 +214,7 @@ partial class Composition: IDisposable, IAsyncDisposable
     return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, int index)
   {
     var finish = index + _bucketSize;
@@ -230,7 +230,7 @@ partial class Composition: IDisposable, IAsyncDisposable
     throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
   }
 
-  [MethodImpl((MethodImplOptions)0x100)]
+  [MethodImpl(MethodImplOptions.AggressiveInlining)]
   public object Resolve(Type type, object? tag)
   {
     var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
@@ -238,7 +238,7 @@ partial class Composition: IDisposable, IAsyncDisposable
     return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
   }
 
-  [MethodImpl((MethodImplOptions)0x8)]
+  [MethodImpl(MethodImplOptions.NoInlining)]
   private object Resolve(Type type, object? tag, int index)
   {
     var finish = index + _bucketSize;
@@ -324,54 +324,6 @@ partial class Composition: IDisposable, IAsyncDisposable
 
   partial void OnDisposeAsyncException<T>(T asyncDisposableInstance, Exception exception) where T : IAsyncDisposable;
 
-  public override string ToString()
-  {
-    return
-      "classDiagram\n" +
-        "  class Composition {\n" +
-          "    +Program ProgramRoot\n" +
-          "    +IService SessionRoot\n" +
-          "    + T ResolveᐸTᐳ()\n" +
-          "    + T ResolveᐸTᐳ(object? tag)\n" +
-          "    + object Resolve(Type type)\n" +
-          "    + object Resolve(Type type, object? tag)\n" +
-        "  }\n" +
-        "  Composition --|> IDisposable\n" +
-        "  Composition --|> IAsyncDisposable\n" +
-        "  class Session {\n" +
-          "    +Session(Composition composition)\n" +
-        "  }\n" +
-        "  class Program {\n" +
-          "    +Program(FuncᐸSessionᐳ sessionFactory)\n" +
-        "  }\n" +
-        "  Dependency --|> IDependency : \n" +
-        "  Dependency --|> IAsyncDisposable : \n" +
-        "  class Dependency {\n" +
-          "    +Dependency()\n" +
-        "  }\n" +
-        "  Service --|> IService : \n" +
-        "  class Service {\n" +
-          "    +Service(IDependency dependency)\n" +
-        "  }\n" +
-        "  class Composition\n" +
-        "  class FuncᐸSessionᐳ\n" +
-        "  class IDependency {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IAsyncDisposable {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  class IService {\n" +
-          "    <<abstract>>\n" +
-        "  }\n" +
-        "  Session *--  Composition : Composition\n" +
-        "  Program o--  \"PerResolve\" FuncᐸSessionᐳ : FuncᐸSessionᐳ\n" +
-        "  Service o--  \"Scoped\" Dependency : IDependency\n" +
-        "  Composition ..> Service : IService SessionRoot\n" +
-        "  Composition ..> Program : Program ProgramRoot\n" +
-        "  FuncᐸSessionᐳ *--  Session : Session";
-  }
-
   private readonly static int _bucketSize;
   private readonly static Pair<Type, IResolver<Composition, object>>[] _buckets;
 
@@ -422,6 +374,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       {
         case null:
           return composition.SessionRoot;
+
         default:
           return base.ResolveByTag(composition, tag);
       }
@@ -441,6 +394,7 @@ partial class Composition: IDisposable, IAsyncDisposable
       {
         case null:
           return composition.ProgramRoot;
+
         default:
           return base.ResolveByTag(composition, tag);
       }
