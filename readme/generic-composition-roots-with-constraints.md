@@ -59,6 +59,7 @@ var someOtherService = composition.GetOtherService<BinaryReader>();
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IServiceᐸTˏT4ᐳ GetMyRootᐸTˏT4ᐳ()
 		+IServiceᐸTˏBooleanᐳ GetOtherServiceᐸTᐳ()
 	}

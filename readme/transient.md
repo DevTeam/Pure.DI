@@ -43,6 +43,7 @@ service2.Dependency1.ShouldNotBe(service1.Dependency1);
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
@@ -63,8 +64,7 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service *--  Dependency : IDependency
-	Service *--  Dependency : IDependency
+	Service *-- "2 " Dependency : IDependency
 	Composition ..> Service : IService Root
 ```
 

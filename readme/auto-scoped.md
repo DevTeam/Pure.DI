@@ -67,6 +67,7 @@ service1.Dependency.ShouldNotBe(service2.Dependency);
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+Program ProgramRoot
 		+Service SessionRoot
 		+ T ResolveᐸTᐳ()
@@ -90,8 +91,8 @@ classDiagram
 	class IDependency {
 		<<interface>>
 	}
-	Program o--  "PerResolve" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
-	Service o--  "Scoped" Dependency : IDependency
+	Program o-- "PerResolve" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
+	Service o-- "Scoped" Dependency : IDependency
 	IService *--  Composition : Composition
 	Composition ..> Service : Service SessionRoot
 	Composition ..> Program : Program ProgramRoot

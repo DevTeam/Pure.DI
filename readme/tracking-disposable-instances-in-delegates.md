@@ -68,6 +68,7 @@ root1.Dependency.IsDisposed.ShouldBeTrue();
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+Service Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
@@ -91,9 +92,9 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service o--  "PerResolve" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
+	Service o-- "PerResolve" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
 	Composition ..> Service : Service Root
-	FuncᐸOwnedᐸIDependencyᐳᐳ o--  "PerBlock" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ
+	FuncᐸOwnedᐸIDependencyᐳᐳ o-- "PerBlock" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ
 	OwnedᐸIDependencyᐳ *--  Owned : Owned
 	OwnedᐸIDependencyᐳ *--  Dependency : IDependency
 ```

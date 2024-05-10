@@ -85,6 +85,7 @@ dependency2.IsDisposed.ShouldBeTrue();
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+Program ProgramRoot
 		+IService SessionRoot
 		+ T ResolveᐸTᐳ()
@@ -121,8 +122,8 @@ classDiagram
 		<<interface>>
 	}
 	Session *--  Composition : Composition
-	Program o--  "PerResolve" FuncᐸSessionᐳ : FuncᐸSessionᐳ
-	Service o--  "Scoped" Dependency : IDependency
+	Program o-- "PerResolve" FuncᐸSessionᐳ : FuncᐸSessionᐳ
+	Service o-- "Scoped" Dependency : IDependency
 	Composition ..> Service : IService SessionRoot
 	Composition ..> Program : Program ProgramRoot
 	FuncᐸSessionᐳ *--  Session : Session

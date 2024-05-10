@@ -48,6 +48,7 @@ stringService.Dependencies[1].ShouldBeOfType<XyzDependency<string>>();
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IServiceᐸInt32ᐳ IntRoot
 		+IServiceᐸStringᐳ StringRoot
 		+ T ResolveᐸTᐳ()
@@ -95,8 +96,8 @@ classDiagram
 	}
 	Composition ..> ServiceᐸInt32ᐳ : IServiceᐸInt32ᐳ IntRoot
 	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ StringRoot
-	ServiceᐸInt32ᐳ o--  "PerBlock" IEnumerableᐸIDependencyᐸInt32ᐳᐳ : IEnumerableᐸIDependencyᐸInt32ᐳᐳ
-	ServiceᐸStringᐳ o--  "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
+	ServiceᐸInt32ᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸInt32ᐳᐳ : IEnumerableᐸIDependencyᐸInt32ᐳᐳ
+	ServiceᐸStringᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
 	IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  AbcDependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
 	IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  XyzDependencyᐸInt32ᐳ : "Xyz"  IDependencyᐸInt32ᐳ
 	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : IDependencyᐸStringᐳ

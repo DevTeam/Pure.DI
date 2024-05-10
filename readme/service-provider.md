@@ -45,6 +45,7 @@ service.Dependency.ShouldBe(dependency);
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		-IDependency _
 		-IService _
 		+ T ResolveᐸTᐳ()
@@ -66,7 +67,7 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service o--  "Singleton" Dependency : IDependency
+	Service o-- "Singleton" Dependency : IDependency
 	Composition ..> Dependency : IDependency _
 	Composition ..> Service : IService _
 ```

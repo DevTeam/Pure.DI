@@ -64,6 +64,7 @@ The tag can be a constant, a type, or a value of an enumerated type. The _defaul
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService Root
 		+IDependency XyzRoot
 		+ T ResolveᐸTᐳ()
@@ -91,7 +92,7 @@ classDiagram
 		<<interface>>
 	}
 	Service *--  AbcDependency : "Abc"  IDependency
-	Service o--  "Singleton" XyzDependency : "Xyz"  IDependency
+	Service o-- "Singleton" XyzDependency : "Xyz"  IDependency
 	Service *--  AbcDependency : IDependency
 	Composition ..> XyzDependency : IDependency XyzRoot
 	Composition ..> Service : IService Root

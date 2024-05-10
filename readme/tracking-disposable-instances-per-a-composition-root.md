@@ -64,6 +64,7 @@ root1.Value.Dependency.IsDisposed.ShouldBeTrue();
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+OwnedᐸIServiceᐳ Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)

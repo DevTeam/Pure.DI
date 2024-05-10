@@ -68,6 +68,7 @@ And of course this list can easily be supplemented on its own.
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)

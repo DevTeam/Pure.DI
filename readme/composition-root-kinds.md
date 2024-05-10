@@ -50,6 +50,7 @@ var dependency = Composition.Dependency;
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IDependency Dependency
 		+IService GetOtherService()
 		+IService GetRoot()

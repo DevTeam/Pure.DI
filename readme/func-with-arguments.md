@@ -71,6 +71,7 @@ service.Dependencies[3].Id.ShouldBe(3);
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
@@ -96,7 +97,7 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Dependency o--  "Singleton" Clock : IClock
+	Dependency o-- "Singleton" Clock : IClock
 	Dependency *--  Int32 : Int32
 	FuncᐸInt32ˏIDependencyᐳ *--  Dependency : Dependency
 	Service *--  FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ

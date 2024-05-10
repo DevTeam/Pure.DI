@@ -72,6 +72,7 @@ await service.RunAsync(cancellationTokenSource.Token);
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService GetRoot(System.Threading.CancellationToken cancellationToken)
 	}
 	class TaskFactory
@@ -98,7 +99,7 @@ classDiagram
 	TaskFactory *--  TaskScheduler : TaskScheduler
 	Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
 	Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)
-	TaskᐸIDependencyᐳ o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+	TaskᐸIDependencyᐳ o-- "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
 	TaskᐸIDependencyᐳ o-- CancellationToken : Argument "cancellationToken"
 	FuncᐸIDependencyᐳ *--  Dependency : IDependency
 ```

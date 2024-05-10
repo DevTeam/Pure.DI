@@ -44,6 +44,7 @@ Be careful, replication takes into account the lifetime of the object.
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
@@ -65,7 +66,7 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+	Service o-- "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
 	Composition ..> Service : IService Root
 	FuncᐸIDependencyᐳ *--  Dependency : IDependency
 ```

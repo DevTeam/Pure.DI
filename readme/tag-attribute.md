@@ -52,6 +52,7 @@ The tag can be a constant, a type, or a value of an enumerated type. This attrib
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)

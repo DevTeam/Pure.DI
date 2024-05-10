@@ -58,6 +58,7 @@ Special types from the list above will not be added to bindings:
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+Service MyService
 	}
 	class Service {
@@ -74,9 +75,9 @@ classDiagram
 	class IOtherDependency {
 		<<interface>>
 	}
-	Service o--  "PerBlock" Dependency : Dependency
-	Service o--  "PerBlock" Dependency : IDependency
-	Service o--  "PerBlock" Dependency : IOtherDependency
+	Service o-- "PerBlock" Dependency : Dependency
+	Service o-- "PerBlock" Dependency : IDependency
+	Service o-- "PerBlock" Dependency : IOtherDependency
 	Composition ..> Service : Service MyService
 ```
 

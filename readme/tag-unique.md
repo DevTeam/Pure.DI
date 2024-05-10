@@ -41,6 +41,7 @@ stringService.Dependencies.Length.ShouldBe(2);
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IServiceᐸStringᐳ Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
@@ -67,7 +68,7 @@ classDiagram
 		<<interface>>
 	}
 	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root
-	ServiceᐸStringᐳ o--  "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
+	ServiceᐸStringᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
 	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : Unique tag 1  IDependencyᐸStringᐳ
 	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : Unique tag 2  IDependencyᐸStringᐳ
 ```

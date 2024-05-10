@@ -70,6 +70,7 @@ The attribute `Ordinal` is part of the API, but you can use your own attribute a
 ```mermaid
 classDiagram
 	class PersonComposition {
+		<<partial>>
 		+IPerson Person
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)

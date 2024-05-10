@@ -41,6 +41,7 @@ service.Dependencies.Length.ShouldBe(10);
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
@@ -62,7 +63,7 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service o--  "PerResolve" FuncᐸIDependencyᐳ : "my tag"  FuncᐸIDependencyᐳ
+	Service o-- "PerResolve" FuncᐸIDependencyᐳ : "my tag"  FuncᐸIDependencyᐳ
 	Composition ..> Service : IService Root
 	FuncᐸIDependencyᐳ *--  Dependency : "my tag"  IDependency
 ```

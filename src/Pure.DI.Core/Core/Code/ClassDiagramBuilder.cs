@@ -26,6 +26,7 @@ internal sealed class ClassDiagramBuilder(
                 lines.AppendLine($"class {composition.Source.Source.Name.ClassName} {{");
                 using (lines.Indent())
                 {
+                    lines.AppendLine($"<<partial>>");
                     foreach (var root in composition.Roots.OrderByDescending(i => i.IsPublic).ThenBy(i => i.Name))
                     {
                         lines.AppendLine($"{(root.IsPublic ? "+" : "-")}{FormatRoot(root)}");
@@ -92,27 +93,22 @@ internal sealed class ClassDiagramBuilder(
                 {
                     typeKind = "record";
                 }
-                else
+                
+                if (type.IsTupleType)
                 {
-                    if (type.IsTupleType)
-                    {
-                        typeKind = "tuple";
-                    }
-                    else
-                    {
-                        if (type.TypeKind == TypeKind.Interface)
-                        {
-                            typeKind = "interface";
-                        }
-                        else
-                        {
-                            if (type.IsAbstract)
-                            {
-                                typeKind = "abstract";
-                            }   
-                        }
-                    }
+                    typeKind = "tuple";
                 }
+                
+                if (type.IsAbstract)
+                {
+                    typeKind = "abstract";
+                }
+
+                typeKind = type.TypeKind switch
+                {
+                    TypeKind.Interface or TypeKind.Enum or TypeKind.Delegate or TypeKind.Struct => type.TypeKind.ToString().ToLower(),
+                    _ => typeKind
+                };
 
                 if (string.IsNullOrWhiteSpace(typeKind))
                 {
@@ -127,7 +123,7 @@ internal sealed class ClassDiagramBuilder(
                 lines.AppendLine("}");
             }
             
-            foreach (var dependency in graph.Edges)
+            foreach (var (dependency, count) in graph.Edges.GroupBy(i => i).Select(i => (dependency: i.First(), count: i.Count())))
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 if (dependency.Target.Root is not null && rootProperties.TryGetValue(dependency.Injection, out var root))
@@ -149,7 +145,7 @@ internal sealed class ClassDiagramBuilder(
                         }
 
                         var relationship = dependency.Source.Lifetime == Lifetime.Transient ? "*--" : "o--";
-                        lines.AppendLine($"{FormatType(dependency.Target.Type, DefaultFormatOptions)} {relationship} {FormatCardinality(dependency.Source.Lifetime)} {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatDependency(dependency, DefaultFormatOptions)}");   
+                        lines.AppendLine($"{FormatType(dependency.Target.Type, DefaultFormatOptions)} {relationship} {FormatCardinality(count, dependency.Source.Lifetime)} {FormatType(dependency.Source.Type, DefaultFormatOptions)} : {FormatDependency(dependency, DefaultFormatOptions)}");   
                     }
                 }
             }
@@ -177,13 +173,30 @@ internal sealed class ClassDiagramBuilder(
         return $"{FormatType(root.Injection.Type, DefaultFormatOptions)} {displayName}{typeArgsStr}{rootArgsStr}";
     }
 
-    private static string FormatCardinality(Lifetime lifetime) =>
-        lifetime switch
+    [SuppressMessage("ReSharper", "InvertIf")]
+    private static string FormatCardinality(int count, Lifetime lifetime)
+    {
+        var cardinality = new StringBuilder();
+        if (count > 1)
         {
-            Lifetime.Transient => "",
-            _ => $" \\\"{lifetime}\\\""
-        };
-    
+            cardinality.Append(count);
+            cardinality.Append(' ');
+        }
+
+        if (lifetime != Lifetime.Transient)
+        {
+            cardinality.Append(lifetime);
+        }
+
+        if (cardinality.Length > 0)
+        {
+            cardinality.Insert(0, "\\\"");
+            cardinality.Append("\\\"");
+        }
+        
+        return cardinality.ToString();
+    }
+
     private string FormatDependency(Dependency dependency, FormatOptions options) => 
         $"{(dependency.Injection.Tag == default ? "" : FormatTag(dependency.Injection.Tag) + " ")}{FormatSymbol(dependency.Injection.Type, options)}";
 
@@ -266,7 +279,7 @@ internal sealed class ClassDiagramBuilder(
         string StartGenericArgsSymbol = "ᐸ",
         string FinishGenericArgsSymbol = "ᐳ",
         string TypeArgsSeparator = "ˏ");
-
+    
     private class ClassDiagramWalker(ClassDiagramBuilder builder, LinesBuilder lines, FormatOptions options)
         : DependenciesWalker<Unit>
     {

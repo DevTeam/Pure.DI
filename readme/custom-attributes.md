@@ -61,6 +61,7 @@ person.ToString().ShouldBe("123 Nik");
 ```mermaid
 classDiagram
 	class PersonComposition {
+		<<partial>>
 		+IPerson Person
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)

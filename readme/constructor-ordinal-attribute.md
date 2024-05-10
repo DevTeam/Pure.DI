@@ -50,6 +50,7 @@ The attribute `Ordinal` is part of the API, but you can use your own attribute a
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)

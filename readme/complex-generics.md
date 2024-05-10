@@ -66,6 +66,7 @@ It can also be useful in a very simple scenario where, for example, the sequence
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+ProgramᐸStringᐳ Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)

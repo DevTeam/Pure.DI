@@ -47,6 +47,7 @@ service.Dependencies[2].ShouldBeOfType<AbcDependency>();
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)

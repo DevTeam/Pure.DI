@@ -52,6 +52,7 @@ service = otherComposition.Program.Service;
 ```mermaid
 classDiagram
 	class OtherComposition {
+		<<partial>>
 		+Program Program
 		+IService Root
 		+ T ResolveᐸTᐳ()

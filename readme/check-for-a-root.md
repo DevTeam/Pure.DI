@@ -64,6 +64,7 @@ Composition.HasRoot(typeof(IComparable)).ShouldBeFalse();
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService Root
 		-IDependency _
 		+ T ResolveᐸTᐳ()

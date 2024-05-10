@@ -35,6 +35,7 @@ Here an instance of the _Service_ type, labeled _"base"_, is embedded in the dec
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)

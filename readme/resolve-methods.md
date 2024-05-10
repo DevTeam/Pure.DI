@@ -48,6 +48,7 @@ var otherService2 = composition.Resolve(typeof(IService),"Other");
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService OtherService
 		-IDependency _
 		-IService _

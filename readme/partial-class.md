@@ -71,6 +71,7 @@ The partial class is also useful for specifying access modifiers to the generate
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+Service Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
@@ -90,8 +91,7 @@ classDiagram
 		<<interface>>
 	}
 	Service *--  String : "name with id"  String
-	Service *--  Dependency : IDependency
-	Service *--  Dependency : IDependency
+	Service *-- "2 " Dependency : IDependency
 	Dependency *--  Int64 : Int64
 	Composition ..> Service : Service Root
 ```

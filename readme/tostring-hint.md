@@ -31,6 +31,7 @@ For more hints, see [this](https://github.com/DevTeam/Pure.DI/blob/master/README
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService MyService
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)

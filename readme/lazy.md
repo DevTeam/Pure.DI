@@ -35,6 +35,7 @@ service.Dependency.ShouldBe(service.Dependency);
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
@@ -59,7 +60,7 @@ classDiagram
 	}
 	Service *--  LazyᐸIDependencyᐳ : LazyᐸIDependencyᐳ
 	Composition ..> Service : IService Root
-	LazyᐸIDependencyᐳ o--  "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+	LazyᐸIDependencyᐳ o-- "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
 	FuncᐸIDependencyᐳ *--  Dependency : IDependency
 ```
 

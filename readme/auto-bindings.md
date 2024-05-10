@@ -31,6 +31,7 @@ It is better to inject abstract dependencies, for example, in the form of interf
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+Service MyService
 	}
 	class Dependency {

@@ -43,6 +43,7 @@ service.Dependencies[1].ShouldBeOfType<XyzDependency>();
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
@@ -68,7 +69,7 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service o--  "PerBlock" IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ
+	Service o-- "PerBlock" IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ
 	Composition ..> Service : IService Root
 	IEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency
 	IEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency

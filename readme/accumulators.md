@@ -46,6 +46,7 @@ accumulator[2].ShouldBeOfType<Service>();
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+ValueTupleᐸIServiceˏMyAccumulatorᐳ Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
@@ -77,8 +78,8 @@ classDiagram
 	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  Service : IService
 	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  MyAccumulator : MyAccumulator
 	Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency)  IDependency
-	Service o--  "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency)  IDependency
-	Service o--  "PerBlock" AbcDependency : IDependency
+	Service o-- "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency)  IDependency
+	Service o-- "PerBlock" AbcDependency : IDependency
 	Composition ..> ValueTupleᐸIServiceˏMyAccumulatorᐳ : ValueTupleᐸIServiceˏMyAccumulatorᐳ Root
 ```
 

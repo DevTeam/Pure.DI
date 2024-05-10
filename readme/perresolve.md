@@ -46,6 +46,7 @@ service2.Dep1.ShouldNotBe(service1.Dep1);
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+Service Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
@@ -67,13 +68,11 @@ classDiagram
 	class IDependency {
 		<<interface>>
 	}
-	ValueTupleᐸIDependencyˏIDependencyᐳ o--  "PerResolve" Dependency : IDependency
-	ValueTupleᐸIDependencyˏIDependencyᐳ o--  "PerResolve" Dependency : IDependency
-	Service o--  "PerResolve" Dependency : IDependency
-	Service o--  "PerResolve" Dependency : IDependency
+	ValueTupleᐸIDependencyˏIDependencyᐳ o-- "2 PerResolve" Dependency : IDependency
+	Service o-- "2 PerResolve" Dependency : IDependency
 	Service *--  LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ : LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ
 	Composition ..> Service : Service Root
-	LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ o--  "PerResolve" FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ : FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ
+	LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ o-- "PerResolve" FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ : FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ
 	FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ *--  ValueTupleᐸIDependencyˏIDependencyᐳ : ValueTupleᐸIDependencyˏIDependencyᐳ
 ```
 

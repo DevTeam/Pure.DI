@@ -51,6 +51,7 @@ dependency.IsDisposed.ShouldBeTrue();
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)
@@ -77,7 +78,7 @@ classDiagram
 	class IService {
 		<<interface>>
 	}
-	Service o--  "Singleton" Dependency : IDependency
+	Service o-- "Singleton" Dependency : IDependency
 	Composition ..> Service : IService Root
 ```
 

@@ -71,6 +71,7 @@ When using composition root arguments, compilation warnings are shown if `Resolv
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService CreateService(int id, string dependencyName, string serviceName)
 	}
 	class Int32

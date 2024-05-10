@@ -48,6 +48,7 @@ This attribute is part of the API, but you can use your own attribute at any tim
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService Root
 		+ T ResolveᐸTᐳ()
 		+ T ResolveᐸTᐳ(object? tag)

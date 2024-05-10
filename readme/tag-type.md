@@ -60,6 +60,7 @@ service.Dependency3.ShouldBeOfType<AbcDependency>();
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService Root
 		+IDependency XyzRoot
 		+ T ResolveᐸTᐳ()
@@ -87,7 +88,7 @@ classDiagram
 		<<interface>>
 	}
 	Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency)  IDependency
-	Service o--  "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency)  IDependency
+	Service o-- "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency)  IDependency
 	Service *--  AbcDependency : IDependency
 	Composition ..> Service : IService Root
 	Composition ..> XyzDependency : IDependency XyzRoot

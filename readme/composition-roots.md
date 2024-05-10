@@ -71,6 +71,7 @@ This can be done if these methods are not needed, in case only certain compositi
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IService MyRoot
 		+IService SomeOtherService
 		-IDependency _

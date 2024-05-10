@@ -47,6 +47,7 @@ root.Run();
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+Program Root
 	}
 	class Program {

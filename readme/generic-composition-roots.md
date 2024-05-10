@@ -56,6 +56,7 @@ When a generic composition root is used, `Resolve` methods cannot be used to res
 ```mermaid
 classDiagram
 	class Composition {
+		<<partial>>
 		+IServiceᐸT54ᐳ GetMyRootᐸT54ᐳ()
 		+IServiceᐸT54ᐳ GetOtherServiceᐸT54ᐳ()
 	}
