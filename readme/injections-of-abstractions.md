@@ -81,11 +81,11 @@ classDiagram
 	class Program {
 		+Program(IService service)
 	}
-	Dependency --|> IDependency : 
+	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(IDependency dependency)
 	}

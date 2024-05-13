@@ -104,7 +104,7 @@ classDiagram
 		+Dependency(DateTimeOffset time)
 	}
 	class DateTimeOffset
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(IDependency dependency)
 	}

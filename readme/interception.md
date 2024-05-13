@@ -93,7 +93,7 @@ classDiagram
 		<<partial>>
 		+IService Root
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service()
 	}

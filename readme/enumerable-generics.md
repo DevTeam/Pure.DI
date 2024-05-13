@@ -244,17 +244,17 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	ServiceᐸInt32ᐳ --|> IServiceᐸInt32ᐳ : 
+	ServiceᐸInt32ᐳ --|> IServiceᐸInt32ᐳ
 	class ServiceᐸInt32ᐳ {
 		+Service(IEnumerableᐸIDependencyᐸInt32ᐳᐳ dependencies)
 	}
-	ServiceᐸStringᐳ --|> IServiceᐸStringᐳ : 
+	ServiceᐸStringᐳ --|> IServiceᐸStringᐳ
 	class ServiceᐸStringᐳ {
 		+Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
 	}
 	class IEnumerableᐸIDependencyᐸInt32ᐳᐳ
 	class IEnumerableᐸIDependencyᐸStringᐳᐳ
-	AbcDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : 
+	AbcDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ
 	class AbcDependencyᐸInt32ᐳ {
 		+AbcDependency()
 	}
@@ -262,7 +262,7 @@ classDiagram
 	class XyzDependencyᐸInt32ᐳ {
 		+XyzDependency()
 	}
-	AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 
+	AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ
 	class AbcDependencyᐸStringᐳ {
 		+AbcDependency()
 	}

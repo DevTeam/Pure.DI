@@ -204,7 +204,7 @@ classDiagram
 		+ object Resolve(Type type, object? tag)
 	}
 	class String
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		~Service(String name)
 	}

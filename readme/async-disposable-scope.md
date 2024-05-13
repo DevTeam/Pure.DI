@@ -234,12 +234,12 @@ classDiagram
 	class Program {
 		+Program(FuncᐸSessionᐳ sessionFactory)
 	}
-	Dependency --|> IDependency : 
-	Dependency --|> IAsyncDisposable : 
+	Dependency --|> IDependency
+	Dependency --|> IAsyncDisposable
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(IDependency dependency)
 	}

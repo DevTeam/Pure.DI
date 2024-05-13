@@ -186,11 +186,11 @@ classDiagram
 	class WeakReferenceᐸIDependencyᐳ {
 		+WeakReference(IDependency target)
 	}
-	Dependency --|> IDependency : 
+	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(WeakReferenceᐸIDependencyᐳ dependency)
 	}

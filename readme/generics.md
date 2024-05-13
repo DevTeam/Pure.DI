@@ -89,15 +89,15 @@ classDiagram
 		<<partial>>
 		+IService Root
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(IDependencyᐸInt32ᐳ intDependency, IDependencyᐸStringᐳ stringDependency)
 	}
-	DependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : 
+	DependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ
 	class DependencyᐸInt32ᐳ {
 		+Dependency()
 	}
-	DependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 
+	DependencyᐸStringᐳ --|> IDependencyᐸStringᐳ
 	class DependencyᐸStringᐳ {
 		+Dependency()
 	}

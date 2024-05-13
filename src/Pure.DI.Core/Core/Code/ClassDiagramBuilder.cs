@@ -79,7 +79,8 @@ internal sealed class ClassDiagramBuilder(
                     }
 
                     types.Add(contract.Type);
-                    lines.AppendLine($"{FormatType(node.Type, DefaultFormatOptions)} --|> {FormatType(contract.Type, DefaultFormatOptions)} : {FormatTag(contract.Tag)}");
+                    var tag = FormatTag(contract.Tag);
+                    lines.AppendLine($"{FormatType(node.Type, DefaultFormatOptions)} --|> {FormatType(contract.Type, DefaultFormatOptions)}{(string.IsNullOrWhiteSpace(tag) ? "" : $" : {tag}")}");
                 }
 
                 var classDiagramWalker = new ClassDiagramWalker(this, lines, DefaultFormatOptions);

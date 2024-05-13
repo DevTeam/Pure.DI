@@ -259,7 +259,7 @@ classDiagram
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(IDependency dependency)
 	}

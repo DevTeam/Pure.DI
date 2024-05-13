@@ -96,13 +96,13 @@ classDiagram
 		+IServiceᐸT54ᐳ GetMyRootᐸT54ᐳ()
 		+IServiceᐸT54ᐳ GetOtherServiceᐸT54ᐳ()
 	}
-	ServiceᐸT54ᐳ --|> IServiceᐸT54ᐳ : 
+	ServiceᐸT54ᐳ --|> IServiceᐸT54ᐳ
 	class ServiceᐸT54ᐳ {
 		+Service(IDependencyᐸT54ᐳ dependency)
 	}
 	OtherServiceᐸT54ᐳ --|> IServiceᐸT54ᐳ : "Other" 
 	class OtherServiceᐸT54ᐳ
-	DependencyᐸT54ᐳ --|> IDependencyᐸT54ᐳ : 
+	DependencyᐸT54ᐳ --|> IDependencyᐸT54ᐳ
 	class DependencyᐸT54ᐳ {
 		+Dependency()
 	}

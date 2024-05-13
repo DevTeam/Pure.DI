@@ -219,7 +219,7 @@ classDiagram
 	}
 	class String
 	class Int32
-	Person --|> IPerson : 
+	Person --|> IPerson
 	class Person {
 		+Person(String name)
 		~Object Id

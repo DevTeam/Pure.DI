@@ -103,7 +103,7 @@ classDiagram
 	class Service {
 		+Service(IDependency dep1, IDependency dep2, LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ deps)
 	}
-	Dependency --|> IDependency : 
+	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
 	}

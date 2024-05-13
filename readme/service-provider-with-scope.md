@@ -326,11 +326,11 @@ classDiagram
 		+ object GetRequiredKeyedService(Type type, object? tag)
 	}
 	Composition --|> IDisposable
-	Dependency --|> IDependency : 
+	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(IDependency dependency)
 	}

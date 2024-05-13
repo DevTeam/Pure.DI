@@ -228,7 +228,7 @@ classDiagram
 	}
 	class Int64
 	class String
-	Dependency --|> IDependency : 
+	Dependency --|> IDependency
 	class Dependency {
 		+Dependency(Int64 id)
 	}

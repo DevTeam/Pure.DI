@@ -252,12 +252,12 @@ classDiagram
 		+ object Resolve(Type type, object? tag)
 	}
 	class Owned
-	Dependency --|> IDependency : 
+	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService : 
-	Service --|> IAsyncDisposable : 
+	Service --|> IService
+	Service --|> IAsyncDisposable
 	class Service {
 		+Service(FuncᐸOwnedᐸIDependencyᐳᐳ dependencyFactory)
 	}

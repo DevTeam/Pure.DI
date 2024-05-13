@@ -251,11 +251,11 @@ classDiagram
 		+ object GetService(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	Dependency --|> IDependency : 
+	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(IDependency dependency)
 	}

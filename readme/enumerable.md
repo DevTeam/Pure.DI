@@ -199,7 +199,7 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	AbcDependency --|> IDependency : 
+	AbcDependency --|> IDependency
 	class AbcDependency {
 		+AbcDependency()
 	}
@@ -207,7 +207,7 @@ classDiagram
 	class XyzDependency {
 		+XyzDependency()
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(IEnumerableᐸIDependencyᐳ dependencies)
 	}

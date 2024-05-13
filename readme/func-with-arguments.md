@@ -245,11 +245,11 @@ classDiagram
 	}
 	class Int32
 	class FuncᐸInt32ˏIDependencyᐳ
-	Clock --|> IClock : 
+	Clock --|> IClock
 	class Clock {
 		+Clock()
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(FuncᐸInt32ˏIDependencyᐳ dependencyFactory)
 	}

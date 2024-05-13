@@ -175,12 +175,12 @@ classDiagram
 	}
 	Composition --|> IDisposable
 	Composition --|> IAsyncDisposable
-	Dependency --|> IDependency : 
-	Dependency --|> IAsyncDisposable : 
+	Dependency --|> IDependency
+	Dependency --|> IAsyncDisposable
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(IDependency dependency)
 	}

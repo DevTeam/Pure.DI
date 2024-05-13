@@ -100,11 +100,11 @@ classDiagram
 	}
 	class Int32
 	class String
-	Dependency --|> IDependency : 
+	Dependency --|> IDependency
 	class Dependency {
 		+Dependency(Int32 id)
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(String name, IDependency dependency)
 	}

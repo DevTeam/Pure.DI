@@ -193,11 +193,11 @@ classDiagram
 		+ValueTuple(Point item1, IDependency item2)
 	}
 	class Point
-	Dependency --|> IDependency : 
+	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(ValueTupleᐸPointˏIDependencyᐳ tuple)
 	}

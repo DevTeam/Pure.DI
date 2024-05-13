@@ -197,7 +197,7 @@ classDiagram
 		+ object Resolve(Type type)
 		+ object Resolve(Type type, object? tag)
 	}
-	ServiceᐸStringᐳ --|> IServiceᐸStringᐳ : 
+	ServiceᐸStringᐳ --|> IServiceᐸStringᐳ
 	class ServiceᐸStringᐳ {
 		+Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
 	}

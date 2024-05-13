@@ -76,11 +76,11 @@ classDiagram
 		<<partial>>
 		+IService Root
 	}
-	Dependency --|> IDependency : 
+	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(String name)
 		+IDependency Dependency

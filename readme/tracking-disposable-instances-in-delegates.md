@@ -245,11 +245,11 @@ classDiagram
 		+ object Resolve(Type type, object? tag)
 	}
 	class Owned
-	Dependency --|> IDependency : 
+	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(FuncᐸOwnedᐸIDependencyᐳᐳ dependencyFactory)
 	}

@@ -93,8 +93,8 @@ classDiagram
 	class Service {
 		+Service(Dependency dependencyImpl, IDependency dependency, IOtherDependency otherDependency)
 	}
-	Dependency --|> IDependency : 
-	Dependency --|> IOtherDependency : 
+	Dependency --|> IDependency
+	Dependency --|> IOtherDependency
 	class Dependency {
 		+Dependency()
 	}

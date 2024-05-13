@@ -236,7 +236,7 @@ classDiagram
 	class Int32
 	class String
 	class DateTime
-	Person --|> IPerson : 
+	Person --|> IPerson
 	class Person {
 		+Person()
 		+Int32 Id

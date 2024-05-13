@@ -194,11 +194,11 @@ classDiagram
 	class Program {
 		+Program(FuncᐸSessionᐳ sessionFactory)
 	}
-	Dependency --|> IDependency : 
+	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(IDependency dependency)
 	}

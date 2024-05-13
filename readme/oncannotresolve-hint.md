@@ -98,11 +98,11 @@ classDiagram
 		+IService Root
 	}
 	class String
-	Dependency --|> IDependency : 
+	Dependency --|> IDependency
 	class Dependency {
 		+Dependency(String name)
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(IDependency dependency)
 	}

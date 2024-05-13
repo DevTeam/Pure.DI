@@ -70,7 +70,7 @@ classDiagram
 	class Service {
 		+Service()
 	}
-	GreetingService --|> IService : 
+	GreetingService --|> IService
 	class GreetingService {
 		+GreetingService(IService baseService)
 	}

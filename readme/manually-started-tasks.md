@@ -119,11 +119,11 @@ classDiagram
 	}
 	class TaskFactory
 	class CancellationToken
-	Dependency --|> IDependency : 
+	Dependency --|> IDependency
 	class Dependency {
 		+Dependency()
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(TaskᐸIDependencyᐳ dependencyTask)
 	}

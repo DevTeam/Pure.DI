@@ -238,7 +238,7 @@ classDiagram
 	class ValueTupleᐸIServiceˏMyAccumulatorᐳ {
 		+ValueTuple(IService item1, MyAccumulator item2)
 	}
-	AbcDependency --|> IDependency : 
+	AbcDependency --|> IDependency
 	class AbcDependency {
 		+AbcDependency()
 	}
@@ -246,7 +246,7 @@ classDiagram
 	class XyzDependency {
 		+XyzDependency()
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
 	}

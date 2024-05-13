@@ -130,7 +130,7 @@ classDiagram
 		+IDependency XyzRoot
 	}
 	AbcDependency --|> IDependency : "Abc" 
-	AbcDependency --|> IDependency : 
+	AbcDependency --|> IDependency
 	class AbcDependency {
 		+AbcDependency()
 	}
@@ -138,7 +138,7 @@ classDiagram
 	class XyzDependency {
 		+XyzDependency()
 	}
-	Service --|> IService : 
+	Service --|> IService
 	class Service {
 		+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
 	}
