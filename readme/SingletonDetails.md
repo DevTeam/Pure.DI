@@ -63,8 +63,7 @@ classDiagram
 
 ### Generated code
 
-<details>
-<summary>Pure.DI-generated partial class Singleton</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Singleton
@@ -212,6 +211,3 @@ partial class Singleton
   }
 }
 ```
-
-</blockquote></details>
-

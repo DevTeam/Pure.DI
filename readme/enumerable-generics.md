@@ -2,6 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/EnumerableGenericsScenario.cs)
 
+
 ```c#
 interface IDependency<T>;
 
@@ -42,72 +43,7 @@ stringService.Dependencies[0].ShouldBeOfType<AbcDependency<string>>();
 stringService.Dependencies[1].ShouldBeOfType<XyzDependency<string>>();
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IServiceᐸInt32ᐳ IntRoot
-		+IServiceᐸStringᐳ StringRoot
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	ServiceᐸInt32ᐳ --|> IServiceᐸInt32ᐳ : 
-	class ServiceᐸInt32ᐳ {
-		+Service(IEnumerableᐸIDependencyᐸInt32ᐳᐳ dependencies)
-	}
-	ServiceᐸStringᐳ --|> IServiceᐸStringᐳ : 
-	class ServiceᐸStringᐳ {
-		+Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
-	}
-	class IEnumerableᐸIDependencyᐸInt32ᐳᐳ
-	class IEnumerableᐸIDependencyᐸStringᐳᐳ
-	AbcDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : 
-	class AbcDependencyᐸInt32ᐳ {
-		+AbcDependency()
-	}
-	XyzDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : "Xyz" 
-	class XyzDependencyᐸInt32ᐳ {
-		+XyzDependency()
-	}
-	AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 
-	class AbcDependencyᐸStringᐳ {
-		+AbcDependency()
-	}
-	XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : "Xyz" 
-	class XyzDependencyᐸStringᐳ {
-		+XyzDependency()
-	}
-	class IServiceᐸInt32ᐳ {
-		<<interface>>
-	}
-	class IServiceᐸStringᐳ {
-		<<interface>>
-	}
-	class IDependencyᐸInt32ᐳ {
-		<<interface>>
-	}
-	class IDependencyᐸStringᐳ {
-		<<interface>>
-	}
-	Composition ..> ServiceᐸInt32ᐳ : IServiceᐸInt32ᐳ IntRoot
-	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ StringRoot
-	ServiceᐸInt32ᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸInt32ᐳᐳ : IEnumerableᐸIDependencyᐸInt32ᐳᐳ
-	ServiceᐸStringᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
-	IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  AbcDependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
-	IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  XyzDependencyᐸInt32ᐳ : "Xyz"  IDependencyᐸInt32ᐳ
-	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : IDependencyᐸStringᐳ
-	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : "Xyz"  IDependencyᐸStringᐳ
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -295,5 +231,64 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IServiceᐸInt32ᐳ IntRoot
+		+IServiceᐸStringᐳ StringRoot
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	ServiceᐸInt32ᐳ --|> IServiceᐸInt32ᐳ : 
+	class ServiceᐸInt32ᐳ {
+		+Service(IEnumerableᐸIDependencyᐸInt32ᐳᐳ dependencies)
+	}
+	ServiceᐸStringᐳ --|> IServiceᐸStringᐳ : 
+	class ServiceᐸStringᐳ {
+		+Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
+	}
+	class IEnumerableᐸIDependencyᐸInt32ᐳᐳ
+	class IEnumerableᐸIDependencyᐸStringᐳᐳ
+	AbcDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : 
+	class AbcDependencyᐸInt32ᐳ {
+		+AbcDependency()
+	}
+	XyzDependencyᐸInt32ᐳ --|> IDependencyᐸInt32ᐳ : "Xyz" 
+	class XyzDependencyᐸInt32ᐳ {
+		+XyzDependency()
+	}
+	AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : 
+	class AbcDependencyᐸStringᐳ {
+		+AbcDependency()
+	}
+	XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : "Xyz" 
+	class XyzDependencyᐸStringᐳ {
+		+XyzDependency()
+	}
+	class IServiceᐸInt32ᐳ {
+		<<interface>>
+	}
+	class IServiceᐸStringᐳ {
+		<<interface>>
+	}
+	class IDependencyᐸInt32ᐳ {
+		<<interface>>
+	}
+	class IDependencyᐸStringᐳ {
+		<<interface>>
+	}
+	Composition ..> ServiceᐸInt32ᐳ : IServiceᐸInt32ᐳ IntRoot
+	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ StringRoot
+	ServiceᐸInt32ᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸInt32ᐳᐳ : IEnumerableᐸIDependencyᐸInt32ᐳᐳ
+	ServiceᐸStringᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
+	IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  AbcDependencyᐸInt32ᐳ : IDependencyᐸInt32ᐳ
+	IEnumerableᐸIDependencyᐸInt32ᐳᐳ *--  XyzDependencyᐸInt32ᐳ : "Xyz"  IDependencyᐸInt32ᐳ
+	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : IDependencyᐸStringᐳ
+	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : "Xyz"  IDependencyᐸStringᐳ
+```
 

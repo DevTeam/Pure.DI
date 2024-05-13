@@ -82,8 +82,7 @@ classDiagram
 
 ### Generated code
 
-<details>
-<summary>Pure.DI-generated partial class Enum</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Enum
@@ -230,6 +229,3 @@ partial class Enum
   }
 }
 ```
-
-</blockquote></details>
-

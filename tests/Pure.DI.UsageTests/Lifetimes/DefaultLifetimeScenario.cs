@@ -42,6 +42,8 @@ public class Scenario
     {
 // {            
         DI.Setup(nameof(Composition))
+            // This hint indicates to not generate methods such as Resolve
+            .Hint(Hint.Resolve, "Off")
             // Default Lifetime applies
             // to all bindings until the end of the chain
             // or the next call to the DefaultLifetime method

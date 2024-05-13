@@ -60,6 +60,8 @@ public class Scenario
     {
 // {            
         DI.Setup(nameof(Composition))
+            // This hint indicates to not generate methods such as Resolve
+            .Hint(Hint.Resolve, "Off")
             .Bind<IDependency<TT>>().To<Dependency<TT>>()
             .Bind<IDependency<TTS>>("value type").To<DependencyStruct<TTS>>()
             .Bind<IService<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()

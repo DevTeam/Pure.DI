@@ -61,8 +61,7 @@ classDiagram
 
 ### Generated code
 
-<details>
-<summary>Pure.DI-generated partial class Func</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Func
@@ -207,6 +206,3 @@ partial class Func
   }
 }
 ```
-
-</blockquote></details>
-

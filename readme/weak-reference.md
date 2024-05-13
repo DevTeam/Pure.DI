@@ -2,6 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/WeakReferenceScenario.cs)
 
+
 ```c#
 interface IDependency;
 
@@ -28,45 +29,7 @@ var composition = new Composition();
 var service = composition.Root;
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	class WeakReferenceᐸIDependencyᐳ {
-		+WeakReference(IDependency target)
-	}
-	Dependency --|> IDependency : 
-	class Dependency {
-		+Dependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(WeakReferenceᐸIDependencyᐳ dependency)
-	}
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	WeakReferenceᐸIDependencyᐳ *--  Dependency : IDependency
-	Service *--  WeakReferenceᐸIDependencyᐳ : WeakReferenceᐸIDependencyᐳ
-	Composition ..> Service : IService Root
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -208,5 +171,37 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IService Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	class WeakReferenceᐸIDependencyᐳ {
+		+WeakReference(IDependency target)
+	}
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(WeakReferenceᐸIDependencyᐳ dependency)
+	}
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	WeakReferenceᐸIDependencyᐳ *--  Dependency : IDependency
+	Service *--  WeakReferenceᐸIDependencyᐳ : WeakReferenceᐸIDependencyᐳ
+	Composition ..> Service : IService Root
+```
 

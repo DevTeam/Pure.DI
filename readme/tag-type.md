@@ -4,6 +4,7 @@
 
 `Tag.Type` in bindings replaces the expression `typeof(T)`, where `T` is the type of the implementation in a binding.
 
+
 ```c#
 interface IDependency;
 
@@ -54,50 +55,7 @@ service.Dependency2.ShouldBe(composition.XyzRoot);
 service.Dependency3.ShouldBeOfType<AbcDependency>();
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-		+IDependency XyzRoot
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	AbcDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency) 
-	AbcDependency --|> IDependency : 
-	class AbcDependency {
-		+AbcDependency()
-	}
-	XyzDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency) 
-	class XyzDependency {
-		+XyzDependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
-	}
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency)  IDependency
-	Service o-- "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency)  IDependency
-	Service *--  AbcDependency : IDependency
-	Composition ..> Service : IService Root
-	Composition ..> XyzDependency : IDependency XyzRoot
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -294,5 +252,42 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IService Root
+		+IDependency XyzRoot
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	AbcDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency) 
+	AbcDependency --|> IDependency : 
+	class AbcDependency {
+		+AbcDependency()
+	}
+	XyzDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency) 
+	class XyzDependency {
+		+XyzDependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
+	}
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.AbcDependency)  IDependency
+	Service o-- "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.TagTypeScenario.XyzDependency)  IDependency
+	Service *--  AbcDependency : IDependency
+	Composition ..> Service : IService Root
+	Composition ..> XyzDependency : IDependency XyzRoot
+```
 

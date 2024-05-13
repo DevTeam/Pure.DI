@@ -4,6 +4,7 @@
 
 Specifying `T[]` as the injection type allows instances from all bindings that implement the `T` type to be injected.
 
+
 ```c#
 interface IDependency;
 
@@ -62,48 +63,7 @@ In addition to arrays, other collection types are also supported, such as:
 - System.Collections.Immutable.IImmutableStack<T>
 And of course this list can easily be supplemented on its own.
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	AbcDependency --|> IDependency : 
-	class AbcDependency {
-		+AbcDependency()
-	}
-	XyzDependency --|> IDependency : 2 
-	class XyzDependency {
-		+XyzDependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(ArrayᐸIDependencyᐳ dependencies)
-	}
-	class ArrayᐸIDependencyᐳ
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ
-	Composition ..> Service : IService Root
-	ArrayᐸIDependencyᐳ *--  AbcDependency : IDependency
-	ArrayᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -245,5 +205,40 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IService Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	AbcDependency --|> IDependency : 
+	class AbcDependency {
+		+AbcDependency()
+	}
+	XyzDependency --|> IDependency : 2 
+	class XyzDependency {
+		+XyzDependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(ArrayᐸIDependencyᐳ dependencies)
+	}
+	class ArrayᐸIDependencyᐳ
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ
+	Composition ..> Service : IService Root
+	ArrayᐸIDependencyᐳ *--  AbcDependency : IDependency
+	ArrayᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
+```
 

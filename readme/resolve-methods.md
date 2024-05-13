@@ -4,6 +4,7 @@
 
 This example shows how to resolve the composition roots using the _Resolve_ methods by _Service Locator_ approach. `Resolve` methods are generated automatically for each registered root.
 
+
 ```c#
 interface IDependency;
 
@@ -42,49 +43,7 @@ var otherService1 = composition.Resolve<IService>("Other");
 var otherService2 = composition.Resolve(typeof(IService),"Other");
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IService OtherService
-		-IDependency _
-		-IService _
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	Dependency --|> IDependency : 
-	class Dependency {
-		+Dependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(IDependency dependency)
-	}
-	OtherService --|> IService : "Other" 
-	class OtherService {
-		+OtherService()
-	}
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	Service *--  Dependency : IDependency
-	Composition ..> Dependency : IDependency _
-	Composition ..> Service : IService _
-	Composition ..> OtherService : IService OtherService
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -270,5 +229,41 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IService OtherService
+		-IDependency _
+		-IService _
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(IDependency dependency)
+	}
+	OtherService --|> IService : "Other" 
+	class OtherService {
+		+OtherService()
+	}
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	Service *--  Dependency : IDependency
+	Composition ..> Dependency : IDependency _
+	Composition ..> Service : IService _
+	Composition ..> OtherService : IService OtherService
+```
 

@@ -4,6 +4,7 @@
 
 The tuples feature provides concise syntax to group multiple data elements in a lightweight data structure. The following example shows how a type can ask to inject a tuple argument into it:
 
+
 ```c#
 interface IDependency;
 
@@ -33,47 +34,7 @@ var composition = new Composition();
 var root = composition.Root;
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	class ValueTupleᐸPointˏIDependencyᐳ {
-		+ValueTuple(Point item1, IDependency item2)
-	}
-	class Point
-	Dependency --|> IDependency : 
-	class Dependency {
-		+Dependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(ValueTupleᐸPointˏIDependencyᐳ tuple)
-	}
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	ValueTupleᐸPointˏIDependencyᐳ *--  Point : Point
-	ValueTupleᐸPointˏIDependencyᐳ *--  Dependency : IDependency
-	Service *--  ValueTupleᐸPointˏIDependencyᐳ : ValueTupleᐸPointˏIDependencyᐳ
-	Composition ..> Service : IService Root
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -216,5 +177,39 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IService Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	class ValueTupleᐸPointˏIDependencyᐳ {
+		+ValueTuple(Point item1, IDependency item2)
+	}
+	class Point
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(ValueTupleᐸPointˏIDependencyᐳ tuple)
+	}
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	ValueTupleᐸPointˏIDependencyᐳ *--  Point : Point
+	ValueTupleᐸPointˏIDependencyᐳ *--  Dependency : IDependency
+	Service *--  ValueTupleᐸPointˏIDependencyᐳ : ValueTupleᐸPointˏIDependencyᐳ
+	Composition ..> Service : IService Root
+```
 

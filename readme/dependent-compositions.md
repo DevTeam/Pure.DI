@@ -7,6 +7,7 @@ The _Setup_ method has an additional argument _kind_, which defines the type of 
 - _CompositionKind.Internal_ - the composition class will not be created, but that composition can be used to create other compositions by calling the _DependsOn_ method with its name
 - _CompositionKind.Global_ - the composition class will also not be created, but that composition will automatically be used to create other compositions
 
+
 ```c#
 interface IDependency;
 
@@ -46,47 +47,7 @@ var otherComposition = new OtherComposition();
 service = otherComposition.Program.Service;
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class OtherComposition {
-		<<partial>>
-		+Program Program
-		+IService Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	class Program {
-		+Program(IService service)
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(IDependency dependency)
-	}
-	Dependency --|> IDependency : 
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
-	Program *--  Service : IService
-	Service *--  Dependency : IDependency
-	OtherComposition ..> Service : IService Root
-	OtherComposition ..> Program : Program Program
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -227,11 +188,7 @@ partial class Composition
   }
 }
 ```
-
-</blockquote></details>
-
-<details>
-<summary>Pure.DI-generated partial class OtherComposition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class OtherComposition
@@ -405,5 +362,39 @@ partial class OtherComposition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class OtherComposition {
+		<<partial>>
+		+Program Program
+		+IService Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	class Program {
+		+Program(IService service)
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(IDependency dependency)
+	}
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	class IService {
+		<<interface>>
+	}
+	class IDependency {
+		<<interface>>
+	}
+	Program *--  Service : IService
+	Service *--  Dependency : IDependency
+	OtherComposition ..> Service : IService Root
+	OtherComposition ..> Program : Program Program
+```
 

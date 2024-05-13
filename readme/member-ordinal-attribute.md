@@ -4,6 +4,7 @@
 
 When applied to a property or field, these type members will also participate in dependency injection in the appropriate order from smallest value to largest.
 
+
 ```c#
 interface IPerson
 {
@@ -64,42 +65,7 @@ person.Name.ShouldBe("123 Nik 1977-11-16");
 
 The attribute `Ordinal` is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class PersonComposition {
-		<<partial>>
-		+IPerson Person
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	class Int32
-	class String
-	class DateTime
-	Person --|> IPerson : 
-	class Person {
-		+Person()
-		+Int32 Id
-		+String FirstName
-		+DateTime Birthday
-	}
-	class IPerson {
-		<<interface>>
-	}
-	Person o-- Int32 : Argument "personId"
-	Person o-- String : Argument "personName"
-	Person o-- DateTime : Argument "personBirthday"
-	PersonComposition ..> Person : IPerson Person
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class PersonComposition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class PersonComposition
@@ -255,5 +221,34 @@ partial class PersonComposition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class PersonComposition {
+		<<partial>>
+		+IPerson Person
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	class Int32
+	class String
+	class DateTime
+	Person --|> IPerson : 
+	class Person {
+		+Person()
+		+Int32 Id
+		+String FirstName
+		+DateTime Birthday
+	}
+	class IPerson {
+		<<interface>>
+	}
+	Person o-- Int32 : Argument "personId"
+	Person o-- String : Argument "personName"
+	Person o-- DateTime : Argument "personBirthday"
+	PersonComposition ..> Person : IPerson Person
+```
 

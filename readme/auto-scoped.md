@@ -4,6 +4,7 @@
 
 You can use the following example to automatically create a session when creating instances of a particular type:
 
+
 ```c#
 interface IDependency;
 
@@ -29,6 +30,8 @@ partial class Composition
 {
     void Setup() =>
         DI.Setup(nameof(Composition))
+            // This hint indicates to not generate methods such as Resolve
+            .Hint(Hint.Resolve, "Off")
             .Bind().As(Scoped).To<Dependency>()
             // Session composition root
             .Root<Service>("SessionRoot", kind: RootKinds.Private)
@@ -61,48 +64,7 @@ var service2 = program.CreateService();
 service1.Dependency.ShouldNotBe(service2.Dependency);
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+Program ProgramRoot
-		+Service SessionRoot
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	class Program {
-		+Program(FuncᐸIServiceᐳ serviceFactory)
-	}
-	class Service {
-		+Service(IDependency dependency)
-	}
-	class IService
-	Dependency --|> IDependency : 
-	class Dependency {
-		+Dependency()
-	}
-	class FuncᐸIServiceᐳ
-	class Composition
-	class IDependency {
-		<<interface>>
-	}
-	Program o-- "PerResolve" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
-	Service o-- "Scoped" Dependency : IDependency
-	IService *--  Composition : Composition
-	Composition ..> Service : Service SessionRoot
-	Composition ..> Program : Program ProgramRoot
-	FuncᐸIServiceᐳ *--  IService : IService
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -166,145 +128,39 @@ partial class Composition
       return new Program(perResolve43_Func!);
     }
   }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public T Resolve<T>()
-  {
-    return Resolver<T>.Value.Resolve(this);
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public T Resolve<T>(object? tag)
-  {
-    return Resolver<T>.Value.ResolveByTag(this, tag);
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public object Resolve(Type type)
-  {
-    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
-    ref var pair = ref _buckets[index];
-    return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
-  }
-
-  [MethodImpl(MethodImplOptions.NoInlining)]
-  private object Resolve(Type type, int index)
-  {
-    var finish = index + _bucketSize;
-    while (++index < finish)
-    {
-      ref var pair = ref _buckets[index];
-      if (pair.Key == type)
-      {
-        return pair.Value.Resolve(this);
-      }
-    }
-
-    throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public object Resolve(Type type, object? tag)
-  {
-    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
-    ref var pair = ref _buckets[index];
-    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
-  }
-
-  [MethodImpl(MethodImplOptions.NoInlining)]
-  private object Resolve(Type type, object? tag, int index)
-  {
-    var finish = index + _bucketSize;
-    while (++index < finish)
-    {
-      ref var pair = ref _buckets[index];
-      if (pair.Key == type)
-      {
-        return pair.Value.ResolveByTag(this, tag);
-      }
-    }
-
-    throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
-  }
-
-  private readonly static int _bucketSize;
-  private readonly static Pair<Type, IResolver<Composition, object>>[] _buckets;
-
-  static Composition()
-  {
-    var valResolver_0000 = new Resolver_0000();
-    Resolver<Service>.Value = valResolver_0000;
-    var valResolver_0001 = new Resolver_0001();
-    Resolver<Program>.Value = valResolver_0001;
-    _buckets = Buckets<Type, IResolver<Composition, object>>.Create(
-      4,
-      out _bucketSize,
-      new Pair<Type, IResolver<Composition, object>>[2]
-      {
-         new Pair<Type, IResolver<Composition, object>>(typeof(Service), valResolver_0000)
-        ,new Pair<Type, IResolver<Composition, object>>(typeof(Program), valResolver_0001)
-      });
-  }
-
-  private const string CannotResolveMessage = "Cannot resolve composition root ";
-  private const string OfTypeMessage = "of type ";
-
-  private class Resolver<T>: IResolver<Composition, T>
-  {
-    public static IResolver<Composition, T> Value = new Resolver<T>();
-
-    public virtual T Resolve(Composition composite)
-    {
-      throw new InvalidOperationException($"{CannotResolveMessage}{OfTypeMessage}{typeof(T)}.");
-    }
-
-    public virtual T ResolveByTag(Composition composite, object tag)
-    {
-      throw new InvalidOperationException($"{CannotResolveMessage}\"{tag}\" {OfTypeMessage}{typeof(T)}.");
-    }
-  }
-
-  private sealed class Resolver_0000: Resolver<Service>
-  {
-    public override Service Resolve(Composition composition)
-    {
-      return composition.SessionRoot;
-    }
-
-    public override Service ResolveByTag(Composition composition, object tag)
-    {
-      switch (tag)
-      {
-        case null:
-          return composition.SessionRoot;
-
-        default:
-          return base.ResolveByTag(composition, tag);
-      }
-    }
-  }
-
-  private sealed class Resolver_0001: Resolver<Program>
-  {
-    public override Program Resolve(Composition composition)
-    {
-      return composition.ProgramRoot;
-    }
-
-    public override Program ResolveByTag(Composition composition, object tag)
-    {
-      switch (tag)
-      {
-        case null:
-          return composition.ProgramRoot;
-
-        default:
-          return base.ResolveByTag(composition, tag);
-      }
-    }
-  }
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+Program ProgramRoot
+		+Service SessionRoot
+	}
+	class Program {
+		+Program(FuncᐸIServiceᐳ serviceFactory)
+	}
+	class Service {
+		+Service(IDependency dependency)
+	}
+	class IService
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	class FuncᐸIServiceᐳ
+	class Composition
+	class IDependency {
+		<<interface>>
+	}
+	Program o-- "PerResolve" FuncᐸIServiceᐳ : FuncᐸIServiceᐳ
+	Service o-- "Scoped" Dependency : IDependency
+	IService *--  Composition : Composition
+	Composition ..> Service : Service SessionRoot
+	Composition ..> Program : Program ProgramRoot
+	FuncᐸIServiceᐳ *--  IService : IService
+```
 

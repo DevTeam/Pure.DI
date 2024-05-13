@@ -82,8 +82,7 @@ classDiagram
 
 ### Generated code
 
-<details>
-<summary>Pure.DI-generated partial class Array</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Array
@@ -221,6 +220,3 @@ partial class Array
   }
 }
 ```
-
-</blockquote></details>
-

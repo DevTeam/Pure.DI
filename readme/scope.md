@@ -4,6 +4,7 @@
 
 The _Scoped_ lifetime ensures that there will be a single instance of the dependency for each scope.
 
+
 ```c#
 interface IDependency
 {
@@ -39,6 +40,8 @@ partial class Composition
 {
     void Setup() =>
         DI.Setup(nameof(Composition))
+            // This hint indicates to not generate methods such as Resolve
+            .Hint(Hint.Resolve, "Off")
             .Bind().As(Scoped).To<Dependency>()
 
             // Session composition root
@@ -77,55 +80,7 @@ session2.Dispose();
 dependency2.IsDisposed.ShouldBeTrue();
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+Program ProgramRoot
-		+IService SessionRoot
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	Composition --|> IDisposable
-	class Session {
-		+Session(Composition composition)
-	}
-	class Program {
-		+Program(FuncᐸSessionᐳ sessionFactory)
-	}
-	Dependency --|> IDependency : 
-	class Dependency {
-		+Dependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(IDependency dependency)
-	}
-	class Composition
-	class FuncᐸSessionᐳ
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	Session *--  Composition : Composition
-	Program o-- "PerResolve" FuncᐸSessionᐳ : FuncᐸSessionᐳ
-	Service o-- "Scoped" Dependency : IDependency
-	Composition ..> Service : IService SessionRoot
-	Composition ..> Program : Program ProgramRoot
-	FuncᐸSessionᐳ *--  Session : Session
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition: IDisposable
@@ -188,66 +143,6 @@ partial class Composition: IDisposable
     }
   }
 
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public T Resolve<T>()
-  {
-    return Resolver<T>.Value.Resolve(this);
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public T Resolve<T>(object? tag)
-  {
-    return Resolver<T>.Value.ResolveByTag(this, tag);
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public object Resolve(Type type)
-  {
-    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
-    ref var pair = ref _buckets[index];
-    return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
-  }
-
-  [MethodImpl(MethodImplOptions.NoInlining)]
-  private object Resolve(Type type, int index)
-  {
-    var finish = index + _bucketSize;
-    while (++index < finish)
-    {
-      ref var pair = ref _buckets[index];
-      if (pair.Key == type)
-      {
-        return pair.Value.Resolve(this);
-      }
-    }
-
-    throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public object Resolve(Type type, object? tag)
-  {
-    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 4));
-    ref var pair = ref _buckets[index];
-    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
-  }
-
-  [MethodImpl(MethodImplOptions.NoInlining)]
-  private object Resolve(Type type, object? tag, int index)
-  {
-    var finish = index + _bucketSize;
-    while (++index < finish)
-    {
-      ref var pair = ref _buckets[index];
-      if (pair.Key == type)
-      {
-        return pair.Value.ResolveByTag(this, tag);
-      }
-    }
-
-    throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
-  }
-
   public void Dispose()
   {
     int disposeIndex;
@@ -280,85 +175,46 @@ partial class Composition: IDisposable
   }
 
   partial void OnDisposeException<T>(T disposableInstance, Exception exception) where T : IDisposable;
-
-  private readonly static int _bucketSize;
-  private readonly static Pair<Type, IResolver<Composition, object>>[] _buckets;
-
-  static Composition()
-  {
-    var valResolver_0000 = new Resolver_0000();
-    Resolver<IService>.Value = valResolver_0000;
-    var valResolver_0001 = new Resolver_0001();
-    Resolver<Program>.Value = valResolver_0001;
-    _buckets = Buckets<Type, IResolver<Composition, object>>.Create(
-      4,
-      out _bucketSize,
-      new Pair<Type, IResolver<Composition, object>>[2]
-      {
-         new Pair<Type, IResolver<Composition, object>>(typeof(IService), valResolver_0000)
-        ,new Pair<Type, IResolver<Composition, object>>(typeof(Program), valResolver_0001)
-      });
-  }
-
-  private const string CannotResolveMessage = "Cannot resolve composition root ";
-  private const string OfTypeMessage = "of type ";
-
-  private class Resolver<T>: IResolver<Composition, T>
-  {
-    public static IResolver<Composition, T> Value = new Resolver<T>();
-
-    public virtual T Resolve(Composition composite)
-    {
-      throw new InvalidOperationException($"{CannotResolveMessage}{OfTypeMessage}{typeof(T)}.");
-    }
-
-    public virtual T ResolveByTag(Composition composite, object tag)
-    {
-      throw new InvalidOperationException($"{CannotResolveMessage}\"{tag}\" {OfTypeMessage}{typeof(T)}.");
-    }
-  }
-
-  private sealed class Resolver_0000: Resolver<IService>
-  {
-    public override IService Resolve(Composition composition)
-    {
-      return composition.SessionRoot;
-    }
-
-    public override IService ResolveByTag(Composition composition, object tag)
-    {
-      switch (tag)
-      {
-        case null:
-          return composition.SessionRoot;
-
-        default:
-          return base.ResolveByTag(composition, tag);
-      }
-    }
-  }
-
-  private sealed class Resolver_0001: Resolver<Program>
-  {
-    public override Program Resolve(Composition composition)
-    {
-      return composition.ProgramRoot;
-    }
-
-    public override Program ResolveByTag(Composition composition, object tag)
-    {
-      switch (tag)
-      {
-        case null:
-          return composition.ProgramRoot;
-
-        default:
-          return base.ResolveByTag(composition, tag);
-      }
-    }
-  }
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+Program ProgramRoot
+		+IService SessionRoot
+	}
+	Composition --|> IDisposable
+	class Session {
+		+Session(Composition composition)
+	}
+	class Program {
+		+Program(FuncᐸSessionᐳ sessionFactory)
+	}
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(IDependency dependency)
+	}
+	class Composition
+	class FuncᐸSessionᐳ
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	Session *--  Composition : Composition
+	Program o-- "PerResolve" FuncᐸSessionᐳ : FuncᐸSessionᐳ
+	Service o-- "Scoped" Dependency : IDependency
+	Composition ..> Service : IService SessionRoot
+	Composition ..> Program : Program ProgramRoot
+	FuncᐸSessionᐳ *--  Session : Session
+```
 

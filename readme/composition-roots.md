@@ -4,6 +4,7 @@
 
 This example demonstrates several ways to create a composition root. There is no limit to the number of roots, but you should consider limiting the number of roots. Ideally, an application should have a single composition root.
 
+
 ```c#
 interface IDependency;
 
@@ -65,49 +66,7 @@ DI.Setup("Composition")
 ```
 This can be done if these methods are not needed, in case only certain composition roots are used. It's not significant then, but it will help save resources during compilation.
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IService MyRoot
-		+IService SomeOtherService
-		-IDependency _
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(IDependency dependency)
-	}
-	OtherService --|> IService : "Other" 
-	class OtherService {
-		+OtherService()
-	}
-	Dependency --|> IDependency : 
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
-	Service *--  Dependency : IDependency
-	Composition ..> Service : IService MyRoot
-	Composition ..> Dependency : IDependency _
-	Composition ..> OtherService : IService SomeOtherService
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -293,5 +252,41 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IService MyRoot
+		+IService SomeOtherService
+		-IDependency _
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(IDependency dependency)
+	}
+	OtherService --|> IService : "Other" 
+	class OtherService {
+		+OtherService()
+	}
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	class IService {
+		<<interface>>
+	}
+	class IDependency {
+		<<interface>>
+	}
+	Service *--  Dependency : IDependency
+	Composition ..> Service : IService MyRoot
+	Composition ..> Dependency : IDependency _
+	Composition ..> OtherService : IService SomeOtherService
+```
 

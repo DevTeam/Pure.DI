@@ -2,6 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/FuncWithArgumentsScenario.cs)
 
+
 ```c#
 interface IClock
 {
@@ -65,49 +66,7 @@ service.Dependencies.Length.ShouldBe(10);
 service.Dependencies[3].Id.ShouldBe(3);
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	class Dependency {
-		+Dependency(IClock clock, Int32 id)
-	}
-	class Int32
-	class FuncᐸInt32ˏIDependencyᐳ
-	Clock --|> IClock : 
-	class Clock {
-		+Clock()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(FuncᐸInt32ˏIDependencyᐳ dependencyFactory)
-	}
-	class IClock {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	Dependency o-- "Singleton" Clock : IClock
-	Dependency *--  Int32 : Int32
-	FuncᐸInt32ˏIDependencyᐳ *--  Dependency : Dependency
-	Service *--  FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ
-	Composition ..> Service : IService Root
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -269,5 +228,41 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IService Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	class Dependency {
+		+Dependency(IClock clock, Int32 id)
+	}
+	class Int32
+	class FuncᐸInt32ˏIDependencyᐳ
+	Clock --|> IClock : 
+	class Clock {
+		+Clock()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(FuncᐸInt32ˏIDependencyᐳ dependencyFactory)
+	}
+	class IClock {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	Dependency o-- "Singleton" Clock : IClock
+	Dependency *--  Int32 : Int32
+	FuncᐸInt32ˏIDependencyᐳ *--  Dependency : Dependency
+	Service *--  FuncᐸInt32ˏIDependencyᐳ : FuncᐸInt32ˏIDependencyᐳ
+	Composition ..> Service : IService Root
+```
 

@@ -2,6 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Generics/GenericCompositionRootsWithConstraintsScenario.cs)
 
+
 ```c#
 interface IDependency<T>
     where T: IDisposable;
@@ -53,45 +54,7 @@ var service = composition.GetMyRoot<Stream, double>();
 var someOtherService = composition.GetOtherService<BinaryReader>();
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IServiceᐸTˏT4ᐳ GetMyRootᐸTˏT4ᐳ()
-		+IServiceᐸTˏBooleanᐳ GetOtherServiceᐸTᐳ()
-	}
-	ServiceᐸTˏT4ᐳ --|> IServiceᐸTˏT4ᐳ : 
-	class ServiceᐸTˏT4ᐳ {
-		+Service(IDependencyᐸTᐳ dependency)
-	}
-	OtherServiceᐸTᐳ --|> IServiceᐸTˏBooleanᐳ : "Other" 
-	class OtherServiceᐸTᐳ
-	DependencyᐸTᐳ --|> IDependencyᐸTᐳ : 
-	class DependencyᐸTᐳ {
-		+Dependency()
-	}
-	class IServiceᐸTˏT4ᐳ {
-		<<interface>>
-	}
-	class IServiceᐸTˏBooleanᐳ {
-		<<interface>>
-	}
-	class IDependencyᐸTᐳ {
-		<<interface>>
-	}
-	Composition ..> ServiceᐸTˏT4ᐳ : IServiceᐸTˏT4ᐳ GetMyRootᐸTˏT4ᐳ()
-	Composition ..> OtherServiceᐸTᐳ : IServiceᐸTˏBooleanᐳ GetOtherServiceᐸTᐳ()
-	ServiceᐸTˏT4ᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ
-	OtherServiceᐸTᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -130,5 +93,37 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IServiceᐸTˏT4ᐳ GetMyRootᐸTˏT4ᐳ()
+		+IServiceᐸTˏBooleanᐳ GetOtherServiceᐸTᐳ()
+	}
+	ServiceᐸTˏT4ᐳ --|> IServiceᐸTˏT4ᐳ : 
+	class ServiceᐸTˏT4ᐳ {
+		+Service(IDependencyᐸTᐳ dependency)
+	}
+	OtherServiceᐸTᐳ --|> IServiceᐸTˏBooleanᐳ : "Other" 
+	class OtherServiceᐸTᐳ
+	DependencyᐸTᐳ --|> IDependencyᐸTᐳ : 
+	class DependencyᐸTᐳ {
+		+Dependency()
+	}
+	class IServiceᐸTˏT4ᐳ {
+		<<interface>>
+	}
+	class IServiceᐸTˏBooleanᐳ {
+		<<interface>>
+	}
+	class IDependencyᐸTᐳ {
+		<<interface>>
+	}
+	Composition ..> ServiceᐸTˏT4ᐳ : IServiceᐸTˏT4ᐳ GetMyRootᐸTˏT4ᐳ()
+	Composition ..> OtherServiceᐸTᐳ : IServiceᐸTˏBooleanᐳ GetOtherServiceᐸTᐳ()
+	ServiceᐸTˏT4ᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ
+	OtherServiceᐸTᐳ *--  DependencyᐸTᐳ : IDependencyᐸTᐳ
+```
 

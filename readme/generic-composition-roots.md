@@ -4,6 +4,7 @@
 
 A generic composition root is represented by a method.
 
+
 ```c#
 interface IDependency<T>;
 
@@ -50,42 +51,7 @@ var someOtherService = composition.GetOtherService<string>();
 
 When a generic composition root is used, `Resolve` methods cannot be used to resolve them.
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IServiceᐸT54ᐳ GetMyRootᐸT54ᐳ()
-		+IServiceᐸT54ᐳ GetOtherServiceᐸT54ᐳ()
-	}
-	ServiceᐸT54ᐳ --|> IServiceᐸT54ᐳ : 
-	class ServiceᐸT54ᐳ {
-		+Service(IDependencyᐸT54ᐳ dependency)
-	}
-	OtherServiceᐸT54ᐳ --|> IServiceᐸT54ᐳ : "Other" 
-	class OtherServiceᐸT54ᐳ
-	DependencyᐸT54ᐳ --|> IDependencyᐸT54ᐳ : 
-	class DependencyᐸT54ᐳ {
-		+Dependency()
-	}
-	class IServiceᐸT54ᐳ {
-		<<interface>>
-	}
-	class IDependencyᐸT54ᐳ {
-		<<interface>>
-	}
-	Composition ..> ServiceᐸT54ᐳ : IServiceᐸT54ᐳ GetMyRootᐸT54ᐳ()
-	Composition ..> OtherServiceᐸT54ᐳ : IServiceᐸT54ᐳ GetOtherServiceᐸT54ᐳ()
-	ServiceᐸT54ᐳ *--  DependencyᐸT54ᐳ : IDependencyᐸT54ᐳ
-	OtherServiceᐸT54ᐳ *--  DependencyᐸT54ᐳ : IDependencyᐸT54ᐳ
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -121,5 +87,34 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IServiceᐸT54ᐳ GetMyRootᐸT54ᐳ()
+		+IServiceᐸT54ᐳ GetOtherServiceᐸT54ᐳ()
+	}
+	ServiceᐸT54ᐳ --|> IServiceᐸT54ᐳ : 
+	class ServiceᐸT54ᐳ {
+		+Service(IDependencyᐸT54ᐳ dependency)
+	}
+	OtherServiceᐸT54ᐳ --|> IServiceᐸT54ᐳ : "Other" 
+	class OtherServiceᐸT54ᐳ
+	DependencyᐸT54ᐳ --|> IDependencyᐸT54ᐳ : 
+	class DependencyᐸT54ᐳ {
+		+Dependency()
+	}
+	class IServiceᐸT54ᐳ {
+		<<interface>>
+	}
+	class IDependencyᐸT54ᐳ {
+		<<interface>>
+	}
+	Composition ..> ServiceᐸT54ᐳ : IServiceᐸT54ᐳ GetMyRootᐸT54ᐳ()
+	Composition ..> OtherServiceᐸT54ᐳ : IServiceᐸT54ᐳ GetOtherServiceᐸT54ᐳ()
+	ServiceᐸT54ᐳ *--  DependencyᐸT54ᐳ : IDependencyᐸT54ᐳ
+	OtherServiceᐸT54ᐳ *--  DependencyᐸT54ᐳ : IDependencyᐸT54ᐳ
+```
 

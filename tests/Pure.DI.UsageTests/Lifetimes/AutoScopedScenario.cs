@@ -42,6 +42,8 @@ partial class Composition
 {
     void Setup() =>
         DI.Setup(nameof(Composition))
+            // This hint indicates to not generate methods such as Resolve
+            .Hint(Hint.Resolve, "Off")
             .Bind().As(Scoped).To<Dependency>()
             // Session composition root
             .Root<Service>("SessionRoot", kind: RootKinds.Private)

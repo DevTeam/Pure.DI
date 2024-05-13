@@ -2,6 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/CompositionRootKindsScenario.cs)
 
+
 ```c#
 interface IDependency;
 
@@ -44,49 +45,7 @@ var otherService = composition.GetOtherService();
 var dependency = Composition.Dependency;
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IDependency Dependency
-		+IService GetOtherService()
-		+IService GetRoot()
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(IDependency dependency)
-	}
-	OtherService --|> IService : "Other" 
-	class OtherService {
-		+OtherService()
-	}
-	Dependency --|> IDependency : 
-	class Dependency {
-		+Dependency()
-	}
-	class IService {
-		<<interface>>
-	}
-	class IDependency {
-		<<interface>>
-	}
-	Service *--  Dependency : IDependency
-	Composition ..> OtherService : IService GetOtherService()
-	Composition ..> Service : IService GetRoot()
-	Composition ..> Dependency : IDependency Dependency
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -266,5 +225,41 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IDependency Dependency
+		+IService GetOtherService()
+		+IService GetRoot()
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(IDependency dependency)
+	}
+	OtherService --|> IService : "Other" 
+	class OtherService {
+		+OtherService()
+	}
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	class IService {
+		<<interface>>
+	}
+	class IDependency {
+		<<interface>>
+	}
+	Service *--  Dependency : IDependency
+	Composition ..> OtherService : IService GetOtherService()
+	Composition ..> Service : IService GetRoot()
+	Composition ..> Dependency : IDependency Dependency
+```
 

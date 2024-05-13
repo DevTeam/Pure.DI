@@ -4,6 +4,7 @@
 
 Injection of non-abstract types is possible without any additional effort.
 
+
 ```c#
 class Dependency;
 
@@ -11,7 +12,6 @@ class Service(Dependency dependency);
 
 // Specifies to create a partial class "Composition"
 DI.Setup("Composition")
-
     // Specifies to create a property "MyService"
     .Root<Service>("MyService");
         
@@ -25,29 +25,7 @@ var service = composition.MyService;
 
 It is better to inject abstract dependencies, for example, in the form of interfaces. Use bindings to map abstract types to their implementations as in almost all [other examples](injections-of-abstractions.md).
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+Service MyService
-	}
-	class Dependency {
-		+Dependency()
-	}
-	class Service {
-		+Service(Dependency dependency)
-	}
-	Service *--  Dependency : Dependency
-	Composition ..> Service : Service MyService
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -75,5 +53,21 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+Service MyService
+	}
+	class Dependency {
+		+Dependency()
+	}
+	class Service {
+		+Service(Dependency dependency)
+	}
+	Service *--  Dependency : Dependency
+	Composition ..> Service : Service MyService
+```
 

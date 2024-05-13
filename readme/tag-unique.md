@@ -4,6 +4,7 @@
 
 `Tag.Unique` is useful to register a binding with a unique tag. It will not be available through the composition root or `Resolve` methods directly, but can be embedded in compositions as some kind of enumeration.
 
+
 ```c#
 interface IDependency<T>;
 
@@ -35,48 +36,7 @@ var stringService = composition.Root;
 stringService.Dependencies.Length.ShouldBe(2);
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IServiceᐸStringᐳ Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	ServiceᐸStringᐳ --|> IServiceᐸStringᐳ : 
-	class ServiceᐸStringᐳ {
-		+Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
-	}
-	class IEnumerableᐸIDependencyᐸStringᐳᐳ
-	AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : Unique tag 1 
-	class AbcDependencyᐸStringᐳ {
-		+AbcDependency()
-	}
-	XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : Unique tag 2 
-	class XyzDependencyᐸStringᐳ {
-		+XyzDependency()
-	}
-	class IServiceᐸStringᐳ {
-		<<interface>>
-	}
-	class IDependencyᐸStringᐳ {
-		<<interface>>
-	}
-	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root
-	ServiceᐸStringᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
-	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : Unique tag 1  IDependencyᐸStringᐳ
-	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : Unique tag 2  IDependencyᐸStringᐳ
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -225,5 +185,40 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IServiceᐸStringᐳ Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	ServiceᐸStringᐳ --|> IServiceᐸStringᐳ : 
+	class ServiceᐸStringᐳ {
+		+Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
+	}
+	class IEnumerableᐸIDependencyᐸStringᐳᐳ
+	AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : Unique tag 1 
+	class AbcDependencyᐸStringᐳ {
+		+AbcDependency()
+	}
+	XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : Unique tag 2 
+	class XyzDependencyᐸStringᐳ {
+		+XyzDependency()
+	}
+	class IServiceᐸStringᐳ {
+		<<interface>>
+	}
+	class IDependencyᐸStringᐳ {
+		<<interface>>
+	}
+	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root
+	ServiceᐸStringᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
+	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : Unique tag 1  IDependencyᐸStringᐳ
+	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : Unique tag 2  IDependencyᐸStringᐳ
+```
 

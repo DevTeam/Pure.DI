@@ -4,6 +4,7 @@
 
 Sometimes it's important to take control of building a dependency graph. For example, when there are multiple implementations of the same contract. In this case, _tags_ will help:
 
+
 ```c#
 interface IDependency;
 
@@ -46,46 +47,7 @@ service.Dependency2.ShouldBeOfType<XyzDependency>();
 
 The tag can be a constant, a type, or a value of an enumerated type. This attribute is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	AbcDependency --|> IDependency : "Abc" 
-	class AbcDependency {
-		+AbcDependency()
-	}
-	XyzDependency --|> IDependency : "Xyz" 
-	class XyzDependency {
-		+XyzDependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(IDependency dependency1, IDependency dependency2)
-	}
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	Service *--  AbcDependency : "Abc"  IDependency
-	Service *--  XyzDependency : "Xyz"  IDependency
-	Composition ..> Service : IService Root
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -227,5 +189,38 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IService Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	AbcDependency --|> IDependency : "Abc" 
+	class AbcDependency {
+		+AbcDependency()
+	}
+	XyzDependency --|> IDependency : "Xyz" 
+	class XyzDependency {
+		+XyzDependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(IDependency dependency1, IDependency dependency2)
+	}
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	Service *--  AbcDependency : "Abc"  IDependency
+	Service *--  XyzDependency : "Xyz"  IDependency
+	Composition ..> Service : IService Root
+```
 

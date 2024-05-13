@@ -4,6 +4,7 @@
 
 The `// ObjectResolveMethodName = GetService` hint overrides the _object Resolve(Type type)_ method name in _GetService_, allowing the _IServiceProvider_ interface to be implemented in a partial class.
 
+
 ```c#
 interface IDependency;
 
@@ -39,43 +40,7 @@ var dependency = serviceProvider.GetRequiredService<IDependency>();
 service.Dependency.ShouldBe(dependency);
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		-IDependency _
-		-IService _
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object GetService(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	Dependency --|> IDependency : 
-	class Dependency {
-		+Dependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(IDependency dependency)
-	}
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	Service o-- "Singleton" Dependency : IDependency
-	Composition ..> Dependency : IDependency _
-	Composition ..> Service : IService _
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -273,5 +238,35 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		-IDependency _
+		-IService _
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object GetService(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(IDependency dependency)
+	}
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	Service o-- "Singleton" Dependency : IDependency
+	Composition ..> Dependency : IDependency _
+	Composition ..> Service : IService _
+```
 

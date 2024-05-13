@@ -2,6 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/TrackingAsyncDisposableInDelegatesScenario.cs)
 
+
 ```c#
 interface IDependency
 {
@@ -69,51 +70,7 @@ await root1.DisposeAsync();
 root1.Dependency.IsDisposed.ShouldBeTrue();
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+Service Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	class Owned
-	Dependency --|> IDependency : 
-	class Dependency {
-		+Dependency()
-	}
-	Service --|> IService : 
-	Service --|> IAsyncDisposable : 
-	class Service {
-		+Service(FuncᐸOwnedᐸIDependencyᐳᐳ dependencyFactory)
-	}
-	class FuncᐸOwnedᐸIDependencyᐳᐳ
-	class OwnedᐸIDependencyᐳ
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	class IAsyncDisposable {
-		<<interface>>
-	}
-	Service o-- "PerResolve" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
-	Composition ..> Service : Service Root
-	FuncᐸOwnedᐸIDependencyᐳᐳ o-- "PerBlock" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ
-	OwnedᐸIDependencyᐳ *--  Owned : Owned
-	OwnedᐸIDependencyᐳ *--  Dependency : IDependency
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -282,5 +239,43 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+Service Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	class Owned
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	Service --|> IAsyncDisposable : 
+	class Service {
+		+Service(FuncᐸOwnedᐸIDependencyᐳᐳ dependencyFactory)
+	}
+	class FuncᐸOwnedᐸIDependencyᐳᐳ
+	class OwnedᐸIDependencyᐳ
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	class IAsyncDisposable {
+		<<interface>>
+	}
+	Service o-- "PerResolve" FuncᐸOwnedᐸIDependencyᐳᐳ : FuncᐸOwnedᐸIDependencyᐳᐳ
+	Composition ..> Service : Service Root
+	FuncᐸOwnedᐸIDependencyᐳᐳ o-- "PerBlock" OwnedᐸIDependencyᐳ : OwnedᐸIDependencyᐳ
+	OwnedᐸIDependencyᐳ *--  Owned : Owned
+	OwnedᐸIDependencyᐳ *--  Dependency : IDependency
+```
 

@@ -269,29 +269,35 @@ internal class ReadmeTarget(
                 await examplesWriter.WriteLineAsync($"#### {description}");
                 await examplesWriter.WriteLineAsync("");
                 await examplesWriter.WriteLineAsync($"[![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../{vars[SourceKey].Replace('\\', '/')})");
+                await examplesWriter.WriteLineAsync("");
                 var header = vars[HeaderKey];
                 if (!string.IsNullOrWhiteSpace(header))
                 {
-                    await examplesWriter.WriteLineAsync("");
                     await examplesWriter.WriteLineAsync(header);
+                    await examplesWriter.WriteLineAsync("");
                 }
 
                 await examplesWriter.WriteLineAsync("");
                 await examplesWriter.WriteLineAsync("```c#");
                 await examplesWriter.WriteLineAsync(vars[BodyKey]);
                 await examplesWriter.WriteLineAsync("```");
+                await examplesWriter.WriteLineAsync("");
 
                 var footer = vars[FooterKey];
                 if (!string.IsNullOrWhiteSpace(footer))
                 {
-                    await examplesWriter.WriteLineAsync("");
                     await examplesWriter.WriteLineAsync(footer);
+                    await examplesWriter.WriteLineAsync("");
                 }
 
                 var exampleName = Path.GetFileNameWithoutExtension(vars[SourceKey]);
-                await AddClassDiagram(logsDirectory, exampleName, examplesWriter);
+                
                 await AddExample(logsDirectory, $"Pure.DI.UsageTests.*.{exampleName}.*.g.cs", examplesWriter);
-
+                await examplesWriter.WriteLineAsync("");
+                
+                await AddClassDiagram(logsDirectory, exampleName, examplesWriter);
+                await examplesWriter.WriteLineAsync("");
+                
                 await examplesWriter.FlushAsync();
             }
         }
@@ -302,17 +308,12 @@ internal class ReadmeTarget(
         var classDiagramFile = Path.Combine(logsDirectory, exampleName + ".Mermaid");
         if (File.Exists(classDiagramFile))
         {
-            await examplesWriter.WriteLineAsync("");
-            await examplesWriter.WriteLineAsync("<details open>");
-            await examplesWriter.WriteLineAsync("<summary>Class Diagram</summary>");
+            await examplesWriter.WriteLineAsync("Class diagram:");
             await examplesWriter.WriteLineAsync("");
             await examplesWriter.WriteLineAsync("```mermaid");
             var classDiagram = await File.ReadAllTextAsync(classDiagramFile);
             await examplesWriter.WriteLineAsync(classDiagram);
             await examplesWriter.WriteLineAsync("```");
-            await examplesWriter.WriteLineAsync("");
-            await examplesWriter.WriteLineAsync("</details>");
-            await examplesWriter.WriteLineAsync("");
         }
     }
 
@@ -323,8 +324,7 @@ internal class ReadmeTarget(
         {
             var ns = string.Join('.', Path.GetFileName(generatedCodeFile).Split('.').Reverse().Skip(3).Reverse()) + ".";
             var name = Path.GetFileName(generatedCodeFile).Split('.').Reverse().Skip(2).FirstOrDefault() ?? "Generated";
-            await examplesWriter.WriteLineAsync("<details>");
-            await examplesWriter.WriteLineAsync($"<summary>Pure.DI-generated partial class {name}</summary><blockquote>");
+            await examplesWriter.WriteLineAsync("The following partial class will be generated:");
             await examplesWriter.WriteLineAsync("");
             await examplesWriter.WriteLineAsync("```c#");
             var generatedCode = await File.ReadAllTextAsync(generatedCodeFile);
@@ -369,9 +369,6 @@ internal class ReadmeTarget(
                         .Replace("(MethodImplOptions)0x8", "MethodImplOptions.NoInlining")));
             await examplesWriter.WriteLineAsync(generatedCode);
             await examplesWriter.WriteLineAsync("```");
-            await examplesWriter.WriteLineAsync("");
-            await examplesWriter.WriteLineAsync("</blockquote></details>");
-            await examplesWriter.WriteLineAsync("");
         }
     }
 

@@ -4,6 +4,7 @@
 
 When applied to any constructor in a type, automatic injection constructor selection is disabled. The selection will only focus on constructors marked with this attribute, in the appropriate order from smallest value to largest.
 
+
 ```c#
 interface IDependency;
 
@@ -44,35 +45,7 @@ service.ToString().ShouldBe("Xyz");
 
 The attribute `Ordinal` is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	class String
-	Service --|> IService : 
-	class Service {
-		~Service(String name)
-	}
-	class IService {
-		<<interface>>
-	}
-	Service o-- String : Argument "serviceName"
-	Composition ..> Service : IService Root
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -218,5 +191,27 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IService Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	class String
+	Service --|> IService : 
+	class Service {
+		~Service(String name)
+	}
+	class IService {
+		<<interface>>
+	}
+	Service o-- String : Argument "serviceName"
+	Composition ..> Service : IService Root
+```
 

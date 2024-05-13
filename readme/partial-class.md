@@ -4,6 +4,7 @@
 
 A partial class can contain setup code.
 
+
 ```c#
 interface IDependency
 {
@@ -65,41 +66,7 @@ service.Name.ShouldBe("Abc_3");
 
 The partial class is also useful for specifying access modifiers to the generated class.
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+Service Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	class Service {
-		+Service(String name, IDependency dependency1, IDependency dependency2)
-	}
-	class Int64
-	class String
-	Dependency --|> IDependency : 
-	class Dependency {
-		+Dependency(Int64 id)
-	}
-	class IDependency {
-		<<interface>>
-	}
-	Service *--  String : "name with id"  String
-	Service *-- "2 " Dependency : IDependency
-	Dependency *--  Int64 : Int64
-	Composition ..> Service : Service Root
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -244,5 +211,33 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+Service Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	class Service {
+		+Service(String name, IDependency dependency1, IDependency dependency2)
+	}
+	class Int64
+	class String
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency(Int64 id)
+	}
+	class IDependency {
+		<<interface>>
+	}
+	Service *--  String : "name with id"  String
+	Service *-- "2 " Dependency : IDependency
+	Dependency *--  Int64 : Int64
+	Composition ..> Service : Service Root
+```
 

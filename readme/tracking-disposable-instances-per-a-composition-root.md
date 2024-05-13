@@ -2,6 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/Advanced/TrackingDisposableScenario.cs)
 
+
 ```c#
 interface IDependency
 {
@@ -58,44 +59,7 @@ root1.Dispose();
 root1.Value.Dependency.IsDisposed.ShouldBeTrue();
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+OwnedᐸIServiceᐳ Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	class Owned
-	Dependency --|> IDependency : 
-	class Dependency {
-		+Dependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(IDependency dependency)
-	}
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	Service *--  Dependency : IDependency
-	Composition ..> OwnedᐸIServiceᐳ : OwnedᐸIServiceᐳ Root
-	OwnedᐸIServiceᐳ *--  Owned : Owned
-	OwnedᐸIServiceᐳ *--  Service : IService
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -184,5 +148,36 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+OwnedᐸIServiceᐳ Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	class Owned
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(IDependency dependency)
+	}
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	Service *--  Dependency : IDependency
+	Composition ..> OwnedᐸIServiceᐳ : OwnedᐸIServiceᐳ Root
+	OwnedᐸIServiceᐳ *--  Owned : Owned
+	OwnedᐸIServiceᐳ *--  Service : IService
+```
 

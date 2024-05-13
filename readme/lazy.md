@@ -2,6 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/LazyScenario.cs)
 
+
 ```c#
 interface IDependency;
 
@@ -29,45 +30,7 @@ var service = composition.Root;
 service.Dependency.ShouldBe(service.Dependency);
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	Dependency --|> IDependency : 
-	class Dependency {
-		+Dependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(LazyᐸIDependencyᐳ dependency)
-	}
-	class LazyᐸIDependencyᐳ
-	class FuncᐸIDependencyᐳ
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	Service *--  LazyᐸIDependencyᐳ : LazyᐸIDependencyᐳ
-	Composition ..> Service : IService Root
-	LazyᐸIDependencyᐳ o-- "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
-	FuncᐸIDependencyᐳ *--  Dependency : IDependency
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -225,5 +188,37 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IService Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(LazyᐸIDependencyᐳ dependency)
+	}
+	class LazyᐸIDependencyᐳ
+	class FuncᐸIDependencyᐳ
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	Service *--  LazyᐸIDependencyᐳ : LazyᐸIDependencyᐳ
+	Composition ..> Service : IService Root
+	LazyᐸIDependencyᐳ o-- "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+	FuncᐸIDependencyᐳ *--  Dependency : IDependency
+```
 

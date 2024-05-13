@@ -4,6 +4,7 @@
 
 The _PreBlock_ lifetime does not guarantee that there will be a single instance of the dependency for each root of the composition, but is useful to reduce the number of instances of type.
 
+
 ```c#
 interface IDependency;
 
@@ -24,6 +25,8 @@ class Service(
 }
 
 DI.Setup(nameof(Composition))
+    // This hint indicates to not generate methods such as Resolve
+    .Hint(Hint.Resolve, "Off")
     .Bind().As(Lifetime.PerBlock).To<Dependency>()
 
     // Composition root
@@ -40,46 +43,7 @@ var service2 = composition.Root;
 service2.Dep1.ShouldNotBe(service1.Dep1);
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+Service Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	class ValueTupleᐸIDependencyˏIDependencyᐳ {
-		+ValueTuple(IDependency item1, IDependency item2)
-	}
-	class Service {
-		+Service(IDependency dep1, IDependency dep2, LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ deps)
-	}
-	Dependency --|> IDependency : 
-	class Dependency {
-		+Dependency()
-	}
-	class LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ
-	class FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ
-	class IDependency {
-		<<interface>>
-	}
-	ValueTupleᐸIDependencyˏIDependencyᐳ o-- "2 PerBlock" Dependency : IDependency
-	Service o-- "2 PerBlock" Dependency : IDependency
-	Service *--  LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ : LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ
-	Composition ..> Service : Service Root
-	LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ o-- "PerResolve" FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ : FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ
-	FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ *--  ValueTupleᐸIDependencyˏIDependencyᐳ : ValueTupleᐸIDependencyˏIDependencyᐳ
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -122,122 +86,37 @@ partial class Composition
       return new Service(perBlock1_Dependency, perBlock1_Dependency, transient2_Lazy);
     }
   }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public T Resolve<T>()
-  {
-    return Resolver<T>.Value.Resolve(this);
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public T Resolve<T>(object? tag)
-  {
-    return Resolver<T>.Value.ResolveByTag(this, tag);
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public object Resolve(Type type)
-  {
-    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _buckets[index];
-    return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
-  }
-
-  [MethodImpl(MethodImplOptions.NoInlining)]
-  private object Resolve(Type type, int index)
-  {
-    var finish = index + _bucketSize;
-    while (++index < finish)
-    {
-      ref var pair = ref _buckets[index];
-      if (pair.Key == type)
-      {
-        return pair.Value.Resolve(this);
-      }
-    }
-
-    throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public object Resolve(Type type, object? tag)
-  {
-    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _buckets[index];
-    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
-  }
-
-  [MethodImpl(MethodImplOptions.NoInlining)]
-  private object Resolve(Type type, object? tag, int index)
-  {
-    var finish = index + _bucketSize;
-    while (++index < finish)
-    {
-      ref var pair = ref _buckets[index];
-      if (pair.Key == type)
-      {
-        return pair.Value.ResolveByTag(this, tag);
-      }
-    }
-
-    throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
-  }
-
-  private readonly static int _bucketSize;
-  private readonly static Pair<Type, IResolver<Composition, object>>[] _buckets;
-
-  static Composition()
-  {
-    var valResolver_0000 = new Resolver_0000();
-    Resolver<Service>.Value = valResolver_0000;
-    _buckets = Buckets<Type, IResolver<Composition, object>>.Create(
-      1,
-      out _bucketSize,
-      new Pair<Type, IResolver<Composition, object>>[1]
-      {
-         new Pair<Type, IResolver<Composition, object>>(typeof(Service), valResolver_0000)
-      });
-  }
-
-  private const string CannotResolveMessage = "Cannot resolve composition root ";
-  private const string OfTypeMessage = "of type ";
-
-  private class Resolver<T>: IResolver<Composition, T>
-  {
-    public static IResolver<Composition, T> Value = new Resolver<T>();
-
-    public virtual T Resolve(Composition composite)
-    {
-      throw new InvalidOperationException($"{CannotResolveMessage}{OfTypeMessage}{typeof(T)}.");
-    }
-
-    public virtual T ResolveByTag(Composition composite, object tag)
-    {
-      throw new InvalidOperationException($"{CannotResolveMessage}\"{tag}\" {OfTypeMessage}{typeof(T)}.");
-    }
-  }
-
-  private sealed class Resolver_0000: Resolver<Service>
-  {
-    public override Service Resolve(Composition composition)
-    {
-      return composition.Root;
-    }
-
-    public override Service ResolveByTag(Composition composition, object tag)
-    {
-      switch (tag)
-      {
-        case null:
-          return composition.Root;
-
-        default:
-          return base.ResolveByTag(composition, tag);
-      }
-    }
-  }
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+Service Root
+	}
+	class ValueTupleᐸIDependencyˏIDependencyᐳ {
+		+ValueTuple(IDependency item1, IDependency item2)
+	}
+	class Service {
+		+Service(IDependency dep1, IDependency dep2, LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ deps)
+	}
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	class LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ
+	class FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ
+	class IDependency {
+		<<interface>>
+	}
+	ValueTupleᐸIDependencyˏIDependencyᐳ o-- "2 PerBlock" Dependency : IDependency
+	Service o-- "2 PerBlock" Dependency : IDependency
+	Service *--  LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ : LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ
+	Composition ..> Service : Service Root
+	LazyᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ o-- "PerResolve" FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ : FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ
+	FuncᐸValueTupleᐸIDependencyˏIDependencyᐳᐳ *--  ValueTupleᐸIDependencyˏIDependencyᐳ : ValueTupleᐸIDependencyˏIDependencyᐳ
+```
 

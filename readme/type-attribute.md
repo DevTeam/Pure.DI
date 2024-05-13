@@ -4,6 +4,7 @@
 
 The injection type can be defined manually using the `Type` attribute. This attribute explicitly overrides an injected type, otherwise it would be determined automatically based on the type of the constructor/method, property, or field parameter.
 
+
 ```c#
 interface IDependency;
 
@@ -42,41 +43,7 @@ service.Dependency2.ShouldBeOfType<XyzDependency>();
 
 This attribute is part of the API, but you can use your own attribute at any time, and this allows you to define them in the assembly and namespace you want.
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	class XyzDependency {
-		+XyzDependency()
-	}
-	class AbcDependency {
-		+AbcDependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(IDependency dependency1, IDependency dependency2)
-	}
-	class IService {
-		<<interface>>
-	}
-	Service *--  AbcDependency : AbcDependency
-	Service *--  XyzDependency : XyzDependency
-	Composition ..> Service : IService Root
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -218,5 +185,33 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IService Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	class XyzDependency {
+		+XyzDependency()
+	}
+	class AbcDependency {
+		+AbcDependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(IDependency dependency1, IDependency dependency2)
+	}
+	class IService {
+		<<interface>>
+	}
+	Service *--  AbcDependency : AbcDependency
+	Service *--  XyzDependency : XyzDependency
+	Composition ..> Service : IService Root
+```
 

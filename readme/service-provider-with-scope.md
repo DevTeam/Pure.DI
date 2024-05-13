@@ -2,6 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/ServiceProviderWithScopeScenario.cs)
 
+
 ```c#
 interface IDependency;
 
@@ -69,44 +70,7 @@ service1.ShouldNotBe(service2);
 dependency1.ShouldBe(dependency2);
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		-IDependency _
-		-IService _
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object GetService(Type type)
-		+ object GetRequiredKeyedService(Type type, object? tag)
-	}
-	Composition --|> IDisposable
-	Dependency --|> IDependency : 
-	class Dependency {
-		+Dependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(IDependency dependency)
-	}
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	Service o-- "Singleton" Dependency : IDependency
-	Composition ..> Dependency : IDependency _
-	Composition ..> Service : IService _
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition: IDisposable
@@ -348,5 +312,36 @@ partial class Composition: IDisposable
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		-IDependency _
+		-IService _
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object GetService(Type type)
+		+ object GetRequiredKeyedService(Type type, object? tag)
+	}
+	Composition --|> IDisposable
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(IDependency dependency)
+	}
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	Service o-- "Singleton" Dependency : IDependency
+	Composition ..> Dependency : IDependency _
+	Composition ..> Service : IService _
+```
 

@@ -4,6 +4,7 @@
 
 At any time, the default binding to the BCL type can be changed to your own:
 
+
 ```c#
 interface IDependency;
 
@@ -41,35 +42,7 @@ service.Dependencies[1].ShouldBeOfType<XyzDependency>();
 service.Dependencies[2].ShouldBeOfType<AbcDependency>();
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	class ArrayᐸIDependencyᐳ
-	Service --|> IService : 
-	class Service {
-		+Service(ArrayᐸIDependencyᐳ dependencies)
-	}
-	class IService {
-		<<interface>>
-	}
-	Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ
-	Composition ..> Service : IService Root
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -217,5 +190,27 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IService Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	class ArrayᐸIDependencyᐳ
+	Service --|> IService : 
+	class Service {
+		+Service(ArrayᐸIDependencyᐳ dependencies)
+	}
+	class IService {
+		<<interface>>
+	}
+	Service *--  ArrayᐸIDependencyᐳ : ArrayᐸIDependencyᐳ
+	Composition ..> Service : IService Root
+```
 

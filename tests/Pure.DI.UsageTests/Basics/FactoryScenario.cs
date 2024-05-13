@@ -48,6 +48,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // Resolve = Off
 // {            
         DI.Setup(nameof(Composition))
             .Bind().To(_ => DateTimeOffset.Now)

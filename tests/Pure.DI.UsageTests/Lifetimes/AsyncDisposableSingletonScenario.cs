@@ -47,6 +47,8 @@ public class Scenario
     {
 // {            
         DI.Setup(nameof(Composition))
+            // This hint indicates to not generate methods such as Resolve
+            .Hint(Hint.Resolve, "Off")
             .Bind().As(Lifetime.Singleton).To<Dependency>()
             .RootBind<IService>("Root").To<Service>();
 

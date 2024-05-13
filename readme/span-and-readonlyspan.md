@@ -4,6 +4,7 @@
 
 Specifying `Span<T>` and `ReadOnlySpan<T>` work the same as with the array `T[]`.
 
+
 ```c#
 struct Dependency;
 
@@ -43,41 +44,7 @@ public IService Root
 }
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	class Dependency {
-		+Dependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(ReadOnlySpanᐸDependencyᐳ dependencies)
-	}
-	class ReadOnlySpanᐸDependencyᐳ
-	class IService {
-		<<interface>>
-	}
-	Service *--  ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ
-	Composition ..> Service : IService Root
-	ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'a'  Dependency
-	ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'b'  Dependency
-	ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'c'  Dependency
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -225,5 +192,33 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IService Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(ReadOnlySpanᐸDependencyᐳ dependencies)
+	}
+	class ReadOnlySpanᐸDependencyᐳ
+	class IService {
+		<<interface>>
+	}
+	Service *--  ReadOnlySpanᐸDependencyᐳ : ReadOnlySpanᐸDependencyᐳ
+	Composition ..> Service : IService Root
+	ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'a'  Dependency
+	ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'b'  Dependency
+	ReadOnlySpanᐸDependencyᐳ *--  Dependency : 'c'  Dependency
+```
 

@@ -8,6 +8,7 @@ It's very easy to use your attributes. To do this, you need to create a descenda
 - `TagAttribute`
 You can also use combined attributes, and each method in the list above has an optional parameter that defines the argument number (the default is 0) from where to get the appropriate metadata for _tag_, _ordinal_, or _type_.
 
+
 ```c#
 [AttributeUsage(
     AttributeTargets.Constructor
@@ -55,38 +56,7 @@ var person = composition.Person;
 person.ToString().ShouldBe("123 Nik");
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class PersonComposition {
-		<<partial>>
-		+IPerson Person
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	class String
-	class Int32
-	Person --|> IPerson : 
-	class Person {
-		+Person(String name)
-		~Object Id
-	}
-	class IPerson {
-		<<interface>>
-	}
-	Person *--  String : "NikName"  String
-	Person o-- Int32 : Argument "personId"
-	PersonComposition ..> Person : IPerson Person
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class PersonComposition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class PersonComposition
@@ -235,5 +205,30 @@ partial class PersonComposition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class PersonComposition {
+		<<partial>>
+		+IPerson Person
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	class String
+	class Int32
+	Person --|> IPerson : 
+	class Person {
+		+Person(String name)
+		~Object Id
+	}
+	class IPerson {
+		<<interface>>
+	}
+	Person *--  String : "NikName"  String
+	Person o-- Int32 : Argument "personId"
+	PersonComposition ..> Person : IPerson Person
+```
 

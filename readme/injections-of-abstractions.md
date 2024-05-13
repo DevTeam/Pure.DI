@@ -4,6 +4,7 @@
 
 This example demonstrates the recommended approach of using abstractions instead of implementations when injecting dependencies.
 
+
 ```c#
 interface IDependency;
 
@@ -41,8 +42,35 @@ var root = composition.Root;
 root.Run();
 ```
 
-<details open>
-<summary>Class Diagram</summary>
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+
+  public Composition()
+  {
+    _root = this;
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+  }
+
+  public Program Root
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      return new Program(new Service(new Dependency()));
+    }
+  }
+}
+```
+
+Class diagram:
 
 ```mermaid
 classDiagram
@@ -71,37 +99,4 @@ classDiagram
 	Service *--  Dependency : IDependency
 	Composition ..> Program : Program Root
 ```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  public Program Root
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      return new Program(new Service(new Dependency()));
-    }
-  }
-}
-```
-
-</blockquote></details>
 

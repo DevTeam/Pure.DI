@@ -4,6 +4,7 @@
 
 The `// OnNewRoot = On` hint specifies to create a static method that will be called for each registered composition root. This method can be used, for example, to create an _IServiceCollection_ object:
 
+
 ```c#
 interface IDependency;
 
@@ -41,43 +42,7 @@ var dependency = serviceProvider.GetRequiredKeyedService<IDependency>("Dependenc
 service.Dependency.ShouldBe(dependency);
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		-IDependency _
-		-IService _
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	Dependency --|> IDependency : "Dependency Key" 
-	class Dependency {
-		+Dependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(IDependency dependency)
-	}
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	Service o-- "Singleton" Dependency : "Dependency Key"  IDependency
-	Composition ..> Dependency : IDependency _
-	Composition ..> Service : IService _
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -277,5 +242,35 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		-IDependency _
+		-IService _
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	Dependency --|> IDependency : "Dependency Key" 
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(IDependency dependency)
+	}
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	Service o-- "Singleton" Dependency : "Dependency Key"  IDependency
+	Composition ..> Dependency : IDependency _
+	Composition ..> Service : IService _
+```
 

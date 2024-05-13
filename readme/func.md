@@ -4,6 +4,7 @@
 
 _Func<T>_ helps when the logic must enter instances of some type on demand or more than once. This is a very handy mechanism for instance replication. For example it is used when implementing the `Lazy<T>` injection.
 
+
 ```c#
 interface IDependency;
 
@@ -38,43 +39,7 @@ service.Dependencies.Length.ShouldBe(10);
 
 Be careful, replication takes into account the lifetime of the object.
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	Dependency --|> IDependency : 
-	class Dependency {
-		+Dependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(FuncᐸIDependencyᐳ dependencyFactory)
-	}
-	class FuncᐸIDependencyᐳ
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	Service o-- "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
-	Composition ..> Service : IService Root
-	FuncᐸIDependencyᐳ *--  Dependency : IDependency
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -227,5 +192,35 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IService Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(FuncᐸIDependencyᐳ dependencyFactory)
+	}
+	class FuncᐸIDependencyᐳ
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	Service o-- "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+	Composition ..> Service : IService Root
+	FuncᐸIDependencyᐳ *--  Dependency : IDependency
+```
 

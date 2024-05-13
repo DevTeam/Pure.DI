@@ -25,6 +25,7 @@ public class Scenario
     [Fact]
     public void Run()
     {
+        // Resolve = Off
 // {            
         DI.Setup(nameof(Composition))
             .RootBind<IService>("Root").To<Service>();

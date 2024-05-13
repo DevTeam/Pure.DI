@@ -4,6 +4,7 @@
 
 Defining generic type arguments using particular marker types like ```TT``` in this sample is a distinguishing and outstanding feature. This allows binding complex generic types with nested generic types and with any type constraints. For instance ```IService<T1, T2, TList, TDictionary> where T2: struct where TList: IList<T1> where TDictionary: IDictionary<T1, T2> { }``` and its binding to the some implementation ```.Bind<IService<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>().To<Service<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()``` with all checks and code-generation at the compile time. It is clear that this example is exaggerated, it just demonstrates the ease of working with marker types like ```TT, TTEnumerable, TTSet``` and etc. for binding complex generic types.
 
+
 ```c#
 interface IDependency<T>;
 
@@ -42,6 +43,8 @@ class Program<T>(IService<T, int, List<T>, Dictionary<T, int>> service)
 }
 
 DI.Setup(nameof(Composition))
+    // This hint indicates to not generate methods such as Resolve
+    .Hint(Hint.Resolve, "Off")
     .Bind<IDependency<TT>>().To<Dependency<TT>>()
     .Bind<IDependency<TTS>>("value type").To<DependencyStruct<TTS>>()
     .Bind<IService<TT1, TTS2, TTList<TT1>, TTDictionary<TT1, TTS2>>>()
@@ -60,18 +63,41 @@ service.Dependency2.ShouldBeOfType<DependencyStruct<int>>();
 
 It can also be useful in a very simple scenario where, for example, the sequence of type arguments does not match the sequence of arguments of the contract that implements the type.
 
-<details open>
-<summary>Class Diagram</summary>
+The following partial class will be generated:
+
+```c#
+partial class Composition
+{
+  private readonly Composition _root;
+
+  public Composition()
+  {
+    _root = this;
+  }
+
+  internal Composition(Composition parentScope)
+  {
+    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+  }
+
+  public Program<string> Root
+  {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    get
+    {
+      return new Program<string>(new Service<string, int, List<string>, Dictionary<string, int>>(new Dependency<string>(), new DependencyStruct<int>()));
+    }
+  }
+}
+```
+
+Class diagram:
 
 ```mermaid
 classDiagram
 	class Composition {
 		<<partial>>
 		+ProgramᐸStringᐳ Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
 	}
 	class ProgramᐸStringᐳ {
 		+Program(IServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ service)
@@ -102,151 +128,4 @@ classDiagram
 	ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *--  DependencyᐸStringᐳ : IDependencyᐸStringᐳ
 	ServiceᐸStringˏInt32ˏListᐸStringᐳˏDictionaryᐸStringˏInt32ᐳᐳ *--  DependencyStructᐸInt32ᐳ : "value type"  IDependencyᐸInt32ᐳ
 ```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
-
-```c#
-partial class Composition
-{
-  private readonly Composition _root;
-
-  public Composition()
-  {
-    _root = this;
-  }
-
-  internal Composition(Composition parentScope)
-  {
-    _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
-  }
-
-  public Program<string> Root
-  {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    get
-    {
-      return new Program<string>(new Service<string, int, List<string>, Dictionary<string, int>>(new Dependency<string>(), new DependencyStruct<int>()));
-    }
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public T Resolve<T>()
-  {
-    return Resolver<T>.Value.Resolve(this);
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public T Resolve<T>(object? tag)
-  {
-    return Resolver<T>.Value.ResolveByTag(this, tag);
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public object Resolve(Type type)
-  {
-    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _buckets[index];
-    return pair.Key == type ? pair.Value.Resolve(this) : Resolve(type, index);
-  }
-
-  [MethodImpl(MethodImplOptions.NoInlining)]
-  private object Resolve(Type type, int index)
-  {
-    var finish = index + _bucketSize;
-    while (++index < finish)
-    {
-      ref var pair = ref _buckets[index];
-      if (pair.Key == type)
-      {
-        return pair.Value.Resolve(this);
-      }
-    }
-
-    throw new InvalidOperationException($"{CannotResolveMessage} {OfTypeMessage} {type}.");
-  }
-
-  [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public object Resolve(Type type, object? tag)
-  {
-    var index = (int)(_bucketSize * ((uint)RuntimeHelpers.GetHashCode(type) % 1));
-    ref var pair = ref _buckets[index];
-    return pair.Key == type ? pair.Value.ResolveByTag(this, tag) : Resolve(type, tag, index);
-  }
-
-  [MethodImpl(MethodImplOptions.NoInlining)]
-  private object Resolve(Type type, object? tag, int index)
-  {
-    var finish = index + _bucketSize;
-    while (++index < finish)
-    {
-      ref var pair = ref _buckets[index];
-      if (pair.Key == type)
-      {
-        return pair.Value.ResolveByTag(this, tag);
-      }
-    }
-
-    throw new InvalidOperationException($"{CannotResolveMessage} \"{tag}\" {OfTypeMessage} {type}.");
-  }
-
-  private readonly static int _bucketSize;
-  private readonly static Pair<Type, IResolver<Composition, object>>[] _buckets;
-
-  static Composition()
-  {
-    var valResolver_0000 = new Resolver_0000();
-    Resolver<Program<string>>.Value = valResolver_0000;
-    _buckets = Buckets<Type, IResolver<Composition, object>>.Create(
-      1,
-      out _bucketSize,
-      new Pair<Type, IResolver<Composition, object>>[1]
-      {
-         new Pair<Type, IResolver<Composition, object>>(typeof(Program<string>), valResolver_0000)
-      });
-  }
-
-  private const string CannotResolveMessage = "Cannot resolve composition root ";
-  private const string OfTypeMessage = "of type ";
-
-  private class Resolver<T>: IResolver<Composition, T>
-  {
-    public static IResolver<Composition, T> Value = new Resolver<T>();
-
-    public virtual T Resolve(Composition composite)
-    {
-      throw new InvalidOperationException($"{CannotResolveMessage}{OfTypeMessage}{typeof(T)}.");
-    }
-
-    public virtual T ResolveByTag(Composition composite, object tag)
-    {
-      throw new InvalidOperationException($"{CannotResolveMessage}\"{tag}\" {OfTypeMessage}{typeof(T)}.");
-    }
-  }
-
-  private sealed class Resolver_0000: Resolver<Program<string>>
-  {
-    public override Program<string> Resolve(Composition composition)
-    {
-      return composition.Root;
-    }
-
-    public override Program<string> ResolveByTag(Composition composition, object tag)
-    {
-      switch (tag)
-      {
-        case null:
-          return composition.Root;
-
-        default:
-          return base.ResolveByTag(composition, tag);
-      }
-    }
-  }
-}
-```
-
-</blockquote></details>
 

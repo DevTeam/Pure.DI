@@ -4,6 +4,7 @@
 
 Specifying `IEnumerable<T>` as the injection type allows you to inject instances of all bindings that implement type `T` in a lazy fashion - the instances will be provided one by one, in order corresponding to the sequence of bindings.
 
+
 ```c#
 interface IDependency;
 
@@ -37,48 +38,7 @@ service.Dependencies[0].ShouldBeOfType<AbcDependency>();
 service.Dependencies[1].ShouldBeOfType<XyzDependency>();
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	AbcDependency --|> IDependency : 
-	class AbcDependency {
-		+AbcDependency()
-	}
-	XyzDependency --|> IDependency : 2 
-	class XyzDependency {
-		+XyzDependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(IEnumerableᐸIDependencyᐳ dependencies)
-	}
-	class IEnumerableᐸIDependencyᐳ
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	Service o-- "PerBlock" IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ
-	Composition ..> Service : IService Root
-	IEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency
-	IEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -227,5 +187,40 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IService Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	AbcDependency --|> IDependency : 
+	class AbcDependency {
+		+AbcDependency()
+	}
+	XyzDependency --|> IDependency : 2 
+	class XyzDependency {
+		+XyzDependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(IEnumerableᐸIDependencyᐳ dependencies)
+	}
+	class IEnumerableᐸIDependencyᐳ
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	Service o-- "PerBlock" IEnumerableᐸIDependencyᐳ : IEnumerableᐸIDependencyᐳ
+	Composition ..> Service : IService Root
+	IEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency
+	IEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
+```
 

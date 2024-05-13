@@ -4,6 +4,7 @@
 
 Specifying `IAsyncEnumerable<T>` as the injection type allows instances of all bindings implementing type `T` to be injected in an asynchronous-lazy manner - the instances will be provided one at a time, in an order corresponding to the sequence of the bindings.
 
+
 ```c#
 interface IDependency;
 
@@ -45,48 +46,7 @@ dependencies[0].ShouldBeOfType<AbcDependency>();
 dependencies[1].ShouldBeOfType<XyzDependency>();
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	AbcDependency --|> IDependency : 
-	class AbcDependency {
-		+AbcDependency()
-	}
-	XyzDependency --|> IDependency : 2 
-	class XyzDependency {
-		+XyzDependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(IAsyncEnumerableᐸIDependencyᐳ dependencies)
-	}
-	class IAsyncEnumerableᐸIDependencyᐳ
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	Service *--  IAsyncEnumerableᐸIDependencyᐳ : IAsyncEnumerableᐸIDependencyᐳ
-	Composition ..> Service : IService Root
-	IAsyncEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency
-	IAsyncEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -236,5 +196,40 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IService Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	AbcDependency --|> IDependency : 
+	class AbcDependency {
+		+AbcDependency()
+	}
+	XyzDependency --|> IDependency : 2 
+	class XyzDependency {
+		+XyzDependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(IAsyncEnumerableᐸIDependencyᐳ dependencies)
+	}
+	class IAsyncEnumerableᐸIDependencyᐳ
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	Service *--  IAsyncEnumerableᐸIDependencyᐳ : IAsyncEnumerableᐸIDependencyᐳ
+	Composition ..> Service : IService Root
+	IAsyncEnumerableᐸIDependencyᐳ *--  AbcDependency : IDependency
+	IAsyncEnumerableᐸIDependencyᐳ *--  XyzDependency : 2  IDependency
+```
 

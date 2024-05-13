@@ -63,8 +63,7 @@ classDiagram
 
 ### Generated code
 
-<details>
-<summary>Pure.DI-generated partial class Transient</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Transient
@@ -202,6 +201,3 @@ partial class Transient
   }
 }
 ```
-
-</blockquote></details>
-

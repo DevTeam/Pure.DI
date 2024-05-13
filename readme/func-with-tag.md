@@ -2,6 +2,7 @@
 
 [![CSharp](https://img.shields.io/badge/C%23-code-blue.svg)](../tests/Pure.DI.UsageTests/BaseClassLibrary/FuncWithTagScenario.cs)
 
+
 ```c#
 interface IDependency;
 
@@ -35,43 +36,7 @@ var service = composition.Root;
 service.Dependencies.Length.ShouldBe(10);
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IService Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	Dependency --|> IDependency : "my tag" 
-	class Dependency {
-		+Dependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(FuncᐸIDependencyᐳ dependencyFactory)
-	}
-	class FuncᐸIDependencyᐳ
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	Service o-- "PerResolve" FuncᐸIDependencyᐳ : "my tag"  FuncᐸIDependencyᐳ
-	Composition ..> Service : IService Root
-	FuncᐸIDependencyᐳ *--  Dependency : "my tag"  IDependency
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -224,5 +189,35 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IService Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	Dependency --|> IDependency : "my tag" 
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(FuncᐸIDependencyᐳ dependencyFactory)
+	}
+	class FuncᐸIDependencyᐳ
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	Service o-- "PerResolve" FuncᐸIDependencyᐳ : "my tag"  FuncᐸIDependencyᐳ
+	Composition ..> Service : IService Root
+	FuncᐸIDependencyᐳ *--  Dependency : "my tag"  IDependency
+```
 

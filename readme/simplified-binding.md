@@ -4,6 +4,7 @@
 
 You can use the `Bind(...)` method without type parameters. In this case binding will be performed for the implementation type itself, and if the implementation is not an abstract type or structure, for all abstract but NOT special types that are directly implemented.
 
+
 ```c#
 interface IDependency;
 
@@ -52,39 +53,7 @@ Special types from the list above will not be added to bindings:
 - `System.IAsyncResult`
 - `System.AsyncCallback`
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+Service MyService
-	}
-	class Service {
-		+Service(Dependency dependencyImpl, IDependency dependency, IOtherDependency otherDependency)
-	}
-	Dependency --|> IDependency : 
-	Dependency --|> IOtherDependency : 
-	class Dependency {
-		+Dependency()
-	}
-	class IDependency {
-		<<interface>>
-	}
-	class IOtherDependency {
-		<<interface>>
-	}
-	Service o-- "PerBlock" Dependency : Dependency
-	Service o-- "PerBlock" Dependency : IDependency
-	Service o-- "PerBlock" Dependency : IOtherDependency
-	Composition ..> Service : Service MyService
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -113,5 +82,31 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+Service MyService
+	}
+	class Service {
+		+Service(Dependency dependencyImpl, IDependency dependency, IOtherDependency otherDependency)
+	}
+	Dependency --|> IDependency : 
+	Dependency --|> IOtherDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	class IDependency {
+		<<interface>>
+	}
+	class IOtherDependency {
+		<<interface>>
+	}
+	Service o-- "PerBlock" Dependency : Dependency
+	Service o-- "PerBlock" Dependency : IDependency
+	Service o-- "PerBlock" Dependency : IOtherDependency
+	Composition ..> Service : Service MyService
+```
 

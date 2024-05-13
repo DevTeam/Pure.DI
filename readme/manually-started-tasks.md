@@ -4,6 +4,7 @@
 
 By default, tasks are started automatically when they are injected. But you can override this behavior as shown in the example below. It is also recommended to add a binding for <c>CancellationToken</c> to be able to cancel the execution of a task.
 
+
 ```c#
 interface IDependency
 {
@@ -66,48 +67,7 @@ var service = composition.GetRoot(cancellationTokenSource.Token);
 await service.RunAsync(cancellationTokenSource.Token);
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IService GetRoot(System.Threading.CancellationToken cancellationToken)
-	}
-	class TaskFactory
-	class CancellationToken
-	Dependency --|> IDependency : 
-	class Dependency {
-		+Dependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(TaskᐸIDependencyᐳ dependencyTask)
-	}
-	class TaskᐸIDependencyᐳ
-	class FuncᐸIDependencyᐳ
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	TaskFactory o-- CancellationToken : Argument "cancellationToken"
-	TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-	TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-	TaskFactory *--  TaskScheduler : TaskScheduler
-	Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
-	Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)
-	TaskᐸIDependencyᐳ o-- "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
-	TaskᐸIDependencyᐳ o-- CancellationToken : Argument "cancellationToken"
-	FuncᐸIDependencyᐳ *--  Dependency : IDependency
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -149,5 +109,40 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IService GetRoot(System.Threading.CancellationToken cancellationToken)
+	}
+	class TaskFactory
+	class CancellationToken
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(TaskᐸIDependencyᐳ dependencyTask)
+	}
+	class TaskᐸIDependencyᐳ
+	class FuncᐸIDependencyᐳ
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	TaskFactory o-- CancellationToken : Argument "cancellationToken"
+	TaskFactory *--  TaskCreationOptions : TaskCreationOptions
+	TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
+	TaskFactory *--  TaskScheduler : TaskScheduler
+	Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
+	Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)
+	TaskᐸIDependencyᐳ o-- "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+	TaskᐸIDependencyᐳ o-- CancellationToken : Argument "cancellationToken"
+	FuncᐸIDependencyᐳ *--  Dependency : IDependency
+```
 

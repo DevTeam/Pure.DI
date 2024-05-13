@@ -11,6 +11,7 @@ By default, tasks are started automatically when they are injected. It is recomm
 
 But you can always override them, as in the example below for <c>TaskScheduler.Current</c>.
 
+
 ```c#
 interface IDependency
 {
@@ -57,56 +58,7 @@ var service = composition.GetRoot(cancellationTokenSource.Token);
 await service.RunAsync(cancellationTokenSource.Token);
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+IService GetRoot(System.Threading.CancellationToken cancellationToken)
-	}
-	class TaskCreationOptions
-	class TaskContinuationOptions
-	class TaskFactory
-	class TaskScheduler
-	class CancellationToken
-	Dependency --|> IDependency : 
-	class Dependency {
-		+Dependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(TaskᐸIDependencyᐳ dependencyTask)
-	}
-	class TaskᐸIDependencyᐳ
-	class FuncᐸIDependencyᐳ
-	class TaskFactoryᐸIDependencyᐳ
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	TaskFactory o-- CancellationToken : Argument "cancellationToken"
-	TaskFactory *--  TaskCreationOptions : TaskCreationOptions
-	TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
-	TaskFactory *--  TaskScheduler : TaskScheduler
-	Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
-	Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)
-	TaskᐸIDependencyᐳ o-- "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
-	TaskᐸIDependencyᐳ o-- "PerBlock" TaskFactoryᐸIDependencyᐳ : TaskFactoryᐸIDependencyᐳ
-	FuncᐸIDependencyᐳ *--  Dependency : IDependency
-	TaskFactoryᐸIDependencyᐳ o-- CancellationToken : Argument "cancellationToken"
-	TaskFactoryᐸIDependencyᐳ *--  TaskCreationOptions : TaskCreationOptions
-	TaskFactoryᐸIDependencyᐳ *--  TaskContinuationOptions : TaskContinuationOptions
-	TaskFactoryᐸIDependencyᐳ *--  TaskScheduler : TaskScheduler
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -159,5 +111,48 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+IService GetRoot(System.Threading.CancellationToken cancellationToken)
+	}
+	class TaskCreationOptions
+	class TaskContinuationOptions
+	class TaskFactory
+	class TaskScheduler
+	class CancellationToken
+	Dependency --|> IDependency : 
+	class Dependency {
+		+Dependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(TaskᐸIDependencyᐳ dependencyTask)
+	}
+	class TaskᐸIDependencyᐳ
+	class FuncᐸIDependencyᐳ
+	class TaskFactoryᐸIDependencyᐳ
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	TaskFactory o-- CancellationToken : Argument "cancellationToken"
+	TaskFactory *--  TaskCreationOptions : TaskCreationOptions
+	TaskFactory *--  TaskContinuationOptions : TaskContinuationOptions
+	TaskFactory *--  TaskScheduler : TaskScheduler
+	Service *--  TaskᐸIDependencyᐳ : TaskᐸIDependencyᐳ
+	Composition ..> Service : IService GetRoot(System.Threading.CancellationToken cancellationToken)
+	TaskᐸIDependencyᐳ o-- "PerResolve" FuncᐸIDependencyᐳ : FuncᐸIDependencyᐳ
+	TaskᐸIDependencyᐳ o-- "PerBlock" TaskFactoryᐸIDependencyᐳ : TaskFactoryᐸIDependencyᐳ
+	FuncᐸIDependencyᐳ *--  Dependency : IDependency
+	TaskFactoryᐸIDependencyᐳ o-- CancellationToken : Argument "cancellationToken"
+	TaskFactoryᐸIDependencyᐳ *--  TaskCreationOptions : TaskCreationOptions
+	TaskFactoryᐸIDependencyᐳ *--  TaskContinuationOptions : TaskContinuationOptions
+	TaskFactoryᐸIDependencyᐳ *--  TaskScheduler : TaskScheduler
+```
 

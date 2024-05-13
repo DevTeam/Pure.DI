@@ -4,6 +4,7 @@
 
 Accumulators allow you to accumulate instances of certain types and lifetimes.
 
+
 ```c#
 interface IAccumulating;
 
@@ -40,53 +41,7 @@ accumulator[2].ShouldBeOfType<Service>();
         
 ```
 
-<details open>
-<summary>Class Diagram</summary>
-
-```mermaid
-classDiagram
-	class Composition {
-		<<partial>>
-		+ValueTupleᐸIServiceˏMyAccumulatorᐳ Root
-		+ T ResolveᐸTᐳ()
-		+ T ResolveᐸTᐳ(object? tag)
-		+ object Resolve(Type type)
-		+ object Resolve(Type type, object? tag)
-	}
-	class MyAccumulator
-	class ValueTupleᐸIServiceˏMyAccumulatorᐳ {
-		+ValueTuple(IService item1, MyAccumulator item2)
-	}
-	AbcDependency --|> IDependency : 
-	class AbcDependency {
-		+AbcDependency()
-	}
-	XyzDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency) 
-	class XyzDependency {
-		+XyzDependency()
-	}
-	Service --|> IService : 
-	class Service {
-		+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
-	}
-	class IDependency {
-		<<interface>>
-	}
-	class IService {
-		<<interface>>
-	}
-	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  Service : IService
-	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  MyAccumulator : MyAccumulator
-	Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency)  IDependency
-	Service o-- "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency)  IDependency
-	Service o-- "PerBlock" AbcDependency : IDependency
-	Composition ..> ValueTupleᐸIServiceˏMyAccumulatorᐳ : ValueTupleᐸIServiceˏMyAccumulatorᐳ Root
-```
-
-</details>
-
-<details>
-<summary>Pure.DI-generated partial class Composition</summary><blockquote>
+The following partial class will be generated:
 
 ```c#
 partial class Composition
@@ -267,5 +222,45 @@ partial class Composition
 }
 ```
 
-</blockquote></details>
+Class diagram:
+
+```mermaid
+classDiagram
+	class Composition {
+		<<partial>>
+		+ValueTupleᐸIServiceˏMyAccumulatorᐳ Root
+		+ T ResolveᐸTᐳ()
+		+ T ResolveᐸTᐳ(object? tag)
+		+ object Resolve(Type type)
+		+ object Resolve(Type type, object? tag)
+	}
+	class MyAccumulator
+	class ValueTupleᐸIServiceˏMyAccumulatorᐳ {
+		+ValueTuple(IService item1, MyAccumulator item2)
+	}
+	AbcDependency --|> IDependency : 
+	class AbcDependency {
+		+AbcDependency()
+	}
+	XyzDependency --|> IDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency) 
+	class XyzDependency {
+		+XyzDependency()
+	}
+	Service --|> IService : 
+	class Service {
+		+Service(IDependency dependency1, IDependency dependency2, IDependency dependency3)
+	}
+	class IDependency {
+		<<interface>>
+	}
+	class IService {
+		<<interface>>
+	}
+	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  Service : IService
+	ValueTupleᐸIServiceˏMyAccumulatorᐳ *--  MyAccumulator : MyAccumulator
+	Service *--  AbcDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.AbcDependency)  IDependency
+	Service o-- "Singleton" XyzDependency : typeof(Pure.DI.UsageTests.Advanced.AccumulatorScenario.XyzDependency)  IDependency
+	Service o-- "PerBlock" AbcDependency : IDependency
+	Composition ..> ValueTupleᐸIServiceˏMyAccumulatorᐳ : ValueTupleᐸIServiceˏMyAccumulatorᐳ Root
+```
 
