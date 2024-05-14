@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=3
+$p=7
 $d=Disposable singleton
 $h=To dispose all created singleton instances, simply dispose the composition instance:
 $f=A composition class becomes disposable if it creates at least one disposable singleton instance. 

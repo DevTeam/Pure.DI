@@ -1,12 +1,13 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 namespace Pure.DI.Core.Code;
 
-internal class TypeResolver(IMarker marker)
+internal class TypeResolver(
+    IMarker marker,
+    [Tag("GenericType")] IIdGenerator idGenerator)
     : ITypeResolver
 {
     private readonly Dictionary<ITypeSymbol, string> _names = new(SymbolEqualityComparer.Default);
-    private int _markerCounter;
-
+    
     public TypeDescription Resolve(ITypeSymbol type) => Resolve(type, default);
 
     private TypeDescription Resolve(ITypeSymbol type, ITypeParameterSymbol? typeParam)
@@ -19,11 +20,11 @@ internal class TypeResolver(IMarker marker)
                 {
                     if (!_names.TryGetValue(type, out var typeName))
                     {
-                        typeName = _markerCounter == 0 ? "T" : $"T{_markerCounter}";
+                        var id = idGenerator.Generate();
+                        typeName = id == 0 ? "T" : $"T{id}";
                         _names.Add(type, typeName);
                     }
                     
-                    _markerCounter++;
                     description = new TypeDescription(typeName, ImmutableArray.Create(new TypeDescription(typeName, ImmutableArray<TypeDescription>.Empty, typeParam)), typeParam);
                 }
                 else

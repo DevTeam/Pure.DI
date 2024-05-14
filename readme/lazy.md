@@ -60,13 +60,13 @@ partial class Composition
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-          var value_1 = new Dependency();
-          return value_1;
+          var value_0 = new Dependency();
+          return value_0;
       });
       Lazy<IDependency> transient1_Lazy;
       {
-          var factory_2 = perResolve40_Func!;
-          transient1_Lazy = new Lazy<IDependency>(factory_2, true);
+          var factory_1 = perResolve40_Func!;
+          transient1_Lazy = new Lazy<IDependency>(factory_1, true);
       }
       return new Service(transient1_Lazy);
     }

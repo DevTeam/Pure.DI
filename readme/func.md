@@ -69,8 +69,8 @@ partial class Composition
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       () =>
       {
-          var value_1 = new Dependency();
-          return value_1;
+          var value_0 = new Dependency();
+          return value_0;
       });
       return new Service(perResolve39_Func!);
     }

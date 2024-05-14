@@ -69,18 +69,18 @@ partial class Composition
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T54> GetMyRoot<T54>()
+  public IService<T2> GetMyRoot<T2>()
   {
-    return new Service<T54>(new Dependency<T54>());
+    return new Service<T2>(new Dependency<T2>());
   }
 
   [MethodImpl(MethodImplOptions.AggressiveInlining)]
-  public IService<T54> GetOtherService<T54>()
+  public IService<T2> GetOtherService<T2>()
   {
-    OtherService<T54> transient0_OtherService;
+    OtherService<T2> transient0_OtherService;
     {
-        var dependency_1 = new Dependency<T54>();
-        transient0_OtherService = new OtherService<T54>(dependency_1);
+        var dependency_0 = new Dependency<T2>();
+        transient0_OtherService = new OtherService<T2>(dependency_0);
     }
     return transient0_OtherService;
   }
@@ -93,28 +93,28 @@ Class diagram:
 classDiagram
 	class Composition {
 		<<partial>>
-		+IServiceᐸT54ᐳ GetMyRootᐸT54ᐳ()
-		+IServiceᐸT54ᐳ GetOtherServiceᐸT54ᐳ()
+		+IServiceᐸT2ᐳ GetMyRootᐸT2ᐳ()
+		+IServiceᐸT2ᐳ GetOtherServiceᐸT2ᐳ()
 	}
-	ServiceᐸT54ᐳ --|> IServiceᐸT54ᐳ
-	class ServiceᐸT54ᐳ {
-		+Service(IDependencyᐸT54ᐳ dependency)
+	ServiceᐸT2ᐳ --|> IServiceᐸT2ᐳ
+	class ServiceᐸT2ᐳ {
+		+Service(IDependencyᐸT2ᐳ dependency)
 	}
-	OtherServiceᐸT54ᐳ --|> IServiceᐸT54ᐳ : "Other" 
-	class OtherServiceᐸT54ᐳ
-	DependencyᐸT54ᐳ --|> IDependencyᐸT54ᐳ
-	class DependencyᐸT54ᐳ {
+	OtherServiceᐸT2ᐳ --|> IServiceᐸT2ᐳ : "Other" 
+	class OtherServiceᐸT2ᐳ
+	DependencyᐸT2ᐳ --|> IDependencyᐸT2ᐳ
+	class DependencyᐸT2ᐳ {
 		+Dependency()
 	}
-	class IServiceᐸT54ᐳ {
+	class IServiceᐸT2ᐳ {
 		<<interface>>
 	}
-	class IDependencyᐸT54ᐳ {
+	class IDependencyᐸT2ᐳ {
 		<<interface>>
 	}
-	Composition ..> ServiceᐸT54ᐳ : IServiceᐸT54ᐳ GetMyRootᐸT54ᐳ()
-	Composition ..> OtherServiceᐸT54ᐳ : IServiceᐸT54ᐳ GetOtherServiceᐸT54ᐳ()
-	ServiceᐸT54ᐳ *--  DependencyᐸT54ᐳ : IDependencyᐸT54ᐳ
-	OtherServiceᐸT54ᐳ *--  DependencyᐸT54ᐳ : IDependencyᐸT54ᐳ
+	Composition ..> ServiceᐸT2ᐳ : IServiceᐸT2ᐳ GetMyRootᐸT2ᐳ()
+	Composition ..> OtherServiceᐸT2ᐳ : IServiceᐸT2ᐳ GetOtherServiceᐸT2ᐳ()
+	ServiceᐸT2ᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
+	OtherServiceᐸT2ᐳ *--  DependencyᐸT2ᐳ : IDependencyᐸT2ᐳ
 ```
 

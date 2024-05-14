@@ -101,16 +101,16 @@ partial class Composition
           }
           Owned<IDependency> perBlock1_Owned;
           {
-              var owned_2 = accumulator38;
-              var value_3 = transient3_Dependency;
-              perBlock1_Owned = new Owned<IDependency>(value_3, owned_2);
+              var owned_1 = accumulator38;
+              var value_2 = transient3_Dependency;
+              perBlock1_Owned = new Owned<IDependency>(value_2, owned_1);
           }
           lock (_lock)
           {
               accumulator38.Add(perBlock1_Owned);
           }
-          var value_1 = perBlock1_Owned;
-          return value_1;
+          var value_0 = perBlock1_Owned;
+          return value_0;
       });
       return new Service(perResolve39_Func!);
     }

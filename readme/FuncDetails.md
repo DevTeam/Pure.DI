@@ -85,8 +85,8 @@ partial class Func
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-        var value_1 = newService3(newService4(), newService4());
-        return value_1;
+        var value_0 = newService3(newService4(), newService4());
+        return value_0;
     });
     return newCompositionRoot(newService1(newService2Func(perBlock10_Func)), newService2Func(perBlock10_Func), newService2Func(perBlock10_Func), newService2Func(perBlock10_Func), newService3(newService4(), newService4()), newService4(), newService4());
   }

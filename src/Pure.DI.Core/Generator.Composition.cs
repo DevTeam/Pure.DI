@@ -123,5 +123,6 @@ public partial class Generator
             .Bind().To<AsyncDisposableSettings>()
             .Bind().To<Filter>()
             .Bind("UniqueTags").To<IdGenerator>()
+            .Bind("GenericType").To<IdGenerator>()
             .Bind().To<IdGenerator>();
 }

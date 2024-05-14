@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=1
+$p=4
 $d=Scope
 $h=The _Scoped_ lifetime ensures that there will be a single instance of the dependency for each scope.
 */

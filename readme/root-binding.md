@@ -6,11 +6,16 @@ You might want to register some services as roots. You can use `RootBind<T>()` m
 
 
 ```c#
+interface IDependency;
+
+class Dependency: IDependency;
+
 interface IService;
 
-class Service : IService;
+class Service(IDependency dependency) : IService;
 
 DI.Setup(nameof(Composition))
+    .Bind().As(Lifetime.Singleton).To<Dependency>()
     .RootBind<IService>("Root").To<Service>();
 
 var composition = new Composition();
@@ -23,15 +28,19 @@ The following partial class will be generated:
 partial class Composition
 {
   private readonly Composition _root;
+  private readonly object _lock;
+  private Dependency? _singleton36_Dependency;
 
   public Composition()
   {
     _root = this;
+    _lock = new object();
   }
 
   internal Composition(Composition parentScope)
   {
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
+    _lock = _root._lock;
   }
 
   public IService Root
@@ -39,7 +48,17 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
     {
-      return new Service();
+      if (_root._singleton36_Dependency == null)
+      {
+          lock (_lock)
+          {
+              if (_root._singleton36_Dependency == null)
+              {
+                  _root._singleton36_Dependency = new Dependency();
+              }
+          }
+      }
+      return new Service(_root._singleton36_Dependency!);
     }
   }
 }
@@ -53,13 +72,21 @@ classDiagram
 		<<partial>>
 		+IService Root
 	}
+	Dependency --|> IDependency
+	class Dependency {
+		+Dependency()
+	}
 	Service --|> IService
 	class Service {
-		+Service()
+		+Service(IDependency dependency)
+	}
+	class IDependency {
+		<<interface>>
 	}
 	class IService {
 		<<interface>>
 	}
+	Service o-- "Singleton" Dependency : IDependency
 	Composition ..> Service : IService Root
 ```
 

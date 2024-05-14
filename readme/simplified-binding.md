@@ -12,10 +12,13 @@ interface IOtherDependency;
 
 class Dependency: IDependency, IOtherDependency;
 
+interface IService;
+
 class Service(
     Dependency dependencyImpl,
     IDependency dependency,
-    IOtherDependency otherDependency);
+    IOtherDependency otherDependency)
+    : IService;
 
 // Specifies to create a partial class "Composition"
 DI.Setup("Composition")
@@ -27,9 +30,10 @@ DI.Setup("Composition")
     //  .As(Lifetime.PerBlock)
     //  .To<Dependency>()
     .Bind().As(Lifetime.PerBlock).To<Dependency>()
+    .Bind().To<Service>()
 
     // Specifies to create a property "MyService"
-    .Root<Service>("MyService");
+    .Root<IService>("MyService");
         
 var composition = new Composition();
 var service = composition.MyService;
@@ -70,7 +74,7 @@ partial class Composition
     _root = (parentScope ?? throw new ArgumentNullException(nameof(parentScope)))._root;
   }
 
-  public Service MyService
+  public IService MyService
   {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     get
@@ -88,15 +92,16 @@ Class diagram:
 classDiagram
 	class Composition {
 		<<partial>>
-		+Service MyService
-	}
-	class Service {
-		+Service(Dependency dependencyImpl, IDependency dependency, IOtherDependency otherDependency)
+		+IService MyService
 	}
 	Dependency --|> IDependency
 	Dependency --|> IOtherDependency
 	class Dependency {
 		+Dependency()
+	}
+	Service --|> IService
+	class Service {
+		+Service(Dependency dependencyImpl, IDependency dependency, IOtherDependency otherDependency)
 	}
 	class IDependency {
 		<<interface>>
@@ -104,9 +109,12 @@ classDiagram
 	class IOtherDependency {
 		<<interface>>
 	}
+	class IService {
+		<<interface>>
+	}
 	Service o-- "PerBlock" Dependency : Dependency
 	Service o-- "PerBlock" Dependency : IDependency
 	Service o-- "PerBlock" Dependency : IOtherDependency
-	Composition ..> Service : Service MyService
+	Composition ..> Service : IService MyService
 ```
 

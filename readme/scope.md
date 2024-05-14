@@ -136,8 +136,8 @@ partial class Composition: IDisposable
       () =>
       {
           Composition transient2_Composition = this;
-          var value_1 = new Session(transient2_Composition);
-          return value_1;
+          var value_0 = new Session(transient2_Composition);
+          return value_0;
       });
       return new Program(perResolve43_Func!);
     }

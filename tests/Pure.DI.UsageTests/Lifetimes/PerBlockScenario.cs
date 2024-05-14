@@ -1,6 +1,6 @@
 ﻿/*
 $v=true
-$p=2
+$p=3
 $d=PerBlock
 $h=The _PreBlock_ lifetime does not guarantee that there will be a single instance of the dependency for each root of the composition, but is useful to reduce the number of instances of type.
 */
@@ -20,15 +20,15 @@ class Dependency : IDependency;
 class Service(
     IDependency dep1,
     IDependency dep2,
-    Lazy<(IDependency dep3, IDependency dep4)> deps)
+    (IDependency dep3, IDependency dep4) deps)
 {
     public IDependency Dep1 { get; } = dep1;
 
     public IDependency Dep2 { get; } = dep2;
 
-    public IDependency Dep3 { get; } = deps.Value.dep3;
+    public IDependency Dep3 { get; } = deps.dep3;
 
-    public IDependency Dep4 { get; } = deps.Value.dep4;
+    public IDependency Dep4 { get; } = deps.dep4;
 }
 // }
 
@@ -42,6 +42,7 @@ public class Scenario
             // This hint indicates to not generate methods such as Resolve
             .Hint(Hint.Resolve, "Off")
             .Bind().As(Lifetime.PerBlock).To<Dependency>()
+            .Bind().As(Lifetime.Singleton).To<(IDependency dep3, IDependency dep4)>()
             
             // Composition root
             .Root<Service>("Root");

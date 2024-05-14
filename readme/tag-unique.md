@@ -202,11 +202,11 @@ classDiagram
 		+Service(IEnumerableᐸIDependencyᐸStringᐳᐳ dependencies)
 	}
 	class IEnumerableᐸIDependencyᐸStringᐳᐳ
-	AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : Unique tag 1 
+	AbcDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : Unique tag 0 
 	class AbcDependencyᐸStringᐳ {
 		+AbcDependency()
 	}
-	XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : Unique tag 2 
+	XyzDependencyᐸStringᐳ --|> IDependencyᐸStringᐳ : Unique tag 1 
 	class XyzDependencyᐸStringᐳ {
 		+XyzDependency()
 	}
@@ -218,7 +218,7 @@ classDiagram
 	}
 	Composition ..> ServiceᐸStringᐳ : IServiceᐸStringᐳ Root
 	ServiceᐸStringᐳ o-- "PerBlock" IEnumerableᐸIDependencyᐸStringᐳᐳ : IEnumerableᐸIDependencyᐸStringᐳᐳ
-	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : Unique tag 1  IDependencyᐸStringᐳ
-	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : Unique tag 2  IDependencyᐸStringᐳ
+	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  AbcDependencyᐸStringᐳ : Unique tag 0  IDependencyᐸStringᐳ
+	IEnumerableᐸIDependencyᐸStringᐳᐳ *--  XyzDependencyᐸStringᐳ : Unique tag 1  IDependencyᐸStringᐳ
 ```
 

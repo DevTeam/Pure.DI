@@ -117,13 +117,13 @@ partial class Composition
           Composition transient2_Composition = this;
           IService transient1_IService;
           {
-              var baseComposition_2 = transient2_Composition;
+              var baseComposition_1 = transient2_Composition;
               // Creates a session
-              var session_3 = new Composition(baseComposition_2);
-              transient1_IService = session_3.SessionRoot;
+              var session_2 = new Composition(baseComposition_1);
+              transient1_IService = session_2.SessionRoot;
           }
-          var value_1 = transient1_IService;
-          return value_1;
+          var value_0 = transient1_IService;
+          return value_0;
       });
       return new Program(perResolve43_Func!);
     }

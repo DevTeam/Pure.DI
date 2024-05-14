@@ -36,12 +36,15 @@ DI.Setup(nameof(Composition))
     .Bind().To(_ => DateTimeOffset.Now)
     .Bind<IDependency>().To(ctx =>
     {
+        // When building a composition of objects,
+        // all of this code will be outside the lambda function:
+
         // Some custom logic for creating an instance.
         // For example, here's how you can inject
         // an instance of a particular type
         ctx.Inject(out Dependency dependency);
 
-        // And do something about it
+        // And do something about it.
         dependency.Initialize();
 
         // And at the end return an instance
@@ -82,9 +85,9 @@ partial class Composition
       DateTimeOffset transient3_DateTimeOffset = DateTimeOffset.Now;
       Dependency transient1_Dependency;
       {
-          var dependency_1 = new Dependency(transient3_DateTimeOffset);
-          dependency_1.Initialize();
-          transient1_Dependency = dependency_1;
+          var dependency_0 = new Dependency(transient3_DateTimeOffset);
+          dependency_0.Initialize();
+          transient1_Dependency = dependency_0;
       }
       return new Service(transient1_Dependency);
     }

@@ -95,14 +95,14 @@ partial class Composition
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-        var value_1 = new Dependency();
-        return value_1;
+        var value_0 = new Dependency();
+        return value_0;
     });
     Task<IDependency> transient1_Task;
     {
-        var factory_2 = perResolve42_Func!;
-        var cancellationToken_3 = cancellationToken;
-        transient1_Task = new Task<IDependency>(factory_2, cancellationToken_3);
+        var factory_1 = perResolve42_Func!;
+        var cancellationToken_2 = cancellationToken;
+        transient1_Task = new Task<IDependency>(factory_1, cancellationToken_2);
     }
     return new Service(transient1_Task);
   }

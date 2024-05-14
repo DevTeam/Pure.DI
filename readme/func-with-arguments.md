@@ -105,8 +105,8 @@ partial class Composition
                   }
               }
           }
-          var dependency_1 = new Dependency(_root._singleton36_Clock!, transient3_Int32);
-          return dependency_1;
+          var dependency_0 = new Dependency(_root._singleton36_Clock!, transient3_Int32);
+          return dependency_0;
       };
       return new Service(transient1_Func);
     }

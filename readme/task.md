@@ -87,24 +87,24 @@ partial class Composition
     TaskCreationOptions transient3_TaskCreationOptions = TaskCreationOptions.None;
     TaskFactory<IDependency> perBlock2_TaskFactory;
     {
-        var cancellationToken_1 = cancellationToken;
-        var taskCreationOptions_2 = transient3_TaskCreationOptions;
-        var taskContinuationOptions_3 = transient4_TaskContinuationOptions;
-        var taskScheduler_4 = transient5_TaskScheduler;
-        perBlock2_TaskFactory = new TaskFactory<IDependency>(cancellationToken_1, taskCreationOptions_2, taskContinuationOptions_3, taskScheduler_4);
+        var cancellationToken_0 = cancellationToken;
+        var taskCreationOptions_1 = transient3_TaskCreationOptions;
+        var taskContinuationOptions_2 = transient4_TaskContinuationOptions;
+        var taskScheduler_3 = transient5_TaskScheduler;
+        perBlock2_TaskFactory = new TaskFactory<IDependency>(cancellationToken_0, taskCreationOptions_1, taskContinuationOptions_2, taskScheduler_3);
     }
     perResolve42_Func = new Func<IDependency>(
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     () =>
     {
-        var value_5 = new Dependency();
-        return value_5;
+        var value_4 = new Dependency();
+        return value_4;
     });
     Task<IDependency> transient1_Task;
     {
-        var factory_6 = perResolve42_Func!;
-        var taskFactory_7 = perBlock2_TaskFactory;
-        transient1_Task = taskFactory_7.StartNew(factory_6);
+        var factory_5 = perResolve42_Func!;
+        var taskFactory_6 = perBlock2_TaskFactory;
+        transient1_Task = taskFactory_6.StartNew(factory_5);
     }
     return new Service(transient1_Task);
   }

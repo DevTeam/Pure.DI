@@ -92,9 +92,9 @@ partial class Composition
       }
       Owned<IService> perBlock0_Owned;
       {
-          var owned_1 = accumulator38;
-          var value_2 = new Service(transient3_Dependency);
-          perBlock0_Owned = new Owned<IService>(value_2, owned_1);
+          var owned_0 = accumulator38;
+          var value_1 = new Service(transient3_Dependency);
+          perBlock0_Owned = new Owned<IService>(value_1, owned_0);
       }
       lock (_lock)
       {

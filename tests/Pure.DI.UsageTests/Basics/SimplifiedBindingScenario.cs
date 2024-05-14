@@ -39,10 +39,13 @@ interface IOtherDependency;
 
 class Dependency: IDependency, IOtherDependency;
 
+interface IService;
+
 class Service(
     Dependency dependencyImpl,
     IDependency dependency,
-    IOtherDependency otherDependency);
+    IOtherDependency otherDependency)
+    : IService;
 // }
 
 public class Scenario
@@ -62,9 +65,10 @@ public class Scenario
             //  .As(Lifetime.PerBlock)
             //  .To<Dependency>()
             .Bind().As(Lifetime.PerBlock).To<Dependency>()
+            .Bind().To<Service>()
             
             // Specifies to create a property "MyService"
-            .Root<Service>("MyService");
+            .Root<IService>("MyService");
         
         var composition = new Composition();
         var service = composition.MyService;
